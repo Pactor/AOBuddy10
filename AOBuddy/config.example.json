@@ -1,0 +1,16 @@
+{
+  "Owner": "YourMainName",
+  "DefaultMode": "Assist",
+  "AutoAcceptOwnerTeamInvite": true,
+  "HealOwnerBelowPercent": 60,
+  "HealNanoId": 0,
+  "HealSelfBelowPercent": 55,
+  "HealItemName": "Health and Nano Stim",
+  "SelfBuffNanoIds": [],
+  "OwnerBuffNanoIds": [],
+  "TeamBuffNanoIds": [],
+  "AssistMaxDistance": 40.0,
+  "PerkLines": [ "Enhance DNA:2" ],
+  "ResearchBonuses": {},
+  "TickMs": 500
+}

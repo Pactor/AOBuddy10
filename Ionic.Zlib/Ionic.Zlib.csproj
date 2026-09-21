@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ionic.Zlib</RootNamespace>
+    <AssemblyName>Ionic.Zlib</AssemblyName>
+  </PropertyGroup>
+
+</Project>

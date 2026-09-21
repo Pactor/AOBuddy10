@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AOBuddy</RootNamespace>
+    <AssemblyName>AOBuddy</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AOSharp.Common\AOSharp.Common.csproj" />
+    <ProjectReference Include="..\AOSharp.Clientless.Chat\AOSharp.Clientless.Chat.csproj" />
+    <ProjectReference Include="..\AOSharp.Clientless\AOSharp.Clientless.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config.example.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="GameData\perks.sql"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\Perks.xml"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+  </ItemGroup>
+
+</Project>

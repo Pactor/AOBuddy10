@@ -1,0 +1,29 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+[Pp]ackages/
+*.nupkg
+
+# Runtime / local config (credentials + logs live here — never commit)
+config.json
+**/config.json
+*.log
+aobuddy.log
+
+# OS
+Thumbs.db
+desktop.ini

@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="AOBuddy/AOBuddy.csproj" />
+  <Project Path="AOSharp.Clientless.Chat/AOSharp.Clientless.Chat.csproj" />
+  <Project Path="AOSharp.Clientless.Common/AOSharp.Clientless.Common.csproj" />
+  <Project Path="AOSharp.Clientless/AOSharp.Clientless.csproj" />
+  <Project Path="AOSharp.Common/AOSharp.Common.csproj" />
+  <Project Path="Ionic.Zlib/Ionic.Zlib.csproj" />
+  <Project Path="Test/Test.csproj" />
+</Solution>

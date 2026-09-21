@@ -1,0 +1,166 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="StreamReader.cs" company="SmokeLounge">
+//   Copyright © 2013 SmokeLounge.
+//   This program is free software. It comes without any warranty, to
+//   the extent permitted by applicable law. You can redistribute it
+//   and/or modify it under the terms of the Do What The Fuck You Want
+//   To Public License, Version 2, as published by Sam Hocevar. See
+//   http://www.wtfpl.net/ for more details.
+// </copyright>
+// <summary>
+//   Defines the StreamReader type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace SmokeLounge.AOtomation.Messaging.Serialization
+{
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Text;
+
+    public sealed class StreamReader : IDisposable
+    {
+        #region Fields
+
+        private readonly BinaryReader reader;
+
+        private readonly Stream stream;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        public StreamReader(Stream stream)
+        {
+            this.stream = stream;
+            this.reader = new BinaryReader(stream);
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public long Position
+        {
+            get
+            {
+                return this.stream.Position;
+            }
+
+            set
+            {
+                this.stream.Position = value;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void Dispose()
+        {
+            this.reader.Dispose();
+            this.stream.Dispose();
+        }
+
+        public bool ReadBool()
+        {
+            return this.reader.ReadBoolean();
+        }
+
+        public byte ReadByte()
+        {
+            return this.reader.ReadByte();
+        }
+
+        public byte[] ReadBytes(int count)
+        {
+            return this.reader.ReadBytes(count);
+        }
+
+        public short ReadInt16()
+        {
+            return IPAddress.NetworkToHostOrder(this.reader.ReadInt16());
+        }
+
+        public int ReadInt32()
+        {
+            return IPAddress.NetworkToHostOrder(this.reader.ReadInt32());
+        }
+
+        public long ReadInt64()
+        {
+            return IPAddress.NetworkToHostOrder(this.reader.ReadInt64());
+        }
+
+        public float ReadSingle()
+        {
+            var single = this.reader.ReadBytes(4);
+            Array.Reverse(single);
+            return BitConverter.ToSingle(single, 0);
+        }
+
+        public double ReadDouble()
+        {
+            return this.reader.ReadDouble();
+        }
+
+        public string ReadString(int length)
+        {
+            var bytes = this.reader.ReadBytes(length);
+            return Encoding.ASCII.GetString(bytes).TrimEnd(char.MinValue);
+        }
+
+        public ushort ReadUInt16()
+        {
+            var littleEndian = this.reader.ReadUInt16() << 16;
+            return (ushort)IPAddress.NetworkToHostOrder(littleEndian);
+        }
+
+        public uint ReadUInt32()
+        {
+            var littleEndian = this.reader.ReadUInt32() << 32;
+            return (uint)(IPAddress.NetworkToHostOrder(littleEndian) >> 32);
+        }
+
+        public string ReadNullTerminatedString()
+        {
+            string str = "";
+            byte ch;
+            while ((int)(ch = this.reader.ReadByte()) != 0)
+                str = str + Convert.ToChar(ch);
+            return str;
+        }
+
+        public int PeekNullTermStringLength()
+        {
+            long origin = reader.BaseStream.Position;
+            while (reader.ReadByte() != 0);
+            long length = reader.BaseStream.Position - origin;
+            reader.BaseStream.Position = origin;
+            return (int)length;
+        }
+
+        public int PeekUntilEnd()
+        {
+            long origin = reader.BaseStream.Position;
+            int length = 0;
+            while (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                reader.ReadByte();
+                length++;
+            }
+            reader.BaseStream.Position = origin;
+            return length;
+        }
+
+        public byte[] ReadAll()
+        {
+            reader.BaseStream.Position = 0;
+            return reader.ReadBytes((int)reader.BaseStream.Length);
+        }
+
+        #endregion
+    }
+}

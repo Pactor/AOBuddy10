@@ -1,0 +1,26 @@
+<Project>
+  <!--
+    AOBuddy10 — shared build settings for the .NET 10 migration.
+    The whole solution targets net10.0-windows (Windows-only runtime; the Unmanaged/Imports
+    P/Invoke in AOSharp.Common compiles here but is never called by the clientless bot).
+    GenerateAssemblyInfo is off so each project keeps its existing Properties/AssemblyInfo.cs
+    (preserves AOSharp.Common's Version=1.0.0.0 that references expect).
+    Output goes straight to bin\Debug\ (no net10.0-windows subfolder) to match the old layout
+    and the deploy steps (copy AOSharp.Clientless.dll next to the host).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Deterministic>true</Deterministic>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <!-- CA1416 = Windows-only API (P/Invoke never called clientless); CS0618/CS0612 = obsolete APIs. -->
+    <NoWarn>$(NoWarn);CA1416;CS0618;CS0612;CS1591;NU1701</NoWarn>
+  </PropertyGroup>
+</Project>

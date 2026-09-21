@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AOSharp.Clientless.Chat</RootNamespace>
+    <AssemblyName>AOSharp.Clientless.Chat</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="stateless" Version="5.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AOSharp.Common\AOSharp.Common.csproj" />
+    <ProjectReference Include="..\AOSharp.Clientless.Common\AOSharp.Clientless.Common.csproj" />
+  </ItemGroup>
+
+</Project>

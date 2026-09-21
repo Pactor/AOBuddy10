@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AOSharp.Clientless</RootNamespace>
+    <AssemblyName>AOSharp.Clientless</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="stateless" Version="5.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AOSharp.Common\AOSharp.Common.csproj" />
+    <ProjectReference Include="..\AOSharp.Clientless.Chat\AOSharp.Clientless.Chat.csproj" />
+    <ProjectReference Include="..\AOSharp.Clientless.Common\AOSharp.Clientless.Common.csproj" />
+    <ProjectReference Include="..\Ionic.Zlib\Ionic.Zlib.csproj" />
+  </ItemGroup>
+
+  <!-- Game data files the runtime loads from the output directory. -->
+  <ItemGroup>
+    <None Update="GameData\ItemData.bin"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\ItemData.idx"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\PlayfieldNames.json"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\SkillTrickle.json"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\StaticDynelData.bin"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+  </ItemGroup>
+
+</Project>

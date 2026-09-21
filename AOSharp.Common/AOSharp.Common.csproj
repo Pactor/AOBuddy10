@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AOSharp.Common</RootNamespace>
+    <AssemblyName>AOSharp.Common</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Two native GUI wrappers were excluded from the original .NET Framework project and
+       do not compile; keep them excluded (never used by the clientless bot). -->
+  <ItemGroup>
+    <Compile Remove="Unmanaged\Imports\GUI\BrowserModule_c.cs" />
+    <Compile Remove="Unmanaged\Imports\GUI\BrowserWindow_c.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

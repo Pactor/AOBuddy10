@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"E:\\Funcom\\AOSharp.Clientless\\AOBuddy\\.claude\\rule-gate.ps1\" -Event UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"E:\\Funcom\\AOSharp.Clientless\\AOBuddy\\.claude\\rule-gate.ps1\" -Event PreToolUse"
+          }
+        ]
+      }
+    ]
+  }
+}
