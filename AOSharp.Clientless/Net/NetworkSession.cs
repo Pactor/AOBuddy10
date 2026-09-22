@@ -55,6 +55,11 @@ namespace AOSharp.Clientless.Net
 
         private ConcurrentQueue<byte[]> _inboundPacketQueue = new ConcurrentQueue<byte[]>();
 
+        // Distinct unparseable packets already logged (key = n3type:length), so a message the stock
+        // serializer can't read is reported ONCE with its full hex instead of spamming a stack trace
+        // every time the server sends it. See ProcessCachedPacket's catch.
+        private readonly HashSet<string> _loggedBadPackets = new HashSet<string>();
+
         internal NetworkSession(Logger logger, Dictionary<SystemMessageType, Action<SystemMessage>> sysMsgCallbacks, Dictionary<N3MessageType, Action<N3Message>> n3MsgCallbacks)
         {
             _logger = logger;
@@ -184,7 +189,20 @@ namespace AOSharp.Clientless.Net
                     if (IsN3MessageType(packet, N3MessageType.ChestFullUpdate))
                         return;
 
-                    message = _serializer.Deserialize(packet);
+                    // SpellList: a nano was uploaded/learned mid-session. The stock serializer leaves this
+                    // message empty (its body is undefined), so learned nanos never reached SpellList and the
+                    // bot wouldn't summon e.g. a just-learned heal pet until a relog. Pull the added nano out
+                    // and add it live, then drop the packet (nothing else consumes it).
+                    if (IsN3MessageType(packet, N3MessageType.SpellList))
+                    {
+                        TryApplySpellListNano(packet);
+                        return;
+                    }
+
+                    // FullCharacter: try the stock serializer first (correct for the common no-pet case); only
+                    // fall back to the corrected reader when it throws (a pet is up — see FullCharacterReader).
+                    if (!TryDeserializeFullCharacter(packet, out message))
+                        message = _serializer.Deserialize(packet);
                 }
 
                 if (message == null)
@@ -226,13 +244,35 @@ namespace AOSharp.Clientless.Net
                         internalCallback.Invoke(n3Msg);
                 }
             }
-            catch(Exception e)
+            catch (Exception dropEx)
             {
-                if (Client.LogDeserializationErrors)
-                    return;
-
-                _logger.Error($"Failed to deserialize packet: {packet.ToHexString()}");
-                _logger.Error(e.ToString());
+                // A message the stock serializer can't parse (the bundled AOSharp.Common has incomplete
+                // coverage for some pet/combat messages). DROP it so the bot keeps running, and log ONE
+                // concise line per distinct message — its N3 type id, length and full hex — instead of a
+                // repeating stack trace. That gives a clean capture so a corrected reader can be added for
+                // the specific type (the SimpleCharFullUpdateReader workaround is the template).
+                try
+                {
+                    int typeId = 0;
+                    if (packet != null && packet.Length >= 20)
+                    {
+                        using (MemoryStream ms = new MemoryStream(packet))
+                        using (MessagingStreamReader r = new MessagingStreamReader(ms))
+                        { r.Position = 16; typeId = r.ReadInt32(); }
+                    }
+                    string key = $"{typeId:X8}:{(packet == null ? 0 : packet.Length)}";
+                    if (_loggedBadPackets.Add(key))
+                    {
+                        // The exception used to be DISCARDED here, so every "fix" to a reader was a guess at
+                        // which field broke. Log where it actually threw: type, message, and the deepest
+                        // frame (file+line) — that names the exact read that failed.
+                        Exception root = dropEx; while (root.InnerException != null) root = root.InnerException;
+                        string frame = (root.StackTrace ?? "").Split('\n').LastOrDefault(s => s.Contains("AOSharp"))?.Trim() ?? "?";
+                        _logger.Error($"Dropping unparseable packet: n3type=0x{typeId:X8} len={(packet == null ? 0 : packet.Length)} EX={root.GetType().Name}: {root.Message} AT {frame}");
+                        _logger.Error($"  hex={(packet == null ? "" : packet.ToHexString())}");
+                    }
+                }
+                catch { /* logging must never throw */ }
             }
         }
 
@@ -288,6 +328,70 @@ namespace AOSharp.Clientless.Net
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// FullCharacter handling. Returns false for non-FullCharacter packets (caller uses the stock path).
+        /// For a FullCharacter it PREFERS the stock serializer (unchanged for the common no-pet case) and only
+        /// falls back to <see cref="FullCharacterReader"/> when the stock serializer throws — which it does
+        /// whenever the character has a pet up (the trailing pet identity is mis-read as a TeamMember struct
+        /// and it reads past the end). The fallback keeps our stats + spell list and extracts the pet list.
+        /// </summary>
+        private bool TryDeserializeFullCharacter(byte[] packet, out Message message)
+        {
+            message = null;
+            if (!IsN3MessageType(packet, N3MessageType.FullCharacter))
+                return false;
+
+            try
+            {
+                message = _serializer.Deserialize(packet);
+                return true;
+            }
+            catch
+            {
+                Header header = DeserializeHeader(packet);
+                using (MemoryStream bodyStream = new MemoryStream(packet))
+                using (MessagingStreamReader bodyReader = new MessagingStreamReader(bodyStream))
+                {
+                    bodyReader.Position = 16;
+                    FullCharacterMessage body = FullCharacterReader.Read(bodyReader, packet.Length);
+                    message = new Message { Header = header, Body = body };
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Extract the nano a SpellList message uploaded and add it to the LOCAL player's SpellList live.
+        /// The SpellList body has a variable effect block we can't cheaply skip, but the uploaded nano lives
+        /// in a fixed 14-byte tail: [HasNano=1][Nano.Type(4)][Nano.Instance(4)][UnreadFlag][ApplyScope(4)].
+        /// So we read the tail, not the effects. A stray misread is harmless — a bogus id just fails the nano
+        /// lookup in AutoSummons and is ignored. Only applies to our own character (identity at offset 24).
+        /// </summary>
+        private void TryApplySpellListNano(byte[] packet)
+        {
+            try
+            {
+                if (packet == null || packet.Length < 38) return;   // 16 header + type + identity + ≥14 tail
+                using (MemoryStream ms = new MemoryStream(packet))
+                using (MessagingStreamReader r = new MessagingStreamReader(ms))
+                {
+                    r.Position = 24;                        // character Identity.Instance
+                    int charInstance = r.ReadInt32();
+                    if (Client.LocalDynelId != 0 && charInstance != Client.LocalDynelId) return;
+
+                    r.Position = packet.Length - 14;        // start of the [HasNano][Nano][…] tail
+                    if (r.ReadByte() != 1) return;          // HasNano == 0: nothing uploaded here
+                    r.ReadInt32();                          // Nano.Type
+                    int nanoId = r.ReadInt32();             // Nano.Instance == the nano id
+                    if (nanoId <= 0) return;
+
+                    LocalPlayer me = DynelManager.LocalPlayer;
+                    if (me != null) me.AddUploadedNano(nanoId);
+                }
+            }
+            catch { /* never let a malformed SpellList disrupt processing */ }
         }
 
         /// <summary>

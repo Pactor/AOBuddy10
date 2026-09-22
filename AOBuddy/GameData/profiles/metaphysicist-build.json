@@ -1,0 +1,204 @@
+{
+  "profession": "Metaphysicist",
+  "professionId": 12,
+  "playstyle": {
+    "role": "Pet-based nuker / support hybrid: commands up to three floating AI pets (attack, heal, mezz/crowd-control) while nuking and debuffing, and provides top-tier nanoskill buffs to the team.",
+    "strengths": [
+      "Three simultaneous pets: attacker (damage), healer (support), mezz (crowd control) for versatile combat",
+      "Second-best nanoskill buffs in the game (Mochams / Composite Infuses, +140 nanoskills, behind only Trader's +147)",
+      "Strong nuke and debuff kit (Mind Quake debuff line, Trader-like nano/skill debuffs)",
+      "Pets are persistent (no longer time-limited), so wrangles can be used to cast above self-cast level",
+      "Excellent solo capability once pets are up; good team utility (buffs, mezz, off-heals)"
+    ],
+    "weaknesses": [
+      "Low weapon skills (1HB, 2HE, Bow, Pistol are expensive) - weak personal weapon damage",
+      "Squishy: relies on pets to tank; caught without pets it is fragile",
+      "Pet management complexity (positioning, re-casting on death, over-equip / body pool concerns)",
+      "Ancient Knowledge AI perk pet effects are bugged / unreliable"
+    ],
+    "summary": "The Meta-Physicist (profession 12) is Anarchy Online's cosmic pet-master: it summons an attack pet, heal pet, and mezz pet from the 'other side' and supplements them with nukes, debuffs, and the game's second-strongest nanoskill buffs. Play centers on keeping the right pets up, keeping them and the team healed, and controlling the fight with mezz and debuffs.",
+    "tips": [
+      "Keep pets at the highest nanoline level you can self-cast (or wrangle up); re-summon promptly when a pet dies",
+      "Max the nano schools first - they gate which pets, nukes and buffs you can cast",
+      "Buff teammates with Mocham's Gifts and Composite Infuses; this is a large part of MP team value",
+      "Use the mezz pet for crowd control rather than trying to weapon-tank",
+      "Watch pet over-equipment/body pool when using outside buffs to cast pets above self-cast level"
+    ]
+  },
+  "breed": {
+    "recommended": "Nanomage",
+    "reasoning": "Nanomage has the highest Intelligence and Psychic, which most directly raise the nanoskills the MP lives on (MM/BM/MC/TS/PM/SI). This lets it cast higher-tier attack pets, nukes and buffs sooner and with less IP, and gives the largest nano pool for sustained casting. The Funcom-forums MP guide states Nanomage is the optimal choice: 'Nanomage have most Int and Psy... Int ability will boost your nano skills most' and 'You will need a lot of MC and TS all the time 1-220'.",
+    "alternatives": [
+      { "breed": "Solitus", "note": "Balanced all-rounder with no hard caps; easier, more forgiving IP spread and better HP/AC than Nanomage. Solid, safer pick if you dislike the Nanomage fragility." },
+      { "breed": "Atrox", "note": "Most HP and best melee/Body Dev, but low base nano pool and lower Int/Psy make nanoskills more IP-hungry; nano pool is 'especially important for the Atrox breed' per AOWiki. Chosen mainly for survivability/froob play, not for peak casting." },
+      { "breed": "Opifex", "note": "Best evades and highest run speed for kiting/positioning, but lower Int/Psy than Nanomage/Solitus; a niche survivability pick, not the casting optimum." }
+    ]
+  },
+  "perks": [
+    {
+      "name": "Soothing Spirit",
+      "type": "SL",
+      "line": "Soothing Spirit (10 tiers, levels 30-203)",
+      "effect": "Premier MP heal line: up to ~50% bonus to heal-pet healing at max, plus special actions Spirit of Blessing (team heal up to ~1,300 HP) and Spirit of Purity (team nano refill up to ~1,300 nano). Also changes the heal pet's appearance.",
+      "recommendedAtLevel": "Start at 30; max first as IP/levels allow",
+      "priority": "high"
+    },
+    {
+      "name": "Channel Rage",
+      "type": "SL",
+      "line": "Channel Rage (10 tiers, levels 10-210)",
+      "effect": "Buffs the attack pet: +30 AddAllOff and +300 to all damage types at max; also gives the MP ~210 HP and assorted resistances. Overall value is debated in the community.",
+      "recommendedAtLevel": "Situational; take for pet-DPS focus",
+      "priority": "med"
+    },
+    {
+      "name": "Starfall",
+      "type": "SL",
+      "line": "Starfall (10 tiers)",
+      "effect": "Self offense/utility: +400 max nano and +160 health, plus a 4-step damage special-action chain (Dazzle with Lights, Combust, Thermal Detonation, Supernova) used in sequence.",
+      "recommendedAtLevel": "Optional damage/nano line",
+      "priority": "med"
+    },
+    {
+      "name": "Blunt Mastery",
+      "type": "SL",
+      "line": "Blunt Mastery (max rank 4 at level 80, shared with Enforcer)",
+      "effect": "+45 to 1-Hand Blunt skill and grants Quick Bash direct-damage special action; only useful for a 1HB-weapon MP.",
+      "recommendedAtLevel": "80, only if wielding 1HB",
+      "priority": "low"
+    },
+    {
+      "name": "Ranger",
+      "type": "AI/Alien",
+      "line": "Ranger (max rank 6)",
+      "effect": "+75 Bow and +38 Bow Special Attack, plus Clearshot and Popshot specials; only for a bow-using MP.",
+      "recommendedAtLevel": "Only for a bow build",
+      "priority": "low"
+    },
+    {
+      "name": "Ancient Knowledge",
+      "type": "AI/Alien",
+      "line": "Ancient Knowledge",
+      "effect": "Intended to buff pets, but pet effects are bugged/non-functional; generally not recommended as a priority.",
+      "recommendedAtLevel": "Avoid until fixed",
+      "priority": "low"
+    },
+    {
+      "name": "Ego Strike / Super-Ego Strike",
+      "type": "LE/Research proc",
+      "line": "Foresight (Ego Strike) and Sympathy (Super-Ego Strike)",
+      "effect": "Offensive damage proc perks that fire during combat (mind/ego damage). LEProcMetaPhysicistEgoStrike / LEProcMetaPhysicistSuperEgoStrike in local PerkHash enum.",
+      "recommendedAtLevel": "Slot on an offensive proc setup",
+      "priority": "med"
+    },
+    {
+      "name": "Mind Wail",
+      "type": "LE/Research proc",
+      "line": "Perseverances",
+      "effect": "Offensive AoE-style mind proc. LEProcMetaPhysicistMindWail in enum.",
+      "recommendedAtLevel": "Offensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Anticipated Evasion",
+      "type": "LE/Research proc",
+      "line": "Foresight",
+      "effect": "Defensive proc that raises evasion when it fires. LEProcMetaPhysicistAnticipatedEvasion in enum.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Regain Focus",
+      "type": "LE/Research proc",
+      "line": "Perseverances",
+      "effect": "Defensive/sustain proc (nano/focus recovery). LEProcMetaPhysicistRegainFocus in enum.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Nanobot Contingent Arrest",
+      "type": "LE/Research proc",
+      "line": "Perseverances",
+      "effect": "Control/utility proc (root/arrest effect). LEProcMetaPhysicistNanobotContingentArrest in enum.",
+      "recommendedAtLevel": "Utility proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Diffuse Rage",
+      "type": "LE/Research proc",
+      "line": "Spatial Awareness",
+      "effect": "Defensive proc (damage/aggression reduction). LEProcMetaPhysicistDiffuseRage in enum.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Economic Nanobot Use",
+      "type": "LE/Research proc",
+      "line": "Spatial Awareness",
+      "effect": "Sustain proc reducing nano cost / restoring nano. LEProcMetaPhysicistEconomicNanobotUse in enum.",
+      "recommendedAtLevel": "Sustain proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Suppress Fury",
+      "type": "LE/Research proc",
+      "line": "Sympathy",
+      "effect": "Defensive/mitigation proc. LEProcMetaPhysicistSuppressFury in enum.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Sow Doubt / Sow Despair / Thoughtful Means",
+      "type": "LE/Research proc",
+      "line": "Angst / Jealousy / Trauma (exact mapping unverified)",
+      "effect": "Debuff/utility procs (LEProcMetaPhysicistSowDoubt, LEProcMetaPhysicistSowDespair, LEProcMetaPhysicistThoughtfulMeans in enum). Line assignment of these three not confirmed in fetched sources.",
+      "recommendedAtLevel": "Debuff/utility proc slot",
+      "priority": "low"
+    }
+  ],
+  "research": [
+    { "name": "Foresight", "track": "LE", "effect": "Int/Quantum-Physics scaling; grants proc perks Ego Strike (offense) and Anticipated Evasion (evasion).", "note": "Good all-round MP personal line: offense + defense procs." },
+    { "name": "Perseverances", "track": "LE", "effect": "Health/defense scaling; grants Regain Focus, Mind Wail and Nanobot Contingent Arrest procs.", "note": "Survivability + an offensive Mind Wail proc." },
+    { "name": "Sympathy", "track": "LE", "effect": "Nano-programming/Int scaling; grants Suppress Fury and Super-Ego Strike procs.", "note": "Nanoskill support plus a strong offensive Super-Ego Strike proc." },
+    { "name": "Spatial Awareness", "track": "LE", "effect": "Evasion/Stamina scaling; grants Diffuse Rage and Economic Nanobot Use procs.", "note": "Defensive/sustain line." },
+    { "name": "Angst", "track": "LE", "effect": "Strength and nano-skill progression culminating in psychic abilities.", "note": "Personal research line; nanoskill-oriented." },
+    { "name": "Jealousy", "track": "LE", "effect": "Melee/exploit-weakness focus with nano-cost reduction and attack modifiers.", "note": "Lower priority for a caster MP." },
+    { "name": "Trauma", "track": "LE", "effect": "Ranged/bow focus: Aimed Shot and Bow proficiency with initiative bonuses (to ~60 Bow at completion).", "note": "Only for a bow-oriented MP." },
+    { "name": "Personal Research (skill/perk unlocks)", "track": "Personal", "effect": "The seven MP lines above are all personal (not global): each is 10 levels with skill and perk-point requirements per tier, funded by redirecting a chosen % of XP.", "note": "All MP profession research lines are personal per AOWiki." },
+    { "name": "Global Research (all-profession)", "track": "Global", "effect": "Shared cross-profession global lines (general bonuses) apply to MP as to any profession.", "note": "Not MP-specific; standard global picks apply." }
+  ],
+  "skillPriorities": [
+    { "skill": "Matter Metamorphosis (MM)", "why": "Core nano school; gates attack pets, buffs and many nanos - 'always max this if possible'", "target": "max" },
+    { "skill": "Biological Metamorphosis (BM)", "why": "Core nano school; heals and heal-pet casting - 'always max this skill'", "target": "max" },
+    { "skill": "Matter Creation (MC)", "why": "Core nano school; nukes and pet casting - 'always keep maxed', heavily used 1-220", "target": "max" },
+    { "skill": "Time and Space (TS)", "why": "Core nano school; pets/summons and utility - 'always max this skill', needed all levels", "target": "max" },
+    { "skill": "Psychological Modification (PM)", "why": "Needed for buffs/mezz and debuffs - max when possible", "target": "high" },
+    { "skill": "Sensory Improvement (SI)", "why": "Needed for buff casting - max when possible", "target": "high" },
+    { "skill": "Nano Pool", "why": "Fuel for constant pet/nuke/buff casting; especially important at low levels and for Atrox", "target": "high" },
+    { "skill": "Nano C. Init (Nano Init)", "why": "Faster cast/recast on pets, heals and nukes", "target": "high" },
+    { "skill": "Computer Literacy", "why": "Needed for many things (NCU, tradeskills, decks) - 'max this out'", "target": "high" },
+    { "skill": "Treatment", "why": "Heal and nano kits, and implant install - 'max this out'", "target": "high" },
+    { "skill": "First Aid", "why": "Emergency self heals/stims between casts", "target": "as-needed" },
+    { "skill": "Dodge Ranged / Evade Close Combat / Duck Explosives", "why": "Survivability while pets tank - keep high or max whenever possible", "target": "high" },
+    { "skill": "Body Development", "why": "HP buffer; raise if you find yourself dying a lot (higher value for Atrox)", "target": "as-needed" },
+    { "skill": "Run Speed", "why": "Positioning/kiting; raise with spare IP", "target": "as-needed" },
+    { "skill": "Weapon skills (1HB/2HE/Bow/Pistol)", "why": "Expensive for MP and secondary to pets; only invest for a specific weapon plan (e.g. bow with Ranger/Trauma)", "target": "as-needed" }
+  ],
+  "_unverified": [
+    "Exact research-line assignment of the Sow Doubt, Sow Despair and Thoughtful Means proc perks (attributed to Angst/Jealousy/Trauma by inference; not confirmed in fetched sources).",
+    "Offensive-vs-defensive classification of individual procs is inferred from names/effects; aoitems.com/perk/prof/meta-physicist returned unrelated content and could not confirm per-proc details.",
+    "Precise per-tier levels/values for Channel Rage, Starfall, and the proc perks beyond the summary figures quoted from AOWiki.",
+    "The Fandom Meta-Physicist:Perks page (HTTP 402) and aoitems perk page could not be fetched; perk detail relies on wiki.aodb.us and the Funcom-forums guide.",
+    "Nanomage-vs-Solitus recommendation reflects the Funcom-forums guide plus community consensus; AOWiki's Breed and Skills page did not state an explicit single recommended breed."
+  ],
+  "_sources": [
+    "https://forums.funcom.com/t/mp-meta-physicist-guide/74897 (official Funcom forums MP guide - breed = Nanomage, skill priorities, Soothing Spirit)",
+    "http://wiki.aodb.us/wiki/Meta-Physicist (AOWiki - role, strengths/weaknesses, three pets, nanoskill buffs)",
+    "http://wiki.aodb.us/wiki/Meta-Physicist:Breed_and_Skills (AOWiki - skill priorities, nano-pool/Atrox note)",
+    "http://wiki.aodb.us/wiki/Meta-Physicist:Perks (AOWiki - Soothing Spirit, Channel Rage, Starfall, Blunt Mastery, Ranger, Ancient Knowledge)",
+    "http://wiki.aodb.us/wiki/Meta-Physicist:Research_Lines (AOWiki - 7 personal LE research lines and their proc perks)",
+    "https://anarchyonline.fandom.com/wiki/Meta-Physicist (Fandom KB - overview and appendix structure)",
+    "E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Profession.cs (Metaphysicist = 12)",
+    "E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkHash.cs (12 LEProcMetaPhysicist* proc-perk enum names)"
+  ]
+}

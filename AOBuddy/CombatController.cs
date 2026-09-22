@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AOSharp.Clientless;
 using AOSharp.Common.GameData;
@@ -21,7 +22,13 @@ namespace AOBuddy
         private readonly BotContext _ctx;
 
         private Identity? _attackedTarget;   // the target we've already issued Attack on
+        private double _notSwinging;         // seconds we've been on this target without the server swinging
         private bool _inCombat;
+
+        // How long the server must leave us not-swinging on a mob we already engaged before we re-issue
+        // Attack. Comfortably longer than any real weapon's recharge gap, so a normal fight issues exactly
+        // one Attack per target and only a real stall produces a second.
+        private const double StallResumeSeconds = 3.0;
         private string _lastTargetLog = "";
         private double _noTargetLogAccum;
 
@@ -37,14 +44,52 @@ namespace AOBuddy
         public SimpleChar SelectAndEngage(LocalPlayer me, PlayerChar owner)
         {
             _sinceCombat += _ctx.Config.TickMs / 1000.0;
+
+            // FOLLOW THE OWNER'S TARGET, ALWAYS. An earlier version committed to the first mob until it died
+            // and ignored the owner switching — the owner has since retired that rule: his PET can pull aggro
+            // we cannot see, so when he switches he is switching for a reason, and in practice the bot never
+            // changed targets at all. So: take his fight every tick, and if he switches away and later comes
+            // back to finish one off, that mob simply gets a second Attack — one to start it, one to resume
+            // after the change, which is what a player does too.
+            //
+            // The one thing that must not happen is re-issuing Attack on the mob we are ALREADY swinging at:
+            // that resets the weapon timer (swing once, then wait — the "not swinging" bug). The
+            // _attackedTarget check below is what prevents it.
             SimpleChar target = GetAssistTarget(me, owner);
+
+            // His FightingTarget flickers to null for a tick mid-fight. Don't read that as "fight over" and
+            // drop the mob we are on — hold the current one while it is still a live, hostile, in-range mob.
+            if (target == null && _attackedTarget.HasValue)
+            {
+                SimpleChar current = DynelManager.Characters.FirstOrDefault(c => c.Identity == _attackedTarget.Value);
+                if (current != null && IsHostile(current, me, owner) && IsAlive(current)
+                    && me.DistanceFrom(current) <= _ctx.Config.AssistMaxDistance)
+                    target = current;
+            }
+
             if (target != null)
             {
-                if (_attackedTarget != target.Identity)
+                // ONE Attack per target. The server drives the swing from there: our AttackMessage sets
+                // FightingIdentity (= IsAttacking) and it auto-swings on the weapon timer. Re-issuing on a
+                // mob we are already swinging at RESETS that timer — swing once, then wait, the "never
+                // swings" bug — so a target we have already engaged is never re-Attacked.
+                //
+                // The single exception is a genuine stall: the server can clear FightingIdentity between
+                // swings (Client.cs handles StopFightMessage by doing exactly that), and without a resume the
+                // bot would then stand idle on a live mob. So a resume is allowed, but only after the stall
+                // has lasted StallResumeSeconds — long enough that it cannot fire in the gap between two
+                // ordinary swings, which is what would turn "one Attack per target" into a stream of them.
+                bool newTarget = _attackedTarget != target.Identity;
+                if (!newTarget && !me.IsAttacking) _notSwinging += _ctx.Config.TickMs / 1000.0;
+                else if (me.IsAttacking) _notSwinging = 0;
+
+                if (newTarget || _notSwinging >= StallResumeSeconds)
                 {
-                    _ctx.Log($"ATTACK-> '{target.Name}' id={target.Identity} weapons={Inventory.Items.Count(x => x.Slot.Type == IdentityType.WeaponPage)}");
+                    bool resume = !newTarget;
+                    _ctx.Log($"ATTACK-> '{target.Name}' id={target.Identity} weapon={string.Join("+", EquippedWeapons().Select(w => w.Name))}{(resume ? $" (resume after {_notSwinging:0.0}s not swinging)" : "")}");
                     me.Attack(target);
                     _attackedTarget = target.Identity;
+                    _notSwinging = 0;
                 }
                 _inCombat = true;
                 _sinceCombat = 0;
@@ -54,6 +99,7 @@ namespace AOBuddy
             else
             {
                 _attackedTarget = null;   // fight over — the next target starts fresh, once
+                _notSwinging = 0;
             }
             return target;
         }
@@ -64,10 +110,23 @@ namespace AOBuddy
         // when each is off cooldown. A special is a SEPARATE message that does NOT reset the main weapon swing
         // timer, so this cannot reintroduce the "never swings" bug. Snapshot the set first: firing registers a
         // cooldown, which touches the same collection we're iterating.
+        // The ACTIVE weapon special attacks — the only stats that are on-demand, aim-at-a-mob specials.
+        // KnownSpecials is learned from server COOLDOWN messages, which also cover non-attacks (FirstAid,
+        // Treatment, Level, pet perks, nanos); firing those as "specials" interrupts the weapon swing
+        // (attack-stop-attack) and wastes the action. This set is protocol fact — what a weapon special IS,
+        // not per-class hardcoding — and the character's equipped weapon still decides which he can use.
+        // Riposte/Parry are excluded (passive, auto-trigger on defence, not fired on demand).
+        private static readonly HashSet<Stat> WeaponSpecials = new HashSet<Stat>
+        {
+            Stat.Brawl, Stat.Dimach, Stat.SneakAttack, Stat.FastAttack,
+            Stat.Burst, Stat.FlingShot, Stat.AimedShot, Stat.FullAuto, Stat.Backstab,
+        };
+
         private void FireReadySpecials(LocalPlayer me, SimpleChar target)
         {
             if (!_ctx.Config.UseSpecials) return;
-            foreach (Stat special in me.KnownSpecials.ToArray())
+            // Fire only the specials the EQUIPPED WEAPON allows (read from its own criteria), each when ready.
+            foreach (Stat special in AllowedWeaponSpecials())
             {
                 if (!me.IsSpecialReady(special)) continue;
                 me.PerformSpecialAttack(target.Identity, special);
@@ -75,14 +134,43 @@ namespace AOBuddy
             }
         }
 
+        // The special attacks the equipped weapon ALLOWS — read straight from the weapon's own criteria, where
+        // a weapon lists its specials as requirements (e.g. "AimedShot 319", "FastAttack 251", "Burst 401").
+        // This is the weapon's ground truth: a bow yields AimedShot, a pistol Burst/FlingShot/FullAuto, a melee
+        // weapon Brawl/FastAttack/etc. No trained-skill reading, no class guessing — it works for any weapon,
+        // and dual-wield contributes both hands' specials.
+        public static HashSet<Stat> AllowedWeaponSpecials()
+        {
+            var allowed = new HashSet<Stat>();
+            foreach (var w in EquippedWeapons())
+            {
+                if (w.Criteria == null) continue;
+                foreach (var kv in w.Criteria)
+                    foreach (var c in kv.Value)
+                        if (WeaponSpecials.Contains((Stat)c.Param1))
+                            allowed.Add((Stat)c.Param1);
+            }
+            return allowed;
+        }
+
         // Dump the EQUIPPED weapon(s) exactly as the item data describes them — every criteria (wield/attack
         // requirement: stat + operator + value) and every modifier — so we can read from DATA which weapon
         // SKILL he actually uses, instead of assuming. Equipped weapons are the Inventory items in the weapon
         // page (same source the attack log already uses). This is the ground truth the buff-relevance filter keys on.
+        // His actual weapon(s): the items in the HAND slots. The "weapon page" also holds HUD, utility,
+        // belt and 6 NCU deck slots, so filtering on the page alone counts those too (9 "weapons"). A wielded
+        // weapon is only ever in RightHand and/or LeftHand — this generalises to any class (bow, gun, melee).
+        public static IEnumerable<Item> EquippedWeapons()
+        {
+            if (Inventory.Items == null) return Enumerable.Empty<Item>();
+            return Inventory.Items.Where(x => x != null && x.Slot.Type == IdentityType.WeaponPage
+                && (x.Slot.Instance == (int)EquipSlot.Weap_RightHand || x.Slot.Instance == (int)EquipSlot.Weap_LeftHand));
+        }
+
         public int DumpWeapons(LocalPlayer me)
         {
-            var weapons = Inventory.Items?.Where(x => x != null && x.Slot.Type == IdentityType.WeaponPage).ToList();
-            if (weapons == null || weapons.Count == 0) { _ctx.Log("WEAPON: no equipped weapons in Inventory (not loaded yet?)."); return 0; }
+            var weapons = EquippedWeapons().ToList();
+            if (weapons.Count == 0) { _ctx.Log("WEAPON: no weapon in hand slots (not loaded yet?)."); return 0; }
             _ctx.Log($"WEAPON: {weapons.Count} equipped weapon(s) ---");
             foreach (var w in weapons)
             {
@@ -150,6 +238,7 @@ namespace AOBuddy
         {
             _inCombat = false;
             _attackedTarget = null;
+            _notSwinging = 0;
         }
 
         // ---- Target selection ----------------------------------------------------
@@ -193,6 +282,14 @@ namespace AOBuddy
                 else _ctx.Log("TARGET: none (no owner fight)");
             }
             return t;
+        }
+
+        // Alive while it still has health. A mob's Health stat can be stale (not every hit updates the dynel),
+        // so an unknown/absent Health reads as alive and we rely on despawn (removal from DynelManager) for
+        // death; but a readable 0 HP means dead, so we stop committing to it and move to the next mob.
+        private static bool IsAlive(SimpleChar c)
+        {
+            return !c.TryGetStat(Stat.Health, out int hp) || hp > 0;
         }
 
         // Not the owner, not the bot, not a teammate — safe to attack.

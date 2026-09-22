@@ -42,7 +42,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public short VisualFlags { get; set; }
 
         [AoMember(3)]
-        public byte Unknown1 { get; set; }
+        public byte VisibleTitle { get; set; }
 
         #endregion
     }

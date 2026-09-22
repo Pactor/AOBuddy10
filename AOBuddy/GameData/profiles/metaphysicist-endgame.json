@@ -1,0 +1,263 @@
+{
+  "profession": "Metaphysicist",
+  "professionId": 12,
+  "symbiantUnitType": "Control",
+  "levelCapContext": "AO level cap is 220 (+ up to 30 AI/research levels). 'Endgame' = ~level 200-220, AI 24-30, research L9-10.",
+  "content": [
+    {
+      "name": "Pandemonium (Adonis inner realm)",
+      "type": "raid",
+      "level": "~201-220, requires a +10 (or better) Pande access ring to reach the inner islands",
+      "whatDropsForMP": "The Night Heart drops Intelligent (QL300) symbiants - the second half of every Xan Alpha symbiant. Trash bosses drop common phatz used across the game (Glyph of the Arcana, Meteorite Spikes, Koan Shuriken, Heroes Discus, Tear of Oedipus, etc.). Portal bosses gate progress and drop nothing.",
+      "mpRole": "Pet DPS + crowd control. 18 bosses across 4 islands; MP roots/calms adds, keeps attack pet alive, contributes nukes. Bring a +10 ring to zone in.",
+      "note": "Pandemonium is the farm zone for Intelligent QL300 symbiants that combine with Xan Betas into Alphas. Access ring quality gates which islands you can reach."
+    },
+    {
+      "name": "The Beast",
+      "type": "raid",
+      "level": "Endgame (level ~201-220 players); the Beast mob itself is very high level",
+      "whatDropsForMP": "Per kill: 4 armor parts + both hilts + 1-2 stars + 2-4 weapons, each as 'Lady of' (QL299) or 'Lord of' (QL300), plus 1 random Shadowbreed. MP-usable star reported: Star of Moral (~1.9% drop). Lord/Lady weapons and Shadowbreed are the headline endgame drops.",
+      "mpRole": "Pet DPS + support. MP is not a core Beast role; contributes attack-pet damage, root/calm on adds, nukes. Keep pets on the Beast and re-cast when it wipes them.",
+      "note": "The Beast is the classic Shadowlands pinnacle kill. Shadowbreed items and Lord/Lady weapons/armor are the loot people chase; MP benefits mostly from tradeable phatz + the occasional caster-usable star/ring."
+    },
+    {
+      "name": "The Xan (12-man) / Hall of the Elders",
+      "type": "raid",
+      "level": "Endgame, level ~210+ recommended. 4-hour lockout. Located in the Xan Center Hub (LoX).",
+      "whatDropsForMP": "Xan Beta symbiants (Control-line Betas are the first half of every Xan Alpha) across ear/eye/chest/thigh + arm/hand/feet/leg slots; Xan spirits; Xan Weapon/Belt tuning/upgrade devices; Nanodeck components. Completion buff 'The Awakening' (5h, level 210+) and an Offense/Defense buff from the Deranged Xan.",
+      "mpRole": "Pet DPS + nuke damage; MP is flagged as vulnerable to the encounter's mind-control mechanic ('Enslaver of the Spirits!'). Manage pets through control phases and re-summon after mez.",
+      "note": "This is THE source of Xan Beta symbiants. Betas here + Intelligent QL300 from Pandemonium = your Alpha symbiants. Beta ear/thigh are clickable/adaptable between unit types."
+    },
+    {
+      "name": "Dust Brigade - Outpost (DB1)",
+      "type": "instance",
+      "level": "High-level (~200+), full team recommended (tank + doc)",
+      "whatDropsForMP": "Enhanced Dust Brigade Armor parts drop from DB1 (and DB2). DB armor is a strong caster-viable set and a step on the way to the DB questline / DB3.",
+      "mpRole": "Pet DPS + CC; standard team support. Part of the multi-stage DB quest chain (also a level 215-220 progression checkbox).",
+      "note": "DB1/DB2/DB3 = Outpost / Inside the Machine / The Facility. Enhanced DB armor drops in DB1-DB2."
+    },
+    {
+      "name": "Dust Brigade - Inside the Machine (DB2)",
+      "type": "instance",
+      "level": "High-level (~210+), full team",
+      "whatDropsForMP": "More Enhanced Dust Brigade Armor parts; continuation of the DB chain.",
+      "mpRole": "Pet DPS + CC. Progression content toward completing the Dust Brigade quest.",
+      "note": "Second stage of the DB chain."
+    },
+    {
+      "name": "Dust Brigade - The Facility (DB3)",
+      "type": "instance",
+      "level": "Endgame (~215-220), full team",
+      "whatDropsForMP": "Six floors; 1st/3rd/5th are filler with no loot. Final DB quest reward stage. Completing the DB quest is a level 215-220 progression milestone.",
+      "mpRole": "Pet DPS + CC through a long multi-floor instance; MP is a filler DPS/utility slot, not required.",
+      "note": "Finishing DB3 completes the Dust Brigade questline (progression checkbox for 215-220)."
+    },
+    {
+      "name": "Alien City Raids (Kyr'Ozch cities)",
+      "type": "raid",
+      "level": "High-level org/raid content",
+      "whatDropsForMP": "Kyr'Ozch Bio-Material (used to upgrade alien weapons and to craft alien armor) drops from the city 'boss' and the alien-ship boss. Bio-material types: Pristine (least chem), Mutated (most chem), plus Viralbots (Spiritual Lead Viralbots for the caster armor). Also alien weapons and AI-armor mats.",
+      "mpRole": "Pet DPS + CC on the raid. City generals + ship bosses = the source of your armor/weapon upgrade materials.",
+      "note": "Farm target for the bio-material and Spiritual/Arithmetic viralbots that make Miy's Nano / Combined caster armor and upgrade Kyr'Ozch weapons."
+    },
+    {
+      "name": "Sector 7",
+      "type": "raid",
+      "level": "High-level team content. Gates open ~every 7h for ~10 min (via Unicorn Outpost, ship outside ICC/Andromeda).",
+      "whatDropsForMP": "Four ship bosses (4th spawned from a Power Core built from the first three). 16 NODROP profession-restricted special-edition weapons drop from bosses; QL160-270 items that grant Victory Points; alien loot.",
+      "mpRole": "Team pet DPS + CC. Look for MP-usable Special Edition Kyr'Ozch weapon and VP items.",
+      "note": "Entry-tier alien playfield; gateway to VP farming and Special Edition weapons."
+    },
+    {
+      "name": "Sector 10",
+      "type": "raid",
+      "level": "Mid/high-level alien playfield (team instanced)",
+      "whatDropsForMP": "Alien loot, bio-material, VP items; step up from S7.",
+      "mpRole": "Team pet DPS + CC.",
+      "note": "Progression alien playfield between S7 and the higher sectors."
+    },
+    {
+      "name": "Sector 13",
+      "type": "raid",
+      "level": "High-level instanced raid",
+      "whatDropsForMP": "Alien loot, bio-material for weapon/armor upgrades, VP.",
+      "mpRole": "Raid pet DPS + CC.",
+      "note": "One of the high-level instanced alien raids (13/28/35)."
+    },
+    {
+      "name": "Sector 28",
+      "type": "raid",
+      "level": "High-level instanced raid",
+      "whatDropsForMP": "Alien loot, bio-material, VP.",
+      "mpRole": "Raid pet DPS + CC.",
+      "note": "High-level instanced alien raid."
+    },
+    {
+      "name": "Sector 35",
+      "type": "raid",
+      "level": "High-level instanced raid (endgame)",
+      "whatDropsForMP": "Alien loot, bio-material, VP; among the harder sector raids.",
+      "mpRole": "Raid pet DPS + CC.",
+      "note": "Top-tier instanced alien raid before Sector 42."
+    },
+    {
+      "name": "Sector 42 (Alien Playfield / APF) - the Zodiac / Artillery Commander",
+      "type": "raid",
+      "level": "Endgame raid, level 210+ (do not roll on 210+ APF items before level 210)",
+      "whatDropsForMP": "APF nano items and endgame alien loot. Sector 42 requires 3 bosses in separate places killed simultaneously to spawn the Artillery Commander, the biggest alien in the game.",
+      "mpRole": "Coordinated raid pet DPS + CC; contribute to a synchronized multi-team pull.",
+      "note": "The APF/Zodiac endgame alien raid. APF nano items are worth collecting; wait until 210+ to roll on 210+ gear."
+    },
+    {
+      "name": "Battlestation (Ofab / Victory Points)",
+      "type": "daily",
+      "level": "Faction PvP battlefield; queue at endgame for VP",
+      "whatDropsForMP": "Victory Points spent at the OFab Shop vendors for Ofab armor (incl. 'Ofab Metaphysicist' set), Ofab weapons, nanos and special items. VP also buys the QL300 ring, Special Edition Head and Ofab back item at 220.",
+      "mpRole": "PvP/PvM contribution for VP; pets + CC on the battlefield. Primary purpose is farming VP currency.",
+      "note": "VP is the currency gate for Ofab gear and several 220 purchases (~84k VP for QL300 ring + SE head + Ofab back)."
+    },
+    {
+      "name": "Inferno missions & pocket bosses",
+      "type": "instance",
+      "level": "Level 190+ (Inferno). Grind for tokens and pocket-boss patterns.",
+      "whatDropsForMP": "QL220-255 pocket-boss patterns (9 specific complete patterns needed for the Galahad Garden key), Inferno boots/HHAB items, tokens, and mission nanos.",
+      "mpRole": "Solo/team pet DPS; MP can solo many Inferno missions with pets + heals. Farm tokens and garden patterns here.",
+      "note": "Inferno mission grind feeds tokens, the Galahad Garden key, and access to higher SL content."
+    },
+    {
+      "name": "Penumbra missions (Shadowbreed / Shadow gear)",
+      "type": "instance",
+      "level": "Level 150-210 team range",
+      "whatDropsForMP": "Shadowbreed gear via rolled Penumbra missions; tokens; step toward Pande access.",
+      "mpRole": "Pet DPS + CC; MP handles these easily with pets.",
+      "note": "Roll Penumbra missions ~205-210 for Shadow Breed gear and tokens."
+    },
+    {
+      "name": "Galahad Garden Key quest (Inferno)",
+      "type": "quest",
+      "level": "Inferno-level (190+)",
+      "whatDropsForMP": "Opens the Inferno garden (Galahad) - a safe staging garden and progression gate. Requires 9 complete QL220-255 pocket-boss patterns from Inferno depths.",
+      "mpRole": "Solo-friendly for MP with pets; collect the 9 patterns.",
+      "note": "Garden access is important for staging Pande/Inferno raids (fast return, buffs, no DoT)."
+    },
+    {
+      "name": "Ice Golem questline (Inferno progression)",
+      "type": "quest",
+      "level": "Inferno-level",
+      "whatDropsForMP": "Give Cama the heart -> receive Ice Golem blueprint -> spawn at the Incarnator -> Golem drops 6 molars used in progression.",
+      "mpRole": "Team the Golem; MP as pet DPS + CC.",
+      "note": "Part of the Inferno/Shadowlands progression chain."
+    },
+    {
+      "name": "Lost Eden dailies (Alien / AI team dailies)",
+      "type": "daily",
+      "level": "Endgame (200-220)",
+      "whatDropsForMP": "Tokens, VP-adjacent rewards; the Arid AI-team daily yields components to build a warp device. Steady token/AIXP income.",
+      "mpRole": "Pet DPS on quick daily runs; MP clears these fast.",
+      "note": "Daily loop for tokens and AI/research XP at endgame."
+    },
+    {
+      "name": "Sector 07 / Elysium team dailies",
+      "type": "daily",
+      "level": "Endgame team dailies (e.g. 'Go to Sector 07 (Team)')",
+      "whatDropsForMP": "Daily reward tokens/VP and alien loot access.",
+      "mpRole": "Team pet DPS + CC on the daily objective.",
+      "note": "Repeatable daily content for currency/tokens."
+    }
+  ],
+  "progressionOrder": [
+    {
+      "step": "1. Endgame nano twink (foundation)",
+      "what": "As Nanomage MP, twink Matter Creation (MC) and Time & Space (TS) high enough to cast the top pets. L225-equivalent pets are cited at ~MC 3045 / TS 3040. Always run the best attack/heal/mezz pet nanos you can cast.",
+      "why": "Pets are the MP's damage and survivability. Everything else (symbiants, armor, jewelry) exists partly to push MC/TS/nano-init so you can cast and keep bigger pets. Do this first because it multiplies the value of all later gear."
+    },
+    {
+      "step": "2. Base implants + first symbiants",
+      "what": "Fill slots with QL200+ implants, then start swapping in Control-line symbiants (MP uses the Control unit type). Get to a stable QL240+ symbiant baseline.",
+      "why": "Symbiants beat implants on total ability/skill and free up nano-skill headroom. 240+ symbiants are a 220 checkbox and the platform for Alpha/Beta later."
+    },
+    {
+      "step": "3. Ofab armor via Battlestation VP",
+      "what": "Farm Victory Points on Battlestation; buy the Ofab Metaphysicist set (upgrade each piece twice). Grab the SL/Penumbra Shadow gear along the way.",
+      "why": "Ofab has replaced Tier as the baseline profession armor - big, cheap, reliable nano-skill/ability platform to get you raid-ready."
+    },
+    {
+      "step": "4. Alien armor - caster set (Miy's Nano / Combined)",
+      "what": "Farm Kyr'Ozch bio-material + Spiritual Lead Viralbots in Alien City raids and Sectors; craft/roll Miy's Nano armor (Int/Psychic + nano skills; biggest bonuses on Head + Arms) and/or Combined caster pieces. Alien 'Spiritual' armor gives nano-pool, 'Arithmetic' gives nano + trade skills.",
+      "why": "Best caster armor in the game; Int/Psychic + nano skills directly raise your castable pet/nano ceiling and nano pool."
+    },
+    {
+      "step": "5. Research (Lost Eden) + AI/perk completion",
+      "what": "Push Personal + Global research to L9-10 and AI levels to 24-30; complete perk lines. Personal research caps at 5% of total cost per reward, so bank big XP/SK rewards.",
+      "why": "Research procs/skill bonuses and perks are large, permanent power with no drop RNG. AI levels also unlock more perk points and gear requirements. A 220 target is AI 26+, research L9+."
+    },
+    {
+      "step": "6. Jewelry / rings + VP purchases",
+      "what": "Get a Pande access ring (+10 minimum) for inner Pandemonium; buy QL300 ring, Special Edition Head and Ofab back item with VP at 220 (~84k VP total). Pick up caster-usable stars/rings from the Beast.",
+      "why": "The +10 ring gates Pande farming (needed for Alpha symbiants); the VP items are cheap, permanent stat upgrades."
+    },
+    {
+      "step": "7. Xan Beta symbiants (Hall of the Elders / The Xan 12-man)",
+      "what": "Raid the Xan 12-man for Control-line Xan Beta symbiants across your slots. Beta ear/thigh are adaptable between unit types.",
+      "why": "Betas are the first half of every Alpha and are strong upgrades on their own. This is the only source."
+    },
+    {
+      "step": "8. Intelligent QL300 symbiants (Pandemonium / Night Heart)",
+      "what": "Farm the Night Heart in Pandemonium for Intelligent (QL300) Control symbiants - few drop per kill, so this is the grind bottleneck.",
+      "why": "Intelligent QL300 is the second half of every Alpha. Requires the Pande access ring from step 6."
+    },
+    {
+      "step": "9. Xan Alpha symbiants (craft, NODROP)",
+      "what": "Combine matching Xan Beta + Intelligent QL300 of the same unit type + slot on your own character to make Alphas. Use the ear/thigh right-click adapt trick to save money.",
+      "why": "Xan Alpha symbiants are the best-in-slot symbiants - the endgame ability/skill payoff. NODROP, so must be crafted on the MP itself."
+    },
+    {
+      "step": "10. Dust Brigade armor + questlines",
+      "what": "Run DB1/DB2 for Enhanced Dust Brigade armor and complete the DB quest (DB3), plus Arid Rift / Neretva quests. Finish Beast/Lord-Lady weapon and Shadowbreed hunting.",
+      "why": "Final polish: DB armor, quest rewards, Shadowbreed and Lord/Lady gear round out a fully-geared 220 MP. These are long, low-priority-until-last chores."
+    }
+  ],
+  "notes": [
+    "MP core loop in all endgame content: three pet types - attack (DPS), healing (sustain), and mezz (crowd control). Keep the best you can cast up at all times; re-summon fast after wipes/mez phases.",
+    "MP is a flexible utility/DPS slot in raids, not a required role like tank or doc. Value = pet DPS + roots/calms on adds + nukes + nano-skill debuffs on bosses. Bring the right pet for the fight.",
+    "Pet survivability is the main raid problem: AoE and boss specials one-shot pets. Mitigate by keeping heal pet up, re-summoning quickly, positioning attack pet, and using pet-heal/warp nanos. Budget nano for constant re-casts.",
+    "Breed: Nanomage is the standard endgame MP breed for max Int/Psychic and nano pool (best for casting the biggest pets/nanos).",
+    "Symbiant unit type: Meta-Physicist uses CONTROL symbiants (same as Engineer, Bureaucrat, Trader). Match Control on Betas/Alphas.",
+    "Alpha symbiants and DB armor are NODROP/self-crafted - build them on the MP that will wear them; don't expect to trade for finished Alphas.",
+    "Gate items to remember: a +10 (or better) Pande access ring is required before you can farm Intelligent QL300 symbiants; don't roll on 210+ APF items until you are level 210.",
+    "Currency gates: Victory Points (Battlestation/Sectors) buy Ofab gear + QL300 ring + SE head + Ofab back (~84k VP for the 220 trio). Tokens (Inferno/dailies) and bio-material (alien raids) feed armor and upgrades.",
+    "Kyr'Ozch weapons are upgradable with bio-material; Special Edition Kyr'Ozch weapons from Sector 7 bosses are NODROP and profession-restricted - check for MP-usable ones."
+  ],
+  "_unverified": [
+    "Exact MP pet-cast skill numbers (MC 3045 / TS 3040 for ~L225 pets) come from an older Funcom-forum MP guide and may be off for the current live/2019-era client; verify against the actual nano requirements in-game or a current nano DB.",
+    "'The Beast requires level 300' from wiki.aodb.us almost certainly refers to the Beast MOB's level, not a player requirement (AO player cap is 220). Player access is via the Pande access ring at ~level 201+. Flagged as a likely wiki phrasing artifact.",
+    "Specific MP-usable Beast drop 'Star of Moral' (~1.9%) came from a WebFetch summary of the wiki loot table; confirm the exact item name/stats and that it is MP-equippable.",
+    "Combined (Alien Invasion) caster armor: the exact set name an MP uses (Miy's Nano vs a specific Combined variant) was not pinned down from a single authoritative page - Miy's Nano is confirmed as the caster/nano set; the precise 'Combined <name>' for MP is unverified.",
+    "Ofab set name 'Ofab Metaphysicist Armor' came from the wiki MP:Armor page summary; confirm exact set/piece names and upgrade path.",
+    "Sector-by-sector (10/13/28/35/42) MP-specific drops were not individually enumerated from loot tables here; treat per-sector loot as 'alien loot + bio-material + VP + APF nano items' pending a per-sector loot-table check.",
+    "MP raid-role specifics (which calms/roots/nukes/nano-skill debuffs are meta) were summarized from general guides, not a current MP raid guide; verify the exact top nanos against a live nano list.",
+    "LE/Ely daily reward specifics (exact tokens/items) were not fully enumerated; verify current daily reward tables.",
+    "Pandemonium boss/loot counts (18 bosses, 4 portal + 12 phatz bosses) and Beast per-kill drop counts are from wiki/AO-Universe summaries; confirm against current live drop tables."
+  ],
+  "_sources": [
+    "https://forums.funcom.com/t/mp-meta-physicist-guide/74897 - [MP] Meta-physicist guide (Funcom forums): breed (Nanomage), MC/TS pet-cast skills, three pet types, gear categories.",
+    "https://anarchyonline.fandom.com/wiki/Meta-Physicist - MP overview: profession identity, nano-skill manipulation of friends/foes.",
+    "https://anarchyonline.fandom.com/wiki/Symbiants OR aoguide symbiants - MP = Control unit type; Alpha = Beta + Intelligent QL300 same unit+slot; Alpha NODROP.",
+    "https://www.athenpaladins.org/forums/viewtopic.php?t=12867 - Guide: making Xan Alpha/Beta symbiants; Betas from Hall of the Elders (Xan 12-man), Intelligent QL300 from Night Heart in Pandemonium; ear/thigh adapt trick.",
+    "https://athenpaladins.org/forums/viewtopic.php?t=7386 - AO progress guide (205-220): Ofab, symbiants 240+, +10 Pande ring, research L9/AI 24+, DB quest, APF, VP costs (~84k), 220 checklist.",
+    "http://wiki.aodb.us/wiki/Alien_Loot - Alien armor types (Spiritual=nano pool, Arithmetic=nano+trade), Kyr'Ozch weapons, bio-material types (Pristine/Mutated/Viralbots), Crystalline Disk (MA/MP).",
+    "http://wiki.aodb.us/wiki/The_Beast - Beast loot table: 4 armor + hilts + stars + weapons (Lady QL299/Lord QL300) + random Shadowbreed; Star of Moral for MP.",
+    "http://wiki.aodb.us/wiki/Pandemonium - Pandemonium structure: 18 bosses, portal vs phatz bosses, common phatz loot, Night Heart.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man - Xan 12-man: Beta symbiants/spirits, tuning devices, Awakening buff, MP mind-control mechanic, 4h lockout.",
+    "http://wiki.aodb.us/wiki/Dust_Brigade + AO-Universe DB1/DB2/DB3 guides - DB1 Outpost / DB2 Inside the Machine / DB3 Facility; Enhanced DB armor from DB1-2; DB3 six floors.",
+    "http://wiki.aodb.us/wiki/Alien_Playfields + Fandom The Alien Playfields - Sectors 7/10/13/28/35 and Sector 42 (Artillery Commander needs 3 simultaneous boss kills); Special Edition NODROP weapons; VP items.",
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-07-alien-playfield - Sector 7 access (7h/10min gates, Unicorn Outpost), 4 ship bosses, 16 SE weapons, VP items.",
+    "https://www.ao-universe.com/guides/classic-ao/location-guides-5/battle-stations - Battlestation VP -> Ofab armor/weapons/nanos at the OFab Shop.",
+    "https://wiki.aodb.us/wiki/Miy's_Nano_Armor + Fandom Armorsets - Miy's Nano armor: Int/Psychic + skills, biggest on Head/Arms; Ofab as baseline profession armor.",
+    "http://wiki.aodb.us/wiki/Meta-Physicist:Armor - Ofab Metaphysicist Armor set reference.",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/galahad-garden-key-quest - Galahad Garden key: 9 QL220-255 pocket-boss patterns; garden staging.",
+    "https://anarchyonline.fandom.com/wiki/Research + AO-Universe Research - Personal vs Global research; caps at 5% of cost per reward; procs/skills.",
+    "https://anarchyonline.fandom.com/wiki/Lost_Eden - Lost Eden expansion (research, Battlestation, Ofab, alien playfields context).",
+    "http://wiki.aodb.us/wiki/The_Xan - The Xan 12-man raid location, level 250 Spirit of Redemption boss, endgame items."
+  ]
+}

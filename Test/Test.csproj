@@ -13,6 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The starting point for Build\config.json, dropped beside the host so it is where you look. -->
+    <None Update="config.example.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AOSharp.Clientless.Common\AOSharp.Clientless.Common.csproj" />
     <ProjectReference Include="..\AOSharp.Clientless\AOSharp.Clientless.csproj" />
   </ItemGroup>

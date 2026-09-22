@@ -27,10 +27,10 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         {
             this.N3MessageType = N3MessageType.SpecialAttackWeapon;
             this.Unknown1 = 0x00000007;
-            this.Unknown2 = 0x00000007;
-            this.Unknown3 = 0x00000007;
-            this.Unknown4 = 0x0000000E;
-            this.Unknown5 = 0x00000064;
+            this.CloseCombatInitiative = 0x00000007;
+            this.DistanceWeaponInitiative = 0x00000007;
+            this.PhysicalProwessInitiative = 0x0000000E;
+            this.NanoProwessInitiative = 0x00000064;
         }
 
         #endregion
@@ -44,16 +44,16 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public int Unknown1 { get; set; }
 
         [AoMember(2)]
-        public int Unknown2 { get; set; }
+        public int CloseCombatInitiative { get; set; }
 
         [AoMember(3)]
-        public int Unknown3 { get; set; }
+        public int DistanceWeaponInitiative { get; set; }
 
         [AoMember(4)]
-        public int Unknown4 { get; set; }
+        public int PhysicalProwessInitiative { get; set; }
 
         [AoMember(5)]
-        public int Unknown5 { get; set; }
+        public int NanoProwessInitiative { get; set; }
 
         #endregion
     }

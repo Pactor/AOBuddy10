@@ -56,9 +56,38 @@ namespace AOSharp.Clientless
                 LocalPlayerProxy.ApplySimpleCharFullUpdate(simpleCharMsg);
                 dynel = LocalPlayer;
             }
+            else if (simpleCharMsg.Flags.HasFlag(SimpleCharFullUpdateFlags.IsNpc))
+            {
+                var npc = new NpcChar(simpleCharMsg);
+                bool existed = _dynels.TryGetValue(npc.Identity, out Dynel prev);
+
+                // PET OWNERSHIP PERSISTENCE. A pet's master (Flags2 0x4, wire-proven in scfuwire.log) is only
+                // carried on SOME full updates — the spawn announce, not steady-state ones (a re-summoned pet's
+                // next update reads Flags2=0x2, no owner). Because every full update builds a BRAND-NEW NpcChar
+                // that OVERWRITES the old one in _dynels, an owner-less update wiped the Owner set at spawn ->
+                // me.Pets went empty -> the bot stopped commanding the pet and spammed resummon. Carry the known
+                // owner forward when this update doesn't bring one, so ownership survives steady-state rebuilds.
+                if (npc.Owner == null && existed && prev is NpcChar prevNpc && prevNpc.Owner != null)
+                {
+                    npc.Owner = prevNpc.Owner;
+                }
+                // PET OWNERSHIP BY SUMMON. When 0x4 never comes (some pets never send it), fall back to the
+                // owner's rule: "if he summoned it, it's his." A brand-NEW NPC that spawns right next to us
+                // while our pet-summon claim window is open (LocalPlayer.ExpectingPetUntilMs, set when we cast
+                // a summon nano) is our pet — claim it so it enters me.Pets, gets commanded, and stops the
+                // false resummon loop. Tight radius so a mob that happens to spawn during the window isn't mis-claimed.
+                else if (npc.Owner == null && !existed)
+                {
+                    LocalPlayer me = LocalPlayer;
+                    if (me != null && Environment.TickCount64 <= me.ExpectingPetUntilMs
+                        && Vector3.Distance(npc.Transform.Position, me.Transform.Position) <= 8f)
+                        npc.Owner = me.Identity;
+                }
+                dynel = npc;
+            }
             else
             {
-                dynel = simpleCharMsg.Flags.HasFlag(SimpleCharFullUpdateFlags.IsNpc) ? new NpcChar(simpleCharMsg) : (Dynel)new PlayerChar(simpleCharMsg);
+                dynel = new PlayerChar(simpleCharMsg);
             }
 
             OnDynelSpawned(dynel);

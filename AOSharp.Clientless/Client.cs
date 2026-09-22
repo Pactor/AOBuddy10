@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Serilog.Core;
@@ -55,6 +55,13 @@ namespace AOSharp.Clientless
         public static Action<bool> CharacterInPlay;
         public static Action Died;
         public static Action Disconnected;
+
+        // Pet lifecycle, straight from the server (AddPet / RemovePet / PetToMaster). PetAttached
+        // also states what the pet is for; the same value is on the pet's own character update as
+        // NpcChar.PetTypeId, so either source works and they agree.
+        public static Action<Identity> PetAdded;
+        public static Action<Identity> PetRemoved;
+        public static Action<Identity, PetType> PetAttached;
 
         private static Dictionary<SystemMessageType, Action<SystemMessage>> _sysMsgCallbacks;
         private static Dictionary<N3MessageType, Action<N3Message>> _n3MsgCallbacks;
@@ -302,6 +309,21 @@ namespace AOSharp.Clientless
                     return;
 
                 DynelManager.LocalPlayerProxy.ApplyFullCharUpdate(fullCharMsg);
+
+                // AUTHORITATIVE pet ownership: our own FullCharacter lists our pets (decoded by the corrected
+                // fallback reader when a pet is up). Mark those NPCs as owned so me.Pets is reliable regardless
+                // of the flaky per-update pet-master bit. Match on INSTANCE — the FullCharacter pet-list
+                // identity uses a different Type than the pet's own dynel identity.
+                if (fullCharMsg.Pets != null && fullCharMsg.Pets.Length > 0)
+                {
+                    LocalPlayer me = DynelManager.LocalPlayer;
+                    if (me != null)
+                        foreach (Identity petId in fullCharMsg.Pets)
+                            foreach (NpcChar npc in DynelManager.Npcs)
+                                if (npc.Identity.Instance == petId.Instance)
+                                    npc.Owner = me.Identity;
+                }
+
                 Send(new CharInPlayMessage());
                 CharacterInPlay?.Invoke(_isFirstPlayshift);
 
@@ -482,12 +504,58 @@ namespace AOSharp.Clientless
             {
                 TeamMemberMessage teamMemberMsg = (TeamMemberMessage)msg;
 
-                Team.OnTeamMember(teamMemberMsg.Character, teamMemberMsg.Unknown2, teamMemberMsg.Name);
+                Team.OnTeamMember(teamMemberMsg.Character, teamMemberMsg.Level, teamMemberMsg.Name,
+                                  teamMemberMsg.Profession, teamMemberMsg.RaidGroup);
 
                 if (DynelManager.Find(teamMemberMsg.Identity, out Dynel statTarget))
                 {
                     statTarget.SetStat(Stat.Team, teamMemberMsg.Team.Instance);
                 }
+            });
+
+            // The team window's live health/nano for one member. This was decoded and then dropped
+            // on the floor, so a teammate's vitals could only be read off his dynel - which goes
+            // stale as soon as he stops being broadcast to us. These keep coming while he is in the
+            // playfield at any distance.
+            _n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg) =>
+            {
+                TeamMemberInfoMessage infoMsg = (TeamMemberInfoMessage)msg;
+
+                Team.OnTeamMemberInfo(infoMsg.Character, infoMsg.CurrentHealth, infoMsg.MaxHealth,
+                                      infoMsg.CurrentNano, infoMsg.MaxNano);
+
+                // Mirror onto the dynel when we can see it, so existing stat readers agree.
+                if (DynelManager.Find(infoMsg.Character, out Dynel vitalsTarget))
+                {
+                    vitalsTarget.SetStat(Stat.Health, infoMsg.CurrentHealth);
+                    vitalsTarget.SetStat(Stat.MaxHealth, infoMsg.MaxHealth);
+                    vitalsTarget.SetStat(Stat.CurrentNano, infoMsg.CurrentNano);
+                    vitalsTarget.SetStat(Stat.MaxNanoEnergy, infoMsg.MaxNano);
+                }
+            });
+
+            // Pet lifecycle. LocalPlayer.Pets still derives the roster from the dynel list, but these
+            // are the exact moments a summon landed or a pet was lost, so a caller can react at once
+            // instead of noticing on its next poll. PetToMaster's attach also repeats the pet's type.
+            _n3MsgCallbacks.Add(N3MessageType.AddPet, (msg) =>
+            {
+                AddPetMessage addPetMsg = (AddPetMessage)msg;
+                PetAdded?.Invoke(addPetMsg.PetIdentity);
+            });
+
+            _n3MsgCallbacks.Add(N3MessageType.RemovePet, (msg) =>
+            {
+                RemovePetMessage removePetMsg = (RemovePetMessage)msg;
+                PetRemoved?.Invoke(removePetMsg.PetIdentity);
+            });
+
+            _n3MsgCallbacks.Add(N3MessageType.PetToMaster, (msg) =>
+            {
+                PetToMasterMessage petToMasterMsg = (PetToMasterMessage)msg;
+
+                // Operation 1 is the attach and carries the pet type; operation 2 is the detach.
+                if (petToMasterMsg.Operation == 1)
+                    PetAttached?.Invoke(petToMasterMsg.PetIdentity, (PetType)petToMasterMsg.AttachNotificationValue);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Buff, (msg) =>
@@ -499,7 +567,7 @@ namespace AOSharp.Clientless
             _n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg) =>
             {
                 CastNanoSpellMessage castNanoSpellMsg = (CastNanoSpellMessage)msg;
-                OnCastNanoSpell(castNanoSpellMsg.Identity, castNanoSpellMsg.Unknown1);
+                OnCastNanoSpell(castNanoSpellMsg.Identity, castNanoSpellMsg.TargetPresent);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Trade, (msg) =>
@@ -521,7 +589,7 @@ namespace AOSharp.Clientless
                 if (templateMsg.Identity != DynelManager.LocalPlayer.Identity)
                     return;
 
-                if ((templateMsg.Unknown2 == 6 || templateMsg.Unknown2 == 85) && templateMsg.Placement == IdentityType.Inventory)
+                if ((templateMsg.Action == 6 || templateMsg.Action == 85) && templateMsg.Placement == IdentityType.Inventory)
                 {
                     Trade.OnTemplateAction(templateMsg.ItemLowId, templateMsg.ItemHighId, templateMsg.Quality);
                 }

@@ -1,4 +1,6 @@
-# Build output
+# Build output. Build/ is where the whole solution lands (see Directory.Build.props) - the
+# assemblies, and the two config.json files you edit, which are yours and not the repository's.
+Build/
 [Bb]in/
 [Oo]bj/
 [Dd]ebug/
@@ -27,3 +29,15 @@ aobuddy.log
 # OS
 Thumbs.db
 desktop.ini
+
+# Python bytecode (the tools/ webserver)
+__pycache__/
+*.pyc
+
+# Recorded navigation data. These are one character's walked routes, rebuilt by simply playing,
+# and they are not something a clone needs; nav_backups/ is kept as a worked example.
+AOBuddy/nav/
+
+# Local working notes. These name the characters used for testing and quote sniff transcripts,
+# so they stay on the machine that made them.
+AOBuddy/CLAUDE.md

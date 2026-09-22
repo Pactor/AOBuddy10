@@ -59,6 +59,15 @@ namespace AOSharp.Clientless
 
         internal static void OnFullCharacterMessage(InventorySlot[] inventorySlots)
         {
+            // NULL when this FullCharacter came from the corrected fallback reader: FullCharacterReader
+            // SKIPS the InventorySlots section (SkipX3F1) and never assigns it. Walking that null threw a
+            // NullReferenceException out of the FullCharacter callback, which NetworkSession then reported
+            // as "Dropping unparseable packet" — the packet parsed fine, the HANDLER died.
+            // Worse, the two lines below had ALREADY WIPED the inventory before the throw, leaving the bot
+            // with no items at all. Keep what we have when there is nothing to replace it with.
+            if (inventorySlots == null)
+                return;
+
             _items = new List<Item>();
             _containers = new List<Container>();
             RegisterItems(_items, inventorySlots);

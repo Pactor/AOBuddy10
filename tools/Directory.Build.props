@@ -1,0 +1,10 @@
+<Project>
+  <!--
+    The extractors under tools\ are one-off utilities, not part of a run. Keep them out of the
+    solution's Build\ folder so it holds only what the bot actually needs to start.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <PropertyGroup>
+    <OutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+</Project>

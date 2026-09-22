@@ -35,7 +35,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public Identity Door { get; set; }
 
         [AoMember(1)]
-        public int Unk1 { get; set; }
+        public int MsgVersion { get; set; }
 
         [AoMember(2)]
         public Vector3 Position { get; set; }

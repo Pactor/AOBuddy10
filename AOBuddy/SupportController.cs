@@ -32,11 +32,25 @@ namespace AOBuddy
         private double _predHp = -1, _predNano = -1;
         private int _lastRawHp = -1, _lastRawNano = -1;
 
+        // ADAPTIVE STIM COOLDOWN. A stim's real recharge isn't exposed on the item, and firing one always
+        // retargets the recipient (Item.Use sets the target), which interrupts the melee swing. So a stim
+        // fired while it's still cooling down is a pure pause with no heal. We LEARN the cooldown instead of
+        // hardcoding: only fire when the stim is due, and after each fire check (a beat later) whether HP
+        // actually rose — if not, it was on cooldown, so back the timer off; if it did, ease it back down.
+        // While the stim is cooling the bot just keeps attacking (the heal path returns false). No guessing.
+        private double _stimReadyAt = 0;        // sessionSeconds a stim may next be used
+        private double _stimBackoff = 3.0;      // current learned cooldown estimate (s)
+        private bool _stimPending = false;      // a fired stim awaits its did-it-heal check
+        private double _stimCheckAt = 0;        // when to run that check
+        private int _stimHpBefore = 0;          // recipient HP% at fire time
+        private bool _stimWasOwner = false;     // recipient was the owner (vs self)
+
         private double _healCd;           // cooldown so emergency heals don't fire every tick
         private double _sessionSeconds;   // monotonic clock for aura recast rate-limiting
         private double _auraAccum;
         private readonly Dictionary<int, double> _auraLastCast = new Dictionary<int, double>();
         private double _rechargeAccum;
+        private double _itemReadyAt;        // session-seconds when the heal item's use timer expires (sit/use/stand cycle)
 
         // Auto-buff: learned nanos classified as keep-up buffs (rebuilt when SpellList changes).
         private sealed class BuffPlan { public int NanoId; public NanoItem Nano; public bool Self; public NanoLine Line; public int Ncu; }
@@ -56,6 +70,9 @@ namespace AOBuddy
         private double _buffGrace = 10.0;   // wait for ActiveNanos to load after login before the first scan
         private const double BuffZoneGrace = 8.0;
         private double _nanoRefillAccum;
+        private double _refillElapsed;             // time spent recharging for a queued cast this sit
+        private int _refillPeakNano;              // highest nano% seen while refilling (progress tracking)
+        private double _refillLastGainAt;         // _refillElapsed when nano last climbed
 
         private bool _sitting;
         private bool _resting;
@@ -624,7 +641,7 @@ namespace AOBuddy
                     _resting = true;   // tell the movement arbiter to hold still while we recharge to buff
                     _ctx.SetBehavior("Resting");
                     _nanoRefillAccum += _ctx.Config.TickMs / 1000.0;
-                    if (_nanoRefillAccum >= 1.5) { _nanoRefillAccum = 0; recharger.Use(); }
+                    if (_nanoRefillAccum >= 1.5) { _nanoRefillAccum = 0; recharger.Use(); }   // self-use, proven stim pattern
                     return;
                 }
             }
@@ -644,10 +661,34 @@ namespace AOBuddy
         // resting. Returns true if it healed.
         public bool TryEmergencyHeal(LocalPlayer me, PlayerChar owner, bool fighting)
         {
+            // Learn the stim cooldown: a beat after a stim fired, did the recipient's HP actually rise? If
+            // not, the stim was on cooldown (wasted retarget) -> wait longer next time; if it did, ease back.
+            if (_stimPending && _sessionSeconds >= _stimCheckAt)
+            {
+                int now = _stimWasOwner ? (owner != null ? PercentHealth(owner) : 100) : SelfHpPct(me);
+                if (now > _stimHpBefore) _stimBackoff = Math.Max(3.0, _stimBackoff - 1.0);
+                else _stimBackoff = Math.Min(20.0, _stimBackoff + 2.0);
+                _stimPending = false;
+            }
+
             if (_resting || _healCd < _ctx.Config.HealIntervalSec) return false;
             if (IsRezSick(me)) return false;   // stims/rechargers can't be used through rez sickness
             if (!DoEmergencyHeal(me, owner, fighting)) return false;
             _healCd = 0; StandIfSitting(me); _resting = false;
+            return true;
+        }
+
+        // Fire a stim only if it's off its (learned) cooldown. While cooling, returns false so the caller
+        // keeps attacking instead of re-poking a dead stim and pausing the swing. Records a did-it-heal check.
+        private bool FireStim(Item stim, PlayerChar owner, bool onOwner, int hpBefore)
+        {
+            if (_sessionSeconds < _stimReadyAt) return false;   // timer not up -> keep swinging, no retarget
+            if (onOwner) stim.Use(owner); else stim.Use();
+            _stimReadyAt = _sessionSeconds + _stimBackoff;
+            _stimPending = true;
+            _stimCheckAt = _sessionSeconds + 1.5;
+            _stimHpBefore = hpBefore;
+            _stimWasOwner = onOwner;
             return true;
         }
 
@@ -656,15 +697,19 @@ namespace AOBuddy
             int selfHp = SelfHpPct(me);
             int selfNano = SelfNanoPct(me);
             int ownerHp = owner != null ? PercentHealth(owner) : 101;
-            bool selfLow = selfHp <= _ctx.Config.HealSelfBelowPercent;
+            // A stim restores BOTH health and nano, so for a caster a full health bar and an empty nano bar
+            // is just as much a reason to use one mid-fight as a health drop: without nano he cannot cast,
+            // which for a nano class is the same as being out of the fight.
+            bool selfLow = selfHp <= _ctx.Config.HealSelfBelowPercent
+                           || selfNano <= _ctx.Config.StimNanoBelowPercent;
             bool ownerLow = owner != null && ownerHp <= _ctx.Config.HealOwnerBelowPercent;
 
-            // 1) SURVIVAL FIRST. Heal the bot itself before the owner whenever the bot is the more critical
-            //    one (or the owner isn't low). It must NEVER stim a healthier owner while dying — that just
-            //    got it killed. Below the critical floor it stims itself even out of combat.
+            // 1) HIMSELF FIRST, ALWAYS. In a fight the bot heals itself before the owner, full stop — not
+            //    only when it is the more critical of the two. Stimming a healthier owner while about to die
+            //    is what kept getting it killed, and a dead bot heals nobody. Below the critical floor it
+            //    stims itself out of combat as well.
             bool selfCritical = selfHp <= _ctx.Config.SelfCriticalPercent;
-            bool selfBeforeOwner = selfLow && (!ownerLow || selfHp <= ownerHp);
-            if (selfCritical || (fighting && selfBeforeOwner))
+            if (selfCritical || (fighting && selfLow))
             {
                 if (TrySelfHeal(me, selfHp, selfNano)) return true;
             }
@@ -674,11 +719,12 @@ namespace AOBuddy
             {
                 if (_ctx.Config.HealNanoId > 0) { DoCast(me, new CastRequest { Target = owner.Identity, NanoId = _ctx.Config.HealNanoId, Label = "heal owner" }); return true; }
                 Item so;
-                if (me.DistanceFrom(owner) <= _ctx.Config.StimOwnerRange && (so = BestEmergencyHeal(true, false)) != null) { so.Use(owner); _ctx.Log($"STIM owner {ownerHp}% with QL{so.Ql} {so.Name}"); return true; }
+                if (me.DistanceFrom(owner) <= _ctx.Config.StimOwnerRange && (so = BestEmergencyHeal(true, false)) != null && FireStim(so, owner, true, ownerHp)) { _ctx.Log($"STIM owner {ownerHp}% with QL{so.Ql} {so.Name}"); return true; }
             }
 
-            // 3) In a fight, HP low → STIM to heal. Stims heal HP — they are never used to top nano.
-            if (fighting && selfLow)
+            // 3) Out of combat and below the heal threshold with no owner to worry about — top up rather
+            //    than wait for a rest. (In a fight this case was already taken by step 1.)
+            if (!fighting && selfLow)
             {
                 if (TrySelfHeal(me, selfHp, selfNano)) return true;
             }
@@ -696,10 +742,18 @@ namespace AOBuddy
         {
             if (_ctx.Config.SelfHealNanoId > 0 && selfHp <= _ctx.Config.HealSelfBelowPercent)
             { DoCast(me, new CastRequest { OnSelf = true, NanoId = _ctx.Config.SelfHealNanoId, Label = "self heal" }); return true; }
-            Item ss = BestEmergencyHeal(true, true);
-            if (ss != null) { ss.Use(); _ctx.Log($"STIM self hp={selfHp}% nano={selfNano}% with QL{ss.Ql} {ss.Name}"); return true; }
+            // Stims restore health AND nano, so ask for whichever is actually short.
+            bool needHp = selfHp <= _ctx.Config.HealSelfBelowPercent || selfHp <= _ctx.Config.SelfCriticalPercent;
+            bool needNano = selfNano <= _ctx.Config.StimNanoBelowPercent;
+            Item ss = BestEmergencyHeal(needHp || !needNano, needNano || !needHp);
+            if (ss != null && FireStim(ss, null, false, selfHp)) { _ctx.Log($"STIM self hp={selfHp}% nano={selfNano}% with QL{ss.Ql} {ss.Name}"); return true; }
             return false;
         }
+
+        // The bot needs to sit and recover (own HP or nano low). Owner-independent — used to make recovery
+        // take priority over wandering after a lost owner (don't zone-sweep/catch-up when he should be healing).
+        public bool NeedsRecovery(LocalPlayer me)
+            => me != null && (SelfHpPct(me) < _ctx.Config.RestBelowPercent || SelfNanoPct(me) < _ctx.Config.RestNanoBelowPercent);
 
         // A new fight started — allow one rest again once it's over, and stand from any sit.
         public void OnFight(LocalPlayer me)
@@ -721,28 +775,60 @@ namespace AOBuddy
             // or a good recharger that "failed" only because of rez sickness would be blacklisted for good.
             if (IsRezSick(me)) { if (_sitting) StandIfSitting(me); _resting = false; return false; }
 
+            // Resting is the bot's OWN need — it does NOT depend on the owner. He could be anywhere (or gone);
+            // if the bot needs HP/nano and isn't in a fight, it sits and recovers. So a missing/lost owner
+            // counts as "settled" and "still" (never a reason to skip a rest).
             bool settled = owner == null || me.DistanceFrom(owner) <= _ctx.Config.FollowDistance + 2f;
-            bool ownerStill = _ownerSpeed < 0.5f;
+            bool ownerStill = owner == null || _ownerSpeed < 0.5f;
             int hpNow = SelfHpPct(me);
             int nanoNow = SelfNanoPct(me);
             // Between fights he sits and rechargers restore BOTH HP and nano — if either is low, rest. Kept
             // available for the whole sit so it doesn't go null mid-rest.
             bool needRest = hpNow < _ctx.Config.RestBelowPercent || nanoNow < _ctx.Config.RestNanoBelowPercent;
-            Item recharger = (needRest || _resting) ? BestRestHeal(true, true) : null;
-            bool haveRecharger = recharger != null && !IsConsumableStim(recharger);   // a consumable stim is not a rest item
+            // Heal items (stims AND rechargers) BOTH restore HP and nano — treat them the same. Use whichever
+            // he has: recharger first (reusable, doesn't cost supplies), else a stim. If HP OR nano is low, heal.
+            // STIM FIRST. Both restore HP and nano, but the stim's Use is the PROVEN one — it's the item the
+            // heal path has used successfully for days. The Recharger fires the identical GenericCmd Use yet
+            // moved nano 0 points across every use (rawNano flat 30/184) and carries UseMods[(none)], so it is
+            // not a trustworthy nano source. Try the proven item first, fall back to the recharger.
+            Item recharger = (needRest || _resting)
+                ? (BestUsableHealItem(_ctx.Config.StimKeyword, _ctx.Config.StimItemName)
+                   ?? BestUsableHealItem(_ctx.Config.RechargerKeyword, _ctx.Config.RechargerItemName)
+                   ?? BestRestHeal(true, true))
+                : null;
+            bool haveRecharger = recharger != null;   // a stim counts too — it restores HP and nano just the same
 
             // Casting takes posture priority: a nano cast auto-STANDS him, so if he's also resting he ping-pongs
             // stand(cast)/sit every tick while buffing/summoning (log 13:07). REST yields while casts are queued or
             // were fired in the last few seconds — nano to afford a specific buff is topped by the separate
             // nano-refill path, then he sits here to recover once casting is idle.
-            bool castsActive = _castQueue.Count > 0 || (_sessionSeconds - _lastCastAt) < 3.0;
+            // ACTIVE casting only. A cast merely QUEUED but unaffordable (exactly the low-nano case) must NOT
+            // count as "casting" — otherwise the queued summon blocks the very recharge needed to afford it, and
+            // he deadlocks: can't summon (no nano), can't recharge (queued summon blocks rest). Only a cast that
+            // is actually firing (auto-stands him) should make rest yield, to avoid sit/stand ping-pong.
+            bool castsActive = me.IsCasting || (_sessionSeconds - _lastCastAt) < 3.0;
 
             // combatLull only blocks STARTING a rest (don't sit mid-pull). Once seated we keep resting through a
             // flapping lull — otherwise the caller stood him every time a hostile drifted in/out of range and he
             // ping-ponged sit/stand (log 13:03).
-            bool startRest = !inCombat && !combatLull && !castsActive && !_restedSinceCombat && _restCooldown <= 0
-                             && _restZoneSuppress <= 0 && haveRecharger && settled && ownerStill && needRest;
-            bool continueRest = _resting && !inCombat && !castsActive && settled;
+            // CASTER NANO RECOVERY: a caster whose nano is low MUST recharge even with HP full — and even when a
+            // cast (e.g. a pet summon) is queued but UNaffordable, which is exactly why nano is low. That queued
+            // cast makes castsActive true and used to block the very recharge needed to afford it (nano stuck at
+            // 4%, "sits and does nothing"). So when nano is below the rest threshold and we're not mid-cast, low
+            // nano overrides castsActive / restedSinceCombat / restCooldown. The castsActive guard still applies
+            // when nano is fine (it only exists to stop sit/stand ping-pong while actively firing casts).
+            bool nanoStarved = !me.IsCasting && nanoNow < _ctx.Config.RestNanoBelowPercent;
+            // Do NOT sit again until the heal item's use timer has run out — sitting early just burns a use
+            // that the server ignores. This is the "wait for the timer" half of the sit/use/stand cycle.
+            bool itemReady = _sessionSeconds >= _itemReadyAt;
+            bool startRest = !inCombat && !combatLull && _restZoneSuppress <= 0 && haveRecharger && settled
+                             && ownerStill && needRest && itemReady
+                             && (nanoStarved || (!castsActive && !_restedSinceCombat && _restCooldown <= 0));
+            // Keep resting until HP AND nano are actually topped (so he doesn't sit forever at full, and doesn't
+            // stand while nano is still low). A queued-but-not-firing summon no longer blocks this (castsActive is
+            // active-only now); only a cast currently firing yields, to avoid ping-pong.
+            bool stillNeedsRecovery = hpNow < _ctx.Config.RestUntilPercent || nanoNow < _ctx.Config.RestNanoUntilPercent;
+            bool continueRest = _resting && !inCombat && settled && stillNeedsRecovery && (nanoStarved || !castsActive);
             if (!(startRest || continueRest)) return false;
 
             if (!_sitting)
@@ -767,6 +853,11 @@ namespace AOBuddy
             }
 
             _rechargeAccum += _ctx.Config.TickMs / 1000.0;
+            if (_rechargeAccum >= 1.5 && !haveRecharger)
+            {
+                _rechargeAccum = 0;
+                _ctx.Log($"RECHARGE-DBG: sitting at hp={hpNow}% nano={nanoNow}% but NO usable recharger — BestRestHeal={(recharger == null ? "null" : recharger.Name + " QL" + recharger.Ql)} consumableStim={(recharger != null && IsConsumableStim(recharger))} invItems={AllInvItems().Count(i => i?.Name != null && i.Name.IndexOf(_ctx.Config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0)}");
+            }
             if (_rechargeAccum >= 1.5 && haveRecharger)
             {
                 _rechargeAccum = 0;
@@ -777,13 +868,34 @@ namespace AOBuddy
                     _ctx.Log($"REST: hp & nano at targets — done, standing.");
                     return true;
                 }
-                recharger.Use();   // restores HP and nano (over time while seated)
-                _ctx.Log($"RECHARGE: used {recharger.Name} QL{recharger.Ql} (seated {_restElapsed:0.0}s) at hp={hpNow}% nano={nanoNow}%.");
+                // FACT-FINDING (ends the guessing loop): dump what the item's Use actually restores + the RAW
+                // server nano each use. If UseMods has no CurrentNano the item can't refill nano; if rawNano
+                // climbs while nano% looks flat, the % read is just stale (server sends sparse nano deltas).
+                me.TryGetStat(Stat.CurrentNano, out int rawNano); me.TryGetStat(Stat.MaxNanoEnergy, out int rawMaxNano);
+                string useMods = (recharger.Modifiers != null && recharger.Modifiers.TryGetValue(SpellListType.Use, out var um) && um != null && um.Count > 0)
+                    ? string.Join(",", um.Select(kv => kv.Key + "=" + kv.Value)) : "(none)";
+                recharger.Use();                    // self-use — matches the PROVEN stim self-heal path (stim.Use(), used for days)
+                // Per-item lock from the item data's OnUse LockSkill: recharger 15s (skill 124), stim 40s (123).
+                bool isRecharger = recharger.Name != null
+                    && recharger.Name.IndexOf(_ctx.Config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0;
+                double reuseSec = isRecharger ? _ctx.Config.RechargerReuseSec : _ctx.Config.StimReuseSec;
+                _itemReadyAt = _sessionSeconds + reuseSec;
+                _ctx.Log($"RECHARGE: used {recharger.Name} QL{recharger.Ql} (seated {_restElapsed:0.0}s) hp={hpNow}% nano={nanoNow}% rawNano={rawNano}/{rawMaxNano} UseMods[{useMods}] — standing, next use in {reuseSec:0.#}s");
+
+                // ONE use per sit, then STAND. Two reasons: the item's use timer means further uses this sit
+                // are wasted, and the server only sends a CurrentNano update on a posture change — so standing
+                // is what actually lets us SEE the result of the use we just made.
+                StandIfSitting(me);
+                _resting = false;
+                _restedSinceCombat = false;   // nano may still be low; allow the next sit once the timer expires
+                return true;
             }
 
             bool recovered = hpNow >= _ctx.Config.RestUntilPercent && nanoNow >= _ctx.Config.RestNanoUntilPercent;
-            // No gain in either stat for a while = the item isn't helping (not a slow heal) — stand, don't spam.
-            bool stalled = _restElapsed >= 5.0 && (_restElapsed - _restLastGainAt) >= 5.0;
+            // No gain for a WHILE = the item really isn't helping — stand. The window is long (15s) because the
+            // server sends HP/nano sparsely, so a working recharger's climb can look flat for several seconds;
+            // a 5s window stood him up mid-recharge and (with nanoStarved) he instantly re-sat = the sit/stand loop.
+            bool stalled = (_restElapsed - _restLastGainAt) >= 15.0;
             if (recovered || stalled)
             {
                 StandIfSitting(me); _resting = false;
@@ -1024,8 +1136,16 @@ namespace AOBuddy
 
         // ---- Shared vitals helpers -----------------------------------------------
 
+        // A teammate's vitals come from the TEAM WINDOW first (TeamMemberInfoMessage), and only then from
+        // his dynel. The team feed keeps arriving while he is out of render range and stops only when he
+        // leaves the playfield, whereas a dynel's Health stat freezes at whatever it was when the server
+        // last broadcast him — which is exactly the moment the bot most needs to know he is dropping.
+        // The SDK used to decode this message into four fields named Unknown and discard it.
         public static int PercentHealth(SimpleChar c)
         {
+            if (c == null) return 100;
+            TeamMember tm = Team.Find(c.Identity);
+            if (tm != null && tm.HealthPercent >= 0) return tm.HealthPercent;
             if (!c.TryGetStat(Stat.MaxHealth, out int max) || max <= 0) return 100;
             c.TryGetStat(Stat.Health, out int cur);
             return (int)(100L * cur / max);
@@ -1033,6 +1153,9 @@ namespace AOBuddy
 
         public static int PercentNano(SimpleChar c)
         {
+            if (c == null) return 100;
+            TeamMember tm = Team.Find(c.Identity);
+            if (tm != null && tm.NanoPercent >= 0) return tm.NanoPercent;
             if (!c.TryGetStat(Stat.MaxNanoEnergy, out int max) || max <= 0) return 100;
             c.TryGetStat(Stat.CurrentNano, out int cur);
             return (int)(100L * cur / max);

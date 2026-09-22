@@ -37,7 +37,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages
         public PingMessageType PingMessageType { get; set; }
 
         [AoMember(1)]
-        public int Unk1 { get; set; }
+        public int HopCount { get; set; }
 
         [AoMember(2)]
         public uint ServerTime { get; set; }

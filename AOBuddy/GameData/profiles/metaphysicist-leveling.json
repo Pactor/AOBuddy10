@@ -1,0 +1,172 @@
+{
+  "profession": "Metaphysicist",
+  "summary": "Level 1-220 (+ AI title levels 1-30 + LE research) leveling path, hunting spots and key quests for the Meta-Physicist (profession 12), written for AOBuddy10. The MP is a pet class: it fights through an Attack pet (damage), a Heal pet (heals owner/team/pets/NPCs/towers) and a Mezz/support pet (single-target stun). The core leveling tactic at every bracket is 'send the pet, stay back': the pet takes aggro and damage while the MP heals it and itself from range, so an MP can safely fight mobs several levels above what a squishy nanomage could melee. Pets are no longer on a timer (they persist like Engineer robots since 18.7) and can be cast over-equipped via a Trader Wrangle / General Wrangle or Moch's/Mocham's buffs to run pets above your own nano-skill level. This file is a curated aggregation of reputable community sources (see _sources); numbers and spot names that could not be cleanly cross-checked are listed in _unverified.",
+  "brackets": [
+    {
+      "levelRange": "1-6",
+      "where": ["ICC / Arete Landing starter area (RK)", "Old Backyards / newbie yard grinder mobs", "Shadowlands startup island (alternative, playable to ~15 before you must pick a home dimension)"],
+      "fight": "Rookie leets, rollerrats, and the yard's grinder mobs; do every free newbie quest for the NCU belt, backpack and starter tokens.",
+      "petNotes": "Cast your first Attack pet as soon as you have the nano (very low level). Put it on /pet follow and /pet guard so it aggros for you; you barely need to fight yourself. Roll a Nano Cluster / basic implants for Matter Creation (MC) and Time&Space (TS) early so the pet stays castable.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "6-15",
+      "where": ["Condemned Subway (entrance in ICC HQ, Andromeda; instanced, team BEFORE entering)", "Newland City / Newland Desert low mobs", "RK newbie/team missions from mission terminals"],
+      "fight": "Subway trash (level ~8-20 mobs) and, once strong, the boss Abmouth Supremus (Abby) for the upgradeable Ring of the Nucleus Basalis, Belt of Justice and Juggler's Treat. A well-geared 24-25 can solo Abby; at 6-15 you do the trash and team the boss.",
+      "petNotes": "Subway is ideal for an MP: send the Attack pet into a pull, heal it, and it out-tanks anything you could. Grab the Subway/Abmouth ring for cheap early NCU. Keep a Heal pet up so you never have to interrupt casting to self-heal.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "15-25",
+      "where": ["Condemned Subway (finish it, farm Abmouth ring)", "Oasis / Borealis backyards", "RK team missions (pull QL to your level)", "Buy QL30-ish implants and NCU from Newland shops"],
+      "fight": "Subway bosses, Borealis backyard mobs, and mission mobs. Farm the Ring of the Nucleus Basalis from Abmouth (drops ~1/3-1/4 kills).",
+      "petNotes": "Start rolling Dominate-line and Moch's/Teachings shop nanos to push MC/TS so your pet stays at your level. Use /pet report and macros (/macro atk /pet attack, /macro heal /pet heal) to react fast.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "25-40",
+      "where": ["Temple of Three Winds (TOTW) - unlock via Windcaller Karrec at ICC HQ (Bronto Burger + Maddy Cardile credit-card quest), then the portal", "Steps of Madness (~30-50) for nano-buffing items", "RK team missions"],
+      "fight": "TOTW trash and mini-bosses (Guardian of Tomorrow, the Curator for Notum Rings of Three, Windcaller Yatila, Lien the Memorystalker for NCU memory). Research composite nanos at level 25.",
+      "petNotes": "TOTW is a classic MP spot: the pet tanks in the corridors while you heal from the doorway. Great gear per level. Start the Garden of Aban key quest prep (collect Insignias of Aban) if you have Shadowlands.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "40-60",
+      "where": ["Temple of Three Winds (LAST chance - you cannot ENTER TOTW past level 60)", "RK team missions at higher QL", "Nascence (SL) Cripplers/Croakers/Barking Chimeras if you own Shadowlands"],
+      "fight": "TOTW big bosses in a team: Uklesh the Frozen (guarded by 3 Exarchs; stun/debuff; drops Purifying Rod), Khalum, and Aztur the Immortal (hardest; drops the Stygian Desolator). Loot robe tiers and Guardian Tank Armor.",
+      "petNotes": "Do all your TOTW boss loot BEFORE 60 - the dungeon locks out. In a team the MP heal-pet + support carries; solo, send pet on single pulls and mezz-stun adds. Aim for QL100+ implants by now.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "60-80",
+      "where": ["Nascence hecklers (SL) - team heckler runs", "Foreman's Office / RK missions (froob-friendly alternative)", "The Reck (Broken Shores, ~90-200) once strong enough"],
+      "fight": "Nascence Hecklers in a team for big SL XP/SK. Install QL125 implants and lower symbiants. If froob (no SL): stay on RK missions, Foreman's, Smuggler's Den (110+).",
+      "petNotes": "Heckler teams love MPs: your Attack pet adds steady DPS and your Heal pet is a second healer. Get a Wrangle so you can run a pet a bit above your MC/TS. By ~80 a geared MP can solo hecklers with pet-tanking + heals.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "80-110",
+      "where": ["Elysium (SL) - Tiigs (Callous Mortiigs), Whispervale/Coldrock spiders, Chapel of Chants", "Foreman missions", "Steps of Madness for nano-buffing items", "RK missions (froob path)"],
+      "fight": "Elysium Tiigs and camps; complete Specialization 1. Reach toward QL200 implants and install 110+ symbiants.",
+      "petNotes": "Pet-tank Tiigs: they hit hard, so let the pet hold aggro and keep the Heal pet + your own heals rolling. Do the Aban Garden Key quest (Nascence) so you can hub-travel Nascence gardens freely.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "110-130",
+      "where": ["Cyborg missions (RK; e.g. Mort/PW borgs 70-130+)", "Elysium camps and key quest", "Scheol (SL, enterable at 80; ~85-150)"],
+      "fight": "Cyborg mission mobs and Elysium mobs; complete the Elysium key quest. Accumulate ~400 tokens on the token board.",
+      "petNotes": "Keep pets at level with fresh nano lines and a Wrangle. This is where a solo pet-tanking MP shines - park the pet on a spawn, heal it, and grind. Froobs cap out on RK content here.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "130-160",
+      "where": ["Elysium hecklers (team)", "RK missions / Battle Station / Alien dailies (LE + AI)", "Adonis approach at 135+"],
+      "fight": "Elysium Hecklers for heavy SK. Complete Specialization 2 around 150. Target QL170-200 symbiants. Stop ~150 to optimize gear.",
+      "petNotes": "In heckler teams the MP is a top-tier off-healer AND adds pet DPS - very desirable. Solo, mezz-stun one heckler while the pet kills another. Start stacking daily quests (RK city, Battle Station, alien) for tokens + XP.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "160-190",
+      "where": ["Adonis (SL) hecklers (Clan/Omni), Whirling Rocks", "Dark Ruins instanced missions (excellent XP)", "Scheol quest for XP/nanos"],
+      "fight": "Adonis Hecklers and Dark Ruins missions. Complete the Adonis quest for Specialization 3 (needs group help). Acquire Miy's items and OFAB armor. Target 1000+ tokens by 190.",
+      "petNotes": "Adonis hecklers are a staple 24/7 team spot; MP pet + heals keep the team stable. Dark Ruins missions solo very well for a pet-tank MP. Keep the pet nano line current and re-wrangle after buff drops (watch /oe overequip).",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "190-200",
+      "where": ["Penumbra (SL) hecklers and PF runs", "Ice Golem molar raids", "Battle Station for Victory Points (VP)"],
+      "fight": "Penumbra progression: collect Ravine fragments (~35) and insignias for the Cama Garden key. Run the Penumbra PF for programs. Do the Penumbra key quest. Gather VP for endgame OFAB.",
+      "petNotes": "Penumbra hecklers hit hard - full pet-tank + Heal pet + your heals. FROOB CAP: free accounts stop at level 200 with no SL/AI/LE, so this is the froob ceiling (froobs level on RK all the way).",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "200-210",
+      "where": ["Inferno (SL) missions and mobs", "Alliance / org raids", "Penumbra missions for shadow breed"],
+      "fight": "Inferno mobs and Alliance raids. Equip endgame OFAB gear. Begin higher LE research (level 9). Push Alien Levels 24+. Research the +10 ring for Pandemonium.",
+      "petNotes": "Inferno mobs are brutal; the pet MUST tank while you top it off. This is prime pet-class territory - an MP can solo much of Inferno with a well-fed pet and Heal pet. Keep re-wrangling pets to endgame lines.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "210-220",
+      "where": ["Inferno missions/mobs (solo-able for a pet MP)", "Tower missions", "Battle Station runs", "Arid Rift (~210-220) and Neretva Canyon endgame quests", "Alliance raids"],
+      "fight": "Solo Inferno regulars; do Dust Brigade quest (register first), Arid Rift, Neretva Canyon. Reach Alien Levels 26+. Accumulate 2500+ tokens for APF loot. Upgrade to QL240+ symbiants; farm LoX beta symbiants.",
+      "petNotes": "Endgame MP grinds Inferno solo (pet tanks, you heal) or joins BS/APF/raids. Keep pets on the top nano ladder and re-buff/re-wrangle constantly. Target the level 220 checklist: AL26+, research near-done, QL240+ symbiants, full HUD/utils, 84k+ VP for the QL300 ring / spec head / OFAB back.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "AI title levels 1-30 (AXP, parallel track)",
+      "where": ["Daily Alien Missions (any level)", "Mothership missions", "City raids / city defense (kill alien attackers)", "Alien playfields: Sector 7 (low), Sector 10, Sector 13, Sector 35", "Arid Rift (~210-220)"],
+      "fight": "Alien mobs during city raids and mothership/sector runs. AXP is a SEPARATE bar from XP/SK; AI levels unlock perks and 'title level' gates. Requires the Alien Invasion expansion (not froob).",
+      "petNotes": "MP pets tank alien mobs in city defense while you heal - safe AXP farming. Kill the general and hecklers on the mothership for big AXP. Aim AL24-26+ by 210-220 for the perk lines and symbiant/ring requirements.",
+      "xpType": "AXP"
+    }
+  ],
+  "keyQuests": [
+    {"name": "Newbie yard free-gear quests", "where": "ICC / Arete / Old Backyards", "reward": "NCU belt, backpack, starter NCU/tokens", "level": "1-10"},
+    {"name": "Condemned Subway / Abmouth Supremus", "where": "ICC HQ, Andromeda (instanced dungeon)", "reward": "Ring of the Nucleus Basalis (upgradeable NCU ring), Belt of Justice, Juggler's Treat", "level": "8-25"},
+    {"name": "TOTW access quest (Windcaller Karrec)", "where": "ICC HQ, Andromeda - Bronto Burger from Annoying Dude + credit-card from Maddy Cardile", "reward": "Portal access to Temple of Three Winds", "level": "20-30"},
+    {"name": "TOTW boss runs (Uklesh, Khalum, Aztur, Guardian, Curator, Lien)", "where": "Temple of Three Winds, Greater Tir County (MUST be done <=60; cannot enter past 60)", "reward": "Stygian Desolator, Purifying Rod, Notum Rings of Three, robe tiers, Guardian Tank Armor, NCU memory", "level": "25-60"},
+    {"name": "Hermit / martial-arts books (optional)", "where": "Tir Desert (~830x2300) - Hermit Sho-li; trade tattered books", "reward": "Martial-artist special attacks (MA classes; MP can loot/sell)", "level": "25-60"},
+    {"name": "Aban Garden Key quest", "where": "Nascence (SL) - collect ~3+ Insignias of Aban (Barking Chimeras / Unredeemed mobs)", "reward": "Free travel between Nascence Redeemed transit statues (garden hub travel)", "level": "10-60"},
+    {"name": "Elysium key quest", "where": "Elysium (SL)", "reward": "Elysium garden/sanctuary access & travel", "level": "110-130"},
+    {"name": "Specialization quests (Spec 1/2/3/4)", "where": "Spec1 ~80-110, Spec2 ~150, Spec3 Adonis (~160+, group), Spec4 endgame", "reward": "Nano/action specialization tiers (huge power spikes)", "level": "80-200+"},
+    {"name": "Cama Garden Key quest", "where": "Penumbra (SL) - collect 6 Insignia of Vanya (+ ~35 Ravine fragments for progression)", "reward": "Penumbra garden hub travel & progression", "level": "190-200"},
+    {"name": "Scheol / Adonis progression quests", "where": "Scheol & Adonis (SL)", "reward": "XP, nanos, Specialization 3, Sanctuary access", "level": "130-190"},
+    {"name": "Dust Brigade quest chain", "where": "Endgame (register first)", "reward": "Endgame progression / gear", "level": "210-220"},
+    {"name": "Arid Rift & Neretva Canyon", "where": "Endgame RK/alien content", "reward": "Endgame XP, AXP, quest rewards", "level": "210-220"}
+  ],
+  "keys": [
+    {"name": "Subway key / access", "forWhat": "Enter Condemned Subway", "how": "Instanced dungeon entered from ICC HQ in Andromeda; team BEFORE entering so you share one instance. (Historically a physical key/portal; access is via ICC HQ.)"},
+    {"name": "TOTW key / portal", "forWhat": "Enter Temple of Three Winds", "how": "Complete Windcaller Karrec's quest at ICC HQ (Bronto Burger + Maddy Cardile credit card), then use the portal. Clan alt route via Windcaller Karrac in Newland Desert. (Old route: Windcaller Cerrak in Rome Green for 1000 credits, removed after 18.7.)"},
+    {"name": "Insignia of Aban", "forWhat": "Aban Garden Key (Nascence hub travel)", "how": "Drops from Barking Chimeras at the Nascence entrance and Unredeemed mobs deeper in; collect ~3+ and complete the Aban Garden Key quest."},
+    {"name": "Insignia of Vanya (x6)", "forWhat": "Cama Garden Key (Penumbra hub travel)", "how": "Collect 6 Insignia of Vanya in Penumbra plus progression items and complete the Cama Garden Key quest."},
+    {"name": "Ravine fragments (~35)", "forWhat": "Penumbra progression", "how": "Collect ~35 Ravine fragments during Penumbra progression (190-200)."},
+    {"name": "Garden / Sanctuary keys (per SL zone)", "forWhat": "Sanctuary access and inter-garden travel in each SL zone", "how": "Each Shadowlands zone (Nascence/Elysium/Scheol/Adonis/Penumbra) has its own garden key / Sanctuary progression; do them as you enter each zone for safe rez points and hub travel."},
+    {"name": "Ring of the Nucleus Basalis", "forWhat": "Cheap upgradeable NCU ring (not a door key, but a must-loot)", "how": "Drops from Abmouth Supremus in the Subway (~1/3-1/4). Upgradeable; great early NCU for a buff-heavy MP."}
+  ],
+  "froobVsPaid": "FROOB (free play = Classic RK + free Notum Wars only): hard level cap 200, NO Shadowlands, NO Alien Invasion (so ZERO AI levels/perks and no city/mothership AXP), NO Lost Eden (so NO research and no mechs/turrets). Froob MP path is entirely Rubi-Ka: newbie yard -> Subway -> TOTW (<=60) -> RK team missions -> Foreman's / Steps of Madness / Smuggler's Den / borg camps / The Reck, grinding missions and camps to 200. PAID (SL): unlocks the heckler/garden leveling highway (Nascence->Elysium->Scheol->Adonis->Penumbra->Inferno), the fastest SK in the game, garden keys, Sanctuary, and levels 201-220. PAID (AI): unlocks the parallel AXP/AI-level track (city raids, mothership, alien sectors, dailies) and perks - a big power boost for a pet class. PAID (LE): unlocks Personal + Global Research (skill/proc bonuses, mechs/turrets) and LE daily missions. For an MP specifically, SL+AI+LE together roughly double effective power via perks + research + better pets and give the safe pet-tank heckler grind; froob MPs are fully viable but slower and cap at 200 with weaker gear.",
+  "tips": [
+    "Core MP loop at EVERY level: send Attack pet, keep Heal pet up, self-heal from range = you fight mobs well above your own survivability. This is the class's whole leveling identity.",
+    "Wrangle your pets: a Trader Wrangle (or General Wrangle / Moch's / Mocham's Gift) temporarily boosts MC/TS so you can cast a pet ABOVE your normal level. Because pets no longer time out (persistent since 18.7), the over-equipped pet stays after the buff fades - re-cast whenever it dies.",
+    "Watch over-equip: use /oe and the pet's own overequip state; a pet cast far over your unbuffed skills is fine to keep, but you cannot re-cast it once it dies without the buff again. Always carry a wrangle source or line up a buffer before big fights.",
+    "Mezz pet is a single-target STUN, not an AoE calm: use it to lock down one add while the Attack pet kills another - true 'mezz-pull' crowd control is limited for MP vs a Crat's calms, so plan single pulls.",
+    "Pull with the pet, not your face: send the pet to aggro one mob at a time (pet-pull) so you never body-pull a camp. On camps, park the pet on the spawn point.",
+    "Keep MC and TS maxed above all: they gate pet quality every level. Twink implants/symbiants toward MC/TS, and buy every 'Teachings of...' and Composite/Mocham nano-skill buff you can.",
+    "Nanomage is the popular MP breed (Int/Psychic -> higher nano skills = better pets); other breeds trade HP/AC for it. (Breed choice is set at creation - relevant only for new characters.)",
+    "Loot the Abmouth Ring (Nucleus Basalis) early - cheap upgradeable NCU frees you to run more pet buffs at once.",
+    "Do TOTW boss loot BEFORE level 60 - the dungeon hard-locks entry past 60 and several drops (Stygian Desolator, Notum Rings of Three, NCU memory) are best grabbed while you still can.",
+    "From 60 up, chase heckler teams - MP is a wanted member (off-heals + pet DPS) and heckler SK is the fastest leveling in the game.",
+    "Stack daily quests once you have LE/AI: RK city dailies, Battle Station, Alien daily/mothership, LE dailies all give tokens, VP, AXP and XP in parallel - run them alongside your grind.",
+    "Do garden/Sanctuary key quests as you enter each SL zone: they give safe rez points and hub travel, which matters a lot for a squishy pet caster.",
+    "Grind AI levels in city defense: your pet tanks alien attackers while you heal - low-risk AXP that also builds perks useful for a pet class.",
+    "Re-summon etiquette in teams: pets can add to mob aggro tables; keep the Attack pet on the current target and the Heal pet on /pet heal so you don't scatter aggro."
+  ],
+  "_unverified": [
+    "Exact Attack/Heal/Mezz pet nano NAMES and QL ladder by level are not fully cross-checked here; the sibling metaphysicist-pets.json / metaphysicist-nanos.json in this same folder are the authoritative pet-nano source. The '/forum' pet QL numbers (QL220/223/225 at MC 2045+/2545+/3045+) appear to be the TOP-TIER endgame pet steps, not the low-level ladder - treat any level-by-level pet QL as approximate until verified against aoitems.com.",
+    "Precise level ranges per spot vary by source and gear; ranges given blend the athenpaladins progress guide, aodb Hunting Grounds, and the Funcom MP guide and should be treated as guidance, not exact gates. The only hard gate confirmed is TOTW = cannot ENTER past level 60.",
+    "Specialization quest exact locations/levels (Spec 1/2/3/4) are summarized from the progress guide; verify each spec quest giver/location on ao-universe before scripting.",
+    "Elysium 'key quest' and per-zone Sanctuary/garden key details beyond Aban (Nascence) and Cama (Penumbra) are asserted from the general progress guide; confirm each zone's exact key quest on ao-universe.",
+    "Froob level cap of 200 and 'no AI/LE/SL for free accounts' is well-established AO knowledge and consistent with the Fandom Research/Perk pages (free play excluded from research/perks), but the exact 200 number was not re-confirmed against wiki Player_Level in this pass.",
+    "Endgame (210-220) checklist numbers (2500+ tokens, 84k+ VP, QL240+ symbiants, AL26+) come from one community progress guide and are targets, not hard requirements.",
+    "TOTW access NPC state (Windcaller Karrec vs removed Cerrak) reflects post-18.7 changes per Fandom/AO-U; the live NPC/route on OmniCell or current retail should be spot-checked."
+  ],
+  "_sources": [
+    "AO-Universe leveling & profession guides - https://www.ao-universe.com/guides/classic-ao",
+    "AO-Universe Temple of the Three Winds - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/temple-of-the-three-winds",
+    "AO-Universe Condemned Subway - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/condemned-subway",
+    "AO-Universe Aban Garden Key Quest (Nascence) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/aban-garden-key-quest",
+    "AO-Universe Cama Garden Key Quest (Penumbra) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/cama-garden-key-quest",
+    "AODB Wiki Hunting Grounds - http://wiki.aodb.us/wiki/Hunting_Grounds",
+    "AODB Wiki Meta-Physicist - http://wiki.aodb.us/wiki/Meta-Physicist",
+    "AODB Wiki Condemned Subway - http://wiki.aodb.us/wiki/Condemned_Subway",
+    "AODB Wiki Temple of Three Winds - https://wiki.aodb.us/wiki/Temple_of_Three_Winds",
+    "Funcom Forums [MP] Meta-physicist guide - https://forums.funcom.com/t/mp-meta-physicist-guide/74897",
+    "Athen Paladins AO progress guide (1-220) - https://www.athenpaladins.org/forums/viewtopic.php?f=14&t=7386",
+    "AO Fandom Knowledge Base: Temple of Three Winds - https://anarchyonline.fandom.com/wiki/Temple_of_Three_Winds",
+    "AO Fandom Knowledge Base: Research - https://anarchyonline.fandom.com/wiki/Research",
+    "AO Fandom Knowledge Base: Perk - https://anarchyonline.fandom.com/wiki/Perk",
+    "AO Fandom Knowledge Base: Meta-Physicist:Attack Pets - https://anarchyonline.fandom.com/wiki/Meta-Physicist:Attack_Pets",
+    "GameFAQs hahnsoo Newbie/Froob Guide - https://gamefaqs.gamespot.com/pc/913777-anarchy-online/faqs/46197",
+    "Sibling profiles (authoritative for pet nanos): AOBuddy/GameData/profiles/metaphysicist-pets.json, metaphysicist-nanos.json"
+  ]
+}

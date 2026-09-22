@@ -55,7 +55,7 @@ namespace AOSharp.Clientless
         {
             Client.Send(new TradeMessage
             {
-                Unknown1 = 2,
+                Version = 2,
                 Action = TradeAction.AddItem,
                 Param1 = (int)_tradeTarget.Type,
                 Param2 = _tradeTarget.Instance,
@@ -68,7 +68,7 @@ namespace AOSharp.Clientless
         {
             Client.Send(new TradeMessage
             {
-                Unknown1 = 2,
+                Version = 2,
                 Action = TradeAction.AddItem,
                 Param1 = (int)DynelManager.LocalPlayer.Identity.Type,
                 Param2 = DynelManager.LocalPlayer.Identity.Instance,
@@ -81,7 +81,7 @@ namespace AOSharp.Clientless
         {
             Client.Send(new TradeMessage
             {
-                Unknown1 = 2,
+                Version = 2,
                 Action = TradeAction.Accept,
                 Param1 = (int)_tradeTarget.Type,
                 Param2 = _tradeTarget.Instance,
@@ -92,7 +92,7 @@ namespace AOSharp.Clientless
         {
             Client.Send(new TradeMessage
             {
-                Unknown1 = 2,
+                Version = 2,
                 Action = TradeAction.Confirm,
                 Param1 = (int)_tradeTarget.Type,
                 Param2 = _tradeTarget.Instance,
@@ -277,7 +277,7 @@ namespace AOSharp.Clientless
         {
             Client.Send(new TradeMessage
             {
-                Unknown1 = 2,
+                Version = 2,
                 Action = tradeAction,
                 Param1 = (int)target.Type,
                 Param2 = target.Instance,

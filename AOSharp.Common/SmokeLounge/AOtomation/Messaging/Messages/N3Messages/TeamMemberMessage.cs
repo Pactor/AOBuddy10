@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TeamMemberMessage.cs" company="SmokeLounge">
 //   Copyright © 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
@@ -40,16 +40,23 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(1)]
         public Identity Team { get; set; }
 
+        // Wire-verified (sniffs/20260913-154958_s11.csv seq 627/630):
+        //   one member: RaidGroup=-1 Level=15 Profession=8  (8 = Bureaucrat, and his pet in that
+        //       same capture is a "Bureaucrat Worker", which is what confirms the field)
+        //   the other:  RaidGroup=-1 Level=17 Profession=14 (14 = Keeper)
+        // The previous layout read Profession and the name's length as one int32 plus an int16
+        // count. It parsed the name correctly by accident - the count's high half is zero for any
+        // real name - while losing the profession entirely.
         [AoMember(2)]
-        public uint Unknown1 { get; set; }
+        public int RaidGroup { get; set; }
 
         [AoMember(3)]
-        public int Unknown2 { get; set; }
+        public int Level { get; set; }
 
         [AoMember(4)]
-        public int Unknown3 { get; set; }
+        public short Profession { get; set; }
 
-        [AoMember(5, SerializeSize = ArraySizeType.Int16)]
+        [AoMember(5, SerializeSize = ArraySizeType.Int32)]
         public string Name { get; set; }
 
         #endregion

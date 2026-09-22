@@ -4,6 +4,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>AOBuddy</RootNamespace>
     <AssemblyName>AOBuddy</AssemblyName>
+    <!-- Plugins live beside the host, not in their own bin\: see Directory.Build.props. -->
+    <OutputPath>$(BuildRoot)Plugins\AOBuddy\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

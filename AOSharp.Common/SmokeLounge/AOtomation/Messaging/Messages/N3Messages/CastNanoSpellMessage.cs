@@ -40,7 +40,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public Identity Target { get; set; }
 
         [AoMember(2)]
-        public int Unknown1 { get; set; }
+        public int TargetPresent { get; set; }
 
         [AoMember(3)]
         public Identity Caster { get; set; }

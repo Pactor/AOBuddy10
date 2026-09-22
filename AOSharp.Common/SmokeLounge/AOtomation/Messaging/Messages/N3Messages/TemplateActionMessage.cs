@@ -43,19 +43,19 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public int Quality { get; set; }
 
         [AoMember(3)]
-        public int Unknown1 { get; set; }
+        public int Amount { get; set; }
 
         [AoMember(4)]
-        public int Unknown2 { get; set; }
+        public int Action { get; set; }
 
         [AoMember(5)]
         public Identity Placement { get; set; }
 
         [AoMember(6)]
-        public int Unknown3 { get; set; }
+        public int TargetType { get; set; }
 
         [AoMember(7)]
-        public int Unknown4 { get; set; }
+        public int TargetInstance { get; set; }
 
         #endregion
     }

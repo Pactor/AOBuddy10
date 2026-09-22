@@ -1,0 +1,6144 @@
+{
+  "profile": "Metaphysicist castable nanos (for AOBuddy10 bot decision-making)",
+  "profession": {
+    "id": 12,
+    "name": "Metaphysicist"
+  },
+  "generatedUtc": "2026-09-21T21:19:54Z",
+  "dataSource": {
+    "nanoData": "E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp (OMNICELL-CONTENT v3 pack, client 18.8.50_EP1 extraction) loaded via OmniCell.Core NanoLoader.CacheAllNanos",
+    "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+    "stat/nanoLineEnums": "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs, NanoEnums.cs",
+    "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-nano-extractor (net10)",
+    "nanosInData": 10965
+  },
+  "castabilityCriterion": "A nano is MP-castable when one of its cast Actions (OmniCell.Enums.ActionType.ToUse=3) carries an Operator.EqualTo requirement on Profession(stat 60)==12 OR VisualProfession(stat 368)==12. All matches use EqualTo. VisualProfession is how most older MP nanos are profession-locked; in this data 133 gate via Profession(60) and 153 via VisualProfession(368).",
+  "statIds": {
+    "Level": 54,
+    "Profession": 60,
+    "VisualProfession": 368,
+    "NanoStrain": 75,
+    "MaterialCreation": 130,
+    "MaterialMetamorphosis": 127,
+    "BiologicalMetamorphosis": 128,
+    "PsychologicalModification": 129,
+    "SensoryImprovement": 122,
+    "SpaceTime": 131
+  },
+  "fieldNotes": {
+    "minLevel": "Character Level requirement read from the ToUse action (stat 54). 0 = no explicit level requirement; the real gate is the nano-skill requirement in castReqs.",
+    "castReqs": "The full ToUse action requirement list, stat names from Stat.cs. '>' means the CellAO GreaterThan operator (stat >= value at runtime).",
+    "effectSummary": "Derived from the nano's Events->Functions in nanos.ocp. Modify shows 'stat +/-amount'; SummonPet shows the pet template arg; Hit shows [attackType,min,max,...]; other function types shown as Name[rawArgs].",
+    "nanoLine": "AOSharp NanoLine enum name for the nano's NanoStrain (stat 75)."
+  },
+  "totalCount": 286,
+  "categoryCounts": {
+    "Pets - Attack": 51,
+    "Pets - Mezz/Support": 17,
+    "Pets - Heal": 10,
+    "Pets - Charm": 2,
+    "Pet Buffs / Pet Utility": 40,
+    "Summon Weapon / Shield (Creation)": 32,
+    "Self / Team Buffs": 58,
+    "Nukes / Damage": 14,
+    "Debuffs": 47,
+    "Debuffs - Mind/Nano": 3,
+    "Mezz / Calm": 1,
+    "Heals / HoT": 1,
+    "Travel / Recall": 2,
+    "Misc / Utility": 8
+  },
+  "categories": {
+    "Pets - Attack": [
+      {
+        "id": 225894,
+        "name": "Summon Biazu the Vile",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 150,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 874",
+          "MaterialCreation > 874",
+          "Profession == 12",
+          "Pets op66 1",
+          "Expansion op22 2",
+          "Specialization op22 4",
+          "Level > 149"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,180,-1]",
+          "SummonPet template=[0,175,-1]",
+          "SummonPet template=[0,170,-1]",
+          "SummonPet template=[0,165,-1]",
+          "SummonPet template=[0,160,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 225896,
+        "name": "Summon Urolok the Rotten",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 1150",
+          "MaterialCreation > 1150",
+          "Profession == 12",
+          "Pets op66 1",
+          "Expansion op22 2",
+          "Specialization op22 4",
+          "Level > 174"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,200,-1]",
+          "SummonPet template=[0,195,-1]",
+          "SummonPet template=[0,190,-1]",
+          "SummonPet template=[0,185,-1]",
+          "SummonPet template=[0,180,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 225898,
+        "name": "Summon Ettu the Cursed",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 201,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 1300",
+          "MaterialCreation > 1300",
+          "Profession == 12",
+          "Pets op66 1",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Level > 200"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,212,-1]",
+          "SummonPet template=[0,209,-1]",
+          "SummonPet template=[0,206,-1]",
+          "SummonPet template=[0,203,-1]",
+          "SummonPet template=[0,200,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 225900,
+        "name": "Summon Zhok the Abomination",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 201,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 1700",
+          "MaterialCreation > 1700",
+          "Profession == 12",
+          "Pets op66 1",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Level > 200"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,219,-1]",
+          "SummonPet template=[0,218,-1]",
+          "SummonPet template=[0,216,-1]",
+          "SummonPet template=[0,214,-1]",
+          "SummonPet template=[0,212,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 254859,
+        "name": "Summon The Rihwen",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 2039",
+          "MaterialCreation > 2044",
+          "Profession == 12",
+          "Pets op66 1",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Level > 219"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,225,-1]",
+          "SummonPet template=[0,223,-1]",
+          "SummonPet template=[0,220,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43715,
+        "name": "Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 24",
+          "MaterialCreation > 24",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,3,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43716,
+        "name": "Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 741",
+          "MaterialCreation > 741",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,155,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43717,
+        "name": "Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 602",
+          "MaterialCreation > 602",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,113,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43718,
+        "name": "Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 108",
+          "MaterialCreation > 108",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,19,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43719,
+        "name": "Greater Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 40",
+          "MaterialCreation > 40",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,6,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43720,
+        "name": "Greater Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 771",
+          "MaterialCreation > 771",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,167,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43721,
+        "name": "Greater Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 675",
+          "MaterialCreation > 675",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,125,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43722,
+        "name": "Greater Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 137",
+          "MaterialCreation > 137",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,25,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43723,
+        "name": "Greater Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 257",
+          "MaterialCreation > 257",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,52,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43724,
+        "name": "Greater Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 434",
+          "MaterialCreation > 434",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,84,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43725,
+        "name": "Inferior Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 18",
+          "MaterialCreation > 18",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,2,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43726,
+        "name": "Inferior Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 729",
+          "MaterialCreation > 729",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,149,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43727,
+        "name": "Inferior Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 566",
+          "MaterialCreation > 566",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,107,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43728,
+        "name": "Inferior Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 93",
+          "MaterialCreation > 93",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,16,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43729,
+        "name": "Inferior Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 202",
+          "MaterialCreation > 202",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,40,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43730,
+        "name": "Inferior Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 385",
+          "MaterialCreation > 385",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,72,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43736,
+        "name": "Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 219",
+          "MaterialCreation > 219",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,44,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43324,
+        "name": "Summon Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 3",
+          "MaterialCreation > 3",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,10,-1]",
+          "SummonPet template=[0,8,-1]",
+          "SummonPet template=[0,6,-1]",
+          "SummonPet template=[0,4,-1]",
+          "SummonPet template=[0,3,-1]",
+          "SummonPet template=[0,2,-1]",
+          "SummonPet template=[0,1,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29318,
+        "name": "Summon Demon",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 864",
+          "MaterialCreation > 864",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,197,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43737,
+        "name": "Summon Demon",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 788",
+          "MaterialCreation > 788",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,200,-1]",
+          "SummonPet template=[0,197,-1]",
+          "SummonPet template=[0,191,-1]",
+          "SummonPet template=[0,187,-1]",
+          "SummonPet template=[0,185,-1]",
+          "SummonPet template=[0,183,-1]",
+          "SummonPet template=[0,180,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43731,
+        "name": "Summon Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 692",
+          "MaterialCreation > 692",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,179,-1]",
+          "SummonPet template=[0,173,-1]",
+          "SummonPet template=[0,167,-1]",
+          "SummonPet template=[0,161,-1]",
+          "SummonPet template=[0,155,-1]",
+          "SummonPet template=[0,149,-1]",
+          "SummonPet template=[0,143,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43738,
+        "name": "Summon Fiend",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 846",
+          "MaterialCreation > 846",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,191,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43732,
+        "name": "Summon Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 456",
+          "MaterialCreation > 456",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,137,-1]",
+          "SummonPet template=[0,131,-1]",
+          "SummonPet template=[0,125,-1]",
+          "SummonPet template=[0,119,-1]",
+          "SummonPet template=[0,113,-1]",
+          "SummonPet template=[0,107,-1]",
+          "SummonPet template=[0,101,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43733,
+        "name": "Summon Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 64",
+          "MaterialCreation > 64",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,32,-1]",
+          "SummonPet template=[0,28,-1]",
+          "SummonPet template=[0,25,-1]",
+          "SummonPet template=[0,22,-1]",
+          "SummonPet template=[0,19,-1]",
+          "SummonPet template=[0,16,-1]",
+          "SummonPet template=[0,13,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29319,
+        "name": "Summon Lemur",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 829",
+          "MaterialCreation > 829",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,185,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43734,
+        "name": "Summon Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 171",
+          "MaterialCreation > 171",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,62,-1]",
+          "SummonPet template=[0,57,-1]",
+          "SummonPet template=[0,52,-1]",
+          "SummonPet template=[0,48,-1]",
+          "SummonPet template=[0,44,-1]",
+          "SummonPet template=[0,40,-1]",
+          "SummonPet template=[0,36,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43735,
+        "name": "Summon Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 290",
+          "MaterialCreation > 290",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,95,-1]",
+          "SummonPet template=[0,89,-1]",
+          "SummonPet template=[0,84,-1]",
+          "SummonPet template=[0,79,-1]",
+          "SummonPet template=[0,76,-1]",
+          "SummonPet template=[0,72,-1]",
+          "SummonPet template=[0,67,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43739,
+        "name": "Superior Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 29",
+          "MaterialCreation > 29",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,4,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43740,
+        "name": "Superior Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 753",
+          "MaterialCreation > 753",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,161,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43741,
+        "name": "Superior Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 638",
+          "MaterialCreation > 638",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,119,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43742,
+        "name": "Superior Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 122",
+          "MaterialCreation > 122",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,22,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43743,
+        "name": "Superior Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 236",
+          "MaterialCreation > 236",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,48,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43744,
+        "name": "Superior Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 413",
+          "MaterialCreation > 413",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,79,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43745,
+        "name": "Supreme Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 51",
+          "MaterialCreation > 51",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,8,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43746,
+        "name": "Supreme Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 788",
+          "MaterialCreation > 788",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,173,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43747,
+        "name": "Supreme Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 691",
+          "MaterialCreation > 691",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,131,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43748,
+        "name": "Supreme Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 152",
+          "MaterialCreation > 152",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,28,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43749,
+        "name": "Supreme Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 290",
+          "MaterialCreation > 290",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,57,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43750,
+        "name": "Supreme Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 455",
+          "MaterialCreation > 455",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,89,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43751,
+        "name": "Transcendent Anger Manifestation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 63",
+          "MaterialCreation > 63",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,10,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43918,
+        "name": "Transcendent Enmity Personification",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 810",
+          "MaterialCreation > 810",
+          "Profession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,179,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43753,
+        "name": "Transcendent Frenzy Embodiment",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 703",
+          "MaterialCreation > 703",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,137,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43919,
+        "name": "Transcendent Fury Externalization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 170",
+          "MaterialCreation > 170",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,32,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43920,
+        "name": "Transcendent Rage Materialization",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 323",
+          "MaterialCreation > 323",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,62,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43756,
+        "name": "Transcendent Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 493",
+          "MaterialCreation > 493",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,95,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43714,
+        "name": "Wrath Incarnation",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 401",
+          "MaterialCreation > 401",
+          "VisualProfession == 12",
+          "Pets op66 1"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,76,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Pets - Mezz/Support": [
+      {
+        "id": 156123,
+        "name": "Deranged Mindreaver",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 198",
+          "MaterialMetamorphosis > 198",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,39,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156124,
+        "name": "Distracting Sphere",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 63",
+          "MaterialMetamorphosis > 63",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,10,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156125,
+        "name": "Greater Deranged Mindreaver",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 240",
+          "MaterialMetamorphosis > 240",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,49,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156126,
+        "name": "Greater Distracting Sphere",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 88",
+          "MaterialMetamorphosis > 88",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,15,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156127,
+        "name": "Lesser Deranged Mindreaver",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 166",
+          "MaterialMetamorphosis > 166",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,31,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156128,
+        "name": "Lesser Distracting Sphere",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 35",
+          "MaterialMetamorphosis > 35",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,5,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156129,
+        "name": "Summoning of Absuum",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 385",
+          "MaterialMetamorphosis > 385",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,72,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156131,
+        "name": "Summoning of Balbuto the Gibberer",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 817",
+          "MaterialMetamorphosis > 817",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,181,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156118,
+        "name": "Summoning of Confane",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 768",
+          "MaterialMetamorphosis > 768",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,166,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156121,
+        "name": "Summoning of Demenus",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 560",
+          "MaterialMetamorphosis > 560",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,106,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156119,
+        "name": "Summoning of Distral",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 731",
+          "MaterialMetamorphosis > 731",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,150,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156120,
+        "name": "Summoning of Duoco",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 699",
+          "MaterialMetamorphosis > 699",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,135,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156122,
+        "name": "Summoning of Ignatus Mind-Clouder",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 460",
+          "MaterialMetamorphosis > 460",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,90,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 150309,
+        "name": "Summoning of Tumulten",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 870",
+          "MaterialMetamorphosis > 870",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,199,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 269516,
+        "name": "Summoning of Yidira",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 1297",
+          "MaterialMetamorphosis > 1297",
+          "Profession == 12",
+          "Expansion op22 2",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,210,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156130,
+        "name": "Supreme Deranged Mindreaver",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 310",
+          "MaterialMetamorphosis > 310",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,60,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 156117,
+        "name": "Supreme Distracting Sphere",
+        "nanoStrain": 1017,
+        "nanoLine": "SupportPets",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 113",
+          "MaterialMetamorphosis > 113",
+          "Profession == 12",
+          "Pets op66 2001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,20,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Pets - Heal": [
+      {
+        "id": 225902,
+        "name": "Calling of Mortificant the Eternal",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 207,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SpaceTime > 1462",
+          "BiologicalMetamorphosis > 1465",
+          "Profession == 12",
+          "Pets op66 1001",
+          "Level > 206",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]",
+          "SummonPet template=[0,215,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125740,
+        "name": "Calling of Altumus",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 723",
+          "BiologicalMetamorphosis > 723",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]",
+          "SummonPet template=[0,146,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125746,
+        "name": "Calling of Belamorte",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 849",
+          "BiologicalMetamorphosis > 849",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]",
+          "SummonPet template=[0,192,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125739,
+        "name": "Calling of Curatem The Grand",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 777",
+          "BiologicalMetamorphosis > 777",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]",
+          "SummonPet template=[0,169,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125738,
+        "name": "Calling of Medinos",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 83",
+          "BiologicalMetamorphosis > 83",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]",
+          "SummonPet template=[0,14,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125742,
+        "name": "Calling of Restite",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 518",
+          "BiologicalMetamorphosis > 518",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]",
+          "SummonPet template=[0,99,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125745,
+        "name": "Calling of Salvinous",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 174",
+          "BiologicalMetamorphosis > 174",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]",
+          "SummonPet template=[0,33,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125743,
+        "name": "Calling of Sanoo",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 405",
+          "BiologicalMetamorphosis > 405",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]",
+          "SummonPet template=[0,77,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125741,
+        "name": "Calling of The Vivificator",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 662",
+          "BiologicalMetamorphosis > 662",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]",
+          "SummonPet template=[0,123,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125744,
+        "name": "Calling of Valentyia",
+        "nanoStrain": 1016,
+        "nanoLine": "HealPets",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 277",
+          "BiologicalMetamorphosis > 277",
+          "VisualProfession == 12",
+          "Pets op66 1001"
+        ],
+        "effectSummary": [
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]",
+          "SummonPet template=[0,55,-1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Pets - Charm": [
+      {
+        "id": 269907,
+        "name": "Pet Steal Back",
+        "nanoStrain": 1022,
+        "nanoLine": "Charm_Short",
+        "minLevel": 100,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 3",
+          "VisualProfession == 8",
+          "VisualProfession == 12",
+          "MaterialCreation > 769",
+          "SpaceTime > 769",
+          "Level > 99",
+          "Breed == 7"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[202]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 269908,
+        "name": "Improved Pet Steal Back",
+        "nanoStrain": 1022,
+        "nanoLine": "Charm_Short",
+        "minLevel": 215,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 3",
+          "VisualProfession == 8",
+          "VisualProfession == 12",
+          "MaterialCreation > 1399",
+          "SpaceTime > 1399",
+          "Level > 214",
+          "Breed == 7"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[202]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Pet Buffs / Pet Utility": [
+      {
+        "id": 205195,
+        "name": "Evocation of Unleashed Malice",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 208",
+          "BiologicalMetamorphosis > 208",
+          "SpaceTime > 208",
+          "Profession == 12",
+          "Level > 24",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,57]",
+          "Skill[281,57]",
+          "Skill[317,57]",
+          "Skill[316,57]",
+          "Skill[311,57]",
+          "Skill[280,57]",
+          "Skill[278,57]",
+          "Skill[279,57]",
+          "Modify AddAllOff +52"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205191,
+        "name": "Evocation of Relentless Fury",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 50,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 349",
+          "BiologicalMetamorphosis > 349",
+          "SpaceTime > 349",
+          "Profession == 12",
+          "Level > 49",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,77]",
+          "Skill[281,77]",
+          "Skill[317,77]",
+          "Skill[316,77]",
+          "Skill[311,77]",
+          "Skill[280,77]",
+          "Skill[278,77]",
+          "Skill[279,77]",
+          "Modify AddAllOff +88"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205183,
+        "name": "Evocation of Fathomless Rage",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 519",
+          "BiologicalMetamorphosis > 519",
+          "SpaceTime > 519",
+          "Profession == 12",
+          "Level > 74",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,108]",
+          "Skill[281,108]",
+          "Skill[317,108]",
+          "Skill[316,108]",
+          "Skill[311,108]",
+          "Skill[280,108]",
+          "Skill[278,108]",
+          "Skill[279,108]",
+          "Modify AddAllOff +129"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205185,
+        "name": "Evocation of Implacable Hatred",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 733",
+          "BiologicalMetamorphosis > 733",
+          "SpaceTime > 733",
+          "Profession == 12",
+          "Level > 99",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,143]",
+          "Skill[281,143]",
+          "Skill[317,143]",
+          "Skill[316,143]",
+          "Skill[311,143]",
+          "Skill[280,143]",
+          "Skill[278,143]",
+          "Skill[279,143]",
+          "Modify AddAllOff +175"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205187,
+        "name": "Evocation of Maddening Wrath",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 135,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 852",
+          "BiologicalMetamorphosis > 852",
+          "SpaceTime > 852",
+          "Profession == 12",
+          "Level > 134",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,177]",
+          "Skill[281,177]",
+          "Skill[317,177]",
+          "Skill[316,177]",
+          "Skill[311,177]",
+          "Skill[280,177]",
+          "Skill[278,177]",
+          "Skill[279,177]",
+          "Modify AddAllOff +213"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205189,
+        "name": "Evocation of Pure Malevolence",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 974",
+          "BiologicalMetamorphosis > 974",
+          "SpaceTime > 974",
+          "Profession == 12",
+          "Level > 174",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[282,227]",
+          "Skill[281,227]",
+          "Skill[317,227]",
+          "Skill[316,227]",
+          "Skill[311,227]",
+          "Skill[280,227]",
+          "Skill[278,227]",
+          "Skill[279,227]",
+          "Modify AddAllOff +269"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205193,
+        "name": "Evocation of The Abomination",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1046",
+          "BiologicalMetamorphosis > 1046",
+          "SpaceTime > 1046",
+          "Profession == 12",
+          "Level > 194",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[280,268]",
+          "Skill[278,268]",
+          "Skill[279,268]",
+          "Skill[282,268]",
+          "Skill[281,268]",
+          "Skill[317,268]",
+          "Skill[316,268]",
+          "Skill[311,268]",
+          "Modify AddAllOff +304"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267533,
+        "name": "Sacrifice Combat pet",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1500",
+          "BiologicalMetamorphosis > 1500",
+          "SpaceTime > 1500",
+          "Profession == 12",
+          "Level > 194",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Hit[27,-8000,-8000,94]",
+          "Hit[27,-8000,-8000,96]",
+          "Skill[280,268]",
+          "Skill[278,268]",
+          "Skill[279,268]",
+          "Skill[282,268]",
+          "Skill[281,268]",
+          "Skill[317,268]",
+          "Skill[316,268]",
+          "Skill[311,268]",
+          "Modify AddAllOff +400"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267599,
+        "name": "Evocation of The Enlightened",
+        "nanoStrain": 816,
+        "nanoLine": "PetDefensiveNanos",
+        "minLevel": 201,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1300",
+          "BiologicalMetamorphosis > 1300",
+          "SpaceTime > 1300",
+          "Profession == 12",
+          "Level > 200",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[147,15]",
+          "ResistNanoStrain[202,15]",
+          "Modify AddAllDef +250"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267598,
+        "name": "Evocation of The Enraged",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 201,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1200",
+          "BiologicalMetamorphosis > 1200",
+          "SpaceTime > 1200",
+          "Profession == 12",
+          "Level > 200",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[280,275]",
+          "Skill[278,275]",
+          "Skill[279,275]",
+          "Skill[282,275]",
+          "Skill[281,275]",
+          "Skill[317,275]",
+          "Skill[316,275]",
+          "Skill[311,275]",
+          "Modify AddAllOff +500"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267617,
+        "name": "Evocation of The Cleansed",
+        "nanoStrain": 817,
+        "nanoLine": "PetDamageOverTimeResistNanos",
+        "minLevel": 205,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1500",
+          "BiologicalMetamorphosis > 1500",
+          "SpaceTime > 1500",
+          "Profession == 12",
+          "Level > 204",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "Modify NanoResist +300",
+          "ResistNanoStrain[582,25]",
+          "ResistNanoStrain[7,25]",
+          "ResistNanoStrain[9,25]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267600,
+        "name": "Evocation of The Empowered",
+        "nanoStrain": 816,
+        "nanoLine": "PetDefensiveNanos",
+        "minLevel": 215,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1500",
+          "BiologicalMetamorphosis > 1500",
+          "SpaceTime > 1500",
+          "Profession == 12",
+          "Level > 214",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[147,20]",
+          "ResistNanoStrain[202,20]",
+          "Modify AddAllDef +300"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267609,
+        "name": "Evocation of The Pure",
+        "nanoStrain": 817,
+        "nanoLine": "PetDamageOverTimeResistNanos",
+        "minLevel": 219,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1900",
+          "BiologicalMetamorphosis > 1900",
+          "SpaceTime > 1900",
+          "Profession == 12",
+          "Level > 218",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "Modify NanoResist +600",
+          "ResistNanoStrain[582,50]",
+          "ResistNanoStrain[7,50]",
+          "ResistNanoStrain[9,50]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151830,
+        "name": "Anima of Fathomless Rage",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 409",
+          "BiologicalMetamorphosis > 409",
+          "SpaceTime > 409",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,105]",
+          "Skill[279,105]",
+          "Skill[280,105]",
+          "Skill[281,105]",
+          "Skill[282,105]",
+          "Skill[311,105]",
+          "Skill[316,105]",
+          "Skill[317,105]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151824,
+        "name": "Anima of Implacable Hatred",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 571",
+          "BiologicalMetamorphosis > 571",
+          "SpaceTime > 571",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,140]",
+          "Skill[279,140]",
+          "Skill[280,140]",
+          "Skill[281,140]",
+          "Skill[282,140]",
+          "Skill[311,140]",
+          "Skill[316,140]",
+          "Skill[317,140]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151828,
+        "name": "Anima of Maddening Wrath",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 697",
+          "BiologicalMetamorphosis > 697",
+          "SpaceTime > 697",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,171]",
+          "Skill[279,171]",
+          "Skill[280,171]",
+          "Skill[281,171]",
+          "Skill[282,171]",
+          "Skill[311,171]",
+          "Skill[316,171]",
+          "Skill[317,171]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151829,
+        "name": "Anima of Pure Malevolence",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 780",
+          "BiologicalMetamorphosis > 780",
+          "SpaceTime > 780",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,219]",
+          "Skill[279,219]",
+          "Skill[280,219]",
+          "Skill[281,219]",
+          "Skill[282,219]",
+          "Skill[311,219]",
+          "Skill[316,219]",
+          "Skill[317,219]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151826,
+        "name": "Anima of Relentless Fury",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 251",
+          "BiologicalMetamorphosis > 251",
+          "SpaceTime > 251",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,76]",
+          "Skill[279,76]",
+          "Skill[280,76]",
+          "Skill[281,76]",
+          "Skill[282,76]",
+          "Skill[311,76]",
+          "Skill[316,76]",
+          "Skill[317,76]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151827,
+        "name": "Anima of The Abomination",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 873",
+          "BiologicalMetamorphosis > 873",
+          "SpaceTime > 873",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,254]",
+          "Skill[279,254]",
+          "Skill[280,254]",
+          "Skill[281,254]",
+          "Skill[282,254]",
+          "Skill[311,254]",
+          "Skill[316,254]",
+          "Skill[317,254]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151825,
+        "name": "Anima of Unleashed Malice",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 147",
+          "BiologicalMetamorphosis > 147",
+          "SpaceTime > 147",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,55]",
+          "Skill[279,55]",
+          "Skill[280,55]",
+          "Skill[281,55]",
+          "Skill[282,55]",
+          "Skill[311,55]",
+          "Skill[316,55]",
+          "Skill[317,55]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151831,
+        "name": "Anima of Unrestrained Ferocity",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 57",
+          "BiologicalMetamorphosis > 57",
+          "SpaceTime > 57",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,36]",
+          "Skill[279,36]",
+          "Skill[280,36]",
+          "Skill[281,36]",
+          "Skill[282,36]",
+          "Skill[311,36]",
+          "Skill[316,36]",
+          "Skill[317,36]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116811,
+        "name": "Chant of Effortless Strikes",
+        "nanoStrain": 217,
+        "nanoLine": "MPPetInitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 608",
+          "SensoryImprovement > 547",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Modify AggDef +101",
+          "Modify RangedInit +510",
+          "Modify NanoCInit +510",
+          "Modify PhysicalInit +510",
+          "Modify MeleeInit +510",
+          "Modify Aggressiveness +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116820,
+        "name": "Chant of Frenzied Blows",
+        "nanoStrain": 217,
+        "nanoLine": "MPPetInitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 217",
+          "SensoryImprovement > 174",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Modify AggDef +73",
+          "Modify RangedInit +360",
+          "Modify NanoCInit +360",
+          "Modify PhysicalInit +360",
+          "Modify MeleeInit +360",
+          "Modify Aggressiveness +30"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 205197,
+        "name": "Evocation of Unrestrained Ferocity",
+        "nanoStrain": 225,
+        "nanoLine": "PetShortTermDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 106",
+          "BiologicalMetamorphosis > 106",
+          "SpaceTime > 106",
+          "Profession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[279,37]",
+          "Skill[282,37]",
+          "Skill[281,37]",
+          "Skill[317,37]",
+          "Skill[316,37]",
+          "Skill[311,37]",
+          "Skill[280,37]",
+          "Skill[278,37]",
+          "Modify AddAllOff +24"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273374,
+        "name": "Healthy Manifestation",
+        "nanoStrain": 843,
+        "nanoLine": "PetHealDelta843",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 2208",
+          "BiologicalMetamorphosis > 2108",
+          "Profession == 12",
+          "NanoFocusLevel op22 64",
+          "Breed == 7",
+          "NPCFamily == 96",
+          "NPCFamily == 97",
+          "NPCFamily == 98",
+          "Flags op4 0"
+        ],
+        "effectSummary": [
+          "CastNano[274392]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116819,
+        "name": "High Chant of Effortless Strikes",
+        "nanoStrain": 217,
+        "nanoLine": "MPPetInitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 861",
+          "SensoryImprovement > 776",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Modify AggDef +184",
+          "Modify PhysicalInit +920",
+          "Modify MeleeInit +920",
+          "Modify RangedInit +920",
+          "Modify NanoCInit +920",
+          "Modify Aggressiveness +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116818,
+        "name": "High Chant of Frenzied Blows",
+        "nanoStrain": 217,
+        "nanoLine": "MPPetInitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 739",
+          "SensoryImprovement > 667",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Modify AggDef +139",
+          "Modify RangedInit +700",
+          "Modify NanoCInit +700",
+          "Modify PhysicalInit +700",
+          "Modify MeleeInit +700",
+          "Modify Aggressiveness +65"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116817,
+        "name": "Instill With Enduring Wrath",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 765",
+          "BiologicalMetamorphosis > 765",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,52]",
+          "Skill[279,52]",
+          "Skill[280,52]",
+          "Skill[281,52]",
+          "Skill[282,52]",
+          "Skill[311,52]",
+          "Skill[316,52]",
+          "Skill[317,52]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116816,
+        "name": "Instill With Ferocious Purpose",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 525",
+          "BiologicalMetamorphosis > 525",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,26]",
+          "Skill[279,26]",
+          "Skill[280,26]",
+          "Skill[281,26]",
+          "Skill[282,26]",
+          "Skill[311,26]",
+          "Skill[316,26]",
+          "Skill[317,26]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116815,
+        "name": "Instill With Fury",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 190",
+          "BiologicalMetamorphosis > 190",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,18]",
+          "Skill[279,18]",
+          "Skill[280,18]",
+          "Skill[281,18]",
+          "Skill[282,18]",
+          "Skill[311,18]",
+          "Skill[316,18]",
+          "Skill[317,18]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116814,
+        "name": "Instill With Malign Intent",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 873",
+          "BiologicalMetamorphosis > 873",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,61]",
+          "Skill[279,61]",
+          "Skill[280,61]",
+          "Skill[281,61]",
+          "Skill[282,61]",
+          "Skill[311,61]",
+          "Skill[316,61]",
+          "Skill[317,61]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116813,
+        "name": "Instill With Rage",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 103",
+          "BiologicalMetamorphosis > 103",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,13]",
+          "Skill[279,13]",
+          "Skill[280,13]",
+          "Skill[281,13]",
+          "Skill[282,13]",
+          "Skill[311,13]",
+          "Skill[316,13]",
+          "Skill[317,13]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116812,
+        "name": "Instill With Righteous Frenzy",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 689",
+          "BiologicalMetamorphosis > 689",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,41]",
+          "Skill[279,41]",
+          "Skill[280,41]",
+          "Skill[281,41]",
+          "Skill[282,41]",
+          "Skill[311,41]",
+          "Skill[316,41]",
+          "Skill[317,41]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 116821,
+        "name": "Instill With Terrible Anger",
+        "nanoStrain": 216,
+        "nanoLine": "MPPetDamageBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 349",
+          "BiologicalMetamorphosis > 349",
+          "VisualProfession == 12",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "Skill[278,24]",
+          "Skill[279,24]",
+          "Skill[280,24]",
+          "Skill[281,24]",
+          "Skill[282,24]",
+          "Skill[311,24]",
+          "Skill[316,24]",
+          "Skill[317,24]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 269869,
+        "name": "Pet Attention",
+        "nanoStrain": 1013,
+        "nanoLine": "PetRoot",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 3",
+          "VisualProfession == 8",
+          "VisualProfession == 12",
+          "MaterialCreation > 769",
+          "SpaceTime > 769"
+        ],
+        "effectSummary": [
+          "(2 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 269870,
+        "name": "Pet Cleanse",
+        "nanoStrain": 1047,
+        "nanoLine": "PetDebuffCleanse",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 3",
+          "VisualProfession == 8",
+          "VisualProfession == 12",
+          "MaterialCreation > 1399",
+          "SpaceTime > 1399"
+        ],
+        "effectSummary": [
+          "(2 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 300505,
+        "name": "Sacrificial Bond",
+        "nanoStrain": 1024,
+        "nanoLine": "DamageToPet",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "Modify ShoulderMesh +75",
+          "Modify AccessCount +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 300506,
+        "name": "Sacrificial Bond",
+        "nanoStrain": 1024,
+        "nanoLine": "DamageToPet",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1200",
+          "PsychologicalModification > 1000",
+          "Profession == 12",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "CastNano[300505]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267281,
+        "name": "Sacrificial Shielding",
+        "nanoStrain": 1024,
+        "nanoLine": "DamageToPet",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1800",
+          "PsychologicalModification > 1600",
+          "Profession == 12",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[146]",
+          "RemoveNanoStrain[145]",
+          "ResistNanoStrain[146,60]",
+          "ResistNanoStrain[145,60]",
+          "Modify ShoulderMesh +90",
+          "Modify AccessCount +100",
+          "CastNano[300505]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275853,
+        "name": "Touch of Poison",
+        "nanoStrain": 863,
+        "nanoLine": "MPAttackPetDamageType",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2146",
+          "MaterialCreation > 2146",
+          "Profession == 12",
+          "NanoFocusLevel op22 64",
+          "Breed == 7",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "ChangeVariable[339,96]",
+          "Skill[317,30]",
+          "Modify AddAllOff +120"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Summon Weapon / Shield (Creation)": [
+      {
+        "id": 229922,
+        "name": "Boon of Ergo - Aban-Shere",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 20,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 19",
+          "MaterialCreation > 199",
+          "SpaceTime > 199",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,25,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 204828,
+        "name": "Lien's Crystalizer",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 24",
+          "MaterialCreation > 264",
+          "SpaceTime > 264"
+        ],
+        "effectSummary": [
+          "SpawnItem[CREN,1,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229926,
+        "name": "Boon of Ergo - Ocra-Bhotaar",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 40,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 39",
+          "MaterialCreation > 299",
+          "SpaceTime > 299",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,50,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229928,
+        "name": "Boon of Ergo - Ocra-Thar",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 60,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 59",
+          "MaterialCreation > 399",
+          "SpaceTime > 399",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,75,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229930,
+        "name": "Boon of Ergo - Ocra-Roch",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 80,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 79",
+          "MaterialCreation > 499",
+          "SpaceTime > 499",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,100,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229932,
+        "name": "Boon of Ergo - Ocra-Xum",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 99",
+          "MaterialCreation > 599",
+          "SpaceTime > 599",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,125,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229934,
+        "name": "Boon of Ergo - Ocra-Shere",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 120,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 119",
+          "MaterialCreation > 699",
+          "SpaceTime > 699",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,150,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 206752,
+        "name": "Saemus' Crystalizer",
+        "nanoStrain": 1015,
+        "nanoLine": "AttackPets",
+        "minLevel": 135,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 134",
+          "MaterialCreation > 852",
+          "SpaceTime > 852"
+        ],
+        "effectSummary": [
+          "SpawnItem[CNCR,1,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229936,
+        "name": "Boon of Ergo - Enel-Bhotaar",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 140,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 139",
+          "MaterialCreation > 799",
+          "SpaceTime > 799",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,175,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229938,
+        "name": "Boon of Ergo - Enel-Thar",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 170,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 169",
+          "MaterialCreation > 999",
+          "SpaceTime > 999",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,200,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229940,
+        "name": "Boon of Ergo - Enel-Roch",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 200,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 199",
+          "MaterialCreation > 1199",
+          "SpaceTime > 1199",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UNCS,250,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 229942,
+        "name": "Boon of Ergo - Enel-Xum",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 219",
+          "MaterialCreation > 1499",
+          "SpaceTime > 1499",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[UPCR,300,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154983,
+        "name": "Creation: Asp of Semol",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 603",
+          "BiologicalMetamorphosis > 603",
+          "SpaceTime > 603",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[ASOF,116,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275849,
+        "name": "Creation: Asp of Titaniush",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 2208",
+          "BiologicalMetamorphosis > 2108",
+          "SpaceTime > 2208",
+          "Profession == 12",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "SpawnItem[AFOT,215,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154981,
+        "name": "Creation: Azure Cobra of Orma",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1029",
+          "BiologicalMetamorphosis > 1029",
+          "SpaceTime > 1029",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[AZCO,198,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154968,
+        "name": "Creation: Belthior's Flame Ward",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 748",
+          "BiologicalMetamorphosis > 748",
+          "SpaceTime > 748",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[BEFL,144,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154978,
+        "name": "Creation: Bitis Striker",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 691",
+          "BiologicalMetamorphosis > 691",
+          "SpaceTime > 691",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[BISR,133,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154979,
+        "name": "Creation: Coplan's Hand Taipan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 457",
+          "BiologicalMetamorphosis > 457",
+          "SpaceTime > 457",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[COHN,88,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154972,
+        "name": "Creation: Death Ward",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 912",
+          "BiologicalMetamorphosis > 912",
+          "SpaceTime > 912",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[DEWA,171,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154977,
+        "name": "Creation: Gold Acantophis",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 971",
+          "BiologicalMetamorphosis > 971",
+          "SpaceTime > 971",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[GOAC,187,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154969,
+        "name": "Creation: Living Shield of Evernan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 567",
+          "BiologicalMetamorphosis > 567",
+          "SpaceTime > 567",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[LVSH,109,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154974,
+        "name": "Creation: Mocham's Guard",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 935",
+          "BiologicalMetamorphosis > 935",
+          "SpaceTime > 935",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[MOGU,180,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154976,
+        "name": "Creation: Notum Defender",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 353",
+          "BiologicalMetamorphosis > 353",
+          "SpaceTime > 353",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[NODE,68,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154971,
+        "name": "Creation: Shield of Asmodian",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1034",
+          "BiologicalMetamorphosis > 1034",
+          "SpaceTime > 1034",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[SHOA,199,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275852,
+        "name": "Creation: Shield of Esa",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 2208",
+          "BiologicalMetamorphosis > 2108",
+          "SpaceTime > 2208",
+          "Profession == 12",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "SpawnItem[KLXI,215,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273376,
+        "name": "Creation: Shield of Zset",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 2208",
+          "BiologicalMetamorphosis > 2108",
+          "SpaceTime > 2208",
+          "Profession == 12",
+          "NanoFocusLevel op22 64",
+          "Flags op106 2"
+        ],
+        "effectSummary": [
+          "SpawnItem[SLOZ,215,0]",
+          "SpawnItem[SZOZ,215,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154973,
+        "name": "Creation: Solar Guard",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 426",
+          "BiologicalMetamorphosis > 426",
+          "SpaceTime > 426",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[SOGU,82,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154980,
+        "name": "Creation: The Crotalus",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 235",
+          "BiologicalMetamorphosis > 235",
+          "SpaceTime > 235",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[THCR,45,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154984,
+        "name": "Creation: Viper Staff",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 327",
+          "BiologicalMetamorphosis > 327",
+          "SpaceTime > 327",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[VIST,63,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154970,
+        "name": "Creation: Vital Buckler",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 291",
+          "BiologicalMetamorphosis > 291",
+          "SpaceTime > 291",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[VIBU,56,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154975,
+        "name": "Creation: Wave Breaker",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 650",
+          "BiologicalMetamorphosis > 650",
+          "SpaceTime > 650",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[WABR,125,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 154982,
+        "name": "Creation: Wixel's Notum Python",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 815",
+          "BiologicalMetamorphosis > 815",
+          "SpaceTime > 815",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "SpawnItem[WINO,157,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Self / Team Buffs": [
+      {
+        "id": 220331,
+        "name": "Composite Teachings",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 25,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 151",
+          "SensoryImprovement > 151",
+          "VisualProfession == 12",
+          "Level > 24",
+          "Expansion op22 2",
+          "Specialization op22 1",
+          "Expansion op22 2",
+          "Level > 14"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +25",
+          "Modify MaterialMetamorphosis +25",
+          "Modify BiologicalMetamorphosis +25",
+          "Modify MaterialCreation +25",
+          "Modify SensoryImprovement +25",
+          "Modify PsychologicalModification +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220333,
+        "name": "Composite Mastery",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 50,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 291",
+          "SensoryImprovement > 291",
+          "VisualProfession == 12",
+          "Level > 49",
+          "Expansion op22 2",
+          "Specialization op22 1",
+          "Expansion op22 2",
+          "Level > 39"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +50",
+          "Modify MaterialMetamorphosis +50",
+          "Modify BiologicalMetamorphosis +50",
+          "Modify MaterialCreation +50",
+          "Modify SensoryImprovement +50",
+          "Modify PsychologicalModification +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220335,
+        "name": "Composite Infuse With Knowledge",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 632",
+          "SensoryImprovement > 632",
+          "Profession == 12",
+          "Level > 99",
+          "Expansion op22 2",
+          "Specialization op22 1",
+          "Expansion op22 2",
+          "Level > 89"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +90",
+          "Modify MaterialMetamorphosis +90",
+          "Modify BiologicalMetamorphosis +90",
+          "Modify MaterialCreation +90",
+          "Modify SensoryImprovement +90",
+          "Modify PsychologicalModification +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220337,
+        "name": "Composite Mochams (1 hour)",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 185,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 1028",
+          "SensoryImprovement > 1028",
+          "Profession == 12",
+          "Level > 184",
+          "Expansion op22 2",
+          "Specialization op22 4",
+          "Expansion op22 2",
+          "Level > 174"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +140",
+          "Modify MaterialMetamorphosis +140",
+          "Modify BiologicalMetamorphosis +140",
+          "Modify MaterialCreation +140",
+          "Modify SensoryImprovement +140",
+          "Modify PsychologicalModification +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220339,
+        "name": "Composite Mochams (2 hours)",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 205,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 1228",
+          "SensoryImprovement > 1226",
+          "Profession == 12",
+          "Level > 204",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 200"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +140",
+          "Modify MaterialMetamorphosis +140",
+          "Modify BiologicalMetamorphosis +140",
+          "Modify MaterialCreation +140",
+          "Modify SensoryImprovement +140",
+          "Modify PsychologicalModification +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275020,
+        "name": "Aggressive Construct Empowerment",
+        "nanoStrain": 854,
+        "nanoLine": "AggressiveConstructEmpowerment",
+        "minLevel": 212,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2108",
+          "SpaceTime > 2208",
+          "Profession == 12",
+          "NanoFocusLevel op22 64",
+          "Level > 211",
+          "NPCFamily == 97"
+        ],
+        "effectSummary": [
+          "CastNano[275021]",
+          "Modify AddAllOff +300"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220341,
+        "name": "Composite Mochams (4 hours)",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 215,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 1575",
+          "SensoryImprovement > 1572",
+          "Profession == 12",
+          "Level > 214",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 204"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +140",
+          "Modify MaterialMetamorphosis +140",
+          "Modify BiologicalMetamorphosis +140",
+          "Modify MaterialCreation +140",
+          "Modify SensoryImprovement +140",
+          "Modify PsychologicalModification +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220343,
+        "name": "Composite Mochams (8 hours)",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 219,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 1714",
+          "SensoryImprovement > 1710",
+          "Profession == 12",
+          "Level > 218",
+          "Expansion op22 2",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 208"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +140",
+          "Modify MaterialMetamorphosis +140",
+          "Modify BiologicalMetamorphosis +140",
+          "Modify MaterialCreation +140",
+          "Modify SensoryImprovement +140",
+          "Modify PsychologicalModification +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29327,
+        "name": "Advanced Symbol Manipulation",
+        "nanoStrain": 210,
+        "nanoLine": "NanoProgrammingBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 438",
+          "SensoryImprovement > 438",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify NanoProgramming +92"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29272,
+        "name": "Anticipation of Retaliation",
+        "nanoStrain": 144,
+        "nanoLine": "MajorEvasionBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SensoryImprovement > 246",
+          "PsychologicalModification > 246",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify DuckExp +60",
+          "Modify DodgeRanged +60",
+          "Modify EvadeClsC +60"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 117219,
+        "name": "Assume Profession: Meta-Physicist",
+        "nanoStrain": 218,
+        "nanoLine": "FalseProfession",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 5",
+          "VisualProfession == 12",
+          "Profession == 5",
+          "PsychologicalModification > 532",
+          "SensoryImprovement > 532",
+          "BiologicalMetamorphosis > 532"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[680]",
+          "Skill[318,70]",
+          "ModifyPercentage PsychologicalModification -15",
+          "ModifyPercentage SensoryImprovement -15",
+          "ModifyPercentage MaterialMetamorphosis -15",
+          "ModifyPercentage MaterialCreation -15",
+          "ModifyPercentage SpaceTime -15",
+          "ModifyPercentage BiologicalMetamorphosis -15",
+          "ChangeVariable[368,12]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29275,
+        "name": "BioMet Mastery",
+        "nanoStrain": 163,
+        "nanoLine": "BioMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 183",
+          "SensoryImprovement > 183",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95411,
+        "name": "Coherent Notum Web",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 421",
+          "BiologicalMetamorphosis > 421",
+          "PsychologicalModification > 378",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,-15]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95525,
+        "name": "Dedication of Thought",
+        "nanoStrain": 183,
+        "nanoLine": "InterruptModifier",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 705",
+          "PsychologicalModification > 634",
+          "SensoryImprovement > 634",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[383,51]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95410,
+        "name": "Ease of Execution",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 117",
+          "BiologicalMetamorphosis > 117",
+          "PsychologicalModification > 99",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,-7]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95523,
+        "name": "Engrossing Activity",
+        "nanoStrain": 183,
+        "nanoLine": "InterruptModifier",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 232",
+          "PsychologicalModification > 207",
+          "SensoryImprovement > 207",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[383,34]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 302257,
+        "name": "Eye of the Tigress",
+        "nanoStrain": 815,
+        "nanoLine": "MartialArtistBowBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Expansion op22 2",
+          "PsychologicalModification > 513",
+          "SensoryImprovement > 513",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "Modify Bow +40",
+          "Modify AimedShot +40"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 32036,
+        "name": "False Profession: Meta-Physicist",
+        "nanoStrain": 218,
+        "nanoLine": "FalseProfession",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 5",
+          "VisualProfession == 12",
+          "Profession == 5",
+          "PsychologicalModification > 179",
+          "SensoryImprovement > 179",
+          "BiologicalMetamorphosis > 179"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[680]",
+          "Skill[318,150]",
+          "ModifyPercentage PsychologicalModification -25",
+          "ModifyPercentage SensoryImprovement -25",
+          "ModifyPercentage MaterialMetamorphosis -25",
+          "ModifyPercentage MaterialCreation -25",
+          "ModifyPercentage SpaceTime -25",
+          "ModifyPercentage BiologicalMetamorphosis -25",
+          "ChangeVariable[368,12]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95524,
+        "name": "Ignore External Events",
+        "nanoStrain": 183,
+        "nanoLine": "InterruptModifier",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 439",
+          "PsychologicalModification > 398",
+          "SensoryImprovement > 398",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[383,41]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 302188,
+        "name": "Improved Anticipation of Retaliation",
+        "nanoStrain": 144,
+        "nanoLine": "MajorEvasionBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "SensoryImprovement > 1149",
+          "PsychologicalModification > 1149",
+          "Profession == 12",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify DuckExp +150",
+          "Modify DodgeRanged +150",
+          "Modify EvadeClsC +150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 266311,
+        "name": "Induce Stupor",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Expansion op22 32",
+          "BiologicalMetamorphosis > 799",
+          "Profession == 2",
+          "SensoryImprovement > 799",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -750",
+          "Modify MaterialMetamorphosis -750",
+          "Modify MaterialCreation -750",
+          "Modify PsychologicalModification -750",
+          "Modify SpaceTime -750",
+          "Modify SensoryImprovement -750"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151761,
+        "name": "Infuse With Knowledge: Biological Metamorphose",
+        "nanoStrain": 163,
+        "nanoLine": "BioMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 568",
+          "SensoryImprovement > 568",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151762,
+        "name": "Infuse With Knowledge: Material Creation",
+        "nanoStrain": 159,
+        "nanoLine": "MatCreaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 606",
+          "SensoryImprovement > 606",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151759,
+        "name": "Infuse With Knowledge: Material Metamorphose",
+        "nanoStrain": 157,
+        "nanoLine": "MatMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 583",
+          "SensoryImprovement > 583",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151760,
+        "name": "Infuse With Knowledge: Psychological Modification",
+        "nanoStrain": 167,
+        "nanoLine": "PsyModBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 623",
+          "SensoryImprovement > 623",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151757,
+        "name": "Infuse With Knowledge: Sensory Improvement",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 614",
+          "SensoryImprovement > 614",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151758,
+        "name": "Infuse With Knowledge: Time and Space",
+        "nanoStrain": 161,
+        "nanoLine": "MatLocBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 598",
+          "SensoryImprovement > 598",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95521,
+        "name": "Internal Focus",
+        "nanoStrain": 183,
+        "nanoLine": "InterruptModifier",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 73",
+          "PsychologicalModification > 60",
+          "SensoryImprovement > 60",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[383,27]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29294,
+        "name": "MatCrea Mastery",
+        "nanoStrain": 159,
+        "nanoLine": "MatCreaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 12",
+          "VisualProfession == 11",
+          "PsychologicalModification > 207",
+          "SensoryImprovement > 207"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29296,
+        "name": "MatMet Mastery",
+        "nanoStrain": 157,
+        "nanoLine": "MatMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 235",
+          "SensoryImprovement > 235",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 263298,
+        "name": "Mesmerizing Construct Empowerment",
+        "nanoStrain": 810,
+        "nanoLine": "MesmerizationConstructEmpowerment",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Expansion op22 2",
+          "BiologicalMetamorphosis > 569",
+          "SpaceTime > 567",
+          "Profession == 12",
+          "NPCFamily == 98"
+        ],
+        "effectSummary": [
+          "CastNano[263297]",
+          "Modify PsychologicalModification +80",
+          "Modify SensoryImprovement +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 117208,
+        "name": "Mimic Profession: Meta-Physicist",
+        "nanoStrain": 218,
+        "nanoLine": "FalseProfession",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 5",
+          "VisualProfession == 12",
+          "Profession == 5",
+          "PsychologicalModification > 767",
+          "SensoryImprovement > 767",
+          "BiologicalMetamorphosis > 767"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[680]",
+          "Skill[318,15]",
+          "ModifyPercentage PsychologicalModification -5",
+          "ModifyPercentage SensoryImprovement -5",
+          "ModifyPercentage MaterialMetamorphosis -5",
+          "ModifyPercentage MaterialCreation -5",
+          "ModifyPercentage SpaceTime -5",
+          "ModifyPercentage BiologicalMetamorphosis -5",
+          "ChangeVariable[368,12]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29299,
+        "name": "Mocham's Gift: BioMet",
+        "nanoStrain": 163,
+        "nanoLine": "BioMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 758",
+          "SensoryImprovement > 758",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29300,
+        "name": "Mocham's Gift: MatCrea",
+        "nanoStrain": 159,
+        "nanoLine": "MatCreaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 765",
+          "SensoryImprovement > 765",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29302,
+        "name": "Mocham's Gift: MatMet",
+        "nanoStrain": 157,
+        "nanoLine": "MatMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 751",
+          "SensoryImprovement > 751",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29303,
+        "name": "Mocham's Gift: PsyMod",
+        "nanoStrain": 167,
+        "nanoLine": "PsyModBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 774",
+          "SensoryImprovement > 774",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29304,
+        "name": "Mocham's Gift: SenseImp",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 769",
+          "SensoryImprovement > 769",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29301,
+        "name": "Mocham's Gift: SpaceTime",
+        "nanoStrain": 161,
+        "nanoLine": "MatLocBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 744",
+          "SensoryImprovement > 744",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +140"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95409,
+        "name": "Mocham's Neural Interface-Web",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 742",
+          "BiologicalMetamorphosis > 742",
+          "PsychologicalModification > 671",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,-24]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29307,
+        "name": "Neuron-Notum Interface",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 615",
+          "BiologicalMetamorphosis > 615",
+          "PsychologicalModification > 553",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,-19]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 220345,
+        "name": "Neuronal Stimulator",
+        "nanoStrain": 576,
+        "nanoLine": "Psy_IntBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 11",
+          "Profession == 12",
+          "Profession == 8",
+          "BiologicalMetamorphosis > 193",
+          "PsychologicalModification > 193",
+          "Specialization op22 1",
+          "Expansion op22 2",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "Modify Intelligence +23",
+          "Modify Psychic +23"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95408,
+        "name": "Notum Attunement",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 283",
+          "BiologicalMetamorphosis > 283",
+          "PsychologicalModification > 251",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,-12]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29308,
+        "name": "Notum Rejection",
+        "nanoStrain": 148,
+        "nanoLine": "NPCostBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "BiologicalMetamorphosis > 701",
+          "PsychologicalModification > 629",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[318,25]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29309,
+        "name": "Odin's Missing Eye",
+        "nanoStrain": 576,
+        "nanoLine": "Psy_IntBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "BiologicalMetamorphosis > 785",
+          "PsychologicalModification > 713",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify Intelligence +43",
+          "Modify Psychic +43",
+          "Modify PsychologicalModification +40",
+          "Modify SensoryImprovement +40",
+          "Modify SpaceTime +40",
+          "Modify MaterialCreation +40",
+          "Modify BiologicalMetamorphosis +40",
+          "Modify MaterialMetamorphosis +40",
+          "Modify NanoResist +100"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273379,
+        "name": "Odin's Other Eye",
+        "nanoStrain": 576,
+        "nanoLine": "Psy_IntBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2048",
+          "PsychologicalModification > 1836",
+          "Profession == 12",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify Intelligence +103",
+          "Modify Psychic +103",
+          "Modify PsychologicalModification +100",
+          "Modify SensoryImprovement +100",
+          "Modify SpaceTime +100",
+          "Modify MaterialCreation +100",
+          "Modify BiologicalMetamorphosis +100",
+          "Modify MaterialMetamorphosis +100",
+          "Modify NanoResist +200"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95522,
+        "name": "One Mind, One Purpose",
+        "nanoStrain": 183,
+        "nanoLine": "InterruptModifier",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SpaceTime > 777",
+          "PsychologicalModification > 705",
+          "SensoryImprovement > 705",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[383,57]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29246,
+        "name": "Pistol Mastery",
+        "nanoStrain": 199,
+        "nanoLine": "PistolBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 1",
+          "VisualProfession == 12",
+          "VisualProfession == 3",
+          "VisualProfession == 10",
+          "VisualProfession == 8",
+          "PsychologicalModification > 120",
+          "SensoryImprovement > 120",
+          "Flags op4 0"
+        ],
+        "effectSummary": [
+          "Modify Pistol +40"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29312,
+        "name": "PsyMod Mastery",
+        "nanoStrain": 167,
+        "nanoLine": "PsyModBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 225",
+          "SensoryImprovement > 225",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 120499,
+        "name": "Quantum Wings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "Flags op70 2",
+          "SpaceTime > 479",
+          "BiologicalMetamorphosis > 479",
+          "MaterialMetamorphosis > 479",
+          "VisualProfession == 12",
+          "PlayfieldType op107 1",
+          "ExpansionPlayfield == 0",
+          "Flags op112 0"
+        ],
+        "effectSummary": [
+          "Modify RunSpeed +600"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29315,
+        "name": "Sense Imp Mastery",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 215",
+          "SensoryImprovement > 215",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29295,
+        "name": "SpaceTime Mastery",
+        "nanoStrain": 161,
+        "nanoLine": "MatLocBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 199",
+          "SensoryImprovement > 199",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29113,
+        "name": "Symbol Helper",
+        "nanoStrain": 210,
+        "nanoLine": "NanoProgrammingBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 60",
+          "SensoryImprovement > 60",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify NanoProgramming +20"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151768,
+        "name": "Teachings of Biological Metamorphose",
+        "nanoStrain": 163,
+        "nanoLine": "BioMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 90",
+          "SensoryImprovement > 90",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151765,
+        "name": "Teachings of Material Creation",
+        "nanoStrain": 159,
+        "nanoLine": "MatCreaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "VisualProfession == 12",
+          "VisualProfession == 11",
+          "PsychologicalModification > 107",
+          "SensoryImprovement > 107"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151767,
+        "name": "Teachings of Material Metamorphose",
+        "nanoStrain": 157,
+        "nanoLine": "MatMetBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 95",
+          "SensoryImprovement > 95",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151763,
+        "name": "Teachings of Psychological Modification",
+        "nanoStrain": 167,
+        "nanoLine": "PsyModBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 116",
+          "SensoryImprovement > 116",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151764,
+        "name": "Teachings of Sensory Improvement",
+        "nanoStrain": 165,
+        "nanoLine": "SenseImpBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 111",
+          "SensoryImprovement > 111",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 151766,
+        "name": "Teachings of Time and Space",
+        "nanoStrain": 161,
+        "nanoLine": "MatLocBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 99",
+          "SensoryImprovement > 99",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Nukes / Damage": [
+      {
+        "id": 203609,
+        "name": "Succor of Expediuum",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 155,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "MaterialCreation > 918",
+          "SpaceTime > 918",
+          "Level > 154",
+          "Breed == 7"
+        ],
+        "effectSummary": [
+          "ReduceNanoStrainDuration[145,756]",
+          "ReduceNanoStrainDuration[146,756]",
+          "Hit[27,150,150,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125760,
+        "name": "Chill Spear",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 555",
+          "PsychologicalModification > 502",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-314,-699,95]",
+          "Hit[27,-562,-1004,95]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125765,
+        "name": "Frigid Blast",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 303",
+          "PsychologicalModification > 266",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-160,-288,95]",
+          "Hit[27,-284,-432,95]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125764,
+        "name": "Frost Slivers",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 93",
+          "PsychologicalModification > 78",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-54,-65,95]",
+          "Hit[27,-73,-85,95]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125763,
+        "name": "Glacial Lance",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 750",
+          "PsychologicalModification > 679",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-1093,-1959,95]",
+          "Hit[27,-602,-1268,95]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267878,
+        "name": "Metaing's Improved Glacial Lance",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 941",
+          "PsychologicalModification > 854",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-898,-1848,95]",
+          "Hit[27,-1533,-2725,95]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 270355,
+        "name": "Metaing's Improved Mind Quake",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1080",
+          "PsychologicalModification > 981",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-1095,-2254,96]",
+          "CastNano[270354]",
+          "TauntNpc[1491]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29297,
+        "name": "Mind Banshee",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 693",
+          "PsychologicalModification > 621",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-484,-946,96]",
+          "CastNano[144617]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125762,
+        "name": "Mind Howl",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 413",
+          "PsychologicalModification > 369",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-237,-439,96]",
+          "CastNano[144618]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29114,
+        "name": "Mind Pain",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 4",
+          "PsychologicalModification > 4",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-9,-23,96]",
+          "CastNano[144616]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 125761,
+        "name": "Mind Quake",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 817",
+          "PsychologicalModification > 742",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-736,-1515,96]",
+          "CastNano[144620]",
+          "TauntNpc[1491]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29298,
+        "name": "Mind Scream",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 182",
+          "PsychologicalModification > 158",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Hit[27,-78,-146,96]",
+          "CastNano[144619]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267531,
+        "name": "Sacrifical power",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1800",
+          "PsychologicalModification > 1600",
+          "Profession == 12",
+          "Breed == 7",
+          "NPCFamily == 97",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "Modify AddAllOff +200",
+          "Hit[27,-800,-800,94]",
+          "Hit[27,-800,-800,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267391,
+        "name": "Sacrifical Shielding",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1800",
+          "PsychologicalModification > 1600",
+          "Profession == 12",
+          "Flags op118 0"
+        ],
+        "effectSummary": [
+          "Modify AddAllOff +200",
+          "Hit[27,-800,-800,94]",
+          "Hit[27,-800,-800,96]",
+          "CastNano[267278]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Debuffs": [
+      {
+        "id": 227109,
+        "name": "Distortion of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 145,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 971",
+          "PsychologicalModification > 889",
+          "Profession == 12",
+          "Level > 144",
+          "Specialization op22 2",
+          "Expansion op22 2",
+          "Level > 114",
+          "Flags op91 227149"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -72",
+          "Modify EnergyDamageModifier -72",
+          "Modify MeleeDamageModifier -72",
+          "Modify ColdDamageModifier -72",
+          "Modify FireDamageModifier -72",
+          "Modify PoisonDamageModifier -72",
+          "Modify ChemicalDamageModifier -72",
+          "Modify RadiationDamageModifier -72"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227149,
+        "name": "Distortion of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 145,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 969",
+          "PsychologicalModification > 887",
+          "Profession == 12",
+          "Level > 144",
+          "Specialization op22 2",
+          "Expansion op22 2",
+          "Level > 114"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -51",
+          "Modify EnergyDamageModifier -51",
+          "Modify MeleeDamageModifier -51",
+          "Modify ColdDamageModifier -51",
+          "Modify FireDamageModifier -51",
+          "Modify PoisonDamageModifier -51",
+          "Modify ChemicalDamageModifier -51",
+          "Modify RadiationDamageModifier -51"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227111,
+        "name": "Corruption of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1086",
+          "PsychologicalModification > 1003",
+          "Profession == 12",
+          "Level > 174",
+          "Specialization op22 4",
+          "Expansion op22 2",
+          "Level > 134"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -75",
+          "Modify EnergyDamageModifier -75",
+          "Modify MeleeDamageModifier -75",
+          "Modify ColdDamageModifier -75",
+          "Modify FireDamageModifier -75",
+          "Modify PoisonDamageModifier -75",
+          "Modify ChemicalDamageModifier -75",
+          "Modify RadiationDamageModifier -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227113,
+        "name": "Corruption of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 176,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1089",
+          "PsychologicalModification > 1005",
+          "Profession == 12",
+          "Level > 175",
+          "Specialization op22 4",
+          "Expansion op22 2",
+          "Level > 134",
+          "Flags op91 227111"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -106",
+          "Modify EnergyDamageModifier -106",
+          "Modify MeleeDamageModifier -106",
+          "Modify ColdDamageModifier -106",
+          "Modify FireDamageModifier -106",
+          "Modify PoisonDamageModifier -106",
+          "Modify ChemicalDamageModifier -106",
+          "Modify RadiationDamageModifier -106"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227117,
+        "name": "Degredation of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1150",
+          "PsychologicalModification > 1054",
+          "Profession == 12",
+          "Level > 194",
+          "Specialization op22 4",
+          "Expansion op22 2",
+          "Level > 144",
+          "Flags op91 227115"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -141",
+          "Modify EnergyDamageModifier -141",
+          "Modify MeleeDamageModifier -141",
+          "Modify ColdDamageModifier -141",
+          "Modify FireDamageModifier -141",
+          "Modify PoisonDamageModifier -141",
+          "Modify ChemicalDamageModifier -141",
+          "Modify RadiationDamageModifier -141"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227115,
+        "name": "Degredation of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1150",
+          "PsychologicalModification > 1054",
+          "Profession == 12",
+          "Level > 194",
+          "Specialization op22 4",
+          "Expansion op22 2",
+          "Level > 144"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -97",
+          "Modify EnergyDamageModifier -97",
+          "Modify MeleeDamageModifier -97",
+          "Modify ColdDamageModifier -97",
+          "Modify FireDamageModifier -97",
+          "Modify PoisonDamageModifier -97",
+          "Modify ChemicalDamageModifier -97",
+          "Modify RadiationDamageModifier -97"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227123,
+        "name": "Perversion of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 203,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1285",
+          "PsychologicalModification > 1158",
+          "Profession == 12",
+          "Level > 202",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 149",
+          "Flags op91 227120"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -181",
+          "Modify EnergyDamageModifier -181",
+          "Modify MeleeDamageModifier -181",
+          "Modify ColdDamageModifier -181",
+          "Modify FireDamageModifier -181",
+          "Modify PoisonDamageModifier -181",
+          "Modify ChemicalDamageModifier -181",
+          "Modify RadiationDamageModifier -181"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227120,
+        "name": "Perversion of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 203,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1285",
+          "PsychologicalModification > 1158",
+          "Profession == 12",
+          "Level > 202",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 149"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -136",
+          "Modify EnergyDamageModifier -136",
+          "Modify MeleeDamageModifier -136",
+          "Modify ColdDamageModifier -136",
+          "Modify FireDamageModifier -136",
+          "Modify PoisonDamageModifier -136",
+          "Modify ChemicalDamageModifier -136",
+          "Modify RadiationDamageModifier -136"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227132,
+        "name": "Debasement of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 211,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1645",
+          "PsychologicalModification > 1436",
+          "Profession == 12",
+          "Level > 210",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 154",
+          "Flags op91 227128"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -247",
+          "Modify EnergyDamageModifier -247",
+          "Modify MeleeDamageModifier -247",
+          "Modify ColdDamageModifier -247",
+          "Modify FireDamageModifier -247",
+          "Modify PoisonDamageModifier -247",
+          "Modify ChemicalDamageModifier -247",
+          "Modify RadiationDamageModifier -247"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227128,
+        "name": "Debasement of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 211,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1645",
+          "PsychologicalModification > 1436",
+          "Profession == 12",
+          "Level > 210",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 154"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -160",
+          "Modify EnergyDamageModifier -160",
+          "Modify MeleeDamageModifier -160",
+          "Modify ColdDamageModifier -160",
+          "Modify FireDamageModifier -160",
+          "Modify PoisonDamageModifier -160",
+          "Modify ChemicalDamageModifier -160",
+          "Modify RadiationDamageModifier -160"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227138,
+        "name": "Taint of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 214,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1780",
+          "PsychologicalModification > 1540",
+          "Profession == 12",
+          "Level > 213",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 159",
+          "Flags op91 227134"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -329",
+          "Modify EnergyDamageModifier -329",
+          "Modify MeleeDamageModifier -329",
+          "Modify ColdDamageModifier -329",
+          "Modify FireDamageModifier -329",
+          "Modify PoisonDamageModifier -329",
+          "Modify ChemicalDamageModifier -329",
+          "Modify RadiationDamageModifier -329"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227134,
+        "name": "Taint of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 214,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1780",
+          "PsychologicalModification > 1540",
+          "Profession == 12",
+          "Level > 213",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 159"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -203",
+          "Modify EnergyDamageModifier -203",
+          "Modify MeleeDamageModifier -203",
+          "Modify ColdDamageModifier -203",
+          "Modify FireDamageModifier -203",
+          "Modify PoisonDamageModifier -203",
+          "Modify ChemicalDamageModifier -203",
+          "Modify RadiationDamageModifier -203"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227143,
+        "name": "Defilement of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 218,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1960",
+          "PsychologicalModification > 1680",
+          "Profession == 12",
+          "Level > 217",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 164",
+          "Flags op91 227140"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -411",
+          "Modify EnergyDamageModifier -411",
+          "Modify MeleeDamageModifier -411",
+          "Modify ColdDamageModifier -411",
+          "Modify FireDamageModifier -411",
+          "Modify PoisonDamageModifier -411",
+          "Modify ChemicalDamageModifier -411",
+          "Modify RadiationDamageModifier -411"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227140,
+        "name": "Defilement of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 218,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1960",
+          "PsychologicalModification > 1680",
+          "Profession == 12",
+          "Level > 217",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 164"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -250",
+          "Modify EnergyDamageModifier -250",
+          "Modify MeleeDamageModifier -250",
+          "Modify ColdDamageModifier -250",
+          "Modify FireDamageModifier -250",
+          "Modify PoisonDamageModifier -250",
+          "Modify ChemicalDamageModifier -250",
+          "Modify RadiationDamageModifier -250"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227147,
+        "name": "Desecration of Resolve",
+        "nanoStrain": 659,
+        "nanoLine": "MPDamageDebuffLineB",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 2050",
+          "PsychologicalModification > 1749",
+          "Profession == 12",
+          "Level > 219",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 169",
+          "Flags op91 227145"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -589",
+          "Modify EnergyDamageModifier -589",
+          "Modify MeleeDamageModifier -589",
+          "Modify ColdDamageModifier -589",
+          "Modify FireDamageModifier -589",
+          "Modify PoisonDamageModifier -589",
+          "Modify ChemicalDamageModifier -589",
+          "Modify RadiationDamageModifier -589"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 227145,
+        "name": "Desecration of Will",
+        "nanoStrain": 658,
+        "nanoLine": "MPDamageDebuffLineA",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 2050",
+          "PsychologicalModification > 1749",
+          "Profession == 12",
+          "Level > 219",
+          "Specialization op22 8",
+          "Expansion op22 2",
+          "Level > 169"
+        ],
+        "effectSummary": [
+          "Modify ProjectileDamageModifier -294",
+          "Modify EnergyDamageModifier -294",
+          "Modify MeleeDamageModifier -294",
+          "Modify ColdDamageModifier -294",
+          "Modify FireDamageModifier -294",
+          "Modify PoisonDamageModifier -294",
+          "Modify ChemicalDamageModifier -294",
+          "Modify RadiationDamageModifier -294"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267269,
+        "name": "Beneficial Scourge",
+        "nanoStrain": 128,
+        "nanoLine": "GeneralColdACDebuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1769",
+          "PsychologicalModification > 1539",
+          "Profession == 12",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Modify HealMultiplier -50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29286,
+        "name": "Dominate: BioMet",
+        "nanoStrain": 164,
+        "nanoLine": "BioMetDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 661",
+          "SensoryImprovement > 661",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29287,
+        "name": "Dominate: MatCrea",
+        "nanoStrain": 160,
+        "nanoLine": "MatCreaDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 665",
+          "SensoryImprovement > 665",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29289,
+        "name": "Dominate: MatMet",
+        "nanoStrain": 158,
+        "nanoLine": "MatMetDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 643",
+          "SensoryImprovement > 643",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29290,
+        "name": "Dominate: PsyMod",
+        "nanoStrain": 168,
+        "nanoLine": "PsyModDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 657",
+          "SensoryImprovement > 657",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29291,
+        "name": "Dominate: SenseImp",
+        "nanoStrain": 166,
+        "nanoLine": "SenseImpDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 653",
+          "SensoryImprovement > 653",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29288,
+        "name": "Dominate: SpaceTime",
+        "nanoStrain": 162,
+        "nanoLine": "MatLocDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 649",
+          "SensoryImprovement > 649",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime -125"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99121,
+        "name": "Douse Anger",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 78",
+          "PsychologicalModification > 65",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-6]",
+          "Skill[279,-6]",
+          "Skill[280,-6]",
+          "Skill[281,-6]",
+          "Skill[282,-6]",
+          "Skill[311,-6]",
+          "Skill[316,-6]",
+          "Skill[317,-6]",
+          "Modify MeleeInit -32",
+          "Modify RangedInit -32",
+          "Modify PhysicalInit -32",
+          "TauntNpc[122]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267271,
+        "name": "Hostility Scourge",
+        "nanoStrain": 127,
+        "nanoLine": "GeneralChemicalACDebuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1769",
+          "PsychologicalModification > 1539",
+          "Profession == 12",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Modify NanoDamageMultiplier -50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267275,
+        "name": "Lesser Beneficial Scourge",
+        "nanoStrain": 128,
+        "nanoLine": "GeneralColdACDebuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1569",
+          "PsychologicalModification > 1339",
+          "Profession == 12",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Modify HealMultiplier -25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267272,
+        "name": "Lesser Hostility Scourge",
+        "nanoStrain": 127,
+        "nanoLine": "GeneralChemicalACDebuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 1569",
+          "PsychologicalModification > 1339",
+          "Profession == 12",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Modify NanoDamageMultiplier -25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99123,
+        "name": "Lull Wrath",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 774",
+          "PsychologicalModification > 702",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-33]",
+          "Skill[279,-33]",
+          "Skill[280,-33]",
+          "Skill[281,-33]",
+          "Skill[282,-33]",
+          "Skill[311,-33]",
+          "Skill[316,-33]",
+          "Skill[317,-33]",
+          "Modify MeleeInit -244",
+          "Modify RangedInit -244",
+          "Modify PhysicalInit -244",
+          "TauntNpc[869]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267283,
+        "name": "Nanite Enhanced Nano Shutdown",
+        "nanoStrain": 239,
+        "nanoLine": "NanoShutdownDebuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "PsychologicalModification > 1599",
+          "SpaceTime > 1399",
+          "Profession == 12",
+          "BiologicalMetamorphosis > 1399"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement -3000",
+          "Modify SpaceTime -3000",
+          "Modify MaterialCreation -3000",
+          "Modify PsychologicalModification -3000",
+          "Modify BiologicalMetamorphosis -3000",
+          "Modify MaterialMetamorphosis -3000"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 266299,
+        "name": "Nano Division",
+        "nanoStrain": 643,
+        "nanoLine": "NanoResistanceDebuff_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 1199",
+          "SpaceTime > 1199",
+          "VisualProfession == 12",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "ScalingModify NanoResist -150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29306,
+        "name": "Nano Shutdown",
+        "nanoStrain": 239,
+        "nanoLine": "NanoShutdownDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 688",
+          "SpaceTime > 759",
+          "VisualProfession == 12",
+          "BiologicalMetamorphosis > 759"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement -1000",
+          "Modify SpaceTime -1000",
+          "Modify MaterialCreation -1000",
+          "Modify PsychologicalModification -1000",
+          "Modify BiologicalMetamorphosis -1000",
+          "Modify MaterialMetamorphosis -1000"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99122,
+        "name": "Quell Anger",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 157",
+          "PsychologicalModification > 133",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-9]",
+          "Skill[279,-9]",
+          "Skill[280,-9]",
+          "Skill[281,-9]",
+          "Skill[282,-9]",
+          "Skill[311,-9]",
+          "Skill[316,-9]",
+          "Skill[317,-9]",
+          "Modify MeleeInit -61",
+          "Modify RangedInit -61",
+          "Modify PhysicalInit -61",
+          "TauntNpc[209]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99120,
+        "name": "Quench Anger",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 206",
+          "PsychologicalModification > 183",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-12]",
+          "Skill[279,-12]",
+          "Skill[280,-12]",
+          "Skill[281,-12]",
+          "Skill[282,-12]",
+          "Skill[311,-12]",
+          "Skill[316,-12]",
+          "Skill[317,-12]",
+          "Modify MeleeInit -81",
+          "Modify RangedInit -81",
+          "Modify PhysicalInit -81",
+          "TauntNpc[277]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99117,
+        "name": "Rage Abolishment",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 443",
+          "PsychologicalModification > 402",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-20]",
+          "Skill[279,-20]",
+          "Skill[280,-20]",
+          "Skill[281,-20]",
+          "Skill[282,-20]",
+          "Skill[311,-20]",
+          "Skill[316,-20]",
+          "Skill[317,-20]",
+          "Modify MeleeInit -156",
+          "Modify RangedInit -156",
+          "Modify PhysicalInit -156",
+          "TauntNpc[496]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99115,
+        "name": "Rage Eradication",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 549",
+          "PsychologicalModification > 497",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-23]",
+          "Skill[279,-23]",
+          "Skill[280,-23]",
+          "Skill[281,-23]",
+          "Skill[282,-23]",
+          "Skill[311,-23]",
+          "Skill[316,-23]",
+          "Skill[317,-23]",
+          "Modify MeleeInit -181",
+          "Modify RangedInit -181",
+          "Modify PhysicalInit -181",
+          "TauntNpc[574]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99118,
+        "name": "Rage Suppression",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 377",
+          "PsychologicalModification > 326",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-18]",
+          "Skill[279,-18]",
+          "Skill[280,-18]",
+          "Skill[281,-18]",
+          "Skill[282,-18]",
+          "Skill[311,-18]",
+          "Skill[316,-18]",
+          "Skill[317,-18]",
+          "Modify MeleeInit -134",
+          "Modify RangedInit -134",
+          "Modify PhysicalInit -134",
+          "TauntNpc[431]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99112,
+        "name": "Shed Anger",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 40",
+          "PsychologicalModification > 34",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-3]",
+          "Skill[279,-3]",
+          "Skill[280,-3]",
+          "Skill[281,-3]",
+          "Skill[282,-3]",
+          "Skill[311,-3]",
+          "Skill[316,-3]",
+          "Skill[317,-3]",
+          "Modify MeleeInit -19",
+          "Modify RangedInit -19",
+          "Modify PhysicalInit -19",
+          "TauntNpc[60]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99119,
+        "name": "Stifle Rage",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 264",
+          "PsychologicalModification > 235",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-15]",
+          "Skill[279,-15]",
+          "Skill[280,-15]",
+          "Skill[281,-15]",
+          "Skill[282,-15]",
+          "Skill[311,-15]",
+          "Skill[316,-15]",
+          "Skill[317,-15]",
+          "Modify MeleeInit -101",
+          "Modify RangedInit -101",
+          "Modify PhysicalInit -101",
+          "TauntNpc[344]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99116,
+        "name": "Temper Wrath",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 644",
+          "PsychologicalModification > 578",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-26]",
+          "Skill[279,-26]",
+          "Skill[280,-26]",
+          "Skill[281,-26]",
+          "Skill[282,-26]",
+          "Skill[311,-26]",
+          "Skill[316,-26]",
+          "Skill[317,-26]",
+          "Modify MeleeInit -199",
+          "Modify RangedInit -199",
+          "Modify PhysicalInit -199",
+          "TauntNpc[657]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29321,
+        "name": "Unmake: BioMet",
+        "nanoStrain": 164,
+        "nanoLine": "BioMetDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 339",
+          "SensoryImprovement > 339",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29322,
+        "name": "Unmake: MatCrea",
+        "nanoStrain": 160,
+        "nanoLine": "MatCreaDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 349",
+          "SensoryImprovement > 349",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialCreation -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29324,
+        "name": "Unmake: MatMet",
+        "nanoStrain": 158,
+        "nanoLine": "MatMetDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 293",
+          "SensoryImprovement > 293",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify MaterialMetamorphosis -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29325,
+        "name": "Unmake: PsyMod",
+        "nanoStrain": 168,
+        "nanoLine": "PsyModDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 330",
+          "SensoryImprovement > 330",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify PsychologicalModification -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29326,
+        "name": "Unmake: SenseImp",
+        "nanoStrain": 166,
+        "nanoLine": "SenseImpDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 320",
+          "SensoryImprovement > 320",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SensoryImprovement -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29323,
+        "name": "Unmake: SpaceTime",
+        "nanoStrain": 162,
+        "nanoLine": "MatLocDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "PsychologicalModification > 309",
+          "SensoryImprovement > 309",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify SpaceTime -75"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99113,
+        "name": "Wrath Abatement",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 852",
+          "PsychologicalModification > 769",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-37]",
+          "Skill[279,-37]",
+          "Skill[280,-37]",
+          "Skill[281,-37]",
+          "Skill[282,-37]",
+          "Skill[311,-37]",
+          "Skill[316,-37]",
+          "Skill[317,-37]",
+          "Modify MeleeInit -261",
+          "Modify RangedInit -261",
+          "Modify PhysicalInit -261",
+          "TauntNpc[982]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99114,
+        "name": "Wrath Ebb",
+        "nanoStrain": 187,
+        "nanoLine": "MetaPhysicistDamageDebuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialMetamorphosis > 714",
+          "PsychologicalModification > 643",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Skill[278,-30]",
+          "Skill[279,-30]",
+          "Skill[280,-30]",
+          "Skill[281,-30]",
+          "Skill[282,-30]",
+          "Skill[311,-30]",
+          "Skill[316,-30]",
+          "Skill[317,-30]",
+          "Modify MeleeInit -222",
+          "Modify RangedInit -222",
+          "Modify PhysicalInit -222",
+          "TauntNpc[759]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Debuffs - Mind/Nano": [
+      {
+        "id": 270354,
+        "name": "Metaing's Improved Mind Quake",
+        "nanoStrain": 221,
+        "nanoLine": "MetaphysicistMindDamageNanoDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1080",
+          "PsychologicalModification > 981",
+          "Profession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -150",
+          "Modify SensoryImprovement -150",
+          "Modify PsychologicalModification -150",
+          "Modify MaterialMetamorphosis -150",
+          "Modify MaterialCreation -150",
+          "Modify SpaceTime -150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 144617,
+        "name": "Mind Banshee",
+        "nanoStrain": 221,
+        "nanoLine": "MetaphysicistMindDamageNanoDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 693",
+          "PsychologicalModification > 621",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -65",
+          "Modify SensoryImprovement -65",
+          "Modify PsychologicalModification -65",
+          "Modify MaterialMetamorphosis -65",
+          "Modify MaterialCreation -65",
+          "Modify SpaceTime -65"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 144620,
+        "name": "Mind Quake",
+        "nanoStrain": 221,
+        "nanoLine": "MetaphysicistMindDamageNanoDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "MaterialCreation > 817",
+          "PsychologicalModification > 742",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -100",
+          "Modify SensoryImprovement -100",
+          "Modify PsychologicalModification -100",
+          "Modify MaterialMetamorphosis -100",
+          "Modify MaterialCreation -100",
+          "Modify SpaceTime -100"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Mezz / Calm": [
+      {
+        "id": 29285,
+        "name": "Curse of Chronos",
+        "nanoStrain": 147,
+        "nanoLine": "Mezz",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==12",
+        "castReqs": [
+          "SensoryImprovement > 722",
+          "SpaceTime > 794",
+          "VisualProfession == 12"
+        ],
+        "effectSummary": [
+          "TauntNpc[5663]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals / HoT": [
+      {
+        "id": 260771,
+        "name": "Construct Empowerment",
+        "nanoStrain": 807,
+        "nanoLine": "HealingConstructEmpowerment",
+        "minLevel": 207,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Expansion op22 2",
+          "BiologicalMetamorphosis > 1465",
+          "SpaceTime > 1462",
+          "Profession == 12",
+          "Level > 206",
+          "NPCFamily == 96"
+        ],
+        "effectSummary": [
+          "CastNano[260770]",
+          "Modify HealMultiplier +12"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Travel / Recall": [
+      {
+        "id": 233849,
+        "name": "Awaken Shadowland Soul Memory",
+        "nanoStrain": 738,
+        "nanoLine": "ShadowlandBindandRecall",
+        "minLevel": 150,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 149",
+          "MaterialCreation > 969",
+          "SpaceTime > 969",
+          "Expansion op22 2",
+          "ExpansionPlayfield == 1",
+          "PlayfieldType op107 1"
+        ],
+        "effectSummary": [
+          "RecallToAnchor[]",
+          "Set[214,1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 233847,
+        "name": "Shadowland Soul Fetter",
+        "nanoStrain": 738,
+        "nanoLine": "ShadowlandBindandRecall",
+        "minLevel": 150,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "Level > 149",
+          "MaterialCreation > 969",
+          "SpaceTime > 969",
+          "Expansion op22 2",
+          "ExpansionPlayfield == 1",
+          "PlayfieldType op107 1"
+        ],
+        "effectSummary": [
+          "SetAnchor[]",
+          "Set[214,1]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Misc / Utility": [
+      {
+        "id": 234997,
+        "name": "Channel Notum Vein: Adonis",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Flags op33 226989",
+          "Flags op3 0",
+          "GOS > 4999",
+          "Profession == 12",
+          "PsychologicalModification > 539",
+          "SensoryImprovement > 539",
+          "MaterialMetamorphosis > 583",
+          "ExpansionPlayfield == 1",
+          "Level > 74",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "TeamCastNano[234070]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 234993,
+        "name": "Channel Notum Vein: Elysium",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Flags op33 226987",
+          "Flags op3 0",
+          "GOS > -1",
+          "Profession == 12",
+          "PsychologicalModification > 526",
+          "SensoryImprovement > 526",
+          "MaterialMetamorphosis > 570",
+          "ExpansionPlayfield == 1",
+          "Level > 74",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "TeamCastNano[234068]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 234995,
+        "name": "Channel Notum Vein: Scheol",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Flags op33 226991",
+          "Flags op3 0",
+          "GOS > 999",
+          "Profession == 12",
+          "PsychologicalModification > 532",
+          "SensoryImprovement > 532",
+          "MaterialMetamorphosis > 576",
+          "ExpansionPlayfield == 1",
+          "Level > 74",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "TeamCastNano[234069]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 203605,
+        "name": "Fluctuate Manifestation",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "MaterialCreation > 535",
+          "SpaceTime > 535",
+          "Level > 74",
+          "Breed == 7"
+        ],
+        "effectSummary": [
+          "ReduceNanoStrainDuration[145,417]",
+          "ReduceNanoStrainDuration[146,417]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 203607,
+        "name": "Modulate Manifestation",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "Profession == 12",
+          "MaterialCreation > 769",
+          "SpaceTime > 769",
+          "Level > 99",
+          "Breed == 7"
+        ],
+        "effectSummary": [
+          "ReduceNanoStrainDuration[145,547]",
+          "ReduceNanoStrainDuration[146,547]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 301888,
+        "name": "Induced Apathy",
+        "nanoStrain": 683,
+        "nanoLine": "SiphonBox683",
+        "minLevel": 211,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1300",
+          "SpaceTime > 1300",
+          "Profession == 12",
+          "Level > 210",
+          "Flags op118 0",
+          "NPCFamily != 98",
+          "NPCFamily != 96"
+        ],
+        "effectSummary": [
+          "AddOffProc[10,301887]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267601,
+        "name": "Evocation of The Reinforced",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 219,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 1900",
+          "BiologicalMetamorphosis > 1900",
+          "SpaceTime > 1900",
+          "Profession == 12",
+          "Level > 218"
+        ],
+        "effectSummary": [
+          "(1 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 270800,
+        "name": "Improved Instill With Malign Intent",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==12",
+        "castReqs": [
+          "MaterialCreation > 2208",
+          "BiologicalMetamorphosis > 2108",
+          "Profession == 12",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "(1 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ]
+  }
+}

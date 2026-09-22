@@ -53,7 +53,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public GameTuple<Stat, int>[] Stats { get; set; }
 
         [AoMember(6)]
-        public int Unknown3 { get; set; }
+        public int Playfield { get; set; }
 
         #endregion
     }

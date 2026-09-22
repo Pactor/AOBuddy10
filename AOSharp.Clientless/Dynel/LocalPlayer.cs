@@ -14,6 +14,13 @@ namespace AOSharp.Clientless
     {
         public bool IsCasting { get; internal set; } = false;
 
+        // PET OWNERSHIP BY SUMMON. The pet-master wire bit (SimpleCharFullUpdate Flags2 0x4) is UNRELIABLE —
+        // some summoned pets never send it (wire-proven in scfuwire.log), so they were never recognised as
+        // ours (me.Pets empty -> pet never commanded, endless resummon). Robust rule the owner asked for: "if
+        // he summoned it, it's his." When we cast a pet-summon nano we open this claim window; DynelManager
+        // marks the fresh NPC that spawns next to us during it as owned. Monotonic ms clock (TickCount64).
+        public long ExpectingPetUntilMs { get; private set; }
+
         public new readonly LocalPlayerMovementComponent MovementComponent;
 
         public IReadOnlyDictionary<Stat, Cooldown> Cooldowns => _cooldowns;
@@ -137,6 +144,31 @@ namespace AOSharp.Clientless
                 Parameter1 = (int)IdentityType.NanoProgram,
                 Parameter2 = nanoId
             });
+
+            // If this cast summons a pet, open the ownership-claim window (see ExpectingPetUntilMs). The pet
+            // appears a few seconds later (after the cast), so allow a generous window.
+            if (IsPetSummonNano(nanoId))
+                ExpectingPetUntilMs = Environment.TickCount64 + 12000;
+        }
+
+        private static bool IsPetSummonNano(int nanoId)
+        {
+            if (!ItemData.Find(nanoId, out NanoItem ni) || ni == null) return false;
+            return ni.NanoLine == NanoLine.AttackPets || ni.NanoLine == NanoLine.HealPets || ni.NanoLine == NanoLine.SupportPets;
+        }
+
+        // A nano was uploaded/learned mid-session (server SpellList message). The FullCharacter only refreshes
+        // on login/zone, so without this a just-learned nano (e.g. the MP's first heal pet) wouldn't appear in
+        // SpellList until a relog — and the bot would never summon it. Append it so AutoSummons picks it up live.
+        internal void AddUploadedNano(int nanoId)
+        {
+            if (nanoId <= 0) return;
+            int[] cur = SpellList ?? new int[0];
+            if (Array.IndexOf(cur, nanoId) >= 0) return;
+            var next = new int[cur.Length + 1];
+            Array.Copy(cur, next, cur.Length);
+            next[cur.Length] = nanoId;
+            SpellList = next;
         }
 
         internal void ApplyFullCharacter(FullCharacterMessage fullChar)
@@ -159,7 +191,10 @@ namespace AOSharp.Clientless
                     SetStat((Stat)stat.Value1, (int)stat.Value2);
 
             SpellList = fullChar.UploadedNanoIds;
-            Perks = fullChar.Perks;
+            // Perks may be null when this came from the corrected fallback reader (the pet-case FullCharacter,
+            // whose trailing section it doesn't fully decode). Don't wipe the perks the login FullCharacter set.
+            if (fullChar.Perks != null)
+                Perks = fullChar.Perks;
         }
 
         public override int GetStat(Stat stat)

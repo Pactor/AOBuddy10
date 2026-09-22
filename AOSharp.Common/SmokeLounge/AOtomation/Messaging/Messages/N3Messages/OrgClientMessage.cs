@@ -43,7 +43,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public Identity Target { get; set; }
 
         [AoMember(2)]
-        public int Unknown1 { get; set; }
+        public int Window { get; set; }
 
         [AoUsesFlags("action", typeof(OrgClientNoCommandArgsMessage), FlagsCriteria.EqualsToAny, new[] { (int)OrgClientCommand.Info, (int)OrgClientCommand.Invite })]
         [AoUsesFlags("action", typeof(OrgClientCommandArgsMessage), FlagsCriteria.EqualsToAny, new[]

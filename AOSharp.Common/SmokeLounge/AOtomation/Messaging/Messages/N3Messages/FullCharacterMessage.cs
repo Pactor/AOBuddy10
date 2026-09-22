@@ -47,7 +47,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public UnknownDataType1[] Unknown2 { get; set; }
 
         [AoMember(4)]
-        public int Unknown3 { get; set; }
+        public int SkillEntriesVersion { get; set; }
 
         [AoMember(5, SerializeSize = ArraySizeType.Int32)]
         public UnknownDataType2[] Unknown4 { get; set; }
@@ -91,6 +91,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(18, SerializeSize = ArraySizeType.X3F1)]
         public Perk[] Perks { get; set; }
 
+        // NOT an AoMember — the stock generated serializer never touches this. It is populated only by the
+        // custom fallback reader (NetworkSession.TryDeserializeFullCharacter) when the stock serializer
+        // chokes on the trailing pet section (which it does whenever the character has a pet up: the pet's
+        // 8-byte identity sits where the stock reader expects a full TeamMember struct and it reads past the
+        // end). This is the AUTHORITATIVE pet list for the character, used to set pet ownership reliably.
+        public Identity[] Pets { get; set; }
+
         #endregion
 
         public class TeamMember
@@ -129,7 +136,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public class UnknownDataType2
         {
             [AoMember(0)]
-            public int Unknown1 { get; set; }
+            public int MsgVersion { get; set; }
 
             [AoMember(1)]
             public Identity Unknown2 { get; set; }
@@ -144,7 +151,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public class UnknownDataType4
         {
             [AoMember(0)]
-            public int Unknown1 { get; set; }
+            public int MsgVersion { get; set; }
 
             [AoMember(1)]
             public int Unknown2 { get; set; }
@@ -156,7 +163,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
             public int Unknown4 { get; set; }
 
             [AoMember(4)]
-            public int Unknown5 { get; set; }
+            public int SkillEntriesVersion { get; set; }
 
             [AoMember(5)]
             public int Unknown6 { get; set; }
@@ -165,13 +172,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
             public int Unknown7 { get; set; }
 
             [AoMember(7)]
-            public int Unknown8 { get; set; }
+            public int PerkEntriesVersion { get; set; }
 
             [AoMember(8)]
             public int Unknown9 { get; set; }
 
             [AoMember(9)]
-            public int Unknown10 { get; set; }
+            public int NanoEntriesVersion { get; set; }
 
         }
 

@@ -34,7 +34,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public int Unknown1 { get; set; }
+        public int Version { get; set; }
 
         [AoMember(1)]
         public TradeAction Action { get; set; }

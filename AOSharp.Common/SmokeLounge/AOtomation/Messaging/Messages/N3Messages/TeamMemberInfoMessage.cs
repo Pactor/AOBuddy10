@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TeamMemberInfoMessage.cs" company="SmokeLounge">
 //   Copyright © 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
@@ -36,17 +36,22 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(0)]
         public Identity Character { get; set; }
 
+        // The team window's live vitals for one member. Sent whenever that member's health or
+        // nano changes, for members in THIS playfield only - so it keeps arriving for a teammate
+        // who is out of render range, but stops entirely once he leaves the zone.
+        // Wire-verified (sniffs/20260913-154958_s11.csv seq 628, s16 seq 350):
+        //   Character=<a teammate> CurrentNano=347 MaxNano=347 MaxHealth=363 CurrentHealth=347
         [AoMember(1)]
-        public int Unknown2 { get; set; }
+        public int CurrentNano { get; set; }
 
         [AoMember(2)]
-        public int Unknown4 { get; set; }
+        public int MaxNano { get; set; }
 
         [AoMember(3)]
-        public int Unknown6 { get; set; }
+        public int MaxHealth { get; set; }
 
         [AoMember(4)]
-        public int Unknown8 { get; set; }
+        public int CurrentHealth { get; set; }
 
         #endregion
     }

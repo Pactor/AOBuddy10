@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"E:\\Funcom\\AOSharp.Clientless\\AOBuddy\\.claude\\rule-gate.ps1\" -Event UserPromptSubmit"
+            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR\\AOBuddy\\.claude\\rule-gate.ps1\" -Event UserPromptSubmit"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"E:\\Funcom\\AOSharp.Clientless\\AOBuddy\\.claude\\rule-gate.ps1\" -Event PreToolUse"
+            "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR\\AOBuddy\\.claude\\rule-gate.ps1\" -Event PreToolUse"
           }
         ]
       }

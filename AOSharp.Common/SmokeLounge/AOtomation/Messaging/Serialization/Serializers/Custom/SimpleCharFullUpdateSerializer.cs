@@ -211,7 +211,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization.Serializers.Custom
                 {
                     Place = streamReader.ReadInt32(),
                     Id = streamReader.ReadInt32(),
-                    Unknown = streamReader.ReadInt32()
+                    Group = streamReader.ReadInt32()
                 });
             }
             scfu.Textures = texes.ToArray();

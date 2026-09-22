@@ -35,7 +35,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public byte Unknown1 { get; set; }
+        public byte VersionId { get; set; }
 
         [AoMember(1)]
         public MissionSliders MissionSliders { get; set; }

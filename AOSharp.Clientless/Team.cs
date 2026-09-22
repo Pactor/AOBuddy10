@@ -1,4 +1,4 @@
-﻿using AOSharp.Clientless.Logging;
+using AOSharp.Clientless.Logging;
 using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.GameData;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
@@ -143,22 +143,57 @@ namespace AOSharp.Clientless
             }
         }
 
-        internal static void OnTeamMember(Identity identity, int level, string name)
+        /// <summary>Raised when a member's health or nano changes (TeamMemberInfoMessage).</summary>
+        public static EventHandler<TeamMemberEventsArgs> TeamMemberVitals;
+
+        internal static void OnTeamMember(Identity identity, int level, string name, short profession, int raidGroup)
         {
             if (!TryFindMember(identity, out TeamMember teamMember))
             {
-                teamMember = new TeamMember
-                {
-                    Identity = identity,
-                    Level = level,
-                    Name = name
-                };
-
+                teamMember = new TeamMember { Identity = identity };
                 Members.Add(teamMember);
             }
 
+            // Re-sent whenever the member's row changes (a ding, a raid regroup), so update in place
+            // rather than only filling a new row - otherwise a levelling teammate stays at his old level.
+            teamMember.Level = level;
+            teamMember.Name = name;
+            teamMember.Profession = profession;
+            teamMember.RaidGroup = raidGroup;
+
             TeamMemberEventsArgs teamMemberArgs = new TeamMemberEventsArgs(identity);
             TeamMember?.Invoke(null, teamMemberArgs);
+        }
+
+        /// <summary>
+        /// The team window's live vitals for one member. The server sends this for members in our own
+        /// playfield whenever their health or nano moves, whether or not they are in render range, so
+        /// it is a truer read on a teammate than his dynel's stats - those go stale the moment he is
+        /// no longer being broadcast to us.
+        /// </summary>
+        internal static void OnTeamMemberInfo(Identity identity, int currentHealth, int maxHealth, int currentNano, int maxNano)
+        {
+            if (!TryFindMember(identity, out TeamMember teamMember))
+            {
+                // Vitals can arrive before the row itself; keep them rather than dropping them.
+                teamMember = new TeamMember { Identity = identity };
+                Members.Add(teamMember);
+            }
+
+            teamMember.CurrentHealth = currentHealth;
+            teamMember.MaxHealth = maxHealth;
+            teamMember.CurrentNano = currentNano;
+            teamMember.MaxNano = maxNano;
+            teamMember.VitalsUpdated = DateTime.UtcNow;
+
+            TeamMemberVitals?.Invoke(null, new TeamMemberEventsArgs(identity));
+        }
+
+        /// <summary>The team row for this character, or null when he is not on our team.</summary>
+        public static TeamMember Find(Identity identity)
+        {
+            TryFindMember(identity, out TeamMember teamMember);
+            return teamMember;
         }
 
         internal static void RemoveTeamMember(Identity identity)

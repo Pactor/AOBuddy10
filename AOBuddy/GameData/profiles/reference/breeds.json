@@ -1,0 +1,98 @@
+{
+  "_description": "Anarchy Online breed reference data: creation base abilities, IP-trainable ability caps, HP/nano modifiers, and breed traits. Ability ids match AOSharp.Common.GameData.Stat (Strength=0x10 .. Psychic=0x15).",
+  "_abilityOrder": ["Strength", "Agility", "Stamina", "Intelligence", "Sense", "Psychic"],
+  "_abilityStatIds": {
+    "Strength": 16,
+    "Agility": 17,
+    "Stamina": 18,
+    "Intelligence": 19,
+    "Sense": 20,
+    "Psychic": 21
+  },
+  "_breedStatValues": { "Solitus": 0, "Opifex": 1, "Nanomage": 2, "Atrox": 3 },
+  "_notes": [
+    "creationBase = the ability values a fresh level-1 character of that breed starts with (before profession/IP spend).",
+    "trainedAbilityCap = the maximum each ability can be raised to via IP (the breed 'cap' used by character planners). Both AO-Universe and wiki.aodb.us agree on these level-200 cap values.",
+    "hpPerBodyDev / nanoPerNanoPool = how many Max Health per point of Body Development, and Max Nano per point of Nano Pool, for that breed.",
+    "AO-Universe additionally lists a higher second figure per ability (e.g. Atrox Str '512 / 912*') interpreted as an absolute level-220 maximum including external buffs/items; that interpretation is not fully confirmed here and is recorded under maxAbility220Unverified.",
+    "UNVERIFIED: Nanomage Sense creationBase is reported as 4 by wiki.aodb.us/wiki/Abilities but as 6 in an anarchyonline.fandom.com Breed snippet; Atrox Psychic creationBase (3) likewise varies in some community sources (6). Verify against client character-creation data if exact base values matter."
+  ],
+  "breeds": [
+    {
+      "id": 0,
+      "name": "Solitus",
+      "creationBase": { "Strength": 6, "Agility": 6, "Stamina": 6, "Intelligence": 6, "Sense": 6, "Psychic": 6 },
+      "trainedAbilityCap": { "Strength": 472, "Agility": 480, "Stamina": 480, "Intelligence": 480, "Sense": 480, "Psychic": 480 },
+      "maxAbility220Unverified": { "Strength": 772, "Agility": 780, "Stamina": 780, "Intelligence": 780, "Sense": 780, "Psychic": 780 },
+      "hpPerBodyDev": 3,
+      "nanoPerNanoPool": 3,
+      "baseHealthDelta": 3,
+      "baseNanoDelta": 3,
+      "nanoCostReductionCapPct": 50,
+      "traits": [
+        "The balanced 'human' baseline breed: no ability strongly favoured and no ability strongly penalised.",
+        "All ability caps sit near 480, giving the most even/flexible build with no glaring weakness.",
+        "No special breed-only combat abilities."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Opifex",
+      "creationBase": { "Strength": 3, "Agility": 15, "Stamina": 6, "Intelligence": 6, "Sense": 10, "Psychic": 3 },
+      "trainedAbilityCap": { "Strength": 464, "Agility": 544, "Stamina": 480, "Intelligence": 464, "Sense": 512, "Psychic": 448 },
+      "maxAbility220Unverified": { "Strength": 764, "Agility": 944, "Stamina": 680, "Intelligence": 764, "Sense": 912, "Psychic": 748 },
+      "hpPerBodyDev": 3,
+      "nanoPerNanoPool": 3,
+      "baseHealthDelta": 3,
+      "baseNanoDelta": 3,
+      "nanoCostReductionCapPct": 50,
+      "traits": [
+        "Highest Agility cap (544) and high Sense cap (512): favours evades, ranged and stealth playstyles.",
+        "Strong for Fixers, Agents, Martial Artists and other agility/sense professions.",
+        "Lower Strength and Psychic caps than other breeds."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Nanomage",
+      "creationBase": { "Strength": 3, "Agility": 3, "Stamina": 3, "Intelligence": 15, "Sense": 4, "Psychic": 10 },
+      "trainedAbilityCap": { "Strength": 464, "Agility": 464, "Stamina": 448, "Intelligence": 512, "Sense": 480, "Psychic": 512 },
+      "maxAbility220Unverified": { "Strength": 664, "Agility": 664, "Stamina": 748, "Intelligence": 912, "Sense": 780, "Psychic": 912 },
+      "hpPerBodyDev": 2,
+      "nanoPerNanoPool": 4,
+      "baseHealthDelta": 2,
+      "baseNanoDelta": 4,
+      "nanoCostReductionCapPct": 55,
+      "traits": [
+        "Highest Intelligence and Psychic caps (512): the caster/nano breed.",
+        "Gains the most Max Nano per Nano Pool point (4) and the highest nano-cost-reduction cap (55%).",
+        "Gains the least Max Health per Body Development point (2) and lowest Strength/Stamina caps: fragile in melee.",
+        "creationBase Sense flagged unverified (reported as 4 or 6 across sources)."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Atrox",
+      "creationBase": { "Strength": 15, "Agility": 6, "Stamina": 10, "Intelligence": 3, "Sense": 3, "Psychic": 3 },
+      "trainedAbilityCap": { "Strength": 512, "Agility": 480, "Stamina": 512, "Intelligence": 400, "Sense": 400, "Psychic": 400 },
+      "maxAbility220Unverified": { "Strength": 912, "Agility": 780, "Stamina": 912, "Intelligence": 600, "Sense": 600, "Psychic": 600 },
+      "hpPerBodyDev": 4,
+      "nanoPerNanoPool": 2,
+      "baseHealthDelta": 4,
+      "baseNanoDelta": 2,
+      "nanoCostReductionCapPct": 45,
+      "traits": [
+        "Highest Strength and Stamina caps (512) and the most Max Health per Body Development point (4): the tank/melee breed.",
+        "Has innate access to the Brawl and Dimach special-attack skills as a breed feature.",
+        "Lowest mental caps (Int/Sense/Psychic capped at 400) and least nano per Nano Pool point (2): weak nano casting and mental/tradeskills.",
+        "Genderless breed; creationBase Psychic (3) varies in some community sources."
+      ]
+    }
+  ],
+  "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/breed-statistics (ability caps, HP/nano-per-point modifiers, deltas, nano-cost-reduction caps)",
+    "http://wiki.aodb.us/wiki/Breed (level-200 ability caps; corroborates AO-Universe)",
+    "http://wiki.aodb.us/wiki/Abilities (level-1 creation base ability values per breed)",
+    "https://anarchyonline.fandom.com/wiki/Breed (breed trait descriptions; conflicting Nanomage Sense base = 6)"
+  ]
+}

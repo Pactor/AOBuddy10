@@ -1,0 +1,183 @@
+{
+    "profile":  "Acquisition sources for Metaphysicist representative weapons (AOBuddy10)",
+    "generatedUtc":  "2026-09-21T21:40:29Z",
+    "sources":  {
+                    "122282":  {
+                                   "name":  "Worn Kolt PDW-37",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "122354":  {
+                                   "name":  "Loose Metaphysic Energy Shield",
+                                   "ql":  60,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "122719":  {
+                                   "name":  "Kevlar Bow",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "122785":  {
+                                   "name":  "Premium Bow-Blaster",
+                                   "ql":  200,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "122990":  {
+                                   "name":  "Worn Kolt 58 Magnum",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "123786":  {
+                                   "name":  "MTI 99 Rebel Match Pistol",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "208069":  {
+                                   "name":  "Jupiter Aegis",
+                                   "ql":  40,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "212368":  {
+                                   "name":  "Sancrosanct Shere Bow",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "notes":  "Wield requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp) -\u003e item belongs to that expansion\u0027s content. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "214333":  {
+                                   "name":  "Sprite Bow",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "214338":  {
+                                   "name":  "Bow of Sympathy",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "223467":  {
+                                   "name":  "The Argument",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "226329":  {
+                                   "name":  "Notum Saturated Animal Bone",
+                                   "ql":  1,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "238956":  {
+                                   "name":  "Shank of Maze",
+                                   "ql":  1,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "245669":  {
+                                   "name":  "Superior Skylight Shield",
+                                   "ql":  160,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Wield requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp) -\u003e item belongs to that expansion\u0027s content. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "246705":  {
+                                   "name":  "Howlet",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "246715":  {
+                                   "name":  "Panther",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "271438":  {
+                                   "name":  "Bow-Blaster - 402",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "288286":  {
+                                   "name":  "Special Edition Kyr\u0027Ozch Crossbow",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Wield requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp) -\u003e item belongs to that expansion\u0027s content. Kyr\u0027Ozch alien-tech naming (Alien Invasion line). Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "288292":  {
+                                   "name":  "Special Edition Kyr\u0027Ozch Hammer",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Wield requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp) -\u003e item belongs to that expansion\u0027s content. Kyr\u0027Ozch alien-tech naming (Alien Invasion line). Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               },
+                    "288293":  {
+                                   "name":  "Special Edition Kyr\u0027Ozch Pistol",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "notes":  "MP-only: ToWield has Profession EqualTo Metaphysicist(12) in items.ocp. Wield requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp) -\u003e item belongs to that expansion\u0027s content. Kyr\u0027Ozch alien-tech naming (Alien Invasion line). Acquisition (vendor/mob/mission) NOT verified: absent from OmniCell drop/vendor tables and public AO DBs unreachable in this environment."
+                               }
+                },
+    "_sources":  [
+                     {
+                         "coverage":  {
+                                          "representativeIdsCovered":  20,
+                                          "withVerifiedHow":  0,
+                                          "withDataTraceableExpansion":  5,
+                                          "howUnknown":  20
+                                      },
+                         "method":  [
+                                        "Checked OmniCell local tables E:\\Funcom\\OmniCell\\OmniCell\\Built\\Release\\SqlTables\\ (mobdroptable.sql=25 rows, vendortemplate.sql, moblootprofiles.sql): NONE of the representative ids appear (exact or range).",
+                                        "expansion field derived from each weapon\u0027s ToWield Expansion(389) requirement in items.ocp, mapped via AOSharp.Common ExpansionFlags / OmniCell.Enums.Expansions (authoritative).",
+                                        "Public AO item DBs were not machine-readable here: auno.org (Anubis anti-bot 403), aoitems.com (domain parked/repurposed), anarchyonline.fandom.com (HTTP 402). No per-item drop/vendor/mission was recorded rather than guess one."
+                                    ],
+                         "honestFlag":  "how is \u0027unknown\u0027 for every id by design: no vendor/mob/mission/quest could be verified against a readable authoritative source, and the no-invention rule forbids guessing a boss or vendor. Only data-traceable expansion provenance is asserted (5 of the representative ids carry an explicit Shadowlands/AlienInvasion wield requirement).",
+                         "toImprove":  "Re-run against a reachable AO DB (auno.org via a browser/allowed fetch, or a local aoitems dump) to fill how/where; or import OmniCell moblootprofiles once populated."
+                     }
+                 ]
+}

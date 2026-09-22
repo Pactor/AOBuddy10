@@ -91,7 +91,29 @@ namespace AOBuddy
         private Identity? _lastUsedObj;      // the object the owner most recently USED (button/lift/terminal)
         private Vector3? _lastUsedObjPos;
         private double _lastUsedObjAge = 999; // seconds since that use (a warp needs a teleport right after)
-        private bool _zoneSweepTried;        // one auto zone-sweep attempt per owner-loss episode (reset on reacquire)
+        // ---- Zone crossing, per owner-loss episode ------------------------------
+        // The owner leaving our sight is one of three quite different things, and the bot used to treat
+        // them all the same and get one 16-second sweep to sort it out:
+        //   * he rode a lift/terminal      -> TRAVEL rides it too (armed from the object he used)
+        //   * he walked a zone line        -> we have to cross it ourselves, which is what this is for
+        //   * he simply outran us on open ground -> nothing to cross; keep walking his queued waypoints
+        // We can tell the third from the second because a zone line is something he walked THROUGH from
+        // close by while moving, not something he vanished from at forty metres. Sweeping on open ground
+        // is what made the bot pace back and forth in a field.
+        private float _ownerLostDist;        // how far off he was at the moment he vanished
+        private bool _ownerLostMoving;       // ...and whether he was actually travelling at the time
+        private int _zoneAttempts;           // sweeps made this episode
+        private double _zoneEpisodeElapsed;  // time since he vanished, for the overall give-up
+        private bool _zoneGaveUp;            // told him we lost him; stop retrying until he is back
+        private const float ZoneLossMeters = 30f;     // vanishing further off than this is range, not a line
+        private const int ZoneMaxAttempts = 3;        // sweeps before we admit we cannot cross
+        private const double ZoneEpisodeSeconds = 75; // ...and the wall-clock cap on trying
+
+        // Counts up after a zone/teleport until the owner is seen. Crossing a line SEPARATELY from him is
+        // normal for a second or two while he loads, but if he never appears we have crossed into somewhere
+        // he is not — say so rather than standing in an empty zone waiting.
+        private double _arrivedAlone;
+        private const double ArrivedAloneSeconds = 12.0;
         private bool _navReplaying;          // we handed FOLLOW a recorded nav route (stop it on reacquire)
 
         // Permanent stat bonuses (PERK + RESEARCH) computed once at init and folded into GetStat.
@@ -177,7 +199,7 @@ namespace AOBuddy
 
             Client.Chat.PrivateMessageReceived += (s, msg) =>
             {
-                if (!IsOwner(msg.SenderName)) { Logger.Debug($"[ignored tell] {msg.SenderName}: {msg.Message}"); return; }
+                if (!IsOwnerSender(msg.SenderName, msg.SenderId)) { Logger.Debug($"[ignored tell] {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
                 Log($"CMD from {msg.SenderName}: '{msg.Message}'");
                 try { HandleCommand(msg.Message, text => Client.SendPrivateMessage(msg.SenderId, text)); }
                 catch (Exception ex) { Logger.Error($"command error: {ex.Message}"); Log($"COMMAND EXCEPTION: {ex}"); }
@@ -254,7 +276,9 @@ namespace AOBuddy
             LocalPlayer me = DynelManager.LocalPlayer;
             _deathPos = me?.MovementComponent.Position;
             Log($"DIED (server death signal) at ({_deathPos?.X ?? 0:0},{_deathPos?.Y ?? 0:0},{_deathPos?.Z ?? 0:0}) — stopping all activity; reclaim in ~5s.");
-            try { if (me != null && me.IsAttacking) me.StopAttack(); } catch { }
+            // No StopAttack here: the server ends the fight on death by itself, and the SDK already sends
+            // one from its own death handler. The standing rule is that while he has a mob to attack he
+            // never issues it — only an explicit 'idle'/'stop' from the owner does.
             try { if (me != null) _move.Stop(me, _config.SendIntervalMs); } catch { }
             ClearNav();
             _combat.Reset();
@@ -269,7 +293,6 @@ namespace AOBuddy
         {
             _deadSeconds += dt;
             try { _move.Stop(me, _config.SendIntervalMs); } catch { }
-            try { if (me.IsAttacking) me.StopAttack(); } catch { }
 
             Vector3 pos = me.MovementComponent.Position;
             bool reclaimed = _deathPos.HasValue && Vector3.Distance(pos, _deathPos.Value) > _config.ZoneJumpThreshold;
@@ -388,7 +411,7 @@ namespace AOBuddy
                     try { Client.SendPrivateMessage(owner.Identity.Instance, "AOBuddy online — send 'help' for commands."); } catch { }
                     Logger.Information("Greeted owner.");
                     Log($"=== CONFIG: owner={_config.Owner} mode={_config.DefaultMode} tick={_config.TickMs}ms send={_config.SendIntervalMs}ms | " +
-                        $"follow(dist={_config.FollowDistance} speed={_config.FollowSpeed} crumb={_config.BreadcrumbSpacing} maxTrail={_config.MaxTrail} maxStep={_config.MaxStep} zoneJump={_config.ZoneJumpThreshold}) | " +
+                        $"follow(dist={_config.FollowDistance} speed={_config.FollowSpeed} arrive={_config.CrumbArrive} maxStep={_config.MaxStep} zoneJump={_config.ZoneJumpThreshold}) | " +
                         $"assist(max={_config.AssistMaxDistance} leash={_config.CombatLeashMeters} range={_config.AttackRange}) | " +
                         $"heal(ownerBelow={_config.HealOwnerBelowPercent}% selfBelow={_config.HealSelfBelowPercent}% interval={_config.HealIntervalSec}s stimRange={_config.StimOwnerRange}) | " +
                         $"stim(kw='{_config.StimKeyword}' name='{_config.StimItemName}') recharger(kw='{_config.RechargerKeyword}') | " +
@@ -402,6 +425,7 @@ namespace AOBuddy
                 _ownerLostSeconds = owner == null ? _ownerLostSeconds + dt : 0;
 
                 bool ownerVisible = owner != null;
+                if (!ownerVisible) _follow.SetOwnerDistance(null);
                 if (ownerVisible)
                 {
                     _ctx.OwnerCharId = owner.Identity.Instance;
@@ -420,12 +444,46 @@ namespace AOBuddy
                     _nav.RecordOwner(owner.Transform.Position, navClean);
 
                     _lastOwnerPos = owner.Transform.Position;
-                    _zoneSweepTried = false;   // he's back in view — allow a fresh zone attempt next time he's lost
+                    _follow.SetOwnerDistance(me.DistanceFrom(owner));   // drives FOLLOW's catch-up tier
+                    _ownerLostDist = me.DistanceFrom(owner);
+                    _ownerLostMoving = _support.OwnerSpeed > 0.5;
+                    // He's back in view — this loss episode is over; a fresh one starts from scratch.
+                    _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
                 }
                 else if (_ownerVisibleLast)
                 {
-                    // He just dropped out of view. Give TRAVEL its shot (rode an object?).
+                    // He just dropped out of view. Give TRAVEL its shot (rode an object?), and tell FOLLOW
+                    // where he was — it keeps walking the queued waypoints, then heads for that spot when
+                    // the queue runs dry, instead of stopping for want of a fresh sighting.
                     _travel.OnOwnerLost(_lastOwnerPos);
+                    _follow.OnOwnerLost(_lastOwnerPos);
+                    Log($"OWNER LOST at ({_lastOwnerPos?.X ?? 0:0},{_lastOwnerPos?.Y ?? 0:0},{_lastOwnerPos?.Z ?? 0:0}) " +
+                        $"d={_ownerLostDist:0.0} moving={_ownerLostMoving} — " +
+                        (_ownerLostDist <= ZoneLossMeters && _ownerLostMoving
+                            ? "close and travelling, so a crossing is possible once the queue runs out."
+                            : "too far off / standing still, so this is range not a zone line; walking his route only."));
+                }
+                else if (!ownerVisible)
+                {
+                    _zoneEpisodeElapsed += dt;
+                }
+
+                if (ownerVisible) _arrivedAlone = 0;
+                else if (_arrivedAlone > 0)
+                {
+                    _arrivedAlone += dt;
+                    if (_arrivedAlone > ArrivedAloneSeconds)
+                    {
+                        _arrivedAlone = 0;   // once per arrival
+                        Vector3 ap = me.MovementComponent.Position;
+                        Log($"ZONE: arrived in {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) and you are not here after {ArrivedAloneSeconds:0}s.");
+                        try
+                        {
+                            Client.Chat.SendPrivateMessage(_config.Owner,
+                                $"I zoned into {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) but you're not here. Holding.");
+                        }
+                        catch { }
+                    }
                 }
 
                 // AUTO ZONE (follow-based): when he vanishes while we're following him on foot (not fighting,
@@ -457,8 +515,14 @@ namespace AOBuddy
                     // Defer to TRAVEL and zoning: when the owner just blinked out (rode a button / crossed a
                     // zone line), that's travel's/the sweep's job — don't fire nav until he's been genuinely
                     // lost a couple seconds. When he's VISIBLE but far, catch up immediately (the ramp case).
-                    bool needCatchup = (ownerVisible && owner != null && me.DistanceFrom(owner) > _config.NavCatchupMeters)
-                                       || (!ownerVisible && _ownerLostSeconds > 2.0);
+                    // Don't chase (catch-up route) when he needs to recover — heal first, rejoin after.
+                    // When he is OUT of sight, FOLLOW's queued waypoints are the better plan (they are his
+                    // actual route from moments ago) — nav only steps in once that queue is spent, since
+                    // LoadReplay wipes it. When he is VISIBLE but far, nav preempts immediately: that is the
+                    // ramp case, where the recorded run carries the real up/down Y and live follow does not.
+                    bool needCatchup = !_support.NeedsRecovery(me)
+                                       && ((ownerVisible && owner != null && me.DistanceFrom(owner) > _config.NavCatchupMeters)
+                                       || (!ownerVisible && _ownerLostSeconds > 2.0 && !_follow.HasWork));
                     if (needCatchup && tgt.HasValue)
                     {
                         List<Vector3> route = _nav.RouteToward(me.MovementComponent.Position, tgt.Value);
@@ -487,14 +551,58 @@ namespace AOBuddy
                     }
                 }
 
+                // RECOVERY BEFORE WANDERING. If the bot needs HP/nano and isn't fighting, healing wins — it
+                // does NOT wander after a lost owner (zone-sweep / catch-up). Cancel any sweep already running
+                // so he sits and recovers instead of pacing back and forth. Owner-independent by design.
+                bool needRecovery = !_combat.InCombat && _support.NeedsRecovery(me);
+                if (needRecovery && _follow.ZoneSweeping) _follow.CancelZoneSweep();
+
                 // ZONE-SWEEP: only OFF recorded ground and only once the live trail is exhausted (unknown
-                // ground / a genuine zone line). Unchanged, now subordinate to nav on recorded ground.
-                if (!ownerVisible && !_zoneSweepTried && !_follow.ZoneSweeping && !_navReplaying
+                // ground / a genuine zone line). Unchanged, now subordinate to nav on recorded ground — and
+                // never while he needs to recover (don't wander off instead of healing).
+                // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
+                // spot he disappeared from, and he is still gone: he crossed something. Work the line.
+                bool crossingLikely = _ownerLostDist <= ZoneLossMeters && _ownerLostMoving;
+                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp
+                    && !_follow.ZoneSweeping && !_navReplaying
                     && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
                     && _lastOwnerPos.HasValue && !_follow.HasWork)
                 {
-                    _zoneSweepTried = true;
-                    _follow.StartZoneSweep(me.MovementComponent.Position);
+                    if (_zoneAttempts >= ZoneMaxAttempts || _zoneEpisodeElapsed > ZoneEpisodeSeconds)
+                    {
+                        // Out of attempts. Say where we lost him rather than standing there silently — he
+                        // can walk back, or send 'zone' to make us work the same spot again.
+                        _zoneGaveUp = true;
+                        Vector3 lp = _lastOwnerPos.Value;
+                        Log($"ZONE: gave up after {_zoneAttempts} attempt(s) / {_zoneEpisodeElapsed:0}s at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name}.");
+                        try
+                        {
+                            Client.Chat.SendPrivateMessage(_config.Owner,
+                                $"I lost you at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name} and can't get across. Holding here — walk back or send 'zone'.");
+                        }
+                        catch { }
+                    }
+                    else
+                    {
+                        // Sweep his crossing spot. If we have crossed out of this playfield before and the
+                        // recorded transition is near where he vanished, sweep THAT instead: it is a spot
+                        // that provably works, rather than our best guess at where the line runs.
+                        Vector3 centre = me.MovementComponent.Position;
+                        Vector3? known = _config.NavUse ? _nav.NearestTransition(_lastOwnerPos.Value) : null;
+                        string why = "owner vanished ahead while following (not combat)";
+                        if (known.HasValue && Vector3.Distance(known.Value, _lastOwnerPos.Value) <= _config.NavSnapMeters)
+                        {
+                            centre = known.Value;
+                            why = "a crossing we have made here before";
+                        }
+
+                        // Each retry steps sideways along the line: 0, then +3m, then -3m.
+                        float offset = _zoneAttempts == 0 ? 0f : (_zoneAttempts == 1 ? 3f : -3f);
+                        if (_follow.StartZoneSweep(centre, offset, $"{why} — attempt {_zoneAttempts + 1}/{ZoneMaxAttempts}"))
+                            _zoneAttempts++;
+                        else
+                            _zoneGaveUp = true;   // no usable direction from his path; stop trying this episode
+                    }
                 }
                 _ownerVisibleLast = ownerVisible;
 
@@ -526,9 +634,15 @@ namespace AOBuddy
             catch (Exception ex) { Logger.Error($"update error: {ex.Message}"); Log($"UPDATE EXCEPTION: {ex}"); }
         }
 
-        // ---- Movement arbiter: exactly one system moves the body this frame ------
-        // Priority: hold still to cast/rest > TRAVEL (ride an object) > FOLLOW (breadcrumbs). COMBAT
-        // never appears here — the bot fights from the owner's side while FOLLOW keeps it there.
+        // ---- MOVE: exactly one system moves the body, every single frame --------
+        // FOLLOW is the default and runs unless one of exactly three things is true, and only these three
+        // are genuinely exclusive with walking:
+        //   * a nano cast is in flight  — the server roots you for the cast; moving would abort it
+        //   * we are sitting to rest    — out of combat only, and only while the owner is settled nearby
+        //   * use-object travel         — travel is walking us to a lift/terminal to ride it
+        // Everything else the bot does — swinging, weapon specials, using a stim, commanding pets — is a
+        // packet, not a posture, and none of it stops the legs. That is the point: "he must always be next
+        // to the player" means follow is first in the frame, not last behind a ladder of actions.
         private void Walk(LocalPlayer me, PlayerChar owner, double dt)
         {
             if (me.IsCasting) { _move.Stop(me, _config.SendIntervalMs); return; }
@@ -560,26 +674,44 @@ namespace AOBuddy
 
             _support.AdvanceClocks();
 
-            // Who's the fight? COMBAT picks the owner's target and issues Attack ONCE. Never chases —
-            // FOLLOW keeps her at his side.
+            // ---- ACT --------------------------------------------------------------------------------
+            // These steps are a SEQUENCE, not a ladder: each one runs and none of them returns out of the
+            // tick. The old version returned after the first rung that did anything, so a queued cast or a
+            // stim meant no target selection and no pet command that tick — which is what "he pauses combat
+            // to heal" actually was. Nothing here stops the legs either; MOVE already ran this frame.
+
+            // 1) WHO ARE WE FIGHTING. COMBAT takes the owner's target and issues Attack once for it.
             SimpleChar target = _combat.SelectAndEngage(me, owner);
             bool fighting = target != null;
 
-            // Pets attack the same target (target-based Attack command; no-op unless UsePets and pets are up).
-            if (fighting) _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
+            // 2) PETS ATTACK THE SAME MOB, at the same moment he does — once per target, and only the
+            //    attack/mezz pets, so the heal pet is left healing.
+            bool retargeted = false;
+            if (fighting) retargeted |= _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
 
-            // 1) SURVIVAL — emergency heal (stims work in combat; owner + self + team).
-            if (_support.TryEmergencyHeal(me, owner, fighting)) { _ctx.SetBehavior("Healing"); return; }
+            // 3) HEAL — stims work in combat and do NOT interrupt it: Item.Use is a GenericCmd, it never
+            //    sets IsCasting, so the bot keeps swinging and keeps walking through it. Himself first.
+            bool healed = _support.TryEmergencyHeal(me, owner, fighting);
+            retargeted |= healed;
 
-            // 2) FIGHT — hold the fight state (attack was already issued once). Walk still keeps her
-            // at the owner's side every frame regardless.
+            // 4) HEAL PET keeps the right ally alive — the master himself when he is melee, the attack pet
+            //    when he is ranged, read from the equipped weapon's reach. Issued once per summon.
+            retargeted |= _pets.MaintainHealPet(me, fighting ? target : null, _config.TickMs / 1000.0);
+
+            // 5) PUT THE TARGET BACK. Every action above can move the bot's target: a stim retargets to the
+            //    recipient, a pet command retargets to what the pet must act on. Targeting a friendly does
+            //    not stop the swing, but LEAVING the target off the mob does — so restore it here, in one
+            //    place, for all of them. SetTarget only, never a re-Attack: that would reset the swing timer.
+            if (retargeted && fighting && target != null) Targeting.SetTarget(target.Identity);
+
             if (fighting)
             {
                 _support.OnFight(me);
-                _ctx.SetBehavior("Fighting");
-                return;
+                _ctx.SetBehavior(healed ? "Fighting (healing)" : "Fighting");
+                return;   // the out-of-combat work below (buffs, rest) has no business running mid-fight
             }
             _combat.Disengage(me, owner);
+            if (healed) { _ctx.SetBehavior("Healing"); return; }
 
             // 3) AUTO-BUFF — keep learned buffs up on self/owner/team (out of combat). Only ENQUEUES; the
             // cast + nano refill happen via TryDrainCast at the top of the next tick.
@@ -628,10 +760,13 @@ namespace AOBuddy
             _follow.Reset();
             _travel.Reset();
             _combat.Reset();
+            _pets.Reset();          // zoning drops pet tasking server-side — re-issue attack/heal after the zone
             _support.OnZone();
             _move.Reset();
             _ownerLostSeconds = 0;
             _navReplaying = false;
+            _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
+            _arrivedAlone = 0.001;   // start the "did he follow me here?" clock
             Logger.Information("Zone/teleport detected — navigation reset.");
         }
 
@@ -653,7 +788,7 @@ namespace AOBuddy
             string od = owner != null ? me.DistanceFrom(owner).ToString("0.0") : "n/a";
             string ohp = owner != null ? SupportController.PercentHealth(owner) + "%" : "n/a";
             Log($"hb [{_ctx.Behavior}] mode={_mode} hp={hp}% nano={_support.SelfNanoPct(me)}% ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
-                $"trail={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
+                $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
             _diagOwnerMoves = 0; _diagSelfMoves = 0;
         }
 
@@ -697,15 +832,26 @@ namespace AOBuddy
                 case "forward":
                 case "run":
                 {
-                    // Move him FORWARD in the direction he's facing (a manual nudge) — this is NOT the
-                    // zone-line crossing (that's 'zone'). Set a manual target ahead; FOLLOW walks him there
-                    // (in run mode) and stops on arrival.
+                    // Move him FORWARD a manual nudge (NOT the zone-line crossing — that's 'zone'). The bot's
+                    // OWN heading is unreliable when it's been idle (the clientless self-heading reads as a
+                    // zero quaternion, whose Forward is a zero vector — so "pos + forward*12" == pos and he
+                    // never actually moves while claiming he did). Pick the first USABLE direction: the owner's
+                    // facing (what "forward" naturally means when he leads), then the bot's own heading, then
+                    // owner->bot. If none is usable, say so instead of lying.
                     LocalPlayer pf = DynelManager.LocalPlayer;
                     if (pf == null) break;
                     const float fwdMeters = 12f;
-                    Vector3 fwd = pf.MovementComponent.Heading.Forward;
-                    Vector3 flat = new Vector3(fwd.X, 0f, fwd.Z);
-                    Vector3 fdir = flat.Magnitude > 0.05f ? flat.Normalize() : fwd;
+                    PlayerChar fo = FindOwner();
+                    Vector3 Flat(Vector3 v) => new Vector3(v.X, 0f, v.Z);
+                    Vector3 fdir = new Vector3(0f, 0f, 0f);
+                    foreach (Vector3 cand in new[]
+                    {
+                        fo != null ? Flat(fo.Transform.Heading.Forward) : new Vector3(0f, 0f, 0f),
+                        Flat(pf.MovementComponent.Heading.Forward),
+                        fo != null ? Flat(pf.MovementComponent.Position - fo.Transform.Position) : new Vector3(0f, 0f, 0f),
+                    })
+                    { if (cand.Magnitude > 0.05f) { fdir = cand.Normalize(); break; } }
+                    if (fdir.Magnitude < 0.05f) { reply("I can't tell which way is forward right now — move a step and try again."); break; }
                     _follow.SetManualTarget(pf.MovementComponent.Position + fdir * fwdMeters);
                     reply($"Moving forward {fwdMeters:0}m.");
                     break;
@@ -715,6 +861,10 @@ namespace AOBuddy
                     LocalPlayer p = DynelManager.LocalPlayer;
                     if (p == null) break;
                     Vector3 mypos = p.MovementComponent.Position;
+                    // He is asking again by hand, so the automatic attempts start over: a fresh budget and
+                    // no "gave up" latch, otherwise this command would do nothing after the bot had already
+                    // given up on the same spot.
+                    _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
 
                     // We RECORDED where this playfield's zone line is — the spot we came in through (the
                     // entry point) / where the owner crossed out (a transition), in this zone's own coords.
@@ -1102,13 +1252,32 @@ namespace AOBuddy
         private bool IsOwner(string name) =>
             !string.IsNullOrEmpty(name) && string.Equals(name, _config.Owner, StringComparison.OrdinalIgnoreCase);
 
+        private uint _ownerChatId;   // sender id proven to be the owner, kept for when the name map is empty
+
+        /// <summary>
+        /// Owner check for an incoming tell. A tell's SenderName is looked up in ChatClient.IdToNameMap and is
+        /// literally "&lt;Unknown&gt;" until that map knows the id — so a name-only check silently DROPS the
+        /// owner's own commands. Fall back to the sender id: remembered once seen, else the owner's dynel id.
+        /// </summary>
+        private bool IsOwnerSender(string name, uint senderId)
+        {
+            if (IsOwner(name))
+            {
+                if (senderId != 0) _ownerChatId = senderId;
+                return true;
+            }
+            if (senderId != 0 && senderId == _ownerChatId) return true;
+            PlayerChar owner = FindOwner();
+            return owner != null && senderId != 0 && (uint)owner.Identity.Instance == senderId;
+        }
+
         private string StatusLine()
         {
             LocalPlayer me = DynelManager.LocalPlayer;
             string target = me?.IsAttacking == true && me.FightingTarget != null ? me.FightingTarget.Name : "none";
             int hp = me != null ? SupportController.PercentHealth(me) : 0;
             string lvl = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l.ToString() : "?";
-            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}%. Target: {target}. Trail: {_follow.TrailCount}.";
+            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}%. Target: {target}. Waypoints: {_follow.TrailCount}.";
         }
 
         private static Mode ParseMode(string s)

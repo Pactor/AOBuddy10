@@ -34,7 +34,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public int Unknown1 { get; set; }
+        public int NumberOfSlots { get; set; }
 
         [AoMember(1)]
         public int Unknown2 { get; set; }
@@ -49,7 +49,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public int Handle { get; set; }
 
         [AoMember(5)]
-        public int Unknown3 { get; set; }
+        public int Open { get; set; }
 
         #endregion
     }

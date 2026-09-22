@@ -44,7 +44,7 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
         public int Quality { get; set; }
 
         [AoMember(7)]
-        public int Unknown { get; set; }
+        public int Unused { get; set; }
 
         #endregion
     }

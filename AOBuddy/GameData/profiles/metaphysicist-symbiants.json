@@ -1,0 +1,629 @@
+{
+  "profession": "Metaphysicist",
+  "summary": "A top MP fills all 13 implant slots with CONTROL-Unit symbiants - the nano/pet-caster unit (the Control line is profession-locked to Engineer, Trader, Bureaucrat and Meta-Physicist; verified stat-60 lock {3,7,8,12} in items.ocp, and both the ao-universe and Funcom guides put MP in the Control unit). Control symbiants stack the six nano schools (Matter Creation, Time & Space, Bio Met, Matter Met, Psycho Mod, Sensory Impr) plus Nano Pool, Max Nano, Nano Init, Treatment and Nano Resist - exactly the caster/pet stats an MP wants, which is why symbiants outclass cluster implants here. Best-in-slot at endgame is the Xan Control-Unit ALPHA in every slot (highest bonuses of the line: e.g. all six nano schools +144 and +574 Max Nano on the Brain/Head Alpha). Progression to reach them: wear the Xan Control Beta first (lower reqs), then swap each slot to the crafted Alpha once Treatment/Int/Psychic/level allow.",
+  "unitChoice": {
+    "recommendedUnit": "Control",
+    "why": "Control is the caster/pet unit shared by MP/Crat/Engi/Trader; it carries the nano-school + nano-pool + nano-init bonuses an MP lives on. Verified: every Control symbiant's ToWear action profession-locks to stat 60 EqualTo {3 Engineer, 7 Trader, 8 Bureaucrat, 12 Meta-Physicist} (items.ocp).",
+    "alsoUsablePerAoUniverse": [
+      "Control",
+      "Extermination",
+      "Support"
+    ],
+    "note": "The ao-universe symbiant guide lists Control, Extermination and Support as MP-usable; Control is the nano-caster pick used here. Extermination/Support trade nano bonuses for other stats and are not best-in-slot for a caster MP."
+  },
+  "bestInSlot": [
+    {
+      "slot": "Imp_Head",
+      "slotLabel": "Head/Brain",
+      "symbiant": "Xan Brain Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Matter Creation": 144,
+        "Time & Space": 144,
+        "Biological Metamorphosis": 144,
+        "Matter Metamorphosis": 144,
+        "Psychological Modifications": 144,
+        "Sensory Improvement": 144,
+        "Nano Pool": 87,
+        "Max Nano": 574,
+        "Nano Init": 144
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Agility": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Brain) with an Intelligent Control-Unit Brain Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278957,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236314,
+          "name": "Intelligent Brain Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279009,
+          "name": "Xan Brain Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Eye",
+      "slotLabel": "Eye/Ocular",
+      "symbiant": "Xan Ocular Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Matter Creation": 58,
+        "Time & Space": 58,
+        "Psychological Modifications": 87,
+        "Sensory Improvement": 87,
+        "Nano Init": 87,
+        "Treatment": 87,
+        "Nano Programming": 87,
+        "Comp. Lit.": 87,
+        "Intelligence": 43
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Sense": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ocular) with an Intelligent Control-Unit Ocular Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278958,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236299,
+          "name": "Intelligent Ocular Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279010,
+          "name": "Xan Ocular Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Ear",
+      "slotLabel": "Ear",
+      "symbiant": "Xan Ear Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Psychological Modifications": 58,
+        "Intelligence": 30,
+        "Psychic": 30,
+        "Max NCU": 37,
+        "Nano Cost %": -5
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Agility": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ear) with an Intelligent Control-Unit Ear Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278959,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236331,
+          "name": "Intelligent Ear Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279011,
+          "name": "Xan Ear Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Body",
+      "slotLabel": "Chest/Body",
+      "symbiant": "Xan Chest Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Biological Metamorphosis": 87,
+        "Matter Metamorphosis": 87,
+        "Sensory Improvement": 58,
+        "Nano Pool": 144,
+        "Max Nano": 230,
+        "Nano Init": 58,
+        "Psychic": 43,
+        "Nano Interrupt %": 7,
+        "Skill Lock %": -5
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Stamina": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Chest) with an Intelligent Control-Unit Chest Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278960,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236366,
+          "name": "Intelligent Chest Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279012,
+          "name": "Xan Chest Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_RightArm",
+      "slotLabel": "Right Arm",
+      "symbiant": "Xan Right Arm Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Nano Delta": 43,
+        "Add. All Def.": 108
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Strength": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Arm) with an Intelligent Control-Unit Right Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278964,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236349,
+          "name": "Intelligent Right Arm Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279016,
+          "name": "Xan Right Arm Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_LeftArm",
+      "slotLabel": "Left Arm",
+      "symbiant": "Xan Left Arm Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Matter Metamorphosis": 58,
+        "Nano Cost %": -3,
+        "Heal Delta": 72,
+        "Add. All Def.": 180
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Sense": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Arm) with an Intelligent Control-Unit Left Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278961,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236384,
+          "name": "Intelligent Left Arm Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279013,
+          "name": "Xan Left Arm Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_RightWrist",
+      "slotLabel": "Right Wrist",
+      "symbiant": "Xan Right Wrist Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Nano Resist": 87,
+        "Max NCU": 22,
+        "Nano Delta": 72
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Strength": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Wrist) with an Intelligent Control-Unit Right Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278966,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236402,
+          "name": "Intelligent Right Wrist Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279018,
+          "name": "Xan Right Wrist Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_LeftWrist",
+      "slotLabel": "Left Wrist",
+      "symbiant": "Xan Left Wrist Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Nano Resist": 58
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Sense": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Wrist) with an Intelligent Control-Unit Left Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278963,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236437,
+          "name": "Intelligent Left Wrist Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279015,
+          "name": "Xan Left Wrist Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_RightHand",
+      "slotLabel": "Right Hand",
+      "symbiant": "Xan Right Hand Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Matter Creation": 87,
+        "Time & Space": 87,
+        "Treatment": 58,
+        "Nano Programming": 58,
+        "Comp. Lit.": 58,
+        "First Aid": 87
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Strength": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Hand) with an Intelligent Control-Unit Right Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278965,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236455,
+          "name": "Intelligent Right Hand Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279017,
+          "name": "Xan Right Hand Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_LeftHand",
+      "slotLabel": "Left Hand",
+      "symbiant": "Xan Left Hand Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Nano Interrupt %": 9,
+        "Skill Lock %": -7,
+        "First Aid": 58
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Stamina": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Hand) with an Intelligent Control-Unit Left Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278962,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236489,
+          "name": "Intelligent Left Hand Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279014,
+          "name": "Xan Left Hand Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Waist",
+      "slotLabel": "Waist",
+      "symbiant": "Xan Waist Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Biological Metamorphosis": 58,
+        "Nano Pool": 58,
+        "Max Nano": 345,
+        "Nano Cost %": -9,
+        "Max Health": 345,
+        "Body Dev": 87,
+        "Evade Close": 58,
+        "Dodge Ranged": 58,
+        "Duck Exp": 87
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Agility": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Waist) with an Intelligent Control-Unit Waist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278967,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236420,
+          "name": "Intelligent Waist Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279019,
+          "name": "Xan Waist Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Legs",
+      "slotLabel": "Legs/Thigh",
+      "symbiant": "Xan Thigh Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Max NCU": 15,
+        "Nano Interrupt %": 16,
+        "Skill Lock %": -14,
+        "Max Health": 230,
+        "Heal Delta": 30,
+        "Evade Close": 87,
+        "Dodge Ranged": 144,
+        "Duck Exp": 144,
+        "Adventuring": 144
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Agility": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Thigh) with an Intelligent Control-Unit Thigh Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278968,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236473,
+          "name": "Intelligent Thigh Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279020,
+          "name": "Xan Thigh Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    },
+    {
+      "slot": "Imp_Feet",
+      "slotLabel": "Feet",
+      "symbiant": "Xan Feet Symbiant, Control Unit Alpha",
+      "line": "Control",
+      "unit": "Alpha",
+      "ql": 300,
+      "level": 219,
+      "keyBonuses": {
+        "Nano Delta": 30,
+        "Heal Delta": 43,
+        "Add. All Def.": 72,
+        "Evade Close": 144,
+        "Dodge Ranged": 87,
+        "Duck Exp": 58
+      },
+      "reqs": {
+        "Treatment": 2088,
+        "Intelligence": 1276,
+        "Psychic": 1276,
+        "Sense": 1276,
+        "level": 219
+      },
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Feet) with an Intelligent Control-Unit Feet Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "id": 278969,
+      "_fallbacks": {
+        "IntelligentQL300_SL_base": {
+          "id": 236505,
+          "name": "Intelligent Feet Symbiant, Control Unit Aban",
+          "ql": 300,
+          "reqTreatment": 2088,
+          "reqIntelligence": 1276,
+          "reqLevel": 219
+        },
+        "XanBeta_stepstone": {
+          "id": 279021,
+          "name": "Xan Feet Symbiant, Control Unit Beta",
+          "ql": 300,
+          "reqTreatment": 1870,
+          "reqIntelligence": 1149,
+          "reqLevel": 201
+        }
+      }
+    }
+  ],
+  "alphaCrafting": {
+    "what": "Xan Alpha symbiants are the most advanced symbiants in AO. They cannot be looted - each is crafted by the player from two QL300 components and is NODROP / cannot be reverted once assembled.",
+    "recipe": "Combine (drag + shift-click, or the tradeskill window) a Xan <slot> Symbiant, Control Unit Beta with an Intelligent <slot> Symbiant, Control Unit Aban QL300 of the SAME slot and unit. No tradeskill tool or nano is required.",
+    "components": {
+      "xanBeta": "Xan Control-Unit Beta for the slot. Betas drop from the 3 Legacy-of-the-Xan instances; the Ear and Thigh Betas instead come from separate quests (Arid Rift / Neretva) and are NODROP.",
+      "intelligentQL300": "Intelligent Control-Unit (Aban) QL300 for the slot - the top-QL Shadowlands pocket-boss symbiant. The QL300 Intelligent tier drops from The Night Heart on the Pandemonium islands (real or instanced). Tradeable (YESDROP)."
+    },
+    "assembleRequirements": {
+      "note": "Skill needed to perform the combine (ao-universe Alpha-symbiant tradeskill guide).",
+      "Treatment": 2088,
+      "abilitiesTotal": 1276,
+      "abilityRule": "Three abilities: two fixed by unit + one variable by slot. For Control the two fixed are Intelligence + Psychic."
+    },
+    "equipRequirements": {
+      "note": "Requirements to WEAR the finished Control Alpha, read from items.ocp ToWear (identical across all 13 slots except the one variable ability).",
+      "Treatment": 2088,
+      "Intelligence": 1276,
+      "Psychic": 1276,
+      "level": 219,
+      "variableAbilityBySlot": "third equip ability is Agility (Head/Ear/Waist/Thigh), Sense (Eye/LeftArm/LeftWrist/Feet), Stamina (Chest/LeftHand) or Strength (RightArm/RightHand/RightWrist), each 1276"
+    },
+    "clickyTrick": "Xan Beta Ear and Thigh are clickable: right-click cycles their unit type. Buy the cheapest Intelligent Ear/Thigh of any unit, cycle the Beta to match, combine, then cycle the resulting Alpha back to Control. (Funcom guide.)",
+    "upgradeOverBase": "Per slot the Alpha beats both components. Head example: Beta nano-schools +130 / Max Nano +519; Intelligent (SL QL300) +137 / +547; Alpha +144 / +574. Alpha is a straight upgrade of the QL300 SL symbiant, with the same equip reqs."
+  },
+  "xanAlphaNote": "Endgame path: Shadowlands Control symbiants (top tier = 'Intelligent', QL300) are the base; the Legacy-of-the-Xan 'Xan ... Beta' symbiants are a lower-req stepping stone; the crafted 'Xan ... Alpha' (Beta + Intelligent QL300) is best-in-slot. Alpha and the Ear/Thigh Betas are NODROP - build the Alpha on the MP that will wear it.",
+  "_verification": {
+    "namesAndIds": "All 39 ids (13 Intelligent + 13 Beta + 13 Alpha) verified in itemnames.sql; each row's symbiant name matched to its slot programmatically.",
+    "statsAndReqs": "QL, keyBonuses and reqs extracted from items.ocp (OMNICELL-CONTENT v3) with tools/mp-symbiant-extractor; stat numbers mapped from AOSharp.Common Stat.cs; ToWear = equip reqs, funcType 53045 (target=wearer) = stat bonuses.",
+    "professionLock": "Control unit ToWear stat-60 EqualTo {3,7,8,12} => Engineer/Trader/Bureaucrat/Metaphysicist."
+  },
+  "_unverified": [
+    "Exact drop tables / which specific pocket boss drops each non-QL300 Control symbiant tier are from the guides (ao-universe points to TinkerPocket at ao.tinkeringidiot.com), not re-verified item-by-item here.",
+    "The ao-universe main symbiants guide did not give per-slot MP picks (it defers to TinkerPocket); the per-slot Control choice here is derived from the verified Control-unit profession lock + the Xan/Alpha guides + extracted stats.",
+    "keyBonuses list only the MP-relevant (nano/caster/survival) subset of each symbiant's full modifier set; each also grants many weapon/utility skills omitted here (full per-item dumps in tools/mp-symbiant-extractor output).",
+    "'assembleRequirements.abilitiesTotal 1276' is the ao-universe crafting-guide figure; the extracted per-ability EQUIP reqs are 1276 each (Int, Psychic + variable) - crafting vs wearing reqs differ."
+  ],
+  "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/symbiants",
+    "https://forums.funcom.com/t/guide-how-to-make-xan-alpha-symbiants/109047",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/general-crafting/alpha-symbiants-3",
+    "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql (names+ids)",
+    "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (QL/bonuses/reqs, via tools/mp-symbiant-extractor)",
+    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (stat-id -> name map)"
+  ]
+}

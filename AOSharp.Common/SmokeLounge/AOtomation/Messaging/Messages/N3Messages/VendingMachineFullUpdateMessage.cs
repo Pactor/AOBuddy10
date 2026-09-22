@@ -66,7 +66,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public int Unknown7 { get; set; }
 
         [AoMember(11)]
-        public int Unknown8 { get; set; }
+        public int TailVersion { get; set; }
 
         [AoMember(12, SerializeSize = ArraySizeType.X3F1)]
         public int[] UnknownArray { get; set; }

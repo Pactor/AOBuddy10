@@ -123,9 +123,11 @@ namespace AOSharp.Clientless.Net
                 // The AOSharp message has no NpcInfo type and SimpleChar only reads
                 // CharacterInfo when it is a PlayerInfo, so read the NPC fields to
                 // keep the offset correct and leave CharacterInfo null.
-                if ((flags & HasSmallNpcFamily) != 0) r.ReadByte(); else r.ReadInt16();
+                scfu.NpcFamily = (flags & HasSmallNpcFamily) != 0 ? r.ReadByte() : r.ReadInt16();
                 if ((flags & HasSmallNpcLosHeight) != 0) r.ReadByte(); else r.ReadInt16();
-                if ((flags & HasSmallPetType) != 0) r.ReadByte(); else r.ReadInt16();
+                // What a pet is FOR, per the server - see SimpleCharFullUpdateMessage.PetType.
+                // This used to be read and dropped, which is why pet roles had to be guessed.
+                scfu.PetType = (flags & HasSmallPetType) != 0 ? r.ReadByte() : r.ReadInt16();
                 short npcUnknown2 = r.ReadInt16();
                 if (npcUnknown2 > 0)
                     r.ReadByte();
@@ -244,7 +246,7 @@ namespace AOSharp.Clientless.Net
                 {
                     Place = r.ReadInt32(),
                     Id = r.ReadInt32(),
-                    Unknown = r.ReadInt32()
+                    Group = r.ReadInt32()
                 };
 
                 // HasExtra: Place>0 and its high 16 bits > 0 means two trailing int32s.
@@ -298,12 +300,16 @@ namespace AOSharp.Clientless.Net
             try
             {
                 bool isNpc = (flags & IsNpc) != 0;
-                string key = (isNpc ? "N:" : "P:") + (scfu.Name ?? "");
+                // Dedupe by INSTANCE+flags2 (not name) so each distinct pet instance's flag history is
+                // visible — two same-named pets (a re-summon) share a name, and a name+flags2 key hid
+                // whether the SECOND instance ever carried the pet-master bit. Per-instance keys let us
+                // confirm whether a re-summoned pet ever announces its owner (Flags2 0x4) at all.
+                string key = (isNpc ? "N:" : "P:") + scfu.Identity.Instance + "|f2=" + flags2.ToString("X8");
                 if (_wireSeen.Add(key))
                 {
                     System.IO.File.AppendAllText(
                         System.IO.Path.Combine(System.AppContext.BaseDirectory, "scfuwire.log"),
-                        $"{System.DateTime.Now:HH:mm:ss.fff} name='{scfu.Name}' npc={isNpc} flags=0x{flags:X8} flags2=0x{flags2:X8} hasPetMaster={((flags2 & Flags2HasPetMaster) != 0)} idInst={scfu.Identity.Instance}\n");
+                        $"{System.DateTime.Now:HH:mm:ss.fff} name='{scfu.Name}' npc={isNpc} flags=0x{flags:X8} flags2=0x{flags2:X8} bits[2={(flags2 & 0x2) != 0},4={(flags2 & 0x4) != 0},8={(flags2 & 0x8) != 0}] idInst={scfu.Identity.Instance}\n");
                 }
             }
             catch { }

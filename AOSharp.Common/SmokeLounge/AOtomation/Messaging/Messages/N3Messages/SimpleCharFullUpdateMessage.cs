@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SimpleCharFullUpdateMessage.cs" company="SmokeLounge">
 //   Copyright © 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
@@ -84,6 +84,19 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         [AoMember(15)]
         public uint MonsterData { get; set; }
+
+        /// <summary>
+        /// The NPC block's family and pet type, for an update with the IsNpc flag. PetType is how
+        /// the server says what a pet is FOR, independent of class, name or nano: 10 attack,
+        /// 11 heal, 12 mezz/debuff, 14 social, 0 for an NPC that merely has a master.
+        /// Verified across roughly a hundred pets in sniffs/ and captures/ - among them
+        /// captures/mp_203534_s37.csv, where the type 11 pet is seen casting its heal ON the
+        /// type 10 pet while the type 12 pet debuffs the mob.
+        /// These are read straight by SimpleCharFullUpdateReader, not by the attribute serializer.
+        /// </summary>
+        public short NpcFamily { get; set; }
+
+        public short PetType { get; set; }
 
         [AoMember(16)]
         public short MonsterScale { get; set; }

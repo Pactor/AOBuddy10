@@ -1,0 +1,28 @@
+{
+  "_description": "Anarchy Online profession reference. ids verified against E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Profession.cs. id 13 (Monster) is not player-selectable and is omitted from the playable list.",
+  "_breedAvailability": "In Anarchy Online there are NO breed restrictions on profession choice: every one of the 4 breeds (Solitus, Opifex, Nanomage, Atrox) can roll every playable profession. Keeper and Shade are the only professions gated behind an expansion (Shadowlands) rather than being free-to-play (froob) professions, but that is an account/expansion gate, not a breed gate. 'recommendedBreeds' lists community-preferred breeds for that profession by ability synergy; 'allowedBreeds' is always all four.",
+  "professions": [
+    { "id": 1,  "name": "Soldier",        "role": "Heavy ranged damage dealer; assault rifle / shotgun DPS with strong reflect/absorb survivability nanos.", "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Atrox","Solitus"], "froob": true,  "expansion": null },
+    { "id": 2,  "name": "MartialArtist",   "role": "Unarmed melee striker; high burst with Martial Arts skill plus self-heals and evades.",             "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Opifex","Solitus"], "froob": true,  "expansion": null },
+    { "id": 3,  "name": "Engineer",        "role": "Robot pet class; strong damage/reflect pets, trade skills and team damage buffs.",                 "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Nanomage","Solitus"], "froob": true, "expansion": null },
+    { "id": 4,  "name": "Fixer",           "role": "SMG runner/support; run-speed and HoT grafts, NCU buffs, evades and grid access.",                 "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Opifex","Solitus"], "froob": true,  "expansion": null },
+    { "id": 5,  "name": "Agent",           "role": "Sniper/stealth; rifle + Aimed Shot, False Profession to cast other professions' nanos.",           "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Opifex","Nanomage"], "froob": true, "expansion": null },
+    { "id": 6,  "name": "Adventurer",      "role": "Hybrid all-rounder; morphs, self-heals, multiple weapon options and travel utility.",              "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Solitus","Opifex"], "froob": true,  "expansion": null },
+    { "id": 7,  "name": "Trader",          "role": "Debuff/buff support; skill-wrangle and drain nanos, team damage/AC buffs, best tradeskiller.",      "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Solitus","Opifex"], "froob": true,  "expansion": null },
+    { "id": 8,  "name": "Bureaucrat",      "role": "Crowd control / charm pet class; calms, roots and single-target debuffs plus a charmed pet.",       "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Nanomage","Solitus"], "froob": true, "expansion": null },
+    { "id": 9,  "name": "Enforcer",        "role": "Melee tank; high HP, taunts, Mongo rage buffs and big 2-hand weapons.",                            "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Atrox","Solitus"], "froob": true,  "expansion": null },
+    { "id": 10, "name": "Doctor",          "role": "Primary healer; strongest heals plus damage-over-time and ability/init debuffs.",                  "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Solitus","Nanomage"], "froob": true, "expansion": null },
+    { "id": 11, "name": "NanoTechnician",  "role": "Glass-cannon nuker; highest direct nano damage and strong AoE.",                                  "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Nanomage","Solitus"], "froob": true, "expansion": null },
+    { "id": 12, "name": "Metaphysicist",   "role": "Multi-pet caster; attack/heal/mezz pets plus nuke and debuff nanos.",                              "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Nanomage","Solitus"], "froob": true, "expansion": null },
+    { "id": 14, "name": "Keeper",          "role": "Melee paladin/aura support; 2-hand-edged auras that buff team damage/heal/reflect (Shadowlands).",  "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Atrox","Solitus"], "froob": false, "expansion": "Shadowlands" },
+    { "id": 15, "name": "Shade",           "role": "Dual-wield stealth assassin; fast piercing/knife attacks with drain procs (Shadowlands).",         "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Opifex","Solitus"], "froob": false, "expansion": "Shadowlands" }
+  ],
+  "_notPlayable": [
+    { "id": 13, "name": "Monster", "note": "NPC/monster profession value; never player-selectable." }
+  ],
+  "_sources": [
+    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Profession.cs (enum ids, verified)",
+    "https://anarchyonline.fandom.com/wiki/Breed (any breed can be any profession; froob cannot select Keeper/Shade)",
+    "http://wiki.aodb.us/wiki/Breed and https://gamefaqs.gamespot.com/pc/913777-anarchy-online (breed-per-profession suitability descriptions)"
+  ]
+}

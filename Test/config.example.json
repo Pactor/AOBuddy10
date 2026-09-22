@@ -1,8 +1,5 @@
 {
   "Accounts": [
-    { "Username": "YOUR_ALT_ACCOUNT", "Password": "YOUR_ALT_PASSWORD", "Character": "Mixia" }
-  ],
-  "Plugins": [
-    "E:\Funcom\AOSharp.Clientless\AOBuddy\bin\Debug\AOBuddy.dll"
+    { "Username": "YOUR_ALT_ACCOUNT", "Password": "YOUR_ALT_PASSWORD", "Character": "YourBotChar", "Dimension": "RubiKa" }
   ]
 }

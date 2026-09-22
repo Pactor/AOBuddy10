@@ -21,16 +21,16 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
         #region AoMember Properties
 
         [AoMember(0)]
-        public int Unknown1 { get; set; }
+        public int LowTemplateId { get; set; }
 
         [AoMember(1)]
-        public int Unknown2 { get; set; }
+        public int HighTemplateId { get; set; }
 
         [AoMember(2)]
-        public int Unknown3 { get; set; }
+        public int AttackSelector { get; set; }
 
         [AoMember(3, IsFixedSize = true, FixedSizeLength = 4)]
-        public string Unknown4 { get; set; }
+        public string AttackCode { get; set; }
 
         #endregion
     }

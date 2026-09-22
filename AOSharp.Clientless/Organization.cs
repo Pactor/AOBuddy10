@@ -73,7 +73,7 @@ namespace AOSharp.Clientless
                 Command = OrgClientCommand.BankRemove,
                 Target = DynelManager.LocalPlayer.Identity,
                 Unknown = 0,
-                Unknown1 = 4,
+                Window = 4,
                 IOrgClientMessage = new OrgClientCommandArgsMessage
                 {
                     CommandArgs = amount.ToString()
@@ -91,7 +91,7 @@ namespace AOSharp.Clientless
                 Command = OrgClientCommand.BankAdd,
                 Target = DynelManager.LocalPlayer.Identity,
                 Unknown = 0,
-                Unknown1 = 4,
+                Window = 4,
                 IOrgClientMessage = new OrgClientCommandArgsMessage
                 {
                     CommandArgs = amount.ToString()
@@ -111,7 +111,7 @@ namespace AOSharp.Clientless
                 Command = OrgClientCommand.Kick,
                 Target = identity,
                 Unknown = 0,
-                Unknown1 = 4,
+                Window = 4,
                 IOrgClientMessage = new OrgClientCommandArgsMessage
                 {
                     CommandArgs = name
@@ -130,7 +130,7 @@ namespace AOSharp.Clientless
             {
                 Command = cmd,
                 Target = identity,
-                Unknown1 = 1,
+                Window = 1,
                 Unknown = 0
             });
         }

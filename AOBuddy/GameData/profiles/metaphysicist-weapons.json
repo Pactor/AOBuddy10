@@ -1,0 +1,771 @@
+{
+    "profile":  "Metaphysicist weapons + allowed special attacks (for AOBuddy10 bot decision-making)",
+    "profession":  {
+                       "id":  12,
+                       "name":  "Metaphysicist"
+                   },
+    "generatedUtc":  "2026-09-21T21:35:31Z",
+    "dataSource":  {
+                       "itemData":  "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
+                       "itemNames":  "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+                       "extractor":  "E:\\Funcom\\AOBuddy10\\tools\\mp-weapon-extractor (net10)",
+                       "weaponsInData":  10730,
+                       "note":  "A weapon\u0027s wield requirements live in its ToWield action (OmniCell.Enums.ActionType.ToWield=8). Operator.GreaterThan(2) means \u0027stat \u003e= value\u0027. Special-attack stats present in those requirements = the specials that weapon allows. Requirement VALUES scale with the template\u0027s QL (low/high endpoints); values shown are for the listed QL."
+                   },
+    "howToReadSpecialsAtRuntime":  "For the equipped weapon, read its ToWield criteria: any requirement whose stat is in specialAttackStats is a special that weapon allows (the value is the skill needed at that QL). Wield-skill stat(s) give the weapon type. This mirrors the item data exactly.",
+    "specialAttackStats":  {
+                               "Brawl":  142,
+                               "Dimach":  144,
+                               "SneakAttack":  146,
+                               "FastAttack":  147,
+                               "Burst":  148,
+                               "FlingShot":  150,
+                               "AimedShot":  151,
+                               "FullAuto":  167,
+                               "Backstab":  489,
+                               "passiveNotOnDemand":  [
+                                                          "Riposte(143)",
+                                                          "Parry(145)"
+                                                      ],
+                               "note":  "BowSpecialAttack(121) is a support SKILL for bow Aimed Shot, not an on-demand special; a bow\u0027s on-demand special still shows as AimedShot(151)/FlingShot(150) in criteria."
+                           },
+    "professionRestrictionEncoding":  {
+                                          "stat":  "Profession (stat 60 / 0x3C)",
+                                          "form":  "A ToWield Requirement with Statnumber=60. Operator EqualTo(0) + Value=\u003cprofessionId\u003e locks the weapon to that one profession.",
+                                          "mpUsableRule":  "Weapon is MP-equippable unless it has a Profession EqualTo lock to a profession other than 12 (or Unequal/Not 12). Weapons with no profession requirement are usable by any profession if the skill is met. 59 weapons are locked EqualTo Metaphysicist(12).",
+                                          "example":  "id 271438 \u0027Bow-Blaster - 402\u0027 ql300: ToWield = Bow\u003e=1500, AimedShot\u003e=750, no profession lock -\u003e MP-usable."
+                                      },
+    "dualWieldAndMultiSkills":  {
+                                    "note":  "wield now lists EVERY trainable-skill requirement in the weapon\u0027s ToWield action (weapon skill(s) plus any Multi Melee/Multi Ranged or other skill), each as {skill, requiredValue}. specials lists the on-demand special-attack skills.",
+                                    "multiMeleeStatId":  101,
+                                    "multiRangedStatId":  134,
+                                    "finding":  "In this data (client 18.8.50_EP1) MultiMelee(101)/MultiRanged(134) appear as a ToWield criterion on ONLY 6 weapons - all \u0027Small Ebony Figurine\u0027 variants locked to Soldier/Engineer/Fixer/Agent/Adventurer/Enforcer (NOT Metaphysicist). No MP-usable weapon carries a Multi requirement.",
+                                    "dualWieldMechanic":  "Dual-wielding is gated by the CHARACTER\u0027s Multi Melee / Multi Ranged skill for the off-hand slot, not by a per-weapon ToWield criterion. An MP dual-wields by training Multi Ranged/Melee and equipping two normal weapons (e.g. two Pistols); each weapon still only requires its own wield skill in criteria."
+                                },
+    "usableWeaponTypes":  [
+                              {
+                                  "weaponSkill":  "Bow",
+                                  "wieldSkillStatId":  111,
+                                  "mpSkillCost":  "reduced (MP green)",
+                                  "role":  "Primary MP ranged weapon line (signature). MP-only Shadowlands bows + generic bows.",
+                                  "weaponsTotalInData":  377,
+                                  "weaponsMpUsable":  364,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "AimedShot",
+                                                                         "FlingShot"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  214333,
+                                                                    "name":  "Sprite Bow",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  600
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  214338,
+                                                                    "name":  "Bow of Sympathy",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  600
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  122719,
+                                                                    "name":  "Kevlar Bow",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  470
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "AimedShot",
+                                                                                         "requiredValue":  235
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  212368,
+                                                                    "name":  "Sancrosanct Shere Bow",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  565
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "AimedShot",
+                                                                                         "requiredValue":  565
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  271438,
+                                                                    "name":  "Bow-Blaster - 402",
+                                                                    "ql":  300,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  1500
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "AimedShot",
+                                                                                         "requiredValue":  750
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  122785,
+                                                                    "name":  "Premium Bow-Blaster",
+                                                                    "ql":  200,
+                                                                    "primaryWield":  "Rifle",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Rifle",
+                                                                                      "requiredValue":  765
+                                                                                  },
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  510
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  425
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "AimedShot",
+                                                                                         "requiredValue":  425
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  288286,
+                                                                    "name":  "Special Edition Kyr\u0027Ozch Crossbow",
+                                                                    "ql":  150,
+                                                                    "primaryWield":  "Bow",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Bow",
+                                                                                      "requiredValue":  699
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  349
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Agent",
+                                                                                           "Profession EqualTo MartialArtist",
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  150
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "Pistol",
+                                  "wieldSkillStatId":  112,
+                                  "mpSkillCost":  "reduced (MP green)",
+                                  "role":  "Common MP ranged option; single or dual-wield.",
+                                  "weaponsTotalInData":  1398,
+                                  "weaponsMpUsable":  1160,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "AimedShot",
+                                                                         "Burst",
+                                                                         "FlingShot",
+                                                                         "FullAuto"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  122990,
+                                                                    "name":  "Worn Kolt 58 Magnum",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Pistol",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Pistol",
+                                                                                      "requiredValue":  453
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  226
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  123786,
+                                                                    "name":  "MTI 99 Rebel Match Pistol",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Pistol",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Pistol",
+                                                                                      "requiredValue":  428
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "Burst",
+                                                                                         "requiredValue":  321
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  214
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  122282,
+                                                                    "name":  "Worn Kolt PDW-37",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "Pistol",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Pistol",
+                                                                                      "requiredValue":  439
+                                                                                  },
+                                                                                  {
+                                                                                      "skill":  "MGSMG",
+                                                                                      "requiredValue":  293
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "Burst",
+                                                                                         "requiredValue":  367
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  244
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  288293,
+                                                                    "name":  "Special Edition Kyr\u0027Ozch Pistol",
+                                                                    "ql":  150,
+                                                                    "primaryWield":  "Pistol",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "Pistol",
+                                                                                      "requiredValue":  699
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "Burst",
+                                                                                         "requiredValue":  499
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "FlingShot",
+                                                                                         "requiredValue":  349
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Adventurer",
+                                                                                           "Profession EqualTo Bureaucrat",
+                                                                                           "Profession EqualTo Doctor",
+                                                                                           "Profession EqualTo Engineer",
+                                                                                           "Profession EqualTo Metaphysicist",
+                                                                                           "Profession EqualTo NanoTechnician"
+                                                                                       ],
+                                                                    "levelReq":  150
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "1hBlunt",
+                                  "wieldSkillStatId":  102,
+                                  "mpSkillCost":  "reduced (MP green)",
+                                  "role":  "Melee / energy shields (often paired with Melee Energy).",
+                                  "weaponsTotalInData":  854,
+                                  "weaponsMpUsable":  822,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "Brawl",
+                                                                         "Dimach",
+                                                                         "FastAttack",
+                                                                         "SneakAttack"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  122354,
+                                                                    "name":  "Loose Metaphysic Energy Shield",
+                                                                    "ql":  60,
+                                                                    "primaryWield":  "1hBlunt",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "1hBlunt",
+                                                                                      "requiredValue":  136
+                                                                                  },
+                                                                                  {
+                                                                                      "skill":  "MeleeEnergy",
+                                                                                      "requiredValue":  91
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  76
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  91
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  30
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  245669,
+                                                                    "name":  "Superior Skylight Shield",
+                                                                    "ql":  160,
+                                                                    "primaryWield":  "1hBlunt",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "1hBlunt",
+                                                                                      "requiredValue":  720
+                                                                                  },
+                                                                                  {
+                                                                                      "skill":  "SpaceTime",
+                                                                                      "requiredValue":  480
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  288292,
+                                                                    "name":  "Special Edition Kyr\u0027Ozch Hammer",
+                                                                    "ql":  150,
+                                                                    "primaryWield":  "1hBlunt",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "1hBlunt",
+                                                                                      "requiredValue":  699
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  349
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  399
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  149
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Enforcer",
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  150
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "2hEdged",
+                                  "wieldSkillStatId":  105,
+                                  "mpSkillCost":  "reduced (MP green)",
+                                  "role":  "Cheap melee skill; MP-only 2he weapons exist.",
+                                  "weaponsTotalInData":  764,
+                                  "weaponsMpUsable":  605,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "Brawl",
+                                                                         "Dimach",
+                                                                         "FastAttack",
+                                                                         "SneakAttack"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  246715,
+                                                                    "name":  "Panther",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "2hEdged",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "2hEdged",
+                                                                                      "requiredValue":  750
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  375
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  450
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  150
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Enforcer",
+                                                                                           "Profession EqualTo Metaphysicist",
+                                                                                           "Profession EqualTo Keeper"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "MeleeEnergy",
+                                  "wieldSkillStatId":  104,
+                                  "mpSkillCost":  "standard (guide-recommended)",
+                                  "role":  "MP-only energy weapons/shields (Jupiter Aegis, The Argument).",
+                                  "weaponsTotalInData":  280,
+                                  "weaponsMpUsable":  263,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "Brawl",
+                                                                         "Dimach",
+                                                                         "FastAttack",
+                                                                         "SneakAttack"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  208069,
+                                                                    "name":  "Jupiter Aegis",
+                                                                    "ql":  40,
+                                                                    "primaryWield":  "MeleeEnergy",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "MeleeEnergy",
+                                                                                      "requiredValue":  170
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  85
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  102
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  223467,
+                                                                    "name":  "The Argument",
+                                                                    "ql":  150,
+                                                                    "primaryWield":  "MeleeEnergy",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "MeleeEnergy",
+                                                                                      "requiredValue":  775
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  155
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Enforcer",
+                                                                                           "Profession EqualTo Metaphysicist",
+                                                                                           "Profession EqualTo Keeper"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                },
+                                                                {
+                                                                    "id":  226329,
+                                                                    "name":  "Notum Saturated Animal Bone",
+                                                                    "ql":  1,
+                                                                    "primaryWield":  "MeleeEnergy",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "MeleeEnergy",
+                                                                                      "requiredValue":  10
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "SneakAttack",
+                                                                                         "requiredValue":  10
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  10
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  10
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  10
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Enforcer",
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "1hEdged",
+                                  "wieldSkillStatId":  103,
+                                  "mpSkillCost":  "standard",
+                                  "role":  "MP-only Shank of Maze line.",
+                                  "weaponsTotalInData":  960,
+                                  "weaponsMpUsable":  887,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "Brawl",
+                                                                         "Dimach",
+                                                                         "FastAttack",
+                                                                         "SneakAttack"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  238956,
+                                                                    "name":  "Shank of Maze",
+                                                                    "ql":  1,
+                                                                    "primaryWield":  "1hEdged",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "1hEdged",
+                                                                                      "requiredValue":  10
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "SneakAttack",
+                                                                                         "requiredValue":  5
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  5
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  6
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Adventurer",
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                }
+                                                            ]
+                              },
+                              {
+                                  "weaponSkill":  "2hBlunt",
+                                  "wieldSkillStatId":  107,
+                                  "mpSkillCost":  "standard",
+                                  "role":  "MP-only 2hb weapons (Howlet).",
+                                  "weaponsTotalInData":  503,
+                                  "weaponsMpUsable":  447,
+                                  "allowedSpecialsObservedForType":  [
+                                                                         "Brawl",
+                                                                         "Dimach",
+                                                                         "FastAttack",
+                                                                         "SneakAttack"
+                                                                     ],
+                                  "representativeWeapons":  [
+                                                                {
+                                                                    "id":  246705,
+                                                                    "name":  "Howlet",
+                                                                    "ql":  100,
+                                                                    "primaryWield":  "2hBlunt",
+                                                                    "wield":  [
+                                                                                  {
+                                                                                      "skill":  "2hBlunt",
+                                                                                      "requiredValue":  750
+                                                                                  }
+                                                                              ],
+                                                                    "specials":  [
+                                                                                     {
+                                                                                         "special":  "FastAttack",
+                                                                                         "requiredValue":  375
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Brawl",
+                                                                                         "requiredValue":  450
+                                                                                     },
+                                                                                     {
+                                                                                         "special":  "Dimach",
+                                                                                         "requiredValue":  150
+                                                                                     }
+                                                                                 ],
+                                                                    "professionLock":  [
+                                                                                           "Profession EqualTo Enforcer",
+                                                                                           "Profession EqualTo Metaphysicist"
+                                                                                       ],
+                                                                    "levelReq":  0
+                                                                }
+                                                            ]
+                              }
+                          ],
+    "metaphysicistOnlyWeapons":  {
+                                     "count":  59,
+                                     "byWeaponSkill":  [
+                                                           {
+                                                               "weaponSkill":  "Bow",
+                                                               "count":  16
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "1hEdged",
+                                                               "count":  14
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "MeleeEnergy",
+                                                               "count":  13
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "2hBlunt",
+                                                               "count":  6
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "2hEdged",
+                                                               "count":  5
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "1hBlunt",
+                                                               "count":  3
+                                                           },
+                                                           {
+                                                               "weaponSkill":  "Pistol",
+                                                               "count":  2
+                                                           }
+                                                       ],
+                                     "note":  "These have a Profession EqualTo Metaphysicist(12) lock in ToWield - designed for MPs. Names include Sprite Bow, Bow of Sympathy, Shank of Maze, Howlet, Panther, Jupiter Aegis, The Argument."
+                                 },
+    "technicallyEquippableButAtypical":  {
+                                             "note":  "Any weapon whose only gate is a wield skill can be equipped by an MP IF that skill is raised (implants/buffs), but these types are not part of normal MP play (expensive weapon IP for a nano profession). Counts are MP-usable weapons present in the data.",
+                                             "types":  [
+                                                           {
+                                                               "skill":  "AssaultRifle",
+                                                               "mpUsableInData":  1467
+                                                           },
+                                                           {
+                                                               "skill":  "Rifle",
+                                                               "mpUsableInData":  852
+                                                           },
+                                                           {
+                                                               "skill":  "Piercing",
+                                                               "mpUsableInData":  712
+                                                           },
+                                                           {
+                                                               "skill":  "Shotgun",
+                                                               "mpUsableInData":  537
+                                                           },
+                                                           {
+                                                               "skill":  "MGSMG",
+                                                               "mpUsableInData":  499
+                                                           },
+                                                           {
+                                                               "skill":  "RangedEnergy",
+                                                               "mpUsableInData":  439
+                                                           },
+                                                           {
+                                                               "skill":  "Grenade",
+                                                               "mpUsableInData":  319
+                                                           },
+                                                           {
+                                                               "skill":  "MartialArts",
+                                                               "mpUsableInData":  223
+                                                           },
+                                                           {
+                                                               "skill":  "HeavyWeapons",
+                                                               "mpUsableInData":  84
+                                                           }
+                                                       ]
+                                         },
+    "unverifiedOrCaveats":  [
+                                "MP skill-cost color (which weapon skills are \u0027green\u0027/cheap) comes from AOWiki (wiki.aodb.us Meta-Physicist / Meta-Physicist:Weapons), not from items.ocp. items.ocp gates weapons by skill value, not by an MP-specific cost.",
+                                "Requirement values scale with QL; a single named weapon spans a QL range (low/high templates). Values shown are for the exact template QL listed.",
+                                "EquipSlot (Weap_RightHand 0x06 / Weap_LeftHand 0x08) is not stored in items.ocp; weapon identity here = \u0027has a ToWield action requiring a weapon wield skill\u0027."
+                            ]
+}

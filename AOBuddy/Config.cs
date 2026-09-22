@@ -90,6 +90,14 @@ namespace AOBuddy
         public int StimNanoBelowPercent = 35;      // in combat, stim when nano at/below this (keep casting)
         public int RestNanoBelowPercent = 60;      // out of combat, sit & recharge when nano at/below this
         public int RestNanoUntilPercent = 90;      // nano target to stand at
+        // Heal items have a USE TIMER. Cycle: sit, use ONCE, stand, wait out the timer, only then sit again.
+        // These values come from the ITEM DATA (OmniCell items.ocp), the OnUse event's LockSkill(53033) call:
+        //   Health and Nano Recharger (291082): LockSkill(skill 124, 15s)
+        //   Health and Nano Stim      (291043): LockSkill(skill 123, 40s)
+        // They lock DIFFERENT skills, so the two items are independent — using one does not block the other.
+        // Not readable via AOSharp: its item pack has no OnUse events and drops RechargeDelay for non-nano items.
+        public double RechargerReuseSec = 15.0;
+        public double StimReuseSec = 40.0;
 
         // Low-supply warnings (until she can resupply herself, she tells the owner to restock).
         // Low-supply warnings use real stack-aware unit counts (Item.Count).
@@ -152,10 +160,11 @@ namespace AOBuddy
         public float OwnerInterpFlatY = 1.0f;      // only extrapolate when his vertical speed is under this (flat)
         public float FollowCoastMeters = 5f;       // max distance to coast on one blind gap before waiting
         public float FollowFlatThreshold = 2.5f;   // only coast when the owner's recent path is within this Y of us (flat)
-        public float BreadcrumbSpacing = 0.3f;     // record a path point every this many meters (small = max fidelity)
-        public float CrumbArrive = 1.0f;           // how close to a breadcrumb counts as reached
-        public float StuckSeconds = 1.2f;          // if a crumb can't be reached in this long, skip it (blocked)
-        public int MaxTrail = 800;                 // cap breadcrumb count
+        public float BreadcrumbSpacing = 0.3f;     // 'record'/'savepath' point spacing — saved paths stay dense
+                                                   // (replayed blind later). Live follow uses the sparse
+                                                   // waypoint queue in FollowController, not this.
+        public float CrumbArrive = 1.0f;           // how close to a waypoint counts as reached (normal tier)
+        public float StuckSeconds = 1.2f;          // if a waypoint can't be reached in this long, skip it (blocked)
         public float ZoneChaseMeters = 25f;        // extend one crumb past your last spot to cross a zone line
         public float ManualRunMeters = 25f;        // 'zone'/'forward' command distance
 

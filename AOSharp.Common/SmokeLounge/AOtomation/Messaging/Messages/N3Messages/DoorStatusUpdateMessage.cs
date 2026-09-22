@@ -32,13 +32,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #endregion
 
         [AoMember(0)]
-        public int Unknown1 { get; set; }
+        public int Version { get; set; }
 
         [AoMember(1)]
         public int Unknown2 { get; set; }
 
         [AoMember(2)]
-        public byte Unknown3 { get; set; }
+        public byte Open { get; set; }
 
         [AoMember(3)]
         public short Unknown4 { get; set; }

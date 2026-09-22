@@ -34,13 +34,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public short Unknown1 { get; set; }
+        public short Version { get; set; }
 
         [AoMember(1)]
         public Identity Target { get; set; }
 
         [AoMember(2)]
-        public int Unknown2 { get; set; }
+        public int Seconds { get; set; }
 
         [AoMember(3)]
         public int Unknown3 { get; set; }

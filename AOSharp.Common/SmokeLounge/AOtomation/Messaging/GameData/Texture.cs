@@ -27,7 +27,7 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
         public int Id { get; set; }
 
         [AoMember(2)]
-        public int Unknown { get; set; }
+        public int Group { get; set; }
 
         #endregion
     }

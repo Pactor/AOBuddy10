@@ -31,13 +31,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public float Unknown1 { get; set; }
+        public float CurrentGameTime { get; set; }
 
         [AoMember(1)]
         public int Unknown2 { get; set; }
 
         [AoMember(2)]
-        public int Unknown3 { get; set; }
+        public int CurrentGameDay { get; set; }
 
         [AoMember(3)]
         public float Unknown4 { get; set; }

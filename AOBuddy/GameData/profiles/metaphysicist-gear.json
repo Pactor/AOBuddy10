@@ -1,0 +1,154 @@
+{
+  "profession": "Metaphysicist",
+  "professionId": 12,
+  "summary": "The Meta-Physicist is a pure nano/pet caster: it wins by casting attack/heal/mezz pets, nukes, debuffs and the game's second-best nanoskill buffs, so its gear priorities are nano-skills (MM/BM/PM/MC/TS/SI), the Intelligence + Psychic that raise them, Nano Init (NanoC. Init, stat 0x95) for fast casts, Max Nano / nano pool, NCU, and nano-cost reduction - NOT melee/ranged AC stacking. Best-in-class survivability comes from its pets tanking plus reflect/absorb from symbiants and perks, so armor is chosen for casting output first, ACs last. Leveling path: cheap sided/Carbonum -> nano-skill sets (Living Cyber, Azure Reveries, Sekutek) -> the Shadowlands quest suit -> endgame Miy's Nano, Combined Officer's, or the profession Ofab set. Symbiants and weapons are covered in the separate implants/weapons profiles and are excluded here.",
+  "armorSets": [
+    {
+      "name": "Miy's Nano Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "Intelligence": "up to ~44 (QL300)",
+        "Psychic": "up to ~43 (QL300)",
+        "MaxNano": "~375",
+        "MaxNCU": "~44",
+        "NanoCInit": "~50 (nano init - faster casts)",
+        "AllNanoSkills": "MM/BM/PM/MC/TS/SI each ~+16 (QL300)"
+      },
+      "levelRange": "~QL100-300; mid-to-endgame (froob-friendly)",
+      "source": "wiki.aodb.us/wiki/Miy's_Nano_Armor ; aoitems.com/item/268837 (Miy's Nano Body Armor); auno.org/ao/db.php?id=268836",
+      "note": "The nano variety of Miy's; largest bonuses (Int/Psychic) sit on the Head and Arm pieces. Drops from Medusae (e.g. The Reck dyna camp ~lvl 145). Requires Intelligence + Psychic to wear. Top froob/mid-SL nano set and still strong at endgame; often mixed with Combined pieces.",
+      "priority": "high"
+    },
+    {
+      "name": "Combined Officer's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "NanoPool": "~350 (QL300)",
+        "MaxNano": "~1400 (QL300)",
+        "MaxNCU": "~105 (QL300)",
+        "NanoCostModifier": "~-21% (QL300)",
+        "AllNanoSkills": "each ~+210 (QL300) - incl. MatterMetamorphosis",
+        "AllTradeSkills": "MechEng/ElecEng/QFT etc. ~+210 (QL300)"
+      },
+      "levelRange": "Endgame (AI); QL225 is highest usable with Alien Technology Expertise 2",
+      "source": "wiki.aodb.us/wiki/Combined_Officer's_Armor ; ao-universe.com Alien Armor Process and List ; anarchyonline.fandom.com/wiki/Alien_Armor",
+      "note": "The nano-caster alien armor: tradeskilled by combining Arithmetic + Spiritual alien armor. Best raw weight of nano + trade skill bonuses in the game for a caster. Requires AI raids for parts and high Psychology/EE/NP to build (6x QL). Endgame BiS body/legs/feet for an MP.",
+      "priority": "high"
+    },
+    {
+      "name": "Ofab Metaphysicist Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Shoulder"],
+      "keyBonuses": {
+        "NanoSkills": "profession-tuned nano-skill / caster bonuses",
+        "Upgradeable": "Ofab -> Improved -> Penultimate tiers via Victory Points"
+      },
+      "levelRange": "Endgame (Lost Eden); bought/upgraded with Battlestation Victory Points",
+      "source": "wiki.aodb.us/wiki/Meta-Physicist:Armor (Lost Eden section); local itemnames.sql (Ofab Metaphysicist set)",
+      "note": "Profession-specific PvP/PvM set from Battlestation. Convenient full set with a matching Shoulder Wear piece; a common endgame alternative or supplement to Combined/Miy's. Exact per-QL stat lines not fully verified here - see _unverified.",
+      "priority": "high"
+    },
+    {
+      "name": "Metaphysicist Suit (Shadowlands, upgradeable) -> Chosen / Faithful Metaphysicist Suit",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Shoulder", "Back"],
+      "keyBonuses": {
+        "MaxNano": "First Tier ~150 (QL100) / ~300 (QL160); grows with tier",
+        "NanoSkills": "profession nano-skill bonuses (increase per tier)"
+      },
+      "levelRange": "~lvl 60-205, Shadowlands leveling/quest reward set",
+      "source": "wiki.aodb.us/wiki/Meta-Physicist:Armor ; wiki.aodb.us/wiki/First_Tier_Metaphysicist_Suit ; local itemnames.sql (First/Second Tier, Chosen, Faithful Metaphysicist pieces)",
+      "note": "SL quest chain: First Tier -> Second Tier -> Chosen (Sanctuary) or Faithful (Redeemed) Metaphysicist Suit. Free, no-drop, self-only profession set with Back/Wings and Shoulder pieces. Good leveling backbone through Shadowlands before Miy's/Combined. Detailed nano-skill/init lines per tier not fully verified here.",
+      "priority": "med"
+    },
+    {
+      "name": "Loren's / Azure Reveries armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "NanoSkills": "adds nano skills",
+        "MaxNano": "adds nano pool"
+      },
+      "levelRange": "~lvl 60-130 leveling (Rubi-Ka)",
+      "source": "local itemnames.sql (Azure Reveries pieces ids 165303-165308); ao-universe.com classic-ao armor guides",
+      "note": "Budget/leveling nano-skill armor; commonly mixed with Sekutek/Living Cyber while gearing toward Miy's. Exact per-QL numbers not verified here.",
+      "priority": "budget"
+    },
+    {
+      "name": "Living Cyber Armor",
+      "slotsCovered": ["Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "NanoSkills": "low-level nano-skill bonuses",
+        "Abilities": "Int/Psychic-friendly"
+      },
+      "levelRange": "~lvl 25-100 leveling (Rubi-Ka)",
+      "source": "local itemnames.sql (Living Cyber Armor pieces)",
+      "note": "Cheap early nano-caster set. Superseded quickly; listed as a budget stepping stone.",
+      "priority": "budget"
+    },
+    {
+      "name": "Sekutek Chilled Plasteel Armor",
+      "slotsCovered": ["Head", "Body", "Hands", "Legs"],
+      "keyBonuses": {
+        "Strength": "adds",
+        "Agility": "adds",
+        "Intelligence": "adds"
+      },
+      "levelRange": "~lvl 30-100 leveling (Rubi-Ka)",
+      "source": "local itemnames.sql (Sekutek pieces 160391-160398); AO community armor guides",
+      "note": "Budget ability armor (STR/AGI/INT) - the INT helps nano skills a little; used mainly to make equip/travel requirements while leveling, not a caster BiS.",
+      "priority": "budget"
+    },
+    {
+      "name": "Carbonum Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "ACs": "solid all-round armor class for the level",
+        "NCU": "minor"
+      },
+      "levelRange": "~lvl 20-75 leveling (Rubi-Ka)",
+      "source": "local itemnames.sql (Carbonum pieces 162426-162431); ao-universe.com classic leveling guidance",
+      "note": "Generic cheap tradeskilled leveling armor recommended for the ~20-75 band before switching to nano-skill sets. No nano bonuses - purely survivability filler.",
+      "priority": "budget"
+    }
+  ],
+  "headwear": [
+    {"name": "Miy's Nano Armor Helmet", "effect": "part of Miy's Nano set; Int/Psychic + nano skills (largest Int/Psychic on head/arms)", "id": null},
+    {"name": "Ofab Metaphysicist Headgear", "effect": "profession helmet; caster/nano-skill bonuses; upgradeable to Improved/Penultimate", "id": 264359},
+    {"name": "Helmet of Azure Reveries", "effect": "budget leveling nano-skill helm", "id": 165307},
+    {"name": "Sekutek Chilled Plasteel Armor Helmet", "effect": "budget INT/ability helm for equip requirements", "id": 160395}
+  ],
+  "ncuAndBelt": [
+    {"name": "Belt Component Platform (300X / 4IX / Overclocked / Viral)", "effect": "belt/deck that hosts NCU memory chips and cluster components; base of the MP's NCU stack", "id": 303993},
+    {"name": "Accelerated NCU Memory", "effect": "NCU memory chips slotted into the belt to raise Max NCU (needed to hold buffs/debuffs)", "id": 164603},
+    {"name": "Grid Armor Mk I-IV", "effect": "alternative full-body: large Max NCU, run speed and evades, but occupies Body/Back/Arms slots (blocks nano-skill armor there) - situational, not typical MP BiS", "id": 155172}
+  ],
+  "misc": [
+    {"name": "Custom-Made Metaphysicist Ring of Focus", "effect": "MP profession ring - nano/casting focus", "slot": "Finger", "id": 163658},
+    {"name": "Custom-Made Metaphysicist Ring of the Occult", "effect": "MP profession ring - nano/casting focus (occult variant)", "slot": "Finger", "id": 163660},
+    {"name": "Ring of the Nucleus Basalis (and Superior)", "effect": "nano-skill ring; Superior variant is the endgame upgrade", "slot": "Finger", "id": 202717},
+    {"name": "De'Valos Sleeves", "effect": "arms piece adding up to +30 to all six nano skills (MM/BM/PM/MC/TS/SI); swappable over set sleeves for casters", "slot": "Arm", "id": null},
+    {"name": "Metaphysicist NICS", "effect": "profession HUD item (nano interface)", "slot": "HUD", "id": 215235},
+    {"name": "Nano Targeting Helper", "effect": "HUD utility - increases nuke damage ('every nuker's dream')", "slot": "HUD", "id": 269184},
+    {"name": "Notum Splice", "effect": "utility item (notum-related); commonly used caster util - verify exact stat line before relying on it", "slot": "Util/HUD", "id": 204649}
+  ],
+  "_unverified": [
+    "Ofab Metaphysicist set exact per-QL stat lines (nano-skill/init/max-nano numbers) not read from item data here - confirm on aoitems/auno before using specific values.",
+    "Metaphysicist Suit / Chosen / Faithful per-tier nano-skill and nano-init lines only partially confirmed (Max Nano confirmed: ~150 QL100 / ~300 QL160 First Tier).",
+    "Combined Officer's numbers are the QL300 example from aodb; QL usable is capped by Alien Technology Expertise perk (~QL225 with AT Expertise 2). Confirm the QL you can actually equip.",
+    "Notum Splice (id 204649) exact effect not read from local item data - listed by name only; verify it is a nano-init/max-nano util before trusting.",
+    "Metaphysicist NICS (id 215235) confirmed as a HUD item by name/type but its stat block was not read here.",
+    "Back-slot nano cloaks commonly cited in the Funcom-forums MP guide summary (Neleb's Nano-circuit/Nano-master Robe, Reanimator's Cloak / Cloak of the Reanimated Summoner) were NOT found in local itemnames.sql and their stats were not independently verified - treat as leads, not confirmed.",
+    "Other Funcom-forum-summary items not independently confirmed and deliberately kept OUT of the main lists: 'Nano Formulae/Formula Recompiler', 'Phasing Nano Input Hood', 'Spirit-Infused Yuttos Modified NCU', 'XtremTech's Ring of Casting'. Possible small-model paraphrase - verify names/ids on aoitems before adding.",
+    "Miy's Nano Armor ids: only the Body Armor id is verified (aoitems 268837 / auno 268836); other piece ids not enumerated. Miy's is NOT present in the local itemnames.sql extract (partial extract)."
+  ],
+  "_sources": [
+    "wiki.aodb.us/wiki/Meta-Physicist:Armor (set list: SL Metaphysicist Suit/Jobe/Chosen/Faithful; Lost Eden Ofab)",
+    "wiki.aodb.us/wiki/Miy's_Nano_Armor (Miy's Nano stat summary, drop source)",
+    "wiki.aodb.us/wiki/Combined_Officer's_Armor (Combined Officer's = Arithmetic+Spiritual, QL300 stats, AT Expertise QL cap)",
+    "wiki.aodb.us/wiki/First_Tier_Metaphysicist_Suit (SL suit Max Nano values, upgrade path)",
+    "ao-universe.com - classic-ao and alien-invasion armor/tradeskill guides (leveling armor progression; De'Valos Sleeves; Alien Armor Process and List)",
+    "anarchyonline.fandom.com/wiki/Alien_Armor and /Armorsets (alien/combined armor overview for casters)",
+    "forums.funcom.com/t/mp-meta-physicist-guide/74897 (community MP guide - gear leads; some item names unconfirmed, see _unverified)",
+    "aoitems.com / auno.org (item id verification for Miy's Nano Body Armor)",
+    "LOCAL: E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql (id/name verification - partial extract; Ofab MP set, SL Metaphysicist suits, Azure Reveries, Sekutek, Living Cyber, Carbonum, MP rings, Ring of the Nucleus Basalis, Metaphysicist NICS, Nano Targeting Helper, Notum Splice, Belt Component Platform, Accelerated NCU Memory, Grid Armor confirmed present)",
+    "LOCAL: E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (NanoCInit=0x95, MaxNCU=0xB5, MaxNanoEnergy=0xDD, NPCostModifier=0x13E, nano-skill stat ids) and EquipSlot.cs (Cloth_* clothing slots)"
+  ]
+}

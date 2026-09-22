@@ -36,13 +36,13 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         [AoMember(0)]
-        public int Unknown1 { get; set; }
+        public int ChatCategory { get; set; }
 
         [AoMember(1, SerializeSize = ArraySizeType.Int16)]
         public string Message { get; set; }
       
         [AoMember(2)]
-        public int Unknown2 { get; set; }
+        public int PayloadKind { get; set; }
         #endregion
 
         private string _formattedMessage = null;
