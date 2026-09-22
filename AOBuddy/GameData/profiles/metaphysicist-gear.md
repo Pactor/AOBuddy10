@@ -85,5 +85,5 @@ lists** — verify on aoitems before adding.
 - anarchyonline.fandom.com — Alien Armor / Armorsets
 - forums.funcom.com/t/mp-meta-physicist-guide/74897 (leads only; unconfirmed names flagged)
 - aoitems.com / auno.org — id verification (Miy's Nano Body Armor 268837 / 268836)
-- LOCAL: `E:\Funcom\attic\extracted-client-data\itemnames.sql`;
-  `E:\Funcom\AOBuddy10\AOSharp.Common\GameData\Stat.cs` & `EquipSlot.cs`
+- LOCAL: `the extracted client data\itemnames.sql`;
+  `AOSharp.Common/GameData\Stat.cs` & `EquipSlot.cs`

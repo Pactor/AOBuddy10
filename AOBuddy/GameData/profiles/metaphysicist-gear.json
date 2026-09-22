@@ -148,7 +148,7 @@
     "anarchyonline.fandom.com/wiki/Alien_Armor and /Armorsets (alien/combined armor overview for casters)",
     "forums.funcom.com/t/mp-meta-physicist-guide/74897 (community MP guide - gear leads; some item names unconfirmed, see _unverified)",
     "aoitems.com / auno.org (item id verification for Miy's Nano Body Armor)",
-    "LOCAL: E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql (id/name verification - partial extract; Ofab MP set, SL Metaphysicist suits, Azure Reveries, Sekutek, Living Cyber, Carbonum, MP rings, Ring of the Nucleus Basalis, Metaphysicist NICS, Nano Targeting Helper, Notum Splice, Belt Component Platform, Accelerated NCU Memory, Grid Armor confirmed present)",
-    "LOCAL: E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (NanoCInit=0x95, MaxNCU=0xB5, MaxNanoEnergy=0xDD, NPCostModifier=0x13E, nano-skill stat ids) and EquipSlot.cs (Cloth_* clothing slots)"
+    "LOCAL: the extracted client data\\itemnames.sql (id/name verification - partial extract; Ofab MP set, SL Metaphysicist suits, Azure Reveries, Sekutek, Living Cyber, Carbonum, MP rings, Ring of the Nucleus Basalis, Metaphysicist NICS, Nano Targeting Helper, Notum Splice, Belt Component Platform, Accelerated NCU Memory, Grid Armor confirmed present)",
+    "LOCAL: AOSharp.Common/GameData\\Stat.cs (NanoCInit=0x95, MaxNCU=0xB5, MaxNanoEnergy=0xDD, NPCostModifier=0x13E, nano-skill stat ids) and EquipSlot.cs (Cloth_* clothing slots)"
   ]
 }

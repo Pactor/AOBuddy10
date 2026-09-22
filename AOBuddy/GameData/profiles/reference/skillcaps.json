@@ -87,6 +87,6 @@
   ],
   "_sources": [
     "http://wiki.aodb.us/wiki/Skills_Costs_and_Dependencies_Chart (per-profession skill cost factors - primary source for all 'cost' arrays)",
-    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (skill enum names and ids for join)"
+    "AOSharp.Common/GameData\\Stat.cs (skill enum names and ids for join)"
   ]
 }

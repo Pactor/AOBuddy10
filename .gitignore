@@ -38,6 +38,11 @@ __pycache__/
 # and they are not something a clone needs; nav_backups/ is kept as a worked example.
 AOBuddy/nav/
 
+# One-off data extractors. They ran once against a local copy of the client data and the OmniCell
+# datafiles, wrote the profile JSON that IS committed, and are hard-wired to the paths of the
+# machine that ran them. The generated data is the useful part.
+tools/mp-*/
+
 # Local working notes. These name the characters used for testing and quote sniff transcripts,
 # so they stay on the machine that made them.
 AOBuddy/CLAUDE.md
@@ -46,5 +51,16 @@ AOBuddy/CLAUDE.md
 .claude/
 **/.claude/
 
-# Local working notes, kept on the machine that made them.
+# One-off data extractors. They ran once against a local copy of the client data and the OmniCell
+# datafiles, wrote the profile JSON that IS committed, and are hard-wired to the paths of the
+# machine that ran them. The generated data is the useful part.
+tools/mp-*/
+
+# Local working notes - handoffs, roadmaps and the dated design write-ups that went with each
+# piece of work. They name test characters and local paths, and they go stale the moment the code
+# they describe changes. The repository carries the code and the data it needs, not the diary.
 HANDOFF-*.md
+MILESTONES-*.md
+CLASS-PROFILE-PLAYBOOK.md
+*-design.md
+*_DESIGN.md

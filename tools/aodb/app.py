@@ -3,7 +3,7 @@
 AODB - Anarchy Online character reference web app (AOBuddy10).
 
 Data-driven: reads the JSON the profile/reference agents generate under
-  E:\\Funcom\\AOBuddy10\\AOBuddy\\GameData\\profiles\\
+  AOBuddy/GameData/profiles\\
 and renders a browsable UI (pick a profession -> breeds it can be, skill caps,
 implants, equippable weapons + their specials, and every castable nano).
 

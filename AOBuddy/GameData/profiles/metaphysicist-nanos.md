@@ -4,10 +4,10 @@ Generated 2026-09-21T21:19:54Z for the AOBuddy10 bot. **286 nanos.**
 
 ## Method / provenance
 
-- **Nano data (ground truth):** `E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp` — OmniCell OMNICELL-CONTENT v3 pack (client 18.8.50_EP1 extraction), loaded through `OmniCell.Core` `NanoLoader.CacheAllNanos` (net10 DLL). 10965 nano formulas in the pack.
+- **Nano data (ground truth):** `the OmniCell datafiles/nanos.ocp` — OmniCell OMNICELL-CONTENT v3 pack (client 18.8.50_EP1 extraction), loaded through `OmniCell.Core` `NanoLoader.CacheAllNanos` (net10 DLL). 10965 nano formulas in the pack.
 - **Names:** joined by nano id against `itemnames.sql` (`itemnames` table).
 - **Enums:** stat ids and nano-line names from `AOSharp.Common/GameData/Stat.cs` and `NanoEnums.cs`.
-- **Extractor source:** `E:\Funcom\AOBuddy10\tools\mp-nano-extractor` (re-runnable).
+- **Extractor source:** `tools\mp-nano-extractor` (re-runnable).
 - **No web data was used for any id, name or level.** A web check (AO wiki/aoitems) was used only to confirm the heal-pet line has ~10 strengths, which matches the 10 found locally.
 
 ## MP-castability criterion

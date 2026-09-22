@@ -8,9 +8,9 @@ Companion machine-readable files (same directory): `metaphysicist-weapons.json` 
 
 | Thing | Source |
 |---|---|
-| Item criteria (wield skill, specials, profession, level) | `E:\Funcom\OmniCell\OmniCell\Datafiles\items.ocp` — full converted item pack, `OMNICELL-CONTENT` v3, client **18.8.50_EP1** (120,842 templates) |
-| Id → Name | `E:\Funcom\attic\extracted-client-data\itemnames.sql` |
-| Extractor | `E:\Funcom\AOBuddy10\tools\mp-weapon-extractor\` (net10; self-contained `.ocp` reader) |
+| Item criteria (wield skill, specials, profession, level) | `the OmniCell datafiles\items.ocp` — full converted item pack, `OMNICELL-CONTENT` v3, client **18.8.50_EP1** (120,842 templates) |
+| Id → Name | `the extracted client data\itemnames.sql` |
+| Extractor | `tools\mp-weapon-extractor\` (net10; self-contained `.ocp` reader) |
 | MP weapon-skill cost ("green" skills) | AOWiki `wiki.aodb.us/wiki/Meta-Physicist` and `Meta-Physicist:Weapons` |
 
 Every weapon id/name/QL/requirement below was read from the files above. **Nothing is hand-authored.** The MP skill-cost color is the only web-sourced fact (items.ocp does not store a per-profession cost).

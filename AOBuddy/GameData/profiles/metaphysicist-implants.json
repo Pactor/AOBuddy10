@@ -98,7 +98,7 @@
   ],
   "_sources": [
     "https://www.neoseeker.com/anarchyonline/faqs/93322-anarchy-online-metaphysicist.html (Metaphysicist FAQ: recommended caster implant clusters - Head shiny MC/TS; Eye bright Sensory Impr / faded Time&Space; Ear faded Psycho Mod; Chest bright Bio Met / faded Sensory Impr; Waist faded Bio Met; Right Hand bright Time&Space/Matter Creation; six key slots)",
-    "E:\\Funcom\\AOBuddy10\\AOBuddy\\GameData\\profiles\\reference\\implants.json (own cluster->slot->grade mapping used to validate every placement)",
+    "AOBuddy/GameData/profiles\\reference\\implants.json (own cluster->slot->grade mapping used to validate every placement)",
     "http://wiki.aodb.us/wiki/Implant (equip-requirement formulas cited in the ladder note)"
   ]
 }

@@ -110,4 +110,4 @@ All MP profession research lines are **personal** (10 levels each, funded by red
 - Funcom forums — [MP Meta-physicist guide](https://forums.funcom.com/t/mp-meta-physicist-guide/74897)
 - AOWiki — [Meta-Physicist](http://wiki.aodb.us/wiki/Meta-Physicist), [Breed and Skills](http://wiki.aodb.us/wiki/Meta-Physicist:Breed_and_Skills), [Perks](http://wiki.aodb.us/wiki/Meta-Physicist:Perks), [Research Lines](http://wiki.aodb.us/wiki/Meta-Physicist:Research_Lines)
 - Fandom — [Meta-Physicist Knowledge Base](https://anarchyonline.fandom.com/wiki/Meta-Physicist)
-- Local enums — `E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Profession.cs`, `PerkHash.cs`
+- Local enums — `AOSharp.Common/GameData/Profession.cs`, `PerkHash.cs`

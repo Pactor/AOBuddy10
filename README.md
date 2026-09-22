@@ -20,7 +20,7 @@ capture settled each one.
 | `AOSharp.Common/` | game data types and the SmokeLounge AOtomation message library |
 | `AOSharp.Clientless.Chat/` | the chat-server connection |
 | `Ionic.Zlib/` | the stream compression the zone connection negotiates |
-| `tools/` | the AODB reference web app and the data extractors that feed it |
+| `tools/` | the AODB reference web app |
 | `Test/` | the launcher host |
 
 The bot is split so that working on one behaviour cannot break another. Each controller owns its
@@ -90,9 +90,9 @@ tools\aodb\aodb.bat 9000       another port, when 8888 is taken
 
 It opens the browser for you and needs nothing but Python 3 — no packages.
 
-It reads the JSON under `AOBuddy/GameData/profiles/`, which the extractors in `tools/` generate
-from the game's own item data. Sections with no data yet say so rather than inventing any.
-`CLASS-PROFILE-PLAYBOOK.md` describes how a class profile is produced.
+It reads the JSON under `AOBuddy/GameData/profiles/`, generated from the game's own item data.
+Every entry records where its numbers came from; sections with no data yet say so rather than
+inventing any. The Meta-Physicist is complete and is the worked example for the rest.
 
 ## Game data
 

@@ -4,7 +4,7 @@
   "generatedUtc": "2026-09-21T22:10:00Z",
   "purpose": "Buff reference for AOBuddy10 MP decision-making: self-buffs to keep up, buffs to request from other professions (twink/raid/cast/travel), general consumable/city buffs, and the nano-skill buffs the MP hands to others.",
   "dataSources": {
-    "selfAndGivesIds": "E:/Funcom/AOBuddy10/AOBuddy/GameData/profiles/metaphysicist-nanos.json (nanos.ocp extraction, client 18.8.50_EP1). All ids below marked source=local were read from that file's 'Self / Team Buffs', 'Misc / Utility', 'Heals / HoT', 'Travel / Recall' categories.",
+    "selfAndGivesIds": "AOBuddy/GameData/profiles/metaphysicist-nanos.json (nanos.ocp extraction, client 18.8.50_EP1). All ids below marked source=local were read from that file's 'Self / Team Buffs', 'Misc / Utility', 'Heals / HoT', 'Travel / Recall' categories.",
     "crossProfAndGeneral": "ao-universe.com Buffing Guide; wiki.aodb.us Who_Buffs_What; aoitems.com; forums.funcom.com. Cross-profession buff ids are NOT in the local MP data (they are other professions' nanos) so ids are null and marked source=web."
   },
 
@@ -120,7 +120,7 @@
   ],
 
   "_sources": [
-    "E:/Funcom/AOBuddy10/AOBuddy/GameData/profiles/metaphysicist-nanos.json (local nanos.ocp extraction, client 18.8.50_EP1) -- all self/gives ids",
+    "AOBuddy/GameData/profiles/metaphysicist-nanos.json (local nanos.ocp extraction, client 18.8.50_EP1) -- all self/gives ids",
     "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide -- Wrangle/Essence/Iron Circle/Agent/Adventurer/Fixer/Composite values, expertise stacking",
     "https://wiki.aodb.us/wiki/Who_Buffs_What -- cross-profession buff providers (nano init, HP, run speed, essence)",
     "https://anarchyonline.fandom.com/wiki/Who_buffs_what -- cross-profession buff table (fandom mirror)",

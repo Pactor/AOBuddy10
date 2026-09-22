@@ -172,7 +172,7 @@
                                           "howUnknown":  20
                                       },
                          "method":  [
-                                        "Checked OmniCell local tables E:\\Funcom\\OmniCell\\OmniCell\\Built\\Release\\SqlTables\\ (mobdroptable.sql=25 rows, vendortemplate.sql, moblootprofiles.sql): NONE of the representative ids appear (exact or range).",
+                                        "Checked OmniCell local tables the OmniCell SQL tables\\ (mobdroptable.sql=25 rows, vendortemplate.sql, moblootprofiles.sql): NONE of the representative ids appear (exact or range).",
                                         "expansion field derived from each weapon\u0027s ToWield Expansion(389) requirement in items.ocp, mapped via AOSharp.Common ExpansionFlags / OmniCell.Enums.Expansions (authoritative).",
                                         "Public AO item DBs were not machine-readable here: auno.org (Anubis anti-bot 403), aoitems.com (domain parked/repurposed), anarchyonline.fandom.com (HTTP 402). No per-item drop/vendor/mission was recorded rather than guess one."
                                     ],

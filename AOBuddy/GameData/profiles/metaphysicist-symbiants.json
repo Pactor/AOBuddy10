@@ -622,8 +622,8 @@
     "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/symbiants",
     "https://forums.funcom.com/t/guide-how-to-make-xan-alpha-symbiants/109047",
     "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/general-crafting/alpha-symbiants-3",
-    "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql (names+ids)",
-    "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (QL/bonuses/reqs, via tools/mp-symbiant-extractor)",
-    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (stat-id -> name map)"
+    "the extracted client data\\itemnames.sql (names+ids)",
+    "the OmniCell datafiles\\items.ocp (QL/bonuses/reqs, via tools/mp-symbiant-extractor)",
+    "AOSharp.Common/GameData\\Stat.cs (stat-id -> name map)"
   ]
 }

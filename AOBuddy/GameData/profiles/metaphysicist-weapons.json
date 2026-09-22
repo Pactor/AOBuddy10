@@ -6,9 +6,9 @@
                    },
     "generatedUtc":  "2026-09-21T21:35:31Z",
     "dataSource":  {
-                       "itemData":  "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
-                       "itemNames":  "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
-                       "extractor":  "E:\\Funcom\\AOBuddy10\\tools\\mp-weapon-extractor (net10)",
+                       "itemData":  "the OmniCell datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
+                       "itemNames":  "the extracted client data\\itemnames.sql",
+                       "extractor":  "tools\\mp-weapon-extractor (net10)",
                        "weaponsInData":  10730,
                        "note":  "A weapon\u0027s wield requirements live in its ToWield action (OmniCell.Enums.ActionType.ToWield=8). Operator.GreaterThan(2) means \u0027stat \u003e= value\u0027. Special-attack stats present in those requirements = the specials that weapon allows. Requirement VALUES scale with the template\u0027s QL (low/high endpoints); values shown are for the listed QL."
                    },

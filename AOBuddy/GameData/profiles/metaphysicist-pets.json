@@ -137,8 +137,8 @@
     "Soothing Spirit perk boosting heal-pet output is from the Funcom forum guide; exact magnitude not verified."
   ],
   "_sources": [
-    "LOCAL: E:/Funcom/AOBuddy10/AOBuddy/GameData/profiles/metaphysicist-nanos.json (ids, names, nanoStrain, minLevel, castReqs, SummonPet templates) - source of truth for every id/name used here.",
-    "LOCAL: E:/Funcom/AOBuddy10/AOSharp.Common/GameData/NanoEnums.cs (NanoLine names: AttackPets=1015, HealPets=1016, SupportPets=1017, MPPetDamageBuffs=216, MPPetInitiativeBuffs=217, PetShortTermDamageBuffs=225, PetDefensiveNanos=816, PetDamageOverTimeResistNanos=817) and CharacterFlags.cs (MPHealPets=96, MPAttackPets=97).",
+    "LOCAL: AOBuddy/GameData/profiles/metaphysicist-nanos.json (ids, names, nanoStrain, minLevel, castReqs, SummonPet templates) - source of truth for every id/name used here.",
+    "LOCAL: AOSharp.Common/GameData/NanoEnums.cs (NanoLine names: AttackPets=1015, HealPets=1016, SupportPets=1017, MPPetDamageBuffs=216, MPPetInitiativeBuffs=217, PetShortTermDamageBuffs=225, PetDefensiveNanos=816, PetDamageOverTimeResistNanos=817) and CharacterFlags.cs (MPHealPets=96, MPAttackPets=97).",
     "AO-Universe 'Basic Pet Commands Guide' (https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/basic-pet-commands-guide) - pet command list (follow/attack/guard/behind/wait/heal/report/rename/terminate, named-pet targeting, guard-after-zone).",
     "AODB Wiki Meta-Physicist (http://wiki.aodb.us/wiki/Meta-Physicist) - three pet types, pets no longer on a timer / wrangle to higher pets, /oe check.",
     "Anarchy Online Fandom - Meta-Physicist (https://anarchyonline.fandom.com/wiki/Meta-Physicist) - up to three pets (attacker/healer/crowd control); heal pet 10 strengths incl. Mortificant (SL); mezz = stun not calm, single target; heal pet can heal players/pets/NPCs/towers. (Retrieved via search summary; direct fetch returned HTTP 402.)",

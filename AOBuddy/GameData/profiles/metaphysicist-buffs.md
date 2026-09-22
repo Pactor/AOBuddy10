@@ -128,7 +128,7 @@ both a Composite and a SenseImp single to the same target.
 
 ## Sources
 
-- Local: `E:/Funcom/AOBuddy10/AOBuddy/GameData/profiles/metaphysicist-nanos.json` (nanos.ocp, 18.8.50_EP1) — all self/gives IDs
+- Local: `AOBuddy/GameData/profiles/metaphysicist-nanos.json` (nanos.ocp, 18.8.50_EP1) — all self/gives IDs
 - [AO-Universe Buffing Guide](https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide)
 - [AODB Who Buffs What](https://wiki.aodb.us/wiki/Who_Buffs_What) / [Fandom mirror](https://anarchyonline.fandom.com/wiki/Who_buffs_what)
 - [aoitems: Composite Attribute Boost 223372](https://aoitems.com/item/223372/composite-attribute-boost/)

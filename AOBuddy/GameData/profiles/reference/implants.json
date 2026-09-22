@@ -172,7 +172,7 @@
     "https://martin.brenner.de/ao/implants.html (full cluster-to-slot Shiny/Bright/Faded mapping)",
     "http://wiki.aodb.us/wiki/Implant (Treatment req = QL*4.7+11 ~ trunc(4.7237*QL+6.7673); Ability req = QL*2+4; cluster build Nano Programming multipliers)",
     "https://anarchyonline.fandom.com/wiki/Implant (cluster grade minimum QL %: Shiny 86, Bright 84, Faded 82; cluster invariant)",
-    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\EquipSlot.cs (Imp_* slot names and ids)",
-    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (cluster->skill stat ids for join)"
+    "AOSharp.Common/GameData\\EquipSlot.cs (Imp_* slot names and ids)",
+    "AOSharp.Common/GameData\\Stat.cs (cluster->skill stat ids for join)"
   ]
 }

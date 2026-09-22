@@ -6,10 +6,10 @@
   },
   "generatedUtc": "2026-09-21T21:19:54Z",
   "dataSource": {
-    "nanoData": "E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp (OMNICELL-CONTENT v3 pack, client 18.8.50_EP1 extraction) loaded via OmniCell.Core NanoLoader.CacheAllNanos",
-    "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
-    "stat/nanoLineEnums": "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs, NanoEnums.cs",
-    "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-nano-extractor (net10)",
+    "nanoData": "the OmniCell datafiles/nanos.ocp (OMNICELL-CONTENT v3 pack, client 18.8.50_EP1 extraction) loaded via OmniCell.Core NanoLoader.CacheAllNanos",
+    "itemNames": "the extracted client data\\itemnames.sql",
+    "stat/nanoLineEnums": "AOSharp.Common/GameData\\Stat.cs, NanoEnums.cs",
+    "extractor": "tools\\mp-nano-extractor (net10)",
     "nanosInData": 10965
   },
   "castabilityCriterion": "A nano is MP-castable when one of its cast Actions (OmniCell.Enums.ActionType.ToUse=3) carries an Operator.EqualTo requirement on Profession(stat 60)==12 OR VisualProfession(stat 368)==12. All matches use EqualTo. VisualProfession is how most older MP nanos are profession-locked; in this data 133 gate via Profession(60) and 153 via VisualProfession(368).",

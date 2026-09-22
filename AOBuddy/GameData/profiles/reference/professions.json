@@ -1,5 +1,5 @@
 {
-  "_description": "Anarchy Online profession reference. ids verified against E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Profession.cs. id 13 (Monster) is not player-selectable and is omitted from the playable list.",
+  "_description": "Anarchy Online profession reference. ids verified against AOSharp.Common/GameData\\Profession.cs. id 13 (Monster) is not player-selectable and is omitted from the playable list.",
   "_breedAvailability": "In Anarchy Online there are NO breed restrictions on profession choice: every one of the 4 breeds (Solitus, Opifex, Nanomage, Atrox) can roll every playable profession. Keeper and Shade are the only professions gated behind an expansion (Shadowlands) rather than being free-to-play (froob) professions, but that is an account/expansion gate, not a breed gate. 'recommendedBreeds' lists community-preferred breeds for that profession by ability synergy; 'allowedBreeds' is always all four.",
   "professions": [
     { "id": 1,  "name": "Soldier",        "role": "Heavy ranged damage dealer; assault rifle / shotgun DPS with strong reflect/absorb survivability nanos.", "allowedBreeds": ["Solitus","Opifex","Nanomage","Atrox"], "recommendedBreeds": ["Atrox","Solitus"], "froob": true,  "expansion": null },
@@ -21,7 +21,7 @@
     { "id": 13, "name": "Monster", "note": "NPC/monster profession value; never player-selectable." }
   ],
   "_sources": [
-    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Profession.cs (enum ids, verified)",
+    "AOSharp.Common/GameData\\Profession.cs (enum ids, verified)",
     "https://anarchyonline.fandom.com/wiki/Breed (any breed can be any profession; froob cannot select Keeper/Shade)",
     "http://wiki.aodb.us/wiki/Breed and https://gamefaqs.gamespot.com/pc/913777-anarchy-online (breed-per-profession suitability descriptions)"
   ]

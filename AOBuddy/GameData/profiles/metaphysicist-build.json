@@ -198,7 +198,7 @@
     "http://wiki.aodb.us/wiki/Meta-Physicist:Perks (AOWiki - Soothing Spirit, Channel Rage, Starfall, Blunt Mastery, Ranger, Ancient Knowledge)",
     "http://wiki.aodb.us/wiki/Meta-Physicist:Research_Lines (AOWiki - 7 personal LE research lines and their proc perks)",
     "https://anarchyonline.fandom.com/wiki/Meta-Physicist (Fandom KB - overview and appendix structure)",
-    "E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Profession.cs (Metaphysicist = 12)",
-    "E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkHash.cs (12 LEProcMetaPhysicist* proc-perk enum names)"
+    "AOSharp.Common/GameData/Profession.cs (Metaphysicist = 12)",
+    "AOSharp.Common/GameData/PerkHash.cs (12 LEProcMetaPhysicist* proc-perk enum names)"
   ]
 }
