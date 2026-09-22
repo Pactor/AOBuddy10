@@ -1,90 +1,71 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AOSharp.Clientless;
 using AOSharp.Common.GameData;
 
 namespace AOBuddy
 {
     /// <summary>
-    /// FOLLOW — the only system that walks the bot toward the owner. It records the owner's route as a
-    /// WAYPOINT QUEUE and walks that queue in order, so it takes valid ground and the SAME route the owner
-    /// did — up and down ramps (each waypoint carries his real X/Y/Z), around obstacles, through doors, and
-    /// onto a zone line (which zones the bot). It NEVER beelines to the owner's live position: the live
-    /// server terrain-validates movement and rejects a straight line up a slope (the "bouncing on the ramp"
-    /// bug).
+    /// FOLLOW — the only system that walks the bot toward the owner. It is a DIRECT SEEK, in the same
+    /// three beats a player uses:
     ///
-    /// The queue is the bot's own plan, not a live sighting. Once a waypoint is queued the bot walks it
-    /// whether or not the owner is still in view, so ducking behind a hill or around a corner does not stop
-    /// the bot — it keeps walking B -> C -> D -> E. Only when the queue runs dry AND the owner is still gone
-    /// does it fall back to his last known position, and only after reaching THAT does the zone sweep arm.
+    ///     1. TURN TO OWNER  — rotate in place (real TurnLeft/TurnRight packets) until we face him,
+    ///                         instead of sliding sideways while pointing the wrong way.
+    ///     2. MOVE TO OWNER  — run straight at his CURRENT position (interpolated, fed every frame by
+    ///                         Main's PredictOwnerPos) until we're inside FollowDistance.
+    ///     3. TURN HIS WAY   — once parked, adopt the OWNER'S OWN heading, so the instant he runs off
+    ///                         we're already pointing where he's going and start moving immediately
+    ///                         instead of burning the first metres turning.
     ///
-    /// Waypoints are sparse: a point is queued when the owner has moved WaypointSpacing along a straight,
-    /// OR turned more than ~WaypointTurnCos, OR changed height by WaypointHeightDelta. Straights cost
-    /// almost nothing (so the bot never builds a backlog of old positions to retrace — the old 0.3m
-    /// breadcrumb trail was exactly that), while corners, doorways and ramps still get a point each, which
-    /// is what keeps the retraced route server-legal on terrain.
+    /// The old breadcrumb trail is GONE. Replaying a queue of stale crumbs was the source of the choppy
+    /// stop-start gait (arrive at crumb -> dequeue -> re-aim -> step) and of the "owner left view -> trail
+    /// empties -> bot stops" freeze. Instead the target is always a live point, movement is continuous,
+    /// and losing sight of the owner does NOT stop the bot: it keeps running to his last known spot and
+    /// then leans one push further along his last direction, which is also what carries it onto a zone
+    /// line. Only after that does it hand over (HasWork goes false) to Main's zone-sweep / NAV fallback.
     ///
-    /// This controller owns its own queue/manual/replay state. Nothing outside it touches _waypoints, so a
-    /// change to zone-crossing or path replay here can never reach into combat or travel.
+    /// Hysteresis (FollowDistance to stop, +FollowResumeSlack to start again) keeps it from stuttering
+    /// between "close enough" and "catch up" while the owner jogs at the edge of the leash.
+    ///
+    /// Still owned here and unchanged: the zone sweep, saved-path recording, and the REPLAY walker that
+    /// NAV hands recorded routes to (the wall-safe fallback on ground we've already walked — that's what
+    /// covers ramps, where a straight line at the owner can be rejected by the server's terrain check).
     /// </summary>
     public class FollowController
     {
         private readonly BotContext _ctx;
         private readonly Movement _move;
 
-        // ---- Waypoint tuning ----------------------------------------------------
-        // Derived from how the game actually moves, not from user config: the owner runs at 5.5-15.5 u/s,
-        // so ~7m is about one second of his travel — dense enough that the route still reads as his route,
-        // sparse enough that the bot is never retracing a queue of stale positions.
-        private const float WaypointSpacing = 7.0f;       // straight-line spacing, metres
-        private const float WaypointTurnCos = 0.94f;      // record on a turn of ~20 deg or more
-        // Height granularity is NOT a taste call: a real client crossing a ramped zone line moves in
-        // ~0.35m Y steps (captures/newchar_s16.csv: Y 14.01 -> 14.37 -> 14.72 -> 15.135). Anything coarser
-        // than that lets the bot draw a straight line across a curve the server terrain-validates, which is
-        // the ramp-bounce this whole design exists to avoid. So: sparse on the flat, client-dense on slopes.
-        private const float WaypointHeightDelta = 0.4f;   // ...or a height change this big (ramp / stairs / lift)
-        private const float WaypointNoiseFloor = 0.35f;   // ignore jitter smaller than this
-        private const int MaxWaypoints = 250;             // hard queue cap (~1.7km of route) — bounds memory
-
-        // Catch-up tiers, by how far behind the bot is (live distance to the owner while he is visible,
-        // otherwise the remaining queued path length).
-        //   0 .. CatchupRun     normal follow  — exact path, small step cap, tight arrive
-        //   .. CatchupMax       run            — larger step cap, wider arrive (stop braking into every point)
-        //   beyond              maximum        — widest arrive + corner cutting on flat ground
-        // These do NOT raise velocity. The live server speed-validates every move against the client's run
-        // formula (5.5 + RunSpeed/230); anything above it is rejected and snaps the bot back. Catching up
-        // therefore means losing less ground to per-frame clipping and to braking at each point — the gait
-        // is run in every tier, because walk gait would put the bot behind instantly and flap the tiers.
-        private const float CatchupRun = 10.0f;
-        private const float CatchupMax = 25.0f;
-        private const float ArriveRun = 1.8f;
-        private const float ArriveMax = 3.0f;
-        private const float StepCapRun = 2.5f;
-        private const float StepCapMax = 4.0f;
-        private const float CornerCutFlatY = 1.5f;        // only cut a corner when the points are this level
-        private const float LastKnownArrive = 3.0f;       // close enough to the owner's last known spot
-
-        // The owner's route, oldest first. A LinkedList (not a Queue) so we can look one point ahead and
-        // discard points the bot has already passed.
-        private readonly LinkedList<Vector3> _waypoints = new LinkedList<Vector3>();
-        private Vector3? _lastCrumb;      // position the last waypoint was queued at
-        private Vector3? _lastLegDir;     // horizontal direction of the leg into that waypoint (turn test)
-
-        // The owner's last few queued waypoints, kept so that when he vanishes at a line we can continue
-        // along his REAL recent path (its averaged direction, which follows his curve), instead of a
-        // straight guess off one noisy sample.
+        // The owner's position as of this frame (interpolated — fed by Main every frame he's visible),
+        // and a short history of it, kept for his travel DIRECTION (zone sweep + the lost-sight push).
+        private Vector3? _ownerPos;
         private readonly Queue<Vector3> _recentOwner = new Queue<Vector3>();
+        private Vector3? _lastSample;
 
-        // Where he was standing the last time we saw him, and whether we still owe him a walk to it. Armed
-        // when he drops out of view; consumed once the queue is empty (queue empty + owner missing -> head
-        // for his last known position instead of stopping).
-        private Vector3? _lastKnownOwner;
-        private bool _lastKnownPending;
+        // Is he actually going somewhere? A sample moved => he's moving, and stays "moving" for a short
+        // grace (his position reaches us in bursts, so a gap between samples is not a stop).
+        private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+        private double _ownerMovingUntil;
+        private bool OwnerMoving => _clock.Elapsed.TotalSeconds < _ownerMovingUntil;
+        private const double OwnerMovingGrace = 0.6;
+        private double _lastSampleTime;
+        private double _ownerSpeed;      // u/s, smoothed — measured off his own position samples
+        private double _outrunAccum;     // throttle for the "he's faster than me" log
 
-        // How far behind the bot is right now (metres). Main feeds the live owner distance while he is
-        // visible; while he is not, we fall back to the queued path length.
-        private float? _lagToOwner;
+        // Lost sight of him: the spot to keep running to, then one push past it along his last heading.
+        private Vector3? _lostTarget;
+        private bool _lostPushed;
+
+        // Catch-up hysteresis: true while we're closing the gap, false while parked at his side.
+        private bool _closing;
+        private bool _aligning;   // parked and mid-turn onto the owner's facing
+
+        // MIRROR LOCK (stack mode): we're on his spot with his facing, so Main re-sends his own movement
+        // packets as ours (Movement.Mirror) and this controller sends nothing. Re-earned every WalkTick, so
+        // any frame that doesn't reach StackTick (owner lost, cast, rest, travel, replay...) drops it.
+        private bool _mirrorLock;
+        public bool MirrorLocked => _mirrorLock;
+        public void BreakMirror() => _mirrorLock = false;
 
         // A one-off manual destination ('come' = to the owner; 'zone'/'forward' = a push in a heading).
         private Vector3? _manualTarget;
@@ -93,14 +74,10 @@ namespace AOBuddy
         private bool _recording;
         private readonly List<Vector3> _recordBuf = new List<Vector3>();
         private Vector3? _lastRecord;
-        private readonly LinkedList<Vector3> _replay = new LinkedList<Vector3>();
+        private readonly Queue<Vector3> _replay = new Queue<Vector3>();
         private Vector3? _lastReplayDir;
         private bool _replayPushed;
         private bool _replayZonePush = true;   // lean one push past the end (for a saved path that ends on a zone line)
-
-        // Zone-crossing marker: true while the final waypoint is a push meant to carry the bot ONTO a
-        // zone trigger. Keeps the stuck-skip from throwing that last point away.
-        private bool _zoneCrossing;
 
         // ZONE SWEEP: on losing the owner at a line, sweep back and forth across his vanish spot along
         // his travel axis — exactly what a player does when a zone line won't take on the first step.
@@ -127,56 +104,30 @@ namespace AOBuddy
 
         public bool ZoneSweeping => _zoneSweep;
 
-        // Stuck detection for the current waypoint.
+        // Stuck detection for the current replay point.
         private double _crumbStuck;
         private float _lastCrumbDist = float.MaxValue;
 
-        // How far we've coasted (dead-reckoned along the owner's last direction) since his last real position
-        // update. Bounded so we never coast far if he actually stopped; reset when a fresh waypoint arrives.
-        private double _coastAccum;
-
-        public int TrailCount => _waypoints.Count;
+        // Diagnostics: how many owner samples we're holding (the heartbeat's old "trail=" figure).
+        public int TrailCount => _recentOwner.Count;
         public int ReplayCount => _replay.Count;
-        public bool ZoneCrossing => _zoneCrossing;
+        public bool ZoneCrossing => _lostPushed;
         public bool Recording => _recording;
-        public bool LastKnownPending => _lastKnownPending;
 
-        /// <summary>Remaining queued path length in metres (from the bot's position through every point).</summary>
-        public float PathRemaining(Vector3 from)
-        {
-            float total = 0f;
-            Vector3 prev = from;
-            foreach (Vector3 p in _waypoints) { total += Vector3.Distance(prev, p); prev = p; }
-            return total;
-        }
-
-        /// <summary>How far behind the bot is, in metres — 0 when it has nothing to chase.</summary>
-        private float Lag(Vector3 pos)
-        {
-            float pathLag = _waypoints.Count > 0 ? PathRemaining(pos) : 0f;
-            // While he is visible, being 8m away in a straight line but 40m of PATH behind (a U-bend, a
-            // switchback ramp) still means 40m of running to do — take the worse of the two.
-            if (_lagToOwner.HasValue) return Math.Max(_lagToOwner.Value, pathLag);
-            if (_waypoints.Count > 0) return pathLag;
-            if (_lastKnownPending && _lastKnownOwner.HasValue) return Vector3.Distance(pos, _lastKnownOwner.Value);
-            return 0f;
-        }
-
-        // Does the bot have somewhere to walk right now? (drives the "Following" vs "Idle" label, and gates
-        // the zone sweep in Main — the pending last-known walk counts, so the sweep can't pre-empt it.)
-        public bool HasWork => _manualTarget.HasValue || _replay.Count > 0 || _waypoints.Count > 0 || _lastKnownPending;
+        // Does the bot have somewhere to walk right now? (drives the "Following" vs "Idle" label, and
+        // gates Main's zone-sweep — which must only arm once the lost-sight chase is spent.)
+        public bool HasWork => _manualTarget.HasValue || _replay.Count > 0 || _lostTarget.HasValue;
 
         // A one-off manual destination is set (a queued cast must wait for it to finish).
         public bool ManualActive => _manualTarget.HasValue;
 
-        // The point the bot is walking toward right now (manual > replay > waypoints > last known), or null
-        // if idle. Lets Main notice when the queued path leads AWAY from where the owner now is (he walked back).
+        // The point the bot is walking toward right now (manual > replay > lost-chase), or null if it's
+        // simply following the live owner. Lets Main notice a queued path that leads AWAY from him.
         public Vector3? CurrentTarget()
         {
             if (_manualTarget.HasValue) return _manualTarget;
-            if (_replay.Count > 0) return _replay.First.Value;
-            if (_waypoints.Count > 0) return _waypoints.First.Value;
-            if (_lastKnownPending) return _lastKnownOwner;
+            if (_replay.Count > 0) return _replay.Peek();
+            if (_lostTarget.HasValue) return _lostTarget;
             return null;
         }
 
@@ -186,107 +137,56 @@ namespace AOBuddy
             _move = move;
         }
 
-        // ---- Recording the owner's route ----------------------------------------
+        // ---- Tracking the owner --------------------------------------------------
 
-        // Owner is visible: queue a waypoint when his path has actually changed shape — he has covered
-        // WaypointSpacing on a straight, or turned, or changed height. His recorded positions carry the
-        // correct terrain height, so retracing them stays server-legal.
         public void Record(PlayerChar owner) => RecordAt(owner.Transform.Position);
 
-        // Queue a waypoint from a given position — used with the OWNER-INTERPOLATED position so the route is
-        // smooth between the server's sparse (~1/s) owner keyframes, instead of choppy raw keyframes.
+        // Called every frame the owner is visible, with his INTERPOLATED position (Main's PredictOwnerPos),
+        // so the follow target moves smoothly between the server's sparse (~1/s) owner keyframes. Every
+        // call refreshes the live target; the history behind it is thinned to BreadcrumbSpacing, because
+        // it only exists to derive his travel direction.
         public void RecordAt(Vector3 op)
         {
-            _lastKnownOwner = op;
-            _coastAccum = 0;   // a real owner update arrived — stop counting coast distance
+            _ownerPos = op;
+            _lostTarget = null; _lostPushed = false;   // he's visible — nothing to chase blind
 
-            if (!_lastCrumb.HasValue) { Enqueue(op, null); return; }
-
-            Vector3 d = op - _lastCrumb.Value;
-            float dist = d.Magnitude;
-            if (dist < WaypointNoiseFloor) return;
-
-            Vector3 flat = new Vector3(d.X, 0f, d.Z);
-            Vector3? legDir = flat.Magnitude > 0.2f ? (Vector3?)flat.Normalize() : null;
-
-            bool far = dist >= WaypointSpacing;
-            bool climbed = Math.Abs(d.Y) >= WaypointHeightDelta;
-            bool turned = legDir.HasValue && _lastLegDir.HasValue
-                          && Vector3.Dot(legDir.Value, _lastLegDir.Value) < WaypointTurnCos;
-            if (!far && !climbed && !turned) return;
-
-            Enqueue(op, legDir);
-        }
-
-        private void Enqueue(Vector3 op, Vector3? legDir)
-        {
-            _waypoints.AddLast(op);
-            _lastCrumb = op;
-            if (legDir.HasValue) _lastLegDir = legDir;
-            // Hard cap. Dropping the head skips ground the bot has not walked, so say so rather than
-            // silently teleporting the plan forward.
-            while (_waypoints.Count > MaxWaypoints)
+            if (!_lastSample.HasValue || Vector3.Distance(op, _lastSample.Value) >= _ctx.Config.BreadcrumbSpacing)
             {
-                _waypoints.RemoveFirst();
-                _ctx.Log($"FOLLOW: waypoint queue hit the {MaxWaypoints} cap — dropped the oldest point (bot is very far behind).");
+                double now = _clock.Elapsed.TotalSeconds;
+                if (_lastSample.HasValue)
+                {
+                    _ownerMovingUntil = now + OwnerMovingGrace;
+                    double gap = now - _lastSampleTime;
+                    if (gap > 0.02)
+                    {
+                        double v = Vector3.Distance(op, _lastSample.Value) / gap;
+                        if (v < 40) _ownerSpeed = _ownerSpeed <= 0 ? v : _ownerSpeed * 0.7 + v * 0.3;   // ignore teleports
+                    }
+                }
+                _lastSampleTime = now;
+                _lastSample = op;
+                _recentOwner.Enqueue(op);
+                while (_recentOwner.Count > 8) _recentOwner.Dequeue();
             }
-            _recentOwner.Enqueue(op);
-            while (_recentOwner.Count > 6) _recentOwner.Dequeue();
         }
 
-        /// <summary>Main feeds the live owner distance each frame he is visible; null when he is not.</summary>
-        public void SetOwnerDistance(float? metres) => _lagToOwner = metres;
-
-        /// <summary>The owner just dropped out of view. Keep the queue — it is the plan — but remember where
-        /// he was, so that when the queue runs dry we head there instead of stopping.</summary>
-        public void OnOwnerLost(Vector3? lastKnown)
-        {
-            if (lastKnown.HasValue) _lastKnownOwner = lastKnown;
-            _lagToOwner = null;
-            _lastKnownPending = _lastKnownOwner.HasValue;
-        }
-
-        // Owner reappeared after being out of view. If he's far from the last waypoint it's a real
-        // teleport / new area, so the old route is garbage — drop it. Otherwise keep his exact route, but
-        // discard any queued points that now lead away from him (he doubled back while we couldn't see him).
+        // Owner reappeared after being out of view. Drop the blind chase and, on a far reacquire (he
+        // teleported / we zoned in behind him), drop the stale direction history too.
         public void OnReacquired(PlayerChar owner)
         {
             CancelZoneSweep();   // he's back in view — stop sweeping the line, follow normally
-            _lastKnownPending = false;
-            if (!_lastCrumb.HasValue) return;
-
-            Vector3 op = owner.Transform.Position;
-            float gap = Vector3.Distance(op, _lastCrumb.Value);
+            _lostTarget = null; _lostPushed = false;
+            if (!_lastSample.HasValue) return;
+            float gap = Vector3.Distance(owner.Transform.Position, _lastSample.Value);
             if (gap > 40f)
             {
-                _ctx.Log($"Owner reacquired {gap:0}m from last waypoint — new area, cleared queue({_waypoints.Count}).");
-                _waypoints.Clear();
-                _lastCrumb = null;
-                _lastLegDir = null;
-                return;
-            }
-
-            // Rebuild: trim the TAIL of the queue back to the queued point nearest him. Anything past that
-            // was recorded on a leg he has since walked back along, and walking it would run the bot past him.
-            int before = _waypoints.Count;
-            float bestD = float.MaxValue;
-            LinkedListNode<Vector3> best = null;
-            for (LinkedListNode<Vector3> n = _waypoints.First; n != null; n = n.Next)
-            {
-                float d = Vector3.Distance(n.Value, op);
-                if (d <= bestD) { bestD = d; best = n; }
-            }
-            if (best != null && bestD <= WaypointSpacing * 2f)
-            {
-                while (_waypoints.Last != best) _waypoints.RemoveLast();
-                if (_waypoints.Count != before)
-                    _ctx.Log($"FOLLOW: owner back in view — trimmed queue {before} -> {_waypoints.Count} (dropped points past him).");
-                _lastCrumb = _waypoints.Last.Value;
+                _ctx.Log($"Owner reacquired {gap:0}m from last seen spot — new area, cleared owner history.");
+                _recentOwner.Clear();
+                _lastSample = null;
             }
         }
 
-        // Recording a named path the owner walks (the 'record' command). Saved paths stay dense: they are
-        // replayed blind later, so fidelity matters more than queue length there.
+        // Recording a named path the owner walks (the 'record' command).
         public void RecordPathPoint(PlayerChar owner)
         {
             Vector3 p = owner.Transform.Position;
@@ -307,47 +207,31 @@ namespace AOBuddy
         public void SetManualTarget(Vector3 t) => _manualTarget = t;
         public void ClearManual() => _manualTarget = null;
 
-        // Begin the zone sweep across the owner's vanish spot, along his real recent travel direction.
-        // Returns false if we don't have enough path history to know his direction. Main arms this ONLY
-        // when the owner vanished close ahead while following and NOT in combat.
-        public bool StartZoneSweep(Vector3 vanishSpot) => StartZoneSweep(vanishSpot, 0f, "owner vanished ahead while following (not combat)");
-
-        /// <summary>
-        /// Sweep across a crossing point along the owner's real recent travel direction.
-        /// <paramref name="lateralOffset"/> shifts the whole sweep sideways, perpendicular to that
-        /// direction: a walked zone line is a wall SEGMENT with ends, so a sweep that keeps missing may
-        /// simply be running back and forth past one of them, and stepping sideways for the next attempt
-        /// covers that without needing to know where the segment actually is.
-        /// Returns false when we have too little of his path to know which way he was going.
-        /// </summary>
-        public bool StartZoneSweep(Vector3 center, float lateralOffset, string why)
+        // His most recent travel direction, flattened (null if he wasn't really moving).
+        private Vector3? OwnerDir()
         {
-            if (_recentOwner.Count < 2) return false;
+            if (_recentOwner.Count < 2) return null;
             Vector3[] pts = _recentOwner.ToArray();
-            Vector3 dir = pts[pts.Length - 1] - pts[0];
-            if (dir.Length() < 0.1f) return false;
-            dir = dir.Normalize();
-
-            if (Math.Abs(lateralOffset) > 0.01f)
-            {
-                // Perpendicular in the horizontal plane; the wall check ignores Y entirely.
-                Vector3 side = new Vector3(-dir.Z, 0f, dir.X);
-                if (side.Magnitude > 0.05f) center = center + side.Normalize() * lateralOffset;
-                why += $" — offset {lateralOffset:0.0}m sideways";
-            }
-
-            BeginSweep(center, dir, why);
-            return true;
+            Vector3 d = pts[pts.Length - 1] - pts[0];
+            Vector3 flat = new Vector3(d.X, 0f, d.Z);
+            return flat.Magnitude < 0.3f ? (Vector3?)null : flat.Normalize();
         }
 
-        /// <summary>True once a sweep has run its course without crossing, until the next one starts.</summary>
-        public bool SweepTimedOut { get; private set; }
+        // Begin the zone sweep across the owner's vanish spot, along his real recent travel direction.
+        // Returns false if we don't have enough path history to know his direction.
+        public bool StartZoneSweep(Vector3 vanishSpot)
+        {
+            Vector3? dir = OwnerDir();
+            if (!dir.HasValue) return false;
+            BeginSweep(vanishSpot, dir.Value, "owner vanished ahead while following (not combat) — sweeping his crossing spot");
+            return true;
+        }
 
         // Manual sweep (the 'zone'/'forward' command): sweep across a line in an explicit direction, so
         // the owner can point the bot at a line and have it work the crossing back and forth.
         public void StartManualSweep(Vector3 fromPos, Vector3 dir)
         {
-            if (dir.Length() < 0.1f) return;
+            if (dir.Magnitude < 0.1f) return;
             _manualTarget = null;
             BeginSweep(fromPos, dir.Normalize(), "manual 'zone' command");
         }
@@ -356,8 +240,7 @@ namespace AOBuddy
         {
             // A walked zone line is tested on X,Z ONLY (Y is ignored by the wall check). Any Y in the
             // sweep axis is wasted motion that doesn't help cross the X,Z band, so flatten the axis to the
-            // horizontal plane and re-normalise — all of SweepSpan then goes into crossing the line. If the
-            // owner's recent path was almost purely vertical (no usable X,Z direction), keep the raw dir.
+            // horizontal plane and re-normalise. If his recent path was almost purely vertical, keep raw.
             Vector3 flat = new Vector3(dir.X, 0f, dir.Z);
             _sweepAxis = flat.Magnitude > 0.05f ? flat.Normalize() : dir;
 
@@ -365,9 +248,7 @@ namespace AOBuddy
             _sweepForward = true;
             _sweepElapsed = 0;
             _zoneSweep = true;
-            SweepTimedOut = false;
-            _waypoints.Clear();   // sweep owns movement now
-            _lastKnownPending = false;
+            _lostTarget = null; _lostPushed = false;   // sweep owns movement now
             _ctx.Log($"ZONE SWEEP: {why} — sweeping back and forth {SweepSpan:0}m each side along dir ({_sweepAxis.X:0.0},{_sweepAxis.Y:0.0},{_sweepAxis.Z:0.0}) until it takes.");
         }
 
@@ -377,8 +258,7 @@ namespace AOBuddy
         }
 
         // One frame of the sweep: walk slowly toward the current end of the sweep; on reaching it,
-        // reverse. Slow so he dwells in the ~2-unit band long enough for a server heartbeat to catch
-        // him. A real zone line teleports him mid-sweep (POSITION JUMP -> ClearNav clears _zoneSweep);
+        // reverse. A real zone line teleports him mid-sweep (POSITION JUMP -> ClearNav clears _zoneSweep);
         // a timeout gives up and holds for reacquire.
         private void SweepTick(LocalPlayer me, double dt)
         {
@@ -386,9 +266,8 @@ namespace AOBuddy
             if (_sweepElapsed > SweepTimeout)
             {
                 _zoneSweep = false;
-                SweepTimedOut = true;   // Main decides whether another attempt is worth making
                 _move.Stop(me, _ctx.Config.SendIntervalMs);
-                _ctx.Log($"ZONE SWEEP: no cross after {SweepTimeout:0}s.");
+                _ctx.Log($"ZONE SWEEP: no cross after {SweepTimeout:0}s — holding for reacquire.");
                 return;
             }
 
@@ -417,9 +296,9 @@ namespace AOBuddy
         public void LoadReplay(IEnumerable<Vector3> pts, bool zonePush)
         {
             _manualTarget = null;
-            _waypoints.Clear(); _lastCrumb = null; _lastLegDir = null;   // an explicit replay overrides the live queue
+            _lostTarget = null; _lostPushed = false;   // an explicit route supersedes the blind chase
             _replay.Clear(); _replayPushed = false; _lastReplayDir = null; _replayZonePush = zonePush;
-            foreach (Vector3 p in pts) _replay.AddLast(p);
+            foreach (Vector3 p in pts) _replay.Enqueue(p);
         }
 
         public void StopReplay() { _replay.Clear(); _replayPushed = false; _lastReplayDir = null; }
@@ -430,7 +309,7 @@ namespace AOBuddy
         //     velocity (u/s) = 5.5 + RunSpeed / 230        (RunSpeed = Exploring->Run Speed skill, Stat 156)
         // Base 5.5 u/s at 0 skill; +1 u/s per 230 skill; the client's own hard cap is 15.5 u/s (RunSpeed
         // 2300). This is exactly what the real client moves at, so the server accepts it — no guessed
-        // coefficient, and no catch-up tier may exceed it. Fall back to config only if the stat can't be read.
+        // coefficient. Fall back to config only if the stat can't be read.
         private const float RunSpeedBaseVelocity = 5.5f;
         private const float RunSpeedDivisor = 230f;
         private const float MaxGroundSpeed = 15.5f;   // client cap (reached at RunSpeed 2300)
@@ -447,207 +326,322 @@ namespace AOBuddy
             return _ctx.Config.FollowSpeed;
         }
 
-        // A short coast target along the owner's most-recent HORIZONTAL direction, to keep moving during a
-        // gap in his position updates. Returns false (so we idle instead) when: he wasn't really moving, we've
-        // already coasted the cap (he may have stopped), or his recent path isn't flat/level with us (a ramp —
-        // coasting a guessed height there is exactly the old rubber-band, so we defer to the recorded route).
-        private bool TryCoastTarget(LocalPlayer me, out Vector3 target)
-        {
-            target = default(Vector3);
-            if (_recentOwner.Count < 2 || _coastAccum >= _ctx.Config.FollowCoastMeters) return false;
-            Vector3[] pts = _recentOwner.ToArray();
-            Vector3 dir = pts[pts.Length - 1] - pts[0];
-            Vector3 flat = new Vector3(dir.X, 0f, dir.Z);
-            if (flat.Magnitude < 0.3f) return false;                                   // he wasn't moving
-            Vector3 pos = me.MovementComponent.Position;
-            if (Math.Abs(pts[pts.Length - 1].Y - pos.Y) > _ctx.Config.FollowFlatThreshold) return false;   // ramp — don't guess height
-            target = pos + flat.Normalize() * 3f;                                       // a few metres ahead along his path
-            return true;
-        }
+        public void WalkTick(LocalPlayer me, double dt) => WalkTick(me, null, dt);
 
-        // Discard leading waypoints the bot has effectively already reached, so the queue always points
-        // forward instead of dragging the bot back through positions it has passed.
-        //   - always: the head is inside `arrive` and the next point is no farther off (we are past it)
-        //   - max tier only: cut a corner — drop the head when the next point is already closer AND both
-        //     are level with us. Gated on flat ground because cutting across a ramp or a doorway is
-        //     exactly the straight line the server rejects.
-        private void TrimPassed(Vector3 pos, float arrive, bool cornerCut)
+        /// <summary>
+        /// One frame of movement. Priority: zone sweep > manual target > recorded replay (NAV / saved
+        /// path) > live owner follow > blind chase after losing him. Called by Main's movement arbiter
+        /// only when no higher-priority mover (travel) is active and the bot isn't casting/resting.
+        /// </summary>
+        public void WalkTick(LocalPlayer me, PlayerChar owner, double dt)
         {
-            while (_waypoints.Count >= 2)
+            bool wasLocked = _mirrorLock;
+            _mirrorLock = false;
+            if (wasLocked && owner != null && !_zoneSweep && !_manualTarget.HasValue && _replay.Count == 0 && _ctx.Config.Follow
+                && _ctx.Config.FollowDistance <= 0.05f && MirrorStillOn(me, owner))
             {
-                Vector3 head = _waypoints.First.Value;
-                Vector3 next = _waypoints.First.Next.Value;
-                float dHead = Vector3.Distance(pos, head);
-                float dNext = Vector3.Distance(pos, next);
-
-                bool passed = dHead <= arrive && dNext <= dHead + arrive;
-                bool cut = cornerCut && dNext < dHead
-                           && Math.Abs(head.Y - pos.Y) <= CornerCutFlatY
-                           && Math.Abs(next.Y - pos.Y) <= CornerCutFlatY;
-                if (!passed && !cut) break;
-
-                _waypoints.RemoveFirst();
-                _crumbStuck = 0; _lastCrumbDist = float.MaxValue;
+                _mirrorLock = true;
+                return;
             }
-        }
 
-        public void WalkTick(LocalPlayer me, double dt)
-        {
             if (_zoneSweep) { SweepTick(me, dt); return; }
 
-            if (_waypoints.Count == 0) _zoneCrossing = false;
+            if (_manualTarget.HasValue) { ManualTick(me, dt); return; }
+            if (_replay.Count > 0) { ReplayTick(me, dt); return; }
 
-            Vector3 pos = me.MovementComponent.Position;
-
-            // Catch-up tier from how far behind we are. A tier only widens the arrive radius and the
-            // per-frame step cap (and, at the top tier, allows flat corner cutting) — never the velocity,
-            // which the server validates against the run-speed formula.
-            float lag = Lag(pos);
-            int tier = lag >= CatchupMax ? 2 : lag >= CatchupRun ? 1 : 0;
-            float tierArrive = tier == 2 ? ArriveMax : tier == 1 ? ArriveRun : _ctx.Config.CrumbArrive;
-            float tierStepCap = tier == 2 ? StepCapMax : tier == 1 ? StepCapRun : _ctx.Config.MaxStep;
-
-            if (_waypoints.Count > 0 && !_manualTarget.HasValue && _replay.Count == 0)
-                TrimPassed(pos, tierArrive, cornerCut: tier == 2 && !_zoneCrossing);
-
-            Vector3 target;
-            float arrive;
-            bool coasting = false;
-            bool lastKnownRun = false;
-            LinkedList<Vector3> crumbs = null;   // the queue to advance when a point is reached
-
-            if (_manualTarget.HasValue)
+            if (!_ctx.Config.Follow)
             {
-                target = _manualTarget.Value; arrive = 1.5f;
-            }
-            else if (_replay.Count > 0)
-            {
-                crumbs = _replay; target = _replay.First.Value; arrive = tierArrive;
-            }
-            else if (_ctx.Config.Follow && _waypoints.Count > 0)
-            {
-                // Walk his queued route — oldest first, removed as we arrive. We walk the queue whether or
-                // not he's currently in view, so a disappearance (a hill, a corner, a door) doesn't stop us,
-                // and a route that ends on a zone line walks us onto the trigger and zones us.
-                crumbs = _waypoints; target = _waypoints.First.Value; arrive = tierArrive;
-            }
-            else if (_ctx.Config.Follow && _lastKnownPending && _lastKnownOwner.HasValue)
-            {
-                // Queue is empty and he is still missing: head for where we last saw him. Only after
-                // reaching THAT does Main get to arm the zone sweep (HasWork covers this state).
-                target = _lastKnownOwner.Value; arrive = LastKnownArrive; lastKnownRun = true;
-            }
-            else if (_ctx.Config.FollowLiveLead && TryCoastTarget(me, out Vector3 coastTgt))
-            {
-                // Queue used up but the owner was just moving and his next position update is delayed (his
-                // position reaches us in bursts). Rather than idle and lurch, COAST a little along his last
-                // direction so we're already moving when the update lands. Flat + bounded only (see
-                // TryCoastTarget) so it can never coast a wrong height up a ramp.
-                target = coastTgt; arrive = tierArrive; coasting = true;
-            }
-            else
-            {
-                _ctx.WalkState = $"idle (follow={_ctx.Config.Follow} wp={_waypoints.Count})";
-                _move.Stop(me, _ctx.Config.SendIntervalMs);
+                _ctx.WalkState = "idle (follow=off)";
+                Hold(me);
                 return;
             }
 
-            float dist = Vector3.Distance(pos, target);
+            if (owner != null) { FollowOwnerTick(me, owner, dt); return; }
 
-            if (dist <= arrive)
+            // He's out of view. ARM the blind chase once, from the last spot we saw him at — the bot must
+            // NOT stop the moment he leaves view (that was the old freeze); it runs to where he was, then
+            // leans one push further along his heading, which also carries it onto a zone line.
+            if (!_lostTarget.HasValue && !_lostPushed && _ownerPos.HasValue)
             {
-                if (crumbs != null)
+                _lostTarget = _ownerPos;
+                _ctx.Log($"FOLLOW: lost sight — running to his last spot ({_ownerPos.Value.X:0},{_ownerPos.Value.Y:0},{_ownerPos.Value.Z:0}), then a {_ctx.Config.FollowLostPushMeters:0}m push along his heading.");
+            }
+
+            if (_lostTarget.HasValue) { LostTick(me, dt); return; }
+
+            _ctx.WalkState = "idle (owner not visible, chase spent)";
+            Hold(me);
+        }
+
+        // ---- The three beats: turn to him, move to him, then take his heading ----
+
+        private void FollowOwnerTick(LocalPlayer me, PlayerChar owner, double dt)
+        {
+            Vector3 pos = me.MovementComponent.Position;
+            Vector3 tgt = _ownerPos ?? owner.Transform.Position;   // interpolated when Main is feeding it
+            float dist = Vector3.Distance(pos, tgt);
+
+            if (_ctx.Config.FollowDistance <= 0.05f) { StackTick(me, owner, pos, tgt, dist, dt); return; }
+
+            // Hysteresis, but ONLY against a STANDING owner. Parked next to a man who is standing still,
+            // we don't want to twitch after every centimetre he shuffles — hence the slack. But while he
+            // is actually RUNNING, waiting for him to open up the slack before setting off is exactly the
+            // stutter (and the reason he pulls away): the moment he's outside FollowDistance, go.
+            float resumeAt = _ctx.Config.FollowDistance + (OwnerMoving ? 0f : _ctx.Config.FollowResumeSlack);
+            if (_closing) { if (dist <= _ctx.Config.FollowDistance) _closing = false; }
+            else if (dist >= resumeAt) _closing = true;
+
+            if (!_closing)
+            {
+                // BEAT 3 — parked at his side. Stand still, and while he's STANDING too, swing round to
+                // HIS facing so that when he runs we're already pointing the right way. We do NOT turn
+                // while he's moving: the turn would be obsolete the instant we set off, and burning
+                // frames on it is what left the bot pirouetting while he walked away.
+                Hold(me);
+                if (OwnerMoving)
                 {
-                    crumbs.RemoveFirst(); _crumbStuck = 0; _lastCrumbDist = float.MaxValue;
-                    // End of a saved path: it ends at the doorway (we lost sight of the owner the
-                    // instant he zoned), so lean one push forward onto the trigger. A real zone line
-                    // crosses en route (ClearNav fires on the position jump); otherwise we just stop.
-                    if (crumbs == _replay && crumbs.Count == 0 && !_replayPushed && _replayZonePush && _lastReplayDir.HasValue)
-                    {
-                        _replay.AddLast(pos + _lastReplayDir.Value * _ctx.Config.ZoneChaseMeters);
-                        _replayPushed = true;
-                    }
+                    _aligning = false;
+                    _ctx.WalkState = $"parked (he's moving) d={dist:0.0}";
                     return;
                 }
-                if (lastKnownRun)
+                // Deadzone + latch: only START aligning once his facing is meaningfully off ours, then
+                // finish the turn. Otherwise his idle heading jitter would spam turn packets forever.
+                float faceOff = Movement.HeadingOffsetDeg(me.MovementComponent.Heading, owner.Transform.Heading);
+                if (!_aligning && faceOff > _ctx.Config.FollowFaceDeadzoneDeg) _aligning = true;
+                if (_aligning)
+                    _aligning = _move.Face(me, owner.Transform.Heading, _ctx.Config.FollowTurnDegPerSec, dt, _ctx.Config.SendIntervalMs);
+                _ctx.WalkState = $"{(_aligning ? "align-owner-facing" : "parked")} d={dist:0.0} off={faceOff:0}";
+                return;
+            }
+            _aligning = false;
+
+            Step(me, tgt, dist, dt, "follow");
+        }
+
+        /// <summary>
+        /// STACK / MIRROR follow (FollowDistance = 0): stand on the owner's exact spot and from then on
+        /// simply BE where he is — each frame the bot's pose is set to his position and his heading, so
+        /// its outgoing movement packets are a copy of his. No target-chasing, no arrive-radius, no
+        /// turning: while it can keep up, the gap is exactly zero and there is nothing left to be choppy.
+        /// (Player characters don't collide in AO, so sharing his coordinates is legal, and standing on
+        /// the zone line he stands on means his crossing is our crossing.)
+        ///
+        /// THE ONE HARD LIMIT: mirroring cannot beat physics. Our step per frame is capped at OUR run
+        /// speed (5.5 + RunSpeed/230) because the server rejects a faster move and snaps us back — see
+        /// Config.FollowSpeed. So while the owner is genuinely faster than us we fall behind and this
+        /// degrades to a normal top-speed chase, re-locking onto him the moment he's within one step
+        /// again (he stops, turns a corner, fights). The log tells you which case you're in.
+        /// </summary>
+        private void StackTick(LocalPlayer me, PlayerChar owner, Vector3 pos, Vector3 tgt, float dist, double dt)
+        {
+            float maxStep = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
+
+            if (dist > maxStep)
+            {
+                // Can't reach his spot this frame — run flat out at it and report the speed deficit, which
+                // is the ONLY reason a stack-follow ever lags. Throttled so it can't spam the log.
+                WarnIfOutrun(me, dt);
+                if (dist > _ctx.Config.FollowStackSlideMeters)
                 {
-                    _lastKnownPending = false;
-                    _ctx.Log("FOLLOW: reached the owner's last known position and he is still out of sight — handing off.");
+                    Step(me, tgt, dist, dt, "stack-chase");
+                    return;
                 }
-                else _manualTarget = null;
-                _move.Stop(me, _ctx.Config.SendIntervalMs);
+                // Close: slide onto his spot while keeping HIS facing. If we ended up a metre past him when he
+                // stopped, we back onto his spot still pointing his way — no about-face to walk back, and no
+                // second about-face when he sets off again.
+                Vector3 d = (tgt - pos).Normalize();
+                _ctx.WalkState = $"stack-slide d={dist:0.00} step={maxStep:0.00}";
+                _move.Advance(me, pos + d * maxStep, owner.Transform.Heading, run: true, dt, _ctx.Config.SendIntervalMs);
                 return;
             }
 
-            // Skip a point we can't make progress toward (blocked by a wall) — but never skip the
-            // final push onto a zone-line trigger; keep leaning into it.
-            if (crumbs != null && !(crumbs == _waypoints && _zoneCrossing))
+            // On him. Copy his pose outright: his position, his facing.
+            if (!OwnerMoving && dist < 0.15f)
             {
-                if (dist < _lastCrumbDist - 0.03f) _crumbStuck = 0; else _crumbStuck += dt;
-                _lastCrumbDist = dist;
-                if (_crumbStuck > _ctx.Config.StuckSeconds)
+                // He's standing and we're on his spot — stop the movement stream entirely (no packets to
+                // send while nothing changes) and just keep our facing matched to his.
+                Hold(me);
+                _move.Face(me, owner.Transform.Heading, _ctx.Config.FollowTurnDegPerSec, dt, _ctx.Config.SendIntervalMs);
+                // On his spot, facing his way, both standing: from here on just replay his packets.
+                if (_ctx.Config.FollowMirror && Movement.HeadingOffsetDeg(me.MovementComponent.Heading, owner.Transform.Heading) < 2f)
                 {
-                    _ctx.Log($"STUCK-SKIP {(crumbs == _replay ? "replay" : "waypoint")} at dist={dist:0.0} (blocked {_ctx.Config.StuckSeconds:0.0}s), skipping. remaining={crumbs.Count - 1}");
-                    crumbs.RemoveFirst(); _crumbStuck = 0; _lastCrumbDist = float.MaxValue; return;
+                    _mirrorLock = true;
+                    _ctx.Log($"FOLLOW: stacked on owner — mirroring his movement packets.");
                 }
-            }
-            else if (lastKnownRun)
-            {
-                // The last-known walk is a straight line into ground we never recorded. Give it the same
-                // stuck budget (x3, it can be a long leg), then stop owing it so the sweep / nav fallback
-                // can take over instead of grinding into a wall forever.
-                if (dist < _lastCrumbDist - 0.03f) _crumbStuck = 0; else _crumbStuck += dt;
-                _lastCrumbDist = dist;
-                if (_crumbStuck > _ctx.Config.StuckSeconds * 3)
-                {
-                    _ctx.Log($"FOLLOW: blocked {_ctx.Config.StuckSeconds * 3:0.0}s heading to the owner's last known position — giving up on it.");
-                    _lastKnownPending = false; _crumbStuck = 0; _lastCrumbDist = float.MaxValue; return;
-                }
-            }
-
-            Vector3 dir = (target - pos).Normalize();
-            if (crumbs == _replay) _lastReplayDir = dir;
-            if (coasting) _coastAccum += Math.Min(dist - arrive, Math.Min((float)(MoveSpeed(me) * dt), tierStepCap));
-            Quaternion heading = Movement.SafeLook(dir, me.MovementComponent.Heading);
-            float speed = MoveSpeed(me);   // capped at the char's run speed or the server rejects the move
-            float step = Math.Min(dist - arrive, (float)(speed * dt));
-            step = Math.Min(step, tierStepCap);   // hard cap so a lag spike can never warp him
-            string what = coasting ? "coast"
-                        : crumbs == _replay ? "replay"
-                        : crumbs == _waypoints ? "follow"
-                        : lastKnownRun ? "lastknown" : "manual";
-            _ctx.WalkState = $"{what} t{tier} tgt=({target.X:0},{target.Y:0},{target.Z:0}) d={dist:0.0} lag={lag:0.0} wp={_waypoints.Count} step={step:0.00} coast={_coastAccum:0.0}";
-
-            // Dead zone: he's a hair past 'arrive' so the step rounds to ~0. Treat it as reached
-            // (advance the queue / clear the manual target) and stop, so he doesn't freeze 1m short.
-            if (step <= 0.05f)
-            {
-                if (crumbs != null) { crumbs.RemoveFirst(); _crumbStuck = 0; _lastCrumbDist = float.MaxValue; }
-                else if (lastKnownRun) _lastKnownPending = false;
-                else _manualTarget = null;
-                if (_waypoints.Count == 0) _zoneCrossing = false;
-                _move.Stop(me, _ctx.Config.SendIntervalMs);
+                _ctx.WalkState = $"stacked (he's still) d={dist:0.00}{(_mirrorLock ? " -> mirror" : "")}";
                 return;
             }
 
+            // Caught him on the move: take his predicted spot and facing, then lock — his next packet puts
+            // us exactly on his reported position and from then on we move as he does.
+            _ctx.WalkState = $"stack-join d={dist:0.00}";
+            _move.Advance(me, tgt, owner.Transform.Heading, run: true, dt, _ctx.Config.SendIntervalMs);
+            if (_ctx.Config.FollowMirror && OwnerMoving && !_mirrorLock)
+            {
+                _mirrorLock = true;
+                _ctx.Log($"FOLLOW: joined owner on the move — mirroring his movement packets.");
+            }
+        }
+
+        // Is the mirror still holding? We sit either on his last REPORTED spot (after a replayed packet) or on
+        // his PREDICTED one (locked mid-run, before his next packet), so accept whichever is nearer. Past
+        // FollowMirrorBreakMeters the server has moved us (correction / rejected step) or he did something we
+        // couldn't copy — fall back to the normal stack catch-up, which re-locks once we're on him again.
+        private bool MirrorStillOn(LocalPlayer me, PlayerChar owner)
+        {
+            if (!_ctx.Config.FollowMirror) return false;
+            Vector3 pos = me.MovementComponent.Position;
+            float d = Vector3.Distance(pos, owner.Transform.Position);
+            if (_ownerPos.HasValue) d = Math.Min(d, Vector3.Distance(pos, _ownerPos.Value));
+            if (d <= _ctx.Config.FollowMirrorBreakMeters)
+            {
+                _ctx.WalkState = $"mirror d={d:0.00}";
+                return true;
+            }
+            _ctx.Log($"FOLLOW: mirror broke — {d:0.0}m off him (server moved us / couldn't copy a move). Re-stacking.");
+            return false;
+        }
+
+        // Log (at most every 5s) when the owner is simply faster than this character — no follow algorithm
+        // can fix that, only run-speed buffs or a lower-speed owner can.
+        private void WarnIfOutrun(LocalPlayer me, double dt)
+        {
+            _outrunAccum += dt;
+            if (_outrunAccum < 5.0 || !OwnerMoving || _ownerSpeed <= 0.1) return;
+            _outrunAccum = 0;
+            float mine = MoveSpeed(me);
+            if (_ownerSpeed > mine + 0.5)
+                _ctx.Log($"FOLLOW: he's faster than me — his {_ownerSpeed:0.0} u/s vs my {mine:0.0} u/s (RunSpeed {_lastRunSpeed}). Can't close while he runs; I re-stack when he slows.");
+        }
+
+        // Blind chase after he leaves view: same seek, toward his last spot, then one push past it.
+        private void LostTick(LocalPlayer me, double dt)
+        {
+            Vector3 pos = me.MovementComponent.Position;
+            Vector3 tgt = _lostTarget.Value;
+            float dist = Vector3.Distance(pos, tgt);
+
+            if (dist <= _ctx.Config.CrumbArrive)
+            {
+                Vector3? dir = OwnerDir();
+                if (!_lostPushed && dir.HasValue)
+                {
+                    _lostTarget = pos + dir.Value * _ctx.Config.FollowLostPushMeters;
+                    _lostPushed = true;
+                    _ctx.Log($"FOLLOW: reached his last spot — pushing {_ctx.Config.FollowLostPushMeters:0}m along his heading (rounds a corner / leans onto a zone line).");
+                    return;
+                }
+                _lostTarget = null;   // chase spent — Main's zone-sweep / NAV fallback takes it from here
+                Hold(me);
+                return;
+            }
+
+            Step(me, tgt, dist, dt, _lostPushed ? "lost-push" : "lost-chase");
+        }
+
+        private void ManualTick(LocalPlayer me, double dt)
+        {
+            Vector3 pos = me.MovementComponent.Position;
+            float dist = Vector3.Distance(pos, _manualTarget.Value);
+            if (dist <= 1.5f) { _manualTarget = null; Hold(me); return; }
+            Step(me, _manualTarget.Value, dist, dt, "manual");
+        }
+
+        /// <summary>
+        /// BEATS 1 + 2 for any destination: face it (rotating in place while it's well off our nose), then
+        /// run at it in one capped step. One shared mover, so manual/lost/follow all move identically.
+        /// </summary>
+        private void Step(LocalPlayer me, Vector3 target, float dist, double dt, string what)
+        {
+            Vector3 pos = me.MovementComponent.Position;
+            Vector3 delta = target - pos;
+            if (delta.Magnitude < 0.05f) { Hold(me); return; }
+
+            Vector3 dir = delta.Normalize();
+            Quaternion want = Movement.SafeLook(dir, me.MovementComponent.Heading);
+            float off = Movement.HeadingOffsetDeg(me.MovementComponent.Heading, want);
+            bool instantTurn = _ctx.Config.FollowTurnDegPerSec <= 0f;   // mouse-look: face it in one packet
+
+            // BEAT 1 — he's well off our nose (he came up behind us, or we just rounded a corner): turn
+            // on the spot first, so we don't run sideways while slowly swinging round. Skipped entirely
+            // in mouse-look mode — there the turn costs one packet, so there is nothing to wait for and
+            // we face him and set off in the SAME frame.
+            if (!instantTurn && off > _ctx.Config.FollowTurnFirstDeg)
+            {
+                Hold(me);
+                _move.Face(me, want, _ctx.Config.FollowTurnDegPerSec, dt, _ctx.Config.SendIntervalMs);
+                _ctx.WalkState = $"{what} turn-to d={dist:0.0} off={off:0}";
+                return;
+            }
+
+            // BEAT 2 — run at him. Mouse-look faces him outright; keyboard mode eases the heading round
+            // at the turn rate as it runs. Never step farther than MaxStep, so a lag spike can't warp us.
+            Quaternion heading = instantTurn
+                ? want
+                : Movement.RotateToward(me.MovementComponent.Heading, want, (float)(_ctx.Config.FollowTurnDegPerSec * dt));
+            float step = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
+            step = Math.Min(step, dist);
+            _ctx.WalkState = $"{what} tgt=({target.X:0},{target.Y:0},{target.Z:0}) d={dist:0.0} off={off:0} step={step:0.00}";
             _move.Advance(me, pos + dir * step, heading, run: true, dt, _ctx.Config.SendIntervalMs);
+        }
+
+        private void Hold(LocalPlayer me)
+        {
+            if (_move.Moving) _move.Stop(me, _ctx.Config.SendIntervalMs);
+        }
+
+        // ---- Recorded-route replay (NAV catch-up and saved paths) ----------------
+
+        // Walks an exact list of recorded points in order. This is the wall-safe walker: every point was
+        // actually walked by the owner, so it carries real ramp Y and never cuts a corner into geometry.
+        private void ReplayTick(LocalPlayer me, double dt)
+        {
+            Vector3 pos = me.MovementComponent.Position;
+            Vector3 target = _replay.Peek();
+            float dist = Vector3.Distance(pos, target);
+
+            if (dist <= _ctx.Config.CrumbArrive)
+            {
+                _replay.Dequeue(); _crumbStuck = 0; _lastCrumbDist = float.MaxValue;
+                // End of a saved path: it ends at the doorway (we lost sight of the owner the instant he
+                // zoned), so lean one push forward onto the trigger. A real zone line crosses en route.
+                if (_replay.Count == 0 && !_replayPushed && _replayZonePush && _lastReplayDir.HasValue)
+                {
+                    _replay.Enqueue(pos + _lastReplayDir.Value * _ctx.Config.ZoneChaseMeters);
+                    _replayPushed = true;
+                }
+                return;
+            }
+
+            // Skip a point we can't make progress toward (blocked by a wall).
+            if (dist < _lastCrumbDist - 0.03f) _crumbStuck = 0; else _crumbStuck += dt;
+            _lastCrumbDist = dist;
+            if (_crumbStuck > _ctx.Config.StuckSeconds)
+            {
+                _ctx.Log($"STUCK-SKIP replay point at dist={dist:0.0} (blocked {_ctx.Config.StuckSeconds:0.0}s), skipping. remaining={_replay.Count - 1}");
+                _replay.Dequeue(); _crumbStuck = 0; _lastCrumbDist = float.MaxValue;
+                return;
+            }
+
+            _lastReplayDir = (target - pos).Normalize();
+            Step(me, target, dist, dt, "replay");
         }
 
         // Full reset on a detected zone/teleport — drop old-playfield coordinates.
         public void Reset()
         {
-            _replay.Clear(); _waypoints.Clear(); _recentOwner.Clear();
-            _zoneCrossing = false; _zoneSweep = false; _replayPushed = false; _lastReplayDir = null;
-            _manualTarget = null; _lastCrumb = null; _lastLegDir = null; _lastRecord = null;
-            _lastKnownOwner = null; _lastKnownPending = false; _lagToOwner = null;
+            _replay.Clear(); _recentOwner.Clear();
+            _zoneSweep = false; _replayPushed = false; _lastReplayDir = null;
+            _manualTarget = null; _ownerPos = null; _lastSample = null; _lastRecord = null;
+            _lostTarget = null; _lostPushed = false; _closing = false; _aligning = false; _mirrorLock = false;
             _crumbStuck = 0; _lastCrumbDist = float.MaxValue;
         }
 
         // 'stop'/'idle' clears active movement but keeps recording state.
         public void ClearMovement()
         {
-            _manualTarget = null; _waypoints.Clear(); _replay.Clear();
-            _lastKnownPending = false;
+            _manualTarget = null; _replay.Clear();
+            _lostTarget = null; _lostPushed = false; _closing = false; _mirrorLock = false;
             _replayPushed = false; _lastReplayDir = null;
         }
     }

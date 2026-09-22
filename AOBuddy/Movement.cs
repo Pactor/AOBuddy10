@@ -31,9 +31,63 @@ namespace AOBuddy
             return flat.Magnitude > 0.001f ? Quaternion.LookRotation(flat.Normalize(), Up) : fallback;
         }
 
+        // ---- Heading math: YAW ONLY, and NEVER Quaternion.Slerp -------------------
+        // A character heading in AO is a pure yaw (LookRotation of a flattened direction returns a
+        // quaternion with X=Z=0), so every turn is a scalar angle problem. We do it in yaw degrees and
+        // rebuild the quaternion with LookRotation — the same call that already produces the headings the
+        // server accepts while running.
+        //
+        // AOSharp's Quaternion.Slerp is BROKEN and must not be used: measured against this SDK build,
+        // Slerp(a,b,0) does not return a (it returns a quaternion ~49 degrees off for a 90-degree turn),
+        // increasing t moves AWAY from b, and t=1 throws DivideByZeroException ("Can not normalize a
+        // Vector with no direction") out of its internal AngleAxis ctor. Feeding a per-frame turn through
+        // it froze the bot's heading — it sat at a constant offset and never faced anything.
+
+        // Heading as a yaw angle in degrees, measured from +Z, turning toward +X. Range (-180, 180].
+        public static float YawDeg(Quaternion q)
+        {
+            Vector3 f = q.Forward;
+            if (Math.Abs(f.X) < 1e-6f && Math.Abs(f.Z) < 1e-6f) return 0f;
+            return (float)(Math.Atan2(f.X, f.Z) * 180.0 / Math.PI);
+        }
+
+        // A heading from a yaw angle (the inverse of YawDeg).
+        public static Quaternion FromYawDeg(float yawDeg)
+        {
+            double r = yawDeg * Math.PI / 180.0;
+            return Quaternion.LookRotation(new Vector3((float)Math.Sin(r), 0f, (float)Math.Cos(r)), Up);
+        }
+
+        // Shortest signed turn from -> to, in degrees: positive = one way, negative = the other.
+        public static float SignedOffsetDeg(Quaternion from, Quaternion to)
+        {
+            float d = YawDeg(to) - YawDeg(from);
+            while (d > 180f) d -= 360f;
+            while (d < -180f) d += 360f;
+            return d;
+        }
+
+        // Angle (degrees) between two headings, measured on the horizontal plane only — the bot never
+        // pitches, and a Y difference in the look vector would otherwise report a turn that doesn't exist.
+        public static float HeadingOffsetDeg(Quaternion from, Quaternion to) => Math.Abs(SignedOffsetDeg(from, to));
+
+        // Which way round is shorter, for the TurnLeft/TurnRight packet (the resulting heading is set
+        // explicitly either way, so this only picks the animation the server plays).
+        public static bool TurnsRight(Quaternion from, Quaternion to) => SignedOffsetDeg(from, to) >= 0f;
+
+        // Rotate `from` toward `to` by at most maxDeg — a real, rate-limited turn instead of a snap.
+        public static Quaternion RotateToward(Quaternion from, Quaternion to, float maxDeg)
+        {
+            float off = SignedOffsetDeg(from, to);
+            if (Math.Abs(off) <= maxDeg) return to;
+            return FromYawDeg(YawDeg(from) + (off > 0 ? maxDeg : -maxDeg));
+        }
+
         private bool _moving;
         private bool _run;          // last gait, so a run<->walk switch re-issues the start packet
         private double _sendAccum;
+        private int _turning;       // 0 = not turning, +1 = TurnRight in progress, -1 = TurnLeft
+        private double _turnAccum;
 
         // LOCKSTEP LEASH: don't let the body's dictated (SetPose) position run more than _leashLead metres
         // ahead of the last position the SERVER confirmed. When the server is actively correcting us (a
@@ -72,9 +126,72 @@ namespace AOBuddy
             });
         }
 
+        // ---- MIRROR: replay the owner's own movement packets as ours ----------------
+        // Once the bot stands on his spot with his facing, the cheapest perfect follow is to say exactly
+        // what his client says: every CharDCMove he sends (start/stop, strafe, turn, jump, updates) is re-sent
+        // with OUR identity and HIS position/heading/delta. The server then simulates both of us identically,
+        // so we stay on his spot with no prediction, no chasing and no overshoot.
+        private bool _mirrored;
+        public bool Mirrored => _mirrored;
+
+        // Movement types worth copying. Postures (sit, sleep, lounge, fly, frozen) are NOT: the bot has its
+        // own rest logic and must never be locked into one of those by the owner's keyboard.
+        public static bool IsMirrorable(MovementAction a)
+        {
+            switch (a)
+            {
+                case MovementAction.SwitchToSit: case MovementAction.LeaveSit:
+                case MovementAction.SwitchToSleep: case MovementAction.LeaveSleep:
+                case MovementAction.SwitchToLounge: case MovementAction.LeaveLounge:
+                case MovementAction.SwitchToFly: case MovementAction.LeaveFly:
+                case MovementAction.SwitchToFrozen: case MovementAction.LeaveFrozen:
+                case MovementAction.Unknown0x1f: case MovementAction.Unknown0x20:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        public void Mirror(LocalPlayer me, CharDCMoveMessage m)
+        {
+            SetPose(me, m.Position, m.Heading);
+            me.MovementComponent.SetFlags(m.MoveType);
+            Client.Send(new CharDCMoveMessage
+            {
+                Identity = me.Identity,
+                MoveType = m.MoveType,
+                Heading = m.Heading,
+                Position = m.Position,
+                DeltaTime = m.DeltaTime,
+                Unknown2 = m.Unknown2,
+                Unknown3 = m.Unknown3,
+            });
+            if (m.MoveType == MovementAction.SwitchToRun) _run = true;
+            else if (m.MoveType == MovementAction.SwitchToWalk) _run = false;
+            _moving = (me.MovementComponent.Flags & ~(MovementFlags.TurningLeft | MovementFlags.TurningRight)) != MovementFlags.None;
+            _turning = 0; _turnAccum = 0; _sendAccum = 0;
+            _mirrored = true;
+        }
+
+        // Hand the body back to the bot's own movers. The owner may have left us strafing/backpedalling/
+        // turning, which ForwardStop alone wouldn't end — so one FullStop clears every movement state.
+        public void LeaveMirror(LocalPlayer me, int sendIntervalMs)
+        {
+            if (!_mirrored) return;
+            _mirrored = false;
+            if (me.MovementComponent.Flags != MovementFlags.None || _moving)
+            {
+                me.MovementComponent.SetFlags(MovementAction.FullStop);
+                SendMove(me, MovementAction.FullStop, sendIntervalMs);
+            }
+            _moving = false; _turning = 0; _turnAccum = 0; _sendAccum = 0;
+        }
+
         /// <summary>Move the body one frame: set the new pose, then send the right movement packet.</summary>
         public void Advance(LocalPlayer me, Vector3 newPos, Quaternion heading, bool run, double dt, int sendIntervalMs)
         {
+            LeaveMirror(me, sendIntervalMs);
+
             // Leash: never dictate a position more than _leashLead ahead of the server's last-confirmed one.
             Leashed = false;
             if (_leashAnchor.HasValue && _leashLead > 0f)
@@ -88,6 +205,8 @@ namespace AOBuddy
             }
 
             SetPose(me, newPos, heading);
+
+            StopTurn(me, sendIntervalMs);   // a turn-in-place and a run are different client states
 
             if (!_moving || _run != run)
             {
@@ -106,9 +225,71 @@ namespace AOBuddy
             }
         }
 
+        /// <summary>
+        /// Turn the body IN PLACE toward a heading. TWO MODES, matching the two the real client has:
+        ///
+        ///   degPerSec &lt;= 0  — MOUSE-LOOK. Right-click-drag in the client does not use the turn keys at
+        ///     all: it writes the new heading straight into the movement packet, so the character faces
+        ///     wherever you point in one update. That is why dragging spins you far faster than A/D. The
+        ///     bot is clientless, so this mode is free: set the heading, send one Update, done — no turn
+        ///     animation state, no waiting. (Proven legal here: the old trail follower snapped its
+        ///     heading every frame this way and the server never rejected it.)
+        ///
+        ///   degPerSec &gt; 0   — KEYBOARD. TurnLeft/TurnRightStart, Update while turning, TurnStop when
+        ///     aligned, rotating at the given rate. Slower, but it's what a watching player expects to
+        ///     see, and it's the only mode that produces a turn animation.
+        ///
+        /// Returns true while still turning (mouse-look is never "still turning" — it arrives at once).
+        /// </summary>
+        public bool Face(LocalPlayer me, Quaternion want, float degPerSec, double dt, int sendIntervalMs)
+        {
+            LeaveMirror(me, sendIntervalMs);
+            Quaternion cur = me.MovementComponent.Heading;
+            float off = HeadingOffsetDeg(cur, want);
+            if (off < 1.0f) { StopTurn(me, sendIntervalMs); return false; }
+
+            if (degPerSec <= 0f)
+            {
+                StopTurn(me, sendIntervalMs);
+                SetPose(me, me.MovementComponent.Position, want);
+                SendMove(me, MovementAction.Update, sendIntervalMs);   // tell the server the new facing now
+                return false;
+            }
+
+            int sign = TurnsRight(cur, want) ? 1 : -1;
+            Quaternion next = RotateToward(cur, want, (float)(degPerSec * dt));
+            SetPose(me, me.MovementComponent.Position, next);
+
+            if (_turning != sign)
+            {
+                if (_turning != 0) SendMove(me, _turning > 0 ? MovementAction.TurnRightStop : MovementAction.TurnLeftStop, sendIntervalMs);
+                SendMove(me, sign > 0 ? MovementAction.TurnRightStart : MovementAction.TurnLeftStart, sendIntervalMs);
+                _turning = sign; _turnAccum = 0;
+            }
+            else
+            {
+                _turnAccum += dt;
+                if (_turnAccum >= sendIntervalMs / 1000.0)
+                {
+                    SendMove(me, MovementAction.Update, (int)(_turnAccum * 1000));
+                    _turnAccum = 0;
+                }
+            }
+            return true;
+        }
+
+        public void StopTurn(LocalPlayer me, int sendIntervalMs)
+        {
+            if (_turning == 0) return;
+            SendMove(me, _turning > 0 ? MovementAction.TurnRightStop : MovementAction.TurnLeftStop, sendIntervalMs);
+            _turning = 0; _turnAccum = 0;
+        }
+
         /// <summary>Halt the body (ForwardStop) if it was moving.</summary>
         public void Stop(LocalPlayer me, int sendIntervalMs)
         {
+            LeaveMirror(me, sendIntervalMs);
+            StopTurn(me, sendIntervalMs);
             if (_moving)
             {
                 SendMove(me, MovementAction.ForwardStop, sendIntervalMs);
@@ -118,8 +299,11 @@ namespace AOBuddy
 
         public void Reset()
         {
+            _mirrored = false;
             _moving = false;
             _sendAccum = 0;
+            _turning = 0;
+            _turnAccum = 0;
         }
     }
 }

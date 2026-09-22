@@ -139,11 +139,33 @@ namespace AOBuddy
 
         // Follow: trace the owner's actual path (breadcrumbs), never teleport.
         public bool Follow = true;
+        public float FollowResumeSlack = 1.5f;     // only set off again once he's this far PAST FollowDistance
+        // (hysteresis — stops the stutter at the leash edge)
+        // Turn speed. 0 = MOUSE-LOOK: the heading is written straight into the movement packet and the
+        // bot faces anywhere in ONE update — the same thing right-click-drag does in the client, which is
+        // why dragging spins you so much faster than the A/D turn keys (those drive a rate-limited turn
+        // state). A clientless bot has no reason to pay the keyboard rate, so this is the default and no
+        // follow step is ever spent waiting on a turn. Set >0 (e.g. 540) for a visible, keyboard-style
+        // rate-limited swivel in degrees per second.
+        public float FollowTurnDegPerSec = 0f;
+        public float FollowTurnFirstDeg = 60f;     // keyboard mode only: if the target is more than this off
+        // our nose, turn in place FIRST, then run (no sliding
+        // sideways). Ignored in mouse-look mode.
+        public float FollowFaceDeadzoneDeg = 8f;   // parked: only re-align onto his facing once it's this far
+        // off ours (his idle heading jitter must not spam turns)
+        public float FollowLostPushMeters = 10f;   // after reaching his last-seen spot out of view, lean this
+        // far along his heading (rounds a corner / leans onto a line)
         public float FollowSpeed = 19f;            // move speed u/s. MUST stay under the char's RunSpeedBase
                                                    // (the bot's is 21) or the server rejects every move as
                                                    // too-fast and snaps him back to spawn. 19 confirms the
                                                    // fix; MoveSpeed() also caps at the char's run-speed stat.
-        public float FollowDistance = 4f;          // stop catching up once this close to the owner
+        public float FollowDistance = 0f;          // stop catching up once this close to the owner. 0 = STACK:
+        // stand on his exact spot with his exact facing (see FollowController.StackTick)
+        public float FollowStackSlideMeters = 4f;  // stack mode: within this of his spot, slide onto it keeping HIS
+        // facing (never turn round to walk back after an overshoot); farther, run facing him
+        public bool FollowMirror = true;           // stack mode: once on his spot, replay HIS movement packets as ours
+        // (start/stop, strafe, turn, jump) so the server moves us exactly as it moves him
+        public float FollowMirrorBreakMeters = 2.5f; // drop the mirror and re-stack if we end up this far off him
         // Live-lead: when the breadcrumb trail is used up but the owner is still ahead ON FLAT GROUND, close
         // to him directly instead of idling until his next (delayed) position update — kills the stop-lurch
         // lag. Guarded to flat + short range so it never beelines up a ramp (ramps keep using the safe trail).

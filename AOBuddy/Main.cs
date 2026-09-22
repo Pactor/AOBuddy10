@@ -87,10 +87,12 @@ namespace AOBuddy
         private Vector3? _ownerKeyPos;
         private double _ownerKeyTime;
         private Vector3 _ownerVel;
+        private Quaternion _ownerKeyHeading;
         private bool _ownerMovingKey;
         private Identity? _lastUsedObj;      // the object the owner most recently USED (button/lift/terminal)
         private Vector3? _lastUsedObjPos;
         private double _lastUsedObjAge = 999; // seconds since that use (a warp needs a teleport right after)
+        private bool _zoneSweepTried;        // one auto zone-sweep attempt per owner-loss episode (reset on reacquire)
         // ---- Zone crossing, per owner-loss episode ------------------------------
         // The owner leaving our sight is one of three quite different things, and the bot used to treat
         // them all the same and get one 16-second sweep to sort it out:
@@ -163,7 +165,9 @@ namespace AOBuddy
                             // Capture the owner's movement keyframe and derive his velocity for interpolation.
                             double now = _clock.Elapsed.TotalSeconds;
                             Vector3 p = cm.Position;
-                            if (_ownerKeyPos.HasValue)
+                            // Speed is only measured between two MOVING keyframes: across a stop->start gap the
+                            // displacement/time is ~0 and would leave him unpredicted for his whole first second.
+                            if (_ownerKeyPos.HasValue && _ownerMovingKey)
                             {
                                 double d = now - _ownerKeyTime;
                                 if (d > 0.03)
@@ -173,7 +177,15 @@ namespace AOBuddy
                                 }
                             }
                             _ownerKeyPos = p; _ownerKeyTime = now;
+                            _ownerKeyHeading = cm.Heading;
                             _ownerMovingKey = IsMovingMove(cm.MoveType);
+
+                            // MIRROR: stacked on him — his move is our move, sent the instant it arrives.
+                            if (_follow.MirrorLocked && Movement.IsMirrorable(cm.MoveType))
+                            {
+                                LocalPlayer lp = DynelManager.LocalPlayer;
+                                if (lp != null) _move.Mirror(lp, cm);
+                            }
                         }
                         else { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null && cm.Identity.Instance == lp.Identity.Instance) _diagSelfMoves++; }
                     }
@@ -255,6 +267,7 @@ namespace AOBuddy
             bool wasMoving = _move.Moving;
             Movement.SetPose(me, pos, me.MovementComponent.Heading);   // accept the server's position
             _move.Reset();
+            _follow.BreakMirror();   // replaying his packets from here would just repeat the rejected move
             Log($"SETPOS APPLIED ({(wasMoving ? "resync" : "stopped")}): snapped to server ({pos.X:0},{pos.Y:0},{pos.Z:0}) from ({local.X:0},{local.Y:0},{local.Z:0}) gap={gap:0.0}m.");
 
             // A big resync while sweeping a "zone line" means the server rejected the climb — he's blocked by
@@ -425,7 +438,6 @@ namespace AOBuddy
                 _ownerLostSeconds = owner == null ? _ownerLostSeconds + dt : 0;
 
                 bool ownerVisible = owner != null;
-                if (!ownerVisible) _follow.SetOwnerDistance(null);
                 if (ownerVisible)
                 {
                     _ctx.OwnerCharId = owner.Identity.Instance;
@@ -444,28 +456,12 @@ namespace AOBuddy
                     _nav.RecordOwner(owner.Transform.Position, navClean);
 
                     _lastOwnerPos = owner.Transform.Position;
-                    _follow.SetOwnerDistance(me.DistanceFrom(owner));   // drives FOLLOW's catch-up tier
-                    _ownerLostDist = me.DistanceFrom(owner);
-                    _ownerLostMoving = _support.OwnerSpeed > 0.5;
-                    // He's back in view — this loss episode is over; a fresh one starts from scratch.
-                    _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
+                    _zoneSweepTried = false;   // he's back in view — allow a fresh zone attempt next time he's lost
                 }
                 else if (_ownerVisibleLast)
                 {
-                    // He just dropped out of view. Give TRAVEL its shot (rode an object?), and tell FOLLOW
-                    // where he was — it keeps walking the queued waypoints, then heads for that spot when
-                    // the queue runs dry, instead of stopping for want of a fresh sighting.
+                    // He just dropped out of view. Give TRAVEL its shot (rode an object?).
                     _travel.OnOwnerLost(_lastOwnerPos);
-                    _follow.OnOwnerLost(_lastOwnerPos);
-                    Log($"OWNER LOST at ({_lastOwnerPos?.X ?? 0:0},{_lastOwnerPos?.Y ?? 0:0},{_lastOwnerPos?.Z ?? 0:0}) " +
-                        $"d={_ownerLostDist:0.0} moving={_ownerLostMoving} — " +
-                        (_ownerLostDist <= ZoneLossMeters && _ownerLostMoving
-                            ? "close and travelling, so a crossing is possible once the queue runs out."
-                            : "too far off / standing still, so this is range not a zone line; walking his route only."));
-                }
-                else if (!ownerVisible)
-                {
-                    _zoneEpisodeElapsed += dt;
                 }
 
                 if (ownerVisible) _arrivedAlone = 0;
@@ -515,14 +511,8 @@ namespace AOBuddy
                     // Defer to TRAVEL and zoning: when the owner just blinked out (rode a button / crossed a
                     // zone line), that's travel's/the sweep's job — don't fire nav until he's been genuinely
                     // lost a couple seconds. When he's VISIBLE but far, catch up immediately (the ramp case).
-                    // Don't chase (catch-up route) when he needs to recover — heal first, rejoin after.
-                    // When he is OUT of sight, FOLLOW's queued waypoints are the better plan (they are his
-                    // actual route from moments ago) — nav only steps in once that queue is spent, since
-                    // LoadReplay wipes it. When he is VISIBLE but far, nav preempts immediately: that is the
-                    // ramp case, where the recorded run carries the real up/down Y and live follow does not.
-                    bool needCatchup = !_support.NeedsRecovery(me)
-                                       && ((ownerVisible && owner != null && me.DistanceFrom(owner) > _config.NavCatchupMeters)
-                                       || (!ownerVisible && _ownerLostSeconds > 2.0 && !_follow.HasWork));
+                    bool needCatchup = (ownerVisible && owner != null && me.DistanceFrom(owner) > _config.NavCatchupMeters)
+                                       || (!ownerVisible && _ownerLostSeconds > 2.0);
                     if (needCatchup && tgt.HasValue)
                     {
                         List<Vector3> route = _nav.RouteToward(me.MovementComponent.Position, tgt.Value);
@@ -543,7 +533,7 @@ namespace AOBuddy
                 {
                     float dOwner = me.DistanceFrom(owner);
                     Vector3? t = _follow.CurrentTarget();
-                    if (dOwner <= _config.FollowDistance && t.HasValue
+                    if (dOwner <= Math.Max(_config.FollowDistance, 4f) && t.HasValue   // floor: stack mode has distance 0
                         && Vector3.Distance(t.Value, owner.Transform.Position) > dOwner + 0.5f)
                     {
                         _follow.ClearMovement();
@@ -598,7 +588,7 @@ namespace AOBuddy
 
                         // Each retry steps sideways along the line: 0, then +3m, then -3m.
                         float offset = _zoneAttempts == 0 ? 0f : (_zoneAttempts == 1 ? 3f : -3f);
-                        if (_follow.StartZoneSweep(centre, offset, $"{why} — attempt {_zoneAttempts + 1}/{ZoneMaxAttempts}"))
+                        if (_follow.StartZoneSweep(centre))
                             _zoneAttempts++;
                         else
                             _zoneGaveUp = true;   // no usable direction from his path; stop trying this episode
@@ -645,10 +635,10 @@ namespace AOBuddy
         // to the player" means follow is first in the frame, not last behind a ladder of actions.
         private void Walk(LocalPlayer me, PlayerChar owner, double dt)
         {
-            if (me.IsCasting) { _move.Stop(me, _config.SendIntervalMs); return; }
-            if (_support.Resting) { _move.Stop(me, _config.SendIntervalMs); return; }
-            if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) return;
-            _follow.WalkTick(me, dt);
+            if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
+            if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
+            if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
+            _follow.WalkTick(me, owner, dt);
         }
 
         // ---- Decision ladder (throttled): cast queue > survival heal > fight > rest > follow/idle --
@@ -726,7 +716,7 @@ namespace AOBuddy
 
             // 4) FOLLOW / IDLE.
             _support.SetIdleState(me);
-            bool active = (owner != null && me.DistanceFrom(owner) > _config.FollowDistance) || _follow.HasWork;
+            bool active = (owner != null && me.DistanceFrom(owner) > Math.Max(_config.FollowDistance, 0.5f)) || _follow.HasWork;
             _ctx.SetBehavior(active ? "Following" : "Idle");
         }
 
@@ -744,12 +734,24 @@ namespace AOBuddy
         {
             if (!_config.OwnerInterp || !_ownerKeyPos.HasValue) return owner.Transform.Position;
             double dtSince = _clock.Elapsed.TotalSeconds - _ownerKeyTime;
-            if (_ownerMovingKey && dtSince > 0 && dtSince < _config.OwnerInterpMaxSec)
+            if (_ownerMovingKey && dtSince > 0)
             {
+                // Past the cap, HOLD at the capped point rather than snapping back to the keyframe — snapping
+                // back put the target behind the bot, which then turned round to walk back to it.
+                float t = (float)Math.Min(dtSince, _config.OwnerInterpMaxSec);
                 Vector3 kp = _ownerKeyPos.Value;
-                // Full 3D velocity — follows his REAL slope up/down ramps (his own measured climb rate from his
-                // keyframes), not a flat guess. This is what keeps the crumb on the ramp surface.
-                return new Vector3(kp.X + _ownerVel.X * (float)dtSince, kp.Y + _ownerVel.Y * (float)dtSince, kp.Z + _ownerVel.Z * (float)dtSince);
+                // Direction from the heading HE REPORTED in that keyframe (he runs where he faces), not from
+                // the previous keyframe-to-keyframe delta: that one points along his OLD leg, so every turn he
+                // made sent the prediction — and the bot — shooting off past the corner. Speed is his own
+                // measured horizontal speed; Y keeps his measured climb rate so ramps stay on the surface.
+                Vector3 fwd = _ownerKeyHeading.Forward;
+                Vector3 flat = new Vector3(fwd.X, 0f, fwd.Z);
+                Vector3 velFlat = new Vector3(_ownerVel.X, 0f, _ownerVel.Z);
+                float speed = velFlat.Magnitude;
+                if (flat.Magnitude < 0.001f || speed < 0.1f) return kp;
+                // Backpedalling / strafing: he isn't moving where he faces, so trust his measured direction.
+                Vector3 h = Vector3.Dot(flat.Normalize(), velFlat) > 0.5f * speed ? flat.Normalize() * speed : velFlat;
+                return new Vector3(kp.X + h.X * t, kp.Y + _ownerVel.Y * t, kp.Z + h.Z * t);
             }
             return owner.Transform.Position;
         }
@@ -832,28 +834,46 @@ namespace AOBuddy
                 case "forward":
                 case "run":
                 {
-                    // Move him FORWARD a manual nudge (NOT the zone-line crossing — that's 'zone'). The bot's
-                    // OWN heading is unreliable when it's been idle (the clientless self-heading reads as a
-                    // zero quaternion, whose Forward is a zero vector — so "pos + forward*12" == pos and he
-                    // never actually moves while claiming he did). Pick the first USABLE direction: the owner's
-                    // facing (what "forward" naturally means when he leads), then the bot's own heading, then
-                    // owner->bot. If none is usable, say so instead of lying.
-                    LocalPlayer pf = DynelManager.LocalPlayer;
-                    if (pf == null) break;
-                    const float fwdMeters = 12f;
-                    PlayerChar fo = FindOwner();
-                    Vector3 Flat(Vector3 v) => new Vector3(v.X, 0f, v.Z);
-                    Vector3 fdir = new Vector3(0f, 0f, 0f);
-                    foreach (Vector3 cand in new[]
+                 LocalPlayer p = DynelManager.LocalPlayer;
+                    if (p == null) break;
+                    Vector3 mypos = p.MovementComponent.Position;
+
+                    // We RECORDED where this playfield's zone line is — the spot we came in through (the
+                    // entry point) / where the owner crossed out (a transition), in this zone's own coords.
+                    // HEAD THERE on our recorded route and cross. Do NOT sweep along the bot's stale facing
+                    // (that pointed him away from the line and he ran the wrong way). Aim the lookup at the
+                    // owner's last-seen spot so we pick the line he actually used.
+                    Vector3? line = _nav.NearestTransition(_lastOwnerPos ?? mypos) ?? _nav.EntryPoint();
+                    if (line.HasValue)
                     {
-                        fo != null ? Flat(fo.Transform.Heading.Forward) : new Vector3(0f, 0f, 0f),
-                        Flat(pf.MovementComponent.Heading.Forward),
-                        fo != null ? Flat(pf.MovementComponent.Position - fo.Transform.Position) : new Vector3(0f, 0f, 0f),
-                    })
-                    { if (cand.Magnitude > 0.05f) { fdir = cand.Normalize(); break; } }
-                    if (fdir.Magnitude < 0.05f) { reply("I can't tell which way is forward right now — move a step and try again."); break; }
-                    _follow.SetManualTarget(pf.MovementComponent.Position + fdir * fwdMeters);
-                    reply($"Moving forward {fwdMeters:0}m.");
+                        List<Vector3> route = _nav.RouteToward(mypos, line.Value);
+                        if (route != null && route.Count >= 2)
+                        {
+                            _follow.LoadReplay(route, true);   // zone-push: walk the recorded route to the line and cross
+                            _navReplaying = true;
+                            reply($"Heading to the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
+                            break;
+                        }
+                        // On/near the line but can't route to it — sweep across it, AIMED at the line.
+                        Vector3 toLine = line.Value - mypos;
+                        if (toLine.Length() > 0.5f)
+                        {
+                            _follow.StartManualSweep(mypos, toLine);
+                            reply($"Working the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
+                            break;
+                        }
+                    }
+
+                    // No recorded line here: fall back to the owner's TRAVEL direction (same source the
+                    // auto-sweep uses), then, last resort only, the bot's facing.
+                    if (!_follow.StartZoneSweep(mypos))
+                    {
+                        Vector3 dir = (_lastOwnerPos.HasValue && (_lastOwnerPos.Value - mypos).Length() > 0.5f)
+                                        ? _lastOwnerPos.Value - mypos
+                                        : p.MovementComponent.Heading.Forward;
+                        _follow.StartManualSweep(mypos, dir);
+                    }
+                    reply("Working the zone line (sweeping back and forth).");
                     break;
                 }
                 case "zone":
