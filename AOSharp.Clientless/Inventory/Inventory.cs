@@ -97,9 +97,11 @@ namespace AOSharp.Clientless
             Bank.IsOpen = false;
         }
 
-        internal static void OnAddTemplateMessage(int lowId, int highId, int ql)
+        // Count is the stack size the server created (a shop purchase of 7 stims arrives as one AddTemplate
+        // with Count 7); without it the stack read as a single item.
+        internal static void OnAddTemplateMessage(int lowId, int highId, int ql, int count = 1)
         {
-            var item = new Item(Identity.None, Identity.None, lowId, highId, ql);
+            var item = new Item(Identity.None, Identity.None, lowId, highId, ql) { Count = Math.Max(1, count) };
             AddToNextAvailableSlot(item);
             RegisterLastItem(item);
         }

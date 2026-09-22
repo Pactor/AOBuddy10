@@ -22,6 +22,7 @@
     <None Update="config.example.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\perks.sql"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
     <None Update="GameData\Perks.xml"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
+    <None Update="GameData\ItemValues.bin"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
   </ItemGroup>
 
 </Project>

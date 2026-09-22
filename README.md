@@ -33,6 +33,9 @@ own state and nothing else touches it:
 - **`PetController.cs`** — summons and commands pets, per pet and per role.
 - **`SupportController.cs`** — heals, stims, resting, buffs, supplies. No movement.
 - **`TravelController.cs`** — riding lifts, grids, whompas and mission terminals.
+- **`ResupplyController.cs`** — in a shop, finds the terminal selling stims and rechargers, buys the
+  best ones the bot can use, and asks the owner for credits when it can't pay. Learns prices and which
+  terminal sells what into `resupply.json`.
 - **`NavController.cs`** — per-playfield memory of walked routes, crossings and objects.
 - **`Main.cs`** — wiring: the tick loop, chat commands, and the two arbiters. One system moves the
   body each frame; the action sequence runs every tick without any step starving the next.

@@ -106,6 +106,22 @@ namespace AOBuddy
         public int LowStimCount = 10;              // warn when usable stims fall to this many
         public int LowRechargerCount = 10;         // warn when usable rechargers fall to this many
 
+        // --- Resupply (buying stims/rechargers in a shop; 'resupply' command) -------------------
+        // What to buy, by exact name (a keyword would also catch Boosted Stim, Burst of Speed Stim...), and how
+        // many to carry. Only the highest QL whose First Aid / Treatment requirement the bot meets is bought.
+        public string ResupplyStimName = "Health and Nano Stim";
+        public string ResupplyRechargerName = "Health and Nano Recharger";
+        public int ResupplyStimTarget = 2;        // top usable stims back up to this many (times 25)
+        public int ResupplyRechargerTarget = 3;   // top usable rechargers back up to this many (times 20)
+        public float ResupplySearchRadius = 40f;   // terminals within this of the bot are considered
+        public float ResupplyUseRange = 3f;        // walk this close to a terminal before using it
+        public int ResupplyKeepFreeSlots = 2;      // never fill the last inventory slots with supplies
+        public int ResupplyCashReserve = 0;        // credits never spent on supplies
+        public float ResupplyNagSeconds = 120f;    // short of credits: remind the owner this often
+        // Terminal names that suggest medical supplies are tried first; every other terminal in reach is
+        // still tried after them, and what each one sells is remembered per playfield (resupply.json).
+        public List<string> ResupplyMachineKeywords = new List<string> { "Medic", "Health", "Stim", "Recharg", "First Aid", "Treatment", "Pharma" };
+
         // Flee detection — when the owner runs off, break combat and follow.
         public float FleeSpeed = 3.0f;             // owner world-units/sec that counts as running away
         public float CombatBreakMeters = 28f;      // or if the owner gets this far, break combat & follow

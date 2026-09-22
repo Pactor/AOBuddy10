@@ -604,7 +604,7 @@ namespace AOSharp.Clientless
             _n3MsgCallbacks.Add(N3MessageType.AddTemplate, (msg) =>
             {
                 AddTemplateMessage tmpMsg = (AddTemplateMessage)msg;
-                Inventory.OnAddTemplateMessage(tmpMsg.LowId, tmpMsg.HighId, tmpMsg.Quality);
+                Inventory.OnAddTemplateMessage(tmpMsg.LowId, tmpMsg.HighId, tmpMsg.Quality, tmpMsg.Count);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Attack, (msg) =>

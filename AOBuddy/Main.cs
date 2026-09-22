@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,6 +60,7 @@ namespace AOBuddy
         private PetController _pets;
         private TravelController _travel;
         private SupportController _support;
+        private ResupplyController _resupply;
         private NavController _nav;
 
         private string _pathsDir;
@@ -136,6 +137,7 @@ namespace AOBuddy
             _logFile = Path.Combine(pluginDir, "aobuddy.log");
             _mode = ParseMode(_config.DefaultMode);
             InitPermanentBonuses(pluginDir);
+            ItemValues.Load(pluginDir, Log);
 
             _ctx = new BotContext(_config, Log);
             _ctx.Vitals = new VitalsTracker(_ctx);
@@ -145,6 +147,7 @@ namespace AOBuddy
             _pets = new PetController(_ctx);
             _travel = new TravelController(_ctx, _move);
             _support = new SupportController(_ctx, _move);
+            _resupply = new ResupplyController(_ctx, _move, pluginDir);
             _nav = new NavController(_ctx, pluginDir);
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
@@ -156,6 +159,15 @@ namespace AOBuddy
             {
                 try { _ctx.Vitals.OnMessage(m); }
                 catch (Exception ex) { Log("VITALS feed error: " + ex.Message); }
+                try { _resupply.OnMessage(m); }
+                catch (Exception ex) { Log("RESUPPLY feed error: " + ex.Message); }
+            };
+
+            // Player trades: the owner handing us credits when we asked for them (see ResupplyController).
+            Trade.TradeStatusChanged += (who, status) =>
+            {
+                try { _resupply.OnTradeStatus(who, status); }
+                catch (Exception ex) { Log("RESUPPLY trade error: " + ex.Message); }
             };
 
             // DIAG: count CharDCMove messages that actually deserialize+arrive, split owner vs self, to prove
@@ -300,6 +312,7 @@ namespace AOBuddy
             // one from its own death handler. The standing rule is that while he has a mob to attack he
             // never issues it — only an explicit 'idle'/'stop' from the owner does.
             try { if (me != null) _move.Stop(me, _config.SendIntervalMs); } catch { }
+            _resupply.Stop(me, "died");
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
@@ -646,6 +659,7 @@ namespace AOBuddy
         {
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
+            if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }
             if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
             _follow.WalkTick(me, owner, dt);
         }
@@ -654,6 +668,9 @@ namespace AOBuddy
         private void Decide(LocalPlayer me, PlayerChar owner)
         {
             _support.UpdateOwnerSpeed(owner);
+
+            // Shopping holds everything else: no casting, sitting, fighting or following until it's done.
+            if (_resupply.Active) { _support.SetIdleState(me); _ctx.SetBehavior("Resupplying"); return; }
 
             // Queued casts (auto/manual buffs, heals) first, when free and not mid manual-move. This also
             // drives the nano refill (sit/stim) when we can't afford the next buff, so it holds the tick.
@@ -770,6 +787,7 @@ namespace AOBuddy
         {
             _follow.Reset();
             _travel.Reset();
+            _resupply.OnZone();
             _combat.Reset();
             _pets.Reset();          // zoning drops pet tasking server-side — re-issue attack/heal after the zone
             _support.OnZone();
@@ -825,6 +843,7 @@ namespace AOBuddy
                 case "stop":
                 case "idle":
                     _mode = Mode.Idle; _follow.ClearMovement(); _combat.Reset();
+                    _resupply.Stop(DynelManager.LocalPlayer, "stop command");
                     { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
                     reply("Mode: Idle. Standing down.");
                     break;
@@ -1063,14 +1082,43 @@ namespace AOBuddy
                 case "perks":
                 case "perk": ReportPerks(reply); break;
 
+                case "resupply":
+                {
+                    LocalPlayer rp = DynelManager.LocalPlayer;
+                    if (rp == null) { reply("No character loaded."); break; }
+                    switch (arg)
+                    {
+                        case "stop": if (_resupply.Active) { _resupply.Stop(rp, "owner"); reply("Resupply stopped."); } else reply("Not resupplying."); break;
+                        case "status": reply("Resupply: " + _resupply.Describe()); break;
+                        case "forget": _resupply.Forget(); reply("Forgot which terminals sell what; the next resupply checks them all again."); break;
+                        case "machines":
+                        {
+                            List<string> ml = _resupply.DescribeMachines(rp);
+                            if (ml.Count == 0) { reply($"No terminals within {_config.ResupplySearchRadius:0}m."); break; }
+                            foreach (string l in ml.Take(15)) reply(Truncate(l, 440));
+                            if (ml.Count > 15) reply($"…(+{ml.Count - 15} more, all in the log)");
+                            break;
+                        }
+                        default: _resupply.Start(rp, reply); break;
+                    }
+                    break;
+                }
+                // TEMPORARY: open every matching terminal in the zone and log it (ResupplyController.StartSurvey).
+                case "vendordebug":
+                {
+                    LocalPlayer vp = DynelManager.LocalPlayer;
+                    if (vp == null) { reply("No character loaded."); break; }
+                    _resupply.StartSurvey(vp, parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "", reply);
+                    break;
+                }
                 case "shop":
                 case "sell":
-                case "buy": reply("Vendor buy/sell not implemented yet (Milestone 4). Needs vendor-packet capture — see MILESTONES-solo.md."); break;
+                case "buy": reply("Only 'resupply' (stims and rechargers) so far; general vendor buy/sell isn't implemented yet."); break;
                 case "mission": reply("Mission-terminal running not implemented yet (Milestone 3). See MILESTONES-solo.md."); break;
                 case "whompa":
                 case "travel": reply("Whompa/grid routing not implemented yet (Milestone 5). See MILESTONES-solo.md."); break;
 
-                case "help": reply("Commands: assist, solo, follow, stay, come, zone [m], stop, stand, sit, buff [self|owner|team|all], autobuff, heal, record [stop], savepath <n>, path <n>|stop, paths, nav [save|on|off|use], class, nanos [filter], active, learnable [filter], perks, status."); break;
+                case "help": reply("Commands: assist, solo, follow, stay, come, zone [m], stop, stand, sit, buff [self|owner|team|all], autobuff, heal, record [stop], savepath <n>, path <n>|stop, paths, nav [save|on|off|use], class, nanos [filter], active, learnable [filter], perks, resupply [stop|status|machines|forget], status."); break;
                 default: reply($"Unknown command '{cmd}'. Try 'help'."); break;
             }
         }
