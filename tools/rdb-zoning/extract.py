@@ -15,6 +15,13 @@ Records used (type ids, keyed by playfield id):
                      arrival line destIdx (which is the matching zone line on the far side)
   1000026 Statel     static objects (doors, lifts, whompahs, grid terminals) with their event
                      scripts; the teleport functions in them name where using the object sends you
+                     and carry the requirements for using it. Mission doors are statels of type
+                     ACGEntrance (0xDAC6) with no teleport: the server makes the instance and the
+                     mission key opens the door
+
+Requirements are the function's criteria as stored, in postfix order: [stat, operator, value],
+where operator 3/4/42 is Or/And/Not joining the terms before it (stat and value 0). reqText
+spells them out with the names from AOSharp.Common's Stat and UseCriteriaOperator enums.
 
 Coordinates are AO's (x, y, z) with y up.
 """
@@ -30,6 +37,32 @@ T_PLAYFIELD, T_WALL, T_STATEL = 1000001, 1000021, 1000026
 # Teleport function ids (OmniCell.Enums.FunctionType) and how their big-endian int args read.
 F_TELEPORT, F_LINE, F_PROXY, F_PROXY2, F_PROXY_PET = 53016, 53059, 53082, 53083, 53165
 TELEPORTS = {F_TELEPORT: "teleport", F_LINE: "line", F_PROXY: "proxy", F_PROXY2: "proxy", F_PROXY_PET: "proxy"}
+
+ACG_ENTRANCE = 0xDAC6
+OP_OR, OP_AND, OP_NOT = 3, 4, 42
+
+
+def load_enum(path):
+    names = {}
+    if os.path.exists(path):
+        for m in re.finditer(r"^\s*(\w+)\s*=\s*(-?(?:0x[0-9A-Fa-f]+|\d+))\s*,?", open(path, encoding="utf-8-sig").read(), re.M):
+            names.setdefault(int(m.group(2), 0), m.group(1))
+    return names
+
+
+GAMEDATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "AOSharp.Common", "GameData")
+STATS = load_enum(os.path.join(GAMEDATA, "Stat.cs"))
+OPS = load_enum(os.path.join(GAMEDATA, "UseCriteriaOperator.cs"))
+
+
+def req_text(reqs):
+    words = []
+    for stat, op, value in reqs:
+        if op in (OP_OR, OP_AND, OP_NOT):
+            words.append(OPS.get(op, str(op)))
+        else:
+            words.append(f"{STATS.get(stat, stat)} {OPS.get(op, f'op{op}')} {value}")
+    return " ".join(words)
 
 
 class Rdb:
@@ -129,12 +162,14 @@ def teleport_functions(ev):
         a = o + 16 + reqs * 12 + 16
         if not 0 <= reqs < 20 or a + 16 > len(ev):
             continue
-        found.append((fid, struct.unpack_from(">4i", ev, a)))
+        # Stored as stat, value, operator; kept as [stat, operator, value] to read left to right.
+        crit = [struct.unpack_from(">3i", ev, o + 16 + 12 * i) for i in range(reqs)]
+        found.append((fid, struct.unpack_from(">4i", ev, a), [[s, op, v] for s, v, op in crit]))
     return found
 
 
-def parse_teleports(d):
-    out = []
+def parse_statels(d):
+    teleports, entrances = [], []
     n, p = struct.unpack_from("<i", d, 0)[0], 4
     for _ in range(n):
         ln = struct.unpack_from("<i", d, p)[0]
@@ -143,21 +178,26 @@ def parse_teleports(d):
         itype, inst = struct.unpack_from("<ii", b, 0)
         x, y, z = struct.unpack_from("<3f", b, 24)
         tmpl, evlen = struct.unpack_from("<ii", b, 56)
+        if itype == ACG_ENTRANCE:
+            entrances.append({"pos": r3(x, y, z), "id": [itype, inst], "template": tmpl})
         seen = set()
-        for fid, a in teleport_functions(b[64:64 + evlen]):
+        for fid, a, reqs in teleport_functions(b[64:64 + evlen]):
             if fid == F_TELEPORT:     # x, y, z, playfield
                 t = {"kind": "teleport", "to": a[3], "dest": [a[0], a[1], a[2]]}
             elif fid == F_LINE:       # _, idx << 16 | playfield, ...
                 t = {"kind": "line", "to": a[1] & 0xFFFF, "idx": a[1] >> 16}
             else:                     # 51102 (proxy type), playfield, _, instance
                 t = {"kind": "proxy", "to": a[1]}
+            if reqs:                  # a grid exit can hold the same jump twice: by CL, or by side
+                t["reqs"] = reqs
+                t["reqText"] = req_text(reqs)
             key = json.dumps(t, sort_keys=True)
             if key in seen:           # one object often repeats the same jump across events
                 continue
             seen.add(key)
             t.update({"pos": r3(x, y, z), "id": [itype, inst], "template": tmpl})
-            out.append(t)
-    return out
+            teleports.append(t)
+    return teleports, entrances
 
 
 def main():
@@ -171,17 +211,20 @@ def main():
     zoning = {}
     for pf in rdb.ids(T_PLAYFIELD):
         name, arrivals = parse_playfield(rdb.get(T_PLAYFIELD, pf))
+        teleports, entrances = parse_statels(rdb.get(T_STATEL, pf)) if pf in statels else ([], [])
         zoning[str(pf)] = {
             "name": name,
             "zoneLines": parse_zone_lines(rdb.get(T_WALL, pf)) if pf in walls else [],
-            "teleports": parse_teleports(rdb.get(T_STATEL, pf)) if pf in statels else [],
+            "teleports": teleports,
+            "missionEntrances": entrances,
             "arrivals": {str(k): v for k, v in sorted(arrivals.items())},
         }
     with open(out, "w", encoding="utf-8") as f:
-        json.dump({"version": 1, "playfields": zoning}, f, separators=(",", ":"))
-    lines = sum(len(v["zoneLines"]) for v in zoning.values())
-    tps = sum(len(v["teleports"]) for v in zoning.values())
-    print(f"wrote {len(zoning)} playfields, {lines} zone lines, {tps} teleports to {os.path.normpath(out)}")
+        json.dump({"version": 2, "playfields": zoning}, f, separators=(",", ":"))
+    count = lambda key: sum(len(v[key]) for v in zoning.values())
+    gated = sum(1 for v in zoning.values() for t in v["teleports"] if "reqs" in t)
+    print(f"wrote {len(zoning)} playfields, {count('zoneLines')} zone lines, {count('teleports')} teleports "
+          f"({gated} with requirements), {count('missionEntrances')} mission entrances to {os.path.normpath(out)}")
 
 
 if __name__ == "__main__":
