@@ -41,3 +41,10 @@ AOBuddy/nav/
 # Local working notes. These name the characters used for testing and quote sniff transcripts,
 # so they stay on the machine that made them.
 AOBuddy/CLAUDE.md
+
+# Claude Code's own configuration and hooks. Local tooling, not part of the project.
+.claude/
+**/.claude/
+
+# Local working notes, kept on the machine that made them.
+HANDOFF-*.md
