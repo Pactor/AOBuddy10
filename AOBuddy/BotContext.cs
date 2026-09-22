@@ -20,6 +20,9 @@ namespace AOBuddy
         // Cached owner char id so the bot can still tell the owner things after he's zoned off.
         public int OwnerCharId;
 
+        // Timestamped HP/nano of the owner and teammates (see VitalsTracker). Heal decisions read it.
+        public VitalsTracker Vitals;
+
         private string _behavior = "";
         public string Behavior => _behavior;
 

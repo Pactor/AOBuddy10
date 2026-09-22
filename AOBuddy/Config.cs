@@ -96,6 +96,8 @@ namespace AOBuddy
         //   Health and Nano Stim      (291043): LockSkill(skill 123, 40s)
         // They lock DIFFERENT skills, so the two items are independent — using one does not block the other.
         // Not readable via AOSharp: its item pack has no OnUse events and drops RechargeDelay for non-nano items.
+        // These are the FALLBACK: once the server's lock (SpecialUsed on First Aid / Treatment) arrives in
+        // me.Cooldowns, its remaining time wins (see SupportController.HealItemReady).
         public double RechargerReuseSec = 15.0;
         public double StimReuseSec = 40.0;
 

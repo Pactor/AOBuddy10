@@ -32,25 +32,21 @@ namespace AOBuddy
         private double _predHp = -1, _predNano = -1;
         private int _lastRawHp = -1, _lastRawNano = -1;
 
-        // ADAPTIVE STIM COOLDOWN. A stim's real recharge isn't exposed on the item, and firing one always
-        // retargets the recipient (Item.Use sets the target), which interrupts the melee swing. So a stim
-        // fired while it's still cooling down is a pure pause with no heal. We LEARN the cooldown instead of
-        // hardcoding: only fire when the stim is due, and after each fire check (a beat later) whether HP
-        // actually rose — if not, it was on cooldown, so back the timer off; if it did, ease it back down.
-        // While the stim is cooling the bot just keeps attacking (the heal path returns false). No guessing.
-        private double _stimReadyAt = 0;        // sessionSeconds a stim may next be used
-        private double _stimBackoff = 3.0;      // current learned cooldown estimate (s)
-        private bool _stimPending = false;      // a fired stim awaits its did-it-heal check
-        private double _stimCheckAt = 0;        // when to run that check
-        private int _stimHpBefore = 0;          // recipient HP% at fire time
-        private bool _stimWasOwner = false;     // recipient was the owner (vs self)
+        // HEAL-ITEM SKILL LOCKS. Using a heal item locks a skill server-side (the item data's OnUse LockSkill:
+        // stim -> First Aid 40s, recharger -> Treatment 15s). The server announces that lock as a SpecialUsed
+        // on the skill stat and lifts it with SpecialAvailable, so it lands in me.Cooldowns like a weapon
+        // special — that is the authority on whether the item can be used. HP/nano readback can't judge it:
+        // the server sends vitals sparsely, so "did HP rise a beat later?" read as "no" and the old learner
+        // kept re-firing a locked stim (each one a retarget that pauses the swing, for no heal). Until the
+        // server's lock arrives we hold our own timer from the item data, so a late packet can't let us re-fire.
+        private readonly Dictionary<Stat, double> _lockUntil = new Dictionary<Stat, double>();  // skill -> sessionSeconds usable again
+        private readonly HashSet<Stat> _lockSeen = new HashSet<Stat>();   // server lock observed since our last use
 
         private double _healCd;           // cooldown so emergency heals don't fire every tick
         private double _sessionSeconds;   // monotonic clock for aura recast rate-limiting
         private double _auraAccum;
         private readonly Dictionary<int, double> _auraLastCast = new Dictionary<int, double>();
         private double _rechargeAccum;
-        private double _itemReadyAt;        // session-seconds when the heal item's use timer expires (sit/use/stand cycle)
 
         // Auto-buff: learned nanos classified as keep-up buffs (rebuilt when SpellList changes).
         private sealed class BuffPlan { public int NanoId; public NanoItem Nano; public bool Self; public NanoLine Line; public int Ncu; }
@@ -641,7 +637,8 @@ namespace AOBuddy
                     _resting = true;   // tell the movement arbiter to hold still while we recharge to buff
                     _ctx.SetBehavior("Resting");
                     _nanoRefillAccum += _ctx.Config.TickMs / 1000.0;
-                    if (_nanoRefillAccum >= 1.5) { _nanoRefillAccum = 0; recharger.Use(); }   // self-use, proven stim pattern
+                    if (_nanoRefillAccum >= 1.5 && HealItemReady(me, recharger))   // locked -> keep sitting, don't re-poke
+                    { _nanoRefillAccum = 0; recharger.Use(); MarkHealItemUsed(recharger); }   // self-use, proven stim pattern
                     return;
                 }
             }
@@ -661,16 +658,6 @@ namespace AOBuddy
         // resting. Returns true if it healed.
         public bool TryEmergencyHeal(LocalPlayer me, PlayerChar owner, bool fighting)
         {
-            // Learn the stim cooldown: a beat after a stim fired, did the recipient's HP actually rise? If
-            // not, the stim was on cooldown (wasted retarget) -> wait longer next time; if it did, ease back.
-            if (_stimPending && _sessionSeconds >= _stimCheckAt)
-            {
-                int now = _stimWasOwner ? (owner != null ? PercentHealth(owner) : 100) : SelfHpPct(me);
-                if (now > _stimHpBefore) _stimBackoff = Math.Max(3.0, _stimBackoff - 1.0);
-                else _stimBackoff = Math.Min(20.0, _stimBackoff + 2.0);
-                _stimPending = false;
-            }
-
             if (_resting || _healCd < _ctx.Config.HealIntervalSec) return false;
             if (IsRezSick(me)) return false;   // stims/rechargers can't be used through rez sickness
             if (!DoEmergencyHeal(me, owner, fighting)) return false;
@@ -678,31 +665,59 @@ namespace AOBuddy
             return true;
         }
 
-        // Fire a stim only if it's off its (learned) cooldown. While cooling, returns false so the caller
-        // keeps attacking instead of re-poking a dead stim and pausing the swing. Records a did-it-heal check.
-        private bool FireStim(Item stim, PlayerChar owner, bool onOwner, int hpBefore)
+        // Fire a stim only if its skill lock is off. While locked, returns false so the caller keeps
+        // attacking instead of re-poking a locked stim and pausing the swing.
+        private bool FireStim(LocalPlayer me, Item stim, PlayerChar owner, bool onOwner)
         {
-            if (_sessionSeconds < _stimReadyAt) return false;   // timer not up -> keep swinging, no retarget
+            if (!HealItemReady(me, stim)) return false;   // locked -> keep swinging, no retarget
             if (onOwner) stim.Use(owner); else stim.Use();
-            _stimReadyAt = _sessionSeconds + _stimBackoff;
-            _stimPending = true;
-            _stimCheckAt = _sessionSeconds + 1.5;
-            _stimHpBefore = hpBefore;
-            _stimWasOwner = onOwner;
+            MarkHealItemUsed(stim);
             return true;
+        }
+
+        private bool IsRecharger(Item it)
+            => it?.Name != null && !string.IsNullOrEmpty(_ctx.Config.RechargerKeyword)
+               && it.Name.IndexOf(_ctx.Config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0;
+
+        private Stat LockSkill(Item it) => IsRecharger(it) ? Stat.Treatment : Stat.FirstAid;
+
+        // Is this heal item's skill lock off? Syncs our timer to the server's lock whenever it has one: a live
+        // lock sets the remaining time, and a lock we saw that has since been lifted/run out frees it. An
+        // expired leftover entry from an earlier use is ignored, so it can't cut short the timer of a new use.
+        private bool HealItemReady(LocalPlayer me, Item it)
+        {
+            Stat s = LockSkill(it);
+            if (me.Cooldowns.TryGetValue(s, out Cooldown cd) && cd.RemainingTime > 0)
+            {
+                if (_lockSeen.Add(s)) _ctx.Log($"HEAL-LOCK: server locked {s} for {cd.RemainingTime:0.#}s");
+                _lockUntil[s] = _sessionSeconds + cd.RemainingTime;
+            }
+            else if (_lockSeen.Remove(s)) _lockUntil[s] = _sessionSeconds;
+            return !_lockUntil.TryGetValue(s, out double until) || _sessionSeconds >= until;
+        }
+
+        private void MarkHealItemUsed(Item it)
+        {
+            Stat s = LockSkill(it);
+            _lockUntil[s] = _sessionSeconds + (s == Stat.Treatment ? _ctx.Config.RechargerReuseSec : _ctx.Config.StimReuseSec);
+            _lockSeen.Remove(s);
         }
 
         private bool DoEmergencyHeal(LocalPlayer me, PlayerChar owner, bool fighting)
         {
             int selfHp = SelfHpPct(me);
             int selfNano = SelfNanoPct(me);
-            int ownerHp = owner != null ? PercentHealth(owner) : 101;
+            // The owner counts as low only on a FRESH reading — a stale one (he's been out of the team feed,
+            // no reply to our InfoRequest yet, or we just healed him) is unknown, not low. The old dynel read
+            // said "49%" for 22 minutes and he got stimmed on it again and again.
+            int ownerHp = 101;
+            bool ownerKnown = owner != null && _ctx.Vitals.TryFreshHp(owner, out ownerHp, out _);
             // A stim restores BOTH health and nano, so for a caster a full health bar and an empty nano bar
             // is just as much a reason to use one mid-fight as a health drop: without nano he cannot cast,
             // which for a nano class is the same as being out of the fight.
             bool selfLow = selfHp <= _ctx.Config.HealSelfBelowPercent
                            || selfNano <= _ctx.Config.StimNanoBelowPercent;
-            bool ownerLow = owner != null && ownerHp <= _ctx.Config.HealOwnerBelowPercent;
+            bool ownerLow = ownerKnown && ownerHp <= _ctx.Config.HealOwnerBelowPercent;
 
             // 1) HIMSELF FIRST, ALWAYS. In a fight the bot heals itself before the owner, full stop — not
             //    only when it is the more critical of the two. Stimming a healthier owner while about to die
@@ -717,9 +732,21 @@ namespace AOBuddy
             // 2) Owner low (and not out-prioritised by the bot's own survival above).
             if (ownerLow)
             {
-                if (_ctx.Config.HealNanoId > 0) { DoCast(me, new CastRequest { Target = owner.Identity, NanoId = _ctx.Config.HealNanoId, Label = "heal owner" }); return true; }
+                string seen = _ctx.Vitals.Describe(owner);
+                if (_ctx.Config.HealNanoId > 0)
+                {
+                    DoCast(me, new CastRequest { Target = owner.Identity, NanoId = _ctx.Config.HealNanoId, Label = "heal owner" });
+                    _ctx.Vitals.Invalidate(owner.Identity);
+                    _ctx.Log($"HEAL owner [{seen}]");
+                    return true;
+                }
                 Item so;
-                if (me.DistanceFrom(owner) <= _ctx.Config.StimOwnerRange && (so = BestEmergencyHeal(true, false)) != null && FireStim(so, owner, true, ownerHp)) { _ctx.Log($"STIM owner {ownerHp}% with QL{so.Ql} {so.Name}"); return true; }
+                if (me.DistanceFrom(owner) <= _ctx.Config.StimOwnerRange && (so = BestEmergencyHeal(true, false)) != null && FireStim(me, so, owner, true))
+                {
+                    _ctx.Vitals.Invalidate(owner.Identity);
+                    _ctx.Log($"STIM owner [{seen}] with QL{so.Ql} {so.Name}");
+                    return true;
+                }
             }
 
             // 3) Out of combat and below the heal threshold with no owner to worry about — top up rather
@@ -733,6 +760,7 @@ namespace AOBuddy
             if (_ctx.Config.TeamHealNanoId > 0 && Team.Members.Any(m => LowHealthMember(m)))
             {
                 DoCast(me, new CastRequest { OnSelf = true, NanoId = _ctx.Config.TeamHealNanoId, Label = "team heal" });
+                foreach (TeamMember m in Team.Members) _ctx.Vitals.Invalidate(m.Identity);
                 return true;
             }
             return false;
@@ -746,7 +774,7 @@ namespace AOBuddy
             bool needHp = selfHp <= _ctx.Config.HealSelfBelowPercent || selfHp <= _ctx.Config.SelfCriticalPercent;
             bool needNano = selfNano <= _ctx.Config.StimNanoBelowPercent;
             Item ss = BestEmergencyHeal(needHp || !needNano, needNano || !needHp);
-            if (ss != null && FireStim(ss, null, false, selfHp)) { _ctx.Log($"STIM self hp={selfHp}% nano={selfNano}% with QL{ss.Ql} {ss.Name}"); return true; }
+            if (ss != null && FireStim(me, ss, null, false)) { _ctx.Log($"STIM self hp={selfHp}% nano={selfNano}% with QL{ss.Ql} {ss.Name}"); return true; }
             return false;
         }
 
@@ -791,11 +819,18 @@ namespace AOBuddy
             // heal path has used successfully for days. The Recharger fires the identical GenericCmd Use yet
             // moved nano 0 points across every use (rawNano flat 30/184) and carries UseMods[(none)], so it is
             // not a trustworthy nano source. Try the proven item first, fall back to the recharger.
-            Item recharger = (needRest || _resting)
-                ? (BestUsableHealItem(_ctx.Config.StimKeyword, _ctx.Config.StimItemName)
-                   ?? BestUsableHealItem(_ctx.Config.RechargerKeyword, _ctx.Config.RechargerItemName)
-                   ?? BestRestHeal(true, true))
-                : null;
+            // Stim and recharger lock different skills (First Aid / Treatment), so if the stim is still locked
+            // from a fight, the recharger may be free — prefer whichever is actually usable now.
+            Item recharger = null;
+            if (needRest || _resting)
+            {
+                Item stim = BestUsableHealItem(_ctx.Config.StimKeyword, _ctx.Config.StimItemName);
+                Item rech = BestUsableHealItem(_ctx.Config.RechargerKeyword, _ctx.Config.RechargerItemName)
+                            ?? BestRestHeal(true, true);
+                recharger = stim != null && HealItemReady(me, stim) ? stim
+                          : rech != null && HealItemReady(me, rech) ? rech
+                          : stim ?? rech;
+            }
             bool haveRecharger = recharger != null;   // a stim counts too — it restores HP and nano just the same
 
             // Casting takes posture priority: a nano cast auto-STANDS him, so if he's also resting he ping-pongs
@@ -820,7 +855,7 @@ namespace AOBuddy
             bool nanoStarved = !me.IsCasting && nanoNow < _ctx.Config.RestNanoBelowPercent;
             // Do NOT sit again until the heal item's use timer has run out — sitting early just burns a use
             // that the server ignores. This is the "wait for the timer" half of the sit/use/stand cycle.
-            bool itemReady = _sessionSeconds >= _itemReadyAt;
+            bool itemReady = recharger == null || HealItemReady(me, recharger);
             bool startRest = !inCombat && !combatLull && _restZoneSuppress <= 0 && haveRecharger && settled
                              && ownerStill && needRest && itemReady
                              && (nanoStarved || (!castsActive && !_restedSinceCombat && _restCooldown <= 0));
@@ -874,12 +909,11 @@ namespace AOBuddy
                 me.TryGetStat(Stat.CurrentNano, out int rawNano); me.TryGetStat(Stat.MaxNanoEnergy, out int rawMaxNano);
                 string useMods = (recharger.Modifiers != null && recharger.Modifiers.TryGetValue(SpellListType.Use, out var um) && um != null && um.Count > 0)
                     ? string.Join(",", um.Select(kv => kv.Key + "=" + kv.Value)) : "(none)";
+                // Seated since before the lock ran out? Don't burn a use the server will ignore — wait.
+                if (!HealItemReady(me, recharger)) return true;
                 recharger.Use();                    // self-use — matches the PROVEN stim self-heal path (stim.Use(), used for days)
-                // Per-item lock from the item data's OnUse LockSkill: recharger 15s (skill 124), stim 40s (123).
-                bool isRecharger = recharger.Name != null
-                    && recharger.Name.IndexOf(_ctx.Config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0;
-                double reuseSec = isRecharger ? _ctx.Config.RechargerReuseSec : _ctx.Config.StimReuseSec;
-                _itemReadyAt = _sessionSeconds + reuseSec;
+                MarkHealItemUsed(recharger);
+                double reuseSec = IsRecharger(recharger) ? _ctx.Config.RechargerReuseSec : _ctx.Config.StimReuseSec;
                 _ctx.Log($"RECHARGE: used {recharger.Name} QL{recharger.Ql} (seated {_restElapsed:0.0}s) hp={hpNow}% nano={nanoNow}% rawNano={rawNano}/{rawMaxNano} UseMods[{useMods}] — standing, next use in {reuseSec:0.#}s");
 
                 // ONE use per sit, then STAND. Two reasons: the item's use timer means further uses this sit
@@ -920,7 +954,10 @@ namespace AOBuddy
         private bool LowHealthMember(TeamMember m)
         {
             SimpleChar c = DynelManager.Characters.FirstOrDefault(x => x.Identity == m.Identity);
-            return c != null && PercentHealth(c) <= _ctx.Config.TeamHealBelowPercent;
+            if (c == null) return false;
+            LocalPlayer me = DynelManager.LocalPlayer;
+            if (me != null && c.Identity == me.Identity) return SelfHpPct(me) <= _ctx.Config.TeamHealBelowPercent;   // own stats are live
+            return _ctx.Vitals.TryFreshHp(c, out int hp, out _) && hp <= _ctx.Config.TeamHealBelowPercent;
         }
 
         private void DoCast(LocalPlayer me, CastRequest req)
@@ -1132,33 +1169,6 @@ namespace AOBuddy
                 new HealProfile { NameContains = "Coil of Nano",              RestoresNano = true,  UsableInCombat = true, OverTime = true },
                 new HealProfile { NameContains = "Veterans Healing Laboratory", RestoresHealth = true, UsableInCombat = true, Reusable = true },
             };
-        }
-
-        // ---- Shared vitals helpers -----------------------------------------------
-
-        // A teammate's vitals come from the TEAM WINDOW first (TeamMemberInfoMessage), and only then from
-        // his dynel. The team feed keeps arriving while he is out of render range and stops only when he
-        // leaves the playfield, whereas a dynel's Health stat freezes at whatever it was when the server
-        // last broadcast him — which is exactly the moment the bot most needs to know he is dropping.
-        // The SDK used to decode this message into four fields named Unknown and discard it.
-        public static int PercentHealth(SimpleChar c)
-        {
-            if (c == null) return 100;
-            TeamMember tm = Team.Find(c.Identity);
-            if (tm != null && tm.HealthPercent >= 0) return tm.HealthPercent;
-            if (!c.TryGetStat(Stat.MaxHealth, out int max) || max <= 0) return 100;
-            c.TryGetStat(Stat.Health, out int cur);
-            return (int)(100L * cur / max);
-        }
-
-        public static int PercentNano(SimpleChar c)
-        {
-            if (c == null) return 100;
-            TeamMember tm = Team.Find(c.Identity);
-            if (tm != null && tm.NanoPercent >= 0) return tm.NanoPercent;
-            if (!c.TryGetStat(Stat.MaxNanoEnergy, out int max) || max <= 0) return 100;
-            c.TryGetStat(Stat.CurrentNano, out int cur);
-            return (int)(100L * cur / max);
         }
     }
 }

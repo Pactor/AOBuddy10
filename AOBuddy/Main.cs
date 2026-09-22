@@ -138,6 +138,7 @@ namespace AOBuddy
             InitPermanentBonuses(pluginDir);
 
             _ctx = new BotContext(_config, Log);
+            _ctx.Vitals = new VitalsTracker(_ctx);
             _move = new Movement();
             _follow = new FollowController(_ctx, _move);
             _combat = new CombatController(_ctx);
@@ -150,6 +151,12 @@ namespace AOBuddy
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
             Client.OnUpdate += OnUpdate;
+
+            Client.MessageReceived += (s, m) =>
+            {
+                try { _ctx.Vitals.OnMessage(m); }
+                catch (Exception ex) { Log("VITALS feed error: " + ex.Message); }
+            };
 
             // DIAG: count CharDCMove messages that actually deserialize+arrive, split owner vs self, to prove
             // whether the owner's movement is reaching us per-move (smooth) or only in bursts (dropped).
@@ -317,6 +324,7 @@ namespace AOBuddy
             _lastFramePos = pos;          // don't let the reclaim jump re-trigger the zone-jump reset
             ClearNav();
             _support.OnZone();            // re-grace buffs/rest after the reclaim (stats read stale a moment)
+            _ctx.Vitals.Clear();
             Log($"RECLAIMED/alive at ({pos.X:0},{pos.Y:0},{pos.Z:0}) after {_deadSeconds:0}s dead — resuming.");
             PlayerChar owner = FindOwner();
             if (owner != null)
@@ -597,6 +605,7 @@ namespace AOBuddy
                 _ownerVisibleLast = ownerVisible;
 
                 _support.UpdateVitals(me, dt, _combat.InCombat);
+                _ctx.Vitals.Poll(me, owner);
                 // Keep pets up — summons go through the SHARED cast queue so they serialize with buffs (no
                 // interruption), and only when nothing else is queued/casting.
                 _pets.MaintainPets(me, dt, _support.HasPendingCasts, sid => _support.QueueCast(new CastRequest { OnSelf = true, NanoId = sid, Label = "summon pet" }));
@@ -764,6 +773,7 @@ namespace AOBuddy
             _combat.Reset();
             _pets.Reset();          // zoning drops pet tasking server-side — re-issue attack/heal after the zone
             _support.OnZone();
+            _ctx.Vitals.Clear();    // readings from the old playfield say nothing about anyone here
             _move.Reset();
             _ownerLostSeconds = 0;
             _navReplaying = false;
@@ -788,7 +798,7 @@ namespace AOBuddy
 
             Vector3 p = me.MovementComponent.Position;
             string od = owner != null ? me.DistanceFrom(owner).ToString("0.0") : "n/a";
-            string ohp = owner != null ? SupportController.PercentHealth(owner) + "%" : "n/a";
+            string ohp = _ctx.Vitals.Describe(owner);
             Log($"hb [{_ctx.Behavior}] mode={_mode} hp={hp}% nano={_support.SelfNanoPct(me)}% ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
                 $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
             _diagOwnerMoves = 0; _diagSelfMoves = 0;
@@ -1295,7 +1305,7 @@ namespace AOBuddy
         {
             LocalPlayer me = DynelManager.LocalPlayer;
             string target = me?.IsAttacking == true && me.FightingTarget != null ? me.FightingTarget.Name : "none";
-            int hp = me != null ? SupportController.PercentHealth(me) : 0;
+            int hp = me != null ? _support.SelfHpPct(me) : 0;
             string lvl = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l.ToString() : "?";
             return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}%. Target: {target}. Waypoints: {_follow.TrailCount}.";
         }

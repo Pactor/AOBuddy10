@@ -469,8 +469,10 @@ namespace AOSharp.Clientless
             {
                 HealthDamageMessage hd = (HealthDamageMessage)msg;
 
+                // The packet names the stat it moved: a nano drain/refill carries CurrentNano, and writing
+                // that into Health put a nano number in someone's HP.
                 if (DynelManager.Find(hd.Target, out Dynel hpTarget))
-                    hpTarget.SetStat(Stat.Health, hd.TargetHp);
+                    hpTarget.SetStat(hd.Stat == Stat.CurrentNano ? Stat.CurrentNano : Stat.Health, hd.TargetHp);
             });
 
             // Keep skills/abilities live. After login these change via SkillMessage (buffs like
