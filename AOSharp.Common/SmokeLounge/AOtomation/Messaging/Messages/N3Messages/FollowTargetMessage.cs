@@ -40,7 +40,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public FollowTargetType Type { get; set; }
 
         [AoMember(1)]
-        public byte Unknown1 { get; set; }
+        public byte MoveMode { get; set; }
 
         #endregion
 
@@ -54,29 +54,34 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         {
         }
 
+        // 25 bytes plus the coordinates: identity, a float the client's reader (0x10073740) takes as
+        // a float - the distance kept from the target, going by GamecodeUnk.FollowTarget(vehicle,
+        // dynel, float distance, waypoints) - the target's position, then a byte-counted Vector3[].
         public class TargetInfo : IInfo
         {
             [AoMember(0)]
             public Identity Target { get; set; }
 
             [AoMember(1)]
-            public int Unknown1 { get; set; }
+            public float Distance { get; set; }
 
             [AoMember(2)]
-            public int Unknown2 { get; set; }
+            public Vector3 TargetPosition { get; set; }
 
-            [AoMember(3)]
-            public int Unknown3 { get; set; }
-
-            [AoMember(4)]
-            public int Unknown4 { get; set; }
+            [AoMember(3, SerializeSize = ArraySizeType.Byte)]
+            public Vector3[] Coordinates { get; set; }
         }
 
+        // Always two points: where the mover is now and where it is heading.
         public class PathInfo : IInfo
         {
 
             [AoMember(0, SerializeSize = ArraySizeType.Byte)]
             public Vector3[] Waypoints { get; set; }
+
+            public Vector3 Current => Waypoints[0];
+
+            public Vector3 End => Waypoints[Waypoints.Length - 1];
         }
     }
 
