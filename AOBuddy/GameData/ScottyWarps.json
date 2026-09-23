@@ -1,0 +1,1336 @@
+{
+ "version": 1,
+ "warps": [
+  {
+   "tell": "scty ahanus",
+   "label": "Ahenus",
+   "playfield": "4 Holes",
+   "playfieldId": 760,
+   "pos": {
+    "x": 1635,
+    "z": 1959
+   }
+  },
+  {
+   "tell": "scty aurum",
+   "label": "Aurum",
+   "playfield": "4 Holes",
+   "playfieldId": 760,
+   "pos": {
+    "x": 1125,
+    "z": 989
+   }
+  },
+  {
+   "tell": "scty 4h",
+   "label": "Grid",
+   "playfield": "4 Holes",
+   "playfieldId": 760,
+   "pos": null
+  },
+  {
+   "tell": "scty dodga",
+   "label": "Dodga Demercel",
+   "playfield": "Aegean",
+   "playfieldId": 585,
+   "pos": {
+    "x": 605,
+    "z": 1122
+   }
+  },
+  {
+   "tell": "scty aegean",
+   "label": "Herder's Hole",
+   "playfield": "Aegean",
+   "playfieldId": 585,
+   "pos": {
+    "x": 1320,
+    "z": 2042
+   }
+  },
+  {
+   "tell": "scty icc",
+   "label": "ICC Shuttles",
+   "playfield": "Andromeda",
+   "playfieldId": 655,
+   "pos": null
+  },
+  {
+   "tell": "scty icc2",
+   "label": "ICC Statue",
+   "playfield": "Andromeda",
+   "playfieldId": 655,
+   "pos": null
+  },
+  {
+   "tell": "scty andmine",
+   "label": "Near Mine",
+   "playfield": "Andromeda",
+   "playfieldId": 655,
+   "pos": {
+    "x": 3075,
+    "z": 2113
+   }
+  },
+  {
+   "tell": "scty palmiero",
+   "label": "Palmiero's Office",
+   "playfield": "Andromeda",
+   "playfieldId": 655,
+   "pos": null
+  },
+  {
+   "tell": "scty terra",
+   "label": "Terra",
+   "playfield": "Andromeda",
+   "playfieldId": 655,
+   "pos": {
+    "x": 782,
+    "z": 631
+   }
+  },
+  {
+   "tell": "scty tk",
+   "label": "Trash King",
+   "playfield": "Athen Shire",
+   "playfieldId": 550,
+   "pos": null
+  },
+  {
+   "tell": "scty waracademy",
+   "label": "War Academy",
+   "playfield": "Athen Shire",
+   "playfieldId": 550,
+   "pos": {
+    "x": 1792,
+    "z": 1927
+   }
+  },
+  {
+   "tell": "scty anus",
+   "label": "Anun Tree Knoll",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": {
+    "x": 2054,
+    "z": 2751
+   }
+  },
+  {
+   "tell": "scty cyborgcitadel",
+   "label": "Cyborg Citadel",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": {
+    "x": 1347,
+    "z": 3932
+   }
+  },
+  {
+   "tell": "scty camealot",
+   "label": "Grid",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": null
+  },
+  {
+   "tell": "scty otaf",
+   "label": "Main OTAF Base",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": {
+    "x": 1837,
+    "z": 1247
+   }
+  },
+  {
+   "tell": "scty sandcrawlers",
+   "label": "Sandcrawlers",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": {
+    "x": 2484,
+    "z": 1647
+   }
+  },
+  {
+   "tell": "scty otaf2",
+   "label": "Secondary OTAF Base",
+   "playfield": "Avalon",
+   "playfieldId": 505,
+   "pos": {
+    "x": 807,
+    "z": 1640
+   }
+  },
+  {
+   "tell": "scty crux",
+   "label": "Brigadier Crux",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 3078,
+    "z": 424
+   }
+  },
+  {
+   "tell": "scty drsparks",
+   "label": "Doctor Sparks",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 3007,
+    "z": 3055
+   }
+  },
+  {
+   "tell": "scty enema",
+   "label": "Enema Dog Trainer",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 547,
+    "z": 884
+   }
+  },
+  {
+   "tell": "scty enematree",
+   "label": "Enema Dog Tree",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 540,
+    "z": 2031
+   }
+  },
+  {
+   "tell": "scty hi",
+   "label": "Hollow Island",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 2312,
+    "z": 703
+   }
+  },
+  {
+   "tell": "scty bf",
+   "label": "N-W of Hollow Island",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 1895,
+    "z": 1174
+   }
+  },
+  {
+   "tell": "scty wine",
+   "label": "Near Whompahs",
+   "playfield": "Belial Forest",
+   "playfieldId": 605,
+   "pos": {
+    "x": 2102,
+    "z": 2402
+   }
+  },
+  {
+   "tell": "scty johnsmith",
+   "label": "Antiques and More",
+   "playfield": "Borealis",
+   "playfieldId": 800,
+   "pos": null
+  },
+  {
+   "tell": "scty borft",
+   "label": "Fair Trade",
+   "playfield": "Borealis",
+   "playfieldId": 800,
+   "pos": {
+    "x": 671,
+    "z": 613
+   }
+  },
+  {
+   "tell": "scty atalas",
+   "label": "Atalas",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 463,
+    "z": 4166
+   }
+  },
+  {
+   "tell": "scty brenda",
+   "label": "Brenda Diamond",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 421,
+    "z": 2225
+   }
+  },
+  {
+   "tell": "scty bscabins",
+   "label": "Cabins",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 1604,
+    "z": 2974
+   }
+  },
+  {
+   "tell": "scty bscumtower",
+   "label": "Comm. Relay Tower",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 791,
+    "z": 473
+   }
+  },
+  {
+   "tell": "scty david",
+   "label": "David Meyers",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 1175,
+    "z": 697
+   }
+  },
+  {
+   "tell": "scty bsdigsite",
+   "label": "Dig Site",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 904,
+    "z": 1676
+   }
+  },
+  {
+   "tell": "scty deko",
+   "label": "Near Agent Deko",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 1856,
+    "z": 4930
+   }
+  },
+  {
+   "tell": "scty bs",
+   "label": "Priest Fontain",
+   "playfield": "Broken Shores",
+   "playfieldId": 665,
+   "pos": {
+    "x": 616,
+    "z": 1497
+   }
+  },
+  {
+   "tell": "scty eastcav",
+   "label": "East Dynas",
+   "playfield": "Central Artery Valley",
+   "playfieldId": 590,
+   "pos": {
+    "x": 3398,
+    "z": 1532
+   }
+  },
+  {
+   "tell": "scty cav",
+   "label": "Enigma Forest Outpost",
+   "playfield": "Central Artery Valley",
+   "playfieldId": 590,
+   "pos": {
+    "x": 1615,
+    "z": 1505
+   }
+  },
+  {
+   "tell": "scty thunder",
+   "label": "Near Carillon Thunder",
+   "playfield": "Central Artery Valley",
+   "playfieldId": 590,
+   "pos": {
+    "x": 236,
+    "z": 2212
+   }
+  },
+  {
+   "tell": "scty cavradar",
+   "label": "Radar Station",
+   "playfield": "Central Artery Valley",
+   "playfieldId": 590,
+   "pos": {
+    "x": 379,
+    "z": 3030
+   }
+  },
+  {
+   "tell": "scty swcav",
+   "label": "S-W Dyna",
+   "playfield": "Central Artery Valley",
+   "playfieldId": 590,
+   "pos": {
+    "x": 322,
+    "z": 524
+   }
+  },
+  {
+   "tell": "scty 191",
+   "label": "Commander 191",
+   "playfield": "Clondyke",
+   "playfieldId": 670,
+   "pos": {
+    "x": 978,
+    "z": 2916
+   }
+  },
+  {
+   "tell": "scty clon",
+   "label": "Reservoir Cabin",
+   "playfield": "Clondyke",
+   "playfieldId": 670,
+   "pos": {
+    "x": 1593,
+    "z": 1662
+   }
+  },
+  {
+   "tell": "scty davgolem",
+   "label": "Golem Island",
+   "playfield": "Deep Artery Valley",
+   "playfieldId": 595,
+   "pos": {
+    "x": 1677,
+    "z": 2929
+   }
+  },
+  {
+   "tell": "scty ljotur",
+   "label": "Ljotur",
+   "playfield": "Deep Artery Valley",
+   "playfieldId": 595,
+   "pos": null
+  },
+  {
+   "tell": "scty davmedusa",
+   "label": "Medusa Territory",
+   "playfield": "Deep Artery Valley",
+   "playfieldId": 595,
+   "pos": {
+    "x": 2664,
+    "z": 2098
+   }
+  },
+  {
+   "tell": "scty efpprimus",
+   "label": "N-W of Primus Camp",
+   "playfield": "Eastern Fouls Plains",
+   "playfieldId": 620,
+   "pos": {
+    "x": 465,
+    "z": 1604
+   }
+  },
+  {
+   "tell": "scty tchu",
+   "label": "Near Tchu",
+   "playfield": "Eastern Fouls Plains",
+   "playfieldId": 620,
+   "pos": {
+    "x": 717,
+    "z": 3678
+   }
+  },
+  {
+   "tell": "scty efp",
+   "label": "North of Bunker",
+   "playfield": "Eastern Fouls Plains",
+   "playfieldId": 620,
+   "pos": {
+    "x": 1910,
+    "z": 1756
+   }
+  },
+  {
+   "tell": "scty efpor",
+   "label": "Omni Research",
+   "playfield": "Eastern Fouls Plains",
+   "playfieldId": 620,
+   "pos": {
+    "x": 2692,
+    "z": 2881
+   }
+  },
+  {
+   "tell": "scty efpsecluded",
+   "label": "Secluded Base",
+   "playfield": "Eastern Fouls Plains",
+   "playfieldId": 620,
+   "pos": null
+  },
+  {
+   "tell": "scty peal",
+   "label": "Peal Thunder",
+   "playfield": "Factory VP dng barracks",
+   "playfieldId": 1711,
+   "pos": {
+    "x": 166,
+    "z": 138
+   }
+  },
+  {
+   "tell": "scty burgerfactory",
+   "label": "Bronto Burger Factory",
+   "playfield": "Galway County",
+   "playfieldId": 685,
+   "pos": {
+    "x": 1612,
+    "z": 2373
+   }
+  },
+  {
+   "tell": "scty galway",
+   "label": "Galway Castle",
+   "playfield": "Galway County",
+   "playfieldId": 685,
+   "pos": {
+    "x": 2509,
+    "z": 1210
+   }
+  },
+  {
+   "tell": "scty gs",
+   "label": "Near Guard Post",
+   "playfield": "Galway Shire",
+   "playfieldId": 687,
+   "pos": {
+    "x": 355,
+    "z": 964
+   }
+  },
+  {
+   "tell": "scty galvano",
+   "label": "Near Galvano",
+   "playfield": "Greater Omni Forest",
+   "playfieldId": 717,
+   "pos": {
+    "x": 2019,
+    "z": 2265
+   }
+  },
+  {
+   "tell": "scty cyborgbarracks",
+   "label": "Cyborg Barracks",
+   "playfield": "Greater Tir County",
+   "playfieldId": 647,
+   "pos": {
+    "x": 3188,
+    "z": 2390
+   }
+  },
+  {
+   "tell": "scty hermit",
+   "label": "Hermit",
+   "playfield": "Greater Tir County",
+   "playfieldId": 647,
+   "pos": {
+    "x": 811,
+    "z": 2299
+   }
+  },
+  {
+   "tell": "scty totw",
+   "label": "Temple of Three Winds",
+   "playfield": "Greater Tir County",
+   "playfieldId": 647,
+   "pos": null
+  },
+  {
+   "tell": "scty torrith",
+   "label": "Torrith the Ancient",
+   "playfield": "Greater Tir County",
+   "playfieldId": 647,
+   "pos": {
+    "x": 367,
+    "z": 2014
+   }
+  },
+  {
+   "tell": "scty hitw",
+   "label": "Ashley Winstead",
+   "playfield": "Holes in the Wall",
+   "playfieldId": 791,
+   "pos": null
+  },
+  {
+   "tell": "scty bula",
+   "label": "Bula Siwinski / Skroog",
+   "playfield": "Holes in the Wall",
+   "playfieldId": 791,
+   "pos": {
+    "x": 859,
+    "z": 1482
+   }
+  },
+  {
+   "tell": "scty alvin",
+   "label": "Alvin Odeleder",
+   "playfield": "Lush Fields",
+   "playfieldId": 695,
+   "pos": {
+    "x": 1494,
+    "z": 2520
+   }
+  },
+  {
+   "tell": "scty cumtower1",
+   "label": "Comm. Relay Tower",
+   "playfield": "Lush Fields",
+   "playfieldId": 695,
+   "pos": {
+    "x": 446,
+    "z": 3502
+   }
+  },
+  {
+   "tell": "scty harrys",
+   "label": "Harry's",
+   "playfield": "Lush Fields",
+   "playfieldId": 695,
+   "pos": {
+    "x": 2827,
+    "z": 2933
+   }
+  },
+  {
+   "tell": "scty lushhills",
+   "label": "Lush Hills Resort",
+   "playfield": "Lush Fields",
+   "playfieldId": 695,
+   "pos": null
+  },
+  {
+   "tell": "scty cumtower5",
+   "label": "Comm. Relay Tower",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 4310,
+    "z": 2079
+   }
+  },
+  {
+   "tell": "scty mwcyborg",
+   "label": "Cyborg Valley",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 4403,
+    "z": 912
+   }
+  },
+  {
+   "tell": "scty mwfactory",
+   "label": "Factory",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 1120,
+    "z": 760
+   }
+  },
+  {
+   "tell": "scty diseased",
+   "label": "Near Diseased Prisoner",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 3587,
+    "z": 787
+   }
+  },
+  {
+   "tell": "scty murderous",
+   "label": "Near Murderous Prisoner",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 2034,
+    "z": 1951
+   }
+  },
+  {
+   "tell": "scty silenced",
+   "label": "Near Silenced Prisoner",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 2786,
+    "z": 426
+   }
+  },
+  {
+   "tell": "scty temporal",
+   "label": "Temporal Prisoner",
+   "playfield": "Milky Way",
+   "playfieldId": 625,
+   "pos": {
+    "x": 3143,
+    "z": 2097
+   }
+  },
+  {
+   "tell": "scty cumtower3",
+   "label": "Comm. Relay Tower",
+   "playfield": "Mort",
+   "playfieldId": 560,
+   "pos": {
+    "x": 3637,
+    "z": 3612
+   }
+  },
+  {
+   "tell": "scty mortcrater",
+   "label": "Crater",
+   "playfield": "Mort",
+   "playfieldId": 560,
+   "pos": {
+    "x": 1385,
+    "z": 578
+   }
+  },
+  {
+   "tell": "scty hope",
+   "label": "Hope",
+   "playfield": "Mort",
+   "playfieldId": 560,
+   "pos": {
+    "x": 2887,
+    "z": 1890
+   }
+  },
+  {
+   "tell": "scty mort",
+   "label": "Mask of Tragedy",
+   "playfield": "Mort",
+   "playfieldId": 560,
+   "pos": {
+    "x": 1303,
+    "z": 2683
+   }
+  },
+  {
+   "tell": "scty ironreet",
+   "label": "The Iron Reet",
+   "playfield": "Mutant Domain",
+   "playfieldId": 696,
+   "pos": {
+    "x": 918,
+    "z": 927
+   }
+  },
+  {
+   "tell": "scty spacedout",
+   "label": "Garry Tapanes",
+   "playfield": "Newland",
+   "playfieldId": 567,
+   "pos": {
+    "x": 1158,
+    "z": 302
+   }
+  },
+  {
+   "tell": "scty greasyjoints",
+   "label": "Greasy Joints",
+   "playfield": "Newland",
+   "playfieldId": 567,
+   "pos": {
+    "x": 674,
+    "z": 907
+   }
+  },
+  {
+   "tell": "scty nlc",
+   "label": "Near Shops",
+   "playfield": "Newland City",
+   "playfieldId": 566,
+   "pos": null
+  },
+  {
+   "tell": "scty tarden",
+   "label": "Warden Ystanes",
+   "playfield": "Newland City",
+   "playfieldId": 566,
+   "pos": {
+    "x": 403,
+    "z": 357
+   }
+  },
+  {
+   "tell": "scty meetmedere",
+   "label": "Meetmedere",
+   "playfield": "Newland Desert",
+   "playfieldId": 565,
+   "pos": {
+    "x": 1552,
+    "z": 2713
+   }
+  },
+  {
+   "tell": "scty vanhorn",
+   "label": "Professor Van Horn",
+   "playfield": "Newland Desert",
+   "playfieldId": 565,
+   "pos": null
+  },
+  {
+   "tell": "scty clanagency",
+   "label": "Mission Agency",
+   "playfield": "Old Athen",
+   "playfieldId": 540,
+   "pos": null
+  },
+  {
+   "tell": "scty sirocco",
+   "label": "Sirocco",
+   "playfield": "Old Athen",
+   "playfieldId": 540,
+   "pos": {
+    "x": 295,
+    "z": 208
+   }
+  },
+  {
+   "tell": "scty neleb",
+   "label": "Neleb the Deranged",
+   "playfield": "Omni Forest",
+   "playfieldId": 716,
+   "pos": null
+  },
+  {
+   "tell": "scty relax",
+   "label": "Relax Bar (Dancing Atrox)",
+   "playfield": "Omni Forest",
+   "playfieldId": 716,
+   "pos": {
+    "x": 304,
+    "z": 1854
+   }
+  },
+  {
+   "tell": "scty som",
+   "label": "Steps of Madness",
+   "playfield": "Omni Forest",
+   "playfieldId": 716,
+   "pos": null
+  },
+  {
+   "tell": "scty trade",
+   "label": "Near Grid",
+   "playfield": "Omni-1 Trade",
+   "playfieldId": 710,
+   "pos": {
+    "x": 404,
+    "z": 541
+   }
+  },
+  {
+   "tell": "scty baboons",
+   "label": "Baboons",
+   "playfield": "Omni1 Entertainment",
+   "playfieldId": 705,
+   "pos": {
+    "x": 761,
+    "z": 757
+   }
+  },
+  {
+   "tell": "scty smokeswilly",
+   "label": "Smokey Willy",
+   "playfield": "Omni1 Entertainment",
+   "playfieldId": 705,
+   "pos": {
+    "x": 465,
+    "z": 1049
+   }
+  },
+  {
+   "tell": "scty spoiledbrat",
+   "label": "Spoiled Brat",
+   "playfield": "Omni1 Entertainment",
+   "playfieldId": 705,
+   "pos": {
+    "x": 948,
+    "z": 378
+   }
+  },
+  {
+   "tell": "scty 20k",
+   "label": "20K",
+   "playfield": "Pleasant Meadows",
+   "playfieldId": 630,
+   "pos": null
+  },
+  {
+   "tell": "scty woon",
+   "label": "Major Woon",
+   "playfield": "Pleasant Meadows",
+   "playfieldId": 630,
+   "pos": {
+    "x": 3000,
+    "z": 646
+   }
+  },
+  {
+   "tell": "scty swpm",
+   "label": "S-W Village",
+   "playfield": "Pleasant Meadows",
+   "playfieldId": 630,
+   "pos": {
+    "x": 388,
+    "z": 753
+   }
+  },
+  {
+   "tell": "scty pm",
+   "label": "Shade Camp",
+   "playfield": "Pleasant Meadows",
+   "playfieldId": 630,
+   "pos": {
+    "x": 1828,
+    "z": 1192
+   }
+  },
+  {
+   "tell": "scty omniagency",
+   "label": "Mission Agency",
+   "playfield": "Rome Blue",
+   "playfieldId": 735,
+   "pos": null
+  },
+  {
+   "tell": "scty pax",
+   "label": "Commander Pax / Netrom",
+   "playfield": "Southern Artery Valley ",
+   "playfieldId": 610,
+   "pos": {
+    "x": 2046,
+    "z": 545
+   }
+  },
+  {
+   "tell": "scty osl",
+   "label": "Eroded Ancient Statue",
+   "playfield": "Southern Artery Valley ",
+   "playfieldId": 610,
+   "pos": {
+    "x": 1036,
+    "z": 1992
+   }
+  },
+  {
+   "tell": "scty sav",
+   "label": "North of Rock Shrine",
+   "playfield": "Southern Artery Valley ",
+   "playfieldId": 610,
+   "pos": {
+    "x": 1744,
+    "z": 1428
+   }
+  },
+  {
+   "tell": "scty notumfrag",
+   "label": "Notum Fragment",
+   "playfield": "Southern Artery Valley ",
+   "playfieldId": 610,
+   "pos": {
+    "x": 2621,
+    "z": 2924
+   }
+  },
+  {
+   "tell": "scty hercules",
+   "label": "Whompahs",
+   "playfield": "Southern Artery Valley ",
+   "playfieldId": 610,
+   "pos": null
+  },
+  {
+   "tell": "scty cumtower4",
+   "label": "Comm. Relay Tower",
+   "playfield": "Southern Fouls Hills",
+   "playfieldId": 615,
+   "pos": {
+    "x": 1604,
+    "z": 1601
+   }
+  },
+  {
+   "tell": "scty fathertime",
+   "label": "Father Time",
+   "playfield": "Southern Fouls Hills",
+   "playfieldId": 615,
+   "pos": {
+    "x": 2923,
+    "z": 263
+   }
+  },
+  {
+   "tell": "scty sfh",
+   "label": "Hard Luck Ruins",
+   "playfield": "Southern Fouls Hills",
+   "playfieldId": 615,
+   "pos": {
+    "x": 2460,
+    "z": 1886
+   }
+  },
+  {
+   "tell": "scty informant",
+   "label": "Informant",
+   "playfield": "Southern Fouls Hills",
+   "playfieldId": 615,
+   "pos": null
+  },
+  {
+   "tell": "scty deidre",
+   "label": "Deidre Lux / Whompahs",
+   "playfield": "Stret West Bank",
+   "playfieldId": 790,
+   "pos": {
+    "x": 1276,
+    "z": 2859
+   }
+  },
+  {
+   "tell": "scty wtf",
+   "label": "Will to Fight",
+   "playfield": "Stret West Bank",
+   "playfieldId": 790,
+   "pos": {
+    "x": 2247,
+    "z": 3128
+   }
+  },
+  {
+   "tell": "scty coh",
+   "label": "Crypt of Home",
+   "playfield": "The Crypt of Home",
+   "playfieldId": 4805,
+   "pos": {
+    "x": 233,
+    "z": 278
+   }
+  },
+  {
+   "tell": "scty assend",
+   "label": "Ass End of Nowhere",
+   "playfield": "The Longest Road",
+   "playfieldId": 795,
+   "pos": {
+    "x": 226,
+    "z": 1145
+   }
+  },
+  {
+   "tell": "scty bliss",
+   "label": "Bliss",
+   "playfield": "The Longest Road",
+   "playfieldId": 795,
+   "pos": null
+  },
+  {
+   "tell": "scty drumdar",
+   "label": "Drumdar / Kyle Swan",
+   "playfield": "The Longest Road",
+   "playfieldId": 795,
+   "pos": {
+    "x": 3748,
+    "z": 692
+   }
+  },
+  {
+   "tell": "scty foreskins",
+   "label": "Foreman's Office",
+   "playfield": "The Longest Road",
+   "playfieldId": 795,
+   "pos": null
+  },
+  {
+   "tell": "scty cumtower2",
+   "label": "Comm. Relay Tower",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 2345,
+    "z": 3424
+   }
+  },
+  {
+   "tell": "scty db",
+   "label": "Dust Brigade",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 2144,
+    "z": 2780
+   }
+  },
+  {
+   "tell": "scty wolf",
+   "label": "East / Wolf Buffers",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 4024,
+    "z": 1766
+   }
+  },
+  {
+   "tell": "scty vivyan",
+   "label": "General Vivyan",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 2162,
+    "z": 1785
+   }
+  },
+  {
+   "tell": "scty pwborgs",
+   "label": "N-E Borgs",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 3767,
+    "z": 2657
+   }
+  },
+  {
+   "tell": "scty apods",
+   "label": "Near Alien Pods",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 715,
+    "z": 1648
+   }
+  },
+  {
+   "tell": "scty pwdemons",
+   "label": "Near Sand Demons",
+   "playfield": "The Perpetual Wastelands ",
+   "playfieldId": 570,
+   "pos": {
+    "x": 2187,
+    "z": 1157
+   }
+  },
+  {
+   "tell": "scty cargocrate",
+   "label": "Abandoned Mining Outpost",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 1172,
+    "z": 200
+   }
+  },
+  {
+   "tell": "scty anobserver",
+   "label": "An Observer",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 1797,
+    "z": 491
+   }
+  },
+  {
+   "tell": "scty supplystation",
+   "label": "Near Supply Station",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 1622,
+    "z": 2889
+   }
+  },
+  {
+   "tell": "scty reck",
+   "label": "Port New Thera",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 1470,
+    "z": 736
+   }
+  },
+  {
+   "tell": "scty sandstorm",
+   "label": "SANDSTORM Control Tower",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": null
+  },
+  {
+   "tell": "scty omnireck",
+   "label": "Sentinum",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 1845,
+    "z": 3345
+   }
+  },
+  {
+   "tell": "scty clanreck",
+   "label": "Unicorn",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": {
+    "x": 660,
+    "z": 301
+   }
+  },
+  {
+   "tell": "scty skawt",
+   "label": "Warchief Skawt",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": null
+  },
+  {
+   "tell": "scty wardog",
+   "label": "Wardog",
+   "playfield": "The Reck",
+   "playfieldId": 750,
+   "pos": null
+  },
+  {
+   "tell": "scty tir",
+   "label": "Grid",
+   "playfield": "Tir",
+   "playfieldId": 640,
+   "pos": null
+  },
+  {
+   "tell": "scty kelly",
+   "label": "Near Kelly Frederickson",
+   "playfield": "Tir County",
+   "playfieldId": 646,
+   "pos": {
+    "x": 1784,
+    "z": 977
+   }
+  },
+  {
+   "tell": "scty bsroom",
+   "label": "BS Room",
+   "playfield": "Unicorn Defense Hub",
+   "playfieldId": null,
+   "pos": null
+  },
+  {
+   "tell": "scty outpost",
+   "label": "Bridge",
+   "playfield": "Unicorn Outpost",
+   "playfieldId": 4364,
+   "pos": null
+  },
+  {
+   "tell": "scty xan",
+   "label": "Elevator to Xan Hub",
+   "playfield": "Unicorn Outpost",
+   "playfieldId": 4364,
+   "pos": null
+  },
+  {
+   "tell": "scty apf",
+   "label": "Sector 10-35",
+   "playfield": "Unicorn Outpost",
+   "playfieldId": 4364,
+   "pos": null
+  },
+  {
+   "tell": "scty uturd",
+   "label": "Forest",
+   "playfield": "Uturn Forest",
+   "playfieldId": 6551,
+   "pos": null
+  },
+  {
+   "tell": "scty vwcamp1",
+   "label": "Camp 1",
+   "playfield": "Varmint Woods",
+   "playfieldId": 600,
+   "pos": {
+    "x": 1034,
+    "z": 1918
+   }
+  },
+  {
+   "tell": "scty vwcamp2",
+   "label": "Camp 2",
+   "playfield": "Varmint Woods",
+   "playfieldId": 600,
+   "pos": {
+    "x": 1069,
+    "z": 962
+   }
+  },
+  {
+   "tell": "scty vwcamp3",
+   "label": "Camp 3",
+   "playfield": "Varmint Woods",
+   "playfieldId": 600,
+   "pos": {
+    "x": 3511,
+    "z": 1034
+   }
+  },
+  {
+   "tell": "scty jack1",
+   "label": "Jack Clone #1",
+   "playfield": "Varmint Woods",
+   "playfieldId": 600,
+   "pos": {
+    "x": 2942,
+    "z": 2663
+   }
+  },
+  {
+   "tell": "scty sentinels",
+   "label": "Sentinels Base",
+   "playfield": "Wailing Wastes",
+   "playfieldId": 551,
+   "pos": {
+    "x": 2599,
+    "z": 3583
+   }
+  },
+  {
+   "tell": "scty csl",
+   "label": "Shining Ancient Statue",
+   "playfield": "Wailing Wastes",
+   "playfieldId": 551,
+   "pos": {
+    "x": 1168,
+    "z": 1487
+   }
+  },
+  {
+   "tell": "scty wa",
+   "label": "Grid / The Cup",
+   "playfield": "West Athens",
+   "playfieldId": 545,
+   "pos": null
+  }
+ ]
+}
