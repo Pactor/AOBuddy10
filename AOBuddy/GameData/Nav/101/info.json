@@ -1,0 +1,25 @@
+{
+ "playfield": 101,
+ "name": "Default Door Links",
+ "playfieldVersion": 8,
+ "files": [
+  "ground.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 57,
+  "samplesZ": 57,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   224.0,
+   224.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "playfield": 1184,
+ "name": "ord_smarket_omni_advanced",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1141,
+  "rooms": 3,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 3,
+  "trianglesTotal": 10713,
+  "trianglesWalkable": 3490,
+  "chunks": 4
+ }
+}

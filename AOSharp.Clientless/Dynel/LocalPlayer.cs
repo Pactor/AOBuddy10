@@ -190,7 +190,14 @@ namespace AOSharp.Clientless
                 foreach (var stat in fullChar.Stats4)
                     SetStat((Stat)stat.Value1, (int)stat.Value2);
 
-            SpellList = fullChar.UploadedNanoIds;
+            // An EMPTY nano list is not the same as having no nanos. The FullCharacter that arrives after a
+            // zone carries none, and overwriting a good list with it left the bot knowing nothing it could
+            // cast: "summons = [none - no pet nanos known]", "0 learned nanos", and a heal pet it could never
+            // replace. Nobody forgets their nanos by walking through a terminal - keep what we have until the
+            // server actually sends a list. Same reasoning as the perks guard below, which was already here.
+            if (fullChar.UploadedNanoIds != null && fullChar.UploadedNanoIds.Length > 0)
+                SpellList = fullChar.UploadedNanoIds;
+
             // Perks may be null when this came from the corrected fallback reader (the pet-case FullCharacter,
             // whose trailing section it doesn't fully decode). Don't wipe the perks the login FullCharacter set.
             if (fullChar.Perks != null)

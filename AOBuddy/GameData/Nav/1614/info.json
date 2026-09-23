@@ -1,0 +1,22 @@
+{
+ "playfield": 1614,
+ "name": "Swamp_house04 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1610,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 3156,
+  "trianglesWalkable": 1274,
+  "chunks": 2
+ }
+}

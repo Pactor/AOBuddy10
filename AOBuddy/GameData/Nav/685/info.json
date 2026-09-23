@@ -1,0 +1,32 @@
+{
+ "playfield": 685,
+ "name": "Galway County",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 897,
+  "samplesZ": 897,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3584.0,
+   3584.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 4212,
+  "trianglesTotal": 306577,
+  "trianglesWalkable": 132677,
+  "chunks": 4213
+ }
+}

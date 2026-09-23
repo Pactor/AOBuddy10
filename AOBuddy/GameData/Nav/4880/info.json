@@ -1,0 +1,32 @@
+{
+ "playfield": 4880,
+ "name": "Upper Scheol",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 897,
+  "samplesZ": 1025,
+  "cell": 4.0,
+  "heightScale": 0.00390625,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3584.0,
+   4096.0
+  ],
+  "heightRange": [
+   0.0,
+   255.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 2383,
+  "trianglesTotal": 707082,
+  "trianglesWalkable": 391833,
+  "chunks": 2592
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "playfield": 106,
+ "name": "Town template Playfield",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 449,
+  "samplesZ": 449,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   1792.0,
+   1792.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 245,
+  "trianglesTotal": 46770,
+  "trianglesWalkable": 23313,
+  "chunks": 245
+ }
+}

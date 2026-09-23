@@ -1,0 +1,22 @@
+{
+ "playfield": 8020,
+ "name": "The Pyramid of Home",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 8010,
+  "rooms": 62,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 62,
+  "trianglesTotal": 144449,
+  "trianglesWalkable": 48147,
+  "chunks": 67
+ }
+}

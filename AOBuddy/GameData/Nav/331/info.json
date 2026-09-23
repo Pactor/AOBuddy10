@@ -1,0 +1,22 @@
+{
+ "playfield": 331,
+ "name": "ACD tarm (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 330,
+  "rooms": 42,
+  "cell": 2.0,
+  "heightScale": 0.10000000149011612
+ },
+ "collision": {
+  "records": 42,
+  "trianglesTotal": 34606,
+  "trianglesWalkable": 12332,
+  "chunks": 42
+ }
+}

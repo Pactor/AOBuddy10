@@ -1,0 +1,32 @@
+{
+ "playfield": 6001,
+ "name": "Space Apartment",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   28.1031,
+   69.9109
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 12780,
+  "trianglesWalkable": 8285,
+  "chunks": 7
+ }
+}

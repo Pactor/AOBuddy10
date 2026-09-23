@@ -1,0 +1,32 @@
+{
+ "playfield": 4474,
+ "name": "Sector 10 - Team Instance",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 113,
+  "samplesZ": 113,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   448.0,
+   448.0
+  ],
+  "heightRange": [
+   10.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 77,
+  "trianglesTotal": 21532,
+  "trianglesWalkable": 8073,
+  "chunks": 132
+ }
+}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,6 +64,8 @@ namespace AOBuddy
         private NavController _nav;
 
         private string _pathsDir;
+        private string _pluginDir;
+        private AOBuddyNav _navData;           // test-only reader for GameData/Nav, see the 'navdata' command
         private string _logFile;
 
         // Tick / diagnostics state that belongs to Main's coordination, not to any one system.
@@ -132,6 +134,7 @@ namespace AOBuddy
         public override void Init(string pluginDir)
         {
             LoadConfig(pluginDir);
+            _pluginDir = pluginDir;
             _pathsDir = Path.Combine(pluginDir, "paths");
             try { Directory.CreateDirectory(_pathsDir); } catch { }
             _logFile = Path.Combine(pluginDir, "aobuddy.log");
@@ -213,7 +216,25 @@ namespace AOBuddy
                     // PlayfieldAnarchyF fires on zone-in (incl. entering a mission): playfield id, our landing
                     // coords, and the placed dynels (mobs/objects) = the mission layout the server hands us.
                     if (_config.MissionDebug && m != null && m.Body is PlayfieldAnarchyFMessage pfm)
+                    {
                         Log($"MISSIONDBG: PlayfieldAnarchyF pf={pfm.PlayfieldId1.Instance} land=({pfm.CharacterCoordinates.X:0},{pfm.CharacterCoordinates.Y:0},{pfm.CharacterCoordinates.Z:0}) dynels={(pfm.Dynels != null ? pfm.Dynels.Length : 0)}");
+                        // The same packet carries the instanced building's room placement list
+                        // (BuildingGeneratorData: template playfield, then room/floor/x/z/rotation per room),
+                        // which the SDK does not parse yet. Keep the raw bytes so it can be decoded offline
+                        // against the walk recorded in the mission. See NAV-CLIENTDATA.md.
+                        if (m.RawPacket != null)
+                        {
+                            try
+                            {
+                                string dir = Path.Combine(_pluginDir, "missions");
+                                Directory.CreateDirectory(dir);
+                                string file = Path.Combine(dir, $"zonein-pf{pfm.PlayfieldId1.Instance}-{DateTime.Now:yyyyMMdd-HHmmss}.bin");
+                                File.WriteAllBytes(file, m.RawPacket);
+                                Log($"MISSIONDBG: zone-in packet saved ({m.RawPacket.Length} bytes) to {file}");
+                            }
+                            catch (Exception ex) { Log("MISSIONDBG: could not save zone-in packet: " + ex.Message); }
+                        }
+                    }
 
                     // The mission-terminal list (type 0x5C436609) is NOT SDK-typed — read it raw. Per mission
                     // it carries the destination playfield + entrance X/Z (see aobuddy-mission-wire-data).
@@ -251,7 +272,34 @@ namespace AOBuddy
             // Real death signal from the wire (CharacterAction Death) — not HP guessing. The SDK auto-sends
             // 'Die' ~5s later to reclaim us to the save terminal; we just stop everything and then recover.
             Client.Died += OnDeath;
+
+            // Pet ownership, stated by the server rather than inferred from what is in view. A pet that
+            // wanders out of broadcast range used to read as dead and start a resummon it could not land.
+            // The server echoing our sit/stand back. It is what tells the rest cycle it is really seated, so a
+            // sit-only recharger is pressed at the right moment instead of after a hopeful delay.
+            Client.PostureToggled += id =>
+            {
+                LocalPlayer lp = DynelManager.LocalPlayer;
+                if (lp != null && id.Instance == lp.Identity.Instance) _support.OnPostureToggled();
+            };
+
+            Client.PetAdded += id => _pets.OnPetAdded(id);
+            Client.PetRemoved += id => _pets.OnPetRemoved(id);
+
+            // Why the server refused something. Category 110 is its feedback channel; the id identifies the
+            // message. Logged with whatever we last asked for, so a refusal stops being invisible - six
+            // rechargers were once logged as "used" while the server rejected every one of them.
+            Client.Feedback += (category, messageId) =>
+            {
+                if (category != 110) return;
+                Log($"SERVER SAYS: feedback {category}/{messageId}"
+                    + (_lastActionLabel != null ? $" — right after: {_lastActionLabel}" : ""));
+            };
         }
+
+        // The last thing we asked the server to do, for pairing a refusal with its cause.
+        private string _lastActionLabel;
+        public void NoteAction(string what) => _lastActionLabel = what;
 
         // The server's SetPos is a position correction. The clientless controller OWNS its position (it
         // drives the body via SetPose along the owner's valid-ground breadcrumbs), so we must NOT snap it
@@ -720,6 +768,11 @@ namespace AOBuddy
             //    place, for all of them. SetTarget only, never a re-Attack: that would reset the swing timer.
             if (retargeted && fighting && target != null) Targeting.SetTarget(target.Identity);
 
+            // Call the pets back in. A pet left where its fight ended keeps pulling mobs, and a pet in
+            // combat holds US in combat - which suppresses health and nano regen and makes the server
+            // refuse heal items. One straggler can stop the bot recovering entirely.
+            _pets.RecallStragglers(me, fighting);
+
             if (fighting)
             {
                 _support.OnFight(me);
@@ -802,12 +855,18 @@ namespace AOBuddy
 
         // Once-a-second diagnostic line: what she's doing, vitals, owner state, and the movement/
         // combat flags, so a problem is readable from the log without guessing.
+        /// <summary>A percentage for the log: "?" when we have no reading, so a missing stat is visible
+        /// as missing instead of being printed as a healthy-looking number.</summary>
+        private static string Pct(int pct) => pct == SupportController.Unknown ? "?" : pct + "%";
+
         private void Heartbeat(LocalPlayer me, PlayerChar owner, double dt)
         {
             int hp = _support.SelfHpPct(me);
             // Real death is handled by Client.Died (OnDeath); HP reads are unreliable when the owner is out
-            // of view, so we only note big drops as a diagnostic, never infer death from them.
-            if (_lastHpPct >= 0 && _lastHpPct - hp >= 25) Log($"HP DROP {_lastHpPct}%->{hp}% (owner {(owner == null ? "not visible" : "visible")}).");
+            // of view, so we only note big drops as a diagnostic, never infer death from them. An unknown
+            // reading is not a drop.
+            if (_lastHpPct >= 0 && hp != SupportController.Unknown && _lastHpPct - hp >= 25)
+                Log($"HP DROP {_lastHpPct}%->{hp}% (owner {(owner == null ? "not visible" : "visible")}).");
             _lastHpPct = hp;
 
             _hbAccum += dt;
@@ -817,7 +876,7 @@ namespace AOBuddy
             Vector3 p = me.MovementComponent.Position;
             string od = owner != null ? me.DistanceFrom(owner).ToString("0.0") : "n/a";
             string ohp = _ctx.Vitals.Describe(owner);
-            Log($"hb [{_ctx.Behavior}] mode={_mode} hp={hp}% nano={_support.SelfNanoPct(me)}% ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
+            Log($"hb [{_ctx.Behavior}] mode={_mode} hp={Pct(hp)} nano={Pct(_support.SelfNanoPct(me))} ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
                 $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
             _diagOwnerMoves = 0; _diagSelfMoves = 0;
         }
@@ -985,12 +1044,110 @@ namespace AOBuddy
                 }
                 case "resummon": _config.AutoResummon = !_config.AutoResummon; reply($"Auto-resummon {(_config.AutoResummon ? "ON" : "OFF")}."); break;
                 case "petfollow": _pets.FollowMaster(DynelManager.LocalPlayer); reply("Pets: follow me."); break;
-                case "petdismiss": _pets.Dismiss(DynelManager.LocalPlayer); reply("Pets: dismissed."); break;
+
+                case "petkill":
+                case "petterminate":
+                case "petdismiss":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    int had = _pets.OwnedCount(mp);
+                    _pets.Dismiss(mp);
+                    reply($"Dismissed {had} pet(s). 'petsummon' brings them back.");
+                    break;
+                }
+
+                case "petsummon":
+                case "petresummon":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (!_config.UsePets) { _config.UsePets = true; reply("Pets were off — turning them on."); }
+                    _config.AutoResummon = true;
+                    _pets.ResummonAll(mp);
+                    reply("Resummoning the full set — one at a time as nano allows.");
+                    break;
+                }
+
+                case "pethealme":
                 case "petheal":
                 {
                     LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
                     if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
-                    _pets.HealTarget(mp, po.Identity); reply("Pets: healing you.");
+                    if (!_pets.HealTargetLatched(mp, po.Identity, "you")) { reply("No heal pet up."); break; }
+                    reply("Heal pet is on you.");
+                    break;
+                }
+
+                case "pethealself":
+                case "pethealme2":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (!_pets.HealTargetLatched(mp, mp.Identity, "myself")) { reply("No heal pet up."); break; }
+                    reply("Heal pet is on me.");
+                    break;
+                }
+
+                case "pethealpet":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    NpcChar tank = PetController.AttackPet(mp);
+                    if (tank == null) { reply("No attack pet up to heal."); break; }
+                    if (!_pets.HealTargetLatched(mp, tank.Identity, $"my attack pet ({tank.Name})")) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on {tank.Name}.");
+                    break;
+                }
+
+                case "pethealauto":
+                {
+                    _pets.HealAuto();
+                    reply("Heal pet back to automatic: me when I'm melee, my attack pet when I'm ranged.");
+                    break;
+                }
+
+                case "pethealtarget":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (string.IsNullOrWhiteSpace(arg)) { reply($"Who? 'pethealtarget <name>', or {HealWhoHint()}"); break; }
+                    SimpleChar who = ResolveHealSubject(arg, mp);
+                    if (who == null) { reply($"I can't see anyone called '{arg}'."); break; }
+                    if (!_pets.HealTargetLatched(mp, who.Identity, who.Name)) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on {who.Name}.");
+                    break;
+                }
+
+                case "pethealmytarget":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
+                    if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
+                    // Only what you are FIGHTING is on the wire. A selection you have merely clicked is not:
+                    // LookAtMessage, which carries a target change, is only ever sent with the sender's own
+                    // identity — in every capture under E:\Funcom\sniffs and E:\Funcom\captures, not once
+                    // relayed for another character. So outside combat there is nothing here to read, and
+                    // saying "no target" alone just leaves you stuck.
+                    SimpleChar t = po.FightingTarget;
+                    if (t == null)
+                    {
+                        reply("I can only see what you're FIGHTING — the server never tells me what you've "
+                              + $"merely clicked on. So name it instead: {HealWhoHint()}");
+                        break;
+                    }
+                    if (!_pets.HealTargetLatched(mp, t.Identity, t.Name)) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on your target, {t.Name}.");
+                    break;
+                }
+
+                case "petstatus":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    var roster = mp.Pets.Select(p => $"{p.Name} ({p.Role}, {mp.DistanceFrom(p):0}m)").ToList();
+                    reply($"Owned {_pets.OwnedCount(mp)}, visible {roster.Count}"
+                          + (roster.Count > 0 ? ": " + string.Join(", ", roster) : "")
+                          + $". Heal pet targets {_pets.HealTargetDescription(mp)}.");
                     break;
                 }
                 case "petattack":
@@ -1056,6 +1213,7 @@ namespace AOBuddy
                     }
                     break;
                 case "status": reply(StatusLine()); break;
+                case "navdata": reply(NavDataCommand(arg)); break;
 
                 // ---- Knowledge (profession / nanos) ----
                 case "class":
@@ -1118,7 +1276,10 @@ namespace AOBuddy
                 case "whompa":
                 case "travel": reply("Whompa/grid routing not implemented yet (Milestone 5). See MILESTONES-solo.md."); break;
 
-                case "help": reply("Commands: assist, solo, follow, stay, come, zone [m], stop, stand, sit, buff [self|owner|team|all], autobuff, heal, record [stop], savepath <n>, path <n>|stop, paths, nav [save|on|off|use], class, nanos [filter], active, learnable [filter], perks, resupply [stop|status|machines|forget], status."); break;
+                case "help":
+                case "commands":
+                    reply(HelpPages.For(arg));
+                    break;
                 default: reply($"Unknown command '{cmd}'. Try 'help'."); break;
             }
         }
@@ -1199,61 +1360,42 @@ namespace AOBuddy
             reply($"Active ({parts.Count}): " + Truncate(string.Join(", ", parts), 440));
         }
 
-        // Diagnostic: what she sees for stims/rechargers, at each filter stage.
+        /// <summary>
+        /// What he is carrying, per QL, and which of it his skill can actually reach. Two lines, one per kind:
+        /// the bag, then the verdict and the skill behind it — so a number that looks wrong can be checked
+        /// against what is in the bag without reading the log.
+        /// </summary>
         private void ReportSupplies(Action<string> reply)
         {
-            var all = new List<Item>();
-            if (Inventory.Items != null) all.AddRange(Inventory.Items);
-            if (Inventory.Containers != null) foreach (var c in Inventory.Containers) if (c?.Items != null) all.AddRange(c.Items);
-
-            var stimMatch = all.Where(it => it?.Name != null && it.Name.IndexOf(_config.StimKeyword, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            var rechMatch = all.Where(it => it?.Name != null && it.Name.IndexOf(_config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            int stimUsable = _support.CountUsableHealItems(_config.StimKeyword, _config.StimItemName);
-            int rechUsable = _support.CountUsableHealItems(_config.RechargerKeyword, _config.RechargerItemName);
-            string sample = stimMatch.Concat(rechMatch).Take(4)
-                .Select(it => { int crit = it.Criteria != null && it.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var uc) ? uc.Count : -1; return $"{it.Name} QL{it.Ql} x{it.Count} crit={crit} use={SupportController.CanUseHeal(it)}"; })
-                .DefaultIfEmpty("(no name matches)").Aggregate((a, b) => a + " | " + b);
-            reply($"Inv={all.Count}. Stims {stimMatch.Count}match/{stimUsable}usable. Rechargers {rechMatch.Count}match/{rechUsable}usable. {sample}");
-
-            var first = stimMatch.FirstOrDefault();
             LocalPlayer me = DynelManager.LocalPlayer;
-            if (first != null && me != null && first.Criteria != null && first.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var crits))
-            {
-                string detail = string.Join(", ", crits.Select(c => { me.TryGetStat((Stat)c.Param1, out int have); return $"{(Stat)c.Param1} {c.Operator} {c.Param2} (have {have})"; }));
-                reply(Truncate($"stim [{first.Id}/{first.HighId} QL{first.Ql}] reqs: " + detail, 440));
-            }
+            if (me == null) { reply("Not in play yet."); return; }
 
-            if (me != null)
-            {
-                int Str = 0, Agi = 0, Sta = 0, Int = 0, Sen = 0, Psy = 0, fa = 0, tr = 0;
-                me.TryGetStat(Stat.Strength, out Str); me.TryGetStat(Stat.Agility, out Agi); me.TryGetStat(Stat.Stamina, out Sta);
-                me.TryGetStat(Stat.Intelligence, out Int); me.TryGetStat(Stat.Sense, out Sen); me.TryGetStat(Stat.Psychic, out Psy);
-                me.TryGetStat((Stat)123, out fa); me.TryGetStat((Stat)124, out tr);
-                reply($"stats: Str{Str} Agi{Agi} Sta{Sta} Int{Int} Sen{Sen} Psy{Psy} | FirstAid{fa} Treatment{tr}");
+            reply(SupplyLine("stims", _config.StimKeyword, _config.StimItemName, Stat.FirstAid, "First Aid", me));
+            reply(SupplyLine("rechargers", _config.RechargerKeyword, _config.RechargerItemName, Stat.Treatment, "Treatment", me));
+        }
 
-                int faTotal = fa, faTrickle = me.GetTrickle((Stat)123);
-                int faBuff = 0;
-                foreach (var b in me.Buffs)
-                    if (b.NanoItem != null && b.NanoItem.Modifiers != null && b.NanoItem.Modifiers.TryGetValue(SpellListType.Use, out var um) && um.ContainsKey((Stat)123))
-                        faBuff += um[(Stat)123];
-                reply($"FA math: total={faTotal} trickle={faTrickle} buffMods={faBuff} base+equip+other={faTotal - faTrickle - faBuff}");
+        private string SupplyLine(string what, string keyword, string exactName, Stat skill, string skillName, LocalPlayer me)
+        {
+            List<Item> carried = _support.HealItemPoolUnfiltered(keyword, exactName).ToList();
+            if (carried.Count == 0) return $"No {what} at all.";
 
-                int strBuff = 0, strEquip = 0;
-                foreach (var b in me.Buffs)
-                    if (b.NanoItem?.Modifiers != null && b.NanoItem.Modifiers.TryGetValue(SpellListType.Use, out var um2) && um2.ContainsKey(Stat.Strength)) strBuff += um2[Stat.Strength];
-                if (Inventory.Items != null)
-                    foreach (var it in Inventory.Items)
-                        if (it != null && it.Slot.Instance <= (int)EquipSlot.Imp_Feet && it.Modifiers != null && it.Modifiers.TryGetValue(SpellListType.Wear, out var wm) && wm.ContainsKey(Stat.Strength)) strEquip += wm[Stat.Strength];
-                reply($"Str math: total={Str} buffMods={strBuff} implants/equip={strEquip} base={Str - strBuff - strEquip}");
+            // Group by QL so it reads the way he counts them: "24 QL7, 38 QL9".
+            var byQl = carried.GroupBy(it => it.Ql).OrderBy(g => g.Key)
+                .Select(g => new { Ql = g.Key, Count = g.Sum(it => Math.Max(1, it.Count)), Usable = g.Any(it => SupportController.MeetsHealReqs(it, me)) })
+                .ToList();
 
-                var bl = me.Buffs;
-                if (bl != null && bl.Count > 0)
-                {
-                    string buffs = string.Join(", ", bl.Take(8).Select(b => $"{(b.NanoItem != null ? b.NanoItem.Name : "?")}[{b.Id}] {FormatTime(b.Cooldown?.RemainingTime ?? 0)}"));
-                    reply(Truncate($"buffs({bl.Count}): " + buffs, 440));
-                }
-                else reply("buffs: (none tracked)");
-            }
+            int total = byQl.Sum(g => g.Count);
+            int usable = byQl.Where(g => g.Usable).Sum(g => g.Count);
+            string skillHave = me.TryGetStat(skill, out int sv) ? sv.ToString() : "unknown";
+            string bag = string.Join(", ", byQl.Select(g => $"{g.Count} QL{g.Ql}"));
+
+            if (usable == total)
+                return $"{bag} — {total} {what}, all usable with my {skillName} of {skillHave}.";
+
+            string canUse = string.Join(", ", byQl.Where(g => g.Usable).Select(g => $"{g.Count} QL{g.Ql}"));
+            string tooHigh = string.Join(", ", byQl.Where(g => !g.Usable).Select(g => $"QL{g.Ql}"));
+            return $"{bag} — {total} {what}. {(usable == 0 ? "None" : canUse)} usable with my {skillName} "
+                   + $"of {skillHave}; {tooHigh} need more.";
         }
 
         private static string FormatTime(double seconds)
@@ -1324,6 +1466,51 @@ namespace AOBuddy
             catch { return "(none)"; }
         }
 
+        /// <summary>A visible character by name, for commands that name someone (case-insensitive, and a
+        /// unique prefix will do so you need not type a full name in a tell).</summary>
+        private static SimpleChar FindCharByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            name = name.Trim();
+            var all = DynelManager.Characters.Where(c => !string.IsNullOrEmpty(c.Name)).ToList();
+            SimpleChar exact = all.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (exact != null) return exact;
+            var starts = all.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            return starts.Count == 1 ? starts[0] : null;
+        }
+
+        /// <summary>
+        /// Who a heal-pet command means. A name works, and so do the words you'd actually type in a tell:
+        /// "me"/"you" is the owner, "him"/"self"/"bot" is the bot, "pet" is the attack pet. The two the owner
+        /// reaches for most — the bot and himself — are exactly the two that cannot be picked by clicking,
+        /// because a selection is never broadcast (see pethealmytarget).
+        /// </summary>
+        private SimpleChar ResolveHealSubject(string who, LocalPlayer me)
+        {
+            switch ((who ?? "").Trim().ToLowerInvariant())
+            {
+                case "me":
+                case "you":
+                case "owner":
+                    return FindOwner();
+                case "him":
+                case "he":
+                case "self":
+                case "bot":
+                case "himself":
+                    return me;
+                case "pet":
+                case "attackpet":
+                    return PetController.AttackPet(me);
+            }
+            return FindCharByName(who);
+        }
+
+        /// <summary>The ways to name a heal-pet subject, for a reply that would otherwise be a dead end.</summary>
+        private string HealWhoHint() =>
+            "'pethealme' (you), 'pethealself' (me), 'pethealpet' (my attack pet), "
+            + "or 'pethealtarget <name>' for anyone else I can see.";
+
         private PlayerChar FindOwner() =>
             DynelManager.Players.FirstOrDefault(p => string.Equals(p.Name, _config.Owner, StringComparison.OrdinalIgnoreCase));
 
@@ -1353,9 +1540,10 @@ namespace AOBuddy
         {
             LocalPlayer me = DynelManager.LocalPlayer;
             string target = me?.IsAttacking == true && me.FightingTarget != null ? me.FightingTarget.Name : "none";
-            int hp = me != null ? _support.SelfHpPct(me) : 0;
+            int hpPct = me != null ? _support.SelfHpPct(me) : SupportController.Unknown;
+            string hp = hpPct == SupportController.Unknown ? "?" : hpPct + "%";
             string lvl = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l.ToString() : "?";
-            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}%. Target: {target}. Waypoints: {_follow.TrailCount}.";
+            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}. Target: {target}. Waypoints: {_follow.TrailCount}.";
         }
 
         private static Mode ParseMode(string s)
@@ -1369,6 +1557,39 @@ namespace AOBuddy
         }
 
         // ---- Permanent stats: PERK & RESEARCH ------------------------------------
+
+        // ---- navdata: read-only check of GameData/Nav against the live character (nothing uses it yet) ----
+        //   navdata            floor data under the bot's own feet vs his real Y
+        //   navdata <x> <z>    the same for any point in the current playfield
+        //   navdata verify     every point in nav/<pf>.json against the data (the acceptance test)
+        //   navdata unload     drop the loaded data
+        private string NavDataCommand(string arg)
+        {
+            int pf = (int)Playfield.ModelId;
+            if (pf <= 0) return "Not in a playfield.";
+            if (arg == "unload") { _navData = null; return "Nav data unloaded."; }
+            try
+            {
+                if (_navData == null || _navData.Playfield != pf)
+                {
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
+                    _navData = AOBuddyNav.Load(_pluginDir, pf);
+                    if (_navData == null) return $"No nav data folder for pf {pf} ({AOBuddyNav.FolderFor(_pluginDir, pf)}).";
+                    Log($"NAVDATA: loaded pf {pf} {_navData.Kind} ground={(_navData.Ground != null ? _navData.Ground.SamplesX + "x" + _navData.Ground.SamplesZ : "-")} rooms={(_navData.Dungeon != null ? _navData.Dungeon.Rooms.Count : 0)} collision={(_navData.Collision != null ? _navData.Collision.Triangles : 0)} tris in {sw.ElapsedMilliseconds} ms");
+                }
+                if (arg == "verify") return _navData.SelfTest(Path.Combine(_pluginDir, "nav", pf + ".json"));
+                LocalPlayer me = DynelManager.LocalPlayer;
+                if (me == null) return "No local player.";
+                Vector3 p = me.MovementComponent.Position;
+                double x = p.X, y = p.Y, z = p.Z;
+                var parts = (arg ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && double.TryParse(parts[0], out double ax) && double.TryParse(parts[1], out double az)) { x = ax; z = az; }
+                string text = _navData.Explain(x, y, z);
+                Log("NAVDATA: " + text);
+                return text;
+            }
+            catch (Exception ex) { return "navdata failed: " + ex.Message; }
+        }
 
         private void InitPermanentBonuses(string pluginDir)
         {

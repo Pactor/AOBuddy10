@@ -1,0 +1,22 @@
+{
+ "playfield": 1211,
+ "name": "basicomniapartment dng",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1210,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1924,
+  "trianglesWalkable": 619,
+  "chunks": 2
+ }
+}

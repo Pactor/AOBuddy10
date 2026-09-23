@@ -1,0 +1,32 @@
+{
+ "playfield": 4505,
+ "name": "South Buggy (DONT DELETE)",
+ "playfieldVersion": 9,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 769,
+  "samplesZ": 769,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3072.0,
+   3072.0
+  ],
+  "heightRange": [
+   0.0,
+   102.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 1770,
+  "trianglesTotal": 248102,
+  "trianglesWalkable": 115754,
+  "chunks": 1953
+ }
+}

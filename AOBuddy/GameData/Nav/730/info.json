@@ -1,0 +1,41 @@
+{
+ "playfield": 730,
+ "name": "Rome Park",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   0.0,
+   49.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 153,
+  "trianglesTotal": 33716,
+  "trianglesWalkable": 13243,
+  "chunks": 212
+ },
+ "verification": {
+  "walkedPoints": 21,
+  "toleranceM": 1.0,
+  "explainedByFloor": 21,
+  "explainedByCollision": 0,
+  "unexplained": 0,
+  "explainedPct": 100.0,
+  "unexplainedSamples": []
+ }
+}

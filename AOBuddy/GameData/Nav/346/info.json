@@ -1,0 +1,22 @@
+{
+ "playfield": 346,
+ "name": "ACD Omnilab (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 345,
+  "rooms": 72,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 72,
+  "trianglesTotal": 159863,
+  "trianglesWalkable": 52400,
+  "chunks": 76
+ }
+}

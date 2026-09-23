@@ -1,0 +1,22 @@
+{
+ "playfield": 4628,
+ "name": "Unredeemed Temple (Penumbra)",
+ "playfieldVersion": 9,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4620,
+  "rooms": 9,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 87195,
+  "trianglesWalkable": 30261,
+  "chunks": 19
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "playfield": 4107,
+ "name": "Fixer Grid (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4106,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 33210,
+  "trianglesWalkable": 13228,
+  "chunks": 7
+ }
+}

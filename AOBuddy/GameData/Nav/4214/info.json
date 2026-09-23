@@ -1,0 +1,22 @@
+{
+ "playfield": 4214,
+ "name": "Maze_Eridan_pen_red",
+ "playfieldVersion": 9,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4210,
+  "rooms": 16,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 16,
+  "trianglesTotal": 338332,
+  "trianglesWalkable": 114285,
+  "chunks": 63
+ }
+}

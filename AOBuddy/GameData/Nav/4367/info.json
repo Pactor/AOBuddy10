@@ -1,0 +1,32 @@
+{
+ "playfield": 4367,
+ "name": "Sector 35",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.001953125,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   0.0,
+   31.3477
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 173,
+  "trianglesTotal": 40856,
+  "trianglesWalkable": 14967,
+  "chunks": 296
+ }
+}

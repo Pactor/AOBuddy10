@@ -1,0 +1,22 @@
+{
+ "playfield": 6007,
+ "name": "BS Signup (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 6006,
+  "rooms": 5,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 5,
+  "trianglesTotal": 8342,
+  "trianglesWalkable": 2670,
+  "chunks": 5
+ }
+}

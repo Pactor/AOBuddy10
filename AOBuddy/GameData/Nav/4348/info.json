@@ -1,0 +1,22 @@
+{
+ "playfield": 4348,
+ "name": "Superior Clan org hq",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4820,
+  "rooms": 6,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 6,
+  "trianglesTotal": 29752,
+  "trianglesWalkable": 11022,
+  "chunks": 8
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "playfield": 4568,
+ "name": "Dimensional Shift - Advanced",
+ "playfieldVersion": 9,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4566,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 7270,
+  "trianglesWalkable": 2424,
+  "chunks": 2
+ }
+}

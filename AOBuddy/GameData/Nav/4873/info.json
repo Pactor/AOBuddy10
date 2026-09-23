@@ -1,0 +1,32 @@
+{
+ "playfield": 4873,
+ "name": "Adonis Abyss",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 1025,
+  "samplesZ": 1025,
+  "cell": 4.0,
+  "heightScale": 0.0023437500931322575,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   4096.0,
+   4096.0
+  ],
+  "heightRange": [
+   0.0,
+   153.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 1356,
+  "trianglesTotal": 597324,
+  "trianglesWalkable": 298557,
+  "chunks": 1374
+ }
+}

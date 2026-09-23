@@ -1,0 +1,22 @@
+{
+ "playfield": 7101,
+ "name": "Shuttle to ICC (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 7100,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 6550,
+  "trianglesWalkable": 2117,
+  "chunks": 3
+ }
+}

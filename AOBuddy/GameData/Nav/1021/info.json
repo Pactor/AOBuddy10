@@ -1,0 +1,22 @@
+{
+ "playfield": 1021,
+ "name": "OMni barracks (USEB) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1020,
+  "rooms": 4,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 2222,
+  "trianglesWalkable": 753,
+  "chunks": 4
+ }
+}

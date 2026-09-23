@@ -1,0 +1,32 @@
+{
+ "playfield": 5002,
+ "name": "Montroyal",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 257,
+  "samplesZ": 257,
+  "cell": 4.0,
+  "heightScale": 0.0031250000465661287,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   1024.0,
+   1024.0
+  ],
+  "heightRange": [
+   0.7219,
+   166.2969
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 353,
+  "trianglesTotal": 49178,
+  "trianglesWalkable": 18042,
+  "chunks": 427
+ }
+}

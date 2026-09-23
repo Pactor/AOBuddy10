@@ -1,0 +1,22 @@
+{
+ "playfield": 4571,
+ "name": "Heavenly Business - Basic",
+ "playfieldVersion": 9,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4570,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 14551,
+  "trianglesWalkable": 4842,
+  "chunks": 3
+ }
+}

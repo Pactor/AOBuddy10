@@ -1,0 +1,32 @@
+{
+ "playfield": 3036,
+ "name": "Omni-1 Trade Backyard 17",
+ "playfieldVersion": 8,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 57,
+  "samplesZ": 65,
+  "cell": 4.0,
+  "heightScale": 0.001953125,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   224.0,
+   256.0
+  ],
+  "heightRange": [
+   0.0,
+   115.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 30,
+  "trianglesTotal": 7999,
+  "trianglesWalkable": 3375,
+  "chunks": 44
+ }
+}

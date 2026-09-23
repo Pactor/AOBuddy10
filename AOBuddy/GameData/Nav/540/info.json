@@ -1,0 +1,32 @@
+{
+ "playfield": 540,
+ "name": "Old Athen",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 225,
+  "samplesZ": 225,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   896.0,
+   896.0
+  ],
+  "heightRange": [
+   0.0,
+   48.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 144,
+  "trianglesTotal": 29215,
+  "trianglesWalkable": 11528,
+  "chunks": 156
+ }
+}

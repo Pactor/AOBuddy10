@@ -1,0 +1,22 @@
+{
+ "playfield": 1913,
+ "name": "Reet Retreat (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1912,
+  "rooms": 10,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 10,
+  "trianglesTotal": 27238,
+  "trianglesWalkable": 9005,
+  "chunks": 11
+ }
+}

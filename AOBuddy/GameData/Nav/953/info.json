@@ -1,0 +1,32 @@
+{
+ "playfield": 953,
+ "name": "Clan Backyard",
+ "playfieldVersion": 8,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 33,
+  "samplesZ": 49,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   128.0,
+   192.0
+  ],
+  "heightRange": [
+   23.2,
+   25.2
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 12,
+  "trianglesTotal": 8251,
+  "trianglesWalkable": 4161,
+  "chunks": 60
+ }
+}

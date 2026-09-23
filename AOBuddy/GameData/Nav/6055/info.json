@@ -1,0 +1,32 @@
+{
+ "playfield": 6055,
+ "name": "Inside The Machine",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   50.2,
+   50.2
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 23,
+  "trianglesTotal": 10600,
+  "trianglesWalkable": 5085,
+  "chunks": 23
+ }
+}

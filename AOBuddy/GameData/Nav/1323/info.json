@@ -1,0 +1,22 @@
+{
+ "playfield": 1323,
+ "name": "tir clanbuilding9 dng",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1320,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 564,
+  "trianglesWalkable": 168,
+  "chunks": 1
+ }
+}

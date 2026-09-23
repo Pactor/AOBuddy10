@@ -1,0 +1,32 @@
+{
+ "playfield": 6013,
+ "name": "Central Gateway",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 287,
+  "trianglesTotal": 118999,
+  "trianglesWalkable": 46513,
+  "chunks": 712
+ }
+}

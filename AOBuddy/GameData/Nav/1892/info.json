@@ -1,0 +1,22 @@
+{
+ "playfield": 1892,
+ "name": "Enjoy it While it Lasts",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1890,
+  "rooms": 4,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 4880,
+  "trianglesWalkable": 1565,
+  "chunks": 4
+ }
+}

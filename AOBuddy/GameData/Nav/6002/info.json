@@ -1,0 +1,32 @@
+{
+ "playfield": 6002,
+ "name": "Sunrise Station",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 1019,
+  "trianglesWalkable": 654,
+  "chunks": 9
+ }
+}

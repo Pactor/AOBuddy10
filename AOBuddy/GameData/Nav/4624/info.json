@@ -1,0 +1,22 @@
+{
+ "playfield": 4624,
+ "name": "Unredeemed Temple (Scheol)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4620,
+  "rooms": 9,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 87239,
+  "trianglesWalkable": 30272,
+  "chunks": 19
+ }
+}

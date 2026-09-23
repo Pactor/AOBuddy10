@@ -1,0 +1,32 @@
+{
+ "playfield": 4320,
+ "name": "Penumbra Forest",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 1025,
+  "samplesZ": 769,
+  "cell": 4.0,
+  "heightScale": 0.0023437500931322575,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   4096.0,
+   3072.0
+  ],
+  "heightRange": [
+   0.0,
+   153.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 2804,
+  "trianglesTotal": 553605,
+  "trianglesWalkable": 266453,
+  "chunks": 3030
+ }
+}

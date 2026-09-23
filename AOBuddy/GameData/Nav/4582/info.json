@@ -1,0 +1,32 @@
+{
+ "playfield": 4582,
+ "name": "ICC Shuttleport",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   49.8
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 150,
+  "trianglesTotal": 86536,
+  "trianglesWalkable": 41493,
+  "chunks": 162
+ }
+}

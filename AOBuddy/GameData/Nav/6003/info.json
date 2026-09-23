@@ -1,0 +1,32 @@
+{
+ "playfield": 6003,
+ "name": "The Dig Site",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 257,
+  "samplesZ": 385,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   1024.0,
+   1536.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 224,
+  "trianglesTotal": 11542,
+  "trianglesWalkable": 4561,
+  "chunks": 226
+ }
+}

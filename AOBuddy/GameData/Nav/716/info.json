@@ -1,0 +1,32 @@
+{
+ "playfield": 716,
+ "name": "Omni Forest",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 385,
+  "samplesZ": 1025,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   1536.0,
+   4096.0
+  ],
+  "heightRange": [
+   0.0,
+   50.8
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 2212,
+  "trianglesTotal": 207899,
+  "trianglesWalkable": 92114,
+  "chunks": 2248
+ }
+}

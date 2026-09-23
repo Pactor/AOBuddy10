@@ -1,0 +1,22 @@
+{
+ "playfield": 4324,
+ "name": "Penumbra Transit (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4323,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 34013,
+  "trianglesWalkable": 11292,
+  "chunks": 6
+ }
+}

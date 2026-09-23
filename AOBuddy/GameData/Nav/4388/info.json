@@ -1,0 +1,32 @@
+{
+ "playfield": 4388,
+ "name": "Battle Station 215-220",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   28.1031,
+   69.9109
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 235,
+  "trianglesTotal": 33689,
+  "trianglesWalkable": 21120,
+  "chunks": 235
+ }
+}

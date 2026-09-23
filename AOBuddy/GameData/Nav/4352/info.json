@@ -1,0 +1,15 @@
+{
+ "playfield": 4352,
+ "name": "Market",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 36,
+  "trianglesWalkable": 12,
+  "chunks": 1
+ }
+}

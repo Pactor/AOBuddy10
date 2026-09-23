@@ -1,0 +1,32 @@
+{
+ "playfield": 4692,
+ "name": "Garden of Redeemed Inferno",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 225,
+  "samplesZ": 225,
+  "cell": 4.0,
+  "heightScale": 0.0023437500931322575,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   896.0,
+   896.0
+  ],
+  "heightRange": [
+   0.0,
+   124.8
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 157,
+  "trianglesTotal": 67132,
+  "trianglesWalkable": 33804,
+  "chunks": 223
+ }
+}

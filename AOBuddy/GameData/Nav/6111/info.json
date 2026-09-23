@@ -1,0 +1,22 @@
+{
+ "playfield": 6111,
+ "name": "Alien Scoutship (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 6110,
+  "rooms": 10,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 10,
+  "trianglesTotal": 42061,
+  "trianglesWalkable": 15396,
+  "chunks": 11
+ }
+}

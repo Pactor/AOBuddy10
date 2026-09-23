@@ -1,0 +1,22 @@
+{
+ "playfield": 4349,
+ "name": "Superior Neutral org hq",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4820,
+  "rooms": 6,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 6,
+  "trianglesTotal": 29661,
+  "trianglesWalkable": 10989,
+  "chunks": 8
+ }
+}

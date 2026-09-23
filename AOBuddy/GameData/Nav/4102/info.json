@@ -1,0 +1,22 @@
+{
+ "playfield": 4102,
+ "name": "Beer And Booze (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4101,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 2766,
+  "trianglesWalkable": 964,
+  "chunks": 2
+ }
+}

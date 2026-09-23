@@ -1,0 +1,32 @@
+{
+ "playfield": 556,
+ "name": "Coast of Peace",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 1537,
+  "samplesZ": 769,
+  "cell": 4.0,
+  "heightScale": 0.001953125,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   6144.0,
+   3072.0
+  ],
+  "heightRange": [
+   0.0,
+   127.998
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 4401,
+  "trianglesTotal": 624455,
+  "trianglesWalkable": 319409,
+  "chunks": 4501
+ }
+}

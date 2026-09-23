@@ -1,0 +1,32 @@
+{
+ "playfield": 4370,
+ "name": "Sector 42",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 225,
+  "samplesZ": 225,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   896.0,
+   896.0
+  ],
+  "heightRange": [
+   0.0,
+   47.4
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 312,
+  "trianglesTotal": 86283,
+  "trianglesWalkable": 32546,
+  "chunks": 482
+ }
+}

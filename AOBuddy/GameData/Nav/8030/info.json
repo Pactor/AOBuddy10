@@ -1,0 +1,22 @@
+{
+ "playfield": 8030,
+ "name": "The Gate",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 8025,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 14221,
+  "trianglesWalkable": 4646,
+  "chunks": 3
+ }
+}

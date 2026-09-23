@@ -1,0 +1,22 @@
+{
+ "playfield": 4376,
+ "name": "ICC Assembly Hall (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4375,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 19576,
+  "trianglesWalkable": 6312,
+  "chunks": 4
+ }
+}

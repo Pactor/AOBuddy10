@@ -1,0 +1,32 @@
+{
+ "playfield": 4366,
+ "name": "Sector 28",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.001953125,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   0.0,
+   65.0801
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 202,
+  "trianglesTotal": 32539,
+  "trianglesWalkable": 10458,
+  "chunks": 213
+ }
+}
