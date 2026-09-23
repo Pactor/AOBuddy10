@@ -1,0 +1,15 @@
+{
+ "playfield": 1251,
+ "name": "Omni Small Guild",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 12,
+  "trianglesTotal": 14127,
+  "trianglesWalkable": 4759,
+  "chunks": 12
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1405,
+ "name": "clanapartment",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1691,
+  "trianglesWalkable": 535,
+  "chunks": 2
+ }
+}

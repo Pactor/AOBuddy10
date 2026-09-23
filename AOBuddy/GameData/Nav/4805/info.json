@@ -1,0 +1,22 @@
+{
+ "playfield": 4805,
+ "name": "The Crypt of Home",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4804,
+  "rooms": 15,
+  "cell": 2.0,
+  "heightScale": 0.10000000149011612
+ },
+ "collision": {
+  "records": 15,
+  "trianglesTotal": 109923,
+  "trianglesWalkable": 35975,
+  "chunks": 27
+ }
+}

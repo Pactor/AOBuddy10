@@ -1,0 +1,15 @@
+{
+ "playfield": 4222,
+ "name": "Maze_Styx_ado_unre",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 20,
+  "trianglesTotal": 400183,
+  "trianglesWalkable": 135315,
+  "chunks": 75
+ }
+}

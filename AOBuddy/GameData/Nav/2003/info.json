@@ -1,0 +1,15 @@
+{
+ "playfield": 2003,
+ "name": "clan_basic_pharmasist_shop",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 836,
+  "trianglesWalkable": 268,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1189,
+ "name": "spec_smarket_clan_advanced",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1224,
+  "trianglesWalkable": 384,
+  "chunks": 1
+ }
+}

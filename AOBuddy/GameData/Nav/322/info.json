@@ -1,0 +1,15 @@
+{
+ "playfield": 322,
+ "name": "Autocontentdungcave(dung)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 55,
+  "trianglesTotal": 55242,
+  "trianglesWalkable": 18082,
+  "chunks": 55
+ }
+}

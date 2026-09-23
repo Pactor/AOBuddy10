@@ -1,0 +1,22 @@
+{
+ "playfield": 4357,
+ "name": "Superior Player Market [dng]",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4570,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 26910,
+  "trianglesWalkable": 8939,
+  "chunks": 6
+ }
+}

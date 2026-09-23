@@ -1,0 +1,15 @@
+{
+ "playfield": 341,
+ "name": "ACD Grey Caves-Mines dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 103,
+  "trianglesTotal": 195721,
+  "trianglesWalkable": 62778,
+  "chunks": 105
+ }
+}

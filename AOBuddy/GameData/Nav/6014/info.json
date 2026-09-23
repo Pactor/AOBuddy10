@@ -1,0 +1,32 @@
+{
+ "playfield": 6014,
+ "name": "Inside the Ruin",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 113,
+  "samplesZ": 113,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   448.0,
+   448.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 22,
+  "trianglesTotal": 8833,
+  "trianglesWalkable": 4157,
+  "chunks": 22
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1611,
+ "name": "Swamp_house01 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1152,
+  "trianglesWalkable": 465,
+  "chunks": 1
+ }
+}

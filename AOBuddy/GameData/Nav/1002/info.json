@@ -1,0 +1,15 @@
+{
+ "playfield": 1002,
+ "name": "medical/eating (wine) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1348,
+  "trianglesWalkable": 432,
+  "chunks": 2
+ }
+}

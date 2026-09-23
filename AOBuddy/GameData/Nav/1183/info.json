@@ -1,0 +1,15 @@
+{
+ "playfield": 1183,
+ "name": "ord_smarket_omni_basic",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 7,
+  "trianglesTotal": 14159,
+  "trianglesWalkable": 4592,
+  "chunks": 8
+ }
+}

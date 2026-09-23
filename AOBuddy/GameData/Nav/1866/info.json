@@ -1,0 +1,15 @@
+{
+ "playfield": 1866,
+ "name": "The HQ of Omni-Mine",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 10,
+  "trianglesTotal": 27625,
+  "trianglesWalkable": 9002,
+  "chunks": 12
+ }
+}

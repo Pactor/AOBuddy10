@@ -1,0 +1,15 @@
+{
+ "playfield": 4572,
+ "name": "Heavenly Business - Advanced",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 14551,
+  "trianglesWalkable": 4842,
+  "chunks": 3
+ }
+}

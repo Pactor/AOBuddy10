@@ -1,0 +1,15 @@
+{
+ "playfield": 1662,
+ "name": "rhino_house2 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 684,
+  "trianglesWalkable": 222,
+  "chunks": 1
+ }
+}

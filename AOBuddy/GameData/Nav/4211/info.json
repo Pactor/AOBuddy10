@@ -1,0 +1,15 @@
+{
+ "playfield": 4211,
+ "name": "Maze_Acheron_Ely_unre",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 12,
+  "trianglesTotal": 195894,
+  "trianglesWalkable": 65988,
+  "chunks": 36
+ }
+}

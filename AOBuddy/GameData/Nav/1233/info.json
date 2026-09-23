@@ -1,0 +1,15 @@
+{
+ "playfield": 1233,
+ "name": "Clan Big Clan Apartment",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 7,
+  "trianglesTotal": 11184,
+  "trianglesWalkable": 3709,
+  "chunks": 7
+ }
+}

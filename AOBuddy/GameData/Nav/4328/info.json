@@ -1,0 +1,32 @@
+{
+ "playfield": 4328,
+ "name": "Pandemonium Caina",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 225,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   768.0,
+   896.0
+  ],
+  "heightRange": [
+   0.0,
+   50.8
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 186,
+  "trianglesTotal": 265533,
+  "trianglesWalkable": 124814,
+  "chunks": 1121
+ }
+}

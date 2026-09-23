@@ -1,0 +1,15 @@
+{
+ "playfield": 1846,
+ "name": "McRiid's Office",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 7,
+  "trianglesTotal": 6304,
+  "trianglesWalkable": 1990,
+  "chunks": 7
+ }
+}

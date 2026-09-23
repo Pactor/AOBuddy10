@@ -1,0 +1,32 @@
+{
+ "playfield": 5001,
+ "name": "Playa del Desierto",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 129,
+  "samplesZ": 129,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   512.0,
+   512.0
+  ],
+  "heightRange": [
+   0.0,
+   39.8438
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 140,
+  "trianglesTotal": 48628,
+  "trianglesWalkable": 17036,
+  "chunks": 203
+ }
+}

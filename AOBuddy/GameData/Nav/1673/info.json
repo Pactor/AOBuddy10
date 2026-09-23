@@ -1,0 +1,15 @@
+{
+ "playfield": 1673,
+ "name": "reck_trading_outpost_bunker3 VP",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 444,
+  "trianglesWalkable": 136,
+  "chunks": 1
+ }
+}

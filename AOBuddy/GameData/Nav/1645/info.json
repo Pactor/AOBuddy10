@@ -1,0 +1,15 @@
+{
+ "playfield": 1645,
+ "name": "lowtech_building5 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 600,
+  "trianglesWalkable": 192,
+  "chunks": 1
+ }
+}

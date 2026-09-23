@@ -1,0 +1,15 @@
+{
+ "playfield": 1743,
+ "name": "enigma_tree03",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 668,
+  "trianglesWalkable": 225,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 4621,
+ "name": "Redeemed Temple (Elysium)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 88256,
+  "trianglesWalkable": 30163,
+  "chunks": 19
+ }
+}

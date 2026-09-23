@@ -1,0 +1,22 @@
+{
+ "playfield": 4334,
+ "name": "The Ring (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4333,
+  "rooms": 1,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 11714,
+  "trianglesWalkable": 4122,
+  "chunks": 3
+ }
+}

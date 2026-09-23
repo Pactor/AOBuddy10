@@ -1,0 +1,15 @@
+{
+ "playfield": 346,
+ "name": "ACD Omnilab (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 72,
+  "trianglesTotal": 159863,
+  "trianglesWalkable": 52400,
+  "chunks": 76
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "playfield": 4311,
+ "name": "Nascense Wilds",
+ "playfieldVersion": 9,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0023437500931322575,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   135.6
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 1293,
+  "trianglesTotal": 257130,
+  "trianglesWalkable": 138076,
+  "chunks": 1843
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "playfield": 790,
+ "name": "Stret West Bank",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 769,
+  "samplesZ": 1025,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3072.0,
+   4096.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 3233,
+  "trianglesTotal": 199141,
+  "trianglesWalkable": 87845,
+  "chunks": 3230
+ },
+ "verification": {
+  "walkedPoints": 417,
+  "toleranceM": 1.0,
+  "explainedByFloor": 417,
+  "explainedByCollision": 0,
+  "unexplained": 0,
+  "explainedPct": 100.0,
+  "unexplainedSamples": []
+ }
+}

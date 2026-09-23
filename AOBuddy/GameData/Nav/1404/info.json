@@ -1,0 +1,22 @@
+{
+ "playfield": 1404,
+ "name": "The Temple of Home",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1403,
+  "rooms": 3,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 3,
+  "trianglesTotal": 22346,
+  "trianglesWalkable": 7446,
+  "chunks": 5
+ }
+}

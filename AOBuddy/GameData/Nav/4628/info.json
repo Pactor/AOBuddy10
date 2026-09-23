@@ -1,0 +1,15 @@
+{
+ "playfield": 4628,
+ "name": "Unredeemed Temple (Penumbra)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 87195,
+  "trianglesWalkable": 30261,
+  "chunks": 19
+ }
+}

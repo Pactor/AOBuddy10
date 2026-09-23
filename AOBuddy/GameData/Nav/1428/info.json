@@ -1,0 +1,15 @@
+{
+ "playfield": 1428,
+ "name": "Neutral organisation dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 916,
+  "trianglesWalkable": 292,
+  "chunks": 1
+ }
+}

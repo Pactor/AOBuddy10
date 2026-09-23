@@ -1,0 +1,15 @@
+{
+ "playfield": 4626,
+ "name": "Unredeemed Temple (Adonis)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 87195,
+  "trianglesWalkable": 30261,
+  "chunks": 19
+ }
+}

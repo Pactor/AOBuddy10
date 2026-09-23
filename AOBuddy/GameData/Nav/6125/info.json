@@ -1,0 +1,22 @@
+{
+ "playfield": 6125,
+ "name": "Alien ship trap (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 6124,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 19755,
+  "trianglesWalkable": 6966,
+  "chunks": 5
+ }
+}

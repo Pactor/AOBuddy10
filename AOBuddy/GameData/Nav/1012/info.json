@@ -1,0 +1,15 @@
+{
+ "playfield": 1012,
+ "name": "2HO satellite (streteast) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1168,
+  "trianglesWalkable": 388,
+  "chunks": 1
+ }
+}

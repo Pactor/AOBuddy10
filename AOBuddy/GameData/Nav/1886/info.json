@@ -1,0 +1,15 @@
+{
+ "playfield": 1886,
+ "name": "Versailles Tower",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 24,
+  "trianglesTotal": 48988,
+  "trianglesWalkable": 15548,
+  "chunks": 27
+ }
+}

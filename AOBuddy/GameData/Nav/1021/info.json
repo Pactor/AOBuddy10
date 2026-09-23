@@ -1,0 +1,15 @@
+{
+ "playfield": 1021,
+ "name": "OMni barracks (USEB) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 2222,
+  "trianglesWalkable": 753,
+  "chunks": 4
+ }
+}

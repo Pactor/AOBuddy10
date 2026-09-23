@@ -1,0 +1,15 @@
+{
+ "playfield": 320,
+ "name": "AutocontentMidtech(dung)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 81,
+  "trianglesTotal": 172026,
+  "trianglesWalkable": 55949,
+  "chunks": 82
+ }
+}

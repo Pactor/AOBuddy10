@@ -1,0 +1,32 @@
+{
+ "playfield": 6022,
+ "name": "Area X",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 385,
+  "samplesZ": 385,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 16,
+  "worldSize": [
+   1536.0,
+   1536.0
+  ],
+  "heightRange": [
+   0.0,
+   51.1992
+  ],
+  "heightVerifiable": false
+ },
+ "collision": {
+  "records": 662,
+  "trianglesTotal": 366659,
+  "trianglesWalkable": 128513,
+  "chunks": 664
+ }
+}

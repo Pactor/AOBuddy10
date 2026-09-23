@@ -1,0 +1,47 @@
+{
+ "playfield": 655,
+ "name": "Andromeda",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 1537,
+  "samplesZ": 769,
+  "cell": 4.0,
+  "heightScale": 0.0011718750465661287,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   6144.0,
+   3072.0
+  ],
+  "heightRange": [
+   0.0,
+   76.5
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 5195,
+  "trianglesTotal": 299871,
+  "trianglesWalkable": 132599,
+  "chunks": 5295
+ },
+ "verification": {
+  "walkedPoints": 336,
+  "toleranceM": 1.0,
+  "explainedByFloor": 305,
+  "explainedByCollision": 30,
+  "unexplained": 1,
+  "explainedPct": 99.7,
+  "unexplainedSamples": [
+   [
+    3226.8,
+    36.48,
+    869.5
+   ]
+  ]
+ }
+}

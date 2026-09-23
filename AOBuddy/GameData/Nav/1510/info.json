@@ -1,0 +1,15 @@
+{
+ "playfield": 1510,
+ "name": "Neutral Insurance building",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1592,
+  "trianglesWalkable": 508,
+  "chunks": 1
+ }
+}

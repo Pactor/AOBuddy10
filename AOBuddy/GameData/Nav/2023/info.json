@@ -1,0 +1,15 @@
+{
+ "playfield": 2023,
+ "name": "clan_sup_implants_shop",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 852,
+  "trianglesWalkable": 272,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "playfield": 4544,
+ "name": "North of Elysium",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 769,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3072.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   102.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 1514,
+  "trianglesTotal": 369469,
+  "trianglesWalkable": 156388,
+  "chunks": 2092
+ }
+}

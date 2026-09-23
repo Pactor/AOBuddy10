@@ -1,0 +1,15 @@
+{
+ "playfield": 1827,
+ "name": "Omni Military Barracks",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 3186,
+  "trianglesWalkable": 968,
+  "chunks": 2
+ }
+}

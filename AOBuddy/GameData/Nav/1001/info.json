@@ -1,0 +1,15 @@
+{
+ "playfield": 1001,
+ "name": "Senitel rec_centre (wine) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 676,
+  "trianglesWalkable": 224,
+  "chunks": 1
+ }
+}

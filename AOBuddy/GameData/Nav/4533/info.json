@@ -1,0 +1,32 @@
+{
+ "playfield": 4533,
+ "name": "Jobe Plaza",
+ "playfieldVersion": 9,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.0078125,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 79,
+  "trianglesTotal": 40962,
+  "trianglesWalkable": 18042,
+  "chunks": 106
+ }
+}

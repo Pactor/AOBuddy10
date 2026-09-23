@@ -1,0 +1,15 @@
+{
+ "playfield": 1211,
+ "name": "basicomniapartment dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1924,
+  "trianglesWalkable": 619,
+  "chunks": 2
+ }
+}

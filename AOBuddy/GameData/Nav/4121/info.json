@@ -1,0 +1,22 @@
+{
+ "playfield": 4121,
+ "name": "Will To Fight",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1895,
+  "rooms": 42,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 42,
+  "trianglesTotal": 268194,
+  "trianglesWalkable": 87042,
+  "chunks": 65
+ }
+}

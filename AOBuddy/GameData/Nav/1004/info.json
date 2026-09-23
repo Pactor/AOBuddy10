@@ -1,0 +1,15 @@
+{
+ "playfield": 1004,
+ "name": "barracks (wine) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 15,
+  "trianglesTotal": 14846,
+  "trianglesWalkable": 5058,
+  "chunks": 15
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "playfield": 620,
+ "name": "Eastern Fouls Plains",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 897,
+  "samplesZ": 1537,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3584.0,
+   6144.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 4229,
+  "trianglesTotal": 217721,
+  "trianglesWalkable": 98632,
+  "chunks": 4232
+ }
+}

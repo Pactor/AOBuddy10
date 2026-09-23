@@ -1,0 +1,15 @@
+{
+ "playfield": 4360,
+ "name": "Clinique Plastique",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 5128,
+  "trianglesWalkable": 1814,
+  "chunks": 1
+ }
+}

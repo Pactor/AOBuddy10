@@ -1,0 +1,32 @@
+{
+ "playfield": 8009,
+ "name": "Crashed Alien Ship",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 25,
+  "samplesZ": 25,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   96.0,
+   96.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 2177,
+  "trianglesWalkable": 959,
+  "chunks": 17
+ }
+}

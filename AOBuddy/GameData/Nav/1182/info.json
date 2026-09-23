@@ -1,0 +1,22 @@
+{
+ "playfield": 1182,
+ "name": "ord_smarket_clan_sup",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1140,
+  "rooms": 3,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 3,
+  "trianglesTotal": 14942,
+  "trianglesWalkable": 4956,
+  "chunks": 4
+ }
+}

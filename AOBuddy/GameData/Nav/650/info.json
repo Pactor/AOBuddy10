@@ -1,0 +1,32 @@
+{
+ "playfield": 650,
+ "name": "Upper Stret East Bank",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 769,
+  "samplesZ": 897,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3072.0,
+   3584.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 2628,
+  "trianglesTotal": 190277,
+  "trianglesWalkable": 91319,
+  "chunks": 2625
+ }
+}

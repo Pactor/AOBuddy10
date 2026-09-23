@@ -1,0 +1,15 @@
+{
+ "playfield": 1603,
+ "name": "athens_clanhouse4 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 698,
+  "trianglesWalkable": 224,
+  "chunks": 1
+ }
+}

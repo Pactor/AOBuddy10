@@ -1,0 +1,15 @@
+{
+ "playfield": 1330,
+ "name": "tir clanbuilding7 dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 692,
+  "trianglesWalkable": 220,
+  "chunks": 1
+ }
+}

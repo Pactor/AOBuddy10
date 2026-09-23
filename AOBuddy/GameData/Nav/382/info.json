@@ -1,0 +1,15 @@
+{
+ "playfield": 382,
+ "name": "Alien ACG (dng)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 13,
+  "trianglesTotal": 67230,
+  "trianglesWalkable": 22934,
+  "chunks": 18
+ }
+}

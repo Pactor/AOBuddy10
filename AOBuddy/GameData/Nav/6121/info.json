@@ -1,0 +1,22 @@
+{
+ "playfield": 6121,
+ "name": "Alien Ship 2 (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 6120,
+  "rooms": 21,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 21,
+  "trianglesTotal": 98422,
+  "trianglesWalkable": 34668,
+  "chunks": 26
+ }
+}

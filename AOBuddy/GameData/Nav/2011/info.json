@@ -1,0 +1,15 @@
+{
+ "playfield": 2011,
+ "name": "clan_advanced_armor_shop",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 940,
+  "trianglesWalkable": 300,
+  "chunks": 1
+ }
+}

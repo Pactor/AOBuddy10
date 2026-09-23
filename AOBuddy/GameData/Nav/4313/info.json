@@ -1,0 +1,32 @@
+{
+ "playfield": 4313,
+ "name": "Nascense Training Ground",
+ "playfieldVersion": 9,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 225,
+  "samplesZ": 225,
+  "cell": 4.0,
+  "heightScale": 0.0015625000232830644,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   896.0,
+   896.0
+  ],
+  "heightRange": [
+   0.0,
+   98.8
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 139,
+  "trianglesTotal": 97680,
+  "trianglesWalkable": 48952,
+  "chunks": 313
+ }
+}

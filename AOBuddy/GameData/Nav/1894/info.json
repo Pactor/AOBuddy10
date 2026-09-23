@@ -1,0 +1,15 @@
+{
+ "playfield": 1894,
+ "name": "Clan Registration Office",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 5,
+  "trianglesTotal": 2751,
+  "trianglesWalkable": 918,
+  "chunks": 5
+ }
+}

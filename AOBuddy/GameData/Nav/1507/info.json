@@ -1,0 +1,15 @@
+{
+ "playfield": 1507,
+ "name": "omnimine_hq_building10",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 2032,
+  "trianglesWalkable": 656,
+  "chunks": 1
+ }
+}

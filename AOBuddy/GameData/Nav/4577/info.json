@@ -1,0 +1,15 @@
+{
+ "playfield": 4577,
+ "name": "IPS Interior - Superior",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 12886,
+  "trianglesWalkable": 4186,
+  "chunks": 3
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "playfield": 8006,
+ "name": "Generetic Offices",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 8005,
+  "rooms": 34,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 34,
+  "trianglesTotal": 19907,
+  "trianglesWalkable": 6556,
+  "chunks": 34
+ }
+}

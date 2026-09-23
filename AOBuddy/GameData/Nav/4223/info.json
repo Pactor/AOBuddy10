@@ -1,0 +1,15 @@
+{
+ "playfield": 4223,
+ "name": "Maze_Eridan_pen_unre",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 16,
+  "trianglesTotal": 338332,
+  "trianglesWalkable": 114285,
+  "chunks": 63
+ }
+}

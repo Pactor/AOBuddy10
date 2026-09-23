@@ -1,0 +1,15 @@
+{
+ "playfield": 4316,
+ "name": "Jobe Plaza Gateway (dng)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 37032,
+  "trianglesWalkable": 11563,
+  "chunks": 6
+ }
+}

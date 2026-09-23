@@ -1,0 +1,15 @@
+{
+ "playfield": 1652,
+ "name": "rome_simplebuilding VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 718,
+  "trianglesWalkable": 227,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 331,
+ "name": "ACD tarm (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 42,
+  "trianglesTotal": 34606,
+  "trianglesWalkable": 12332,
+  "chunks": 42
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 362,
+ "name": "SL ACG(dng)",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 68,
+  "trianglesTotal": 1050287,
+  "trianglesWalkable": 371815,
+  "chunks": 214
+ }
+}

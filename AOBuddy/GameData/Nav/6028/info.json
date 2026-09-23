@@ -1,0 +1,22 @@
+{
+ "playfield": 6028,
+ "name": "Christmas Workshop (dng)",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 6027,
+  "rooms": 8,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 8,
+  "trianglesTotal": 21862,
+  "trianglesWalkable": 7452,
+  "chunks": 8
+ }
+}

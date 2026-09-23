@@ -1,0 +1,15 @@
+{
+ "playfield": 1701,
+ "name": "Home VP dng 1 medium",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 664,
+  "trianglesWalkable": 210,
+  "chunks": 1
+ }
+}

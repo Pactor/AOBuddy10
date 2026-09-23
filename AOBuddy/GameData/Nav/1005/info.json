@@ -1,0 +1,15 @@
+{
+ "playfield": 1005,
+ "name": "storage (wine) GOLD",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1262,
+  "trianglesWalkable": 408,
+  "chunks": 1
+ }
+}

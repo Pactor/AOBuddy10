@@ -1,0 +1,15 @@
+{
+ "playfield": 321,
+ "name": "AutocontentHITech(dung)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 69,
+  "trianglesTotal": 129056,
+  "trianglesWalkable": 40977,
+  "chunks": 75
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1031,
+ "name": "Avalon omni barracks",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 7,
+  "trianglesTotal": 5642,
+  "trianglesWalkable": 2080,
+  "chunks": 7
+ }
+}

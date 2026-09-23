@@ -1,0 +1,15 @@
+{
+ "playfield": 2052,
+ "name": "omni_sup_pharmacist_shop",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 640,
+  "trianglesWalkable": 212,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1511,
+ "name": "Neutral Mission building",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 1864,
+  "trianglesWalkable": 596,
+  "chunks": 1
+ }
+}

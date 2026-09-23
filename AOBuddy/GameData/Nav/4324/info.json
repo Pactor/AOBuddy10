@@ -1,0 +1,15 @@
+{
+ "playfield": 4324,
+ "name": "Penumbra Transit (dng)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 34013,
+  "trianglesWalkable": 11292,
+  "chunks": 6
+ }
+}

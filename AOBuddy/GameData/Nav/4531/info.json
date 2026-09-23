@@ -1,0 +1,32 @@
+{
+ "playfield": 4531,
+ "name": "Jobe Harbor",
+ "playfieldVersion": 9,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 193,
+  "samplesZ": 193,
+  "cell": 4.0,
+  "heightScale": 0.0078125,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   768.0,
+   768.0
+  ],
+  "heightRange": [
+   0.0,
+   0.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 85,
+  "trianglesTotal": 44778,
+  "trianglesWalkable": 19289,
+  "chunks": 117
+ }
+}

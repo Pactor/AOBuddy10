@@ -1,0 +1,15 @@
+{
+ "playfield": 4318,
+ "name": "Nascense Portal",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 11193,
+  "trianglesWalkable": 3479,
+  "chunks": 2
+ }
+}

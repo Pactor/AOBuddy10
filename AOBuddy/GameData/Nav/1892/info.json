@@ -1,0 +1,16 @@
+{
+ "playfield": 1892,
+ "name": "Enjoy it While it Lasts",
+ "playfieldVersion": 10,
+ "files": [
+  "collision.bin"
+ ],
+ "error": "error: unpack_from requires a buffer of at least 3068 bytes for unpacking 4 bytes at offset 3064 (actual buffer size is 3067)",
+ "kind": "none",
+ "collision": {
+  "records": 4,
+  "trianglesTotal": 4880,
+  "trianglesWalkable": 1565,
+  "chunks": 4
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "playfield": 2064,
+ "name": "neut_basic_implants_shop",
+ "playfieldVersion": 10,
+ "files": [
+  "collision.bin"
+ ],
+ "error": "error: unpack_from requires a buffer of at least 31213081 bytes for unpacking 4 bytes at offset 31213077 (actual buffer size is 2045)",
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1682,
+  "trianglesWalkable": 544,
+  "chunks": 2
+ }
+}

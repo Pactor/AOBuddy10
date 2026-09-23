@@ -1,0 +1,22 @@
+{
+ "playfield": 1836,
+ "name": "Baboons Nightclub",
+ "playfieldVersion": 10,
+ "files": [
+  "rooms.json",
+  "collision.bin"
+ ],
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1835,
+  "rooms": 10,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
+ "collision": {
+  "records": 10,
+  "trianglesTotal": 23718,
+  "trianglesWalkable": 8286,
+  "chunks": 11
+ }
+}

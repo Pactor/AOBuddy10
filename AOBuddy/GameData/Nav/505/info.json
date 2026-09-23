@@ -1,0 +1,32 @@
+{
+ "playfield": 505,
+ "name": "Avalon",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 897,
+  "samplesZ": 1537,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   3584.0,
+   6144.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 7711,
+  "trianglesTotal": 572560,
+  "trianglesWalkable": 243593,
+  "chunks": 7722
+ }
+}

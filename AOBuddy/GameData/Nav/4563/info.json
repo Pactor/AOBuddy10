@@ -1,0 +1,15 @@
+{
+ "playfield": 4563,
+ "name": "Hardware Dimension - Basic",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 4707,
+  "trianglesWalkable": 1538,
+  "chunks": 1
+ }
+}

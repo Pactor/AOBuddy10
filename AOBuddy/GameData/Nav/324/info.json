@@ -1,0 +1,15 @@
+{
+ "playfield": 324,
+ "name": "AutocontentClan(dung)",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 55,
+  "trianglesTotal": 91484,
+  "trianglesWalkable": 28771,
+  "chunks": 55
+ }
+}

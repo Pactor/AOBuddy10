@@ -1,0 +1,15 @@
+{
+ "playfield": 4568,
+ "name": "Dimensional Shift - Advanced",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 7270,
+  "trianglesWalkable": 2424,
+  "chunks": 2
+ }
+}

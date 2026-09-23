@@ -1,0 +1,15 @@
+{
+ "playfield": 1422,
+ "name": "avalon_building4 dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 2,
+  "trianglesTotal": 1522,
+  "trianglesWalkable": 482,
+  "chunks": 2
+ }
+}

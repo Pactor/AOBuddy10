@@ -1,0 +1,15 @@
+{
+ "playfield": 1941,
+ "name": "Bio MARE",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 48,
+  "trianglesTotal": 346088,
+  "trianglesWalkable": 109096,
+  "chunks": 74
+ }
+}

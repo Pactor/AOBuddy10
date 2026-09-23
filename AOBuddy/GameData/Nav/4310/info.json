@@ -1,0 +1,32 @@
+{
+ "playfield": 4310,
+ "name": "Nascense Frontier",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 513,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0023437500931322575,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   2048.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   135.6
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 1288,
+  "trianglesTotal": 291865,
+  "trianglesWalkable": 148929,
+  "chunks": 1627
+ }
+}

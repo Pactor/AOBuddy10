@@ -1,0 +1,15 @@
+{
+ "playfield": 1722,
+ "name": "LD VP dng 2",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 644,
+  "trianglesWalkable": 204,
+  "chunks": 1
+ }
+}

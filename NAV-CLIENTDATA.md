@@ -886,3 +886,91 @@ floor, it is everything else, and the two together are the floor.
   build the navmesh from that. Then the same for mission templates.
 
 OPEN: door pair semantics, PNG 2-5, the three unparsed dungeon records, the polygon decks.
+
+---
+
+# Outdoor heightmaps decoded from the client's own routine; nav data exported per playfield (2026-09-23)
+
+## The "cracked" heightmap encoding above was wrong
+
+The signed row-delta reading only ever passed a smoothness test. Fitting it against walked
+points in Borealis gave a 7 m p90 error and per-block offsets that clustered at exactly 256
+units, which is a modulo wrap, not a delta chain. The real routine is exported from
+`DisplaySystem.dll` as `AnarchyGroundData_t::Patch_t::DecompressHeightMap` (RVA 0x35DF0);
+disassembled with dumpbin it does, per patch of (P+1)^2 bytes:
+
+1. zlib-inflate the block;
+2. cumulative sum down each column, modulo 256 (unsigned);
+3. cumulative sum along each row, modulo 256;
+4. widen each byte to a u16 by multiplying by 256.
+
+So the decompressed patch is a **mod-256 integral image**, the byte is the absolute height in
+`hscale` units (0.4 m in Borealis, 0.2 m elsewhere), and there is no base or delta chain at all.
+The function has a second path for 16-bit blocks ((P+1)^2 * 2 bytes, same two sums modulo
+65536, no widening); those zones store `hscale` already divided by 256 (Coast of Peace:
+1/512, range 128 m). `heightmap_small_data` is one 4-byte entry per patch (the patch's four
+corner bytes, a LOD summary), not a base. Patches are laid out `bz * nx + bx` with x fastest
+(the caller at RVA 0x3603B walks rows then columns and calls `SetHeightmapPatch(buf, col*P,
+row*P, P)`), `map_modulo` is just the sample stride, and the `CHGA` record wraps an ordinary
+reflective object (`AnarchyGroundDataDB_t`) whose `heightmap_compressed_data` field holds all
+the patches as length-prefixed zlib blobs, so `meshdecode.py` reads it as-is.
+
+Acceptance, nearest sample, against the owner's walked points:
+
+| pf | zone | points | median abs dy | p90 |
+|---|---|---|---|---|
+| 800 | Borealis | 202 | 0.01 | 0.26 |
+| 790 | Stret West Bank | 417 | 0.01 | 0.95 |
+| 795 | The Longest Road | 132 | 0.01 | 0.67 |
+| 655 | Andromeda | 325 | 0.01 | 0.81 |
+| 730 | Rome Park | 21 | 0.01 | 0.30 |
+
+Swapping the axes gives 2.8-4.6 m medians, so the orientation is pinned too. `DecompressTileMap`
+is a plain zlib of P*P u16 tile ids. Patch size is 64 almost everywhere, 32 in a few zones
+(Rome Park), 8 in the "Needed PF-stuff" test zones.
+
+## AOBuddy/GameData/Nav/<pf>/ - the deliverable
+
+`tools/navbridge/exportnav.py` writes one folder per playfield from the resource database plus
+navbridge's collision export (`navbridge.exe <client> export out_all all`, 618 playfields with surfaces, 626 folders in all,
+42.0 M triangles, 1.5 GB raw), and verifies each folder against `Build/Plugins/AOBuddy/nav/<pf>.json`
+where the owner has walked. Formats are in `AOBuddy/GameData/Nav/README.md`; the csproj copies
+the folder to the plugin output.
+
+- `ground.bin` for 336 outdoor zones (u16 heights, tile ids, building nibbles, zlib).
+- `rooms.json` for 100 dungeons (room placement, per-cell tile id / height / flags, doors, decks).
+- `collision.bin` for every playfield that has type-1000013 records: triangles with |normal.y| >
+  0.5 only (18.2 M of 42.0 M), int16 centimetres per chunk, zlib. Ceilings stay; a navmesh build
+  needs its own clearance test.
+
+Verification (1 m tolerance, tiles/heightfield first, then collision):
+
+| pf | kind | walked points | explained |
+|---|---|---|---|
+| 127 Condemned Subway | dungeon | 2390 | 98.9% |
+| 1931 Temple of Three Winds | dungeon | 224 | 97.3% |
+| 1186 / 1187 Supermarket | dungeon | 12 / 6 | 100% |
+| 800 Borealis | outdoor | 202 | 100% |
+| 790 Stret West Bank | outdoor | 417 | 100% |
+| 795 The Longest Road | outdoor | 132 | 98.5% |
+| 655 Andromeda | outdoor | 325 | 99.7% |
+| 566 / 647 / 665 / 730 | outdoor | 40 / 4 / 16 / 21 | 100% |
+| 4530 Jobe Platform | outdoor | 12 | 100% (all from collision: the platform is a mesh) |
+
+## What is still not covered
+
+- 190 playfields have neither: 187 with a version 8 or 9 playfield record and no ground record: the old
+  autocontent dungeons and mission templates (`SL ACG(dng)` pf 362 alone has 1.05 M collision
+  triangles, the Pandemonium mazes, `ACD Grey Caves`, `ACD Subway - Ventil`). They get
+  `collision.bin` only. Their floor model is OPEN: the v8/v9 record layout has not been read,
+  and there is no `GNDA` tilemap for them, so where their tiles live is unknown.
+- 16-bit heightfield zones are decoded per the disassembly but have no walked data to verify.
+- Tile passability (RDB 1000024 descriptors), the building-map nibble order, dungeon door
+  pairs and PNG channels 2-5 remain OPEN, as before.
+- The 20 mission-instance nav recordings (ids like 2224273) cannot be verified: they are
+  server instances, and the mapping to a template playfield is not in the recording.
+
+A C# extractor is a straight port of everything except the collision step: `rdb.py`
+(index + part files), `meshdecode.py`, the CHGA/GNDA readers and `playfield.py` are pure
+format code. The collision step runs the client's 32-bit `N3.dll`; a C# port would either
+host the same DLLs from a 32-bit process, or wait on the V5 bit-packed surface format.

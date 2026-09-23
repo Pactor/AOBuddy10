@@ -1,0 +1,15 @@
+{
+ "playfield": 1232,
+ "name": "Clan Medium Clan Apartment",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 7,
+  "trianglesTotal": 8084,
+  "trianglesWalkable": 2614,
+  "chunks": 7
+ }
+}

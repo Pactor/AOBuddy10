@@ -1,0 +1,15 @@
+{
+ "playfield": 4215,
+ "name": "Maze_Phlegethas1_inf_red",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 24,
+  "trianglesTotal": 376896,
+  "trianglesWalkable": 127312,
+  "chunks": 71
+ }
+}

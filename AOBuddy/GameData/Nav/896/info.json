@@ -1,0 +1,15 @@
+{
+ "playfield": 896,
+ "name": "Character Creation Lab Dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 10,
+  "trianglesTotal": 15389,
+  "trianglesWalkable": 4901,
+  "chunks": 10
+ }
+}

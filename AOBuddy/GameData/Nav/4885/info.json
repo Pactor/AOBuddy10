@@ -1,0 +1,15 @@
+{
+ "playfield": 4885,
+ "name": "Shadow Crypt",
+ "playfieldVersion": 9,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 9,
+  "trianglesTotal": 129623,
+  "trianglesWalkable": 56466,
+  "chunks": 32
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "playfield": 1621,
+ "name": "wood_shack_01 VP dng",
+ "playfieldVersion": 8,
+ "files": [
+  "collision.bin"
+ ],
+ "kind": "none",
+ "collision": {
+  "records": 1,
+  "trianglesTotal": 420,
+  "trianglesWalkable": 135,
+  "chunks": 1
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "playfield": 795,
+ "name": "The Longest Road",
+ "playfieldVersion": 10,
+ "files": [
+  "ground.bin",
+  "collision.bin"
+ ],
+ "kind": "outdoor",
+ "ground": {
+  "samplesX": 1537,
+  "samplesZ": 513,
+  "cell": 4.0,
+  "heightScale": 0.0007812500116415322,
+  "sourceHeightBits": 8,
+  "worldSize": [
+   6144.0,
+   2048.0
+  ],
+  "heightRange": [
+   0.0,
+   51.0
+  ],
+  "heightVerifiable": true
+ },
+ "collision": {
+  "records": 3989,
+  "trianglesTotal": 297462,
+  "trianglesWalkable": 126134,
+  "chunks": 4041
+ },
+ "verification": {
+  "walkedPoints": 132,
+  "toleranceM": 1.0,
+  "explainedByFloor": 130,
+  "explainedByCollision": 0,
+  "unexplained": 2,
+  "explainedPct": 98.5,
+  "unexplainedSamples": [
+   [
+    2044.1,
+    17.47,
+    891.3
+   ],
+   [
+    2044.1,
+    17.47,
+    891.3
+   ]
+  ]
+ }
+}
