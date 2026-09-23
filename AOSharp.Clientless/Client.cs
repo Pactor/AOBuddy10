@@ -59,6 +59,15 @@ namespace AOSharp.Clientless
         // Pet lifecycle, straight from the server (AddPet / RemovePet / PetToMaster). PetAttached
         // also states what the pet is for; the same value is on the pet's own character update as
         // NpcChar.PetTypeId, so either source works and they agree.
+        // Server feedback: the reason it refused something. Category 110 is the feedback/error channel and
+        // MessageId keys into the client's message table, so the id alone identifies the message even
+        // without its text ("you already have that pet", "you cannot do that while in combat", ...).
+        // Decoded and dropped until now, which is why a refused cast or item use looked identical to a
+        // successful one from the log.
+        public static Action<int, int> Feedback;
+
+        /// <summary>The server confirming a sit/stand actually happened (action 0x57, echoed back).</summary>
+        public static Action<Identity> PostureToggled;
         public static Action<Identity> PetAdded;
         public static Action<Identity> PetRemoved;
         public static Action<Identity, PetType> PetAttached;
@@ -539,15 +548,23 @@ namespace AOSharp.Clientless
             // Pet lifecycle. LocalPlayer.Pets still derives the roster from the dynel list, but these
             // are the exact moments a summon landed or a pet was lost, so a caller can react at once
             // instead of noticing on its next poll. PetToMaster's attach also repeats the pet's type.
+            _n3MsgCallbacks.Add(N3MessageType.Feedback, (msg) =>
+            {
+                FeedbackMessage fb = (FeedbackMessage)msg;
+                Feedback?.Invoke(fb.CategoryId, fb.MessageId);
+            });
+
             _n3MsgCallbacks.Add(N3MessageType.AddPet, (msg) =>
             {
                 AddPetMessage addPetMsg = (AddPetMessage)msg;
+                DynelManager.OnPetAdded(addPetMsg.PetIdentity);
                 PetAdded?.Invoke(addPetMsg.PetIdentity);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.RemovePet, (msg) =>
             {
                 RemovePetMessage removePetMsg = (RemovePetMessage)msg;
+                DynelManager.OnPetRemoved(removePetMsg.PetIdentity);
                 PetRemoved?.Invoke(removePetMsg.PetIdentity);
             });
 
@@ -557,7 +574,10 @@ namespace AOSharp.Clientless
 
                 // Operation 1 is the attach and carries the pet type; operation 2 is the detach.
                 if (petToMasterMsg.Operation == 1)
+                {
+                    DynelManager.OnPetAdded(petToMasterMsg.PetIdentity);
                     PetAttached?.Invoke(petToMasterMsg.PetIdentity, (PetType)petToMasterMsg.AttachNotificationValue);
+                }
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Buff, (msg) =>
@@ -663,6 +683,14 @@ namespace AOSharp.Clientless
                     break;
                 case CharacterActionType.Death:
                     OnCharacterDeath(charActionMessage.Identity);
+                    break;
+                // 0x57 is a sit/stand TOGGLE, and the server echoes it back once the posture change has
+                // actually taken effect. That echo is the only reliable "I am seated now" signal we get:
+                // Stat.CurrentMovementMode (173) is set from the login FullCharacter and never updates, so it
+                // still reads Run while the character is sitting. Without this, code that must act while
+                // seated - using a sit-only recharger - can only guess at a delay and hope.
+                case (CharacterActionType)0x57:
+                    PostureToggled?.Invoke(charActionMessage.Identity);
                     break;
                 default:
                     break;

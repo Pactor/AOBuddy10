@@ -296,7 +296,12 @@ namespace AOBuddy
         public bool IsHostile(SimpleChar c, LocalPlayer me, PlayerChar owner)
         {
             if (c == null) return false;
-            if (c.Identity == me.Identity || c.Identity == owner.Identity) return false;
+            // The owner goes NULL the instant he leaves - a zone line, a lift, a travel terminal - and the
+            // "hold the mob we are already on" path calls this with exactly that null. It threw on every tick
+            // from the moment he stepped into a terminal until he came back. Nobody to compare against is not
+            // a reason to fail; it only means that one identity check cannot be made.
+            if (me != null && c.Identity == me.Identity) return false;
+            if (owner != null && c.Identity == owner.Identity) return false;
             if (Team.Members.Any(m => m.Identity == c.Identity)) return false;
             return true;
         }

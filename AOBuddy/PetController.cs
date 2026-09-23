@@ -44,6 +44,33 @@ namespace AOBuddy
         private string _lastRoster = "";
         private string _lastSummonKey = "\0";
 
+        // WHICH PETS ARE OURS, per the server. me.Pets scans the NPCs currently in view, so a pet that
+        // wanders out of broadcast range reads as gone and comes back minutes later with the SAME instance
+        // id - which is exactly what an MP's attack pet did for a whole session while the bot queued a
+        // resummon every twelve seconds. AddPet / RemovePet are the server stating outright that a pet is
+        // ours or is not, so they own this set; the dynel scan only fills in what a pet IS and where it is.
+        private readonly HashSet<int> _owned = new HashSet<int>();
+        private readonly Dictionary<int, double> _lastSeen = new Dictionary<int, double>();   // instance -> _petClock
+
+        /// <summary>Server told us a pet is ours (AddPetMessage).</summary>
+        public void OnPetAdded(Identity pet)
+        {
+            if (_owned.Add(pet.Instance))
+                _ctx.Log($"PET: server added #{pet.Instance} (now {_owned.Count} owned).");
+        }
+
+        /// <summary>Server told us a pet is no longer ours - dead, dismissed, or left behind (RemovePetMessage).</summary>
+        public void OnPetRemoved(Identity pet)
+        {
+            if (_owned.Remove(pet.Instance))
+                _ctx.Log($"PET: server removed #{pet.Instance} (now {_owned.Count} owned).");
+            _lastSeen.Remove(pet.Instance);
+        }
+
+        /// <summary>How many pets the SERVER says we have. Falls back to the dynel scan before the first
+        /// AddPet arrives (a pet summoned before we logged in is only known from the scan).</summary>
+        public int OwnedCount(LocalPlayer me) => _owned.Count > 0 ? _owned.Count : Pets(me).Count();
+
         // A pet takes a few seconds to appear and register after its summon casts; re-casting the same summon
         // before then just replaces the pet and burns nano (the have 0/N spam). Don't re-summon the SAME nano
         // within this window — a genuinely dead pet re-summons once it lapses.
@@ -113,11 +140,16 @@ namespace AOBuddy
         // Log the pet roster (name + id + role) whenever it changes.
         private void LogRoster(LocalPlayer me)
         {
+            foreach (NpcChar p in me.Pets) _lastSeen[p.Identity.Instance] = _petClock;
+
             string roster = string.Join(", ", me.Pets.Select(p => $"{p.Name}#{p.Identity.Instance}:{p.Role}"));
-            if (roster != _lastRoster)
+            // Say how many the SERVER says we own alongside how many we can see, so "pet gone" and "pet out
+            // of range" stop looking the same in the log.
+            string line = $"[{(roster.Length == 0 ? "none" : roster)}] visible={me.Pets.Count()} owned={_owned.Count}";
+            if (line != _lastRoster)
             {
-                _lastRoster = roster;
-                _ctx.Log($"PET: roster = [{(roster.Length == 0 ? "none" : roster)}]");
+                _lastRoster = line;
+                _ctx.Log($"PET: roster = {line}");
             }
         }
 
@@ -149,7 +181,10 @@ namespace AOBuddy
             _resummonAccum = 0;
 
             if (me.IsCasting) return;
-            int have = me.Pets.Count();
+            // Count what the SERVER says we own, not what is in view. Summoning because a live pet wandered
+            // out of range is how you end up with two attack pets, or with a summon refused every twelve
+            // seconds for ten minutes because the one you have is alive and standing somewhere else.
+            int have = OwnedCount(me);
             if (have >= summons.Count) return;   // full complement is up
 
             // Short a pet. Summon the first type we haven't summoned within SummonRecastSec — each pet needs a
@@ -239,7 +274,8 @@ namespace AOBuddy
             NpcChar healer = HealPet(me);
             if (healer == null) return false;          // no heal pet up — nothing to task
 
-            Identity? healTarget = HealPetTarget(me);
+            // An explicit 'pethealtarget' order wins until it is cleared.
+            Identity? healTarget = _healLatched ?? HealPetTarget(me);
             if (!healTarget.HasValue) return false;    // ranged with no attack pet yet — the command would be ignored
 
             // Task the heal pet ONCE PER SUMMON — once told who to heal, it keeps healing that target. So
@@ -255,6 +291,87 @@ namespace AOBuddy
             _ctx.Log($"PET: heal '{healer.Name}' -> #{healTarget.Value.Instance} ({(IsMeleeLoadout(me) ? "melee: self" : "ranged: attack pet")}).");
             return true;
         }
+
+        /// <summary>
+        /// Keep the pets with us. An Attack command sends a pet after its mob and NOTHING brings it back:
+        /// it finishes the fight wherever that ended and stands there, picking up anything that wanders by.
+        /// A pet in combat holds its MASTER in combat, and in combat the server suppresses health and nano
+        /// regen and refuses heal items - so one pet left behind quietly stops the bot recovering at all.
+        /// That is not a theory: an attack pet sat 38m away for a whole session while its master's HP and
+        /// nano stayed frozen to the point and every recharger use was refused.
+        ///
+        /// So: when the fight ends, call them in, and call in any pet that has drifted past RecallMeters
+        /// even mid-fight. Issued once per episode, because re-sending Follow every tick would cancel the
+        /// pet's own pathing each time.
+        /// </summary>
+        public void RecallStragglers(LocalPlayer me, bool fighting)
+        {
+            if (me == null || !_ctx.Config.UsePets) return;
+
+            bool endedFight = _wasFighting && !fighting;
+            _wasFighting = fighting;
+
+            // NEVER DURING A FIGHT. A pet sent at a mob runs to the mob, and this bot engages at twenty to
+            // thirty-five metres - so an obedient pet is past RecallMeters within a second or two of being
+            // given the order. Recalling it then replaces the Attack with a Follow and it never lands a blow:
+            // "PET: attack 'Security Camera'" at 20:28:00, "PET: follow me - 2 pet(s) past 20m" at 20:28:04,
+            // every single fight. A straggler is an OUT-OF-COMBAT problem; the pet left standing where its
+            // fight ended is the one this exists for, and that case is reached through endedFight below.
+            if (fighting) { _recallSent = false; return; }
+
+            List<Identity> bring = new List<Identity>();
+            foreach (NpcChar p in Pets(me))
+            {
+                // The heal pet is never a straggler. It is on a Heal order and follows whoever it is healing
+                // on its own; a Follow sent to it REPLACES that order, and MaintainHealPet only re-issues on a
+                // change of healer or target, so the pet would quietly stop healing and nothing would notice.
+                if (p.Role == PetType.Heal) continue;
+
+                // Out of view counts as far: we cannot measure it, and the last thing we knew was that it
+                // was at the edge. Only act on that once it has been gone a while, so an ordinary flicker
+                // behind a wall does not trigger a recall.
+                float d = me.DistanceFrom(p);
+                if (d > RecallMeters) bring.Add(p.Identity);
+            }
+
+            // A pet the server says is ours but that we cannot see at all is the important case - it is the
+            // one that strands. We cannot name it in a targeted command without its dynel, so those get the
+            // all-pets form of Follow.
+            bool haveUnseen = _owned.Count > Pets(me).Count();
+
+            if (!endedFight && bring.Count == 0 && !haveUnseen) { _recallSent = false; return; }
+            if (_recallSent && !endedFight) return;   // one recall per episode
+            _recallSent = true;
+
+            if (haveUnseen || bring.Count == 0)
+            {
+                // The all-pets form reaches the healer too, so its Heal order is gone: make MaintainHealPet
+                // give it again on the next tick rather than leave a heal pet standing there doing nothing.
+                me.CommandPets(PetCommand.Follow);
+                InvalidateHealTask();
+                _ctx.Log($"PET: follow me — {(haveUnseen ? "a pet we own is out of sight" : "fight over")} (visible={Pets(me).Count()} owned={_owned.Count}).");
+            }
+            else
+            {
+                me.CommandPets(PetCommand.Follow, bring);
+                _ctx.Log($"PET: follow me — {bring.Count} pet(s) past {RecallMeters:0}m.");
+            }
+        }
+
+        /// <summary>
+        /// Forget that the heal pet has been told who to heal, so the order is re-issued. Any command that
+        /// can reach the healer REPLACES its Heal - Follow, Attack, a regroup - and because the order is
+        /// normally given once per summon, nothing would ever put it back: the pet just stops healing while
+        /// standing right next to the person it is supposed to be keeping alive.
+        /// </summary>
+        private void InvalidateHealTask() => _healTaskedRoster = null;
+
+        private bool _wasFighting;
+        private bool _recallSent;
+
+        // How far a pet may drift before we call it back. Well inside the ~40m at which a dynel stops being
+        // broadcast to us, so we recall it while we can still see it rather than after it has stranded.
+        private const float RecallMeters = 20f;
 
         // Melee vs ranged straight from the equipped weapon's attack range — no class assumption, no config.
         // Defaults to melee (heal self) when the range stat isn't known yet: the safe pick for an in-the-fray
@@ -287,12 +404,69 @@ namespace AOBuddy
 
         public void FollowMaster(LocalPlayer me)
         {
-            if (me != null && me.Pets.Any()) { me.CommandPets(PetCommand.Follow); _ctx.Log("PET: follow."); }
+            // Reaches the healer as well, so its Heal order has to be given again (see InvalidateHealTask).
+            if (me != null && me.Pets.Any()) { me.CommandPets(PetCommand.Follow); InvalidateHealTask(); _ctx.Log("PET: follow."); }
         }
 
         public void Dismiss(LocalPlayer me)
         {
             if (me != null && me.Pets.Any()) { me.CommandPets(PetCommand.Terminate); _ctx.Log("PET: terminate all."); }
+            // The server will send RemovePet for each, but clear our own view now so nothing tries to
+            // command a pet we just dismissed in the gap before those arrive.
+            _owned.Clear();
+            _lastSeen.Clear();
+            _healTaskedRoster = "\0";
+            _attackTaskedRoster = "\0";
+        }
+
+        /// <summary>
+        /// Throw away every summon cooldown so the keep-up pass re-casts the full set on its next tick.
+        /// Used by 'petsummon' after a dismissal, when waiting out SummonRecastSec would be pointless -
+        /// we know the pets are gone because we just terminated them.
+        /// </summary>
+        public void ResummonAll(LocalPlayer me)
+        {
+            _summonAt.Clear();
+            _healTaskedRoster = "\0";
+            _attackTaskedRoster = "\0";
+            _lastAttackTarget = null;
+            _lastHealTarget = null;
+            _ctx.Log($"PET: resummon — cleared summon timers, {(me == null ? 0 : OwnedCount(me))} pet(s) currently owned.");
+        }
+
+        /// <summary>
+        /// Point the heal pet at a specific target and keep it there. The automatic tasking would otherwise
+        /// put it back on its own choice (the master when melee, the attack pet when ranged) the next time
+        /// the roster changes, so an explicit order latches until it is changed or the pet is resummoned.
+        /// </summary>
+        public bool HealTargetLatched(LocalPlayer me, Identity target, string describe)
+        {
+            NpcChar healer = HealPet(me);
+            if (me == null || healer == null) return false;
+
+            Targeting.SetTarget(target);
+            me.CommandPets(PetCommand.Heal, new[] { healer.Identity });
+            _healLatched = target;
+            _healTaskedRoster = healer.Identity.Instance + ">" + target.Instance;
+            _lastHealTarget = target;
+            _ctx.Log($"PET: heal '{healer.Name}' -> {describe} (ordered).");
+            return true;
+        }
+
+        /// <summary>Drop an explicit heal order and go back to choosing by weapon reach.</summary>
+        public void HealAuto()
+        {
+            _healLatched = null;
+            _healTaskedRoster = "\0";
+            _ctx.Log("PET: heal target back to automatic (melee: me, ranged: the attack pet).");
+        }
+
+        private Identity? _healLatched;
+
+        public string HealTargetDescription(LocalPlayer me)
+        {
+            if (_healLatched.HasValue) return $"#{_healLatched.Value.Instance} (ordered)";
+            return IsMeleeLoadout(me) ? "myself (melee loadout)" : "my attack pet (ranged loadout)";
         }
 
         public void Reset()
@@ -301,6 +475,12 @@ namespace AOBuddy
             _lastHealTarget = null;
             _attackTaskedRoster = "\0";
             _healTaskedRoster = "\0";
+            _wasFighting = false;
+            _recallSent = false;
+            // Zoning re-creates every pet, so the old instances are not ours any more. The server sends a
+            // fresh AddPet for each one that came along.
+            _owned.Clear();
+            _lastSeen.Clear();
         }
     }
 }

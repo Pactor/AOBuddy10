@@ -1,4 +1,4 @@
-﻿using AOSharp.Common.GameData;
+using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
 using System;
 using System.Collections.Generic;
@@ -25,6 +25,36 @@ namespace AOSharp.Clientless
         public static LocalPlayer LocalPlayer => LocalPlayerProxy.LocalPlayer;
 
         private static Dictionary<Identity, Dynel> _dynels = new Dictionary<Identity, Dynel>();
+
+        // PETS THE SERVER HAS NAMED AS OURS (AddPet / RemovePet). This is the only statement of ownership
+        // that always arrives: the per-update pet-master bit (Flags2 0x4) is absent on some pets entirely -
+        // an MP's heal pet spawned with Flags2=0x2, so it never entered me.Pets, was never commanded, and
+        // every post-fight recall reported "a pet we own is out of sight" for a pet standing right there.
+        // Kept by INSTANCE because a pet's dynel identity and the identity in pet messages differ in Type.
+        private static readonly HashSet<int> _serverOwnedPets = new HashSet<int>();
+
+        /// <summary>The server said this pet is ours. Claim its dynel now if we have it, and remember the
+        /// instance so a later (or rebuilt) full update is claimed too.</summary>
+        internal static void OnPetAdded(Identity pet)
+        {
+            _serverOwnedPets.Add(pet.Instance);
+
+            LocalPlayer me = LocalPlayer;
+            if (me == null) return;
+            foreach (NpcChar npc in Npcs)
+                if (npc.Identity.Instance == pet.Instance)
+                    npc.Owner = me.Identity;
+        }
+
+        /// <summary>The server said this pet is gone. Stop claiming it.</summary>
+        internal static void OnPetRemoved(Identity pet)
+        {
+            _serverOwnedPets.Remove(pet.Instance);
+
+            foreach (NpcChar npc in Npcs)
+                if (npc.Identity.Instance == pet.Instance)
+                    npc.Owner = null;
+        }
 
         public static bool Find<T>(Identity identity, out T dynel) where T : Dynel
         {
@@ -67,7 +97,12 @@ namespace AOSharp.Clientless
                 // that OVERWRITES the old one in _dynels, an owner-less update wiped the Owner set at spawn ->
                 // me.Pets went empty -> the bot stopped commanding the pet and spammed resummon. Carry the known
                 // owner forward when this update doesn't bring one, so ownership survives steady-state rebuilds.
-                if (npc.Owner == null && existed && prev is NpcChar prevNpc && prevNpc.Owner != null)
+                if (npc.Owner == null && _serverOwnedPets.Contains(npc.Identity.Instance) && LocalPlayer != null)
+                {
+                    // The server already named this one as ours; nothing about a later update revokes that.
+                    npc.Owner = LocalPlayer.Identity;
+                }
+                else if (npc.Owner == null && existed && prev is NpcChar prevNpc && prevNpc.Owner != null)
                 {
                     npc.Owner = prevNpc.Owner;
                 }

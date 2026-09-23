@@ -251,7 +251,34 @@ namespace AOBuddy
             // Real death signal from the wire (CharacterAction Death) — not HP guessing. The SDK auto-sends
             // 'Die' ~5s later to reclaim us to the save terminal; we just stop everything and then recover.
             Client.Died += OnDeath;
+
+            // Pet ownership, stated by the server rather than inferred from what is in view. A pet that
+            // wanders out of broadcast range used to read as dead and start a resummon it could not land.
+            // The server echoing our sit/stand back. It is what tells the rest cycle it is really seated, so a
+            // sit-only recharger is pressed at the right moment instead of after a hopeful delay.
+            Client.PostureToggled += id =>
+            {
+                LocalPlayer lp = DynelManager.LocalPlayer;
+                if (lp != null && id.Instance == lp.Identity.Instance) _support.OnPostureToggled();
+            };
+
+            Client.PetAdded += id => _pets.OnPetAdded(id);
+            Client.PetRemoved += id => _pets.OnPetRemoved(id);
+
+            // Why the server refused something. Category 110 is its feedback channel; the id identifies the
+            // message. Logged with whatever we last asked for, so a refusal stops being invisible - six
+            // rechargers were once logged as "used" while the server rejected every one of them.
+            Client.Feedback += (category, messageId) =>
+            {
+                if (category != 110) return;
+                Log($"SERVER SAYS: feedback {category}/{messageId}"
+                    + (_lastActionLabel != null ? $" — right after: {_lastActionLabel}" : ""));
+            };
         }
+
+        // The last thing we asked the server to do, for pairing a refusal with its cause.
+        private string _lastActionLabel;
+        public void NoteAction(string what) => _lastActionLabel = what;
 
         // The server's SetPos is a position correction. The clientless controller OWNS its position (it
         // drives the body via SetPose along the owner's valid-ground breadcrumbs), so we must NOT snap it
@@ -720,6 +747,11 @@ namespace AOBuddy
             //    place, for all of them. SetTarget only, never a re-Attack: that would reset the swing timer.
             if (retargeted && fighting && target != null) Targeting.SetTarget(target.Identity);
 
+            // Call the pets back in. A pet left where its fight ended keeps pulling mobs, and a pet in
+            // combat holds US in combat - which suppresses health and nano regen and makes the server
+            // refuse heal items. One straggler can stop the bot recovering entirely.
+            _pets.RecallStragglers(me, fighting);
+
             if (fighting)
             {
                 _support.OnFight(me);
@@ -802,12 +834,18 @@ namespace AOBuddy
 
         // Once-a-second diagnostic line: what she's doing, vitals, owner state, and the movement/
         // combat flags, so a problem is readable from the log without guessing.
+        /// <summary>A percentage for the log: "?" when we have no reading, so a missing stat is visible
+        /// as missing instead of being printed as a healthy-looking number.</summary>
+        private static string Pct(int pct) => pct == SupportController.Unknown ? "?" : pct + "%";
+
         private void Heartbeat(LocalPlayer me, PlayerChar owner, double dt)
         {
             int hp = _support.SelfHpPct(me);
             // Real death is handled by Client.Died (OnDeath); HP reads are unreliable when the owner is out
-            // of view, so we only note big drops as a diagnostic, never infer death from them.
-            if (_lastHpPct >= 0 && _lastHpPct - hp >= 25) Log($"HP DROP {_lastHpPct}%->{hp}% (owner {(owner == null ? "not visible" : "visible")}).");
+            // of view, so we only note big drops as a diagnostic, never infer death from them. An unknown
+            // reading is not a drop.
+            if (_lastHpPct >= 0 && hp != SupportController.Unknown && _lastHpPct - hp >= 25)
+                Log($"HP DROP {_lastHpPct}%->{hp}% (owner {(owner == null ? "not visible" : "visible")}).");
             _lastHpPct = hp;
 
             _hbAccum += dt;
@@ -817,7 +855,7 @@ namespace AOBuddy
             Vector3 p = me.MovementComponent.Position;
             string od = owner != null ? me.DistanceFrom(owner).ToString("0.0") : "n/a";
             string ohp = _ctx.Vitals.Describe(owner);
-            Log($"hb [{_ctx.Behavior}] mode={_mode} hp={hp}% nano={_support.SelfNanoPct(me)}% ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
+            Log($"hb [{_ctx.Behavior}] mode={_mode} hp={Pct(hp)} nano={Pct(_support.SelfNanoPct(me))} ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
                 $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
             _diagOwnerMoves = 0; _diagSelfMoves = 0;
         }
@@ -985,12 +1023,110 @@ namespace AOBuddy
                 }
                 case "resummon": _config.AutoResummon = !_config.AutoResummon; reply($"Auto-resummon {(_config.AutoResummon ? "ON" : "OFF")}."); break;
                 case "petfollow": _pets.FollowMaster(DynelManager.LocalPlayer); reply("Pets: follow me."); break;
-                case "petdismiss": _pets.Dismiss(DynelManager.LocalPlayer); reply("Pets: dismissed."); break;
+
+                case "petkill":
+                case "petterminate":
+                case "petdismiss":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    int had = _pets.OwnedCount(mp);
+                    _pets.Dismiss(mp);
+                    reply($"Dismissed {had} pet(s). 'petsummon' brings them back.");
+                    break;
+                }
+
+                case "petsummon":
+                case "petresummon":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (!_config.UsePets) { _config.UsePets = true; reply("Pets were off — turning them on."); }
+                    _config.AutoResummon = true;
+                    _pets.ResummonAll(mp);
+                    reply("Resummoning the full set — one at a time as nano allows.");
+                    break;
+                }
+
+                case "pethealme":
                 case "petheal":
                 {
                     LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
                     if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
-                    _pets.HealTarget(mp, po.Identity); reply("Pets: healing you.");
+                    if (!_pets.HealTargetLatched(mp, po.Identity, "you")) { reply("No heal pet up."); break; }
+                    reply("Heal pet is on you.");
+                    break;
+                }
+
+                case "pethealself":
+                case "pethealme2":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (!_pets.HealTargetLatched(mp, mp.Identity, "myself")) { reply("No heal pet up."); break; }
+                    reply("Heal pet is on me.");
+                    break;
+                }
+
+                case "pethealpet":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    NpcChar tank = PetController.AttackPet(mp);
+                    if (tank == null) { reply("No attack pet up to heal."); break; }
+                    if (!_pets.HealTargetLatched(mp, tank.Identity, $"my attack pet ({tank.Name})")) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on {tank.Name}.");
+                    break;
+                }
+
+                case "pethealauto":
+                {
+                    _pets.HealAuto();
+                    reply("Heal pet back to automatic: me when I'm melee, my attack pet when I'm ranged.");
+                    break;
+                }
+
+                case "pethealtarget":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    if (string.IsNullOrWhiteSpace(arg)) { reply($"Who? 'pethealtarget <name>', or {HealWhoHint()}"); break; }
+                    SimpleChar who = ResolveHealSubject(arg, mp);
+                    if (who == null) { reply($"I can't see anyone called '{arg}'."); break; }
+                    if (!_pets.HealTargetLatched(mp, who.Identity, who.Name)) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on {who.Name}.");
+                    break;
+                }
+
+                case "pethealmytarget":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
+                    if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
+                    // Only what you are FIGHTING is on the wire. A selection you have merely clicked is not:
+                    // LookAtMessage, which carries a target change, is only ever sent with the sender's own
+                    // identity — in every capture under E:\Funcom\sniffs and E:\Funcom\captures, not once
+                    // relayed for another character. So outside combat there is nothing here to read, and
+                    // saying "no target" alone just leaves you stuck.
+                    SimpleChar t = po.FightingTarget;
+                    if (t == null)
+                    {
+                        reply("I can only see what you're FIGHTING — the server never tells me what you've "
+                              + $"merely clicked on. So name it instead: {HealWhoHint()}");
+                        break;
+                    }
+                    if (!_pets.HealTargetLatched(mp, t.Identity, t.Name)) { reply("No heal pet up."); break; }
+                    reply($"Heal pet is on your target, {t.Name}.");
+                    break;
+                }
+
+                case "petstatus":
+                {
+                    LocalPlayer mp = DynelManager.LocalPlayer;
+                    if (mp == null) { reply("Not in play yet."); break; }
+                    var roster = mp.Pets.Select(p => $"{p.Name} ({p.Role}, {mp.DistanceFrom(p):0}m)").ToList();
+                    reply($"Owned {_pets.OwnedCount(mp)}, visible {roster.Count}"
+                          + (roster.Count > 0 ? ": " + string.Join(", ", roster) : "")
+                          + $". Heal pet targets {_pets.HealTargetDescription(mp)}.");
                     break;
                 }
                 case "petattack":
@@ -1118,7 +1254,10 @@ namespace AOBuddy
                 case "whompa":
                 case "travel": reply("Whompa/grid routing not implemented yet (Milestone 5). See MILESTONES-solo.md."); break;
 
-                case "help": reply("Commands: assist, solo, follow, stay, come, zone [m], stop, stand, sit, buff [self|owner|team|all], autobuff, heal, record [stop], savepath <n>, path <n>|stop, paths, nav [save|on|off|use], class, nanos [filter], active, learnable [filter], perks, resupply [stop|status|machines|forget], status."); break;
+                case "help":
+                case "commands":
+                    reply(HelpPages.For(arg));
+                    break;
                 default: reply($"Unknown command '{cmd}'. Try 'help'."); break;
             }
         }
@@ -1324,6 +1463,51 @@ namespace AOBuddy
             catch { return "(none)"; }
         }
 
+        /// <summary>A visible character by name, for commands that name someone (case-insensitive, and a
+        /// unique prefix will do so you need not type a full name in a tell).</summary>
+        private static SimpleChar FindCharByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            name = name.Trim();
+            var all = DynelManager.Characters.Where(c => !string.IsNullOrEmpty(c.Name)).ToList();
+            SimpleChar exact = all.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (exact != null) return exact;
+            var starts = all.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            return starts.Count == 1 ? starts[0] : null;
+        }
+
+        /// <summary>
+        /// Who a heal-pet command means. A name works, and so do the words you'd actually type in a tell:
+        /// "me"/"you" is the owner, "him"/"self"/"bot" is the bot, "pet" is the attack pet. The two the owner
+        /// reaches for most — the bot and himself — are exactly the two that cannot be picked by clicking,
+        /// because a selection is never broadcast (see pethealmytarget).
+        /// </summary>
+        private SimpleChar ResolveHealSubject(string who, LocalPlayer me)
+        {
+            switch ((who ?? "").Trim().ToLowerInvariant())
+            {
+                case "me":
+                case "you":
+                case "owner":
+                    return FindOwner();
+                case "him":
+                case "he":
+                case "self":
+                case "bot":
+                case "himself":
+                    return me;
+                case "pet":
+                case "attackpet":
+                    return PetController.AttackPet(me);
+            }
+            return FindCharByName(who);
+        }
+
+        /// <summary>The ways to name a heal-pet subject, for a reply that would otherwise be a dead end.</summary>
+        private string HealWhoHint() =>
+            "'pethealme' (you), 'pethealself' (me), 'pethealpet' (my attack pet), "
+            + "or 'pethealtarget <name>' for anyone else I can see.";
+
         private PlayerChar FindOwner() =>
             DynelManager.Players.FirstOrDefault(p => string.Equals(p.Name, _config.Owner, StringComparison.OrdinalIgnoreCase));
 
@@ -1353,9 +1537,10 @@ namespace AOBuddy
         {
             LocalPlayer me = DynelManager.LocalPlayer;
             string target = me?.IsAttacking == true && me.FightingTarget != null ? me.FightingTarget.Name : "none";
-            int hp = me != null ? _support.SelfHpPct(me) : 0;
+            int hpPct = me != null ? _support.SelfHpPct(me) : SupportController.Unknown;
+            string hp = hpPct == SupportController.Unknown ? "?" : hpPct + "%";
             string lvl = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l.ToString() : "?";
-            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}%. Target: {target}. Waypoints: {_follow.TrailCount}.";
+            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}. Target: {target}. Waypoints: {_follow.TrailCount}.";
         }
 
         private static Mode ParseMode(string s)
