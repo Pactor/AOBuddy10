@@ -329,6 +329,9 @@ namespace AOBuddy
             Vector3 local = me.MovementComponent.Position;
             float gap = Vector3.Distance(local, pos);
 
+            // A mission blitz always takes the server's word (MissionController.OnServerCorrection).
+            if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
+
             // While MOVING, ignore SMALL corrections (ramp/Y jitter, a few metres) so we don't rubber-band
             // on slopes. But a correction that keeps GROWING means the server has genuinely rejected our
             // path and is holding us back — if we keep ignoring it the gap runs away (seen: 10->38m) until

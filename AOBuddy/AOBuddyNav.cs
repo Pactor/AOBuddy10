@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using AOSharp.Common.GameData;
 using Newtonsoft.Json;
@@ -205,15 +206,197 @@ namespace AOBuddy
                 int w = src.Rect[2] - src.Rect[0] + 1, h = src.Rect[3] - src.Rect[1] + 1;
                 int tw = rot % 2 == 0 ? w : h, th = rot % 2 == 0 ? h : w;   // footprint after rotation
                 double ox = X * slot, oz = (m.Height - Z) * slot - th * pool.Cell;
+                // A room's floor is (w-1) x (h-1) cells: the last column and row of its rect are the cell it
+                // shares with its neighbour. The room turns about its FLOOR's centre, and in the mission the
+                // shared cell stays on the slot's +x / -z side (world z counts down from the grid's far edge).
+                // Turning about the rect's centre instead swung the shared cell round with the room and put
+                // rooms 1-2 m off by rotation (Ventil mission 2026-09-23, floor -1: rot 1 right, rot 2 off
+                // (-2,0), rot 3 off (-2,+2), the odd-sized SmallB5 (-1,+1)). With this every doorway on all four
+                // floors meets its neighbour's, and of the owner's 226 walked steps there one crosses a wall.
+                // In the pool's geometry (walls, doors) the floor's centre is the stored centre minus 1 m on an
+                // even-sized axis and the stored centre itself on an odd one; the tiles (CellOf) put it 1 m
+                // lower on the odd axis too. So each room gets two pivots, one each for geometry and tiles:
+                // pivot = slot rect centre - (1, -1) + turned(stored centre - floor centre in that frame).
+                int turnsT = ((-rot) % 4 + 4) % 4;
+                (double, double) Turned(double x, double z) { for (int i = 0; i < turnsT; i++) { double t = x; x = -z; z = t; } return (x, z); }
+                var (gx, gz) = Turned(w % 2 == 0 ? 1 : 0, h % 2 == 0 ? 1 : 0);
+                var (tx, tz) = Turned(1, 1);
+                double cx = ox + tw * pool.Cell / 2.0 - 1, cz = oz + th * pool.Cell / 2.0 + 1;
+                float y = src.Pos[1] + (floor - lowestFloor) * m.WorldHeight;
                 d.Rooms.Add(new NavDungeon.Room
                 {
-                    Index = d.Rooms.Count, Name = src.Name + " f" + floor, PoolName = src.Name, Floor = floor, Flags = src.Flags, Rot = rot, Rect = src.Rect,
-                    Pos = new[] { (float)(ox + tw * pool.Cell / 2.0), src.Pos[1] + (floor - lowestFloor) * m.WorldHeight, (float)(oz + th * pool.Cell / 2.0) },
+                    Index = d.Rooms.Count, Name = src.Name + " f" + floor, PoolName = src.Name, PoolIndex = idx, Floor = floor, Flags = src.Flags, Rot = rot, Rect = src.Rect,
+                    Pos = new[] { (float)(cx + tx), y, (float)(cz + tz) },
+                    GeomPos = new[] { (float)(cx + gx), y, (float)(cz + gz) },
                     HeightBase = src.HeightBase, Doors = src.Doors, Polys = src.Polys, Tile = src.Tile, Height = src.Height, Flags3 = src.Flags3
                 });
             }
-            return new AOBuddyNav(m.Instance, "mission", d.Name, null, d, null) { Layout = m };
+            var nav = new AOBuddyNav(m.Instance, "mission", d.Name, null, d, null) { Layout = m, Walls = PlaceWalls(pluginDir, m.TemplatePlayfield, pool, d) };
+            var doors = PlaceDoors(pool, d);
+            DoorCheck = CheckDoorways(d, doors);
+            nav.Exit = FindExit(d, doors);
+            return nav;
         }
+
+        /// <summary>
+        /// A mission only: the door out of the building. The zone-in's landing point is the entrance only
+        /// when you come in from outside; a bot (re)started inside a running mission lands wherever it is
+        /// (2026-09-23 23:54: on floor -1), so the exit comes from the building instead. The rooms arrive
+        /// entrance first (the Ventil mission lists Subway_Ent_5 first, and a fresh entry landed in it), and
+        /// the way out is the entrance room's doorway that opens onto no neighbour.
+        /// </summary>
+        public Doorway Exit;
+        public int ExitFloor => Exit == null ? 0 : Exit.Floor;
+
+        static Doorway FindExit(NavDungeon mission, List<Doorway>[] doors)
+        {
+            if (mission.Rooms.Count == 0) return null;
+            Doorway best = null;
+            foreach (var da in doors[0])
+            {
+                bool faces = false;
+                for (int b = 1; b < doors.Length && !faces; b++)
+                {
+                    if (mission.Rooms[b].Floor != mission.Rooms[0].Floor) continue;
+                    foreach (var db in doors[b])
+                        if (da.Nx * db.Nx + da.Nz * db.Nz < -0.9 && Math.Sqrt((da.X - db.X) * (da.X - db.X) + (da.Z - db.Z) * (da.Z - db.Z)) < 3.5) { faces = true; break; }
+                }
+                if (!faces) { best = da; break; }
+            }
+            return best;
+        }
+
+        /// <summary>A mission only: every placed room's wall triangles (walls.bin of the pool), world coordinates, 9 floats each. Null when the pool has no walls.bin.</summary>
+        public float[] Walls;
+
+        // The pool's walls.bin holds each pool room's wall triangles where the pool itself places the room
+        // (record index = room index). Move them to where the mission put the room: the offset from the pool
+        // room's centre, turned from the pool room's rotation to the mission's (the same turn NavDungeon.CellOf
+        // uses), then added to the mission room's geometry pivot; heights shift with the floor.
+        //
+        static float[] PlaceWalls(string pluginDir, int poolPf, NavDungeon pool, NavDungeon mission)
+        {
+            string wp = Path.Combine(FolderFor(pluginDir, poolPf), "walls.bin");
+            if (!File.Exists(wp)) return null;
+            var byRoom = new Dictionary<int, List<float[]>>();
+            foreach (var c in NavCollision.Read(wp).Chunks)
+            {
+                int idx = c.Instance & 0xFFFF;
+                if (!byRoom.TryGetValue(idx, out var l)) byRoom[idx] = l = new List<float[]>();
+                l.Add(c.Verts);
+            }
+            int n = mission.Rooms.Count;
+            var walls = new List<float>();
+            for (int ri = 0; ri < n; ri++)
+            {
+                var mr = mission.Rooms[ri];
+                if (mr.PoolIndex < 0) continue;
+                var pr = pool.Rooms[mr.PoolIndex];
+                var g = mr.GeomPos ?? mr.Pos;
+                int turns = ((((-pr.Rot) % 4 + 4) % 4) - (((-mr.Rot) % 4 + 4) % 4) + 4) % 4;
+                void Turn(ref double x, ref double z) { for (int t = 0; t < turns; t++) { double s = x; x = z; z = -s; } }
+                if (byRoom.TryGetValue(mr.PoolIndex, out var chunks))
+                    foreach (var v in chunks)
+                        for (int i = 0; i + 2 < v.Length; i += 3)
+                        {
+                            double dx = v[i] - pr.Pos[0], dz = v[i + 2] - pr.Pos[2];
+                            Turn(ref dx, ref dz);
+                            walls.Add((float)(g[0] + dx)); walls.Add(v[i + 1] - pr.Pos[1] + g[1]); walls.Add((float)(g[2] + dz));
+                        }
+            }
+            return walls.ToArray();
+        }
+
+        /// <summary>Every placed room's doorways to neighbours, in world coordinates (rooms.json 'doors', see DoorwaysFromField).</summary>
+        static List<Doorway>[] PlaceDoors(NavDungeon pool, NavDungeon mission)
+        {
+            var doors = new List<Doorway>[mission.Rooms.Count];
+            for (int ri = 0; ri < doors.Length; ri++)
+            {
+                var mr = mission.Rooms[ri];
+                doors[ri] = new List<Doorway>();
+                if (mr.PoolIndex < 0) continue;
+                var pr = pool.Rooms[mr.PoolIndex];
+                var g = mr.GeomPos ?? mr.Pos;
+                int turns = ((((-pr.Rot) % 4 + 4) % 4) - (((-mr.Rot) % 4 + 4) % 4) + 4) % 4;
+                void Turn(ref double x, ref double z) { for (int t = 0; t < turns; t++) { double s = x; x = z; z = -s; } }
+                foreach (var dw in DoorwaysFromField(pr))
+                {
+                    double cx = dw.X - pr.Pos[0], cz = dw.Z - pr.Pos[2], nx = dw.Nx, nz = dw.Nz;
+                    Turn(ref cx, ref cz); Turn(ref nx, ref nz);
+                    doors[ri].Add(new Doorway { X = g[0] + cx, Y = g[1], Z = g[2] + cz, Nx = nx, Nz = nz, Floor = mr.Floor });
+                }
+            }
+            return doors;
+        }
+
+        // The placement is checked by the doorways (the owner's idea, 2026-09-23): every doorway of a room
+        // that faces a neighbour should meet that neighbour's doorway. Rooms are not moved; the log says how
+        // many meet and names any that miss, which would mean the placement rule is off for that pool.
+        /// <summary>The doorway check of the last mission composed, for the log.</summary>
+        public static string DoorCheck = "";
+
+        static string CheckDoorways(NavDungeon mission, List<Doorway>[] doors)
+        {
+            int total = 0, met = 0; var off = new List<string>();
+            for (int a = 0; a < doors.Length; a++)
+                foreach (var da in doors[a])
+                {
+                    double best = double.MaxValue;
+                    for (int b = 0; b < doors.Length; b++)
+                    {
+                        if (b == a || mission.Rooms[b].Floor != mission.Rooms[a].Floor) continue;
+                        foreach (var db in doors[b])
+                            if (da.Nx * db.Nx + da.Nz * db.Nz < -0.9)
+                                best = Math.Min(best, Math.Sqrt((da.X - db.X) * (da.X - db.X) + (da.Z - db.Z) * (da.Z - db.Z)));
+                    }
+                    if (best > 3.5) continue;   // a doorway onto nothing (the building's edge): nothing to check
+                    total++;
+                    if (best < 0.3) met++;
+                    else off.Add($"{mission.Rooms[a].PoolName} f{mission.Rooms[a].Floor} ({da.X:0.0},{da.Z:0.0}) {best:0.0} m off");
+                }
+            return $"{met}/{total} doorways meet their neighbour's" + (off.Count > 0 ? "; OFF: " + string.Join(", ", off.Take(6)) : "");
+        }
+
+        public sealed class Doorway { public double X, Y, Z, Nx, Nz; public int Floor; }   // N: out of the room
+
+        /// <summary>
+        /// A pool room's doorways from its room record, in pool coordinates (pool rooms are unrotated).
+        /// Each entry is (link, code): link 65535 is a doorway to a neighbour, the room's own index an inner
+        /// door (skipped). code = row * 4(W-1) + col: row is the door's 2 m cell row in the room's floor (the
+        /// floor is W-1 by H-1 cells; the last row and column are the cell shared with the neighbour), col
+        /// its x in half metres. Row 0 is the south side, row H-2 the north; otherwise col 3 is the west side
+        /// and 4(W-1)-3 the east. Worked out on pool 351 (Subway - Ventil), where every entry matched a wall
+        /// opening: 6x6 [10 43 57 88] = S x5, W z5, E z5, N; 16x16 BigA3 [10 177 723 777] = S x5, E z5,
+        /// W z25, E z25. North doors decode 1 m short in x on every size (x4 for an opening at 5), corrected
+        /// here. In the room's geometry the floor starts at the stored centre minus W metres, plus 1 m on an
+        /// odd-sized axis: that is where the walls put the openings (SmallA2 11x11: the code's x15 is the
+        /// opening at 16).
+        /// </summary>
+        static List<Doorway> DoorwaysFromField(NavDungeon.Room pr)
+        {
+            var outp = new List<Doorway>();
+            if (pr.Doors == null) return outp;
+            int W = pr.Rect[2] - pr.Rect[0] + 1, H = pr.Rect[3] - pr.Rect[1] + 1;
+            int stride = 4 * (W - 1);
+            if (stride <= 0) return outp;
+            double ox = pr.Pos[0] - W + (W % 2 == 1 ? 1 : 0), oz = pr.Pos[2] - H + (H % 2 == 1 ? 1 : 0);
+            double fw = 2.0 * (W - 1), fh = 2.0 * (H - 1);
+            foreach (var d in pr.Doors)
+            {
+                if (d == null || d.Length < 2 || d[0] != 65535) continue;
+                int row = d[1] / stride, col = d[1] % stride;
+                double lx, lz, nx = 0, nz = 0;
+                if (row == 0) { lx = col / 2.0; lz = 0; nz = -1; }
+                else if (row >= H - 2) { lx = col / 2.0 + 1; lz = fh; nz = 1; }
+                else if (col == 3) { lx = 0; lz = row * 2 + 1; nx = -1; }
+                else if (col == stride - 3) { lx = fw; lz = row * 2 + 1; nx = 1; }
+                else continue;   // a door inside the room (the MH halls' side rooms: MH_5 330 = row 5, col 30), not to a neighbour
+                outp.Add(new Doorway { X = ox + lx, Z = oz + lz, Nx = nx, Nz = nz });
+            }
+            return outp;
+        }
+
     }
 
     /// <summary>ground.bin (AONG v2): outdoor heightfield + tile ids + building nibbles.</summary>
@@ -303,6 +486,8 @@ namespace AOBuddy
             [JsonProperty("flags3")] public int[][] Flags3;
             [JsonIgnore] public int Floor;         // mission rooms only: the floor as the server numbered it
             [JsonIgnore] public string PoolName = "";   // mission rooms only: the pool room's own name
+            [JsonIgnore] public int PoolIndex = -1;     // mission rooms only: the pool room's index (= its collision record)
+            [JsonIgnore] public float[] GeomPos;         // mission rooms only: the point its walls and doors turn about (Pos: the tiles')
         }
 
         [JsonProperty("playfield")] public int Playfield;

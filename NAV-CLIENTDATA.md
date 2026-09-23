@@ -1094,3 +1094,30 @@ static dungeon. Still test-only, still nothing moves on it.
   as a costly fallback - a few doorways are unmarked on both sides). 99.6% of 1,011 walked steps connect.
   `MissionGrid` in `AOBuddy/MissionController.cs`.
 - The rotation convention in `LoadMission` is right: it reproduces this morning's grading exactly.
+
+---
+
+# Mission walls, doorways and the room pivot (2026-09-23, evening)
+
+The bot walked into walls in a mission because the tile grid joined rooms through solid walls. Fixed with
+real walls, and on the way two things about the rooms were settled.
+
+- **Walls.** RDB 1000013 has them; the exporter had kept only |normal.y| > 0.5. `walls.bin` (dungeons only)
+  holds the steep triangles spanning >= 1 m. They are exact: a doorway is a 1.6 m gap with the lintel at 3 m.
+- **Doorway plugs do not exist.** The 2 m "panels" first taken for plugs are how every wall is built.
+- **`doors` decoded.** `[65535, row * 4(w-1) + col]` per doorway (see GameData/Nav/README.md). On pool 351
+  all 235 decoded outer doors sit on a wall opening, and every door count matches the room's openings
+  except the MH halls, whose extra codes are doors inside the hall. `flags3` is empty there and tile id 5 is
+  a floor family, not a door marker.
+- **The room pivot.** Rooms turn about their floor's centre and the shared cell stays on the slot's
+  +x / -z side. Turning about the rect's centre had put rooms 1-2 m off depending on rotation (rot 1 right,
+  rot 2 (-2,0), rot 3 (-2,+2), odd-sized half that). Found by fitting rooms to each other by their doorways
+  (the owner's suggestion: start from one room, place the next so the doorways meet): the fit from the right
+  room gave 0 of 109 walked steps through a wall, and its shifts were exactly this rotation pattern. With
+  the pivot fixed the slot placement alone gives 34/34 doorways meeting and 1 of 226 steps through a wall
+  (a 4 m step cutting a corner between two recorded points). In pool geometry the floor's centre is `pos`
+  minus 1 m on even axes and `pos` on odd ones; the tile mapping has it at `pos` minus 1 m on both, so an
+  odd-sized room's tiles and walls need separate pivots.
+- **Checked on one mission only** (Ventil, instance 14645763, the only one with walked data and a saved
+  zone-in on this machine). `LoadMission` logs the doorway check at every zone-in ("placement check: n/m
+  doorways meet"); a miss there means the rule is off for that pool.

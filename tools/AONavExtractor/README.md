@@ -30,6 +30,8 @@ What it reads and how:
   and `GetAllTriangles` on each record - which is why the tool is built x86. That runs in a
   child process; a record that faults the reader is skipped and the child restarted, and the
   run says so.
+  For dungeons it also writes `walls.bin`: the steep triangles (|normal.y| <= 0.5) spanning at least
+  1 m of height, in the same format, for the bot's mission routing.
 
 Output is byte-identical to `tools/navbridge/exportnav.py`, the Python pipeline the formats
 were worked out with (checked on 127, 800, 655, 1186, 4530 and 556). How the formats were

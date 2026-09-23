@@ -193,9 +193,19 @@ namespace AONavExtractor
         }
 
         public const float WalkNy = 0.5f;   // keep triangles within 60 degrees of horizontal
+        public const float WallMinHeight = 1.0f;   // a wall triangle spans at least this much height
 
         /// <summary>AOCL: near-horizontal triangles, int16 centimetres relative to a per-chunk origin, zlib. Returns (kept triangles, chunks).</summary>
-        public static (long kept, int chunks) WriteCollision(string path, List<SurfaceRecord> recs)
+        public static (long kept, int chunks) WriteCollision(string path, List<SurfaceRecord> recs) => WriteAocl(path, recs, false);
+
+        /// <summary>
+        /// walls.bin, the same AOCL layout: the steep triangles collision.bin leaves out (|normal.y| &lt;= 0.5)
+        /// that span at least WallMinHeight of height, so walls, doorframes and pillars stay and stair risers
+        /// and kerbs do not. A doorway is the gap between them (subway pool pf 351: 1.6 m wide, lintel at 3 m).
+        /// </summary>
+        public static (long kept, int chunks) WriteWalls(string path, List<SurfaceRecord> recs) => WriteAocl(path, recs, true);
+
+        static (long kept, int chunks) WriteAocl(string path, List<SurfaceRecord> recs, bool walls)
         {
             var body = new MemoryStream();
             var bw = new BinaryWriter(body);
@@ -212,7 +222,10 @@ namespace AONavExtractor
                     float nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
                     double len = Math.Sqrt((double)nx * nx + (double)ny * ny + (double)nz * nz);
                     if (len <= 1e-9) continue;
-                    if (Math.Abs(ny) / Math.Max(len, 1e-9) > WalkNy) for (int k = 0; k < 9; k++) keep.Add(v[t + k]);
+                    bool flat = Math.Abs(ny) / Math.Max(len, 1e-9) > WalkNy;
+                    bool keepIt = !walls ? flat
+                        : !flat && Math.Max(v[t + 1], Math.Max(v[t + 4], v[t + 7])) - Math.Min(v[t + 1], Math.Min(v[t + 4], v[t + 7])) >= WallMinHeight;
+                    if (keepIt) for (int k = 0; k < 9; k++) keep.Add(v[t + k]);
                 }
                 int ntri = keep.Count / 9;
                 kept += ntri;

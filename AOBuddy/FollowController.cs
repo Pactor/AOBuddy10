@@ -309,22 +309,10 @@ namespace AOBuddy
         //     velocity (u/s) = 5.5 + RunSpeed / 230        (RunSpeed = Exploring->Run Speed skill, Stat 156)
         // Base 5.5 u/s at 0 skill; +1 u/s per 230 skill; the client's own hard cap is 15.5 u/s (RunSpeed
         // 2300). This is exactly what the real client moves at, so the server accepts it — no guessed
-        // coefficient. Fall back to config only if the stat can't be read.
-        private const float RunSpeedBaseVelocity = 5.5f;
-        private const float RunSpeedDivisor = 230f;
-        private const float MaxGroundSpeed = 15.5f;   // client cap (reached at RunSpeed 2300)
-        private int _lastRunSpeed = -1;
-        public int LastRunSpeed => _lastRunSpeed;
+        // coefficient. When the stat can't be read, the last good reading (BotContext.RunVelocity).
+        public int LastRunSpeed => _ctx.LastRunSpeed;
 
-        private float MoveSpeed(LocalPlayer me)
-        {
-            if (me.TryGetStat(Stat.RunSpeed, out int rs) && rs >= 0)
-            {
-                _lastRunSpeed = rs;
-                return Math.Min(MaxGroundSpeed, RunSpeedBaseVelocity + rs / RunSpeedDivisor);
-            }
-            return _ctx.Config.FollowSpeed;
-        }
+        private float MoveSpeed(LocalPlayer me) => _ctx.RunVelocity(me);
 
         public void WalkTick(LocalPlayer me, double dt) => WalkTick(me, null, dt);
 
@@ -511,7 +499,7 @@ namespace AOBuddy
             _outrunAccum = 0;
             float mine = MoveSpeed(me);
             if (_ownerSpeed > mine + 0.5)
-                _ctx.Log($"FOLLOW: he's faster than me — his {_ownerSpeed:0.0} u/s vs my {mine:0.0} u/s (RunSpeed {_lastRunSpeed}). Can't close while he runs; I re-stack when he slows.");
+                _ctx.Log($"FOLLOW: he's faster than me — his {_ownerSpeed:0.0} u/s vs my {mine:0.0} u/s (RunSpeed {LastRunSpeed}). Can't close while he runs; I re-stack when he slows.");
         }
 
         // Blind chase after he leaves view: same seek, toward his last spot, then one push past it.

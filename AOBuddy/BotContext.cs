@@ -23,6 +23,18 @@ namespace AOBuddy
         // Timestamped HP/nano of the owner and teammates (see VitalsTracker). Heal decisions read it.
         public VitalsTracker Vitals;
 
+        // RUN SPEED, the game client's exact formula: velocity (u/s) = 5.5 + RunSpeed / 230, capped at 15.5
+        // (RunSpeed = Stat 156). The stat is not always readable: after a mission floor-button ride it read
+        // -1 for the rest of the session (log 2026-09-23 22:14:43), and falling back to Config.FollowSpeed
+        // (19 u/s) there made the server reject every step and snap the bot back to where it started. So
+        // keep the last good reading; before the first one, the 0-skill base speed, which is always legal.
+        public int LastRunSpeed = -1;
+        public float RunVelocity(AOSharp.Clientless.LocalPlayer me)
+        {
+            if (me != null && me.TryGetStat(AOSharp.Common.GameData.Stat.RunSpeed, out int rs) && rs >= 0) LastRunSpeed = rs;
+            return LastRunSpeed < 0 ? 5.5f : Math.Min(15.5f, 5.5f + LastRunSpeed / 230f);
+        }
+
         private string _behavior = "";
         public string Behavior => _behavior;
 

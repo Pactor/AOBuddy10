@@ -83,7 +83,7 @@ namespace AOBuddy
                     new Cmd("specials", "toggle weapon specials (Brawl, Fast Attack, Burst, ...)"),
                     new Cmd("status", "level, mode, health, current target"),
                     new Cmd("stat", "read any stat by name or number", "<name|number>"),
-                    new Cmd("mission", "mission mode: where I am in the building, the next hop, run it, stop", "[status|route|blitz|stop]"),
+                    new Cmd("mission", "mission mode: where I am in the building, the next hop, run it, walk back outside, stop", "[status|route|blitz|backoutside|stop]"),
                 },
             },
             new Page

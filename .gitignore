@@ -38,6 +38,9 @@ __pycache__/
 # and they are not something a clone needs; nav_backups/ is kept as a worked example.
 AOBuddy/nav/
 
+# Mission wall triangles (20 MB). Regenerated from the client data by tools/AONavExtractor.
+AOBuddy/GameData/Nav/*/walls.bin
+
 # One-off data extractors. They ran once against a local copy of the client data and the OmniCell
 # datafiles, wrote the profile JSON that IS committed, and are hard-wired to the paths of the
 # machine that ran them. The generated data is the useful part.

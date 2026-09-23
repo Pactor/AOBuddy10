@@ -55,7 +55,7 @@ Each room:
     tile         rows[z1..z2] of cols[x1..x2]: tile id, 0 = no floor
     height       same shape: template height in heightScale units
     flags3       same shape: sparse edge/door flags - OPEN
-    doors        list of [a, b] pairs - OPEN
+    doors        list of [link, code], one per doorway (see below)
     polys        [{id, verts, tris}] extra triangle meshes in room-local coordinates - OPEN (decks?)
     objects      [{pos, rot, point, radius}] placements in WORLD coordinates - OPEN (doors/blockers?)
 
@@ -83,6 +83,20 @@ far z edge = (gridHeight - z) * 10 m, y = pool height + (floor - lowest floor) *
 worldHeight (floors can be negative: Grey Caves sends 0, -1, -2); see
 NAV-CLIENTDATA.md and AOBuddy/AOBuddyNav.cs LoadMission.
 
+A room turns about its FLOOR's centre, not its rect's: the floor is (w-1) x (h-1) cells, the last
+column and row of the rect being the cell shared with the neighbour, and in a mission that shared
+cell stays on the slot's +x / -z side. In the pool's geometry (walls.bin, doors) the floor's centre
+is `pos` minus 1 m on an even-sized axis and `pos` itself on an odd one; in the tile mapping above it
+is `pos` minus 1 m on both. Verified on the Subway - Ventil mission of 2026-09-23: every doorway on
+all four floors meets its neighbour's, and 1 of the owner's 226 walked steps crosses a wall.
+
+Doorways, `doors`: `link` 65535 is a doorway to a neighbour, the room's own index an inner door.
+`code = row * 4(w-1) + col`, row = the door's 2 m cell row in the floor, col = its x in half metres
+(pool rooms are unrotated). Row 0 is the south side (door at x = col/2), row h-2 the north (x =
+col/2 + 1), otherwise col 3 is the west side and 4(w-1)-3 the east (z = row*2 + 1), all in metres
+from the floor's low corner. Other cols are doors inside the room (the MH halls' side rooms). On pool
+351 all 235 decoded outer doors sit on an opening in walls.bin.
+
 ## collision.bin - near-horizontal collision triangles (RDB 1000013)
 
 Only triangles whose normal is within 60 degrees of vertical are kept (|normal.y| > 0.5), so
@@ -101,3 +115,11 @@ Raw block: `chunks` entries of
     i16 [triangles][3][3]  vertex = origin + value / 100   (centimetres)
 
 A record is split into chunks of at most 2048 triangles, each with its own origin.
+
+## walls.bin - wall triangles (RDB 1000013), dungeons only
+
+The same AOCL layout as collision.bin, holding what collision.bin leaves out: triangles with
+|normal.y| <= 0.5 that span at least 1 m of height (walls, doorframes, pillars; not stair risers or
+kerbs). A doorway is simply a gap between them: 1.6 m wide with the lintel at 3 m in pool 351. The
+bot slices them 1 m above the floor to plan mission routes (MissionGrid in MissionController.cs).
+Written for the 289 dungeon playfields, 20 MB in all.

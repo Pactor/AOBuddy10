@@ -26,7 +26,8 @@ namespace AOBuddy
     ///
     /// What it moves: nothing unless a blitz is running. Then Tick() owns the body through Movement.Advance
     /// (the same small run steps follow uses) and Main.Walk() gives it the frame before travel and follow.
-    /// It never sends StopAttack, never applies SetPos, and hands the body back the moment it stops.
+    /// It never sends StopAttack, takes every server SetPos while it runs (OnServerCorrection), and hands
+    /// the body back the moment it stops.
     /// </summary>
     public class MissionController
     {
@@ -45,7 +46,8 @@ namespace AOBuddy
         private readonly List<string> _rewards = new List<string>();
 
         // ---- blitz state ----------------------------------------------------------------------------------
-        private enum Phase { Off, Plan, Walk, PressButton, AwaitTeleport, Act, AwaitComplete, Exit, Done }
+        private enum Phase { Off, Plan, Walk, PressButton, AwaitTeleport, Act, AwaitComplete, Exit, PushOut, Done }
+        private float _pushed;                   // metres walked through the exit door so far
         private Phase _phase = Phase.Off;
         private bool _completed;                 // the objective is done; the rest is the walk out
         private bool _announced;                 // the owner has been told it is done
@@ -58,6 +60,7 @@ namespace AOBuddy
         private double _stuckTime;
         private float _bestDist;
         private int _replans, _presses, _acts;
+        private Vector3? _lastCorrection;        // where the server last snapped us to during a walk
         private readonly HashSet<(int, int, int)> _blocked = new HashSet<(int, int, int)>();
         private Purpose _purpose;
         private enum Purpose { Button, Target, Entrance, Search }
@@ -159,6 +162,7 @@ namespace AOBuddy
 
         private void OnZoneIn(byte[] raw)
         {
+            if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
             _items.Clear(); _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear();
             try
@@ -169,6 +173,7 @@ namespace AOBuddy
                 _grid = MissionGrid.Build(_nav);
                 ParseRecord();
                 _ctx.Log($"MISSION: in {_nav.Name} instance {_instance}, {_grid.Describe()}");
+                if (_nav.Walls != null) _ctx.Log("MISSION: placement check: " + AOBuddyNav.DoorCheck);
                 if (_grid.MappingErrors > 0) _ctx.Log($"MISSION: WARNING {_grid.MappingErrors} room cells did not map back to themselves");
             }
             catch (Exception ex) { _ctx.Log("MISSION: could not compose the instance: " + ex.Message); _grid = null; _nav = null; }
@@ -201,7 +206,12 @@ namespace AOBuddy
                     Start(reply);
                     break;
                 case "stop": Stop("owner said stop"); reply("Mission mode off."); break;
-                default: reply("mission status | route | blitz | stop"); break;
+                case "backoutside":
+                case "out":
+                    if (_grid == null) { reply("Not in a mission building."); break; }
+                    GoOutside(reply);
+                    break;
+                default: reply("mission status | route | blitz | backoutside | stop"); break;
             }
         }
 
@@ -244,10 +254,26 @@ namespace AOBuddy
 
         private void Start(Action<string> reply)
         {
-            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear();
+            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear(); _lastCorrection = null;
             Enter(Phase.Plan, "starting");
             string target = _record == null ? "no quest record yet" : _record.TypeName;
             reply($"Blitz on: {target}. Floors {string.Join(",", _grid.Floors)}, boss room on floor {(_grid.BossFloor?.ToString() ?? "?")}. Send 'mission stop' to cancel.");
+        }
+
+        /// <summary>
+        /// 'mission backoutside': walk out of the building from wherever the bot is, riding the up buttons,
+        /// whether or not a blitz ran or finished (a team mission whose objective the owner completes, a blitz
+        /// that gave up). The same walk the blitz does after the objective, without the completion message.
+        /// </summary>
+        private void GoOutside(Action<string> reply)
+        {
+            if (Active) Stop("owner said back outside");
+            _completed = true; _announced = true; _rewards.Clear(); _replans = 0; _presses = 0; _blocked.Clear(); _lastCorrection = null;
+            _path = null; _pendingButton = null;
+            Enter(Phase.Exit, "owner said back outside");
+            var ex = _nav.Exit;
+            reply(ex != null ? $"Heading outside: the exit door on floor {ex.Floor} ({ex.X:0},{ex.Z:0}). Send 'mission stop' to cancel."
+                             : "Heading to where I zoned in (this building's exit door is unknown). Send 'mission stop' to cancel.");
         }
 
         public void Stop(string why)
@@ -257,6 +283,47 @@ namespace AOBuddy
             if (me != null) _move.Stop(me, _ctx.Config.SendIntervalMs);
             _ctx.Log($"MISSION: blitz stopped ({why}) in phase {_phase}.");
             _phase = Phase.Off; _path = null; _pendingButton = null;
+        }
+
+        /// <summary>
+        /// A server position correction while a blitz owns the body. Follow ignores small ones while moving
+        /// (ramp jitter), but in a mission they are rare and they mean the server stopped us: it held the
+        /// bot at a doorframe while the local body walked on to the button (log 2026-09-23 22:31:18), and
+        /// everything after that was planned from a position the server never agreed to. So take the
+        /// server's position and plan again from there. Returns true when handled.
+        /// </summary>
+        public bool OnServerCorrection(LocalPlayer me, Vector3 serverPos)
+        {
+            if (!Active || me == null) return false;
+            Vector3 local = me.MovementComponent.Position;
+            float gap = Flat(local, serverPos);
+            Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
+            _move.Reset();
+            _ctx.Log($"MISSION: server put me at ({serverPos.X:0},{serverPos.Y:0},{serverPos.Z:0}), {gap:0.0} m from where I thought I was; planning from there.");
+            if (_phase == Phase.Walk && gap > 2f)
+            {
+                // Snapped back to the same spot again: that is a wall the grid does not show, right ahead of
+                // where the server holds us. Block the cells we kept trying to walk into, so the next route
+                // takes another line instead of the same one (the first time can be plain lag, so not then).
+                if (_lastCorrection.HasValue && Flat(_lastCorrection.Value, serverPos) < 1.5f && gap > 0.5f)
+                {
+                    var here = _grid.CellOf(serverPos);
+                    float dx = (local.X - serverPos.X) / gap, dz = (local.Z - serverPos.Z) / gap;
+                    var added = new List<string>();
+                    for (float s = 1f; s <= 3f; s += 1f)
+                    {
+                        var c = _grid.CellOf(new Vector3(serverPos.X + dx * s, serverPos.Y, serverPos.Z + dz * s));
+                        if (c.HasValue && !c.Equals(here) && _blocked.Add(c.Value)) added.Add($"{c.Value.Item2},{c.Value.Item3}");
+                    }
+                    if (added.Count > 0) _ctx.Log($"MISSION: snapped back to the same spot again, blocking cell(s) {string.Join(" ", added)} ahead of it.");
+                }
+                _lastCorrection = serverPos;
+                _replans++;
+                if (_replans > 12) { Fail("the server kept stopping me short"); return true; }
+                _path = null;
+                Enter(_completed ? Phase.Exit : Phase.Plan, "corrected by the server, planning again");
+            }
+            return true;
         }
 
         private void Enter(Phase p, string why)
@@ -320,6 +387,17 @@ namespace AOBuddy
                         return true;
                     }
                     if (_pendingButton == null) { Enter(Phase.Plan, "no button"); return true; }
+                    // The server judges the press from where IT has us. Pressed 17 ms after arriving, with the
+                    // server still 5.7 m back at the doorframe, every press was refused (feedback 110/172594057)
+                    // and the bot pressed 12 times from the same spot (log 2026-09-23 22:31:20). So: stand still
+                    // a moment so the server has our stop, and walk up again if a correction moved us off.
+                    // (3.5 m: with wall data the route ends on the open cell nearest the button, up to 3 m off it.)
+                    if (_items.TryGetValue(_pendingButton.Value, out var btn) && Flat(pos, btn.Pos) > 3.5f)
+                    {
+                        Enter(Phase.Plan, $"{Flat(pos, btn.Pos):0.0} m from the button, walking up to it");
+                        return true;
+                    }
+                    if (_phaseTime < 0.6) { _ctx.WalkState = "mission: settling before the press"; return true; }
                     _presses++;
                     if (_presses > 12) { Fail("pressed buttons 12 times without getting anywhere"); return true; }
                     _pressedFrom = pos;
@@ -345,8 +423,28 @@ namespace AOBuddy
                         Enter(_completed ? Phase.Exit : Phase.Plan, "arrived");
                         return true;
                     }
-                    if (_phaseTime > 4) Enter(Phase.PressButton, "no teleport after 4 s, pressing again");
+                    // No ride: most likely the server did not have us in range. Plan again from where we are
+                    // now (a correction may have moved us); at the button that is a zero-length walk and a press.
+                    if (_phaseTime > 4) { _path = null; Enter(Phase.Plan, "no teleport after 4 s, walking up to the button again"); }
                     return true;
+
+                case Phase.PushOut:
+                {
+                    // Walk straight out through the exit door until the zone changes (OnZoneIn ends the blitz).
+                    // The door is a wall gap, so this leg is not on the grid; it is at most 8 m.
+                    var ex = _nav.Exit;
+                    if (_pushed > 8f || _phaseTime > 6)
+                    {
+                        Fail($"walked {_pushed:0} m through the exit door at ({ex.X:0},{ex.Z:0}) and did not leave the building");
+                        return true;
+                    }
+                    var dir = new Vector3((float)ex.Nx, 0, (float)ex.Nz);
+                    float step = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
+                    _pushed += step;
+                    _ctx.WalkState = $"mission: out through the door {_pushed:0.0} m";
+                    _move.Advance(me, new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step), Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
+                    return true;
+                }
 
                 case Phase.Act:
                     Hold(me);
@@ -414,7 +512,11 @@ namespace AOBuddy
             Identity? target = null;
             if (_completed)
             {
-                var land = new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
+                // The building's own exit door (AOBuddyNav.Exit), approached from 1.5 m inside it; the landing
+                // point only when the exit is unknown - it is the entrance only if we came in from outside.
+                var ex = _nav.Exit;
+                var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
+                                      : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
                 int? lf = _grid.FloorAt(land);
                 if (!lf.HasValue) { why = "the entrance is not on any floor"; return null; }
                 goalFloor = lf.Value; goalPos = land;
@@ -618,8 +720,12 @@ namespace AOBuddy
             if (_path == null || _pathIndex >= _path.Count) { Arrive(me); return true; }
             Vector3 pos = me.MovementComponent.Position;
 
-            // Knocked off the path (a server correction, a ride we did not ask for): plan again.
-            if (Vector3.Distance(pos, _path[Math.Min(_pathIndex, _path.Count - 1)]) > 12f)
+            // Knocked off the path (a server correction, a ride we did not ask for): plan again. Measured from
+            // the leg we are walking, not from its far end: smoothed legs run 20 m and more, and measuring to
+            // the waypoint replanned every frame the moment the first point was reached, so the bot crept cell
+            // by cell with a stop/start each frame (log 2026-09-23 22:11:52, "wp 2/6 d=23.4" for seconds).
+            Vector3 legFrom = _path[Math.Max(0, _pathIndex - 1)], legTo = _path[Math.Min(_pathIndex, _path.Count - 1)];
+            if (FlatToSegment(pos, legFrom, legTo) > 6f || Math.Abs(pos.Y - legTo.Y) > 6f)
             {
                 _path = null;
                 Enter(_completed ? Phase.Exit : Phase.Plan, "off the path, planning again");
@@ -635,7 +741,9 @@ namespace AOBuddy
             Vector3 wp = _path[_pathIndex];
             float d = Flat(pos, wp);
             bool last = _pathIndex == _path.Count - 1;
-            float arrive = last ? ArriveRadius() : 0.8f;
+            // Corners are passed tightly: each step is clamped to land on the waypoint anyway, and a wide
+            // radius cuts the corner into the door frame the waypoint was placed to clear.
+            float arrive = last ? ArriveRadius() : 0.3f;
             if (d <= arrive)
             {
                 _pathIndex++;
@@ -683,21 +791,30 @@ namespace AOBuddy
                 case Purpose.Target: Enter(Phase.Act, "at the target"); break;
                 case Purpose.Search: Enter(Phase.Plan, "searched a room"); break;
                 case Purpose.Entrance:
-                    _tell("Back at the mission entrance. Mission mode off.");
-                    _ctx.Log("MISSION: back at the entrance, blitz done.");
-                    _phase = Phase.Done;
+                    if (_nav.Exit == null)
+                    {
+                        _tell("Back at the mission entrance. Mission mode off.");
+                        _ctx.Log("MISSION: back at the entrance, blitz done.");
+                        _phase = Phase.Done;
+                        break;
+                    }
+                    Enter(Phase.PushOut, "at the exit door, walking through it");
+                    _pushed = 0;
                     break;
             }
         }
 
         private static float Flat(Vector3 a, Vector3 b) { float dx = a.X - b.X, dz = a.Z - b.Z; return (float)Math.Sqrt(dx * dx + dz * dz); }
 
-        // The client's own run speed (FollowController.MoveSpeed, CLAUDE.md "MOVE SPEED").
-        private float MoveSpeed(LocalPlayer me)
+        private static float FlatToSegment(Vector3 p, Vector3 a, Vector3 b)
         {
-            if (me.TryGetStat(Stat.RunSpeed, out int rs) && rs >= 0) return Math.Min(15.5f, 5.5f + rs / 230f);
-            return _ctx.Config.FollowSpeed;
+            float abx = b.X - a.X, abz = b.Z - a.Z, len2 = abx * abx + abz * abz;
+            float t = len2 < 1e-6f ? 0f : Math.Max(0f, Math.Min(1f, ((p.X - a.X) * abx + (p.Z - a.Z) * abz) / len2));
+            return Flat(p, new Vector3(a.X + abx * t, a.Y, a.Z + abz * t));
         }
+
+        // The client's own run speed, the last good reading when the stat is unreadable (BotContext.RunVelocity).
+        private float MoveSpeed(LocalPlayer me) => _ctx.RunVelocity(me);
 
         private static string ItemName(int template)
         {
@@ -797,6 +914,14 @@ namespace AOBuddy
         private const float MaxStepUp = 2.0f;
         private const float FallbackCost = 6f;
 
+        // Floor cells touching a wall cell. The 2 m grid places a doorway's frame only to the cell, and the
+        // server collides with the real frame: a route along the west edge of a 12 m opening was snapped back
+        // to the same corner nine times running (log 2026-09-23 22:40:53, (70,138,181)). So routes pay extra
+        // for edge cells, which keeps them in the middle of openings, and smoothing may not cut across an edge
+        // cell the route itself avoided. Narrow passages are all edge; the route then uses them as it must.
+        private readonly HashSet<(int, int, int)> _edge = new HashSet<(int, int, int)>();
+        private const float EdgeCost = 2f;
+
         public static MissionGrid Build(AOBuddyNav nav)
         {
             var g = new MissionGrid();
@@ -849,6 +974,11 @@ namespace AOBuddy
                 if (room != null) { g._walk[kv.Key] = best; g._room[kv.Key] = room; }
                 else if (kv.Value.Count >= 2) { g._fallback[kv.Key] = kv.Value.Max(c => c.y); g._room[kv.Key] = kv.Value[0].room; }
             }
+            foreach (var k in g._walk.Keys)
+                for (int dx = -1; dx <= 1 && !g._edge.Contains(k); dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                        if (!g._walk.ContainsKey((k.Item1, k.Item2 + dx, k.Item3 + dz))) { g._edge.Add(k); break; }
+            if (nav.Walls != null && nav.Walls.Length >= 9) g.BuildWalls(nav.Walls);
             return g;
         }
 
@@ -858,7 +988,260 @@ namespace AOBuddy
 
         private static float kv0(List<(int tile, float y, string room)> l) { foreach (var c in l) if (c.tile != 0) return c.y; return l[0].y; }
 
-        public string Describe() => $"{Floors.Count} floor(s) {string.Join(",", Floors)}, {_walk.Count} floor cells, boss room {(BossFloor.HasValue ? $"'{BossRoomName}' on floor {BossFloor}" : "none")}";
+        // ---- real walls (walls.bin) ---------------------------------------------------------------------
+        // The tile grid cannot tell a doorway from a wall where two rooms meet: on the 2026-09-23 Ventil
+        // mission it joined two corridors through a solid wall and sent the bot into the wrong room's door,
+        // and the server stopped it on the wall every time. With the pool's wall
+        // triangles placed into the mission (AOBuddyNav.PlaceWalls) the planner works on 0.5 m cells
+        // instead: a cell is open when the 2 m tile model has floor there (or a shared doorway cell) and no
+        // wall, sliced 1 m above that floor, comes within the body's radius of the cell's centre. A doorway
+        // is simply where the wall has no triangles (1.6 m wide in that pool; the lintel at 3 m is above
+        // the slice), and the radius keeps the route off the frames the server collides with.
+        private const float Fine = 0.5f, BodyRadius = 0.35f, CutAbove = 1.0f;
+        private HashSet<(int, int, int)> _fine;                  // open 0.5 m cells: (floor, fx, fz)
+        private float[] _wallTris;
+        private Dictionary<(int, int), List<int>> _wallHash;     // 2 m column -> wall triangle indices
+        private int FinePer => (int)Math.Round(Cell / Fine);
+
+        private void BuildWalls(float[] tris)
+        {
+            _wallTris = tris;
+            _wallHash = new Dictionary<(int, int), List<int>>();
+            for (int t = 0; t + 9 <= tris.Length; t += 9)
+            {
+                int x0 = (int)Math.Floor(Math.Min(tris[t], Math.Min(tris[t + 3], tris[t + 6])) / Cell), x1 = (int)Math.Floor(Math.Max(tris[t], Math.Max(tris[t + 3], tris[t + 6])) / Cell);
+                int z0 = (int)Math.Floor(Math.Min(tris[t + 2], Math.Min(tris[t + 5], tris[t + 8])) / Cell), z1 = (int)Math.Floor(Math.Max(tris[t + 2], Math.Max(tris[t + 5], tris[t + 8])) / Cell);
+                for (int x = x0; x <= x1; x++)
+                    for (int z = z0; z <= z1; z++)
+                    {
+                        if (!_wallHash.TryGetValue((x, z), out var l)) _wallHash[(x, z)] = l = new List<int>();
+                        l.Add(t);
+                    }
+            }
+            // Floor for the fine layer: the tile model grown by one 2 m cell. The shared column of a doorway
+            // often has no tile on either side (Ventil mission: the doorway between SmallB5 and BigB4 was
+            // sealed that way), and a tile model 2 m coarse leaves floor near the walls uncovered. Growing
+            // the floor is safe because the walls enclose each room: a cell grown past a room's edge is only
+            // reachable through a real opening. A grown cell takes the height of the nearest real one.
+            _fineY = new Dictionary<(int, int, int), float>();
+            foreach (var k in _walk.Keys.Concat(_fallback.Keys)) _fineY[k] = ParentY(k);
+            foreach (var k in _fineY.Keys.ToList())
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                    {
+                        var n = (k.Item1, k.Item2 + dx, k.Item3 + dz);
+                        if (_fineY.ContainsKey(n)) continue;
+                        (int, int, int)? src = null; int bestD = int.MaxValue;
+                        for (int ex = -1; ex <= 1; ex++)
+                            for (int ez = -1; ez <= 1; ez++)
+                            {
+                                var m = (n.Item1, n.Item2 + ex, n.Item3 + ez);
+                                int dd = ex * ex + ez * ez;
+                                if (dd > 0 && dd < bestD && (_walk.ContainsKey(m) || _fallback.ContainsKey(m))) { bestD = dd; src = m; }
+                            }
+                        if (src.HasValue) _fineY[n] = ParentY(src.Value);
+                    }
+            _fine = new HashSet<(int, int, int)>();
+            int per = FinePer;
+            foreach (var k in _fineY.Keys)
+            {
+                float y = _fineY[k];
+                var segs = WallSegments(k.Item2 - 1, k.Item3 - 1, k.Item2 + 1, k.Item3 + 1, y + CutAbove);
+                for (int sx = 0; sx < per; sx++)
+                    for (int sz = 0; sz < per; sz++)
+                    {
+                        int fx = k.Item2 * per + sx, fz = k.Item3 * per + sz;
+                        float cx = (fx + 0.5f) * Fine, cz = (fz + 0.5f) * Fine;
+                        bool clear = true;
+                        foreach (var sg in segs) if (DistToSeg(cx, cz, sg) < BodyRadius) { clear = false; break; }
+                        if (clear) _fine.Add((k.Item1, fx, fz));
+                    }
+            }
+        }
+
+        private float ParentY((int, int, int) k) => _walk.TryGetValue(k, out float y) ? y : _fallback.TryGetValue(k, out y) ? y : 0f;
+        private (int, int, int) ParentOf((int, int, int) f) => (f.Item1, FloorDiv(f.Item2, FinePer), FloorDiv(f.Item3, FinePer));
+        private static int FloorDiv(int a, int b) => (int)Math.Floor(a / (double)b);
+        private Dictionary<(int, int, int), float> _fineY;        // floor height per 2 m cell, grown (see BuildWalls)
+        private float FineY((int, int, int) f) => _fineY.TryGetValue(ParentOf(f), out float y) ? y : 0f;
+        private Vector3 FineCentre((int, int, int) f) => new Vector3((f.Item2 + 0.5f) * Fine, FineY(f), (f.Item3 + 0.5f) * Fine);
+
+        /// <summary>The walls in 2 m columns [cx0..cx1] x [cz0..cz1], sliced by the plane y = cut: (x1, z1, x2, z2) each.</summary>
+        private List<float[]> WallSegments(int cx0, int cz0, int cx1, int cz1, float cut)
+        {
+            var seen = new HashSet<int>(); var segs = new List<float[]>();
+            float[] w = _wallTris;
+            for (int x = cx0; x <= cx1; x++)
+                for (int z = cz0; z <= cz1; z++)
+                {
+                    if (!_wallHash.TryGetValue((x, z), out var l)) continue;
+                    foreach (int t in l)
+                    {
+                        if (!seen.Add(t)) continue;
+                        float px = 0, pz = 0; int got = 0; var seg = new float[4];
+                        for (int e = 0; e < 3 && got < 2; e++)
+                        {
+                            int p0 = t + e * 3, p1 = t + ((e + 1) % 3) * 3;
+                            float y0 = w[p0 + 1] - cut, y1 = w[p1 + 1] - cut;
+                            if ((y0 < 0) == (y1 < 0)) continue;
+                            float s = y0 / (y0 - y1);
+                            px = w[p0] + (w[p1] - w[p0]) * s; pz = w[p0 + 2] + (w[p1 + 2] - w[p0 + 2]) * s;
+                            seg[got * 2] = px; seg[got * 2 + 1] = pz; got++;
+                        }
+                        if (got == 2) segs.Add(seg);
+                    }
+                }
+            return segs;
+        }
+
+        private static float DistToSeg(float px, float pz, float[] s)
+        {
+            float ax = s[0], az = s[1], bx = s[2] - ax, bz = s[3] - az, l2 = bx * bx + bz * bz;
+            float t = l2 < 1e-9f ? 0f : Math.Max(0f, Math.Min(1f, ((px - ax) * bx + (pz - az) * bz) / l2));
+            float dx = px - (ax + bx * t), dz = pz - (az + bz * t);
+            return (float)Math.Sqrt(dx * dx + dz * dz);
+        }
+
+        private static float Orient(float ax, float az, float bx, float bz, float px, float pz) => (bx - ax) * (pz - az) - (bz - az) * (px - ax);
+
+        /// <summary>True when a wall at body height stands between two points on the same floor.</summary>
+        public bool WallBetween(Vector3 a, Vector3 b)
+        {
+            if (_wallTris == null) return false;
+            float cut = Math.Min(a.Y, b.Y) + CutAbove;
+            var segs = WallSegments((int)Math.Floor(Math.Min(a.X, b.X) / Cell), (int)Math.Floor(Math.Min(a.Z, b.Z) / Cell),
+                                    (int)Math.Floor(Math.Max(a.X, b.X) / Cell), (int)Math.Floor(Math.Max(a.Z, b.Z) / Cell), cut);
+            foreach (var s in segs)
+            {
+                float d1 = Orient(s[0], s[1], s[2], s[3], a.X, a.Z), d2 = Orient(s[0], s[1], s[2], s[3], b.X, b.Z);
+                float d3 = Orient(a.X, a.Z, b.X, b.Z, s[0], s[1]), d4 = Orient(a.X, a.Z, b.X, b.Z, s[2], s[3]);
+                if ((d1 > 0) != (d2 > 0) && (d3 > 0) != (d4 > 0)) return true;
+            }
+            return false;
+        }
+
+        private bool FineOpen((int, int, int) f, HashSet<(int, int, int)> blocked) =>
+            _fine.Contains(f) && (blocked == null || !blocked.Contains(ParentOf(f)));
+
+        // The open cell nearest p that p can see (no wall between): a button hangs on a wall, and the cell
+        // straight behind that wall is nearer than the one in front of it. Not for the start: the bot is where
+        // it is, and standing 0.3 m off a wall (where the server put it) every line crossed a wall face.
+        private (int, int, int)? NearestFine(Vector3 p, int floor, float maxR, HashSet<(int, int, int)> blocked, bool needSight = true)
+        {
+            int px = (int)Math.Floor(p.X / Fine), pz = (int)Math.Floor(p.Z / Fine), rmax = (int)Math.Ceiling(maxR / Fine);
+            (int, int, int)? best = null; float bd = float.MaxValue;
+            for (int r = 0; r <= rmax; r++)
+            {
+                if (best.HasValue && (r - 1) * Fine > bd) break;
+                for (int dx = -r; dx <= r; dx++)
+                    for (int dz = -r; dz <= r; dz++)
+                    {
+                        if (Math.Max(Math.Abs(dx), Math.Abs(dz)) != r) continue;
+                        var f = (floor, px + dx, pz + dz);
+                        if (!FineOpen(f, blocked)) continue;
+                        var c = FineCentre(f);
+                        if (Math.Abs(c.Y - p.Y) > 3f) continue;
+                        float d = (float)Math.Sqrt((c.X - p.X) * (c.X - p.X) + (c.Z - p.Z) * (c.Z - p.Z));
+                        if (d >= bd || d > maxR) continue;
+                        if (needSight && WallBetween(new Vector3(p.X, c.Y, p.Z), c)) continue;
+                        bd = d; best = f;
+                    }
+            }
+            return best;
+        }
+
+        private List<Vector3> FindPathWalls(Vector3 a, Vector3 b, int floor, HashSet<(int, int, int)> blocked, out bool usedFallback)
+        {
+            usedFallback = false;
+            var s = NearestFine(a, floor, 2.5f, blocked, needSight: false);
+            var g = NearestFine(b, floor, 3.0f, blocked);
+            if (!s.HasValue || !g.HasValue) return null;
+            var cells = FineAStar(s.Value, g.Value, blocked);
+            if (cells == null) return null;
+            usedFallback = cells.Any(c => !_walk.ContainsKey(ParentOf(c)));
+            // Ends on the open cell nearest the goal, not the goal itself: a button or item often sits on
+            // or against a wall, and walking into the wall is what the server stops.
+            return SmoothFine(cells, blocked);
+        }
+
+        private List<(int, int, int)> FineAStar((int, int, int) s, (int, int, int) g, HashSet<(int, int, int)> blocked)
+        {
+            var open = new PriorityQueue<(int, int, int), float>();
+            var cost = new Dictionary<(int, int, int), float> { [s] = 0 };
+            var prev = new Dictionary<(int, int, int), (int, int, int)>();
+            float H((int, int, int) k) => (float)Math.Sqrt((k.Item2 - g.Item2) * (k.Item2 - g.Item2) + (k.Item3 - g.Item3) * (k.Item3 - g.Item3));
+            open.Enqueue(s, H(s));
+            int guard = 0;
+            while (open.Count > 0 && guard++ < 400000)
+            {
+                var k = open.Dequeue();
+                if (k.Equals(g))
+                {
+                    var path = new List<(int, int, int)> { k };
+                    while (prev.TryGetValue(k, out var p)) { k = p; path.Add(k); }
+                    path.Reverse();
+                    return path;
+                }
+                float c0 = cost[k], y0 = FineY(k);
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                    {
+                        if (dx == 0 && dz == 0) continue;
+                        var n = (k.Item1, k.Item2 + dx, k.Item3 + dz);
+                        if (!FineOpen(n, blocked)) continue;
+                        if (Math.Abs(FineY(n) - y0) > MaxStepUp) continue;
+                        if (dx != 0 && dz != 0 && (!FineOpen((k.Item1, k.Item2 + dx, k.Item3), blocked) || !FineOpen((k.Item1, k.Item2, k.Item3 + dz), blocked))) continue;
+                        // Shared doorway cells are real floor once the walls decide; a small premium keeps
+                        // routes on tiles where both are open.
+                        float cc = _walk.ContainsKey(ParentOf(n)) ? 1f : 1.5f;
+                        float nc = c0 + (dx != 0 && dz != 0 ? 1.4142f : 1f) * cc;
+                        if (cost.TryGetValue(n, out float old) && old <= nc) continue;
+                        cost[n] = nc; prev[n] = k;
+                        open.Enqueue(n, nc + H(n));
+                    }
+            }
+            return null;
+        }
+
+        // String-pull forward: from each kept cell, go as far along the route as a straight line stays on
+        // open cells (the body-radius margin is already in 'open').
+        private List<Vector3> SmoothFine(List<(int, int, int)> cells, HashSet<(int, int, int)> blocked)
+        {
+            var pts = new List<Vector3> { FineCentre(cells[0]) };
+            int i = 0;
+            while (i < cells.Count - 1)
+            {
+                int j = i + 1;
+                while (j + 1 < cells.Count && ClearFine(cells[i], cells[j + 1], blocked)) j++;
+                pts.Add(FineCentre(cells[j]));
+                i = j;
+            }
+            return pts;
+        }
+
+        private bool ClearFine((int, int, int) a, (int, int, int) b, HashSet<(int, int, int)> blocked)
+        {
+            float ax = a.Item2 + 0.5f, az = a.Item3 + 0.5f, bx = b.Item2 + 0.5f, bz = b.Item3 + 0.5f;
+            int n = (int)Math.Ceiling(Math.Max(Math.Abs(bx - ax), Math.Abs(bz - az)) * 4) + 1;
+            float lastY = FineY(a);
+            var lastCell = a;
+            for (int s = 1; s <= n; s++)
+            {
+                float t = s / (float)n;
+                var k = (a.Item1, (int)Math.Floor(ax + (bx - ax) * t), (int)Math.Floor(az + (bz - az) * t));
+                if (k.Equals(lastCell)) continue;
+                if (!FineOpen(k, blocked)) return false;
+                float y = FineY(k);
+                if (Math.Abs(y - lastY) > MaxStepUp) return false;
+                if (k.Item2 != lastCell.Item2 && k.Item3 != lastCell.Item3 &&
+                    (!FineOpen((k.Item1, k.Item2, lastCell.Item3), blocked) || !FineOpen((k.Item1, lastCell.Item2, k.Item3), blocked))) return false;
+                lastY = y; lastCell = k;
+            }
+            return true;
+        }
+
+        public string Describe() => $"{Floors.Count} floor(s) {string.Join(",", Floors)}, {_walk.Count} floor cells, boss room {(BossFloor.HasValue ? $"'{BossRoomName}' on floor {BossFloor}" : "none")}, "
+            + (_fine != null ? $"walls: {_wallTris.Length / 9} triangles, {_fine.Count} open {Fine} m cells" : "no wall data (routing on the tile grid alone)");
 
         /// <summary>The floor under a point: the cell whose height is nearest, within 3 m.</summary>
         public int? FloorAt(Vector3 p)
@@ -911,6 +1294,7 @@ namespace AOBuddy
             usedFallback = false;
             var s = Snap(a, 3f, 2, true); var g = Snap(b, 3f, 3, true);
             if (!s.HasValue || !g.HasValue || s.Value.Item1 != g.Value.Item1) return null;
+            if (_fine != null) return FindPathWalls(a, b, s.Value.Item1, blocked, out usedFallback);
             var cells = AStar(s.Value, g.Value, blocked, false) ?? AStar(s.Value, g.Value, blocked, true);
             if (cells == null) return null;
             usedFallback = cells.Any(c => !_walk.ContainsKey(c));
@@ -958,7 +1342,7 @@ namespace AOBuddy
                         if (!Open(n, blocked, fb, out float y1, out float cc)) { if (!n.Equals(g)) continue; y1 = y0; cc = 1; }
                         if (Math.Abs(y1 - y0) > MaxStepUp) continue;
                         if (dx != 0 && dz != 0 && (!Open((k.Item1, k.Item2 + dx, k.Item3), blocked, fb, out _, out _) || !Open((k.Item1, k.Item2, k.Item3 + dz), blocked, fb, out _, out _))) continue;
-                        float nc = c0 + (dx != 0 && dz != 0 ? 1.4142f : 1f) * cc;
+                        float nc = c0 + (dx != 0 && dz != 0 ? 1.4142f : 1f) * cc + (_edge.Contains(n) ? EdgeCost : 0f);
                         if (cost.TryGetValue(n, out float old) && old <= nc) continue;
                         cost[n] = nc; prev[n] = k;
                         open.Enqueue(n, nc + H(n));
@@ -978,18 +1362,19 @@ namespace AOBuddy
         private List<Vector3> Smooth(List<(int, int, int)> cells, HashSet<(int, int, int)> blocked)
         {
             var pts = new List<Vector3> { Centre(cells[0]) };
+            var route = new HashSet<(int, int, int)>(cells);
             int i = 0;
             while (i < cells.Count - 1)
             {
                 int j = cells.Count - 1;
-                while (j > i + 1 && !Clear(cells[i], cells[j], blocked)) j--;
+                while (j > i + 1 && !Clear(cells[i], cells[j], blocked, route)) j--;
                 pts.Add(Centre(cells[j]));
                 i = j;
             }
             return pts;
         }
 
-        private bool Clear((int, int, int) a, (int, int, int) b, HashSet<(int, int, int)> blocked)
+        private bool Clear((int, int, int) a, (int, int, int) b, HashSet<(int, int, int)> blocked, HashSet<(int, int, int)> route)
         {
             float ax = a.Item2 + 0.5f, az = a.Item3 + 0.5f, bx = b.Item2 + 0.5f, bz = b.Item3 + 0.5f;
             int n = (int)Math.Ceiling(Math.Max(Math.Abs(bx - ax), Math.Abs(bz - az)) * 4) + 1;
@@ -1001,6 +1386,7 @@ namespace AOBuddy
                 var k = (a.Item1, (int)Math.Floor(ax + (bx - ax) * t), (int)Math.Floor(az + (bz - az) * t));
                 if (k.Equals(lastCell)) continue;
                 if (!_walk.TryGetValue(k, out float y) || (blocked != null && blocked.Contains(k))) return false;
+                if (_edge.Contains(k) && !route.Contains(k)) return false;
                 if (Math.Abs(y - lastY) > MaxStepUp) return false;
                 // A diagonal hop between samples must not cut a corner.
                 if (k.Item2 != lastCell.Item2 && k.Item3 != lastCell.Item3 &&
