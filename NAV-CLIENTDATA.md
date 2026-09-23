@@ -970,7 +970,7 @@ Verification (1 m tolerance, tiles/heightfield first, then collision):
 - The 20 mission-instance nav recordings (ids like 2224273) cannot be verified: they are
   server instances, and the mapping to a template playfield is not in the recording.
 
-A C# extractor is a straight port of everything except the collision step: `rdb.py`
-(index + part files), `meshdecode.py`, the CHGA/GNDA readers and `playfield.py` are pure
-format code. The collision step runs the client's 32-bit `N3.dll`; a C# port would either
-host the same DLLs from a 32-bit process, or wait on the V5 bit-packed surface format.
+`tools/AONavExtractor` is the C# port of all of it, for anyone with a client install: the RDB
+reader, the reflective decoder, the CHGA/GNDA readers, the room list, and the collision step,
+which hosts the client's 32-bit DLLs in a child process through unmanaged thiscall function
+pointers (so the tool is x86). Its output is byte-identical to `exportnav.py`'s.

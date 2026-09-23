@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>AONavExtractor</AssemblyName>
+    <RootNamespace>AONavExtractor</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- The collision step hosts the game client's own DLLs (N3.dll, BinaryStream.dll, ...),
+         which are 32-bit, so the whole tool runs as x86. -->
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The folder README ships with the output so the data documents itself. -->
+    <EmbeddedResource Include="..\..\AOBuddy\GameData\Nav\README.md" LogicalName="README.md" />
+  </ItemGroup>
+</Project>

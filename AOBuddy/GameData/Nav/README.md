@@ -1,8 +1,9 @@
 # Nav - navigation data per playfield
 
 One folder per playfield id, generated from the client's `ResourceDatabase.dat` by
-`tools/navbridge/exportnav.py` (collision surfaces come through `tools/navbridge/navbridge.exe`,
-which runs the client's own `n3SurfaceResource_t` reader over the type-1000013 records).
+`tools/AONavExtractor` (C#, self-contained: run it against any AO install) or, equivalently,
+`tools/navbridge/exportnav.py` plus `navbridge.exe`. Collision surfaces come from the client's
+own `n3SurfaceResource_t` reader, hosted from its 32-bit `N3.dll`, over the type-1000013 records.
 `index.json` lists every folder's `info.json`. How the formats were found and checked is in
 `NAV-CLIENTDATA.md` at the repository root.
 
