@@ -216,7 +216,25 @@ namespace AOBuddy
                     // PlayfieldAnarchyF fires on zone-in (incl. entering a mission): playfield id, our landing
                     // coords, and the placed dynels (mobs/objects) = the mission layout the server hands us.
                     if (_config.MissionDebug && m != null && m.Body is PlayfieldAnarchyFMessage pfm)
+                    {
                         Log($"MISSIONDBG: PlayfieldAnarchyF pf={pfm.PlayfieldId1.Instance} land=({pfm.CharacterCoordinates.X:0},{pfm.CharacterCoordinates.Y:0},{pfm.CharacterCoordinates.Z:0}) dynels={(pfm.Dynels != null ? pfm.Dynels.Length : 0)}");
+                        // The same packet carries the instanced building's room placement list
+                        // (BuildingGeneratorData: template playfield, then room/floor/x/z/rotation per room),
+                        // which the SDK does not parse yet. Keep the raw bytes so it can be decoded offline
+                        // against the walk recorded in the mission. See NAV-CLIENTDATA.md.
+                        if (m.RawPacket != null)
+                        {
+                            try
+                            {
+                                string dir = Path.Combine(_pluginDir, "missions");
+                                Directory.CreateDirectory(dir);
+                                string file = Path.Combine(dir, $"zonein-pf{pfm.PlayfieldId1.Instance}-{DateTime.Now:yyyyMMdd-HHmmss}.bin");
+                                File.WriteAllBytes(file, m.RawPacket);
+                                Log($"MISSIONDBG: zone-in packet saved ({m.RawPacket.Length} bytes) to {file}");
+                            }
+                            catch (Exception ex) { Log("MISSIONDBG: could not save zone-in packet: " + ex.Message); }
+                        }
+                    }
 
                     // The mission-terminal list (type 0x5C436609) is NOT SDK-typed — read it raw. Per mission
                     // it carries the destination playfield + entrance X/Z (see aobuddy-mission-wire-data).
