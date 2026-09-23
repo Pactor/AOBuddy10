@@ -29,6 +29,7 @@ namespace AOBuddy
         private BuddyConfig _config = new BuddyConfig();
         private Mode _mode = Mode.Assist;
         private bool _stoodUp;               // set once we've made the one login stand-up decision
+        private bool _optionsLogged;         // set once stat 349 (the player-option flags) has been logged at login
         private bool _greeted;
         private int _lastLevel;              // last seen Stat.Level; watch it to announce a ding (0 = not baselined)
 
@@ -447,6 +448,16 @@ namespace AOBuddy
                         Log($"STAND: login mode={moveMode} (standing) — no stand-up needed.");
                     }
                     _stoodUp = true;   // decided from the login mode; do not toggle again (173 won't update)
+                }
+
+                // Player options. The client's XP on/off toggle sends CharacterAction 165 carrying the whole
+                // option mask: 5 with XP on, 21 (0x15) with XP off (sniff marked-20260923-121514). Stat 349
+                // (named AutoAttackFlags, default 5) held 5 in every earlier login, so it is the likely store.
+                // Logged once so a restart shows whether XP-off survived into the clientless login.
+                if (!_optionsLogged && me.TryGetStat(Stat.AutoAttackFlags, out int opts))
+                {
+                    Log($"OPTIONS: stat 349 = {opts} (0x{opts:X}), bit 0x10 {((opts & 0x10) != 0 ? "SET (XP off if 349 is the option store)" : "clear")}");
+                    _optionsLogged = true;
                 }
 
                 // DING watch. Level is now kept live by the SDK's NewLevel handler; when it climbs, tell the
@@ -891,6 +902,18 @@ namespace AOBuddy
 
         // ---- Commands ------------------------------------------------------------
 
+        // Read-only: any stat by name or number, as the server last sent it.
+        private static string StatCommand(string arg)
+        {
+            var me = DynelManager.LocalPlayer;
+            if (me == null) return "Not in play yet.";
+            if (string.IsNullOrWhiteSpace(arg)) return "Usage: stat <name or number>, e.g. stat 349";
+            Stat stat;
+            if (int.TryParse(arg.Trim(), out int id)) stat = (Stat)id;
+            else if (!Enum.TryParse(arg.Trim(), true, out stat)) return $"No stat named '{arg}'.";
+            return me.TryGetStat(stat, out int v) ? $"{stat} ({(int)stat}) = {v} (0x{v:X})" : $"{stat} ({(int)stat}) has not been sent to me.";
+        }
+
         private void HandleCommand(string message, Action<string> reply)
         {
             if (string.IsNullOrWhiteSpace(message)) return;
@@ -1217,6 +1240,7 @@ namespace AOBuddy
                     break;
                 case "status": reply(StatusLine()); break;
                 case "navdata": reply(NavDataCommand(arg)); break;
+                case "stat": reply(StatCommand(parts.Length > 1 ? parts[1] : "")); break;
 
                 // ---- Knowledge (profession / nanos) ----
                 case "class":

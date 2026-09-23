@@ -82,6 +82,7 @@ namespace AOBuddy
                     new Cmd("idle", "stop fighting and stand down"),
                     new Cmd("specials", "toggle weapon specials (Brawl, Fast Attack, Burst, ...)"),
                     new Cmd("status", "level, mode, health, current target"),
+                    new Cmd("stat", "read any stat by name or number", "<name|number>"),
                 },
             },
             new Page
