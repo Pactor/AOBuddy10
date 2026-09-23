@@ -39,22 +39,37 @@ touching any of it.
   `MissionTypes.FromCode`): 0x2C4E Repair, 0x2C41 Return item, 0x2C47 Find person,
   0x2C49 Find item, 0x2C42 Kill person.
 - Accepting a listed mission is `CreateQuestMessage(QuestIdentity)` (OmniCell messaging,
-  `N3MessageType.CreateQuest` 0x291F361B). `GiveQuestToMember` (0x77230927) exists: the owner
-  can hand a rolled mission to a team member, which lets everything from step 3 on be tested
-  before rolling works.
+  `N3MessageType.CreateQuest` 0x291F361B). A mission rolled at a TEAM terminal goes to every
+  team member automatically (owner's word, 2026-09-23; the find-person capture shows the
+  teammate receiving the reward and the quest removal). A mission from a solo terminal cannot
+  be handed over; copying the key only lets a teammate enter, with no quest updates. So the
+  owner rolls at a team terminal with the bot in team, and steps 3 and 4 can be tested before
+  step 5 exists.
 - Terminal and mission-door positions per playfield are in `AOBuddy/GameData/Zoning.json`
   (Algorithman's extract: statels with teleport functions and ACGEntrance doors).
 
-## What is not known yet, and how each gets known
+## What the existing captures already answer (checked 2026-09-23)
+
+Decoded with `OmniCell\Tools\Capture\bin\PcapDecode.exe <csv> ... --ordered`; the decoded
+streams named below are in `E:\Funcom\sniffs\` (csv + txt), the raw recordings in
+`E:\Funcom\captures\pcap\` and `E:\Funcom\sniffs\pcap\`.
+
+| question | answer | evidence |
+|---|---|---|
+| Roll request | the client sends `QuestAlternativeMessage` (same id 0x5C436609 as the reply): VersionId=4, Difficulty (byte, 6/9/11 seen), the six sliders (0 here), Seed=0, Originator=NeutralBooth, MissionTerminalIdentity=56001:<terminal instance>. The server answers with the same message type holding 5 QuestInfos. Every roll is one such message; the terminal is `GenericCmd Use`d once before the first roll, not before each roll. | `20260910-200346_s2.txt` client seq 37 (Use terminal 56001:-1073741169), 38/41/46/48 (four rolls), server seq 2514/5356/8951/11472 (the lists) |
+| Accept | `CreateQuestMessage QuestIdentity=Quest:<id from the list>`; the server replies `QuestFullUpdateMessage AnnounceAsNew=1` with a NEW quest identity (list id ...C9CB became ...C9D0). Delete is `QuestMessage Version=1 QuestIdentity=<new id>`. | same stream, client seq 50 and 54, server seq 11850 |
+| Repair objective | `GenericCmdMessage Action=UseItemOnItem Target=[2]`: first the inventory item (type 0x68, slot), then the object (type 0xC73D). Server echoes it with Verification=1, then Cash stat, reward item to the overflow window (`TemplateAction 87` + `ContainerAddItem`), `FeedbackMessage MessageId=108871108`, `CharacterAction MissionChanged`, `QuestMessage` (mission removed). | `20260910-203534_s37.txt` client seq 1292, server seq 19742-19749 |
+| Mission zone-in | `PlayfieldAnarchyF` version 4 with BuildingGeneratorData, then `QuestFullUpdateMessage` with the mission text (objective name is in the text: "use the Targeted Radiation Extractor to heal the Fire and Radiation Chamber"). | same stream, server seq 2 and 85 |
+| Player-to-player trade | `TradeMessage Version=2`: open = Action=None Target=<other>, credits = Action=7 Target=None:<amount>, accept = Action=3, confirm = Action=End; the other side accepts with Action=3 then End; server closes with Action=4 (Unknown) to both. `AOSharp.Clientless/Trade.cs` exists. | `20260911-061635_s6.txt` / `_s8.txt` (both accounts) |
+| Floor buttons | items of type 0xC73D, recognised by template id in their `SimpleItemFullUpdate` (stats 701-703): 159863 `Button (down)`, 159869 `Button (up)`, 159864 `Button (boss)` (straight to the boss room). 159862 and 159865-159868 are `Platform 1`-`Platform 5`, standing on the same spots; not used. Riding: client `GenericCmd Use` on the button, server echoes it, sends `CharacterAction 170 p1=54 p2=10` (stat 54 = Level locked for 10 s) and `N3TeleportMessage` in the same playfield within ~0.3 s. The destination is the position of the paired button on the other floor. `CharacterAction 164 p2=54` arrives 10 s later: that is "Level skill available"; the bot waits for it before the next Use. Same pair 170/164 locks and releases every skill (p1=142 brawl 15 s, 123 first aid 40 s). | `20260923-114223_s4.tsv` / `_s5.tsv` (timed, both accounts): four rides each, e.g. Use 11:45:08.161, lock 11:45:08.270, teleport 11:45:08.321, release 11:45:18.380. The 0xC76A objects in the 2026-09-19 notes are corpses, not buttons. |
+| Find person objective | target the named NPC: client `CharacterAction InfoRequest` (0x69) plus `LookAt` on its identity. The mission completed 0.47 s later with no attack by that account. The name is in the mission text (`QuestFullUpdate`: "...Malik Cratty is helping mutants...") and on the NPC's `SimpleCharFullUpdate`. Completion is the same sequence as Repair: reward items to the overflow window (`TemplateAction 87` + `ContainerAddItem`), `FeedbackMessage 108871108`, `CharacterAction MissionChanged` (mission holder only), `QuestMessage`. The teammate got the reward and the removal too. | `20260923-114223_s5.tsv` 11:50:35.558 target, 11:50:36.036 completion; `_s4.tsv` 11:50:35.787 teammate |
+
+## What is still not known, and how each gets known
 
 | unknown | how to settle it |
 |---|---|
-| The request the client sends when you press roll at a terminal | one capture of the owner rolling twice (`OmniCell\Tools\Capture\capture-marked.bat`, mark `roll`), decode per stream, find the client->server message between the Use of the terminal and the next `QuestAlternative` |
-| The "Level skill" lock after a floor button (5-8 s, then "Level skill available") | same capture, ride a button up and down with marks; look for the lock (a `StatMessage`, `CharacterActionMessage` or a feedback text) and the release; the bot times its next Use on the release message, not on a fixed delay |
-| Picking an item off the floor (Find item / Return item) | capture the owner picking up a mission item; check what `AOSharp.Clientless` exposes for it before writing anything |
-| Using an inventory item on an object (Repair) | capture the owner repairing once; same check |
-| Handing an item to the owner (trade) | capture one trade; this is last |
-| Where the up/down buttons stand inside a room | they arrive as dynels once he is in range; compare their positions with the pool room's `objects` list (`rooms.json`, 44-byte placements, meaning OPEN) - if they match, the buttons are known before he sees them |
+| Picking an item off the floor (Find item / Return item) | no capture has one. `GenericCmdAction.Get=1` is the likely wire form. One capture of a Find-item mission: pick the item up, mark it. |
+| Where the buttons stand inside a room | they arrive as `SimpleItemFullUpdate` with position once in range, so the bot reads them live. Still worth comparing with the pool room's `objects` list in `rooms.json` so the route can aim at a button before it is seen: the capture has four button positions to test against (e.g. `Button (down)` at (47.3, 133.4, 22.8), `Button (boss)` at (265.9, 69.0, 107.6)). |
 
 ## The steps, each with its test
 
