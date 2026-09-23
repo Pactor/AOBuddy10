@@ -41,6 +41,18 @@ namespace AOBuddy
         public bool AutoResummon = true;                       // replace pets that die (toggle: 'resummon')
         public List<int> PetSummonNanoIds = new List<int>();   // the summon nanos to keep up (auto-detect later)
 
+        // Pet buffs: once the full pet complement is up, the best castable nano he knows in each line is kept
+        // up. NanoLine names (or numbers). Which pet a nano may go on is still checked against its own target
+        // requirements. NB: Newtonsoft APPENDS a config.json list to these defaults; duplicates are harmless.
+        public bool BuffPets = true;                           // toggle: 'petbuffs'
+        public List<string> AttackPetBuffLines = new List<string>
+        {
+            "PetShortTermDamageBuffs",   // Evocation of Unleashed Malice (205195)
+            "MPPetDamageBuffs",          // Instill With Fury (116815)
+            "MPPetInitiativeBuffs",      // Chant of Frenzied Blows (116820)
+        };
+        public List<string> AllPetsBuffLines = new List<string>();   // heal-delta, resist ... buffs every combat pet gets
+
         // Log what the server tells us about a mission's location/playfield (PlayfieldAnarchyF on entry +
         // the raw mission-terminal list). Toggle: 'missiondbg'. See [[aobuddy-mission-wire-data]].
         public bool MissionDebug = true;

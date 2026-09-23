@@ -97,6 +97,7 @@ namespace AOBuddy
                     new Cmd("petattack", "send them at your current target"),
                     new Cmd("pets", "turn the whole pet system on or off"),
                     new Cmd("resummon", "toggle automatic resummoning"),
+                    new Cmd("petbuffs", "toggle keeping buffs up on the pets"),
                     new Cmd("pethealme", "heal pet onto YOU"),
                     new Cmd("pethealself", "heal pet onto ME"),
                     new Cmd("pethealpet", "heal pet onto my attack pet"),

@@ -26,10 +26,14 @@ namespace AOSharp.Clientless
         /// — profession, level and skill gates are all evaluated from live stats.
         /// </summary>
         public bool MeetsUseReqs(SimpleChar target = null, bool ignoreTargetReqs = false)
+            => MeetsUseReqs(target, ignoreTargetReqs, false);
+
+        /// <param name="ignorePetLimit">Treat the summon "pet slot is free" gate (TestNumPets) as met.</param>
+        public bool MeetsUseReqs(SimpleChar target, bool ignoreTargetReqs, bool ignorePetLimit)
         {
             if (!Criteria.TryGetValue(ItemActionInfo.UseCriteria, out List<RequirementCriterion> useCriteria))
                 return true; // no gate = usable
-            return new ReqChecker(useCriteria).MeetsReqs(target, ignoreTargetReqs);
+            return new ReqChecker(useCriteria).MeetsReqs(target, ignoreTargetReqs, ignorePetLimit);
         }
     }
 }

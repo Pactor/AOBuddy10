@@ -22,7 +22,9 @@ namespace AOSharp.Clientless
             _criteria = criteria;
         }
 
-        public bool MeetsReqs(SimpleChar target = null, bool ignoreTargetReqs = false)
+        /// <param name="ignorePetLimit">Treat TestNumPets (the "pet slot is free" gate on summons) as met,
+        /// to ask whether a summon is castable skill-wise while its pet is already up.</param>
+        public bool MeetsReqs(SimpleChar target = null, bool ignoreTargetReqs = false, bool ignorePetLimit = false)
         {
             //Set starting values
             _criteriaSource = (CriteriaSource.Self, DynelManager.LocalPlayer);
@@ -36,6 +38,9 @@ namespace AOSharp.Clientless
             {
                 bool metReq = false;
 
+                // OnUser/OnTarget/OnFightingTarget only switch whose stats the following criteria test; they
+                // push nothing. (The continue used to sit under the FightingTarget branch alone, so OnTarget
+                // pushed a spurious false and every nano with target criteria failed on a real target.)
                 if (GetNextCriteriaSource(criterion.Operator, out CriteriaSource newCriteriaSource))
                 {
                     if (newCriteriaSource == CriteriaSource.User)
@@ -43,9 +48,9 @@ namespace AOSharp.Clientless
                     else if (newCriteriaSource == CriteriaSource.Target)
                         _criteriaSource = (CriteriaSource.Target, target);
                     else if (newCriteriaSource == CriteriaSource.FightingTarget)
-                        //      _criteriaSource = (CriteriaSource.FightingTarget, DynelManager.LocalPlayer.FightingTarget);
+                        _criteriaSource = (CriteriaSource.FightingTarget, DynelManager.LocalPlayer?.FightingTarget);
 
-                        continue;
+                    continue;
                 }
 
                 if (criterion.Operator == UseCriteriaOperator.And)
@@ -81,7 +86,7 @@ namespace AOSharp.Clientless
                 }
                 else
                 {
-                    metReq = MeetsReq(criterion, target, ignoreTargetReqs);
+                    metReq = MeetsReq(criterion, target, ignoreTargetReqs, ignorePetLimit);
                 }
 
                 _state[prevReqsMet++] = metReq;
@@ -90,7 +95,7 @@ namespace AOSharp.Clientless
             return _state[0];
         }
 
-        private bool MeetsReq(RequirementCriterion criterion, SimpleChar target = null, bool ignoreTargetReqs = false)
+        private bool MeetsReq(RequirementCriterion criterion, SimpleChar target, bool ignoreTargetReqs, bool ignorePetLimit)
         {
             bool metReq = false;
 
@@ -153,26 +158,12 @@ namespace AOSharp.Clientless
                         //Param2 is amount of slots
                         metReq = Inventory.NumFreeSlots >= criterion.Param2;
                         break;
-                    //case UseCriteriaOperator.TestNumPets:
-                    //    Pet[] pets = DynelManager.LocalPlayer.Pets;
-                    //    if (pets.Any(x => x.Type == PetType.Unknown))
-                    //    {
-                    //        metReq = false;
-                    //        break;
-                    //    }
-
-                    //    PetType type = PetType.Unknown;
-                    //    if (criterion.Param2 == 1)
-                    //        type = PetType.Attack;
-                    //    else if (criterion.Param2 == 1001)
-                    //        type = PetType.Heal;
-                    //    else if (criterion.Param2 == 2001)
-                    //        type = PetType.Support;
-                    //    else if (criterion.Param2 == 4001)
-                    //        type = PetType.Social;
-
-                    //    metReq = !pets.Any(x => x.Type == type);
-                    //    break;
+                    case UseCriteriaOperator.TestNumPets:
+                        // Every pet summon ends with this. Param2 = slot * 1000 + max pets in that slot
+                        // (1 attack, 1001 heal, 2001 support, 4001 social). Falling through to the default
+                        // made every summon nano read uncastable.
+                        metReq = ignorePetLimit || HasFreePetSlot(criterion.Param2);
+                        break;
                     case UseCriteriaOperator.HasWieldedItem:
                         if (_criteriaSource.SourceType == CriteriaSource.Target)
                         {
@@ -218,6 +209,23 @@ namespace AOSharp.Clientless
             }
 
             return metReq;
+        }
+
+        private bool HasFreePetSlot(int param2)
+        {
+            PetType type;
+            switch (param2 / 1000)
+            {
+                case 0: type = PetType.Attack; break;
+                case 1: type = PetType.Heal; break;
+                case 2: type = PetType.Support; break;
+                case 4: type = PetType.Social; break;
+                default: return false;
+            }
+
+            Identity owner = _criteriaSource.Char.Identity;
+            int count = DynelManager.Npcs.Count(n => n.Owner.HasValue && n.Owner.Value == owner && n.Role == type);
+            return count < param2 % 1000;
         }
 
         private bool CheckStat(RequirementCriterion criterion, SimpleChar target)

@@ -683,7 +683,7 @@ namespace AOBuddy
                 _ctx.Vitals.Poll(me, owner);
                 // Keep pets up — summons go through the SHARED cast queue so they serialize with buffs (no
                 // interruption), and only when nothing else is queued/casting.
-                _pets.MaintainPets(me, dt, _support.HasPendingCasts, sid => _support.QueueCast(new CastRequest { OnSelf = true, NanoId = sid, Label = "summon pet" }));
+                _pets.MaintainPets(me, dt, _support.HasPendingCasts, _support.QueueCast);
 
                 // Feed the movement leash: anchor to the server's confirmed position, but ONLY while a
                 // correction is fresh (server actively disagreeing). Stale = server happy = no leash, so
@@ -1069,6 +1069,7 @@ namespace AOBuddy
                     break;
                 }
                 case "resummon": _config.AutoResummon = !_config.AutoResummon; reply($"Auto-resummon {(_config.AutoResummon ? "ON" : "OFF")}."); break;
+                case "petbuffs": _config.BuffPets = !_config.BuffPets; reply($"Pet buffs {(_config.BuffPets ? "ON" : "OFF")}."); break;
                 case "petfollow": _pets.FollowMaster(DynelManager.LocalPlayer); reply("Pets: follow me."); break;
 
                 case "petkill":
