@@ -25,6 +25,7 @@ namespace AOBuddy
         public readonly NavGround Ground;          // outdoor only
         public readonly NavDungeon Dungeon;        // dungeon only
         public readonly NavCollision Collision;    // whenever the client has surfaces for the zone
+        public MissionLayout Layout;               // a mission instance only: the zone-in placement it was composed from
 
         AOBuddyNav(int pf, string kind, string name, NavGround g, NavDungeon d, NavCollision c)
         { Playfield = pf; Kind = kind; Name = name; Ground = g; Dungeon = d; Collision = c; }
@@ -143,11 +144,12 @@ namespace AOBuddy
         // carries BuildingGeneratorData: the template playfield (a pool such as 320 Midtech), the building's
         // slot grid, the floor height, and one (room, floor, x, z, rotation) per placed room. Verified on three
         // pools against 425 walked points (NAV-CLIENTDATA.md): a placed room is the pool room with its stored
-        // rotation, x origin = X * 10 m, far z edge = (gridHeight - Z) * 10 m, y = pool height + floor * worldHeight.
+        // rotation, x origin = X * 10 m, far z edge = (gridHeight - Z) * 10 m, y = pool height + (floor - lowest floor) * worldHeight.
 
         public sealed class MissionLayout
         {
             public int Instance, TemplatePlayfield, Width, Height, WorldHeight;
+            public float LandX, LandY, LandZ;               // where the server put us on zone-in (the entrance)
             public List<int[]> Rooms = new List<int[]>();   // room, floor, x, z, rotation
         }
 
@@ -159,13 +161,15 @@ namespace AOBuddy
             int I32() { int v = (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3]; p += 4; return v; }
             short I16() { short v = (short)((b[p] << 8) | b[p + 1]); p += 2; return v; }
             I32(); I32(); I32(); p++;                                   // message type, identity, unknown
-            int version = I32(); p += 12;                                // version, landing coordinates
+            int version = I32();                                         // version, then the landing coordinates
+            float F32() { int v = I32(); return BitConverter.Int32BitsToSingle(v); }
+            float lx = F32(), ly = F32(), lz = F32();
             if (version <= 3) return null;
             p++; int modelType = I32(), modelInst = I32(); I32(); I32(); I32(); I32();
             int genType = I32(), genInst = I32();
             if (genType != 51103) return null;                           // 0xC79F ACGBuildingGeneratorData
             I32();                                                       // revision
-            var m = new MissionLayout { Instance = modelInst, TemplatePlayfield = 0 };
+            var m = new MissionLayout { Instance = modelInst, TemplatePlayfield = 0, LandX = lx, LandY = ly, LandZ = lz };
             I16(); m.Width = I16(); m.Height = I16(); m.WorldHeight = I16(); m.TemplatePlayfield = I32(); p += 3;
             int n = I32();
             if (n < 0 || n > 512 || p + n * 6 > b.Length) return null;
@@ -186,6 +190,12 @@ namespace AOBuddy
             if (!File.Exists(poolPath)) return null;
             NavDungeon pool = NavDungeon.Read(poolPath);
             const double slot = 10.0;
+            // Floors are numbered as the server sends them, and a building can sit below its entrance:
+            // the Grey Caves mission on 2026-09-23 had floors 0, -1, -2 walked at y 133, 69 and 0. The
+            // heights count up from the lowest floor, not from floor 0 (all eight saved missions fit).
+            int lowestFloor = int.MaxValue;
+            foreach (var pr in m.Rooms) lowestFloor = Math.Min(lowestFloor, pr[1]);
+            if (lowestFloor == int.MaxValue) lowestFloor = 0;
             var d = new NavDungeon { Playfield = m.Instance, Name = "mission from " + pool.Name, Tilemap = pool.Tilemap, Cell = pool.Cell, HeightScale = pool.HeightScale, Atlas = pool.Atlas, Rooms = new List<NavDungeon.Room>() };
             foreach (var pr in m.Rooms)
             {
@@ -197,12 +207,12 @@ namespace AOBuddy
                 double ox = X * slot, oz = (m.Height - Z) * slot - th * pool.Cell;
                 d.Rooms.Add(new NavDungeon.Room
                 {
-                    Index = d.Rooms.Count, Name = src.Name + " f" + floor, Flags = src.Flags, Rot = rot, Rect = src.Rect,
-                    Pos = new[] { (float)(ox + tw * pool.Cell / 2.0), src.Pos[1] + floor * m.WorldHeight, (float)(oz + th * pool.Cell / 2.0) },
+                    Index = d.Rooms.Count, Name = src.Name + " f" + floor, PoolName = src.Name, Floor = floor, Flags = src.Flags, Rot = rot, Rect = src.Rect,
+                    Pos = new[] { (float)(ox + tw * pool.Cell / 2.0), src.Pos[1] + (floor - lowestFloor) * m.WorldHeight, (float)(oz + th * pool.Cell / 2.0) },
                     HeightBase = src.HeightBase, Doors = src.Doors, Polys = src.Polys, Tile = src.Tile, Height = src.Height, Flags3 = src.Flags3
                 });
             }
-            return new AOBuddyNav(m.Instance, "mission", d.Name, null, d, null);
+            return new AOBuddyNav(m.Instance, "mission", d.Name, null, d, null) { Layout = m };
         }
     }
 
@@ -291,6 +301,8 @@ namespace AOBuddy
             [JsonProperty("tile")] public int[][] Tile;
             [JsonProperty("height")] public int[][] Height;
             [JsonProperty("flags3")] public int[][] Flags3;
+            [JsonIgnore] public int Floor;         // mission rooms only: the floor as the server numbered it
+            [JsonIgnore] public string PoolName = "";   // mission rooms only: the pool room's own name
         }
 
         [JsonProperty("playfield")] public int Playfield;

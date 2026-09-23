@@ -65,6 +65,51 @@ streams named below are in `E:\Funcom\sniffs\` (csv + txt), the raw recordings i
 | Find person objective | target the named NPC: client `CharacterAction InfoRequest` (0x69) plus `LookAt` on its identity. The mission completed 0.47 s later with no attack by that account. The name is in the mission text (`QuestFullUpdate`: "...Malik Cratty is helping mutants...") and on the NPC's `SimpleCharFullUpdate`. Completion is the same sequence as Repair: reward items to the overflow window (`TemplateAction 87` + `ContainerAddItem`), `FeedbackMessage 108871108`, `CharacterAction MissionChanged` (mission holder only), `QuestMessage`. The teammate got the reward and the removal too. | `20260923-114223_s5.tsv` 11:50:35.558 target, 11:50:36.036 completion; `_s4.tsv` 11:50:35.787 teammate. Second run: `20260923-120056_s9.tsv` targeted Twinger Scorpiod and Jamar Borroel (nothing), then Marquis Forejt, the name in the text, at 12:10:47.972; MissionChanged at 12:10:48.452. Only the named NPC completes it. |
 | Find item objective | the same as find person: select the item, nothing is picked up. The client sent one `LookAt` on the floor item (type 0xC73D, template 100341 `Urgent Sensitive Information`, the name in the mission text) with ReturnInfo=0, and no GenericCmd. The mission completed 150 ms later with the usual sequence; the item stayed on the floor until he left the room. For people the client sends `InfoRequest` + `LookAt` with ReturnInfo=1; for the item only `LookAt` with ReturnInfo=0. The SDK's `Targeting.SetTarget` always sends ReturnInfo=0, which matches the item case; for a person the bot should send what the client sends. The mission item is found by template name against the mission text, like the person. | `20260923-125821_s4.tsv` LookAt 13:04:11.152, completion 13:04:11.304 (owner mark 13:04:09 "picking up item") |
 
+## Built (2026-09-23, evening) - not yet run live
+
+`AOBuddy/MissionController.cs`, wired through `Main.cs` only (message feed, the `mission` command,
+a slot in `Walk()` after resupply and before travel, stop on death, and the owner-lost zone sweep and
+nav catch-up held off while a blitz runs). Off unless the owner types `mission blitz`.
+
+What the captures settled while building it:
+
+- **Floor heights count up from the lowest floor.** Grey Caves numbers its floors 0, -1, -2 and they
+  were walked at y 133, 69, 0; the old `pool y + floor * 64` put every negative floor underground.
+  `AOBuddyNav.LoadMission` now uses `pool y + (floor - lowest floor) * worldHeight`. All eight saved
+  missions still fit (the ones starting at floor 0 are unchanged).
+- **Walkable rule.** Each room's last row and column is the cell shared with its neighbour and holds only
+  0 or 0x80. A cell is floor when ANY room covering it has a tile; cells where every covering room says 0
+  are walls, kept only as a costly fallback. Scored on eight walked missions: 99.6% of 1,011 walked steps
+  connect (with the fallback), every button leg of the three 2026-09-23 runs routes. Steps may climb 2 m.
+- **Buttons are sent per floor on arrival**, up to 270 m away, so the bot never searches for them.
+  `Button (boss)` joins the boss room to the floor next to it (the boss room was on top in HiTech and
+  Midtech, at the bottom in Grey Caves); up/down join the ordinary floors. The planner: ride toward the
+  boss room's floor, take `Button (boss)` when it is on this floor, take the one button in the boss room
+  to leave. Replayed against the three runs it picked the owner's next button 9 times out of 9, out and back.
+- **The target is in the quest record.** `QuestFullUpdate` holds, per mission: holder identity, type
+  code (0x2C47 find person, 0x2C49 find item, 0x2C4E repair), then the target identity (repair: tool,
+  then object), and about 230 bytes on the building identity `(0xC79F, instance)` the zone-in packet
+  carries - so the bot picks the record for the building it is in. A team member's copy has the type and
+  building but NO target (capture -114223 s4); then the target is the NPC or item whose name is in the
+  mission text. Boss-room targets are sent with the ride into the boss room; the Sep 10 repair chamber
+  (single floor, no boss room) was sent at 88 m, so without a boss room the bot searches room by room.
+
+Checked offline with a harness that loads the real captures through the C# code (kept outside the
+repository at `E:\Funcom\sniffs\missiontest`: `Harness.exe` for grid/routes/records,
+`Harness.exe planner` for the button choices).
+
+### Live test, in this order (bot in team, owner rolls at a TEAM terminal so the bot gets the mission)
+
+1. Enter the mission with the bot. `mission status`: pool, floors, boss room and floor, the bot's floor
+   and room, the buttons it has seen, the mission type. Compare with what you see.
+2. `mission route`: the next hop (which button, or the target), metres and the rooms it passes. Walk it
+   by hand if you want to confirm.
+3. `mission blitz` with you watching. The log lines to read afterwards all start with `MISSION:`.
+   `mission stop` ends it at any point and hands him back to follow.
+
+Not built yet: rolling at a terminal (step 5; the wire format is known), return item and kill person,
+the trade at the end, walking out through the exit door (the blitz stops at the entrance).
+
 ## What is still not known, and how each gets known
 
 | unknown | how to settle it |

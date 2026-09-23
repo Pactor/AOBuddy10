@@ -1079,3 +1079,18 @@ Tools: `tools/navbridge/composemission.py` (grades every saved packet against it
 `AOBuddyNav.DecodeZoneIn` / `LoadMission` in the bot. Main now keeps the last zone-in packet,
 so `navdata` inside a mission composes the instance from its pool and answers as it does in a
 static dungeon. Still test-only, still nothing moves on it.
+
+---
+
+# Mission floors, walls and doors from the walks (2026-09-23, evening)
+
+- **Floor height is `pool y + (floor - lowest floor) * worldHeight`.** The Grey Caves mission of capture
+  20260923-114223 sent floors 0, -1, -2 and was walked at y 133, 69, 0. Every earlier mission started at
+  floor 0, which is why `pool y + floor * worldHeight` fitted them. Fixed in `AOBuddyNav.LoadMission`.
+- **Walls and doorways.** A pool room's last row and column only ever hold 0 or 0x80 (all ten pools); they
+  are the cell it shares with the next room. Against eight walked missions, shared cells where one room has
+  floor were walked through as freely as plain floor, and shared cells where every room says 0 almost never:
+  so a cell is walkable when any room covering it has a tile, and the all-zero shared cells are walls (kept
+  as a costly fallback - a few doorways are unmarked on both sides). 99.6% of 1,011 walked steps connect.
+  `MissionGrid` in `AOBuddy/MissionController.cs`.
+- The rotation convention in `LoadMission` is right: it reproduces this morning's grading exactly.

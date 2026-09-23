@@ -63,6 +63,8 @@ namespace AOBuddy
         private SupportController _support;
         private ResupplyController _resupply;
         private NavController _nav;
+        private MissionController _mission;
+        private bool _missionWasActive;
 
         private string _pathsDir;
         private string _pluginDir;
@@ -155,6 +157,8 @@ namespace AOBuddy
             _support = new SupportController(_ctx, _move);
             _resupply = new ResupplyController(_ctx, _move, pluginDir);
             _nav = new NavController(_ctx, pluginDir);
+            _mission = new MissionController(_ctx, _move, pluginDir,
+                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
@@ -167,6 +171,8 @@ namespace AOBuddy
                 catch (Exception ex) { Log("VITALS feed error: " + ex.Message); }
                 try { _resupply.OnMessage(m); }
                 catch (Exception ex) { Log("RESUPPLY feed error: " + ex.Message); }
+                try { _mission.OnMessage(m); }
+                catch (Exception ex) { Log("MISSION feed error: " + ex.Message); }
             };
 
             // Player trades: the owner handing us credits when we asked for them (see ResupplyController).
@@ -365,6 +371,7 @@ namespace AOBuddy
             // never issues it — only an explicit 'idle'/'stop' from the owner does.
             try { if (me != null) _move.Stop(me, _config.SendIntervalMs); } catch { }
             _resupply.Stop(me, "died");
+            _mission.Stop("died");
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
@@ -586,7 +593,7 @@ namespace AOBuddy
                 // engages when BOTH we and the owner are near the same recorded run (RouteToward enforces it),
                 // so it can't send us the wrong way; off recorded ground it returns null and normal follow /
                 // the zone-sweep handle it. Nav only supplies the points; FOLLOW's replay walker moves the body.
-                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat
+                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat && !_mission.Active
                     && _config.Follow && _mode == Mode.Assist && !me.IsCasting && !_support.Resting && !_follow.ZoneSweeping;
                 if (navEligible)
                 {
@@ -636,7 +643,7 @@ namespace AOBuddy
                 // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
                 // spot he disappeared from, and he is still gone: he crossed something. Work the line.
                 bool crossingLikely = _ownerLostDist <= ZoneLossMeters && _ownerLostMoving;
-                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp
+                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active
                     && !_follow.ZoneSweeping && !_navReplaying
                     && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
                     && _lastOwnerPos.HasValue && !_follow.HasWork)
@@ -722,6 +729,9 @@ namespace AOBuddy
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }
+            // MISSION blitz (off unless the owner started it): owns the body until it is done or stopped.
+            if (_mission.Tick(me, dt)) { _follow.BreakMirror(); _missionWasActive = true; return; }
+            if (_missionWasActive) { _missionWasActive = false; _follow.ClearMovement(); }   // hand back to follow clean
             if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
             _follow.WalkTick(me, owner, dt);
         }
@@ -1241,6 +1251,7 @@ namespace AOBuddy
                     break;
                 case "status": reply(StatusLine()); break;
                 case "navdata": reply(NavDataCommand(arg)); break;
+                case "mission": _mission.Command(parts.Length > 1 ? parts[1] : "", reply); break;
                 case "stat": reply(StatCommand(parts.Length > 1 ? parts[1] : "")); break;
 
                 // ---- Knowledge (profession / nanos) ----
@@ -1300,7 +1311,6 @@ namespace AOBuddy
                 case "shop":
                 case "sell":
                 case "buy": reply("Only 'resupply' (stims and rechargers) so far; general vendor buy/sell isn't implemented yet."); break;
-                case "mission": reply("Mission-terminal running not implemented yet (Milestone 3). See MILESTONES-solo.md."); break;
                 case "whompa":
                 case "travel": reply("Whompa/grid routing not implemented yet (Milestone 5). See MILESTONES-solo.md."); break;
 
