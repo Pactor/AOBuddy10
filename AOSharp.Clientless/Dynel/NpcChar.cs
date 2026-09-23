@@ -33,6 +33,12 @@ namespace AOSharp.Clientless
             Owner = simpleCharMsg.Owner;
             PetTypeId = simpleCharMsg.PetType;
             NpcFamily = simpleCharMsg.NpcFamily;
+
+            // Mirror them into the stat table: nano target criteria test these stats (pet buffs require
+            // Breed == 7 and NPCFamily == 97 = attack pet), and ReqChecker only reads stats.
+            SetStat(Stat.NPCFamily, NpcFamily);
+            SetStat(Stat.PetType, PetTypeId);
+            SetStat(Stat.Breed, (int)Appearance.Breed);
         }
     }
 }

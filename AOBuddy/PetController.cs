@@ -156,36 +156,43 @@ namespace AOBuddy
         // Keep pets up. Resummons the moment a summon nano is castable again (its recharge is the resummon
         // timer). Gated by Config.UsePets and Config.AutoResummon so the owner can turn replacement off per
         // situation.
-        public void MaintainPets(LocalPlayer me, double dt, bool supportBusy, Action<int> queueSummon)
+        public void MaintainPets(LocalPlayer me, double dt, bool supportBusy, Action<CastRequest> queueCast)
         {
             if (me == null || !_ctx.Config.UsePets) return;
 
             _petClock += dt;
             LogRoster(me);
 
-            if (!_ctx.Config.AutoResummon) return;
-            // ONE cast at a time: queue summons through the same cast system as buffs (queueSummon) so they
-            // serialize instead of interrupting each other or the buffs. Only add another when nothing is
-            // queued or in flight — so each summon completes before the next is attempted.
+            // ONE cast at a time: queue summons and pet buffs through the same cast system as the other buffs
+            // so they serialize instead of interrupting each other. Only add another when nothing is queued or
+            // in flight — so each cast completes before the next is attempted.
             if (supportBusy || me.IsCasting) return;
-
-            // Summon nanos: AUTO-detected best-QL-per-pet-line (no config). An explicit override is honoured
-            // if set, but by default he picks his own best pets.
-            List<int> summons = (_ctx.Config.PetSummonNanoIds != null && _ctx.Config.PetSummonNanoIds.Count > 0)
-                ? _ctx.Config.PetSummonNanoIds
-                : AutoSummons(me);
-            if (summons.Count == 0) return;
 
             _resummonAccum += dt;
             if (_resummonAccum < 1.0) return;    // check ~1/s, not every frame
             _resummonAccum = 0;
 
-            if (me.IsCasting) return;
+            // Summoning comes first; buffs go on whatever pets are up whenever no summon was queued this
+            // pass. Buffing must NOT hang off the summon list: when that list came back empty (every summon
+            // read uncastable) or AutoResummon was off, the pets standing right there were never buffed.
+            if (_ctx.Config.AutoResummon && TrySummon(me, queueCast)) return;
+            if (_ctx.Config.BuffPets) BuffPets(me, queueCast);
+        }
+
+        // Queue one summon if we're short a pet. True if a summon was queued.
+        private bool TrySummon(LocalPlayer me, Action<CastRequest> queueCast)
+        {
+            // Summon nanos: AUTO-detected best-QL-per-pet-line (no config). An explicit override is honoured
+            // if set, but by default he picks his own best pets.
+            List<int> summons = (_ctx.Config.PetSummonNanoIds != null && _ctx.Config.PetSummonNanoIds.Count > 0)
+                ? _ctx.Config.PetSummonNanoIds
+                : AutoSummons(me);
+
             // Count what the SERVER says we own, not what is in view. Summoning because a live pet wandered
             // out of range is how you end up with two attack pets, or with a summon refused every twelve
             // seconds for ten minutes because the one you have is alive and standing somewhere else.
             int have = OwnedCount(me);
-            if (have >= summons.Count) return;   // full complement is up
+            if (have >= summons.Count) return false;   // full complement is up
 
             // Short a pet. Summon the first type we haven't summoned within SummonRecastSec — each pet needs a
             // few seconds to appear and register, and re-casting the same summon before then replaces the pet
@@ -195,10 +202,121 @@ namespace AOBuddy
                 if (_summonAt.TryGetValue(nanoId, out double last) && _petClock - last < SummonRecastSec)
                     continue;
                 _summonAt[nanoId] = _petClock;
-                queueSummon(nanoId);   // serialized with buffs by the shared cast queue
+                queueCast(new CastRequest { OnSelf = true, NanoId = nanoId, Label = "summon pet" });   // serialized with buffs by the shared cast queue
                 _ctx.Log($"PET: summon — queued nano {nanoId} (have {have}/{summons.Count}).");
-                return;
+                return true;
             }
+            return false;
+        }
+
+        // ---- Pet buffs ------------------------------------------------------------
+        // Config.AttackPetBuffLines go on the attack pet, Config.AllPetsBuffLines on every combat pet. Per
+        // (pet, line) the best nano he knows that MeetsUseReqs says he can cast ON THAT PET — so the nano's own
+        // target requirements (e.g. NPCFamily 97) still decide — and only if the pet doesn't already carry an
+        // equal-or-better buff of that line. One buff queued per pass; the shared cast queue serializes it.
+
+        // After queueing a pet buff, don't queue the same one on the same pet again for this long: the cast
+        // takes a moment to land and show up in the pet's buff list.
+        private const double PetBuffRecastSec = 20.0;
+        private readonly Dictionary<string, double> _petBuffAt = new Dictionary<string, double>();   // "pet:nano" -> _petClock
+        private readonly HashSet<string> _petBuffWarned = new HashSet<string>();
+
+        private void BuffPets(LocalPlayer me, Action<CastRequest> queueCast)
+        {
+            int[] spells = me.SpellList;
+            if (spells == null || spells.Length == 0) return;
+
+            List<NpcChar> pets = Pets(me).Where(p => p.IsCombatPet).ToList();
+            if (pets.Count == 0) return;
+
+            var attackLines = ParseLines(_ctx.Config.AttackPetBuffLines);
+            var allLines = ParseLines(_ctx.Config.AllPetsBuffLines);
+            if (attackLines.Count == 0 && allLines.Count == 0) return;
+
+            // Known nanos of the configured lines, grouped per line, best (highest StackingOrder) first.
+            var byLine = new Dictionary<NanoLine, List<NanoItem>>();
+            foreach (int id in spells)
+            {
+                if (!ItemData.Find(id, out NanoItem ni) || ni == null) continue;
+                if (!attackLines.Contains(ni.NanoLine) && !allLines.Contains(ni.NanoLine)) continue;
+                if (!byLine.TryGetValue(ni.NanoLine, out var list)) byLine[ni.NanoLine] = list = new List<NanoItem>();
+                list.Add(ni);
+            }
+            foreach (var list in byLine.Values)
+                list.Sort((a, b) => (b.StackingOrder & 0xFFFFF).CompareTo(a.StackingOrder & 0xFFFFF));
+
+            foreach (NpcChar pet in pets)
+            {
+                foreach (var kv in byLine)
+                {
+                    bool wanted = allLines.Contains(kv.Key) || (pet.Role == PetType.Attack && attackLines.Contains(kv.Key));
+                    if (!wanted) continue;
+
+                    NanoItem best = kv.Value.FirstOrDefault(ni => CastableOn(ni, pet));
+                    if (best == null)
+                    {
+                        WarnNoneCastable(me, pet, kv.Key);
+                        continue;
+                    }
+
+                    if (!PetNeedsBuff(pet, best)) continue;
+                    string key = pet.Identity.Instance + ":" + best.Id;
+                    if (_petBuffAt.TryGetValue(key, out double last) && _petClock - last < PetBuffRecastSec) continue;
+                    if (best.Range > 0 && me.DistanceFrom(pet) > best.Range) continue;   // wait until it's in reach
+
+                    _petBuffAt[key] = _petClock;
+                    queueCast(new CastRequest { Target = pet.Identity, NanoId = best.Id, Label = "buff pet" });
+                    _ctx.Log($"PET: buff — queued '{best.Name}' [{best.Id}] ({kv.Key}) on {pet.Name}#{pet.Identity.Instance} ({pet.Role}).");
+                    return;
+                }
+            }
+        }
+
+        private static bool CastableOn(NanoItem ni, NpcChar pet)
+        {
+            try { return ni.MeetsUseReqs(pet, false); } catch { return false; }
+        }
+
+        // Missing, or an equal-or-better buff of the line isn't up, or it is about to run out. The refresh margin
+        // is capped at a quarter of the buff's duration, so short-term buffs aren't recast the moment they land.
+        private bool PetNeedsBuff(NpcChar pet, NanoItem best)
+        {
+            Buff up = pet.Buffs?.FirstOrDefault(b => b.Id == best.Id
+                || (b.NanoItem != null && b.NanoItem.NanoLine == best.NanoLine && b.NanoItem.StackingOrder >= best.StackingOrder));
+            if (up == null) return true;
+
+            double remaining = up.Cooldown?.RemainingTime ?? -1;
+            if (remaining < 0) return false;   // up, timer unknown — leave it
+            double margin = Math.Min(_ctx.Config.RebuffMarginSeconds, best.TotalTime / 4.0);
+            return remaining < margin;
+        }
+
+        // A line with known nanos but none castable on this pet: say why once (skills, or the pet's target
+        // stats not matching the nano's target requirements), so a wire value we misread is visible.
+        private void WarnNoneCastable(LocalPlayer me, NpcChar pet, NanoLine line)
+        {
+            string key = pet.Identity.Instance + ":" + line;
+            if (!_petBuffWarned.Add(key)) return;
+            pet.TryGetStat(Stat.Breed, out int breed);
+            pet.TryGetStat(Stat.NPCFamily, out int family);
+            _ctx.Log($"PET: buff — no {line} nano castable on {pet.Name}#{pet.Identity.Instance} ({pet.Role}, breed={breed}, family={family}).");
+        }
+
+        private readonly HashSet<string> _badLineNames = new HashSet<string>();
+
+        // Config line names -> NanoLine. Accepts enum names or numbers; unknown names are logged once.
+        private HashSet<NanoLine> ParseLines(List<string> names)
+        {
+            var lines = new HashSet<NanoLine>();
+            if (names == null) return lines;
+            foreach (string raw in names)
+            {
+                string n = raw?.Trim();
+                if (string.IsNullOrEmpty(n)) continue;
+                if (Enum.TryParse(n, true, out NanoLine line)) lines.Add(line);
+                else if (_badLineNames.Add(n)) _ctx.Log($"PET: buff — unknown NanoLine '{n}' in config, ignored.");
+            }
+            return lines;
         }
 
         // The best summon nano in each pet line the character KNOWS: highest StackingOrder then QL that he can
@@ -206,11 +324,12 @@ namespace AOBuddy
         // hardcoding — auto-upgrades as he trains and uploads better pet nanos.
         public List<int> AutoSummons(LocalPlayer me)
         {
-            // Per pet line, pick the highest-StackingOrder (= best) summon nano. Prefer one MeetsUseReqs says
-            // we can cast, BUT that check UNDER-reports for summon nanos (reads False even when buffed and able),
-            // so if a line has none it calls castable, fall back to the best overall and let the SERVER decide.
+            // Per pet line, pick the highest-StackingOrder (= best) summon nano MeetsUseReqs says we can cast.
+            // ignorePetLimit: rank on skills only — a pet already up in that slot fails TestNumPets, and the
+            // line must still count toward the complement. A line with nanos but none castable is left out
+            // rather than guessing the best one: that cast is refused for skills (e.g. 456 ST/MC at 450).
             var bestCastId = new Dictionary<NanoLine, int>(); var bestCastRank = new Dictionary<NanoLine, long>();
-            var bestAnyId = new Dictionary<NanoLine, int>();  var bestAnyRank = new Dictionary<NanoLine, long>();
+            var knownLines = new HashSet<NanoLine>();
             int[] spells = me == null ? null : me.SpellList;
             if (spells != null)
             {
@@ -218,9 +337,9 @@ namespace AOBuddy
                 {
                     if (!ItemData.Find(id, out NanoItem ni) || ni == null) continue;
                     if (Array.IndexOf(PetLines, ni.NanoLine) < 0) continue;
+                    knownLines.Add(ni.NanoLine);
                     long rank = ni.StackingOrder & 0xFFFFF;
-                    if (!bestAnyRank.TryGetValue(ni.NanoLine, out long a) || rank > a) { bestAnyRank[ni.NanoLine] = rank; bestAnyId[ni.NanoLine] = id; }
-                    bool castable; try { castable = ni.MeetsUseReqs(me, false); } catch { castable = false; }
+                    bool castable; try { castable = ni.MeetsUseReqs(me, false, true); } catch { castable = false; }
                     if (castable && (!bestCastRank.TryGetValue(ni.NanoLine, out long c) || rank > c)) { bestCastRank[ni.NanoLine] = rank; bestCastId[ni.NanoLine] = id; }
                 }
             }
@@ -230,7 +349,7 @@ namespace AOBuddy
             foreach (NanoLine line in PetLines)
             {
                 if (bestCastId.TryGetValue(line, out int cid)) { result.Add(cid); dbg.Add($"{line}:{cid}"); }
-                else if (bestAnyId.TryGetValue(line, out int aid)) { result.Add(aid); dbg.Add($"{line}:{aid}(server-decides)"); }
+                else if (knownLines.Contains(line)) dbg.Add($"{line}:none-castable");
             }
             string key = string.Join(",", dbg);
             if (key != _lastSummonKey) { _lastSummonKey = key; _ctx.Log($"PET: summons = [{(key.Length == 0 ? "none — no pet nanos known" : key)}]"); }
