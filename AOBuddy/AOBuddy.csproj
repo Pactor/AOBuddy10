@@ -25,6 +25,7 @@
     <None Update="GameData\ItemValues.bin"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\Zoning.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\Nav\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="GameData\ScottyWarps.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
   </ItemGroup>
 
 </Project>
