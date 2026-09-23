@@ -137,6 +137,73 @@ namespace AOBuddy
         }
 
         sealed class WalkedFile { public List<List<float[]>> Segments; }
+
+        // ---- missions ----------------------------------------------------------------------------------------
+        // A mission instance is not in the client data. The zone-in packet (PlayfieldAnarchyF, version 4)
+        // carries BuildingGeneratorData: the template playfield (a pool such as 320 Midtech), the building's
+        // slot grid, the floor height, and one (room, floor, x, z, rotation) per placed room. Verified on three
+        // pools against 425 walked points (NAV-CLIENTDATA.md): a placed room is the pool room with its stored
+        // rotation, x origin = X * 10 m, far z edge = (gridHeight - Z) * 10 m, y = pool height + floor * worldHeight.
+
+        public sealed class MissionLayout
+        {
+            public int Instance, TemplatePlayfield, Width, Height, WorldHeight;
+            public List<int[]> Rooms = new List<int[]>();   // room, floor, x, z, rotation
+        }
+
+        /// <summary>Decode the building block of a raw zone-in packet; null when the packet has none (outdoor, static dungeon).</summary>
+        public static MissionLayout DecodeZoneIn(byte[] b)
+        {
+            if (b == null || b.Length < 0x60) return null;
+            int p = 0x10;
+            int I32() { int v = (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3]; p += 4; return v; }
+            short I16() { short v = (short)((b[p] << 8) | b[p + 1]); p += 2; return v; }
+            I32(); I32(); I32(); p++;                                   // message type, identity, unknown
+            int version = I32(); p += 12;                                // version, landing coordinates
+            if (version <= 3) return null;
+            p++; int modelType = I32(), modelInst = I32(); I32(); I32(); I32(); I32();
+            int genType = I32(), genInst = I32();
+            if (genType != 51103) return null;                           // 0xC79F ACGBuildingGeneratorData
+            I32();                                                       // revision
+            var m = new MissionLayout { Instance = modelInst, TemplatePlayfield = 0 };
+            I16(); m.Width = I16(); m.Height = I16(); m.WorldHeight = I16(); m.TemplatePlayfield = I32(); p += 3;
+            int n = I32();
+            if (n < 0 || n > 512 || p + n * 6 > b.Length) return null;
+            for (int i = 0; i < n; i++)
+            {
+                short room = I16(); sbyte floor = (sbyte)b[p++]; int x = b[p++], z = b[p++], rot = b[p++];
+                m.Rooms.Add(new int[] { room, floor, x, z, rot });
+            }
+            return m;
+        }
+
+        /// <summary>Compose a mission instance's rooms from its zone-in packet and the template pool's rooms.json.</summary>
+        public static AOBuddyNav LoadMission(string pluginDir, byte[] zoneInPacket)
+        {
+            var m = DecodeZoneIn(zoneInPacket);
+            if (m == null) return null;
+            string poolPath = Path.Combine(FolderFor(pluginDir, m.TemplatePlayfield), "rooms.json");
+            if (!File.Exists(poolPath)) return null;
+            NavDungeon pool = NavDungeon.Read(poolPath);
+            const double slot = 10.0;
+            var d = new NavDungeon { Playfield = m.Instance, Name = "mission from " + pool.Name, Tilemap = pool.Tilemap, Cell = pool.Cell, HeightScale = pool.HeightScale, Atlas = pool.Atlas, Rooms = new List<NavDungeon.Room>() };
+            foreach (var pr in m.Rooms)
+            {
+                int idx = pr[0], floor = pr[1], X = pr[2], Z = pr[3], rot = pr[4];
+                if (idx < 0 || idx >= pool.Rooms.Count) continue;
+                var src = pool.Rooms[idx];
+                int w = src.Rect[2] - src.Rect[0] + 1, h = src.Rect[3] - src.Rect[1] + 1;
+                int tw = rot % 2 == 0 ? w : h, th = rot % 2 == 0 ? h : w;   // footprint after rotation
+                double ox = X * slot, oz = (m.Height - Z) * slot - th * pool.Cell;
+                d.Rooms.Add(new NavDungeon.Room
+                {
+                    Index = d.Rooms.Count, Name = src.Name + " f" + floor, Flags = src.Flags, Rot = rot, Rect = src.Rect,
+                    Pos = new[] { (float)(ox + tw * pool.Cell / 2.0), src.Pos[1] + floor * m.WorldHeight, (float)(oz + th * pool.Cell / 2.0) },
+                    HeightBase = src.HeightBase, Doors = src.Doors, Polys = src.Polys, Tile = src.Tile, Height = src.Height, Flags3 = src.Flags3
+                });
+            }
+            return new AOBuddyNav(m.Instance, "mission", d.Name, null, d, null);
+        }
     }
 
     /// <summary>ground.bin (AONG v2): outdoor heightfield + tile ids + building nibbles.</summary>

@@ -1023,3 +1023,59 @@ floor-under-point queries; `navdata` in chat runs it against the live character 
 `navdata <x> <z>`, `navdata verify`, `navdata unload`) and logs the answer. No controller
 calls it. Checked out of process on 127 (98.9%), 1931 (97.3%), 800 (100%) and the mission
 pools; the Subway loads in 130 ms, Andromeda in 30 ms.
+
+---
+
+# Missions: composed from the zone-in packet and the pool, verified on three live runs (2026-09-23)
+
+Three Rubi-Ka missions were run with mission debug on and nav recording on, so each one left
+its raw zone-in packet (`missions/zonein-pf<instance>-*.bin`, saved by Main under MissionDebug)
+and the walk (`nav/<instance>.json`). Outdoor zone-ins are 86 bytes; a mission's is 223-247.
+
+## The packet, decoded (big-endian, OmniCell's `PlayfieldAnarchyFSerializer` order)
+
+    0x10  i32 message type            0x5F4B1A39
+          Identity                    (40016, playfield)
+          u8                          0
+          i32 version                 4  (a mission; outdoor zones send 3)
+          f32 x, y, z                 landing point
+          u8 0x61, Identity modelId   (51103 = ACGBuildingGeneratorData, instance id)
+          i32 group, i32 subgroup, Identity playfieldId
+          Identity                    peeked generator id, again (51103, instance)
+          i32 revision
+          i16 version(3) i16 width i16 height i16 worldHeight i32 templatePlayfield u8 r,g,b
+          i32 nRooms, nRooms x (i16 room, i8 floor, u8 x, u8 z, u8 rotation)
+          i32 -1, i32 -1
+
+All three buildings were 30 x 30 slots with worldHeight 64: HiTech (template 321, 19 rooms),
+Midtech (320, 23 rooms), Omnilab (346, 19 rooms). `room` indexes the pool's room list.
+
+## The placement rule (the landing point gave the scale; the walks gave the rest)
+
+Room 51 of the HiTech pool sat at slot (0, 11) and he landed at x = 1.8, z = 185: a slot is
+10 m, x counts from 0 and z from the far edge. A pool room is (5k + 1) cells wide, so it spans
+k slots plus the shared door cell. The composed room is a static-dungeon room:
+
+    rot        as sent
+    footprint  (w, h) cells, swapped when rot is odd
+    x origin   X * 10;   far z edge = (height - Z) * 10   (so z origin = that - footprint * 2)
+    pos        footprint centre;  y = pool room's y + floor * worldHeight
+    tiles, heights, heightBase   straight from the pool room
+
+He walked floors at y = 5, 69 and 129: the ordinary rooms are at 5 in the pool, the boss room
+at 0, so floor * 64 lands exactly. Graded like everything else, tiles within 1 m:
+
+| instance | pool | walked points | explained |
+|---|---|---|---|
+| 2224294 | HiTech 321 | 82 (floors 0, 1, 2) | 100% |
+| 2224295 | Midtech 320 | 173 | 98.3% |
+| 2224298 | Omnilab 346 | 170 | 97.1% |
+
+The eight rotation mappings were all tried; the identity (use rot as sent) wins on every run,
+and the misses are slot-boundary door cells. No mission collision yet: the pool rooms' 1000013
+records would need the same transform, and the tiles alone already cover the walk.
+
+Tools: `tools/navbridge/composemission.py` (grades every saved packet against its walk) and
+`AOBuddyNav.DecodeZoneIn` / `LoadMission` in the bot. Main now keeps the last zone-in packet,
+so `navdata` inside a mission composes the instance from its pool and answers as it does in a
+static dungeon. Still test-only, still nothing moves on it.

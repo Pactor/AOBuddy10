@@ -66,6 +66,7 @@ namespace AOBuddy
         private string _pathsDir;
         private string _pluginDir;
         private AOBuddyNav _navData;           // test-only reader for GameData/Nav, see the 'navdata' command
+        private byte[] _lastZoneInPacket;      // raw PlayfieldAnarchyF of the current zone; carries a mission's room placements
         private string _logFile;
 
         // Tick / diagnostics state that belongs to Main's coordination, not to any one system.
@@ -215,6 +216,7 @@ namespace AOBuddy
                     // MISSION DEBUG — how much the server tells us about a mission's location/playfield.
                     // PlayfieldAnarchyF fires on zone-in (incl. entering a mission): playfield id, our landing
                     // coords, and the placed dynels (mobs/objects) = the mission layout the server hands us.
+                    if (m != null && m.Body is PlayfieldAnarchyFMessage && m.RawPacket != null) _lastZoneInPacket = m.RawPacket;
                     if (_config.MissionDebug && m != null && m.Body is PlayfieldAnarchyFMessage pfm)
                     {
                         Log($"MISSIONDBG: PlayfieldAnarchyF pf={pfm.PlayfieldId1.Instance} land=({pfm.CharacterCoordinates.X:0},{pfm.CharacterCoordinates.Y:0},{pfm.CharacterCoordinates.Z:0}) dynels={(pfm.Dynels != null ? pfm.Dynels.Length : 0)}");
@@ -1559,7 +1561,8 @@ namespace AOBuddy
         // ---- Permanent stats: PERK & RESEARCH ------------------------------------
 
         // ---- navdata: read-only check of GameData/Nav against the live character (nothing uses it yet) ----
-        //   navdata            floor data under the bot's own feet vs his real Y
+        //   navdata            floor data under the bot's own feet vs his real Y (in a mission: composed from the
+        //                      zone-in packet's room placements and the template pool)
         //   navdata <x> <z>    the same for any point in the current playfield
         //   navdata verify     every point in nav/<pf>.json against the data (the acceptance test)
         //   navdata unload     drop the loaded data
@@ -1574,7 +1577,9 @@ namespace AOBuddy
                 {
                     var sw = System.Diagnostics.Stopwatch.StartNew();
                     _navData = AOBuddyNav.Load(_pluginDir, pf);
-                    if (_navData == null) return $"No nav data folder for pf {pf} ({AOBuddyNav.FolderFor(_pluginDir, pf)}).";
+                    if (_navData == null && _lastZoneInPacket != null)
+                        _navData = AOBuddyNav.LoadMission(_pluginDir, _lastZoneInPacket);   // an instance: compose it from its pool
+                    if (_navData == null) return $"No nav data folder for pf {pf} ({AOBuddyNav.FolderFor(_pluginDir, pf)}) and no mission layout in the zone-in packet.";
                     Log($"NAVDATA: loaded pf {pf} {_navData.Kind} ground={(_navData.Ground != null ? _navData.Ground.SamplesX + "x" + _navData.Ground.SamplesZ : "-")} rooms={(_navData.Dungeon != null ? _navData.Dungeon.Rooms.Count : 0)} collision={(_navData.Collision != null ? _navData.Collision.Triangles : 0)} tris in {sw.ElapsedMilliseconds} ms");
                 }
                 if (arg == "verify") return _navData.SelfTest(Path.Combine(_pluginDir, "nav", pf + ".json"));

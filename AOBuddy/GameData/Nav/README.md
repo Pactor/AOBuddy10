@@ -76,8 +76,11 @@ Stairs, ramps between levels, bridges and mezzanines are not in the tiles; they 
 Shadowlands temples and mazes, and the autocontent mission pools (320 Midtech, 321 HiTech,
 324 Clan, 322 Cave, 331 tarm, 341 Grey Caves, 346 Omnilab, 351 Subway Ventil, 362 SL ACG,
 382 Alien ACG). A mission instance is the server placing rooms from one pool; the placement
-arrives on the wire (`BuildingGeneratorData`: template playfield, then room index, floor,
-x, z, rotation per room) and is not in this data.
+arrives in the zone-in packet (`BuildingGeneratorData`: template playfield, slot grid, world
+height, then room index, floor, x, z, rotation per room) and is not in this data. Composition,
+verified on three live missions: the pool room with its rotation as sent, x origin = x * 10 m,
+far z edge = (gridHeight - z) * 10 m, y = pool height + floor * worldHeight; see
+NAV-CLIENTDATA.md and AOBuddy/AOBuddyNav.cs LoadMission.
 
 ## collision.bin - near-horizontal collision triangles (RDB 1000013)
 
