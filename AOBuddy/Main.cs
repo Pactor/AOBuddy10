@@ -65,6 +65,8 @@ namespace AOBuddy
         private NavController _nav;
         private MissionController _mission;
         private bool _missionWasActive;
+        private OverlandController _overland;
+        private bool _overlandWasActive;
 
         private string _pathsDir;
         private string _pluginDir;
@@ -159,6 +161,8 @@ namespace AOBuddy
             _nav = new NavController(_ctx, pluginDir);
             _mission = new MissionController(_ctx, _move, pluginDir,
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
+            _overland = new OverlandController(_ctx, _move, pluginDir,
+                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
@@ -173,6 +177,8 @@ namespace AOBuddy
                 catch (Exception ex) { Log("RESUPPLY feed error: " + ex.Message); }
                 try { _mission.OnMessage(m); }
                 catch (Exception ex) { Log("MISSION feed error: " + ex.Message); }
+                try { OnServerMovedMe(m); }
+                catch (Exception ex) { Log("SERVER MOVE error: " + ex.Message); }
             };
 
             // Player trades: the owner handing us credits when we asked for them (see ResupplyController).
@@ -307,6 +313,45 @@ namespace AOBuddy
             };
         }
 
+        // Moves the server makes to our own body. The SDK applies none of them to the local player, so a grid lift beam
+        // carried the bot up in everyone else's view while its own position stayed on the pad; every step after that
+        // was sent from the wrong place and refused (log 2026-09-24 01:20). An in-playfield N3Teleport jumps us; a
+        // FollowTarget NpcPath carries us along its waypoints: take the end of it and let overland travel wait out the
+        // ride. While standing on a pad every message about us is logged, so whatever a beam really sends shows up.
+        private readonly HashSet<string> _padSeen = new HashSet<string>();
+        private void OnServerMovedMe(Message m)
+        {
+            LocalPlayer lp = DynelManager.LocalPlayer;
+            if (lp == null || !(m?.Body is N3Message n3) || n3.Identity.Instance != lp.Identity.Instance) return;
+            if (_overland.OnPad) { if (_padSeen.Add(n3.GetType().Name)) Log($"PAD: server sent {n3.GetType().Name} about me while I wait on the pad."); }
+            else _padSeen.Clear();
+
+            switch (m.Body)
+            {
+                case N3TeleportMessage t:
+                    Log($"SERVER MOVE: N3Teleport to ({t.Destination.X:0},{t.Destination.Y:0},{t.Destination.Z:0}) pf {t.Playfield.Instance} (in {(int)Playfield.ModelId}), change {t.ChangePlayfield.Instance}.");
+                    if (t.Playfield.Instance != (int)Playfield.ModelId) return;   // a zone change: the zone-in places us
+                    _move.Reset();
+                    Movement.SetPose(lp, t.Destination, t.Heading);
+                    _overland.OnServerMoved(1.0);
+                    break;
+                case FollowTargetMessage ft:
+                    if (!(ft.Info is FollowTargetMessage.PathInfo pi) || pi.Waypoints == null || pi.Waypoints.Length == 0)
+                    {
+                        Log($"SERVER MOVE: FollowTarget {ft.Type} (not a path), ignored.");
+                        return;
+                    }
+                    float len = 0;
+                    for (int i = 1; i < pi.Waypoints.Length; i++) len += Vector3.Distance(pi.Waypoints[i - 1], pi.Waypoints[i]);
+                    Vector3 end = pi.End;
+                    Log($"SERVER MOVE: FollowTarget path {string.Join(" ", pi.Waypoints.Select(w => $"({w.X:0},{w.Y:0},{w.Z:0})"))}, {len:0} m, mode {ft.MoveMode}; taking its end.");
+                    _move.Reset();
+                    Movement.SetPose(lp, end, lp.MovementComponent.Heading);
+                    _overland.OnServerMoved(1.0 + len / 8.0);   // speed unknown: generous, the SetPos when we stop corrects the rest
+                    break;
+            }
+        }
+
         // The last thing we asked the server to do, for pairing a refusal with its cause.
         private string _lastActionLabel;
         public void NoteAction(string what) => _lastActionLabel = what;
@@ -331,6 +376,8 @@ namespace AOBuddy
 
             // A mission blitz always takes the server's word (MissionController.OnServerCorrection).
             if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
+            // ...and so does overland travel: its route is planned on data that can miss a surface the server has.
+            if (_overland.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
 
             // While MOVING, ignore SMALL corrections (ramp/Y jitter, a few metres) so we don't rubber-band
             // on slopes. But a correction that keeps GROWING means the server has genuinely rejected our
@@ -375,6 +422,7 @@ namespace AOBuddy
             try { if (me != null) _move.Stop(me, _config.SendIntervalMs); } catch { }
             _resupply.Stop(me, "died");
             _mission.Stop("died");
+            _overland.Stop("died");
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
@@ -557,7 +605,7 @@ namespace AOBuddy
                     _travel.OnOwnerLost(_lastOwnerPos);
                 }
 
-                if (ownerVisible) _arrivedAlone = 0;
+                if (ownerVisible || _overland.Active) _arrivedAlone = 0;   // zoning alone is the point of overland travel
                 else if (_arrivedAlone > 0)
                 {
                     _arrivedAlone += dt;
@@ -596,7 +644,7 @@ namespace AOBuddy
                 // engages when BOTH we and the owner are near the same recorded run (RouteToward enforces it),
                 // so it can't send us the wrong way; off recorded ground it returns null and normal follow /
                 // the zone-sweep handle it. Nav only supplies the points; FOLLOW's replay walker moves the body.
-                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat && !_mission.Active
+                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat && !_mission.Active && !_overland.Active
                     && _config.Follow && _mode == Mode.Assist && !me.IsCasting && !_support.Resting && !_follow.ZoneSweeping;
                 if (navEligible)
                 {
@@ -646,7 +694,7 @@ namespace AOBuddy
                 // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
                 // spot he disappeared from, and he is still gone: he crossed something. Work the line.
                 bool crossingLikely = _ownerLostDist <= ZoneLossMeters && _ownerLostMoving;
-                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active
+                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active && !_overland.Active
                     && !_follow.ZoneSweeping && !_navReplaying
                     && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
                     && _lastOwnerPos.HasValue && !_follow.HasWork)
@@ -735,6 +783,9 @@ namespace AOBuddy
             // MISSION blitz (off unless the owner started it): owns the body until it is done or stopped.
             if (_mission.Tick(me, dt)) { _follow.BreakMirror(); _missionWasActive = true; return; }
             if (_missionWasActive) { _missionWasActive = false; _follow.ClearMovement(); }   // hand back to follow clean
+            // OVERLAND travel ('travelto', off unless the owner started it): owns the body until it arrives or stops.
+            if (_overland.Tick(me, dt)) { _follow.BreakMirror(); _overlandWasActive = true; return; }
+            if (_overlandWasActive) { _overlandWasActive = false; _follow.ClearMovement(); }
             if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
             _follow.WalkTick(me, owner, dt);
         }
@@ -942,6 +993,7 @@ namespace AOBuddy
                 case "idle":
                     _mode = Mode.Idle; _follow.ClearMovement(); _combat.Reset();
                     _resupply.Stop(DynelManager.LocalPlayer, "stop command");
+                    _overland.Stop("stop command");
                     { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
                     reply("Mode: Idle. Standing down.");
                     break;
@@ -1255,6 +1307,7 @@ namespace AOBuddy
                 case "status": reply(StatusLine()); break;
                 case "navdata": reply(NavDataCommand(arg)); break;
                 case "mission": _mission.Command(parts.Length > 1 ? parts[1] : "", reply); break;
+                case "travelto": _overland.Command(parts.Skip(1).Where(p => p.Length > 0).ToArray(), reply); break;
                 case "stat": reply(StatCommand(parts.Length > 1 ? parts[1] : "")); break;
 
                 // ---- Knowledge (profession / nanos) ----
@@ -1315,7 +1368,7 @@ namespace AOBuddy
                 case "sell":
                 case "buy": reply("Only 'resupply' (stims and rechargers) so far; general vendor buy/sell isn't implemented yet."); break;
                 case "whompa":
-                case "travel": reply("Whompa/grid routing not implemented yet (Milestone 5). See MILESTONES-solo.md."); break;
+                case "travel": reply("Use 'travelto <x> <y> <playfield>' (or 'travelto <playfield>'); it plans the zone lines, whompas and Scotty warps."); break;
 
                 case "help":
                 case "commands":

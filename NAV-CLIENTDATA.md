@@ -1121,3 +1121,33 @@ real walls, and on the way two things about the rooms were settled.
 - **Checked on one mission only** (Ventil, instance 14645763, the only one with walked data and a saved
   zone-in on this machine). `LoadMission` logs the doorway check at every zone-in ("placement check: n/m
   doorways meet"); a miss there means the rule is off for that pool.
+
+---
+
+# Overland travel through the Grid (2026-09-24)
+
+`travelto` routes across playfields (Zoning.Waypoints) and walks each leg on a grid of the zone's floors:
+OverlandGrid outdoors (heightfield + walls.bin), FloorGrid for playfields without ground (layered 0.5 m
+cells from collision.bin + walls.bin). The Grid (152) needed three things, all from the owner:
+
+- **Three levels, joined only by lift beams.** Floors at y 0.1 (the pit), 3.9, 36.5-37.6 and 44.5. The
+  middle one is an outer ring and a web of walkways a metre or two wide. The 37 beams are same-playfield
+  `line` exits (template 95351), each landing at its own arrivals entry: 3.9 -> 36.7 up; 36.5 -> 4.0 down or
+  -> 45 up; 44.5 -> 36.7 down; the pit pads -> 4. Going down otherwise is jumping off an edge, never planned.
+  The planner only lets a walk join points within 3 m of height there (ZoneRouteOptions.SameLevelOnly).
+- **Exits and beams are pads.** You walk onto them; they are not used like terminals. (A Use goes out on
+  the third try only.)
+- **Arrivals into the Grid are not in the data**, so the plan is redone from where the bot lands after
+  every zone or ride.
+
+## OPEN: what a lift beam sends
+
+The server carries the bot up a beam but tells it nothing it applies: the first run logged no SetPos, no
+teleport and no movement for itself while the owner watched it arrive on the next level; the bot's own
+position stayed on the pad and every step it sent afterwards was refused (feedback 110/46155422, log
+2026-09-24 01:20). It works now by assumption: after 3 s on a beam with no word from the server the bot
+puts itself at the beam's arrivals point ("ASSUMING it carried me to ..." in the log). Main also applies
+an in-playfield `N3Teleport` and a `FollowTarget` path about itself if one comes, and logs every message
+about itself while it stands on a pad ("PAD: server sent ..."). Postponed by the owner since the assumption
+works; to settle it, read those PAD / SERVER MOVE lines from a beam ride, or a capture of one, and replace
+the assumption with the real message. The same question stands for the exit pads and for dropping down.

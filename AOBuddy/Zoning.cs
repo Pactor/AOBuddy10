@@ -99,6 +99,11 @@ namespace AOBuddy
         public double UnknownWalk = 250; // walking from a point we don't know
         public bool UseScotty = true;
 
+        // Playfields stacked in levels where walking never changes level (the Grid: decks joined only by lift
+        // beams, which are exits). There a walk between points more than LevelGap apart in height is impossible.
+        public Func<int, bool> SameLevelOnly = pf => pf == 152;
+        public double LevelGap = 3;
+
         // An exit is usable when Filter (if set) allows it and, with Stat set (stat id -> value, null when
         // unreadable), its Reqs pass; terms the checker can't read count as UnknownPasses.
         public Func<ZoneExit, bool> Filter;
@@ -274,6 +279,7 @@ namespace AOBuddy
             int PfOf(int node) => node == start ? fromPf : _all[node].ToPf;
             bool Usable(int i) => usable[i] ?? (usable[i] = CanUse(_all[i], opt)).Value;
             double Walk(Vector3? a, Vector3 b) => a.HasValue ? Flat(a.Value, b) : opt.UnknownWalk; // Scotty points and goals have no height
+            bool OtherLevel(int pf, Vector3? a, Vector3 b) => a.HasValue && opt.SameLevelOnly != null && opt.SameLevelOnly(pf) && Math.Abs(a.Value.Y - b.Y) > opt.LevelGap;
 
             var queue = new PriorityQueue<int, double>();
             queue.Enqueue(start, 0);
@@ -305,9 +311,14 @@ namespace AOBuddy
                         if (e.Kind == ExitKind.ZoneLine)
                         {
                             var (at, beyond, arrive) = CrossLine(e, p);
+                            if (OtherLevel(pf, p, at)) continue;
                             Relax(u, v, d + Walk(p, at) + opt.ZoneLineCost, arrive, at, beyond);
                         }
-                        else Relax(u, v, d + Walk(p, e.A) + opt.TeleportCost, e.Arrival, e.A, null);
+                        else
+                        {
+                            if (OtherLevel(pf, p, e.A)) continue;
+                            Relax(u, v, d + Walk(p, e.A) + opt.TeleportCost, e.Arrival, e.A, null);
+                        }
                     }
 
                 if (opt.UseScotty)

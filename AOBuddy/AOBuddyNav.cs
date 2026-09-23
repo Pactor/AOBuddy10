@@ -531,7 +531,10 @@ namespace AOBuddy
     {
         public sealed class Chunk { public int Instance, TeleportDestPf, LocalizerType, LocalizerInstance; public float[] Verts; }   // 9 floats per triangle, world
         public readonly List<Chunk> Chunks = new List<Chunk>();
-        readonly Dictionary<long, List<int>> _buckets = new Dictionary<long, List<int>>();   // -> (chunk << 20 | tri)
+        // -> (chunk << TriBits | tri). Was chunk << 20: past 2047 chunks that went negative and HeightsUnder threw on
+        // every frame in Lush Fields (695), which has more (log 2026-09-24 01:36).
+        const int TriBits = 11;
+        readonly Dictionary<long, List<int>> _buckets = new Dictionary<long, List<int>>();
         public int Triangles;
 
         static long Key(int a, int c) => ((long)a << 32) ^ (uint)c;
@@ -586,7 +589,7 @@ namespace AOBuddy
                         for (int c = z0; c <= z1; c++)
                         {
                             if (!_buckets.TryGetValue(Key(a, c), out var l)) _buckets[Key(a, c)] = l = new List<int>();
-                            l.Add((ci << 20) | t);
+                            l.Add((ci << TriBits) | t);   // a chunk holds at most 2048 triangles (the extractor splits records there)
                         }
                 }
             }
@@ -598,7 +601,7 @@ namespace AOBuddy
             if (!_buckets.TryGetValue(Key((int)Math.Floor(x / 8), (int)Math.Floor(z / 8)), out var l)) yield break;
             foreach (int id in l)
             {
-                float[] v = Chunks[id >> 20].Verts; int o = (id & 0xFFFFF) * 9;
+                float[] v = Chunks[id >> TriBits].Verts; int o = (id & ((1 << TriBits) - 1)) * 9;
                 double x0 = v[o], y0 = v[o + 1], z0 = v[o + 2], x1 = v[o + 3], y1 = v[o + 4], z1 = v[o + 5], x2 = v[o + 6], y2 = v[o + 7], z2 = v[o + 8];
                 double d = (x1 - x0) * (z2 - z0) - (x2 - x0) * (z1 - z0);
                 if (Math.Abs(d) < 1e-9) continue;

@@ -67,3 +67,7 @@ MILESTONES-*.md
 CLASS-PROFILE-PLAYBOOK.md
 *-design.md
 *_DESIGN.md
+
+# Wall triangles for the nav data: generated from your own client by tools/AONavExtractor (122 MB for
+# every zone), not shipped. See AOBuddy/GameData/Nav/README.md.
+AOBuddy/GameData/Nav/**/walls.bin

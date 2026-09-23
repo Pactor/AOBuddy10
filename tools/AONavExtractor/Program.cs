@@ -95,7 +95,7 @@ namespace AONavExtractor
                     if (ground != null) info.Str("ground.bin");
                     if (dungeon != null) info.Str("rooms.json");
                     if (recs != null) info.Str("collision.bin");
-                    if (recs != null && dungeon != null) info.Str("walls.bin");
+                    if (recs != null && (dungeon != null || ground != null)) info.Str("walls.bin");
                     info.End();
                     if (error != null) info.Key("error").Str(error);
                     info.Key("kind").Str(kind);
@@ -125,9 +125,10 @@ namespace AONavExtractor
                         info.Key("collision").Obj();
                         info.Key("records").Num(recs.Count); info.Key("trianglesTotal").Num(total); info.Key("trianglesWalkable").Num(kept); info.Key("chunks").Num(chunks);
                         info.End();
-                        if (dungeon != null)
+                        if (dungeon != null || ground != null)
                         {
-                            // Dungeons only: mission room pools are dungeons, and that is where the bot needs walls.
+                            // Dungeons for the mission room pools; outdoor zones for overland routing (city walls,
+                            // buildings, fences - the heightfield alone walks straight through them).
                             var (wk, wc) = TriFile.WriteWalls(Path.Combine(folder, "walls.bin"), recs);
                             info.Key("walls").Obj();
                             info.Key("triangles").Num(wk); info.Key("chunks").Num(wc); info.Key("minHeight").Num(TriFile.WallMinHeight);

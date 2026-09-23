@@ -116,10 +116,18 @@ Raw block: `chunks` entries of
 
 A record is split into chunks of at most 2048 triangles, each with its own origin.
 
-## walls.bin - wall triangles (RDB 1000013), dungeons only
+## walls.bin - wall triangles (RDB 1000013), dungeons and outdoor zones - NOT in the repository
 
 The same AOCL layout as collision.bin, holding what collision.bin leaves out: triangles with
 |normal.y| <= 0.5 that span at least 1 m of height (walls, doorframes, pillars; not stair risers or
 kerbs). A doorway is simply a gap between them: 1.6 m wide with the lintel at 3 m in pool 351. The
-bot slices them 1 m above the floor to plan mission routes (MissionGrid in MissionController.cs).
-Written for the 289 dungeon playfields, 20 MB in all.
+bot slices them 1 m above the floor to plan mission routes (MissionGrid in MissionController.cs), and
+stamps them at body height (0.3-1.9 m over the floor) into the overland travel grids (OverlandGrid for
+outdoor zones, FloorGrid for dungeons and the Grid). Written for the 289 dungeon playfields (20 MB) and
+the 336 outdoor ones (102 MB).
+
+These files are not committed: generate them from your own client with `tools/AONavExtractor` and copy
+each playfield's `walls.bin` into its folder here (or straight into `Build/Plugins/AOBuddy/GameData/Nav`).
+The rest of each folder is byte-identical to a fresh extraction. Without them the bot still runs:
+mission routing falls back to the tiles and overland routing sees only cliffs and zone lines, which is
+how a straight walk from Newland's city gate went back through it.
