@@ -79,7 +79,15 @@ namespace AOBuddy
                 // bot would then stand idle on a live mob. So a resume is allowed, but only after the stall
                 // has lasted StallResumeSeconds — long enough that it cannot fire in the gap between two
                 // ordinary swings, which is what would turn "one Attack per target" into a stream of them.
-                bool newTarget = _attackedTarget != target.Identity;
+                // ARE WE ALREADY SWINGING AT THIS ONE? Ask the server, not our own notes. FightingIdentity is
+                // what it says we are fighting; _attackedTarget is only what we remember issuing. Those two
+                // came apart whenever the owner's FightingTarget blinked null for a single tick: the else
+                // branch below forgot the mob, the same mob came back a tick later, it looked new, and Attack
+                // was re-issued - which RESETS the weapon timer, so he swung once and then stood there. That
+                // is the pause. Eighteen of those null ticks in one session, two mobs re-attacked outright.
+                bool alreadySwinging = me.FightingIdentity.HasValue && me.FightingIdentity.Value == target.Identity;
+                bool newTarget = _attackedTarget != target.Identity && !alreadySwinging;
+                if (alreadySwinging) _attackedTarget = target.Identity;   // re-sync our notes to the server
                 if (!newTarget && !me.IsAttacking) _notSwinging += _ctx.Config.TickMs / 1000.0;
                 else if (me.IsAttacking) _notSwinging = 0;
 
@@ -98,7 +106,10 @@ namespace AOBuddy
             }
             else
             {
-                _attackedTarget = null;   // fight over — the next target starts fresh, once
+                // Only forget the mob once we are genuinely off it. While the server still has us fighting
+                // something, keep the note: dropping it on a flickering assist target is what made the same
+                // mob look new a tick later and earned it a second Attack.
+                if (!me.FightingIdentity.HasValue) _attackedTarget = null;
                 _notSwinging = 0;
             }
             return target;

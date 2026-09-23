@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -1338,61 +1338,42 @@ namespace AOBuddy
             reply($"Active ({parts.Count}): " + Truncate(string.Join(", ", parts), 440));
         }
 
-        // Diagnostic: what she sees for stims/rechargers, at each filter stage.
+        /// <summary>
+        /// What he is carrying, per QL, and which of it his skill can actually reach. Two lines, one per kind:
+        /// the bag, then the verdict and the skill behind it — so a number that looks wrong can be checked
+        /// against what is in the bag without reading the log.
+        /// </summary>
         private void ReportSupplies(Action<string> reply)
         {
-            var all = new List<Item>();
-            if (Inventory.Items != null) all.AddRange(Inventory.Items);
-            if (Inventory.Containers != null) foreach (var c in Inventory.Containers) if (c?.Items != null) all.AddRange(c.Items);
-
-            var stimMatch = all.Where(it => it?.Name != null && it.Name.IndexOf(_config.StimKeyword, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            var rechMatch = all.Where(it => it?.Name != null && it.Name.IndexOf(_config.RechargerKeyword, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            int stimUsable = _support.CountUsableHealItems(_config.StimKeyword, _config.StimItemName);
-            int rechUsable = _support.CountUsableHealItems(_config.RechargerKeyword, _config.RechargerItemName);
-            string sample = stimMatch.Concat(rechMatch).Take(4)
-                .Select(it => { int crit = it.Criteria != null && it.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var uc) ? uc.Count : -1; return $"{it.Name} QL{it.Ql} x{it.Count} crit={crit} use={SupportController.CanUseHeal(it)}"; })
-                .DefaultIfEmpty("(no name matches)").Aggregate((a, b) => a + " | " + b);
-            reply($"Inv={all.Count}. Stims {stimMatch.Count}match/{stimUsable}usable. Rechargers {rechMatch.Count}match/{rechUsable}usable. {sample}");
-
-            var first = stimMatch.FirstOrDefault();
             LocalPlayer me = DynelManager.LocalPlayer;
-            if (first != null && me != null && first.Criteria != null && first.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var crits))
-            {
-                string detail = string.Join(", ", crits.Select(c => { me.TryGetStat((Stat)c.Param1, out int have); return $"{(Stat)c.Param1} {c.Operator} {c.Param2} (have {have})"; }));
-                reply(Truncate($"stim [{first.Id}/{first.HighId} QL{first.Ql}] reqs: " + detail, 440));
-            }
+            if (me == null) { reply("Not in play yet."); return; }
 
-            if (me != null)
-            {
-                int Str = 0, Agi = 0, Sta = 0, Int = 0, Sen = 0, Psy = 0, fa = 0, tr = 0;
-                me.TryGetStat(Stat.Strength, out Str); me.TryGetStat(Stat.Agility, out Agi); me.TryGetStat(Stat.Stamina, out Sta);
-                me.TryGetStat(Stat.Intelligence, out Int); me.TryGetStat(Stat.Sense, out Sen); me.TryGetStat(Stat.Psychic, out Psy);
-                me.TryGetStat((Stat)123, out fa); me.TryGetStat((Stat)124, out tr);
-                reply($"stats: Str{Str} Agi{Agi} Sta{Sta} Int{Int} Sen{Sen} Psy{Psy} | FirstAid{fa} Treatment{tr}");
+            reply(SupplyLine("stims", _config.StimKeyword, _config.StimItemName, Stat.FirstAid, "First Aid", me));
+            reply(SupplyLine("rechargers", _config.RechargerKeyword, _config.RechargerItemName, Stat.Treatment, "Treatment", me));
+        }
 
-                int faTotal = fa, faTrickle = me.GetTrickle((Stat)123);
-                int faBuff = 0;
-                foreach (var b in me.Buffs)
-                    if (b.NanoItem != null && b.NanoItem.Modifiers != null && b.NanoItem.Modifiers.TryGetValue(SpellListType.Use, out var um) && um.ContainsKey((Stat)123))
-                        faBuff += um[(Stat)123];
-                reply($"FA math: total={faTotal} trickle={faTrickle} buffMods={faBuff} base+equip+other={faTotal - faTrickle - faBuff}");
+        private string SupplyLine(string what, string keyword, string exactName, Stat skill, string skillName, LocalPlayer me)
+        {
+            List<Item> carried = _support.HealItemPoolUnfiltered(keyword, exactName).ToList();
+            if (carried.Count == 0) return $"No {what} at all.";
 
-                int strBuff = 0, strEquip = 0;
-                foreach (var b in me.Buffs)
-                    if (b.NanoItem?.Modifiers != null && b.NanoItem.Modifiers.TryGetValue(SpellListType.Use, out var um2) && um2.ContainsKey(Stat.Strength)) strBuff += um2[Stat.Strength];
-                if (Inventory.Items != null)
-                    foreach (var it in Inventory.Items)
-                        if (it != null && it.Slot.Instance <= (int)EquipSlot.Imp_Feet && it.Modifiers != null && it.Modifiers.TryGetValue(SpellListType.Wear, out var wm) && wm.ContainsKey(Stat.Strength)) strEquip += wm[Stat.Strength];
-                reply($"Str math: total={Str} buffMods={strBuff} implants/equip={strEquip} base={Str - strBuff - strEquip}");
+            // Group by QL so it reads the way he counts them: "24 QL7, 38 QL9".
+            var byQl = carried.GroupBy(it => it.Ql).OrderBy(g => g.Key)
+                .Select(g => new { Ql = g.Key, Count = g.Sum(it => Math.Max(1, it.Count)), Usable = g.Any(it => SupportController.MeetsHealReqs(it, me)) })
+                .ToList();
 
-                var bl = me.Buffs;
-                if (bl != null && bl.Count > 0)
-                {
-                    string buffs = string.Join(", ", bl.Take(8).Select(b => $"{(b.NanoItem != null ? b.NanoItem.Name : "?")}[{b.Id}] {FormatTime(b.Cooldown?.RemainingTime ?? 0)}"));
-                    reply(Truncate($"buffs({bl.Count}): " + buffs, 440));
-                }
-                else reply("buffs: (none tracked)");
-            }
+            int total = byQl.Sum(g => g.Count);
+            int usable = byQl.Where(g => g.Usable).Sum(g => g.Count);
+            string skillHave = me.TryGetStat(skill, out int sv) ? sv.ToString() : "unknown";
+            string bag = string.Join(", ", byQl.Select(g => $"{g.Count} QL{g.Ql}"));
+
+            if (usable == total)
+                return $"{bag} — {total} {what}, all usable with my {skillName} of {skillHave}.";
+
+            string canUse = string.Join(", ", byQl.Where(g => g.Usable).Select(g => $"{g.Count} QL{g.Ql}"));
+            string tooHigh = string.Join(", ", byQl.Where(g => !g.Usable).Select(g => $"QL{g.Ql}"));
+            return $"{bag} — {total} {what}. {(usable == 0 ? "None" : canUse)} usable with my {skillName} "
+                   + $"of {skillHave}; {tooHigh} need more.";
         }
 
         private static string FormatTime(double seconds)

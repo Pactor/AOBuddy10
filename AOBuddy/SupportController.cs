@@ -117,9 +117,9 @@ namespace AOBuddy
         private bool _warnedStim, _warnedRecharger;
         private bool _everHadStims, _everHadRechargers;   // don't false-warn "OUT" before bags load
 
-        // Heal items proven unusable this session are filtered here (kept for the emergency-heal path); the rest
-        // loop no longer blacklists (a slow recharger isn't a dead item). Session-only, keyed by name+QL.
-        private readonly HashSet<string> _deadHeal = new HashSet<string>();
+        // Which heal items he can use is worked out from the item's own use requirement against his live
+        // skill - see HealItemPool and MeetsHealReqs. Nothing is blacklisted on a refusal: a buff raises First
+        // Aid and Treatment, so an item refused a moment ago may be usable now.
         private static string HealKey(Item it) => (it == null ? "?" : it.Name) + "#" + (it == null ? 0 : it.Ql);
 
         private double _ownerSpeed;
@@ -141,6 +141,16 @@ namespace AOBuddy
         private bool _seatConfirmed;
         private bool _seatFallbackLogged;
         private const double SeatFallbackSeconds = 1.5;
+
+        // AFTER A USE THE SERVER TOOK, WAIT TO SEE IT. Health and nano arrive as sparse stat updates, so for
+        // several seconds after a heal the percentages still read exactly what they did before it - and a bot
+        // that re-decides on those numbers concludes it still needs healing and takes another item. Because a
+        // stim and a recharger lock DIFFERENT skills (First Aid, Treatment), the other one is always ready, so
+        // it alternates: five items used in ninety seconds where one was enough. Hold until a raw stat
+        // actually moves, or until the wait runs out, whichever comes first.
+        private double _postUseHoldUntil;
+        private int _postUseRawHp = -1, _postUseRawNano = -1;
+        private const double PostUseSettleSeconds = 10.0;
 
         private double _restRunSince;
         private int _restRunPeakHp = -1, _restRunPeakNano = -1;
@@ -835,6 +845,11 @@ namespace AOBuddy
                         : "neither combat nor posture explains it; check rez sickness and the item itself";
                 _ctx.Log($"HEAL-REFUSED: {item} was NOT accepted — no {s} lock in {HealVerifySeconds:0.#}s "
                          + $"({where}). Likely: {why}. (refused {_refusedHealUses} so far this session)");
+
+                // Seated, out of combat, not rez sick - there is nothing left to blame but this particular
+                // item, so stop offering it and let the next one down be tried. Only THIS case demotes: a
+                // refusal in combat or while standing says nothing about the item, and blacklisting on a
+                // guess is what once condemned a perfectly good recharger.
                 if (_awaitingRestUseConfirm && s == _restUseStat) _restUseRefused = true;
                 (done ?? (done = new List<Stat>())).Add(s);
             }
@@ -867,12 +882,18 @@ namespace AOBuddy
                            || AtOrBelow(selfNano, _ctx.Config.StimNanoBelowPercent);
             bool ownerLow = ownerKnown && ownerHp <= _ctx.Config.HealOwnerBelowPercent;
 
-            // 1) HIMSELF FIRST, ALWAYS. In a fight the bot heals itself before the owner, full stop — not
-            //    only when it is the more critical of the two. Stimming a healthier owner while about to die
-            //    is what kept getting it killed, and a dead bot heals nobody. Below the critical floor it
-            //    stims itself out of combat as well.
+            // 1) HIMSELF FIRST WHILE HE IS THE ONE IN DANGER. Below the critical floor he always heals himself
+            //    and nothing argues with that: a dead bot heals nobody.
+            //
+            //    Above it, the stim goes to whoever is actually closer to dying. "Himself first, full stop" was
+            //    written to stop him stimming a healthier owner while about to die, and it does - but taken
+            //    literally it also does the opposite. It killed the owner: the bot stimmed ITSELF at 52%, well
+            //    clear of danger, while the owner fell 58% -> 0%. Worse, both of them draw on the same First
+            //    Aid lock, so that one self-heal shut the owner out for forty seconds, which is exactly how
+            //    long he had left. One stim, one lock, so it has to go to the right person the first time.
             bool selfCritical = AtOrBelow(selfHp, _ctx.Config.SelfCriticalPercent);
-            if (selfCritical || (fighting && selfLow))
+            bool ownerWorse = ownerKnown && selfHp != Unknown && ownerHp < selfHp;
+            if (selfCritical || (fighting && selfLow && !ownerWorse))
             {
                 if (TrySelfHeal(me, selfHp, selfNano)) return true;
             }
@@ -940,6 +961,7 @@ namespace AOBuddy
             _awaitingRestUseConfirm = false;   // a fight ends the sit; whatever the server says about that use
             // A fight is a new situation: forget any backed-off run of fruitless sits and judge afresh after it.
             _restRunSince = 0; _restRunPeakHp = -1; _restRunPeakNano = -1; _restSuppressUntil = 0;
+            _postUseHoldUntil = 0;   // a fight overtakes whatever the last item was going to do
         }
 
         // Out-of-combat REST — between fights he SITS and rechargers restore BOTH HP and nano. Sit when HP OR nano
@@ -1036,8 +1058,30 @@ namespace AOBuddy
                 return false;
             }
 
+            // Still waiting to see what the last accepted item did? Then the numbers we would decide on are
+            // the ones from BEFORE it, and deciding on those is what makes him use a second item he does not
+            // need. A raw stat moving ends the wait early - that is the result arriving.
+            if (_postUseHoldUntil > 0)
+            {
+                me.TryGetStat(Stat.Health, out int settleHp);
+                me.TryGetStat(Stat.CurrentNano, out int settleNano);
+                if (settleHp != _postUseRawHp || settleNano != _postUseRawNano)
+                {
+                    _ctx.Log($"REST: the last item landed — hp {_postUseRawHp} -> {settleHp}, nano {_postUseRawNano} -> {settleNano}.");
+                    _postUseHoldUntil = 0;
+                }
+                else if (_sessionSeconds >= _postUseHoldUntil)
+                {
+                    _ctx.Log($"REST: {PostUseSettleSeconds:0}s after an accepted item and neither hp ({settleHp}) nor "
+                             + "nano has moved — the server has sent no update, so another item would be guesswork.");
+                    _postUseHoldUntil = 0;
+                    _restSuppressUntil = _sessionSeconds + RestRunBackoffSeconds;
+                }
+            }
+
             bool startRest = !inCombat && !combatLull && _restZoneSuppress <= 0 && haveRecharger && settled
                              && ownerStill && needRest && itemReady && _sessionSeconds >= _restSuppressUntil
+                             && _postUseHoldUntil <= 0
                              && (nanoStarved || (!castsActive && !_restedSinceCombat && _restCooldown <= 0));
             // Keep resting until HP AND nano are actually topped (so he doesn't sit forever at full, and doesn't
             // stand while nano is still low). A queued-but-not-firing summon no longer blocks this (castsActive is
@@ -1071,7 +1115,16 @@ namespace AOBuddy
                 StandIfSitting(me); _resting = false;
                 _restedSinceCombat = false;      // the item's timer decides the next sit, not a once-per-lull rule
                 _restCooldown = 1.0;
-                _ctx.Log($"REST: use confirmed — standing (hp={Pct(hpNow)} nano={Pct(nanoNow)}).");
+
+                // The server took it. Now wait for its effect before judging whether more is needed - see
+                // _postUseHoldUntil. Remember the raw numbers as they stand right now, because it is a CHANGE
+                // in those, not the clock, that tells us the heal has arrived.
+                me.TryGetStat(Stat.Health, out _postUseRawHp);
+                me.TryGetStat(Stat.CurrentNano, out _postUseRawNano);
+                _postUseHoldUntil = _sessionSeconds + PostUseSettleSeconds;
+
+                _ctx.Log($"REST: use confirmed — standing (hp={Pct(hpNow)} nano={Pct(nanoNow)}), waiting up to "
+                         + $"{PostUseSettleSeconds:0}s to see what it did.");
                 return true;
             }
             if (_awaitingRestUseConfirm && _restUseRefused)
@@ -1135,7 +1188,11 @@ namespace AOBuddy
                 // "sent", not "used": whether the server took it is decided by VerifyHealUses, which logs
                 // HEAL-OK or HEAL-REFUSED a moment later. Claiming success here is what hid six straight
                 // refusals behind a log line that read like everything was working.
-                _ctx.Log($"RECHARGE: sent {recharger.Name} QL{recharger.Ql} (seated {_restElapsed:0.0}s) hp={Pct(hpNow)} nano={Pct(nanoNow)} rawNano={rawNano}/{rawMaxNano} UseMods[{useMods}] — awaiting server lock (reuse {reuseSec:0.#}s if accepted)");
+                // Raw HP as well as the percentage. A percentage that will not move is impossible to argue
+                // with; the two numbers behind it say whether the item healed nothing or the server simply
+                // has not sent us a new Health yet.
+                me.TryGetStat(Stat.Health, out int rawHp); me.TryGetStat(Stat.MaxHealth, out int rawMaxHp);
+                _ctx.Log($"RECHARGE: sent {recharger.Name} QL{recharger.Ql} (seated {_restElapsed:0.0}s) hp={Pct(hpNow)} rawHp={rawHp}/{rawMaxHp} nano={Pct(nanoNow)} rawNano={rawNano}/{rawMaxNano} UseMods[{useMods}] — awaiting server lock (reuse {reuseSec:0.#}s if accepted)");
 
                 // Sit, use, DETECT that it landed, then stand. Standing at this point instead - which is what
                 // this did, to force the posture-change nano update - meant the server saw a standing character
@@ -1263,11 +1320,34 @@ namespace AOBuddy
             // Bags load their contents a moment AFTER login, so at first the pool reads 0 even with a full
             // backpack. Don't cry "OUT" until we've actually SEEN some at least once (a real depletion),
             // otherwise the login sync window fires a false alarm.
+            // "Low on stims (8 left)" while carrying dozens is not a miscount - it counts the ones he can
+            // actually USE, after the First Aid skill gate. Say so, and say how many he is carrying, or the
+            // warning reads as a bug and the real problem (QLs above his skill) stays invisible.
             int stims = CountUsableHealItems(_ctx.Config.StimKeyword, _ctx.Config.StimItemName);
+            int stimsCarried = CountHealItemsCarried(_ctx.Config.StimKeyword, _ctx.Config.StimItemName);
             if (stims > 0) _everHadStims = true;
             if (stims <= _ctx.Config.LowStimCount)
             {
-                if (_everHadStims && !_warnedStim) { Tell(stims == 0 ? "I'm OUT of stims — please resupply me." : $"Low on stims ({stims} left) — please resupply."); _warnedStim = true; }
+                if (_everHadStims && !_warnedStim)
+                {
+                    string extra = stimsCarried > stims
+                        ? $" I'm carrying {stimsCarried}; {stimsCarried - stims} the server has refused this session."
+                        : "";
+                    Tell((stims == 0 ? "I'm OUT of stims I can use — please resupply me." : $"Low on stims ({stims} left) — please resupply.") + extra);
+                    _warnedStim = true;
+
+                    // What he is carrying, by QL, with the skills alongside. Not a gate any more - just the
+                    // numbers, so a count that looks wrong can be checked against the bag instead of argued about.
+                    LocalPlayer meNow = DynelManager.LocalPlayer;
+                    string fa = meNow != null && meNow.TryGetStat(Stat.FirstAid, out int faV) ? faV.ToString() : "unknown";
+                    string tr = meNow != null && meNow.TryGetStat(Stat.Treatment, out int trV) ? trV.ToString() : "unknown";
+                    var byQl = AllInvItems().Where(it => it?.Name != null
+                            && it.Name.IndexOf(_ctx.Config.StimKeyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .GroupBy(it => it.Ql).OrderBy(g => g.Key)
+                        .Select(g => $"QL{g.Key}x{g.Sum(it => Math.Max(1, it.Count))}").ToList();
+                    _ctx.Log($"SUPPLY-DBG: FirstAid={fa} Treatment={tr} offered={stims} carried={stimsCarried} "
+                             + $"stims=[{string.Join(", ", byQl)}]");
+                }
             }
             else _warnedStim = false;
 
@@ -1292,22 +1372,37 @@ namespace AOBuddy
             return all;
         }
 
-        public IEnumerable<Item> HealItemPool(string keyword, string exactName)
+        /// <summary>Everything in the bags matching this kind of heal item, skill requirement ignored — what he
+        /// is CARRYING, as opposed to what he can use.</summary>
+        public IEnumerable<Item> HealItemPoolUnfiltered(string keyword, string exactName)
         {
             IEnumerable<Item> poolQ = AllInvItems().Where(it => it?.Name != null);
-            poolQ = string.IsNullOrEmpty(exactName)
+            return string.IsNullOrEmpty(exactName)
                 ? poolQ.Where(it => it.Name.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
                 : poolQ.Where(it => string.Equals(it.Name, exactName, StringComparison.OrdinalIgnoreCase));
-            // Drop items proven not to heal us this session (used but no HP/nano gain).
-            var matches = poolQ.Where(it => !_deadHeal.Contains(HealKey(it))).ToList();
-            // Filter by the REAL skill gate (First Aid for stims, Treatment for rechargers) so we pick the
-            // highest QL he can ACTUALLY use — not a high-QL one that needs more skill than he has (that Use
-            // silently fails: "sits down like he'll heal, then doesn't"). No skill criterion = usable.
+        }
+
+        public IEnumerable<Item> HealItemPool(string keyword, string exactName)
+        {
+            IEnumerable<Item> poolQ = HealItemPoolUnfiltered(keyword, exactName);
+            // We know the item's QL, we know the skill it asks for, and we know what he has - so work it out
+            // rather than sending a use and waiting to be told no. His skills are live stats, so a buff that
+            // raises First Aid raises what he can reach in the same instant.
+            //
+            // The one rule that matters: a skill we cannot READ is not a skill of zero. Defaulting a missing
+            // stat to 0 failed every requirement, so the whole bag was rejected and this fell through to its
+            // last resort - one stack, the lowest QL - and the bot offered 8 QL1 stims while carrying 146
+            // across five QLs, every one of them usable. Unknown means do not exclude.
+            var matches = poolQ.ToList();
             LocalPlayer meNow = DynelManager.LocalPlayer;
             var usable = matches.Where(it => MeetsHealReqs(it, meNow)).ToList();
             if (usable.Count > 0) return usable;
-            // None pass the skill gate: fall back to the LOWEST-QL match (most likely usable), never highest.
-            return matches.OrderBy(it => it.Ql).Take(1).ToList();
+
+            // Nothing passes a requirement we could actually read: his skill really is short of every QL he is
+            // carrying. Offer the lowest QL - all of it, not one stack - as the best chance of being accepted.
+            if (matches.Count == 0) return matches;
+            int lowest = matches.Min(it => it.Ql);
+            return matches.Where(it => it.Ql == lowest).ToList();
         }
 
         // Item.MeetsUseReqs returns FALSE when an item has no UseCriteria at all (basic stims have
@@ -1332,8 +1427,12 @@ namespace AOBuddy
                 {
                     if (c.Param1 == 123 || c.Param1 == 124)   // First Aid / Treatment
                     {
-                        if (!me.TryGetStat((Stat)c.Param1, out int have)) have = 0;
-                        if (have < c.Param2) return false;    // skill requirement not met
+                        // A skill we cannot READ is not a skill of zero. Defaulting the missing stat to 0
+                        // failed every requirement and quietly shrank the usable pool - the bot reported
+                        // "8 stims left" while carrying twenty-four it could use. Unknown means don't refuse;
+                        // if the item really is out of reach the server refuses the Use and HEAL-REFUSED says so.
+                        if (!me.TryGetStat((Stat)c.Param1, out int have)) continue;
+                        if (have < c.Param2) return false;    // skill requirement genuinely not met
                     }
                 }
                 return true;
@@ -1346,6 +1445,15 @@ namespace AOBuddy
 
         public int CountUsableHealItems(string keyword, string exactName)
             => HealItemPool(keyword, exactName).Sum(it => Math.Max(1, it.Count));
+
+        /// <summary>Every matching item in the bags, skill gate or not - what he is actually carrying, as
+        /// opposed to what he can use. The gap between the two is the thing worth telling him about.</summary>
+        public int CountHealItemsCarried(string keyword, string exactName)
+            => AllInvItems().Where(it => it?.Name != null)
+                .Where(it => string.IsNullOrEmpty(exactName)
+                    ? it.Name.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0
+                    : string.Equals(it.Name, exactName, StringComparison.OrdinalIgnoreCase))
+                .Sum(it => Math.Max(1, it.Count));
 
         // A CONSUMABLE stim (spent on use) vs a reusable recharger/coil. Discriminated by name: our stims contain
         // the StimKeyword ("Stim") and rechargers the RechargerKeyword ("Recharger"). Rest must not burn stims.
