@@ -317,6 +317,16 @@ namespace AOSharp.Clientless
                 if (!_isFirstPlayshift && Client.LocalDynelId != 0 && fullCharMsg.Identity.Instance != Client.LocalDynelId)
                     return;
 
+                // Say what we took and from whom. A login where hp, nano, run speed and movement mode all read
+                // as absent, while the nano list arrived intact from the same message, cannot be diagnosed from
+                // the symptom - the counts here name which part of the message was empty and which reader
+                // produced it, instead of another round of guessing.
+                Logger.Information($"FULLCHAR: identity={fullCharMsg.Identity.Instance} localDynelId={Client.LocalDynelId} "
+                    + $"first={_isFirstPlayshift} stats1={fullCharMsg.Stats1?.Length ?? -1} stats2={fullCharMsg.Stats2?.Length ?? -1} "
+                    + $"stats3={fullCharMsg.Stats3?.Length ?? -1} stats4={fullCharMsg.Stats4?.Length ?? -1} "
+                    + $"nanos={fullCharMsg.UploadedNanoIds?.Length ?? -1} perks={(fullCharMsg.Perks == null ? "null" : fullCharMsg.Perks.Length.ToString())} "
+                    + $"pets={fullCharMsg.Pets?.Length ?? -1}");
+
                 DynelManager.LocalPlayerProxy.ApplyFullCharUpdate(fullCharMsg);
 
                 // AUTHORITATIVE pet ownership: our own FullCharacter lists our pets (decoded by the corrected

@@ -477,9 +477,16 @@ namespace AOBuddy
             _healTaskedRoster = "\0";
             _wasFighting = false;
             _recallSent = false;
-            // Zoning re-creates every pet, so the old instances are not ours any more. The server sends a
-            // fresh AddPet for each one that came along.
+            // Zoning does NOT necessarily re-create the pets. Through a travel terminal they came along with
+            // their instance ids unchanged (245447606/7 before and after) and no fresh AddPet followed, so
+            // clearing this left the bot reporting "owned=0" while three of its own pets stood beside it.
+            // Re-seed from the pets the server still says are ours instead of assuming they are gone; a pet
+            // that really was left behind simply is not in the list.
             _owned.Clear();
+            LocalPlayer me = DynelManager.LocalPlayer;
+            if (me != null)
+                foreach (NpcChar p in me.Pets)
+                    _owned.Add(p.Identity.Instance);
             _lastSeen.Clear();
         }
     }
