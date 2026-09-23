@@ -77,7 +77,7 @@ namespace AONavExtractor
                     Ground ground = null; Dungeon dungeon = null;
                     try
                     {
-                        if (Dungeon.IsDungeonRecord(blob)) { dungeon = Dungeon.Read(rdb, pf, blob); kind = "dungeon"; }
+                        if (Dungeon.IsDungeonRecord(blob) && rdb.Has(1000009, BitConverter.ToInt32(blob, 0x28))) { dungeon = Dungeon.Read(rdb, pf, blob); kind = "dungeon"; }
                         else if (rdb.Has(1000009, pf)) { ground = Ground.Read(rdb, pf); if (ground != null) kind = "outdoor"; }
                     }
                     catch (Exception e) { error = e.GetType().Name + ": " + e.Message; }

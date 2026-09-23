@@ -8,8 +8,9 @@
          u16 nDoors; nDoors x (u16 a, u16 b)
          char name[32]     only when flags bit 7 is set
          u32 lmBytes, u32 lmSamples; lmBytes of (zlib lightmap + u32 trailer)
-         u32 ?; then 0..n polygon meshes in room-local coordinates: u32 nVerts, nVerts x vec3,
-             u32 nTris, nTris x 3 u16, u32 0.  The lightmap trailer u32 equals 1009 * (1 + nPolys).
+         nPolys polygon meshes, room-local: u32 id, u32 nVerts, vec3[nVerts], u32 nTris, u16[3*nTris],
+             where nPolys = lightmap trailer / 1009 - 1;
+         u32 nObjects; nObjects x (vec3 pos, quat rot, vec3 point, f32 radius) in world coordinates (OPEN)
 """
 import struct, zlib, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -19,14 +20,14 @@ from meshdecode import DB
 
 class Room:
     __slots__ = ("index", "flags", "rot", "rect", "pos", "doors", "name", "lm_bytes", "lm_samples",
-                 "trailer", "extra", "polys", "offset")
+                 "trailer", "extra", "polys", "objects", "offset")
 
 
 def parse_rooms(b):
     version, pf = struct.unpack_from("<2i", b, 0)
     name = b[8:40].split(b"\0")[0].decode("latin1")
     tilemap, f1, nrooms = struct.unpack_from("<3i", b, 0x28)
-    p = 0x60
+    p = 0x34 if version == 8 else 0x60      # v8 rooms start right after the count; v9/v10 pad to 0x60
     rooms = []
     for r in range(nrooms):
         rm = Room()
@@ -45,18 +46,21 @@ def parse_rooms(b):
         rm.lm_bytes, rm.lm_samples = struct.unpack_from("<2I", b, p); p += 8
         rm.trailer = struct.unpack_from("<I", b, p + rm.lm_bytes - 4)[0]
         p += rm.lm_bytes
-        rm.extra = struct.unpack_from("<I", b, p)[0]; p += 4
+        # nPolys = trailer / 1009 - 1, each: u32 id, u32 nVerts, vec3[nVerts], u32 nTris, u16[3*nTris]
+        # (room-local coordinates); then u32 nObjects and nObjects x 44 bytes: pos, quaternion,
+        # a second point and a radius, in WORLD coordinates (meaning OPEN: doors/blockers?)
         rm.polys = []
-        while p + 4 <= len(b):
-            n = struct.unpack_from("<I", b, p)[0]
-            if n == 0 or n > 64:          # a room's flags word is >= 0x500
-                break
-            verts = [struct.unpack_from("<3f", b, p + 4 + 12 * i) for i in range(n)]
-            p += 4 + 12 * n
-            ntri = struct.unpack_from("<I", b, p)[0]; p += 4
-            tris = [struct.unpack_from("<3H", b, p + 6 * i) for i in range(ntri)]; p += 6 * ntri
-            tail = struct.unpack_from("<I", b, p)[0]; p += 4
-            rm.polys.append((verts, tris, tail))
+        npolys = rm.trailer // 1009 - 1 if rm.trailer % 1009 == 0 and rm.trailer >= 1009 else 0
+        for _ in range(npolys):
+            pid = struct.unpack_from("<I", b, p)[0]; p += 4
+            n = struct.unpack_from("<I", b, p)[0]; p += 4
+            verts = [struct.unpack_from("<3f", b, p + 12 * i) for i in range(n)]; p += 12 * n
+            nt = struct.unpack_from("<I", b, p)[0]; p += 4
+            tris = [struct.unpack_from("<3H", b, p + 6 * i) for i in range(nt)]; p += 6 * nt
+            rm.polys.append((verts, tris, pid))
+        nobj = struct.unpack_from("<I", b, p)[0]; p += 4
+        rm.extra = nobj
+        rm.objects = [struct.unpack_from("<11f", b, p + 44 * i) for i in range(nobj)]; p += 44 * nobj
         rooms.append(rm)
     return dict(version=version, playfield=pf, name=name, tilemap=tilemap, f1=f1, nrooms=nrooms), rooms, p
 
@@ -71,8 +75,10 @@ if __name__ == "__main__":
         print("room %2d @%05X rot=%d rect=%-20s pos=(%6.1f,%7.2f,%6.1f) doors=%2d %-30r lm=%d/%d tr=%d extra=%d polys=%d"
               % (rm.index, rm.offset, rm.rot, rm.rect, rm.pos[0], rm.pos[1], rm.pos[2], len(rm.doors), rm.name,
                  rm.lm_bytes, rm.lm_samples, rm.trailer, rm.extra, len(rm.polys)))
-        for verts, tris, tail in rm.polys:
-            print("      poly verts=%s tris=%s tail=%d" % ([tuple(round(v, 1) for v in vv) for vv in verts], tris, tail))
+        for verts, tris, pid in rm.polys:
+            print("      poly id=%d verts=%s tris=%s" % (pid, [tuple(round(v, 1) for v in vv) for vv in verts], tris))
+        for o in rm.objects:
+            print("      object pos=%s rot=%s point=%s r=%.2f" % (tuple(round(v, 1) for v in o[0:3]), tuple(round(v, 2) for v in o[3:7]), tuple(round(v, 1) for v in o[7:10]), o[10]))
     print("rooms end at 0x%X of 0x%X" % (end, len(b)))
     for i in range(end, min(end + 256, len(b)), 16):
         row = b[i:i + 16]

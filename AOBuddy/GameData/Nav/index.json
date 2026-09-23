@@ -354,9 +354,16 @@
   "name": "Tir Assembly Hall",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 123,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 17964,
@@ -473,9 +480,16 @@
   "name": "Emote Test",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 129,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 3370,
@@ -510,9 +524,16 @@
   "name": "AutocontentMidtech(dung)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 307,
+   "rooms": 81,
+   "cell": 2.0,
+   "heightScale": 0.05000000074505806
+  },
   "collision": {
    "records": 81,
    "trianglesTotal": 172026,
@@ -525,9 +546,16 @@
   "name": "AutocontentHITech(dung)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 308,
+   "rooms": 69,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 69,
    "trianglesTotal": 129056,
@@ -540,9 +568,16 @@
   "name": "Autocontentdungcave(dung)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 306,
+   "rooms": 55,
+   "cell": 2.0,
+   "heightScale": 0.05000000074505806
+  },
   "collision": {
    "records": 55,
    "trianglesTotal": 55242,
@@ -555,9 +590,16 @@
   "name": "AutocontentClan(dung)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 310,
+   "rooms": 55,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 55,
    "trianglesTotal": 91484,
@@ -570,9 +612,16 @@
   "name": "ACD tarm (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 330,
+   "rooms": 42,
+   "cell": 2.0,
+   "heightScale": 0.10000000149011612
+  },
   "collision": {
    "records": 42,
    "trianglesTotal": 34606,
@@ -585,9 +634,16 @@
   "name": "ACD Grey Caves-Mines dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 340,
+   "rooms": 103,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 103,
    "trianglesTotal": 195721,
@@ -600,9 +656,16 @@
   "name": "ACD Omnilab (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 345,
+   "rooms": 72,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 72,
    "trianglesTotal": 159863,
@@ -615,9 +678,16 @@
   "name": "ACD Subway - Ventil (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 350,
+   "rooms": 81,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 81,
    "trianglesTotal": 173718,
@@ -630,9 +700,16 @@
   "name": "SL ACG(dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 360,
+   "rooms": 68,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 68,
    "trianglesTotal": 1050287,
@@ -645,9 +722,16 @@
   "name": "Alien ACG (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 380,
+   "rooms": 13,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 13,
    "trianglesTotal": 67230,
@@ -1029,9 +1113,9 @@
    "chunks": 148
   },
   "verification": {
-   "walkedPoints": 47,
+   "walkedPoints": 56,
    "toleranceM": 1.0,
-   "explainedByFloor": 47,
+   "explainedByFloor": 56,
    "explainedByCollision": 0,
    "unexplained": 0,
    "explainedPct": 100.0,
@@ -1719,10 +1803,10 @@
    "chunks": 5295
   },
   "verification": {
-   "walkedPoints": 336,
+   "walkedPoints": 356,
    "toleranceM": 1.0,
-   "explainedByFloor": 305,
-   "explainedByCollision": 30,
+   "explainedByFloor": 323,
+   "explainedByCollision": 32,
    "unexplained": 1,
    "explainedPct": 99.7,
    "unexplainedSamples": [
@@ -2360,9 +2444,9 @@
    "chunks": 3230
   },
   "verification": {
-   "walkedPoints": 417,
+   "walkedPoints": 504,
    "toleranceM": 1.0,
-   "explainedByFloor": 417,
+   "explainedByFloor": 504,
    "explainedByCollision": 0,
    "unexplained": 0,
    "explainedPct": 100.0,
@@ -2485,9 +2569,9 @@
    "chunks": 263
   },
   "verification": {
-   "walkedPoints": 228,
+   "walkedPoints": 240,
    "toleranceM": 1.0,
-   "explainedByFloor": 228,
+   "explainedByFloor": 240,
    "explainedByCollision": 0,
    "unexplained": 0,
    "explainedPct": 100.0,
@@ -2499,9 +2583,16 @@
   "name": "Character Creation Lab Dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 897,
+   "rooms": 10,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 10,
    "trianglesTotal": 15389,
@@ -2674,9 +2765,16 @@
   "name": "Senitel rec_centre (wine) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1000,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 676,
@@ -2689,9 +2787,16 @@
   "name": "medical/eating (wine) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1000,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1348,
@@ -2704,9 +2809,16 @@
   "name": "Wine hq (wine) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1000,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 972,
@@ -2719,9 +2831,16 @@
   "name": "barracks (wine) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1000,
+   "rooms": 15,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 15,
    "trianglesTotal": 14846,
@@ -2734,9 +2853,16 @@
   "name": "storage (wine) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1000,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1262,
@@ -2749,9 +2875,16 @@
   "name": "2HO HQ (streteast) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1010,
+   "rooms": 3,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 3,
    "trianglesTotal": 2805,
@@ -2764,9 +2897,16 @@
   "name": "2HO satellite (streteast) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1010,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1168,
@@ -2779,9 +2919,16 @@
   "name": "OMni barracks (USEB) GOLD",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1020,
+   "rooms": 4,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 4,
    "trianglesTotal": 2222,
@@ -2794,9 +2941,16 @@
   "name": "Avalon omni barracks",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1030,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 5642,
@@ -2919,9 +3073,16 @@
   "name": "ord_smarket_omni_basic",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1141,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 14159,
@@ -2934,9 +3095,16 @@
   "name": "ord_smarket_omni_advanced",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1141,
+   "rooms": 3,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 3,
    "trianglesTotal": 10713,
@@ -2949,9 +3117,16 @@
   "name": "ord_smarket_omni_sup",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1141,
+   "rooms": 3,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 3,
    "trianglesTotal": 10809,
@@ -3026,9 +3201,16 @@
   "name": "spec_smarket_clan_advanced",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1150,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1224,
@@ -3063,9 +3245,16 @@
   "name": "spec_smarket_omni_advanced",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1151,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1060,
@@ -3078,9 +3267,16 @@
   "name": "spec_smarket_omni_sup",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1151,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1180,
@@ -3093,9 +3289,16 @@
   "name": "spec_smarket_neut_basic",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1152,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1136,
@@ -3108,9 +3311,16 @@
   "name": "basicomniapartment dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1210,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1924,
@@ -3123,9 +3333,16 @@
   "name": "Clan Small Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1230,
+   "rooms": 5,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 5,
    "trianglesTotal": 4338,
@@ -3138,9 +3355,16 @@
   "name": "Clan Medium Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1230,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 8084,
@@ -3153,9 +3377,16 @@
   "name": "Clan Big Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1230,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 11184,
@@ -3168,9 +3399,16 @@
   "name": "Neutral Small Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1240,
+   "rooms": 5,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 5,
    "trianglesTotal": 6126,
@@ -3183,9 +3421,16 @@
   "name": "Neutral Medium Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1240,
+   "rooms": 6,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 6,
    "trianglesTotal": 9517,
@@ -3198,9 +3443,16 @@
   "name": "Neutral Big Clan Apartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1240,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 14314,
@@ -3213,9 +3465,16 @@
   "name": "Omni Small Guild",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1250,
+   "rooms": 12,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 12,
    "trianglesTotal": 14127,
@@ -3228,9 +3487,16 @@
   "name": "tir clanbuilding2 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1364,
@@ -3243,9 +3509,16 @@
   "name": "tir clanbuilding1 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1206,
@@ -3258,9 +3531,16 @@
   "name": "tir clanbuilding9 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 564,
@@ -3273,9 +3553,16 @@
   "name": "tir clanbuilding11 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 556,
@@ -3288,9 +3575,16 @@
   "name": "tir clanbuilding12 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 606,
@@ -3303,9 +3597,16 @@
   "name": "tir clanbuilding3",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 900,
@@ -3318,9 +3619,16 @@
   "name": "tir clanbuilding_pod4 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 3,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 3,
    "trianglesTotal": 2564,
@@ -3333,9 +3641,16 @@
   "name": "tir clanbuilding5 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 4,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 4,
    "trianglesTotal": 2960,
@@ -3348,9 +3663,16 @@
   "name": "tir clanbuilding6 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 508,
@@ -3363,9 +3685,16 @@
   "name": "tir clanbuilding7 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1320,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 692,
@@ -3400,9 +3729,16 @@
   "name": "clanapartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 309,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1691,
@@ -3415,9 +3751,16 @@
   "name": "omniapartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 309,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1722,
@@ -3430,9 +3773,16 @@
   "name": "neutralapartment",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 309,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1727,
@@ -3477,9 +3827,16 @@
   "name": "avalon_building3 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1420,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 754,
@@ -3492,9 +3849,16 @@
   "name": "avalon_building4 dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1420,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1522,
@@ -3507,9 +3871,16 @@
   "name": "avalon_building5",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1420,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 756,
@@ -3522,9 +3893,16 @@
   "name": "Clan Registration dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1425,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 904,
@@ -3537,9 +3915,16 @@
   "name": "Omni registration dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1425,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1060,
@@ -3552,9 +3937,16 @@
   "name": "Neutral organisation dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1425,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 916,
@@ -3567,9 +3959,16 @@
   "name": "omnimine_hq_building_06",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 3775,
@@ -3582,9 +3981,16 @@
   "name": "omnimine_hq_building_02",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 2032,
@@ -3597,9 +4003,16 @@
   "name": "omnimine_hq_building_04",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1200,
@@ -3612,9 +4025,16 @@
   "name": "omnimine_hq_building_07",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 2604,
@@ -3627,9 +4047,16 @@
   "name": "omnimine_hq_building_08",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1916,
@@ -3642,9 +4069,16 @@
   "name": "omnimine_hq_building_09",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 7656,
@@ -3657,9 +4091,16 @@
   "name": "omnimine_hq_building10",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 2032,
@@ -3672,9 +4113,16 @@
   "name": "Neutral Insurance building",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1592,
@@ -3687,9 +4135,16 @@
   "name": "Neutral Mission building",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1500,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1864,
@@ -3702,9 +4157,16 @@
   "name": "athens_clanhouse1 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1600,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1304,
@@ -3717,9 +4179,16 @@
   "name": "athens_clanhouse3 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1600,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1492,
@@ -3732,9 +4201,16 @@
   "name": "athens_clanhouse4 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1600,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 698,
@@ -3747,9 +4223,16 @@
   "name": "athens_clanhouse12 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1600,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1604,
@@ -3762,9 +4245,16 @@
   "name": "Swamp_house01 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1610,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1152,
@@ -3777,9 +4267,16 @@
   "name": "Swamp_house02",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1610,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1192,
@@ -3792,9 +4289,16 @@
   "name": "swamp_house03 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1610,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1112,
@@ -3807,9 +4311,16 @@
   "name": "Swamp_house04 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1610,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 3156,
@@ -3822,9 +4333,16 @@
   "name": "wood_shack_01 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 420,
@@ -3837,9 +4355,16 @@
   "name": "wood_shack_02 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 616,
@@ -3852,9 +4377,16 @@
   "name": "wood_shack_03 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 560,
@@ -3867,9 +4399,16 @@
   "name": "wood_shack_04 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 480,
@@ -3882,9 +4421,16 @@
   "name": "wood_shack_05 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 456,
@@ -3897,9 +4443,16 @@
   "name": "wood_shack_06 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 582,
@@ -3912,9 +4465,16 @@
   "name": "wood_shack_07 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1620,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 734,
@@ -3927,9 +4487,16 @@
   "name": "lowtech_building1 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 598,
@@ -3942,9 +4509,16 @@
   "name": "lowtech_building2 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1040,
@@ -3957,9 +4531,16 @@
   "name": "lowtech_building3 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 780,
@@ -3972,9 +4553,16 @@
   "name": "lowtech_building4 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 548,
@@ -3987,9 +4575,16 @@
   "name": "lowtech_building5 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 600,
@@ -4002,9 +4597,16 @@
   "name": "lowtech_building6 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 484,
@@ -4017,9 +4619,16 @@
   "name": "lowtech_building7 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 742,
@@ -4032,9 +4641,16 @@
   "name": "lowtech_waterwell VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1640,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 504,
@@ -4047,9 +4663,16 @@
   "name": "rome_shopbuilding1 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1650,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 3734,
@@ -4062,9 +4685,16 @@
   "name": "rome_simplebuilding VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1650,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 718,
@@ -4077,9 +4707,16 @@
   "name": "rome_simplebuilding1 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1650,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 712,
@@ -4092,9 +4729,16 @@
   "name": "rhino_house1 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1660,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 520,
@@ -4107,9 +4751,16 @@
   "name": "rhino_house2 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1660,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 684,
@@ -4122,9 +4773,16 @@
   "name": "rhino_house3 VP dng",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1660,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 696,
@@ -4137,9 +4795,16 @@
   "name": "reck_trading_outpost_bunker1 VP ",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1670,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1348,
@@ -4152,9 +4817,16 @@
   "name": "reck_trading_outpost_bunker2 VP",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1670,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 496,
@@ -4167,9 +4839,16 @@
   "name": "reck_trading_outpost_bunker3 VP",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1670,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 444,
@@ -4182,9 +4861,16 @@
   "name": "reck_trading_outpost_bunker4 VP",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1670,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1112,
@@ -4197,9 +4883,16 @@
   "name": "reck_trading_outpost_bunker5 VP",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1670,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1376,
@@ -4212,9 +4905,16 @@
   "name": "Home VP dng 1 medium",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1700,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 664,
@@ -4227,9 +4927,16 @@
   "name": "Home VP dng 2 big",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1700,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1288,
@@ -4242,9 +4949,16 @@
   "name": "Home VP dng 3 small",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1700,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 396,
@@ -4257,9 +4971,16 @@
   "name": "Factory VP dng barracks",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1710,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 712,
@@ -4272,9 +4993,16 @@
   "name": "Factory VP dng factory",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1710,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1158,
@@ -4287,9 +5015,16 @@
   "name": "LD VP dng 1",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1720,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 684,
@@ -4302,9 +5037,16 @@
   "name": "LD VP dng 2",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1720,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 644,
@@ -4317,9 +5059,16 @@
   "name": "enigma_tree01",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1740,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 726,
@@ -4332,9 +5081,16 @@
   "name": "enigma_tree02",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1740,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 650,
@@ -4347,9 +5103,16 @@
   "name": "enigma_tree03",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1740,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 668,
@@ -4384,9 +5147,16 @@
   "name": "Omni Military Barracks",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1825,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 3186,
@@ -4465,9 +5235,16 @@
   "name": "McRiid's Office",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1845,
+   "rooms": 7,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 7,
    "trianglesTotal": 6304,
@@ -4502,9 +5279,16 @@
   "name": "The HQ of Omni-Mine",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1865,
+   "rooms": 10,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 10,
    "trianglesTotal": 27625,
@@ -4517,9 +5301,16 @@
   "name": "Versailles Tower",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1885,
+   "rooms": 24,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 24,
    "trianglesTotal": 48988,
@@ -4532,9 +5323,16 @@
   "name": "Treepine Hut",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1885,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 2852,
@@ -4569,10 +5367,16 @@
   "name": "Enjoy it While it Lasts",
   "playfieldVersion": 10,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "error": "error: unpack_from requires a buffer of at least 3068 bytes for unpacking 4 bytes at offset 3064 (actual buffer size is 3067)",
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1890,
+   "rooms": 4,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 4,
    "trianglesTotal": 4880,
@@ -4607,9 +5411,16 @@
   "name": "Clan Registration Office",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1890,
+   "rooms": 5,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 5,
    "trianglesTotal": 2751,
@@ -4622,9 +5433,16 @@
   "name": "Neutral Organisation Office",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1900,
+   "rooms": 4,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 4,
    "trianglesTotal": 2701,
@@ -4765,9 +5583,16 @@
   "name": "Bio MARE",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1940,
+   "rooms": 48,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 48,
    "trianglesTotal": 346088,
@@ -4802,9 +5627,16 @@
   "name": "clan_basic_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 932,
@@ -4817,9 +5649,16 @@
   "name": "clan_basic_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 928,
@@ -4832,9 +5671,16 @@
   "name": "clan_basic_pharmasist_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 836,
@@ -4847,9 +5693,16 @@
   "name": "clan_basic_clothes_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 1372,
@@ -4862,9 +5715,16 @@
   "name": "clan_basic_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 852,
@@ -4877,9 +5737,16 @@
   "name": "clan_advanced_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 932,
@@ -4892,9 +5759,16 @@
   "name": "clan_advanced_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 940,
@@ -4907,9 +5781,16 @@
   "name": "clan_advanced_pharmacist_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 836,
@@ -4922,9 +5803,16 @@
   "name": "clan_advanced_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 852,
@@ -4937,9 +5825,16 @@
   "name": "clan_sup_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 932,
@@ -4952,9 +5847,16 @@
   "name": "clan_sup_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 940,
@@ -4967,9 +5869,16 @@
   "name": "clan_sup_pharmacist_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 836,
@@ -4982,9 +5891,16 @@
   "name": "clan_sup_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1100,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 852,
@@ -4997,9 +5913,16 @@
   "name": "omni_basic_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 948,
@@ -5012,9 +5935,16 @@
   "name": "omni_basic_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 732,
@@ -5027,9 +5957,16 @@
   "name": "omni_basic_pharmacist",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 640,
@@ -5042,9 +5979,16 @@
   "name": "omni_basic_clothes_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 876,
@@ -5057,9 +6001,16 @@
   "name": "omni_basic_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 642,
@@ -5072,9 +6023,16 @@
   "name": "omni_advanced_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 948,
@@ -5087,9 +6045,16 @@
   "name": "omni_advanced_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 732,
@@ -5102,9 +6067,16 @@
   "name": "omni_advanced_pharmacist_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 640,
@@ -5117,9 +6089,16 @@
   "name": "omni_advanced_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 642,
@@ -5132,9 +6111,16 @@
   "name": "omni_sup_weapons_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 948,
@@ -5147,9 +6133,16 @@
   "name": "omni_sup_armor_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 732,
@@ -5162,9 +6155,16 @@
   "name": "omni_sup_pharmacist_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 640,
@@ -5177,9 +6177,16 @@
   "name": "omni_sup_implants_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1120,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 642,
@@ -5258,9 +6265,16 @@
   "name": "neut_basic_clothes_shop",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1130,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 700,
@@ -5273,10 +6287,16 @@
   "name": "neut_basic_implants_shop",
   "playfieldVersion": 10,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "error": "error: unpack_from requires a buffer of at least 31213081 bytes for unpacking 4 bytes at offset 31213077 (actual buffer size is 2045)",
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1130,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1682,
@@ -5355,10 +6375,16 @@
   "name": "neut_advanced_implants_shop",
   "playfieldVersion": 10,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "error": "error: unpack_from requires a buffer of at least 4285875775 bytes for unpacking 4 bytes at offset 4285875771 (actual buffer size is 2055)",
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 1130,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 1682,
@@ -5371,9 +6397,16 @@
   "name": "4holes Fashion",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 2095,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 792,
@@ -9728,9 +10761,16 @@
   "name": "Beer And Booze (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4101,
+   "rooms": 2,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 2,
    "trianglesTotal": 2766,
@@ -9787,9 +10827,16 @@
   "name": "Maze_Acheron_Ely_unre",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 12,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 12,
    "trianglesTotal": 195894,
@@ -9824,9 +10871,16 @@
   "name": "Maze_Styx_ado_red",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 20,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 20,
    "trianglesTotal": 400183,
@@ -9839,9 +10893,16 @@
   "name": "Maze_Eridan_pen_red",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 16,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 16,
    "trianglesTotal": 338332,
@@ -9854,9 +10915,16 @@
   "name": "Maze_Phlegethas1_inf_red",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 24,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 24,
    "trianglesTotal": 376896,
@@ -9869,9 +10937,16 @@
   "name": "Maze_Acheron_Ely_unre",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 12,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 12,
    "trianglesTotal": 195894,
@@ -9906,9 +10981,16 @@
   "name": "Maze_Styx_ado_unre",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 20,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 20,
    "trianglesTotal": 400183,
@@ -9921,9 +11003,16 @@
   "name": "Maze_Eridan_pen_unre",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 16,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 16,
    "trianglesTotal": 338332,
@@ -9936,9 +11025,16 @@
   "name": "Maze_Phlegethas_inf_unre",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4210,
+   "rooms": 24,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 24,
    "trianglesTotal": 376896,
@@ -10079,9 +11175,16 @@
   "name": "Jobe Harbour Gateway (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4560,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 37032,
@@ -10094,9 +11197,16 @@
   "name": "Jobe Market Gateway (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4560,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 37093,
@@ -10109,9 +11219,16 @@
   "name": "Jobe Plaza Gateway (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4560,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 37032,
@@ -10124,9 +11241,16 @@
   "name": "Nascense Portal",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4317,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 11193,
@@ -10235,9 +11359,16 @@
   "name": "Penumbra Transit (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4323,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 34013,
@@ -10250,9 +11381,16 @@
   "name": "Jobe Apartment Normal (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4326,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 12930,
@@ -10721,9 +11859,16 @@
   "name": "Swimming Pool",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4820,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4473,
@@ -10751,9 +11896,16 @@
   "name": "Uncle Bazzits Workshop (Dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4353,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4166,
@@ -10832,9 +11984,16 @@
   "name": "Clinique Plastique",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4820,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 5128,
@@ -10847,9 +12006,16 @@
   "name": "Tir Night Club (dng)",
   "playfieldVersion": 8,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4362,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 9196,
@@ -11971,9 +13137,16 @@
   "name": "Arrival Hall Gateway (dng)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4560,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 37042,
@@ -11986,9 +13159,16 @@
   "name": "Hardware Dimension - Basic",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4562,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4707,
@@ -12001,9 +13181,16 @@
   "name": "Hardware Dimension - Advanced",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4562,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4707,
@@ -12016,9 +13203,16 @@
   "name": "Hardware Dimenion - Superior",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4562,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4707,
@@ -12031,9 +13225,16 @@
   "name": "Dimensional Shift - Basic",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4566,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 7270,
@@ -12046,9 +13247,16 @@
   "name": "Dimensional Shift - Advanced",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4566,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 7270,
@@ -12061,9 +13269,16 @@
   "name": "Dimensional Shift - Superior",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4566,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 7270,
@@ -12076,9 +13291,16 @@
   "name": "Heavenly Business - Basic",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4570,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 14551,
@@ -12091,9 +13313,16 @@
   "name": "Heavenly Business - Advanced",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4570,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 14551,
@@ -12106,9 +13335,16 @@
   "name": "Heavenly Business - Superior",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4570,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 14551,
@@ -12121,9 +13357,16 @@
   "name": "IPS Interior - Basic",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4574,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 12886,
@@ -12136,9 +13379,16 @@
   "name": "IPS Interior - Advanced",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4574,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 12886,
@@ -12151,9 +13401,16 @@
   "name": "IPS Interior - Superior",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4574,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 12886,
@@ -12252,9 +13509,16 @@
   "name": "Redeemed Temple (Elysium)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 88256,
@@ -12267,9 +13531,16 @@
   "name": "Unredeemed Temple (ELysium)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 87195,
@@ -12282,9 +13553,16 @@
   "name": "Redeemed Temple (Scheol)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 88256,
@@ -12319,9 +13597,16 @@
   "name": "Redeemed Temple (Adonis)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 88256,
@@ -12334,9 +13619,16 @@
   "name": "Unredeemed Temple (Adonis)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 87195,
@@ -12371,9 +13663,16 @@
   "name": "Unredeemed Temple (Penumbra)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 87195,
@@ -12386,9 +13685,16 @@
   "name": "Redeemed Temple (Inferno)",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4620,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 88256,
@@ -13235,9 +14541,16 @@
   "name": "Teleport Tower",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4832,
+   "rooms": 1,
+   "cell": 2.0,
+   "heightScale": 0.20000000298023224
+  },
   "collision": {
    "records": 1,
    "trianglesTotal": 4789,
@@ -13400,9 +14713,16 @@
   "name": "Shadow Crypt",
   "playfieldVersion": 9,
   "files": [
+   "rooms.json",
    "collision.bin"
   ],
-  "kind": "none",
+  "kind": "dungeon",
+  "dungeon": {
+   "tilemap": 4884,
+   "rooms": 9,
+   "cell": 2.0,
+   "heightScale": 0.10000000149011612
+  },
   "collision": {
    "records": 9,
    "trianglesTotal": 129623,

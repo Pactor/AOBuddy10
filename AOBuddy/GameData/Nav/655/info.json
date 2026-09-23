@@ -30,10 +30,10 @@
   "chunks": 5295
  },
  "verification": {
-  "walkedPoints": 336,
+  "walkedPoints": 356,
   "toleranceM": 1.0,
-  "explainedByFloor": 305,
-  "explainedByCollision": 30,
+  "explainedByFloor": 323,
+  "explainedByCollision": 32,
   "unexplained": 1,
   "explainedPct": 99.7,
   "unexplainedSamples": [

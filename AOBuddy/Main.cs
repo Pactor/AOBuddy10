@@ -64,6 +64,8 @@ namespace AOBuddy
         private NavController _nav;
 
         private string _pathsDir;
+        private string _pluginDir;
+        private AOBuddyNav _navData;           // test-only reader for GameData/Nav, see the 'navdata' command
         private string _logFile;
 
         // Tick / diagnostics state that belongs to Main's coordination, not to any one system.
@@ -132,6 +134,7 @@ namespace AOBuddy
         public override void Init(string pluginDir)
         {
             LoadConfig(pluginDir);
+            _pluginDir = pluginDir;
             _pathsDir = Path.Combine(pluginDir, "paths");
             try { Directory.CreateDirectory(_pathsDir); } catch { }
             _logFile = Path.Combine(pluginDir, "aobuddy.log");
@@ -1192,6 +1195,7 @@ namespace AOBuddy
                     }
                     break;
                 case "status": reply(StatusLine()); break;
+                case "navdata": reply(NavDataCommand(arg)); break;
 
                 // ---- Knowledge (profession / nanos) ----
                 case "class":
@@ -1535,6 +1539,39 @@ namespace AOBuddy
         }
 
         // ---- Permanent stats: PERK & RESEARCH ------------------------------------
+
+        // ---- navdata: read-only check of GameData/Nav against the live character (nothing uses it yet) ----
+        //   navdata            floor data under the bot's own feet vs his real Y
+        //   navdata <x> <z>    the same for any point in the current playfield
+        //   navdata verify     every point in nav/<pf>.json against the data (the acceptance test)
+        //   navdata unload     drop the loaded data
+        private string NavDataCommand(string arg)
+        {
+            int pf = (int)Playfield.ModelId;
+            if (pf <= 0) return "Not in a playfield.";
+            if (arg == "unload") { _navData = null; return "Nav data unloaded."; }
+            try
+            {
+                if (_navData == null || _navData.Playfield != pf)
+                {
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
+                    _navData = AOBuddyNav.Load(_pluginDir, pf);
+                    if (_navData == null) return $"No nav data folder for pf {pf} ({AOBuddyNav.FolderFor(_pluginDir, pf)}).";
+                    Log($"NAVDATA: loaded pf {pf} {_navData.Kind} ground={(_navData.Ground != null ? _navData.Ground.SamplesX + "x" + _navData.Ground.SamplesZ : "-")} rooms={(_navData.Dungeon != null ? _navData.Dungeon.Rooms.Count : 0)} collision={(_navData.Collision != null ? _navData.Collision.Triangles : 0)} tris in {sw.ElapsedMilliseconds} ms");
+                }
+                if (arg == "verify") return _navData.SelfTest(Path.Combine(_pluginDir, "nav", pf + ".json"));
+                LocalPlayer me = DynelManager.LocalPlayer;
+                if (me == null) return "No local player.";
+                Vector3 p = me.MovementComponent.Position;
+                double x = p.X, y = p.Y, z = p.Z;
+                var parts = (arg ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && double.TryParse(parts[0], out double ax) && double.TryParse(parts[1], out double az)) { x = ax; z = az; }
+                string text = _navData.Explain(x, y, z);
+                Log("NAVDATA: " + text);
+                return text;
+            }
+            catch (Exception ex) { return "navdata failed: " + ex.Message; }
+        }
 
         private void InitPermanentBonuses(string pluginDir)
         {

@@ -3,7 +3,7 @@
     python exportnav.py [<cd_image/data/db>] [<collision .tri dir>] [<out dir>] [pf,pf,...]
 
 Sources (all read straight from ResourceDatabase.dat, nothing running):
-  1000001  playfield record   - dungeon room list (version 10, room flags 0x05xx)
+  1000001  playfield record   - dungeon room list (versions 8/9/10, room flags 0x05xx)
   1000009  ground data        - 'CHGA' outdoor heightfield, 'GNDA' dungeon template atlas
   1000013  collision surfaces - via navbridge.exe's .tri export (the client's own reader)
 
@@ -126,14 +126,18 @@ def read_dungeon(rdb, pf, blob):
         tile = ims[0][z1:z2 + 1, x1:x2 + 1]
         hgt = ims[1][z1:z2 + 1, x1:x2 + 1]
         flg = ims[3][z1:z2 + 1, x1:x2 + 1] if len(ims) > 3 else np.zeros_like(tile)
+        if flg.ndim == 3:                 # an RGB fourth layer in some dungeons: keep channel 0 (as AONavExtractor does)
+            flg = flg[:, :, 0]
         floor = tile != 0
         kmin = int(hgt[floor].min()) if floor.any() else 0
         out_rooms.append(dict(
             index=rm.index, name=rm.name, flags=rm.flags, rot=rm.rot, rect=list(rm.rect),
             pos=[round(v, 3) for v in rm.pos], heightBase=kmin,
             doors=[list(d) for d in rm.doors],
-            polys=[dict(verts=[[round(v, 3) for v in vv] for vv in verts], tris=[list(t) for t in tris])
-                   for verts, tris, tail in rm.polys],
+            polys=[dict(id=pid, verts=[[round(v, 3) for v in vv] for vv in verts], tris=[list(t) for t in tris])
+                   for verts, tris, pid in rm.polys],
+            objects=[dict(pos=[round(v, 3) for v in o[0:3]], rot=[round(v, 4) for v in o[3:7]], point=[round(v, 3) for v in o[7:10]], radius=round(o[10], 3))
+                     for o in rm.objects],
             tile=tile.astype(int).tolist(), height=hgt.astype(int).tolist(), flags3=flg.astype(int).tolist()))
     return dict(playfield=pf, name=hdr["name"], tilemap=hdr["tilemap"], cell=cell, heightScale=hs,
                 atlas=[tw, th], rooms=out_rooms)
@@ -298,7 +302,8 @@ def main():
         info = dict(playfield=pf, name=name, playfieldVersion=version, files=[])
         folder = os.path.join(out, str(pf))
         try:
-            if version == 10 and len(blob) > 0x62 and (struct.unpack_from("<H", blob, 0x60)[0] & 0xFF00) == 0x0500:
+            start = 0x34 if version == 8 else 0x60
+            if version in (8, 9, 10) and len(blob) > start + 2 and (struct.unpack_from("<H", blob, start)[0] & 0xFF00) == 0x0500                     and rdb.off.get(1000009, {}).get(struct.unpack_from("<i", blob, 0x28)[0]) is not None:
                 dungeon = read_dungeon(rdb, pf, blob)
                 kind = "dungeon"
             elif pf in rdb.off[1000009]:

@@ -3,9 +3,16 @@
  "name": "Autocontentdungcave(dung)",
  "playfieldVersion": 8,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 306,
+  "rooms": 55,
+  "cell": 2.0,
+  "heightScale": 0.05000000074505806
+ },
  "collision": {
   "records": 55,
   "trianglesTotal": 55242,

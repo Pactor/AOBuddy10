@@ -974,3 +974,52 @@ Verification (1 m tolerance, tiles/heightfield first, then collision):
 reader, the reflective decoder, the CHGA/GNDA readers, the room list, and the collision step,
 which hosts the client's 32-bit DLLs in a child process through unmanaged thiscall function
 pointers (so the tool is x86). Its output is byte-identical to `exportnav.py`'s.
+
+---
+
+# The old dungeons and the mission room pools were never a different format (2026-09-23)
+
+The 190 "collision only" playfields were a version check, nothing more. Version 8 and 9
+playfield records carry the same room list as version 10; only the header differs (rooms start
+at 0x34 in version 8, at 0x60 in 9 and 10), and their tilemap ids are exactly the 55 `GNDA`
+records nothing had referenced. With that, **289 of the 290 room-list records parse, 2,247
+rooms**, and the room trailer is finally read properly:
+
+    after the lightmap:  nPolys x (u32 id, u32 nVerts, vec3[nVerts], u32 nTris, u16[3*nTris])
+                         u32 nObjects, nObjects x (vec3 pos, quat rot, vec3 point, f32 radius)
+    nPolys = lightmap trailer / 1009 - 1   (holds in all 2,247 rooms)
+
+The polygons are room-local (decks, ramps); the 44-byte objects are in world coordinates and
+look like door or blocker placements (position, rotation, a second point, a radius) - OPEN.
+The version-10 "extra u32" read earlier was this object count. `rooms.json` now carries both.
+
+What came in: the autocontent mission pools (320 Midtech 81 rooms, 321 HiTech 69, 324 Clan
+55, 322 Cave 55, 331 tarm 42, 341 Grey Caves 103, 346 Omnilab 72, 351 Subway Ventil 81,
+362 SL ACG 68, 382 Alien ACG 13), the Shadowlands temples and Pandemonium mazes, Bio MARE,
+the city buildings and apartments. Only 4352 "Market" (1 collision record) is left without
+a floor model. Python and C# outputs stay byte-identical on the new records.
+
+## Missions: the pools are the geometry, the wire is the layout
+
+A mission instance is not in the resource database; the server builds it from a pool. The
+protocol (OmniCell's `BuildingGeneratorData`, carried in the zone-in `PlayfieldAnarchyF`
+message) gives `TemplatePlayfield` (the pool, e.g. 320), `Width`, `Height`, `WorldHeight`,
+and `Rooms[]` of `(Room, Floor, X, Z, Rotation)` - the same placement model our static rooms
+use (an index into the pool's room list, a cell position, a floor, a 90-degree rotation). So
+a mission's floors are: for each placed room, the pool room's tiles at that position and
+rotation, plus the pool room's collision record. Nothing has to be recorded per roll.
+
+What blocks it today: AOBuddy10's `PlayfieldAnarchyFMessage` does not parse the building
+block (OmniCell's serializer does), and no mission run has logged it, so there is no ground
+truth yet. The 20 mission-instance recordings (ids like 2224273) cannot be verified until a
+run logs `TemplatePlayfield` and the room placements alongside the walk. That is the next
+step: extend the SDK message, log it under mission debug, run one mission, then compose and
+verify exactly as the static dungeons were.
+
+## AOBuddyNav.cs - the bot-side reader, test-only
+
+`AOBuddy/AOBuddyNav.cs` loads a playfield's folder (ground, rooms, collision) and answers
+floor-under-point queries; `navdata` in chat runs it against the live character (`navdata`,
+`navdata <x> <z>`, `navdata verify`, `navdata unload`) and logs the answer. No controller
+calls it. Checked out of process on 127 (98.9%), 1931 (97.3%), 800 (100%) and the mission
+pools; the Subway loads in 130 ms, Andromeda in 30 ms.

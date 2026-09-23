@@ -3,9 +3,16 @@
  "name": "AutocontentMidtech(dung)",
  "playfieldVersion": 8,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 307,
+  "rooms": 81,
+  "cell": 2.0,
+  "heightScale": 0.05000000074505806
+ },
  "collision": {
   "records": 81,
   "trianglesTotal": 172026,

@@ -3,9 +3,16 @@
  "name": "Shadow Crypt",
  "playfieldVersion": 9,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4884,
+  "rooms": 9,
+  "cell": 2.0,
+  "heightScale": 0.10000000149011612
+ },
  "collision": {
   "records": 9,
   "trianglesTotal": 129623,

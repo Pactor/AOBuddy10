@@ -5,23 +5,24 @@ using System.Text;
 namespace AONavExtractor
 {
     /// <summary>
-    /// A dungeon playfield: the version-10 RDB 1000001 record's room list joined with its 'GNDA'
+    /// A dungeon playfield: the RDB 1000001 record's room list (versions 8, 9, 10) joined with its 'GNDA'
     /// tilemap (RDB 1000009), a 2 m-cell template atlas stored as PNG layers. Layout of the
     /// playfield record (measured on pf 127):
-    ///   header 0x60: i32 version(10), i32 playfield, char name[32], i32 tilemapId, i32, i32 roomCount, ...
+    ///   header: i32 version, i32 playfield, char name[32], i32 tilemapId, i32 10, i32 roomCount; rooms at 0x34 (v8) or 0x60
     ///   room: u16 flags (0x05xx, bits 0-1 rotation, bit 7 name present), u16 x1,z1,x2,z2 atlas rect,
     ///         f32 x,y,z world centre (y = lowest floor cell), u16 nDoors, nDoors x (u16,u16),
     ///         char name[32] if flags&0x80, u32 lmBytes, u32 lmSamples, lmBytes of lightmap,
-    ///         u32, then 0..n polygon meshes: u32 nVerts, vec3[nVerts], u32 nTris, u16[3*nTris], u32.
+    ///         nPolys (= lightmap trailer/1009 - 1) x (u32 id, u32 nVerts, vec3[], u32 nTris, u16[3*nTris]),
+    ///         u32 nObjects, nObjects x 44 bytes (pos, quat, point, radius).
     /// </summary>
     public sealed class Dungeon
     {
-        public sealed class Poly { public List<float[]> Verts = new List<float[]>(); public List<int[]> Tris = new List<int[]>(); }
+        public sealed class Poly { public int Id; public List<float[]> Verts = new List<float[]>(); public List<int[]> Tris = new List<int[]>(); }
 
         public sealed class Room
         {
             public int Index, Flags, Rot; public int[] Rect; public float[] Pos; public string Name = "";
-            public List<int[]> Doors = new List<int[]>(); public List<Poly> Polys = new List<Poly>();
+            public List<int[]> Doors = new List<int[]>(); public List<Poly> Polys = new List<Poly>(); public List<float[]> Objects = new List<float[]>();
             public int HeightBase;
             public int[][] Tile, Height, Flags3;     // rows z1..z2 of cols x1..x2
         }
@@ -31,9 +32,16 @@ namespace AONavExtractor
         public float Cell, HeightScale;
         public List<Room> Rooms = new List<Room>();
 
+        /// <summary>Rooms start at 0x34 in version 8 records and at 0x60 (zero padded) in 9 and 10.</summary>
+        public static int RoomsStart(byte[] b) => BitConverter.ToInt32(b, 0) == 8 ? 0x34 : 0x60;
+
         public static bool IsDungeonRecord(byte[] b)
         {
-            return b.Length > 0x62 && BitConverter.ToInt32(b, 0) == 10 && (BitConverter.ToUInt16(b, 0x60) & 0xFF00) == 0x0500;
+            if (b.Length < 0x40) return false;
+            int v = BitConverter.ToInt32(b, 0);
+            if (v != 8 && v != 9 && v != 10) return false;
+            int start = RoomsStart(b);
+            return b.Length > start + 2 && (BitConverter.ToUInt16(b, start) & 0xFF00) == 0x0500;
         }
 
         public static Dungeon Read(Rdb rdb, int pf, byte[] b)
@@ -49,7 +57,7 @@ namespace AONavExtractor
             if (layers.Count < 2) throw new InvalidDataException("pf " + pf + ": tilemap has " + layers.Count + " layers");
             Png tileL = layers[0], hgtL = layers[1], flgL = layers.Count > 3 ? layers[3] : null;
 
-            int p = 0x60;
+            int p = RoomsStart(b);
             for (int r = 0; r < nrooms; r++)
             {
                 var rm = new Room { Index = r };
@@ -61,18 +69,26 @@ namespace AONavExtractor
                 for (int i = 0; i < nd; i++) { rm.Doors.Add(new int[] { BitConverter.ToUInt16(b, p), BitConverter.ToUInt16(b, p + 2) }); p += 4; }
                 if ((rm.Flags & 0x80) != 0) { rm.Name = Util.CStr(b, p, 32); p += 32; }
                 int lmBytes = BitConverter.ToInt32(b, p); p += 8;
+                uint trailer = BitConverter.ToUInt32(b, p + lmBytes - 4);
                 p += lmBytes;
-                p += 4;                                   // u32, meaning open
-                while (p + 4 <= b.Length)
+                // nPolys = trailer / 1009 - 1; each: u32 id, u32 nVerts, vec3[], u32 nTris, u16[3*nTris] (room-local)
+                int npolys = trailer >= 1009 && trailer % 1009 == 0 ? (int)(trailer / 1009) - 1 : 0;
+                for (int k = 0; k < npolys; k++)
                 {
-                    int n = BitConverter.ToInt32(b, p);
-                    if (n <= 0 || n > 64) break;           // a room's flags word is >= 0x500
-                    var poly = new Poly(); p += 4;
+                    var poly = new Poly { Id = BitConverter.ToInt32(b, p) }; p += 4;
+                    int n = BitConverter.ToInt32(b, p); p += 4;
                     for (int i = 0; i < n; i++) { poly.Verts.Add(new[] { BitConverter.ToSingle(b, p), BitConverter.ToSingle(b, p + 4), BitConverter.ToSingle(b, p + 8) }); p += 12; }
                     int nt = BitConverter.ToInt32(b, p); p += 4;
                     for (int i = 0; i < nt; i++) { poly.Tris.Add(new int[] { BitConverter.ToUInt16(b, p), BitConverter.ToUInt16(b, p + 2), BitConverter.ToUInt16(b, p + 4) }); p += 6; }
-                    p += 4;
                     rm.Polys.Add(poly);
+                }
+                // then u32 nObjects x (pos, quaternion, point, radius) in world coordinates - meaning OPEN
+                int nobj = BitConverter.ToInt32(b, p); p += 4;
+                for (int i = 0; i < nobj; i++)
+                {
+                    var o = new float[11];
+                    for (int j = 0; j < 11; j++) o[j] = BitConverter.ToSingle(b, p + 4 * j);
+                    rm.Objects.Add(o); p += 44;
                 }
                 int x1 = rm.Rect[0], z1 = rm.Rect[1], x2 = rm.Rect[2], z2 = rm.Rect[3];
                 int rows = z2 - z1 + 1, cols = x2 - x1 + 1;
@@ -128,8 +144,20 @@ namespace AONavExtractor
                 foreach (var pl in rm.Polys)
                 {
                     w.Obj();
+                    w.Key("id").Num(pl.Id);
                     w.Key("verts").Arr(); foreach (var v in pl.Verts) { w.Arr(); foreach (var c in v) w.Num(Math.Round(c, 3)); w.End(); } w.End();
                     w.Key("tris").Arr(); foreach (var t in pl.Tris) { w.Arr().Num(t[0]).Num(t[1]).Num(t[2]).End(); } w.End();
+                    w.End();
+                }
+                w.End();
+                w.Key("objects").Arr();
+                foreach (var o in rm.Objects)
+                {
+                    w.Obj();
+                    w.Key("pos").Arr(); for (int j = 0; j < 3; j++) w.Num(Math.Round(o[j], 3)); w.End();
+                    w.Key("rot").Arr(); for (int j = 3; j < 7; j++) w.Num(Math.Round(o[j], 4)); w.End();
+                    w.Key("point").Arr(); for (int j = 7; j < 10; j++) w.Num(Math.Round(o[j], 3)); w.End();
+                    w.Key("radius").Num(Math.Round(o[10], 3));
                     w.End();
                 }
                 w.End();

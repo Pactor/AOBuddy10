@@ -3,9 +3,16 @@
  "name": "tir clanbuilding3",
  "playfieldVersion": 8,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1320,
+  "rooms": 2,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
  "collision": {
   "records": 2,
   "trianglesTotal": 900,

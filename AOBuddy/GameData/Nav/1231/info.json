@@ -3,9 +3,16 @@
  "name": "Clan Small Clan Apartment",
  "playfieldVersion": 8,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1230,
+  "rooms": 5,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
  "collision": {
   "records": 5,
   "trianglesTotal": 4338,

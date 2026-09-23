@@ -3,9 +3,16 @@
  "name": "Maze_Phlegethas_inf_unre",
  "playfieldVersion": 9,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 4210,
+  "rooms": 24,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
  "collision": {
   "records": 24,
   "trianglesTotal": 376896,

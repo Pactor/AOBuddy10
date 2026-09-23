@@ -40,7 +40,7 @@ Andromeda (655), Rome Park (730), Stret West Bank (790), The Longest Road (795),
 (566), Broken Shores (665) and Greater Tir County (647): median error 0.01 m, 98.5-100% of points
 within 1 m.
 
-## rooms.json - dungeon rooms (RDB 1000001 v10 + 1000009 'GNDA')
+## rooms.json - dungeon rooms (RDB 1000001 versions 8/9/10 + 1000009 'GNDA')
 
     { playfield, name, tilemap, cell (2.0), heightScale (0.2), atlas [w, h], rooms: [ ... ] }
 
@@ -56,7 +56,8 @@ Each room:
     height       same shape: template height in heightScale units
     flags3       same shape: sparse edge/door flags - OPEN
     doors        list of [a, b] pairs - OPEN
-    polys        extra horizontal triangle meshes in room-local coordinates - OPEN (decks?)
+    polys        [{id, verts, tris}] extra triangle meshes in room-local coordinates - OPEN (decks?)
+    objects      [{pos, rot, point, radius}] placements in WORLD coordinates - OPEN (doors/blockers?)
 
 World floor height of the cell under world point (x, z):
 
@@ -68,7 +69,15 @@ World floor height of the cell under world point (x, z):
     y = pos.y + (height[b - z1][a - x1] - heightBase) * heightScale
 
 Stairs, ramps between levels, bridges and mezzanines are not in the tiles; they are in
-`collision.bin`. Tiles plus collision explained 98.8% of 2,390 walked points in the subway.
+`collision.bin`. Tiles plus collision explained 98.9% of 2,390 walked points in the subway and
+97.3% in the Temple of Three Winds.
+
+289 playfields have a room list: the static dungeons, the city buildings and apartments, the
+Shadowlands temples and mazes, and the autocontent mission pools (320 Midtech, 321 HiTech,
+324 Clan, 322 Cave, 331 tarm, 341 Grey Caves, 346 Omnilab, 351 Subway Ventil, 362 SL ACG,
+382 Alien ACG). A mission instance is the server placing rooms from one pool; the placement
+arrives on the wire (`BuildingGeneratorData`: template playfield, then room index, floor,
+x, z, rotation per room) and is not in this data.
 
 ## collision.bin - near-horizontal collision triangles (RDB 1000013)
 

@@ -3,9 +3,16 @@
  "name": "2HO HQ (streteast) GOLD",
  "playfieldVersion": 8,
  "files": [
+  "rooms.json",
   "collision.bin"
  ],
- "kind": "none",
+ "kind": "dungeon",
+ "dungeon": {
+  "tilemap": 1010,
+  "rooms": 3,
+  "cell": 2.0,
+  "heightScale": 0.20000000298023224
+ },
  "collision": {
   "records": 3,
   "trianglesTotal": 2805,
