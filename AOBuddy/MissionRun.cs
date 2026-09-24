@@ -217,7 +217,8 @@ namespace AOBuddy
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
             Save(pick);
-            _tell($"Took: {MissionRoll.Line(pick)} (after {_rolls} roll(s)).");
+            _cashBefore = DynelManager.LocalPlayer != null && DynelManager.LocalPlayer.TryGetStat(Stat.Cash, out int cb) ? cb : (int?)null;
+            _tookLine = $"Took: {MissionRoll.Line(pick)} (after {_rolls} roll(s))";
             Enter(Phase.Accepting, "accepted");
         }
 
@@ -366,6 +367,14 @@ namespace AOBuddy
 
                 case Phase.Accepting:
                     if (_phaseTime < 2) return false;
+                    // Taking a mission costs credits, and he can run out (owner): say what he has once the server
+                    // has charged it (the 2 s this phase waits).
+                    {
+                        string cash = me.TryGetStat(Stat.Cash, out int c)
+                            ? $" Credits: {c:N0}" + (_cashBefore.HasValue && _cashBefore.Value != c ? $" ({c - _cashBefore.Value:+#,0;-#,0})." : ".")
+                            : "";
+                        _tell(_tookLine + "." + cash);
+                    }
                     _rolls = 0;
                     Enter(Phase.ToDoor, "going to the door");
                     return false;
@@ -552,6 +561,8 @@ namespace AOBuddy
         private int _doorDir = -1, _doorStart, _doorStep;
         private double _approach, _travelWaitUntil;
         private int _travelBacks;
+        private int? _cashBefore;
+        private string _tookLine = "";
         private Phase _travelReturn;
         private Phase _fightReturn;
         private bool _resumeBlitz;
