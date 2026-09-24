@@ -1988,6 +1988,9 @@ namespace AOBuddy
             _phase = p; _phaseTime = 0;
             if (p == Phase.ToDoor || p == Phase.Rolling) { _blitzTries = 0; _exitStands = 0; _exitDoor = null; }
             if (p == Phase.Rolling) _rollWarned = false;
+            // The walk-to-it tries are per arrival: he reaches the terminal through its own approach (not travel's
+            // 'there'), so without this the count stayed at 2 and the next trip had none (09:23-09:28, 2026-09-24).
+            if (p == Phase.Rolling || p == Phase.EnterDoor || p == Phase.Hike) _straightTries = 0;
             if (p == Phase.Leaving) _leaveWarned = false;
             if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
             _approach = 0;
