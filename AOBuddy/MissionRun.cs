@@ -308,6 +308,18 @@ namespace AOBuddy
             if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
+                // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
+                // at the wall by the Grid, stood 15 s, then walked the same route into the same wall. The owner: "resetting
+                // to last known good pos is a must". So walk the clean trail back and plan again from there.
+                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike)
+                {
+                    if (_overland.Active) _overland.Stop("pulled back");
+                    _follow.ClearMovement();
+                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;
+                    _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
+                    StartBackoff(me, "travel");
+                    return false;
+                }
                 _heldUntil = _clock + 15;
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
