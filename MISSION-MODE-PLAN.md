@@ -271,7 +271,7 @@ missions may be taken in (empty = any zone).
    raw quest update is now saved for the next one.
 5. **ICC (pf 655) grid, 4 m cells**: the reclaim spot (3231,35,915) and the whompa to Newland (3173,866) both
    "walled off: no open ground"; the Grid proxy (3179,881) too. Travel then falls back to Scotty.
-6. **Scotty has never warped this bot** (borft x3, deidre x1); its replies are now in the log.
+6. ~~Scotty has never warped this bot~~ Resolved (Algorithman, 2026-09-24): Scotty answers; the warp comes ~20 s after the tell. The run now gives it 40 s before walking.
 7. **The bot's own HP reading** (`SupportController` predicted HP) sat at 51% while the owner saw full HP.
 8. **Snares read as "unreadable"** (`BotContext.RunVelocity`): a mob's run-speed debuff put Stat 156 at -289
    (23:00:47, also -286/-153/-131 in earlier fights). `rs >= 0` drops every negative value and keeps the last
