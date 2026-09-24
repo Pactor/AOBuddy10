@@ -311,10 +311,10 @@ namespace AOBuddy
                                 if (dT <= 6f) { Enter(Phase.Rolling, "at the terminal"); return false; }
                                 _approach = 0;   // couldn't close in: travel again
                             }
-                            else { _follow.SetManualTarget(_termPos); return true; }
+                            else { _follow.SetManualTarget(_termPos); return true; }   // from the approach spot: clear of pads
                         }
                     }
-                    return Travel(me, _termPf, _termPos, "the terminal");
+                    return Travel(me, _termPf, TerminalApproach(), "the terminal");
 
                 case Phase.Rolling:
                     if (_recovering()) { _phaseTime = 0; return false; }
@@ -719,6 +719,32 @@ namespace AOBuddy
             return true;
         }
 
+        // The spot 4 m from the terminal to travel to: the side farthest from any pad or zone line, and whose last
+        // few metres to the terminal pass no closer than 3 m to one. Borealis Backyard 5's entry pad sits 10 m from
+        // the terminal on the straight way in, and the bot walked onto it (2026-09-23 22:45).
+        private Vector3 TerminalApproach()
+        {
+            var lines = Zoning.ExitsFrom(_termPf).Where(e => e.Kind == ExitKind.Line || e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Teleport).ToList();
+            if (lines.Count == 0) return _termPos;
+            Vector3 best = _termPos; float bestScore = float.MinValue;
+            for (int k = 0; k < 8; k++)
+            {
+                double t = k * Math.PI / 4;
+                var c = new Vector3(_termPos.X + (float)Math.Cos(t) * 4f, _termPos.Y, _termPos.Z + (float)Math.Sin(t) * 4f);
+                float near = float.MaxValue;
+                foreach (var e in lines)
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        float f = i / 4f;   // along the approach segment spot -> terminal
+                        var q = new Vector3(c.X + (_termPos.X - c.X) * f, c.Y, c.Z + (_termPos.Z - c.Z) * f);
+                        near = Math.Min(near, Flat(q, e.A));
+                        if (e.Kind == ExitKind.ZoneLine) near = Math.Min(near, Flat(q, e.B));
+                    }
+                if (near > bestScore) { bestScore = near; best = c; }
+            }
+            return best;
+        }
+
         private void StartBackoff(LocalPlayer me, string next)
         {
             Vector3 pos = me.Transform.Position;
@@ -798,7 +824,7 @@ namespace AOBuddy
 
         private void StartStash()
         {
-            _bagsToTry.Clear(); _bag = null;
+            _bagsToTry.Clear(); _bag = null; _movedSlot = null;
             foreach (var b in Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container))
                 _bagsToTry.Enqueue(b);
             Enter(Phase.Stash, "stashing the reward");
@@ -833,14 +859,25 @@ namespace AOBuddy
                 return;
             }
             if (cont.IsFull) { _ctx.Log($"MISSIONRUN: bag '{_bag.Name}' is full."); _bag = null; return; }
-            if (_clock - _lastMove < 0.6) return;
             var item = rewards[0];
+            // The SDK's view of a bag's contents is from when it was opened, so a bag our own last move filled
+            // still reads as having room (2026-09-23 22:44: 97 refused moves into a full Large Backpack). If the
+            // item we moved is still in the inventory 2 s later, the server refused it: that bag is full.
+            if (_movedSlot.HasValue)
+            {
+                if (_clock - _lastMove < 2) return;
+                bool stillThere = rewards.Any(r => r.Slot == _movedSlot.Value);
+                _movedSlot = null;
+                if (stillThere) { _ctx.Log($"MISSIONRUN: bag '{_bag.Name}' refused the item; it must be full."); _bag = null; return; }
+                return;   // it went in; pick the next reward on the next tick
+            }
             item.MoveToContainer(cont);
-            _lastMove = _clock;
-            _ctx.Log($"MISSIONRUN: stashed '{item.Name}' into '{_bag.Name}'.");
+            _lastMove = _clock; _movedSlot = item.Slot;
+            _ctx.Log($"MISSIONRUN: moving '{item.Name}' into '{_bag.Name}'.");
         }
 
         private double _bagOpenedAt;
+        private Identity? _movedSlot;
 
         // ---- Doors -----------------------------------------------------------------------------------------
 
