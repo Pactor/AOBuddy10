@@ -1269,6 +1269,8 @@ namespace AOBuddy
         }
         private Vector3? _shopArrival;
         private int _bankUses;
+        private int _bankPulls;
+        private double _bankPulledAt = -99;
         private double _bankUsedAt = -99;
         private Identity? _shopBag;
         private bool _shopBoughtForNanos, _shopBoughtForRoom;
@@ -1531,7 +1533,7 @@ namespace AOBuddy
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
                         var bank = BankTerminal;
-                        _bankUses = 0; _bankUsedAt = -99;
+                        _bankUses = 0; _bankUsedAt = -99; _bankPulls = 0; _bankPulledAt = -99;
                         ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank ({bank}).");
                         return false;
                     }
@@ -1575,7 +1577,23 @@ namespace AOBuddy
                         _ctx.Log("MISSIONRUN: shop: the bank didn't answer three uses; skipping the banking.");
                         return ShopAfterNanos(me);
                     }
-                    if (InvNanos().Count == 0) { _ctx.Log("MISSIONRUN: shop: no nano crystals to bank."); return ShopAfterNanos(me); }
+                    // Keepers sit in the bags (the stash puts every reward there): bring them out to the inventory, a few
+                    // at a time, so they can go to the bank (the SDK names a bag item Backpack:(bag << 16 | slot)).
+                    if (InvNanos().Count == 0 && _bankPulls < 10)
+                    {
+                        var inBags = Inventory.Containers.Where(c => c?.Items != null && !(_personalBags?.Contains(c.Identity) ?? false))
+                                                         .SelectMany(c => c.Items).Where(i => i != null && Bankable(i)).ToList();
+                        int room = Inventory.NumFreeSlots - 4;
+                        if (inBags.Count > 0 && room > 0)
+                        {
+                            if (_clock - _bankPulledAt < 2) return false;
+                            foreach (var it in inBags.Take(Math.Min(room, 8))) { Item.MoveItemToInventory(it.Slot, 0x6F); _ctx.Log($"MISSIONRUN: shop: '{it.Name}' out of a bag for the bank."); }
+                            _bankPulls++; _bankPulledAt = _clock;
+                            return false;
+                        }
+                    }
+                    if (_clock - _bankPulledAt < 2) return false;
+                    if (InvNanos().Count == 0) { _ctx.Log("MISSIONRUN: shop: nothing to bank."); return ShopAfterNanos(me); }
                     return ShopPickBag(me);
 
                 case ShopStep.TakeBag:
