@@ -571,6 +571,8 @@ namespace AOBuddy
         private Phase _hikeReturn;
         private double _hikeUsedAt = -99, _hikeLastHike = -99;
         private List<Vector3> _hikeRoute;
+        private Vector3? _hikeBackTo, _hikeCameFrom;
+        private double _hikeBackAt, _hikeOnAt = -1;
 
         // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
         // thread the way travel builds it.
@@ -614,7 +616,7 @@ namespace AOBuddy
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99; _hikeRoute = null;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -678,14 +680,33 @@ namespace AOBuddy
                 _follow.SetManualTarget(Flat(pos, at) > 2f ? at : cross);
                 return true;
             }
-            if (Flat(pos, e.A) > 1.5f) { _follow.SetManualTarget(e.A); return true; }
-            // On it: a pad takes you by standing on it; an object is used. Use it every few seconds either way.
-            _follow.ClearManual();
-            if (_clock - _hikeUsedAt > 4 && e.ObjInstance != 0)
+            // The owner's way with an exit that doesn't take you: back off it and come at it again.
+            if (_hikeBackTo.HasValue)
             {
-                _hikeUsedAt = _clock;
-                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
-                _ctx.Log($"MISSIONRUN: used {e} at the exit.");
+                if (Flat(pos, _hikeBackTo.Value) > 1.5f && _clock - _hikeBackAt < 4) { _follow.SetManualTarget(_hikeBackTo.Value); return true; }
+                _hikeBackTo = null; _hikeOnAt = -1;
+            }
+            if (Flat(pos, e.A) > 1.5f) { _follow.SetManualTarget(e.A); _hikeCameFrom = pos; return true; }
+            // On it: a pad takes you by standing on it; an object is used. Use it once, then give it 3 s.
+            _follow.ClearManual();
+            if (_hikeOnAt < 0)
+            {
+                _hikeOnAt = _clock;
+                if (e.ObjInstance != 0)
+                {
+                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
+                    _ctx.Log($"MISSIONRUN: used {e} at the exit.");
+                }
+            }
+            else if (_clock - _hikeOnAt > 3)
+            {
+                // Didn't take us: step 5 m back the way we came, then onto it again.
+                Vector3 from = _hikeCameFrom ?? new Vector3(pos.X + 5, pos.Y, pos.Z);
+                var away = new Vector3(from.X - e.A.X, 0, from.Z - e.A.Z);
+                float len = away.Magnitude;
+                _hikeBackTo = len > 0.1f ? new Vector3(e.A.X + away.X / len * 5f, pos.Y, e.A.Z + away.Z / len * 5f) : from;
+                _hikeBackAt = _clock;
+                _ctx.Log($"MISSIONRUN: the exit didn't take me; backing off it and trying again.");
             }
             return false;
         }
