@@ -181,7 +181,10 @@ namespace AOBuddy
                 {
                     var lp = DynelManager.LocalPlayer;
                     if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
-                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)) return true;   // fight style: anything that attacks
+                    // fight style: anything that attacks - INSIDE a mission. On the way (06:51, 2026-09-24) it stopped
+                    // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
+                    // blitz rules apply whatever the style.
+                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
                     // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
                     // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
                     // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.

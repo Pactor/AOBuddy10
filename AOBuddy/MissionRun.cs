@@ -356,7 +356,9 @@ namespace AOBuddy
                         if (me.FightingIdentity.HasValue && !_combat.IsSetAside(me.FightingIdentity.Value))
                         {
                             var foe = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == me.FightingIdentity.Value);
-                            if (foe != null && me.DistanceFrom(foe) > 4f) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                            // Only one that is hurting us: a mob that merely shows as fighting us from afar (the level
+                            // 50 Watcher, 06:51) is not walked up to.
+                            if (foe != null && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
                         if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
@@ -1393,6 +1395,7 @@ namespace AOBuddy
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
                             && !_combat.IsSetAside(n.Identity)
+                            && !TooStrong(me, n)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
             if (a == null) { _defId = null; return null; }
@@ -1427,6 +1430,10 @@ namespace AOBuddy
             }
             return a;
         }
+        // A mob far above his level is never fought: run (a level 50 Male Watcher killed him at 36, 06:51).
+        private static bool TooStrong(LocalPlayer me, SimpleChar n)
+            => me.TryGetStat(Stat.Level, out int mine) && n.TryGetStat(Stat.Level, out int theirs) && theirs > mine + 5;
+
         private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
         private double _defSince;
