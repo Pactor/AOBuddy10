@@ -313,7 +313,11 @@ namespace AOBuddy
                         // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
                         // 6 s after the last blow) instead of walking off into the next room half dead. At most a
                         // minute, in case the rest logic won't sit for a reason of its own.
-                        if ((_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
+                        // 06:33 2026-09-24): then get moving, stims on the way.
+                        bool beingHit = _clock - _lastHurt < 5;
+                        if (!beingHit && (_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     }
                 }
