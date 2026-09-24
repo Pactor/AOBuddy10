@@ -444,6 +444,20 @@ namespace AOBuddy
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
                     if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && StartFlee(me)) return true;
+                    // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
+                    // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
+                    // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
+                    if (_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _fleeUntil)
+                    {
+                        var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+                        foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
+                        if (me.IsAttacking) me.StopAttack();
+                        _fleeUntil = _clock + T("fleesecs");
+                        _ctx.Log($"MISSIONRUN: fleeing the mission at {hpNow}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(x => x.Name).Distinct())}): walking out.");
+                        if (_completed) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "fleeing out"); }
+                        else Skip("losing a fight inside it");
+                        return false;
+                    }
                     // A fight that isn't one: 12 minutes 'fighting' Kirby Schatz, the person a find-person mission
                     // sent him to (23:38-23:51, 2026-09-23), HP at 100% throughout and every blow answered with
                     // feedback 110. Combat never ends, so neither did this pause. 30 s without dropping under 90%
