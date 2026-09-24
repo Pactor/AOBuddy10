@@ -849,7 +849,12 @@ namespace AOBuddy
 
         private bool HikeTick(LocalPlayer me)
         {
-            if ((int)Playfield.ModelId != _hikeFromPf)
+            // A teleporter inside the zone (Lush Fields 695 -> 695) never changes the playfield: through it = far
+            // from it after a use. 09:21:51 (2026-09-24): the third use took him 2 km, and the hike called it a
+            // failure and marked the teleporter bad.
+            bool jumped = _hike.Exit.ToPf == _hikeFromPf && (int)Playfield.ModelId == _hikeFromPf && _hikeUses > 0
+                          && Flat(me.Transform.Position, _hike.Exit.A) > 60f;
+            if ((int)Playfield.ModelId != _hikeFromPf || jumped)
             {
                 _follow.ClearMovement();
                 int now = (int)Playfield.ModelId;
@@ -1450,6 +1455,9 @@ namespace AOBuddy
                 for (int i = _good.Count - 1; i >= 0 && got < want; i--)
                 {
                     if (Vector3.Distance(_good[i], pos) < 2f && back.Count == 0) continue;
+                    // Never across a jump: a teleporter or zone in the trail is not walkable back (09:16:43,
+                    // 2026-09-24: 'walking my clean trail back 2030 m' through Lush Fields' teleporter).
+                    if (Flat(last, _good[i]) > 20f) break;
                     got += Flat(last, _good[i]); last = _good[i];
                     back.Add(_good[i]);
                 }
@@ -1496,6 +1504,7 @@ namespace AOBuddy
         // travelto, once per leg, through the command it already has; retried twice on failure.
         private bool Travel(LocalPlayer me, int pf, Vector3 goal, string what)
         {
+            _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
             if (_overland.Active)
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
