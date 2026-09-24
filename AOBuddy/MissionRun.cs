@@ -174,6 +174,8 @@ namespace AOBuddy
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
+                // A skipped mission's zone is left alone for a while, so the next roll doesn't send him straight back.
+                if (_current != null && !_completed) _danger[_current.Playfield.Instance] = _clock;
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
@@ -1680,7 +1682,13 @@ namespace AOBuddy
                 if (!there && ++_travelTries >= 3)
                 {
                     _travelTries = 0;
-                    if (_phase == Phase.ToDoor) { Skip($"can't get to its door ({_overland.Status()})"); return false; }
+                    if (_phase == Phase.ToDoor)
+                    {
+                        // Unreachable from here: leave the zone alone for a while too (Galway County, 09:41-10:06,
+                        // 2026-09-24: every point of the Galway Shire border pulled him back, for travel and hike).
+                        if (_current != null) _danger[_current.Playfield.Instance] = _clock;
+                        Skip($"can't get to its door ({_overland.Status()})"); return false;
+                    }
                     _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
                     _travelWaitUntil = _clock + 60;
                     return false;
