@@ -637,6 +637,7 @@ namespace AOBuddy
         private int _hikePass = -1, _hikePassStage;
         private double _hikePassAt;
         private bool _hikeUsedHere;
+        private int _hikeUses;
         private Vector3 _hikeDir0;
 
         // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
@@ -675,13 +676,13 @@ namespace AOBuddy
             {
                 UseScotty = false, UnknownPasses = true,
                 Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
-                Filter = e => e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0,
+                Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e),
             };
             ZoneRoute route;
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -745,6 +746,25 @@ namespace AOBuddy
                 _follow.SetManualTarget(Flat(pos, at) > 2f ? at : cross);
                 return true;
             }
+            // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
+            // does it (ICC Grid terminal, first try, 23:18 and 23:37). Three tries 4 s apart.
+            if (e.Kind != ExitKind.Line)
+            {
+                if (Flat(pos, at) > 3f && _hikeUses == 0 && _phaseTime < 140) { _follow.SetManualTarget(at); return true; }
+                _follow.ClearMovement();
+                if (_clock - _hikeUsedAt < 4) return false;
+                if (_hikeUses >= 3)
+                {
+                    MarkBadExit(e);
+                    _ctx.Log($"MISSIONRUN: used {e} three times and it didn't take me.");
+                    Enter(_hikeReturn, "hike failed");
+                    return false;
+                }
+                _hikeUses++; _hikeUsedAt = _clock;
+                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
+                _ctx.Log($"MISSIONRUN: used {e} (try {_hikeUses}).");
+                return false;
+            }
             // WALK THROUGH IT, don't stand on it. Every time this bot got through the ICC Newland whompa it was
             // moving: following the owner with a 10 m push past his spot (14:13, 15:34), or walking into it from the
             // east (22:13:31). Every time it stood on the spot and Used it (hike and travel, 22:12 and 23:16-23:18)
@@ -760,6 +780,7 @@ namespace AOBuddy
             }
             if (_hikePass >= 4)
             {
+                MarkBadExit(e);
                 _follow.ClearMovement();
                 _ctx.Log("MISSIONRUN: walked across the exit from all four sides and it didn't take me; leaving it to travel.");
                 Enter(_hikeReturn, "hike failed");
@@ -841,6 +862,28 @@ namespace AOBuddy
             return best;
         }
 
+        // Exits that failed him (a whompa walked across from all four sides without a zone: ICC Newland whompa,
+        // 23:36, 2026-09-23). Kept in badexits.json so the hike routes round them next time (from ICC: the Grid).
+        private HashSet<string> _badExits;
+        private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
+        private string BadExitsPath => Path.Combine(_pluginDir, "badexits.json");
+        private bool BadExit(ZoneExit e)
+        {
+            if (_badExits == null)
+            {
+                _badExits = new HashSet<string>();
+                try { if (File.Exists(BadExitsPath)) foreach (var t in JArray.Parse(File.ReadAllText(BadExitsPath))) _badExits.Add((string)t); } catch { }
+            }
+            return _badExits.Contains(ExitKey(e));
+        }
+        private void MarkBadExit(ZoneExit e)
+        {
+            BadExit(e);
+            if (!_badExits.Add(ExitKey(e))) return;
+            _ctx.Log($"MISSIONRUN: remembering {e} as an exit that doesn't take me; routing round it from now on.");
+            try { File.WriteAllText(BadExitsPath, new JArray(_badExits.ToArray()).ToString()); } catch { }
+        }
+
         private void StartBackoff(LocalPlayer me, string next)
         {
             Vector3 pos = me.Transform.Position;
@@ -887,7 +930,7 @@ namespace AOBuddy
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > 60 && StartHike(me, pf, goal, what)) return false;   // Scotty now gets the tell (name case fix); give it a minute
+                else if (_overland.Status().Contains("scty") && _phaseTime > 15 && StartHike(me, pf, goal, what)) return false;   // Scotty has never warped this bot (all night 2026-09-23): 15 s, then on foot
                 return false;
             }
             if (_clock < _travelWaitUntil) return false;
