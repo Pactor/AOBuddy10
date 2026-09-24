@@ -280,14 +280,19 @@ missions may be taken in (empty = the terminal's own zone only).
    still moves, just slower (owner, 23:10); the snare timer (~3 min) doesn't run while logged off.
    Separately, the run stands still 15 s when the server pulls him back >5 m twice in 8 s (roots).
    Also worth making "snapped back to the same spot N times" read as a speed problem, not an obstacle.
-9. **ICC Newland whompa (Door C012028F at 3173,866) needs walking through, not standing on.** Every trip this
-   bot made through it was while moving: following the owner with the 10 m push past his spot (14:13, 15:34),
-   or walking in from the east (22:13:31, zoned 0.3 s after). Standing on the pad and Using it, which is what travel
-   and the run's hike both did, got a GenericCmd reply and no zone every time (22:12, 23:16-23:18; 3 tries in
-   `OverlandController` then it replanned via the Grid, which worked). The hike now walks across it from 6 m
-   out to 6 m past, one side at a time (4 sides). Travel's pad wait might want the same.
+9. **ICC Newland whompa: stop ON its centre, at the pad's height.** Owner capture 20260923-234203 (23:43:59):
+   his client walked in from (3165.6,35.91,868.0) and stopped at (3173.45,**36.175**,865.94). That is 0.1 m from
+   the exit's centre in Zoning.json (3173.47,35.89,866.01), and **0.285 m above** the height the data gives it (the pad's top).
+   The server zoned him right after the stop (MoveType 2). There was **no Use**. The bot failed every time it:
+   - stood 3.5 m off the centre (travel's `ArriveWalk` "on the pad" at (3170,866), 23:17 and 23:37);
+   - ran across the centre without stopping (the hike, 23:36);
+   - Used the Door object.
+   The trips that did work tonight were follow copying the owner's own packets. The run's hike now walks onto the
+   centre and stops (4 tries, alternating the data's height and +0.285), and logs which one takes him.
+   `ArriveWalk` likely needs the same: stop within ~0.5 m, and possibly at the pad's top height.
    The owner's route: reclaim -> the Newland whompa at the back of the whompa row -> in Newland turn right
-   into the Borealis whompa.
+   into the Borealis whompa. The Grid needs Computer Literacy, and some Grid exits are over the bot's skill,
+   so the whompa is the route of choice.
 
 ### Later (owner, 2026-09-23)
 - **Out of room (done):** he always needs **4 free inventory slots** (not bags, not items) to pull mission keys
