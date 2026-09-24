@@ -332,7 +332,8 @@ namespace AOBuddy
             {
                 string what = m.Body?.GetType().Name ?? "(unreadable)";
                 if (what != "CharDCMoveMessage" && what != "FollowTargetMessage")
-                    _ctx.Log($"MISSIONRUN: shop: server sent {what} during the bank open{(m.RawPacket != null ? $" ({m.RawPacket.Length} bytes)" : "")}.");
+                    _ctx.Log($"MISSIONRUN: shop: server sent {what} during the bank open{(m.RawPacket != null ? $" ({m.RawPacket.Length} bytes)" : "")}"
+                             + (what == "GenericCmdMessage" && m.RawPacket != null ? ": " + BitConverter.ToString(m.RawPacket) : "") + ".");
             }
             if (!Active || m?.Body == null) return;
             var me = DynelManager.LocalPlayer;
@@ -1277,6 +1278,8 @@ namespace AOBuddy
         private Vector3? _shopArrival;
         private int _bankUses;
         private int _bankPulls;
+        private bool? _bankBuffWas;
+        private double _bankQuietAt = -99;
         private double _bankPulledAt = -99;
         private double _bankUsedAt = -99;
         private Identity? _shopBag;
@@ -1435,7 +1438,12 @@ namespace AOBuddy
             return true;
         }
 
-        private void ShopNext(ShopStep s, string log) { _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log); }
+        private void ShopNext(ShopStep s, string log)
+        {
+            // Auto-buff back on once the bank step is over (it is paused for the bank open).
+            if (s != ShopStep.OpenBank && _bankBuffWas.HasValue) { _ctx.Config.AutoBuff = _bankBuffWas.Value; _bankBuffWas = null; }
+            _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log);
+        }
 
         private int _shopPrevPf = -1;
         private string FairTradePath => Path.Combine(_pluginDir, "fairtrade.json");
@@ -1587,6 +1595,12 @@ namespace AOBuddy
                         var bankDyn = DynelManager.AllDynels.FirstOrDefault(d => d != null && d.Identity == bankId);
                         if (bankDyn != null && me.DistanceFrom(bankDyn) > 3f && t < 20) { _follow.SetManualTarget(bankDyn.Transform.Position); return true; }
                         _follow.ClearMovement();
+                        // Not while casting (16:49, 2026-09-24: auto-buff and pet casts landed between every try, and the
+                        // server echoed each use but never opened the bank). Auto-buff paused for the bank step; each
+                        // use waits for 2 s with nothing being cast.
+                        if (_bankBuffWas == null) { _bankBuffWas = _ctx.Config.AutoBuff; _ctx.Config.AutoBuff = false; }
+                        if (t < 40 && (me.IsCasting || _buffing())) { _bankQuietAt = _clock; return false; }
+                        if (_clock - _bankQuietAt < 2) return false;
                         if (_bankUses < 3 && _clock - _bankUsedAt > 3)
                         {
                             // What the owner's client used (capture, MISSION-MODE-PLAN): the static object C73D (51005)
