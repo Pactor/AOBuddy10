@@ -89,7 +89,8 @@ namespace AOBuddy
                 string v = a.Substring(4).Trim();
                 if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
                 if (v == "now" && Active) { _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true; StartShop("owner asked"); _ctx.Config.MissionShop = was; }
-                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now'.");
+                if (v == "list") { reply(SellPreview()); return; }
+                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list'.");
                 return;
             }
             if (a.StartsWith("difficulty"))
@@ -253,7 +254,7 @@ namespace AOBuddy
             var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
             _rewardIds.Clear();
-            foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
+            foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) { _rewardIds.Add((r.LowId, r.HighId)); RememberReward(r.LowId, r.HighId); }
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
             Save(pick);
             _cashBefore = DynelManager.LocalPlayer != null && DynelManager.LocalPlayer.TryGetStat(Stat.Cash, out int cb) ? cb : (int?)null;
@@ -1006,7 +1007,7 @@ namespace AOBuddy
         // (VendingMachine 42685979 at (199,129)) and the bank terminal (C73D:0EE5BBFF) from there. The way out is
         // back the way he came in (owner): where he landed on zoning in, then on through it.
         public ResupplyController Resupply;
-        private enum ShopStep { Travel, OpenBank, TakeBag, FillBag, StoreBag, Buy, Exit }
+        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Exit }
         private ShopStep _shopStep;
         private double _shopStepAt, _shopTriedAt = -9999;
         private const int FairTradePf = 1187;
@@ -1018,6 +1019,60 @@ namespace AOBuddy
         private Identity? _nanoSlot;
         private readonly HashSet<Identity> _shopKnownBags = new HashSet<Identity>();
         private readonly HashSet<Identity> _shopFullBags = new HashSet<Identity>();
+
+        private int _sellRounds, _sellStage, _sellMoves;
+        private bool _sellBagsOpened;
+        private double _sellSentAt = -99;
+
+        // What housekeeping may sell: only items the run got as mission rewards (their ids are recorded at each
+        // accept - so gear, keys and supplies never are), in the main inventory, not a bag, not a nano crystal, not
+        // on KeepItems. Items inside bags aren't sold yet: that needs a capture of selling out of a bag.
+        private List<Item> Sellable()
+        {
+            LoadRewards();
+            var keep = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            keep.Add(_ctx.Config.ResupplyStimName); keep.Add(_ctx.Config.ResupplyRechargerName);
+            return Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && SellableItem(i, keep)).ToList();
+        }
+        private bool SellableItem(Item i, HashSet<string> keep)
+            => i.UniqueIdentity.Type != IdentityType.Container && !IsNano(i) && i.Name != null && !keep.Contains(i.Name)
+               && (_rewardHistory.Contains(i.Id) || _rewardHistory.Contains(i.HighId) || _rewardNames.Contains(i.Name));
+
+        // Sellable items still inside bags: they can't be sold from there (owner), so they're moved to the
+        // inventory a few at a time first. The SDK names a bag item Backpack:(bag handle << 16 | slot).
+        private List<Item> SellableInBags()
+        {
+            LoadRewards();
+            var keep = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            keep.Add(_ctx.Config.ResupplyStimName); keep.Add(_ctx.Config.ResupplyRechargerName);
+            return Inventory.Containers.Where(c => c?.Items != null).SelectMany(c => c.Items).Where(i => i != null && SellableItem(i, keep)).ToList();
+        }
+        private HashSet<string> _rewardNames;
+        private HashSet<int> _rewardHistory;
+        private string RewardsPath => Path.Combine(_pluginDir, "rewardids.json");
+        private string RewardNamesPath => Path.Combine(_pluginDir, "rewardnames.json");   // names too: seeded from the log's accepted rewards
+        private void LoadRewards()
+        {
+            if (_rewardHistory != null) return;
+            _rewardHistory = new HashSet<int>();
+            _rewardNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            try { if (File.Exists(RewardsPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardsPath))) _rewardHistory.Add((int)t); } catch { }
+            try { if (File.Exists(RewardNamesPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardNamesPath))) _rewardNames.Add((string)t); } catch { }
+        }
+        private void RememberReward(int low, int high)
+        {
+            LoadRewards();
+            bool added = _rewardHistory.Add(low) | _rewardHistory.Add(high);
+            if (added) try { File.WriteAllText(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString()); } catch { }
+            if (ItemData.Find(low, out DummyItem it) && it?.Name != null && _rewardNames.Add(it.Name))
+                try { File.WriteAllText(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString()); } catch { }
+        }
+        public string SellPreview()
+        {
+            var s = Sellable(); var b = SellableInBags();
+            if (s.Count + b.Count == 0) return "Nothing I'd sell right now (open bags are checked; a bag not opened this session isn't).";
+            return $"I'd sell {s.Count + b.Count} ({b.Count} from bags): " + string.Join(", ", s.Concat(b).Select(i => i.Name));
+        }
 
         private static bool IsNano(Item i) => i?.Name != null && (i.Name.StartsWith("Nano Crystal", StringComparison.OrdinalIgnoreCase) || i.Name.StartsWith("NanoCrystal", StringComparison.OrdinalIgnoreCase));
         private static List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && IsNano(i)).ToList();
@@ -1049,10 +1104,66 @@ namespace AOBuddy
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
-                    // Bank first: what it holds decides whether a bag must be bought.
-                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = BankTerminal, Count = 1, Temp4 = 1 });
-                    ShopNext(ShopStep.OpenBank, "opening the bank.");
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false;
+                    ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
+
+                case ShopStep.Sell:
+                {
+                    // SELL (capture 20260924-074329, owner, 07:44-07:45): LookAt + Use the shop terminal, Trade AddItem
+                    // with HIMSELF as target and Inventory:<slot> as the container (one per item; two in one trade),
+                    // then Trade Accept with no target. The server pays (Cash stat) and closes the window, so every
+                    // batch opens the terminal again.
+                    if (_sellSentAt > 0 && _clock - _sellSentAt < 2.5) return false;
+                    if (!_sellBagsOpened)
+                    {
+                        // Open every bag so its contents are known (the stash's proven open: Use with Temp4 0).
+                        foreach (var b in Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container))
+                            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = b.Slot, Count = 1, Temp4 = 0 });
+                        _sellBagsOpened = true; _sellSentAt = _clock;
+                        return false;
+                    }
+                    var sell = Sellable();
+                    if (sell.Count == 0 && _sellStage == 0)
+                    {
+                        // Nothing loose: bring a few out of the bags (owner: you can't sell from a backpack).
+                        var inBags = SellableInBags();
+                        int room = Inventory.NumFreeSlots - 1;
+                        if (inBags.Count > 0 && room > 0 && _sellMoves < 20)
+                        {
+                            foreach (var it in inBags.Take(Math.Min(5, room)))
+                            {
+                                Item.MoveItemToInventory(it.Slot, 0x6F);
+                                _ctx.Log($"MISSIONRUN: shop: '{it.Name}' out of a bag ({it.Slot}).");
+                            }
+                            _sellMoves++; _sellSentAt = _clock;
+                            return false;
+                        }
+                    }
+                    var vm = DynelManager.VendingMachines.OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
+                    if (sell.Count == 0 || vm == null || _sellRounds >= 12)
+                    {
+                        if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = BankTerminal, Count = 1, Temp4 = 1 });
+                        ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank.");
+                        return false;
+                    }
+                    if (_sellStage == 0)
+                    {
+                        Client.Send(new LookAtMessage { Target = vm.Identity, ReturnInfo = 0 });
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = vm.Identity, Count = 1, Temp4 = 1 });
+                        _sellStage = 1; _shopStepAt = _clock;
+                        return false;
+                    }
+                    if (t < 1) return false;   // the window opens (ShopUpdate + Trade open)
+                    var batch = sell.Take(5).ToList();
+                    foreach (var it in batch)
+                        Client.Send(new TradeMessage { Version = 2, Action = TradeAction.AddItem, Param1 = (int)me.Identity.Type, Param2 = me.Identity.Instance, Param3 = (int)it.Slot.Type, Param4 = it.Slot.Instance });
+                    Client.Send(new TradeMessage { Version = 2, Action = TradeAction.Accept });
+                    _ctx.Log($"MISSIONRUN: shop: selling {string.Join(", ", batch.Select(b => b.Name))} to '{vm.Name}'.");
+                    _sellStage = 0; _sellRounds++; _sellSentAt = _clock;
+                    return false;
+                }
 
                 case ShopStep.OpenBank:
                     if (!Inventory.Bank.IsOpen)

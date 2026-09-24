@@ -184,7 +184,8 @@ namespace AOBuddy
         public int MissionFightAttackers = 2;                    // ...or when this many mobs are on him at once
         public string MissionStyle = "blitz";
         public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
-        public int MissionCashReserve = 20000;                   // credits never spent on bags: kept for running missions
+        public int MissionCashReserve = 20000;
+        public List<string> KeepItems = new List<string> { "Health and Nano Stim", "Health and Nano Recharger" };   // never sold by housekeeping (exact names)                   // credits never spent on bags: kept for running missions
         // Mission types the run takes (any of "find person", "repair", "find item"). Find item left out for now:
         // in the solo buildings the item never showed up as a loose item (2026-09-23).
         public List<string> MissionTypes = new List<string> { "find person", "repair", "find item" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any
