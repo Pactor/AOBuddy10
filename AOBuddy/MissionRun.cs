@@ -1181,7 +1181,14 @@ namespace AOBuddy
             switch (_shopStep)
             {
                 case ShopStep.Travel:
-                    if (pf != FairTradePf) return Travel(me, FairTradePf, ShopSpot, "Fair Trade");
+                    if (pf != FairTradePf)
+                    {
+                        // Travel Uses a door and, when it doesn't take, replans to another city's door (07:58,
+                        // 2026-09-24: Borealis -> Newland Desert -> Mort, never in). The hike stands on doors, so
+                        // it goes first; travel only for the zones between.
+                        if (!_overland.Active && StartHike(me, FairTradePf, ShopSpot, "Fair Trade")) return false;
+                        return Travel(me, FairTradePf, ShopSpot, "Fair Trade");
+                    }
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
