@@ -816,6 +816,7 @@ namespace AOBuddy
             return _hikeGrid;
         }
 
+        private int _hikeChain;
         private bool StartHike(LocalPlayer me, int pf, Vector3 goal, string what)
         {
             if (_clock - _hikeLastHike < 20) return false;          // one attempt at a time
@@ -844,7 +845,21 @@ namespace AOBuddy
             if ((int)Playfield.ModelId != _hikeFromPf)
             {
                 _follow.ClearMovement();
-                _ctx.Log($"MISSIONRUN: through to {Zoning.Name((int)Playfield.ModelId)}; travel takes it from here.");
+                int now = (int)Playfield.ModelId;
+                // EVERY crossing on foot, not just the first (08:25-08:30, 2026-09-24): handed to travel in the ICC
+                // (Andromeda 655), it tried the Jobe, Tir and Omni-1 Trade whompas at ground height, three tries
+                // each, detoured through the Grid and came back to the same whompas. Chain the next hike at once
+                // (the 20 s gap between hikes is for failed ones); after 10 crossings travel takes over.
+                if (now != _hikeTargetPf && ++_hikeChain <= 10)
+                {
+                    _ctx.Log($"MISSIONRUN: through to {Zoning.Name(now)}; on to the next crossing myself ({_hikeChain}).");
+                    Enter(_hikeReturn, "through the exit");
+                    _hikeLastHike = -99;
+                    if (StartHike(me, _hikeTargetPf, _hikeGoal, _hikeWhat)) return false;
+                    return false;
+                }
+                _hikeChain = 0;
+                _ctx.Log($"MISSIONRUN: through to {Zoning.Name(now)}; travel takes it from here.");
                 Enter(_hikeReturn, "through the exit");
                 return false;
             }
