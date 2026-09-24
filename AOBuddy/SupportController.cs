@@ -173,6 +173,8 @@ namespace AOBuddy
 
         private double _lastCastAt = -999;   // sessionSeconds of the last cast queued/fired — rest yields to casting
         public void QueueCast(CastRequest req) { _castQueue.Enqueue(req); _lastCastAt = _sessionSeconds; }
+        /// <summary>Seconds since a cast was last queued or fired (buffs, heals, pet summons).</summary>
+        public double SecondsSinceCast => _sessionSeconds - _lastCastAt;
 
         // Per decision-tick clocks.
         public void AdvanceClocks()

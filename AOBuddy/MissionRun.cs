@@ -35,7 +35,7 @@ namespace AOBuddy
         private readonly OverlandController _overland;
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
-        private readonly Func<bool> _dead, _recovering;
+        private readonly Func<bool> _dead, _recovering, _buffing;
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand }
@@ -65,10 +65,10 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering)
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing;
             _roll.ListArrived += OnList;
         }
 
@@ -270,10 +270,12 @@ namespace AOBuddy
                     if (_afterDeath)
                     {
                         // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
-                        if (SupportController.IsRezSick(me) || me.IsCasting) { _phaseTime = 0; return false; }
-                        if (_phaseTime < 8) return false;
+                        // Buffed = nothing cast or queued for 15 s (the buff scan runs every 2 s and puts up one buff
+                        // at a time, refilling nano between them) - not just a fixed pause after the sickness.
+                        if (SupportController.IsRezSick(me) || me.IsCasting || _buffing()) { _phaseTime = 0; return false; }
+                        if (_phaseTime < 3) return false;
                         _afterDeath = false;
-                        _tell("Rez sickness is over and I'm buffed; back to work.");
+                        _tell("Rez sickness is over and my buffs are back up; back to work.");
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
