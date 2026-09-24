@@ -182,7 +182,9 @@ namespace AOBuddy
                     var lp = DynelManager.LocalPlayer;
                     if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
                     int hp = _support.SelfHpPct(lp);
-                    return hp != SupportController.Unknown && hp < _config.MissionFightBelowPercent;
+                    // ...and no stim to fall back on: stims share the FirstAid lock (40 s after each use).
+                    bool canStim = lp.IsSpecialReady(Stat.FirstAid);
+                    return hp != SupportController.Unknown && hp < _config.MissionFightBelowPercent && !canStim;
                 },
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); },
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); });
