@@ -921,7 +921,8 @@ namespace AOBuddy
             if (_phaseTime > 150)
             {
                 _follow.ClearMovement();
-                _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; back to travel.");
+                MarkBadExit(_hike.Exit);   // or the next plan picks the same exit (four times, 09:50-10:00)
+                _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; routing round it.");
                 Enter(_hikeReturn, "hike failed");
                 return false;
             }
@@ -950,9 +951,20 @@ namespace AOBuddy
 
             if (e.Kind == ExitKind.ZoneLine)
             {
-                // Walk to the line, then on across it.
-                Vector3 cross = _hike.CrossTo ?? at;
-                _follow.SetManualTarget(Flat(pos, at) > 2f ? at : cross);
+                // Walk to the line, then on across it: 10 m past it, not 3 (the walker stops 1.5 m short of its
+                // target, so aiming 3 m past from 1.7 m off never moved him: Galway Shire -> Galway County,
+                // 09:50-10:00, 2026-09-24, four 150 s tries standing on the line). Which side is 'past' is a guess
+                // from the line's geometry, so every 12 s the other side is tried.
+                if (Flat(pos, at) > 2f && _hikePassStage == 0) { _follow.SetManualTarget(at); return true; }
+                if (_hikePassStage == 0) { _hikePassStage = 1; _hikePassAt = _clock; }
+                Vector3 c = _hike.CrossTo ?? at;
+                var d = new Vector3(c.X - at.X, 0, c.Z - at.Z);
+                if (d.Magnitude < 0.5f) { var ab = e.B - e.A; d = new Vector3(-ab.Z, 0, ab.X); }
+                if (d.Magnitude < 0.1f) d = new Vector3(at.X - pos.X, 0, at.Z - pos.Z);
+                if (d.Magnitude < 0.1f) d = new Vector3(1, 0, 0);
+                d = d * (1f / d.Magnitude);
+                int side = ((int)((_clock - _hikePassAt) / 12)) % 2 == 0 ? 1 : -1;
+                _follow.SetManualTarget(new Vector3(at.X + d.X * 10f * side, at.Y, at.Z + d.Z * 10f * side));
                 return true;
             }
             // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
