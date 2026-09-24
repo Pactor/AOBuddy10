@@ -36,6 +36,9 @@ namespace AOBuddy
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
         private readonly Func<bool> _dead, _recovering, _buffing, _fighting, _needsRecovery, _inCombat;
+        private readonly Func<int> _selfHp;
+        private double _fightStart, _fightIgnoreUntil = -1;
+        private int _fightHpMin = 100;
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
@@ -65,10 +68,10 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat)
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat, Func<int> selfHp)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat; _selfHp = selfHp;
             _roll.ListArrived += OnList;
         }
 
@@ -257,6 +260,7 @@ namespace AOBuddy
             {
                 _bigSnaps.Clear();
                 _heldUntil = _clock + 15;
+                _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
                 if (_mission.Active) _mission.Stop("held");
                 if (_overland.Active) _overland.Stop("held");
@@ -265,8 +269,10 @@ namespace AOBuddy
                 Enter(Phase.Fight, "held");
                 return false;
             }
-            if (moving && _fighting())
+            int hpTick = _selfHp();
+            if (moving && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
+                _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
                 if (_mission.Active) _mission.Stop("fighting");
                 if (_overland.Active) _overland.Stop("fighting");
@@ -281,15 +287,31 @@ namespace AOBuddy
             switch (_phase)
             {
                 case Phase.Fight:
-                    // Stay until the fight is really over (not just back above the emergency line).
-                    if (_inCombat()) { _phaseTime = 0; return false; }
-                    if (_clock < _heldUntil) return false;
-                    if (_phaseTime < 3) return false;          // a moment for stragglers and loot
-                    // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
-                    // 6 s after the last blow) instead of walking off into the next room half dead. At most a
-                    // minute, in case the rest logic won't sit for a reason of its own.
-                    if ((_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
-                    _ctx.Log("MISSIONRUN: fight over; carrying on.");
+                {
+                    int hpNow = _selfHp();
+                    if (hpNow >= 0) _fightHpMin = Math.Min(_fightHpMin, hpNow);
+                    // A fight that isn't one: 12 minutes 'fighting' Kirby Schatz, the person a find-person mission
+                    // sent him to (23:38-23:51, 2026-09-23), HP at 100% throughout and every blow answered with
+                    // feedback 110. Combat never ends, so neither did this pause. 30 s without dropping under 90%
+                    // HP: carry on, and don't stop for a fight again for a minute unless HP falls.
+                    if (_clock - _fightStart > 30 && _fightHpMin >= 90 && _clock >= _heldUntil)
+                    {
+                        _fightIgnoreUntil = _clock + 60;
+                        _ctx.Log("MISSIONRUN: 30 s of 'fighting' and nothing hurts me; carrying on.");
+                    }
+                    else
+                    {
+                        // Stay until the fight is really over (not just back above the emergency line).
+                        if (_inCombat()) { _phaseTime = 0; return false; }
+                        if (_clock < _heldUntil) return false;
+                        if (_phaseTime < 3) return false;          // a moment for stragglers and loot
+                        // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
+                        // 6 s after the last blow) instead of walking off into the next room half dead. At most a
+                        // minute, in case the rest logic won't sit for a reason of its own.
+                        if ((_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        _ctx.Log("MISSIONRUN: fight over; carrying on.");
+                    }
+                }
                     switch (_fightReturn)
                     {
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:

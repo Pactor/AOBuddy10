@@ -195,7 +195,8 @@ namespace AOBuddy
                     return hp < _config.MissionFightNoStimBelowPercent && !lp.IsSpecialReady(Stat.FirstAid);
                 },
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); },
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); });
+                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); },
+                () => { var lp = DynelManager.LocalPlayer; return lp == null ? SupportController.Unknown : _support.SelfHpPct(lp); });
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
