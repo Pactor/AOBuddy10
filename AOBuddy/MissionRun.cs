@@ -436,6 +436,11 @@ namespace AOBuddy
                 }
                     switch (_fightReturn)
                     {
+                        case Phase.Backoff when !_mission.InMission && (_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop):
+                            // Held while backing off from a travel snag (08:36:59, 2026-09-24): back to that travel,
+                            // not to the terminal - he had a mission in hand and went to roll another.
+                            Enter(_travelReturn, "back to travel");
+                            break;
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
                             if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
                             else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }
@@ -826,7 +831,9 @@ namespace AOBuddy
             {
                 UseScotty = false, UnknownPasses = true,
                 Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
-                Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e),
+                // Not through the Grid: its lifts and exits are gated by Computer Literacy and none took him
+                // (four Grid lines stood on 4 times each, 08:33-08:36, 2026-09-24). The owner: the whompa is the best bet.
+                Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152,
             };
             ZoneRoute route;
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
@@ -1463,6 +1470,7 @@ namespace AOBuddy
             Enter(Phase.Backoff, "backing off");
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
+        private int _straightTries;
         private int _blitzTries;
         private double _doorStepTime;
 
@@ -1482,7 +1490,18 @@ namespace AOBuddy
                 _travelStarted = false;
                 bool there = (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) <= 12f;
                 if (!there && StartHike(me, pf, goal, what)) return false;
-                if (there) { _backoffs = 0; _travelBacks = 0; }
+                if (there) { _backoffs = 0; _travelBacks = 0; _straightTries = 0; }
+                // Same zone and close, but travel found no way (Andromeda's terminal at (3233,921), 'walled off: no
+                // open ground within 3 m', 08:37-08:40, 2026-09-24 - he had rolled there five minutes before): walk
+                // straight at it, twice, before the backoffs.
+                if (!there && (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) < 120f && _straightTries < 2)
+                {
+                    _straightTries++;
+                    _follow.SetManualTarget(goal);
+                    _travelWaitUntil = _clock + 25;
+                    _ctx.Log($"MISSIONRUN: travel found no way to {what} {Flat(me.Transform.Position, goal):0} m off; walking straight at it (try {_straightTries}).");
+                    return false;
+                }
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
                 // back, it had planned the same trip fine.
