@@ -1400,7 +1400,7 @@ namespace AOBuddy
             if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
             _shopTriedAt = _clock;
             _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear();
-            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade. Selling is not built yet (no capture of a sale).");
+            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade to sell, bank the keepers and make room.");
             _tell($"Out of room ({why}); going to Fair Trade to bank my nano crystals and buy a bag. (Test switch: mission run shop on|off.)");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
             Enter(Phase.Shop, "housekeeping");
