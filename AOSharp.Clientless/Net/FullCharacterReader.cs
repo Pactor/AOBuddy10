@@ -85,6 +85,19 @@ namespace AOSharp.Clientless.Net
             return a;
         }
 
+        private static InventorySlot[] ReadInventorySlots(StreamReader r)
+        {
+            int c = ReadX3F1Count(r);
+            var a = new InventorySlot[c > 0 ? c : 0];
+            for (int i = 0; i < c; i++)
+                a[i] = new InventorySlot
+                {
+                    Placement = r.ReadInt32(), Flags = r.ReadInt16(), Count = r.ReadInt16(), Identity = ReadIdentity(r),
+                    ItemLowId = r.ReadInt32(), ItemHighId = r.ReadInt32(), Quality = r.ReadInt32(), Unused = r.ReadInt32(),
+                };
+            return a;
+        }
+
         /// <summary>
         /// Reads a FullCharacter body from a stream positioned at the start of the body (offset 16, right
         /// after the 16-byte packet header). <paramref name="packetLength"/> bounds the defensive tail read.
@@ -100,7 +113,10 @@ namespace AOSharp.Clientless.Net
 
             fc.Version = r.ReadInt32();
 
-            SkipX3F1(r, 32);                     // InventorySlots  (int + short + short + Identity + 4*int)
+            // InventorySlots (int + short + short + Identity + 4*int). Read, not skipped: a login with a pet up
+            // takes this reader, and skipping left the bot with no inventory at all for the session (the mission
+            // key's ContainerAddItem then threw on the null item list, log 2026-09-24 08:51:48).
+            fc.InventorySlots = ReadInventorySlots(r);
             fc.UploadedNanoIds = ReadX3F1Int32s(r);
             SkipX3F1(r, 3);                      // Unknown2 (UnknownDataType1: 3 bytes)
             r.ReadInt32();                       // Unknown3

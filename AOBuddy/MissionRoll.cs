@@ -32,6 +32,7 @@ namespace AOBuddy
         public IReadOnlyList<MissionInfo> Offered => _offered;
         private List<MissionInfo> _offered = new List<MissionInfo>();
         private Identity? _terminal;
+        private MissionScope _scope = MissionScope.Solo;   // Team at a team terminal (capture 20260923-120056), Solo at a solo one
         private readonly HashSet<Identity> _usedTerminals = new HashSet<Identity>();
         private double _rollAt = -1;           // clock time to send the pending roll (after the terminal Use)
         private double _clock;
@@ -75,20 +76,41 @@ namespace AOBuddy
             return false;
         }
 
-        /// <summary>Roll at the nearest mission terminal (within 6 m).</summary>
+        /// <summary>A team terminal: its name says so ('Basic Team Mission Terminal', log 2026-09-24 08:36:16).
+        /// Nothing in the game data lists terminals, so the name is all there is to go by.</summary>
+        public static bool IsTeamTerminal(Dynel d) => d?.Name != null && d.Name.IndexOf("Team", StringComparison.OrdinalIgnoreCase) >= 0;
+
+        /// <summary>In a team: team missions from a team terminal. Not: solo missions from a solo terminal.</summary>
+        public static bool WantTeam(LocalPlayer me) => me != null && me.GetStat(Stat.Team) != 0;
+
+        /// <summary>The nearest terminal within the given metres of a point whose kind (team/solo) is the one
+        /// the bot's team status calls for.</summary>
+        public static Dynel MatchingTerminal(LocalPlayer me, Vector3 near, float within)
+        {
+            bool team = WantTeam(me);
+            return DynelManager.AllDynels
+                .Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal && IsTeamTerminal(d) == team
+                            && Vector3.Distance(d.Transform.Position, near) <= within)
+                .OrderBy(d => Vector3.Distance(d.Transform.Position, near)).FirstOrDefault();
+        }
+
+        /// <summary>Roll at the nearest terminal within 6 m of the kind his team status calls for.</summary>
         public void Roll(Action<string> reply)
         {
             var me = DynelManager.LocalPlayer;
             if (me == null) { reply("Not in game."); return; }
-            var term = DynelManager.AllDynels
-                .Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
-                .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
-            if (term == null || me.DistanceFrom(term) > 6f)
+            bool team = WantTeam(me);
+            string kind = team ? "team" : "solo";
+            var term = MatchingTerminal(me, me.Transform.Position, 6f);
+            if (term == null)
             {
-                reply(term == null ? "No mission terminal in this playfield." : $"Nearest mission terminal is {me.DistanceFrom(term):0} m away; I need to be within 6 m.");
+                var any = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
+                                                .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
+                reply(any == null ? "No mission terminal in this playfield."
+                    : $"I'm {(team ? "" : "not ")}in a team, so I need a {kind} mission terminal within 6 m; the nearest terminal is '{any.Name}' {me.DistanceFrom(any):0} m away.");
                 return;
             }
-            _terminal = term.Identity; _reply = reply;
+            _terminal = term.Identity; _scope = team ? MissionScope.Team : MissionScope.Solo; _reply = reply;
             if (_usedTerminals.Add(term.Identity))
             {
                 // The owner's client Uses the terminal once, then rolls; rolls after that need no Use.
@@ -117,10 +139,10 @@ namespace AOBuddy
             };
             Client.Send(new QuestAlternativeMessage
             {
-                VersionId = 4, MissionSliders = sliders, Unknown2 = 0, Scope = MissionScope.Solo,
+                VersionId = 4, MissionSliders = sliders, Unknown2 = 0, Scope = _scope,
                 Terminal = _terminal.Value, MissionDetails = new MissionInfo[0],
             });
-            _ctx.Log($"MISSIONROLL: roll sent: difficulty {sliders.Difficulty}, sliders {sliders.GoodBad},{sliders.OrderChaos},{sliders.OpenHidden},{sliders.PhysicalMystical},{sliders.HeadonStealth},{sliders.CreditsXp} (bytes) at {_terminal.Value}.");
+            _ctx.Log($"MISSIONROLL: roll sent: difficulty {sliders.Difficulty}, sliders {sliders.GoodBad},{sliders.OrderChaos},{sliders.OpenHidden},{sliders.PhysicalMystical},{sliders.HeadonStealth},{sliders.CreditsXp} (bytes), scope {_scope}, at {_terminal.Value}.");
         }
 
         // Slider value (-100..+100, 0 = middle) to its signed byte on the wire: -100 = 0x9C, +100 = 0x64.

@@ -206,8 +206,11 @@ namespace AOSharp.Clientless
 
         public override int GetStat(Stat stat)
         {
+            // No inventory known: no gear bonuses, but still the real stat. Returning 0 here made EVERY stat
+            // (MaxHealth, MaxNanoEnergy, ...) read 0 for a whole session after a pets-up login (hb 'hp=? nano=?',
+            // log 2026-09-24 08:49).
             if (Inventory.Items == null)
-                return 0;
+                return base.GetStat(stat);
 
             int equippedValue = Inventory.Items.Where(x => x.Slot.Instance <= (int)EquipSlot.Imp_Feet && x.Modifiers.TryGetValue(SpellListType.Wear, out var wearModifiers) && wearModifiers.ContainsKey(stat)).Sum(x => x.Modifiers[SpellListType.Wear][stat]);
 

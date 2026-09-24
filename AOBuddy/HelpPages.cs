@@ -65,6 +65,7 @@ namespace AOBuddy
                     new Cmd("sit", "sit down"),
                     new Cmd("forward", "nudge forward a few metres", "[m]"),
                     new Cmd("zone", "work the nearest zone line until it takes", "[m]"),
+                    new Cmd("pos", "where I am: playfield, map x/y and height"),
                     new Cmd("travelto", "travel there across playfields: zone lines, whompas/grid, Scotty warps", "<x> <y> <playfield> | <playfield> | stop | status"),
                     new Cmd("nav","the recorded route memory for this playfield", "[save|on|off|use]"),
                     new Cmd("record", "start/stop recording a named path I walk", "[stop]"),
@@ -85,7 +86,28 @@ namespace AOBuddy
                     new Cmd("status", "level, mode, health, current target"),
                     new Cmd("stat", "read any stat by name or number", "<name|number>"),
                     new Cmd("hunt", "send my pets at every mob within a radius of me (I stay put), next one when it dies, again when they respawn", "[radius|off|status|why]"),
-                    new Cmd("mission", "missions: 'run' at a solo terminal loops roll/travel/blitz/stash on my own; roll/accept by hand; in the building: status, route, blitz, backoutside", "[run|run skip|run style fight/blitz|run stop|run status|roll|list|accept n|status|route|blitz|backoutside|stop]"),
+                },
+            },
+            new Page
+            {
+                Key = "missions", Title = "Missions",
+                Blurb = "'mission run ...' is the whole loop (roll, travel, blitz, back to the terminal). Plain 'mission stop' only stops the blitz inside a building - the run carries on; 'mission run stop' ends it.",
+                Commands = new[]
+                {
+                    new Cmd("mission run", "start the loop at the mission terminal next to me (team terminal if I'm in a team, solo if not): roll, accept, travel, blitz, back, again"),
+                    new Cmd("mission run new", "start the loop but ignore a mission I'm already holding"),
+                    new Cmd("mission run skip", "delete the mission I'm on and go on to the next (not running: just delete my terminal missions)"),
+                    new Cmd("mission run stop", "end the loop - no more rolling or accepting"),
+                    new Cmd("mission run status", "what the loop is doing and how many are done"),
+                    new Cmd("mission run style", "how I handle attackers on the way", "fight|blitz"),
+                    new Cmd("mission roll", "roll missions at the terminal next to me"),
+                    new Cmd("mission list", "the missions from the last roll"),
+                    new Cmd("mission accept", "take one from the last roll", "<1-5>"),
+                    new Cmd("mission status", "inside a building: floors, boss room, buttons, the mission's target"),
+                    new Cmd("mission route", "inside a building: the route I'd take"),
+                    new Cmd("mission blitz", "inside a building: do the mission now"),
+                    new Cmd("mission backoutside", "inside a building: walk back out the door"),
+                    new Cmd("mission stop", "stop the blitz inside the building only (the run, if any, keeps going)"),
                 },
             },
             new Page

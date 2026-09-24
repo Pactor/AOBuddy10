@@ -78,6 +78,12 @@ namespace AOBuddy
         public const int TypeRepair = 0x2C4E, TypeReturnItem = 0x2C41, TypeFindPerson = 0x2C47, TypeFindItem = 0x2C49, TypeKillPerson = 0x2C42;
 
         public bool Active => _phase != Phase.Off && _phase != Phase.Done;
+
+        /// <summary>The blitz is selecting its target and waiting for the completion: nothing else may move the
+        /// selection meanwhile (no combat retarget, cast, stim or pet command - each sends its own LookAt). The
+        /// owner's client selected the item and sent nothing else until the completion 165 ms later (capture
+        /// 20260924-074524 s9 08:01:45.575); the bot on a team run stood at the item and failed three tries.</summary>
+        public bool HoldsSelection => (_phase == Phase.Act || _phase == Phase.AwaitComplete) && !_completed;
         public bool InMission => _grid != null;
 
         public MissionController(BotContext ctx, Movement move, string pluginDir, Action<string> tell)
@@ -135,6 +141,12 @@ namespace AOBuddy
 
                 case CharacterActionMessage ca:
                     if ((int)ca.Action == MissionChangedAction && IsMe(ca.Identity)) OnCompleted("MissionChanged");
+                    break;
+
+                case FeedbackMessage fb:
+                    // Whatever the server says while we wait on the objective (a refusal would show here).
+                    if (_phase == Phase.AwaitComplete && IsMe(fb.Identity))
+                        _ctx.Log($"MISSION: feedback {fb.CategoryId}/{fb.MessageId} while waiting for the completion.");
                     break;
 
                 case QuestMessage qm:
@@ -392,6 +404,7 @@ namespace AOBuddy
         {
             if (p != _phase || why != _why) _ctx.Log($"MISSION: {_phase} -> {p}: {why}");
             _phase = p; _why = why; _phaseTime = 0; _stuckTime = 0; _bestDist = float.MaxValue;
+            _actStill = 0;
         }
 
         private void Fail(string why)
@@ -509,7 +522,11 @@ namespace AOBuddy
                 }
 
                 case Phase.Act:
+                    if (_record?.Type == TypeFindItem && ApproachItem(me, dt)) return true;
                     Hold(me);
+                    // Stand still a moment first so the server has our stop (the button lesson, 2026-09-23
+                    // 22:31:20: acting the instant we arrived was judged from where the server still had us).
+                    if ((_actStill += dt) < 0.6) { _ctx.WalkState = "mission: settling before the selection"; return true; }
                     DoObjective(me);
                     return true;
 
@@ -765,10 +782,36 @@ namespace AOBuddy
             return false;
         }
 
+        private double _actStill;                // seconds stood still in Phase.Act
+
+        /// <summary>
+        /// Find item: the route ends on the open cell nearest the item and arrives within 2.5 m of that, which can
+        /// leave us several metres off it. The owner selected it from 2.7 m (capture 20260924-074524 s9, at
+        /// (52.9,5.7,143.9), item at (53.5,5.1,146.5)). So walk straight at it until within 2 m, for at most 5 s -
+        /// the last metres need not be on the grid. True while still walking.
+        /// </summary>
+        private bool ApproachItem(LocalPlayer me, double dt)
+        {
+            FindTarget(out Vector3? tp, out _);
+            if (!tp.HasValue) return false;
+            Vector3 pos = me.MovementComponent.Position;
+            float d = Flat(pos, tp.Value);
+            if (d <= 2f || _phaseTime > 5) return false;
+            Vector3 dir = new Vector3(tp.Value.X - pos.X, 0, tp.Value.Z - pos.Z).Normalize();
+            float step = Math.Min(Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep), d - 1.5f);
+            Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
+            next = new Vector3(next.X, _grid.HeightAt(next, pos.Y) ?? pos.Y, next.Z);
+            _ctx.WalkState = $"mission: up to the item d={d:0.0}";
+            _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
+            _actStill = 0;
+            return true;
+        }
+
         private void DoObjective(LocalPlayer me)
         {
-            var target = FindTarget(out _, out string how);
+            var target = FindTarget(out Vector3? tpos, out string how);
             if (!target.HasValue) { Enter(Phase.Plan, "lost sight of the target (" + how + ")"); return; }
+            if (tpos.HasValue) how += $", {Flat(me.MovementComponent.Position, tpos.Value):0.0} m away";
             _acts++;
             switch (_record.Type)
             {
@@ -780,7 +823,8 @@ namespace AOBuddy
                     _ctx.Log($"MISSION: selected {target.Value} ({how}).");
                     break;
                 case TypeFindItem:
-                    // One LookAt with ReturnInfo=0 on the floor item (capture 20260923-125821 s4 13:04:11.152).
+                    // One LookAt with ReturnInfo=0 on the floor item (capture 20260923-125821 s4 13:04:11.152;
+                    // again 20260924-074524 s9 08:01:45.575, completion 165 ms later, nothing opened or picked up).
                     // A container holding the item is opened first (GenericCmd Use, the way the owner opened his
                     // backpack in capture 20260923-201746), then selected. UNVERIFIED which of the two completes it.
                     if ((int)target.Value.Type == (int)IdentityType.Container)
