@@ -151,6 +151,24 @@ namespace AOSharp.Clientless
                 ExpectingPetUntilMs = Environment.TickCount64 + 12000;
         }
 
+        /// <summary>
+        /// Remove a friendly nano (a buff) from a character — what the game client sends when you click a
+        /// buff icon away. Used to drop a borrowed wrangle again once the nano it enabled has been cast:
+        /// the wrangle costs 58 NCU that the rest of the buff plan wants. The wire layout mirrors CastNano
+        /// (target = who wears the buff, nano id in Parameter2); no capture of a real client removal has
+        /// been checked against it yet, so the caller should verify the buff actually left.
+        /// </summary>
+        public void RemoveFriendlyNano(Identity target, int nanoId)
+        {
+            Client.Send(new CharacterActionMessage()
+            {
+                Action = CharacterActionType.RemoveFriendlyNano,
+                Target = target,
+                Parameter1 = (int)IdentityType.NanoProgram,
+                Parameter2 = nanoId
+            });
+        }
+
         private static bool IsPetSummonNano(int nanoId)
         {
             if (!ItemData.Find(nanoId, out NanoItem ni) || ni == null) return false;

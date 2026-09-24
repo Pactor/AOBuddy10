@@ -65,6 +65,7 @@ namespace AOBuddy
         private NavController _nav;
         private MissionController _mission;
         private HuntController _hunt;
+        private ChewyBuffController _chewy;
         private MissionRoll _roll;
         private MissionRun _run;
         private bool _missionWasActive;
@@ -168,6 +169,8 @@ namespace AOBuddy
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
 
             _hunt = new HuntController(_ctx, () => _mission.InMission);
+            _chewy = new ChewyBuffController(_ctx, _support, _overland, pluginDir,
+                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
             Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
             _run = new MissionRun(_ctx, _roll, _mission, _overland, _follow, pluginDir,
@@ -802,6 +805,8 @@ namespace AOBuddy
                 _move.SetLeash(_serverAnchorAge < _config.MoveLeashWindowSec ? _serverAnchor : (Vector3?)null, _config.MoveLeashMeters);
 
                 _roll.Tick(dt);
+                _chewy.StartupTick(me, dt);
+                _chewy.Tick(me, dt, _combat.InCombat);
                 Walk(me, owner, dt);
 
                 _decisionAccum += dt;
@@ -1406,8 +1411,17 @@ namespace AOBuddy
                 case "class":
                 case "whoami": reply(ClassLine()); break;
                 case "nanos": ReportNanos(arg, reply); break;
-                case "active":
-                case "buffs": ReportActive(reply); break;
+                case "active": ReportActive(reply); break;
+                case "buffs":
+                    // Bare 'buffs' = the running buffs; 'buffs plan/ask/...' = the Chewy request planner.
+                    if (parts.Length > 1 && ChewyBuffController.IsCommand(parts[1]))
+                    {
+                        LocalPlayer meC = DynelManager.LocalPlayer;
+                        if (meC == null) { reply("Not in game."); break; }
+                        _chewy.Command(meC, parts.Skip(1).ToArray(), reply);
+                    }
+                    else ReportActive(reply);
+                    break;
                 case "autobuff":
                 case "keepup":
                 {
