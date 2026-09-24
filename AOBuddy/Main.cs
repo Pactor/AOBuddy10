@@ -181,12 +181,17 @@ namespace AOBuddy
                 {
                     var lp = DynelManager.LocalPlayer;
                     if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
-                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)) return true;   // fight style: anything that attacks
+                    // fight style: anything that attacks - INSIDE a mission. On the way (06:51, 2026-09-24) it stopped
+                    // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
+                    // blitz rules apply whatever the style.
+                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
                     // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
                     // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
                     // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
                     int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
-                                                              && c.Identity != lp.Identity && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
+                                                              && c.Identity != lp.Identity && !_combat.IsSetAside(c.Identity)
+                                                              && c is NpcChar && MissionRun.IsMob(c, _mission.InMission)
+                                                              && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
                     if (onMe >= _config.MissionFightAttackers) return true;
                     int hp = _support.SelfHpPct(lp);
                     if (hp == SupportController.Unknown) return false;
@@ -1390,7 +1395,8 @@ namespace AOBuddy
                 }
                 case "navdata": reply(NavDataCommand(arg)); break;
                 case "mission":
-                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? parts[2] : "", reply); }                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
+                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? string.Join(" ", parts.Skip(2)) : "", reply); }   // all of it: "style fight" was cut to "style"
+                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
                         _mission.Command(parts.Length > 1 ? parts[1] : "", reply);
                     break;
                 case "travelto": _overland.Command(parts.Skip(1).Where(p => p.Length > 0).ToArray(), reply); break;

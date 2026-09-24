@@ -39,7 +39,8 @@ namespace AOBuddy
         private readonly Func<int> _selfHp;
         private readonly CombatController _combat;
         private double _fightStart, _fightIgnoreUntil = -1;
-        private int _fightHpMin = 100;
+        private int _fightHpMin = 100, _prevHp = -1;
+        private double _lastHurt = -999;
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
@@ -83,6 +84,20 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("difficulty"))
+            {
+                // The terminal's difficulty for the style he's on: blitz uses MissionDifficulty, fight rolls at least
+                // MissionFightDifficulty. Takes effect on the next roll.
+                bool fightStyle = string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase);
+                string v = a.Substring("difficulty".Length).Trim();
+                if (int.TryParse(v, out int d) && d >= 0 && d <= 255)
+                {
+                    if (fightStyle) _ctx.Config.MissionFightDifficulty = d; else _ctx.Config.MissionDifficulty = d;
+                    reply($"Difficulty for {_ctx.Config.MissionStyle} style set to {d}; from the next roll.");
+                }
+                else reply($"Difficulty: blitz {_ctx.Config.MissionDifficulty}, fight {Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty)} (now on {_ctx.Config.MissionStyle}). 'mission run difficulty <n>' sets it for the current style (captures: 1 easy, 6 his level, 11 hard).");
+                return;
+            }
             if (a.StartsWith("style"))
             {
                 string st = a.Length > 5 ? a.Substring(5).Trim() : "";
@@ -96,7 +111,7 @@ namespace AOBuddy
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
-            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run style fight|blitz | mission run stop | mission run status"); return; }
+            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run style fight|blitz | mission run difficulty <n> | mission run stop | mission run status"); return; }
             if (Active) { reply("Already running: " + Status()); return; }
 
             var me = DynelManager.LocalPlayer;
@@ -288,9 +303,23 @@ namespace AOBuddy
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
             // into the snap-back for minutes (2026-09-23 23:01). The owner: roots and snares both happen.
-            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2)
+            // ...but never while something is hurting him: at a Longest Road door (07:00, 2026-09-24) he stood 15 s
+            // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
+            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
+                // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
+                // at the wall by the Grid, stood 15 s, then walked the same route into the same wall. The owner: "resetting
+                // to last known good pos is a must". So walk the clean trail back and plan again from there.
+                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike)
+                {
+                    if (_overland.Active) _overland.Stop("pulled back");
+                    _follow.ClearMovement();
+                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;
+                    _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
+                    StartBackoff(me, "travel");
+                    return false;
+                }
                 _heldUntil = _clock + 15;
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -302,6 +331,7 @@ namespace AOBuddy
                 return false;
             }
             int hpTick = _selfHp();
+            if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
             if (moving && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
@@ -326,21 +356,36 @@ namespace AOBuddy
                     // sent him to (23:38-23:51, 2026-09-23), HP at 100% throughout and every blow answered with
                     // feedback 110. Combat never ends, so neither did this pause. 30 s without dropping under 90%
                     // HP: carry on, and don't stop for a fight again for a minute unless HP falls.
-                    if (_clock - _fightStart > 30 && _fightHpMin >= 90 && _clock >= _heldUntil)
+                    // Measured over the last 30 s, not the whole fight: at 00:22 (2026-09-24) one early hit to 68%
+                    // kept him 'fighting' Levi McDannold, a find-person target 34 m off, for 15 minutes at 100% HP.
+                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil)
                     {
                         _fightIgnoreUntil = _clock + 60;
                         _ctx.Log("MISSIONRUN: 30 s of 'fighting' and nothing hurts me; carrying on.");
                     }
                     else
                     {
+                        // CLOSE IN: he fights with a melee weapon and used to stand swinging at a mob 11-16 m away that
+                        // shot him to death (06:33, 2026-09-24). Walk up to what we're fighting.
+                        if (me.FightingIdentity.HasValue && !_combat.IsSetAside(me.FightingIdentity.Value))
+                        {
+                            var foe = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == me.FightingIdentity.Value);
+                            // Only one that is hurting us: a mob that merely shows as fighting us from afar (the level
+                            // 50 Watcher, 06:51) is not walked up to.
+                            if (foe != null && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                        }
                         // Stay until the fight is really over (not just back above the emergency line).
-                        if (_inCombat()) { _phaseTime = 0; return false; }
+                        if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
                         if (_clock < _heldUntil) return false;
                         if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                         // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
                         // 6 s after the last blow) instead of walking off into the next room half dead. At most a
                         // minute, in case the rest logic won't sit for a reason of its own.
-                        if ((_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
+                        // 06:33 2026-09-24): then get moving, stims on the way.
+                        bool beingHit = _clock - _lastHurt < 5;
+                        if (!beingHit && (_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     }
                 }
@@ -845,7 +890,9 @@ namespace AOBuddy
             }
             double ang = (_hikePass / 2) * Math.PI / 2;
             var dir = new Vector3((float)(_hikeDir0.X * Math.Cos(ang) - _hikeDir0.Z * Math.Sin(ang)), 0, (float)(_hikeDir0.X * Math.Sin(ang) + _hikeDir0.Z * Math.Cos(ang)));
-            float padY = e.A.Y + (_hikePass % 2 == 1 ? 0.285f : 0f);
+            // CONFIRMED 00:14 (2026-09-24): 0.3 m from the centre at 35.74 did nothing for 12 s; 0.2 m at 36.05
+            // zoned him 0.6 s later. The pad's top first, then our data's height.
+            float padY = e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
             var aim = new Vector3(e.A.X + dir.X * 1.2f, padY, e.A.Z + dir.Z * 1.2f);
@@ -935,6 +982,9 @@ namespace AOBuddy
                 _ctx.Log($"MISSIONRUN: {e} didn't take me; routing round it until I restart.");
         }
 
+        // RubiKa2019 has no Scotty (owner, 2026-09-24): a Scotty leg there is a wait for nobody.
+        private static bool NoScotty => Client.Dimension == AOSharp.Clientless.Common.Dimension.RubiKa2019;
+
         private void StartBackoff(LocalPlayer me, string next)
         {
             Vector3 pos = me.Transform.Position;
@@ -981,7 +1031,7 @@ namespace AOBuddy
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > 15 && StartHike(me, pf, goal, what)) return false;   // Scotty has never warped this bot (all night 2026-09-23): 15 s, then on foot
+                else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
                 return false;
             }
             if (_clock < _travelWaitUntil) return false;
@@ -1325,17 +1375,51 @@ namespace AOBuddy
         {
             if (!Active || me == null) return null;
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            // THE PERSON WE CAME TO FIND is never an enemy. The moment the bot selects him and the mission
+            // completes, the server shows him 'fighting' the bot (Kirby Schatz 23:38, Levi McDannold 00:22:18,
+            // 0.3 s after completion) though he never lands a blow; the bot then swung at him for 12 and 70+
+            // minutes. Set aside for 10 minutes: no swings, and he doesn't count as a mob on us.
+            var findTarget = _mission.FindPersonTarget;
+            if (findTarget.HasValue && !_combat.IsSetAside(findTarget.Value))
+            {
+                var fp = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == findTarget.Value);
+                if (fp != null && fp.FightingIdentity.HasValue && fp.FightingIdentity.Value == me.Identity)
+                {
+                    _ctx.Log($"MISSIONRUN: '{fp.Name}' is the person this mission sent me to find, not an enemy; not fighting him.");
+                    _combat.SetAside(me, fp.Identity, 600);
+                }
+            }
+            // STATIONARY SHOOTERS: guard turrets don't follow, just run past them (owner, 2026-09-24; the bot stood
+            // 4 minutes swinging a melee weapon at a Guard Turret 12.6 m off until it died). No flag marks them
+            // (same flags as a summoned pet), so by behaviour: attacking us from more than 6 m and not moved at
+            // all in 5 s. Set aside for a minute; it doesn't count as a mob on him either (Main).
+            foreach (var n in DynelManager.Npcs)
+            {
+                if (n == null || !n.FightingIdentity.HasValue || n.FightingIdentity.Value != me.Identity || _combat.IsSetAside(n.Identity)) { if (n != null) _still.Remove(n.Identity); continue; }
+                var p = n.Transform.Position;
+                if (!_still.TryGetValue(n.Identity, out var st) || Vector3.Distance(st.pos, p) > 0.5f) { _still[n.Identity] = (p, _clock); continue; }
+                // OFF (06:31-06:36, 2026-09-24): ordinary ranged mobs stand still while they shoot too (Rollerrats,
+                // Blubbags, Probes); setting them all aside meant he never fought back and died twice. Mobs out of
+                // reach are now walked up to (Fight phase); one his blows can't hurt is dropped after 20 s.
+                if (false && _clock - st.since > 5 && me.DistanceFrom(n) > 6f)
+                {
+                    _ctx.Log($"MISSIONRUN: '{n.Name}' shoots from {me.DistanceFrom(n):0} m and hasn't moved in {(_clock - st.since):0} s: a stationary shooter; running past it.");
+                    _combat.SetAside(me, n.Identity, 60);
+                    _still.Remove(n.Identity);
+                }
+            }
             var a = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
                             && !_combat.IsSetAside(n.Identity)
+                            && !TooStrong(me, n)
+                            && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
-            // came back as feedback 110. 30 s like that and the mob is set aside for 5 minutes. Only when both
-            // HPs read and neither moved, so a real fight (either side hurt) is never dropped.
+            // came back as feedback 110. When our blows don't lower a mob's HP, it is set aside for 5 minutes.
             bool readable = a.TryGetStat(Stat.Health, out int ahp);
             int mine = _selfHp();
             if (_defId != a.Identity) { _defId = a.Identity; _defSince = _clock; _defHp = ahp; _defMyMin = mine < 0 ? 100 : mine; }
@@ -1343,9 +1427,20 @@ namespace AOBuddy
             {
                 if (mine >= 0) _defMyMin = Math.Min(_defMyMin, mine);
                 if (readable && ahp < _defHp) { _defHp = ahp; _defSince = _clock; }
-                else if (readable && _defMyMin >= 90 && _clock - _defSince > 30)
+                // Its HP unreadable: judge by us. 30 s on it without being hurt once (Levi McDannold, 00:22-00:37).
+                else if (!readable && _clock - _defSince > 30 && _clock - _lastHurt > 30)
                 {
-                    _ctx.Log($"MISSIONRUN: 30 s on '{a.Name}' and neither of us is hurt (its HP {ahp}); leaving it alone for 5 minutes.");
+                    _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' (HP unreadable) and nothing has hurt me for 30 s; leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, a.Identity, 300);
+                    _defId = null;
+                    return null;
+                }
+                // ...and one we can't hurt while it hurts us: a Guard Turret 12.6 m off, the bot standing with a
+                // melee weapon for 4 minutes until it died (00:08-00:12, 2026-09-24), the mission already done.
+                // 20 s of fighting it without its HP dropping at all: leave it.
+                else if (readable && _clock - _defSince > 20)
+                {
+                    _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' and its HP hasn't moved ({ahp}); leaving it alone for 5 minutes.");
                     _combat.SetAside(me, a.Identity, 300);
                     _defId = null;
                     return null;
@@ -1353,6 +1448,26 @@ namespace AOBuddy
             }
             return a;
         }
+        /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
+        /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
+        /// not fought even when they show as fighting him: on the way to a Longest Road door (06:58, 2026-09-24)
+        /// he attacked a Male Watcher, an NPC, 37 m off (owner: "stop him from attacking the npcs on the way").
+        /// Inside a building every NPC left is fair game.</summary>
+        public static bool IsMob(SimpleChar n, bool inMission)
+        {
+            if (n == null) return false;
+            if (inMission) return true;
+            int flags = (int)n.Flags;
+            if ((flags & (0x200000 | 0x800000 | 0x8000000)) != 0) return false;
+            if (n is NpcChar npc && (npc.Owner.HasValue || npc.PetTypeId != 0)) return false;
+            return (int)n.Side == 3;
+        }
+
+        // A mob far above his level is never fought: run (a level 50 Male Watcher killed him at 36, 06:51).
+        private static bool TooStrong(LocalPlayer me, SimpleChar n)
+            => me.TryGetStat(Stat.Level, out int mine) && n.TryGetStat(Stat.Level, out int theirs) && theirs > mine + 5;
+
+        private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
         private double _defSince;
         private int _defHp, _defMyMin = 100;

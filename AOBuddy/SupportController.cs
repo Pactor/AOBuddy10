@@ -959,6 +959,10 @@ namespace AOBuddy
 
         // The bot needs to sit and recover (own HP or nano low). Owner-independent — used to make recovery
         // take priority over wandering after a lost owner (don't zone-sweep/catch-up when he should be healing).
+        private int _restPrevHp = Unknown;
+        private double _hurtAt = -999;
+        public bool UnderFire => _sessionSeconds - _hurtAt < 6;
+
         public bool NeedsRecovery(LocalPlayer me)
             => me != null && (Below(SelfHpPct(me), _ctx.Config.RestBelowPercent)
                               || Below(SelfNanoPct(me), _ctx.Config.RestNanoBelowPercent));
@@ -996,6 +1000,11 @@ namespace AOBuddy
             // somewhere - and a rest is worth nothing if he has to stand up again a second later.
             bool ownerStill = owner == null || OwnerStillFor >= OwnerStillSeconds;
             int hpNow = SelfHpPct(me);
+            // UNDER FIRE: HP falling in the last 6 s means something is still hitting him, whatever combat says.
+            // 06:33 (2026-09-24): two turrets set aside as stationary shooters, 'out of combat', he sat down to
+            // rest in their line of fire and died seated, recharger refused twice.
+            if (hpNow != Unknown) { if (_restPrevHp != Unknown && hpNow < _restPrevHp) _hurtAt = _sessionSeconds; _restPrevHp = hpNow; }
+            bool underFire = _sessionSeconds - _hurtAt < 6;
             int nanoNow = SelfNanoPct(me);
             // Between fights he sits and rechargers restore BOTH HP and nano — if either is low, rest. Kept
             // available for the whole sit so it doesn't go null mid-rest.
@@ -1088,7 +1097,7 @@ namespace AOBuddy
                 }
             }
 
-            bool startRest = !inCombat && !combatLull && _restZoneSuppress <= 0 && haveRecharger && settled
+            bool startRest = !inCombat && !underFire && !combatLull && _restZoneSuppress <= 0 && haveRecharger && settled
                              && ownerStill && needRest && itemReady && _sessionSeconds >= _restSuppressUntil
                              && _postUseHoldUntil <= 0
                              && (nanoStarved || (!castsActive && !_restedSinceCombat && _restCooldown <= 0));
@@ -1099,7 +1108,7 @@ namespace AOBuddy
                                       || Below(nanoNow, _ctx.Config.RestNanoUntilPercent);
             // An unanswered use holds the sit open on its own: standing before the server replies is exactly
             // what was getting the use thrown away.
-            bool continueRest = _resting && !inCombat && settled
+            bool continueRest = _resting && !inCombat && !underFire && settled
                                 && (_awaitingRestUseConfirm || (stillNeedsRecovery && (nanoStarved || !castsActive)));
             if (!(startRest || continueRest)) return false;
 

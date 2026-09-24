@@ -100,6 +100,7 @@ namespace AOBuddy
                     new Cmd("mission run stop", "end the loop - no more rolling or accepting"),
                     new Cmd("mission run status", "what the loop is doing and how many are done"),
                     new Cmd("mission run style", "how I handle attackers on the way", "fight|blitz"),
+                    new Cmd("mission run difficulty", "terminal difficulty for the current style (1 easy, 6 my level, 11 hard)", "<n>"),
                     new Cmd("mission roll", "roll missions at the terminal next to me"),
                     new Cmd("mission list", "the missions from the last roll"),
                     new Cmd("mission accept", "take one from the last roll", "<1-5>"),

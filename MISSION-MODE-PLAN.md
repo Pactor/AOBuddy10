@@ -271,7 +271,11 @@ missions may be taken in (empty = any zone).
    raw quest update is now saved for the next one.
 5. **ICC (pf 655) grid, 4 m cells**: the reclaim spot (3231,35,915) and the whompa to Newland (3173,866) both
    "walled off: no open ground"; the Grid proxy (3179,881) too. Travel then falls back to Scotty.
-6. **Scotty has never warped this bot** (borft x3, deidre x1); its replies are now in the log.
+6. ~~Scotty has never warped this bot~~ Resolved (Algorithman, 2026-09-24): Scotty answers; the warp comes ~20 s after the tell. The run now gives it 40 s before walking.
+   **But RubiKa2019 has no Scotty** (owner, 2026-09-24; the owner's bot logs in there, `Client.Dimension`). That is
+   why Scotty never answered him. Travel should plan without Scotty there:
+   `UseScotty = Client.Dimension != Dimension.RubiKa2019` in `OverlandController.Options`. The run already walks
+   at once on 2019 when travel falls back to Scotty.
 7. **The bot's own HP reading** (`SupportController` predicted HP) sat at 51% while the owner saw full HP.
 8. **Snares read as "unreadable"** (`BotContext.RunVelocity`): a mob's run-speed debuff put Stat 156 at -289
    (23:00:47, also -286/-153/-131 in earlier fights). `rs >= 0` drops every negative value and keeps the last
@@ -292,7 +296,11 @@ missions may be taken in (empty = any zone).
    - Used the Door object.
    The trips that did work tonight were follow copying the owner's own packets. The run's hike now walks onto the
    centre and stops (4 tries, alternating the data's height and +0.285), and logs which one takes him.
-   `ArriveWalk` likely needs the same: stop within ~0.5 m, and possibly at the pad's top height.
+   **Confirmed live 2026-09-24 00:14:** at 0.3 m from the centre and height 35.74 (our data's height), nothing
+   happened for 12 s. At 0.2 m and height 36.05 (the pad's top), he zoned 0.6 s later. **The height decides it.**
+   `ArriveWalk` needs the same: stop within ~0.5 m of the centre, **on the pad's top surface**. Our data's height
+   (35.89) is the ground under the pad; the pad here is 0.285 m higher. The Newland -> Borealis whompa worked
+   through travel on the same run.
    The owner's route: reclaim -> the Newland whompa at the back of the whompa row -> in Newland turn right
    into the Borealis whompa. The Grid needs Computer Literacy, and some Grid exits are over the bot's skill,
    so the whompa is the route of choice.
@@ -316,3 +324,21 @@ missions may be taken in (empty = any zone).
   - bank moves appear as `Bank:0` containers, and a bag comes out of the bank to inventory slot 111.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
+
+10. **`travelto` gives up where the run would back off** (owner, 2026-09-24 07:05): from (3191,886) in ICC toward
+    the Newland whompa, 'no progress ... routing round it' 4 times at (3190,885), then "stuck ... something is in
+    the way". Same spot where the server pulled the run back at 07:02. The mission run backs off, walks its clean
+    trail back and replans; plain travel could do the same before giving up (owner: "backtrack to the last
+    known good position and try again").
+
+11. **Stret West Bank (790): the grid seals the inner town** (probe 2026-09-24, `docs/img/stret790_town.png`:
+    dark = blocked, green = reachable from the Borealis whompa at (1276,2884), pink = open but unreachable,
+    blue = the bot's own walked segments from `nav/790.json`). The town is two walled octagons with a ring road
+    between. The ring road and the country outside connect, but the **whole inner octagon is cut off**. The bot has
+    walked through the inner wall on the NE side, where the grid has no gap: an arch narrower than a 2 m cell,
+    or its overhead stone stamped as wall (StampWalls blocks any cell with geometry at body height). Ideas:
+    open every cell on a walked segment (walked = walkable), and/or skip wall samples with ground clearance
+    above the body.
+    Separately, the door at (1047,2704) that live travel "searched 1500000 cells without reaching": on the plain
+    grid, FindPath from (1283,2891) finds it (26 points, snap 8). So the live failure came from travel's own
+    state (extra blocked cells or its snap), not the map. Probe: scratchpad navprobe (OverlandGrid.Build + IsOpen).

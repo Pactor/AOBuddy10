@@ -679,6 +679,9 @@ namespace AOBuddy
         }
 
         // ---- offline test hooks (the harness replays captures through the planner; nothing calls these live)
+        /// <summary>The person a find-person mission sends us to, if this building's record names one.</summary>
+        public Identity? FindPersonTarget => _record != null && _record.TypeName == "find person" ? _record.TargetA : null;
+
         public void TestLoad(byte[] zoneIn, MissionRecord record) { OnZoneIn(zoneIn); _record = record; }
         public void TestSeeItem(Identity id, int template, Vector3 pos) => _items[id] = new SeenItem { Template = template, Pos = pos, Seen = Now };
         public void TestSetCompleted(bool done) => _completed = done;
