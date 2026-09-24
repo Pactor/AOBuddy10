@@ -84,19 +84,63 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("tune"))
+            {
+                var w = args.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (w.Length >= 2 && w[1].Equals("reset", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (w.Length >= 3) _tune.Remove(w[2].ToLowerInvariant()); else _tune.Clear();
+                    SaveTune(); reply("Back to defaults: " + TuneText()); return;
+                }
+                if (w.Length >= 3)
+                {
+                    string k = w[1].ToLowerInvariant();
+                    if (!TuneDefaults.ContainsKey(k)) { reply($"No '{k}'. " + TuneText()); return; }
+                    if (!float.TryParse(w[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v)) { reply($"'{w[2]}' isn't a number."); return; }
+                    _tune[k] = v; SaveTune();
+                    _ctx.Log($"MISSIONRUN: tune {k} = {v} (default {TuneDefaults[k].def}).");
+                    reply($"{k} = {v} (default {TuneDefaults[k].def}): {TuneDefaults[k].what}.");
+                    return;
+                }
+                reply(TuneText() + " | 'mission run tune <name> <value>', 'mission run tune reset [name]'.");
+                return;
+            }
             if (a.StartsWith("keep"))
             {
                 KeepSet();
                 string rest = args.Trim().Length > 4 ? args.Trim().Substring(4).Trim() : "";   // original case for the name
+                if (rest.StartsWith("ql ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var w = rest.Substring(3).Trim();
+                    int sp = w.IndexOf(' ');
+                    string first = sp > 0 ? w.Substring(0, sp) : w, nm = sp > 0 ? w.Substring(sp + 1).Trim() : "";
+                    if (nm.Length == 0) { reply("'mission run keep ql <ql> <exact name>' or 'keep ql off <exact name>'."); return; }
+                    if (first.Equals("off", StringComparison.OrdinalIgnoreCase)) { reply(NameRules().Remove(nm) ? $"'{nm}' is sold like anything else again." : $"No rule for '{nm}'."); SaveBankRules(); return; }
+                    if (!int.TryParse(first, out int q) || q < 1) { reply($"'{first}' isn't a QL."); return; }
+                    NameRules()[nm] = q; SaveBankRules();
+                    reply($"'{nm}' QL {q}+ is kept and banked with the nanos.");
+                    return;
+                }
+                if (rest.StartsWith("implant", StringComparison.OrdinalIgnoreCase))
+                {
+                    string q = rest.Substring(7).Trim().TrimStart('s').Trim();
+                    if (q.Equals("off", StringComparison.OrdinalIgnoreCase)) { SetImplantMinQl(0); reply("Implants are sold like anything else again."); return; }
+                    if (int.TryParse(q, out int ql) && ql > 0) { SetImplantMinQl(ql); reply($"Implants QL {ql}+ are kept and banked with the nanos."); return; }
+                    reply(ImplantMinQl() > 0 ? $"Implants QL {ImplantMinQl()}+ are kept and banked. 'mission run keep implant <ql>|off'." : "Implants aren't kept. 'mission run keep implant <ql>' keeps and banks them from that QL up.");
+                    return;
+                }
                 if (rest.StartsWith("add ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(4).Trim(); _keepAdded.Add(nm); SaveKeep(); reply($"Keeping '{nm}': never sold."); return; }
                 if (rest.StartsWith("remove ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(7).Trim(); reply(_keepAdded.Remove(nm) ? $"'{nm}' off the keep list." : $"'{nm}' isn't on the list I added to (config KeepItems is edited in config.json)."); SaveKeep(); return; }
-                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + ". 'mission run keep add <exact item name>' / 'keep remove <name>'.");
+                var banked = NameRules().Select(kv => $"{kv.Key} QL {kv.Value}+").ToList();
+                if (ImplantMinQl() > 0) banked.Insert(0, $"implants QL {ImplantMinQl()}+");
+                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + (banked.Count > 0 ? ". Kept and banked: nanos, " + string.Join(", ", banked) : "")
+                      + ". 'mission run keep add <exact item name>' / 'keep remove <name>' / 'keep ql <ql> <name>' / 'keep implant <ql>'.");
                 return;
             }
             if (a.StartsWith("shop"))
             {
                 string v = a.Substring(4).Trim();
-                if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
+                if (v == "on" || v == "off") { _ctx.Config.MissionShop = v == "on"; SaveConfigValue("MissionShop", v == "on"); }
                 if (v == "now")
                 {
                     // Starts the run first if it isn't going (07:56, 2026-09-24: 'shop now' on a fresh start did nothing).
@@ -112,7 +156,22 @@ namespace AOBuddy
                 {
                     LoadPersonal();
                     var bags = Bags();
-                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => $"{n + 1}) {b.Name}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")}")) + ". 'mission run shop personal <n>' toggles.");
+                    // Bags all have the same name ('Large Backpack'), so each line says where it sits and what's in
+                    // it (owner, 2026-09-24). A bag not opened this session is opened now; ask again for its contents.
+                    var me0 = DynelManager.LocalPlayer;
+                    int opened = 0;
+                    foreach (var b in bags)
+                        if (me0 != null && !Inventory.Containers.Any(c => c?.Items != null && c.Identity == b.UniqueIdentity))
+                        { Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me0.Identity, Target = b.Slot, Count = 1, Temp4 = 0 }); opened++; }
+                    string Line(Item b, int n)
+                    {
+                        var c = Inventory.Containers.FirstOrDefault(x => x?.Items != null && x.Identity == b.UniqueIdentity);
+                        string what = c == null ? "not opened yet" : c.Items.Count == 0 ? "empty"
+                            : $"{c.Items.Count} item(s): " + string.Join(", ", c.Items.Where(i => i?.Name != null).Select(i => i.Name).Take(4)) + (c.Items.Count > 4 ? ", ..." : "");
+                        return $"{n + 1}) {b.Name} in slot {b.Slot.Instance}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")} - {what}";
+                    }
+                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => Line(b, n)))
+                          + (opened > 0 ? $". Opened {opened} bag(s) just now: ask again for their contents." : "") + " 'mission run shop personal <n>' toggles.");
                     return;
                 }
                 if (v.StartsWith("personal"))
@@ -126,7 +185,7 @@ namespace AOBuddy
                     reply($"Bag {n} ({bags[n - 1].Name}) is {(on ? "personal: nothing in it is ever sold" : "no longer personal")}.");
                     return;
                 }
-                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list|bags|personal <n>', 'mission run keep'.");
+                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list|bags|personal <n>', 'mission run keep', 'mission run tune'.");
                 return;
             }
             if (a.StartsWith("difficulty"))
@@ -138,6 +197,7 @@ namespace AOBuddy
                 if (int.TryParse(v, out int d) && d >= 0 && d <= 255)
                 {
                     if (fightStyle) _ctx.Config.MissionFightDifficulty = d; else _ctx.Config.MissionDifficulty = d;
+                    SaveConfigValue(fightStyle ? "MissionFightDifficulty" : "MissionDifficulty", d);
                     reply($"Difficulty for {_ctx.Config.MissionStyle} style set to {d}; from the next roll.");
                 }
                 else reply($"Difficulty: blitz {_ctx.Config.MissionDifficulty}, fight {Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty)} (now on {_ctx.Config.MissionStyle}). 'mission run difficulty <n>' sets it for the current style (captures: 1 easy, 6 his level, 11 hard).");
@@ -146,13 +206,15 @@ namespace AOBuddy
             if (a.StartsWith("style"))
             {
                 string st = a.Length > 5 ? a.Substring(5).Trim() : "";
-                if (st == "fight" || st == "blitz") { _ctx.Config.MissionStyle = st; reply(st == "fight" ? "Style: fight - I'll stop and fight anything that attacks me." : $"Style: blitz - I run to the end and stim, and only stop to fight under {_ctx.Config.MissionFightBelowPercent}% with no stim ready."); }
+                if (st == "fight" || st == "blitz") { _ctx.Config.MissionStyle = st; SaveConfigValue("MissionStyle", st); reply(st == "fight" ? "Style: fight - I'll stop and fight anything that attacks me." : $"Style: blitz - I run to the end and stim, and only stop to fight under {_ctx.Config.MissionFightBelowPercent}% with no stim ready."); }
                 else reply($"Style is {_ctx.Config.MissionStyle}. 'mission run style fight' or 'mission run style blitz'.");
                 return;
             }
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
+                // A skipped mission's zone is left alone for a while, so the next roll doesn't send him straight back.
+                if (_current != null && !_completed) MarkDanger(_current.Playfield.Instance);
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
@@ -238,6 +300,17 @@ namespace AOBuddy
         {
             if (!Active) return;
             if (_current != null && !_completed) _deathsHere++;
+            // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
+            // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
+            // third time. A death out in the open marks the zone: no missions there for 'dangermins', and the
+            // mission he was walking to is dropped.
+            if (!_mission.InMission)
+            {
+                int pf = (int)Playfield.ModelId;
+                MarkDanger(pf);
+                if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
+                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n}).");
+            }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
             _follow.ClearManual();
@@ -278,6 +351,8 @@ namespace AOBuddy
         {
             if (_phase != Phase.AwaitList) return;
             var ok = list.Where(Fits).ToList();
+            int dangerous = ok.RemoveAll(m => Dangerous(m.Playfield.Instance));
+            if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
@@ -305,7 +380,9 @@ namespace AOBuddy
         {
             if (me == null) return null;
             var opt = Zoning.RouteOptions(me);
-            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0) && !BadExit(e);
+            opt.UseScotty = !NoScotty;   // RubiKa2019 has no Scotty at all (owner): cost the trip as walked
+            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || (e.Kind == ExitKind.Scotty && !NoScotty) || e.ObjInstance != 0) && !BadExit(e)
+                              && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance);
             try
             {
                 var r = Zoning.FindRoute((int)Playfield.ModelId, me.Transform.Position, m.Playfield.Instance, new Vector3(m.Location.X, 0f, m.Location.Z), opt);
@@ -348,7 +425,7 @@ namespace AOBuddy
             // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
             // And never while overland is SWIMMING: afloat the server corrects often (the surface trues our
             // float Y) — that is the mode working, not a pull (Newland lake, 2026-09-24).
-            if (moving && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
+            if (moving && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls") && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
@@ -358,12 +435,17 @@ namespace AOBuddy
                 {
                     if (_overland.Active) _overland.Stop("pulled back");
                     _follow.ClearMovement();
+                    // Pulled back AT a zone line is that line refusing him: Galway Shire's border, 10:35-10:37
+                    // (2026-09-24), three pull-backs within 60 m of the line and the same line planned each time.
+                    if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.ZoneLine
+                        && Movement.Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
+                        MarkBadExit(_hike.Exit);
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
                     return false;
                 }
-                _heldUntil = _clock + 15;
+                _heldUntil = _clock + T("held");
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
                 if (_mission.Active) _mission.Stop("held");
@@ -375,7 +457,7 @@ namespace AOBuddy
             }
             int hpTick = _selfHp();
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
-            if (moving && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -395,6 +477,24 @@ namespace AOBuddy
                 {
                     int hpNow = _selfHp();
                     if (hpNow >= 0) _fightHpMin = Math.Min(_fightHpMin, hpNow);
+                    // FLEE (09:33, 2026-09-24): crossing Mutant Domain to a mission door, a pack of Hammer Broodlings
+                    // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
+                    // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
+                    if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && StartFlee(me)) return true;
+                    // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
+                    // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
+                    // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
+                    if (_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _fleeUntil)
+                    {
+                        var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+                        foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
+                        if (me.IsAttacking) me.StopAttack();
+                        _fleeUntil = _clock + T("fleesecs");
+                        _ctx.Log($"MISSIONRUN: fleeing the mission at {hpNow}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(x => x.Name).Distinct())}): walking out.");
+                        if (_completed) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "fleeing out"); }
+                        else Skip("losing a fight inside it");
+                        return false;
+                    }
                     // A fight that isn't one: 12 minutes 'fighting' Kirby Schatz, the person a find-person mission
                     // sent him to (23:38-23:51, 2026-09-23), HP at 100% throughout and every blow answered with
                     // feedback 110. Combat never ends, so neither did this pause. 30 s without dropping under 90%
@@ -415,7 +515,12 @@ namespace AOBuddy
                             var foe = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == me.FightingIdentity.Value);
                             // Only one that is hurting us: a mob that merely shows as fighting us from afar (the level
                             // 50 Watcher, 06:51) is not walked up to.
-                            if (foe != null && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                            // ...but not into a nest: at 12:33 (2026-09-24) walking up to a level 27 Bloodcreeper took him
+                            // down a slope among Bileswarm Defenders of level 116-118, dead in 3 s. Outside a mission,
+                            // nothing too strong for him within 30 m of the foe, or he stays where he is.
+                            bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
+                                            && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
                         if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
@@ -434,6 +539,11 @@ namespace AOBuddy
                 }
                     switch (_fightReturn)
                     {
+                        case Phase.Backoff when !_mission.InMission && (_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop):
+                            // Held while backing off from a travel snag (08:36:59, 2026-09-24): back to that travel,
+                            // not to the terminal - he had a mission in hand and went to roll another.
+                            Enter(_travelReturn, "back to travel");
+                            break;
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
                             if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
                             else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }
@@ -463,13 +573,13 @@ namespace AOBuddy
                         // (2026-09-23 21:29: 'Arrived' at 5.4 m, over and over). So finish on foot, straight at it,
                         // and roll from wherever that ends within the roll's 6 m.
                         float dT = Movement.Flat(me.Transform.Position, _termPos);
-                        if (dT <= 12f)
+                        if (dT <= T("termnear"))
                         {
                             _approach += dt;
-                            if (dT <= 3.5f || _approach > 5)
+                            if (dT <= T("termstop") || _approach > 5)
                             {
                                 _follow.ClearManual();
-                                if (dT <= 6f) { Enter(Phase.Rolling, "at the terminal"); return false; }
+                                if (dT <= T("termroll")) { Enter(Phase.Rolling, "at the terminal"); return false; }
                                 _approach = 0;   // couldn't close in: travel again
                             }
                             else { _follow.SetManualTarget(_termPos); return true; }   // from the approach spot: clear of pads
@@ -491,6 +601,7 @@ namespace AOBuddy
                         // Twice dead in the same mission (23:14 and 23:20, 2026-09-23: the same pack in the same corner
                         // of an Omnilab) is a bad mission: drop it and roll another.
                         if (_current != null && !_completed && _deathsHere >= 2) { Skip($"died {_deathsHere} times in it"); return false; }
+                        if (_current != null && !_completed && _diedOnWay) { _diedOnWay = false; Skip("I died on the way to its door"); return false; }
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
@@ -678,7 +789,7 @@ namespace AOBuddy
                 {
                     // The owner's way out of a spot the server keeps stopping you at: turn round, run back to the
                     // edge of the room, turn again and go. Up to 6 m back along our own facing, then retry.
-                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
+                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel" && _backoffNext != "flee") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
                     bool replaying = _follow.ReplayCount > 0 && !_follow.ManualActive;
                     bool done = _phaseTime > (replaying ? 25 : 4) || (_backoffTo.HasValue && Movement.Flat(me.Transform.Position, _backoffTo.Value) <= 1.2f);
                     if (!done && replaying) return true;
@@ -688,6 +799,10 @@ namespace AOBuddy
                     {
                         case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
                         case "travel": Enter(_travelReturn, "travel again from a good spot"); break;
+                        case "flee":
+                            if (_travelReturn == Phase.ToDoor && _current != null && !_completed) { Skip("a pack I couldn't beat is on the way to its door"); break; }
+                            Enter(_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop ? _travelReturn : Phase.ToTerminal, "got away");
+                            break;
                         case "leave": _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out again"); break;
                         default: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "walking out"); break;
                     }
@@ -747,7 +862,7 @@ namespace AOBuddy
         public void OnServerCorrection(float gap)
         {
             _lastCorrection = _clock;
-            if (gap > 5f) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
+            if (gap > T("pullgap")) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
         }
         private readonly List<double> _bigSnaps = new List<double>();
         private double _heldUntil = -1;
@@ -801,9 +916,48 @@ namespace AOBuddy
             {
                 _hikeGridPf = pf;
                 _hikeGrid = _hikeNav.Grid;
+                _hikeGround = _hikeNav.Nav?.Ground; _hikeGroundPf = pf;
                 if (_hikeGrid == null) { _hikeRoute = new List<Vector3>(); }   // no grid: straight
             }
             return _hikeGrid;
+        }
+
+        private int _hikeChain;
+        private double _hikeAtExitAt = -1;
+        private int _hikeChainFrom = -1;
+        private volatile NavGround _hikeGround;
+        private volatile int _hikeGroundPf = -1;
+
+        // ON THE GROUND BETWEEN POINTS (2026-09-24): the grid's route is smoothed into long straight legs, and the
+        // walker moves along each leg in a straight 3D line, so over a hill it walks INSIDE the hill. In Galway
+        // Shire it sent heights of 27 and 25 where the ground is 37 and 33 - and our ground data matched the
+        // server there (919,1055: 37.3 vs 37; 929,1054: 33.0 vs 33) - so the server snapped him back again and
+        // again. Every leg is cut into 3 m steps with the ground's height at each, where both ends of the leg
+        // are on the ground (within 3 m of it); legs off the ground (floors, bridges) are left straight.
+        private List<Vector3> OnGround(IEnumerable<Vector3> pts, Vector3 from)
+        {
+            var list = pts.ToList();
+            var g = _hikeGroundPf == (int)Playfield.ModelId ? _hikeGround : null;
+            if (g == null || list.Count == 0) return list;
+            var outp = new List<Vector3>();
+            Vector3 a = from;
+            foreach (var b in list)
+            {
+                double ha = g.HeightAt(a.X, a.Z), hb = g.HeightAt(b.X, b.Z);
+                bool ground = !double.IsNaN(ha) && !double.IsNaN(hb) && Math.Abs(a.Y - ha) < 3 && Math.Abs(b.Y - hb) < 3;
+                float len = Movement.Flat(a, b);
+                int n = ground ? (int)(len / 3f) : 0;
+                for (int k = 1; k <= n; k++)
+                {
+                    float t = k / (float)(n + 1);
+                    float x = a.X + (b.X - a.X) * t, z = a.Z + (b.Z - a.Z) * t;
+                    double h = g.HeightAt(x, z);
+                    outp.Add(new Vector3(x, double.IsNaN(h) ? a.Y + (b.Y - a.Y) * t : (float)h, z));
+                }
+                outp.Add(ground ? new Vector3(b.X, (float)hb, b.Z) : b);
+                a = b;
+            }
+            return outp;
         }
 
         private bool StartHike(LocalPlayer me, int pf, Vector3 goal, string what)
@@ -813,12 +967,32 @@ namespace AOBuddy
             if (here == pf) return false;                            // same zone: nothing to cross
             var opt = Zoning.RouteOptions(me);
             // opt.UseScotty = false;   // the hike crosses on foot: doors stood on, not Scotty
-            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e);
+            // Not through the Grid: its lifts and exits are gated by Computer Literacy and none took him
+            // (four Grid lines stood on 4 times each, 08:33-08:36, 2026-09-24). The owner: the whompa is the best bet.
+            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152;
             ZoneRoute route;
+            // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
+            // at 12:14, then walked through again on the way to Athen Shire and killed there).
+            var plain = opt.Filter;
+            // Never straight back into the zone this chain just came from (15:39-15:40, 2026-09-24: ten crossings
+            // between Stret West Bank and Holes in the Wall - each landing sits by the line, and from there the way
+            // back over it looked cheapest). Tried first; dropped only if it leaves no route.
+            int back = _hikeChain > 0 ? _hikeChainFrom : -1;
+            opt.Filter = e => plain(e) && !(Dangerous(e.ToPf) && e.ToPf != pf) && e.ToPf != back;
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
-            if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            if (route == null || route.Hops.Count == 0)
+            {
+                opt.Filter = e => plain(e) && e.ToPf != back;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
+            if (route == null || route.Hops.Count == 0)
+            {
+                opt.Filter = plain;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
+            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -828,17 +1002,41 @@ namespace AOBuddy
 
         private bool HikeTick(LocalPlayer me)
         {
-            if ((int)Playfield.ModelId != _hikeFromPf)
+            // A teleporter inside the zone (Lush Fields 695 -> 695) never changes the playfield: through it = far
+            // from it after a use. 09:21:51 (2026-09-24): the third use took him 2 km, and the hike called it a
+            // failure and marked the teleporter bad.
+            bool jumped = _hike.Exit.ToPf == _hikeFromPf && (int)Playfield.ModelId == _hikeFromPf && _hikeUses > 0
+                          && Movement.Flat(me.Transform.Position, _hike.Exit.A) > 60f;
+            if ((int)Playfield.ModelId != _hikeFromPf || jumped)
             {
                 _follow.ClearMovement();
-                _ctx.Log($"MISSIONRUN: through to {Zoning.Name((int)Playfield.ModelId)}; travel takes it from here.");
+                int now = (int)Playfield.ModelId;
+                // EVERY crossing on foot, not just the first (08:25-08:30, 2026-09-24): handed to travel in the ICC
+                // (Andromeda 655), it tried the Jobe, Tir and Omni-1 Trade whompas at ground height, three tries
+                // each, detoured through the Grid and came back to the same whompas. Chain the next hike at once
+                // (the 20 s gap between hikes is for failed ones); after 10 crossings travel takes over.
+                if (now != _hikeTargetPf && ++_hikeChain <= T("chain"))
+                {
+                    _hikeChainFrom = _hikeFromPf;
+                    _ctx.Log($"MISSIONRUN: through to {Zoning.Name(now)}; on to the next crossing myself ({_hikeChain}; stand try {_hikePass + 1}, use try {_hikeUses}, {StandTune()}).");
+                    Enter(_hikeReturn, "through the exit");
+                    _hikeLastHike = -99;
+                    if (StartHike(me, _hikeTargetPf, _hikeGoal, _hikeWhat)) return false;
+                    return false;
+                }
+                _hikeChain = 0;
+                _ctx.Log($"MISSIONRUN: through to {Zoning.Name(now)}; travel takes it from here.");
                 Enter(_hikeReturn, "through the exit");
                 return false;
             }
-            if (_phaseTime > 150)
+            // 150 s AT the exit, not from the start: the walk there can be over a kilometre (Eastern Fouls Plains,
+            // 13:09-13:15, 2026-09-24: two good lines timed out mid-walk, marked bad, 4-5 km detours). The walk
+            // itself gets 15 minutes.
+            if ((_hikeAtExitAt >= 0 && _clock - _hikeAtExitAt > 150) || _phaseTime > 900)
             {
                 _follow.ClearMovement();
-                _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; back to travel.");
+                MarkBadExit(_hike.Exit);   // or the next plan picks the same exit (four times, 09:50-10:00)
+                _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; routing round it.");
                 Enter(_hikeReturn, "hike failed");
                 return false;
             }
@@ -854,32 +1052,34 @@ namespace AOBuddy
                 var grid = HikeGrid();
                 if (grid == null) return false;                       // still building (a few seconds)
                 _hikeRoute = new List<Vector3>();
-                List<Vector3> best = null; float bestLeft = float.MaxValue;
-                foreach (float r in new[] { 0f, 4f, 8f, 12f, 16f, 24f })
-                    for (int k = 0; k < (r == 0 ? 1 : 8); k++)
-                    {
-                        double t = k * Math.PI / 4;
-                        var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
-                        var path = grid.FindPath(pos, goal, null, 8f, 1.5f, out _);
-                        if (path == null) continue;
-                        float left = Movement.Flat(path[path.Count - 1], at);
-                        if (left < bestLeft) { bestLeft = left; best = path; }
-                    }
+                var best = NearestPath(grid, pos, at, out float bestLeft);
                 if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
-                    _follow.LoadReplay(best.Skip(1), false);
+                    _follow.LoadReplay(OnGround(best.Skip(1), pos), false);
                     _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
             }
             if (_follow.ReplayCount > 0) return true;                 // still on the grid leg
+            if (_hikeAtExitAt < 0) _hikeAtExitAt = _clock;
 
             if (e.Kind == ExitKind.ZoneLine)
             {
-                // Walk to the line, then on across it.
-                Vector3 cross = _hike.CrossTo ?? at;
-                _follow.SetManualTarget(Movement.Flat(pos, at) > 2f ? at : cross);
+                // Walk to the line, then on across it: 10 m past it, not 3 (the walker stops 1.5 m short of its
+                // target, so aiming 3 m past from 1.7 m off never moved him: Galway Shire -> Galway County,
+                // 09:50-10:00, 2026-09-24, four 150 s tries standing on the line). Which side is 'past' is a guess
+                // from the line's geometry, so every 12 s the other side is tried.
+                if (Movement.Flat(pos, at) > 2f && _hikePassStage == 0) { _follow.SetManualTarget(at); return true; }
+                if (_hikePassStage == 0) { _hikePassStage = 1; _hikePassAt = _clock; }
+                Vector3 c = _hike.CrossTo ?? at;
+                var d = new Vector3(c.X - at.X, 0, c.Z - at.Z);
+                if (d.Magnitude < 0.5f) { var ab = e.B - e.A; d = new Vector3(-ab.Z, 0, ab.X); }
+                if (d.Magnitude < 0.1f) d = new Vector3(at.X - pos.X, 0, at.Z - pos.Z);
+                if (d.Magnitude < 0.1f) d = new Vector3(1, 0, 0);
+                d = d * (1f / d.Magnitude);
+                int side = ((int)((_clock - _hikePassAt) / 12)) % 2 == 0 ? 1 : -1;
+                _follow.SetManualTarget(new Vector3(at.X + d.X * 10f * side, at.Y, at.Z + d.Z * 10f * side));
                 return true;
             }
             // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
@@ -890,10 +1090,10 @@ namespace AOBuddy
             // Fair Trade door was Used six times with no zone (07:59, 2026-09-24).
             if (e.Kind != ExitKind.Line && e.ObjType != 51016)
             {
-                if (Movement.Flat(pos, at) > 3f && _hikeUses == 0 && _phaseTime < 140) { _follow.SetManualTarget(at); return true; }
+                if (Movement.Flat(pos, at) > 3f && _hikeUses == 0 && _clock - _hikeAtExitAt < 140) { _follow.SetManualTarget(at); return true; }
                 _follow.ClearMovement();
                 if (_clock - _hikeUsedAt < 4) return false;
-                if (_hikeUses >= 3)
+                if (_hikeUses >= T("usetries"))
                 {
                     MarkBadExit(e);
                     _ctx.Log($"MISSIONRUN: used {e} three times and it didn't take me.");
@@ -920,11 +1120,11 @@ namespace AOBuddy
                 _hikeDir0 = d0 * (1f / d0.Magnitude);
                 _hikePass = 0; _hikePassStage = 0; _hikePassAt = _clock;
             }
-            if (_hikePass >= 4)
+            if (_hikePass >= T("standtries"))
             {
                 MarkBadExit(e);
                 _follow.ClearMovement();
-                _ctx.Log("MISSIONRUN: stood on the exit's centre four times and it didn't take me; leaving it.");
+                _ctx.Log($"MISSIONRUN: stood on the exit's centre {_hikePass} times and it didn't take me; leaving it ({StandTune()}).");
                 Enter(_hikeReturn, "hike failed");
                 return false;
             }
@@ -934,10 +1134,10 @@ namespace AOBuddy
             // zoned him 0.6 s later. The pad's top first, then our data's height.
             // A door's recorded position is its centre, ~1.4 m up (Borealis Fair Trade door 68.49 over ground 67.07,
             // where the owner stood): stand on the ground. Only a whompa pad needs its top surface.
-            float padY = e.Kind == ExitKind.Proxy ? pos.Y : e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
+            float padY = e.Kind == ExitKind.Proxy ? pos.Y : e.A.Y + (_hikePass % 2 == 0 ? T("padtop") : 0f);
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
-            var aim = new Vector3(e.A.X + dir.X * 1.2f, padY, e.A.Z + dir.Z * 1.2f);
+            var aim = new Vector3(e.A.X + dir.X * T("aimpast"), padY, e.A.Z + dir.Z * T("aimpast"));
             if (_hikePassStage == 0)
             {
                 if (Movement.Flat(pos, start) > 1.2f && _clock - _hikePassAt < 8) { _follow.SetManualTarget(start); return true; }
@@ -951,7 +1151,7 @@ namespace AOBuddy
                 _hikePassStage = 2; _hikePassAt = _clock;
                 _ctx.Log($"MISSIONRUN: standing at ({pos.X:0.00},{pos.Y:0.00},{pos.Z:0.00}), {Movement.Flat(pos, e.A):0.0} m from the centre.");
             }
-            if (_clock - _hikePassAt < 4) return false;   // standing on it: the zone comes after the stop
+            if (_clock - _hikePassAt < T("standwait")) return false;   // standing on it: the zone comes after the stop
             _hikePass++; _hikePassStage = 0; _hikePassAt = _clock;
             return false;
         }
@@ -1017,12 +1217,24 @@ namespace AOBuddy
         // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
         private readonly HashSet<string> _badExits = new HashSet<string>();
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
-        private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e));
+        private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
         private void MarkBadExit(ZoneExit e)
         {
             if (_badExits.Add(ExitKey(e)))
                 _ctx.Log($"MISSIONRUN: {e} didn't take me; routing round it until I restart.");
+            // A BORDER is a chain of zone-line segments: the Galway Shire -> Galway County border is 19 of them and
+            // pulled him back at every one tried (09:46-10:09, 2026-09-24), the hike trying them one by one at up
+            // to 150 s each. Two failed segments of one border close the whole border.
+            if (e.Kind == ExitKind.ZoneLine)
+            {
+                var key = (e.FromPf, e.ToPf);
+                _borderFails[key] = (_borderFails.TryGetValue(key, out int n) ? n : 0) + 1;
+                if (_borderFails[key] >= 2 && _badBorders.Add(key))
+                    _ctx.Log($"MISSIONRUN: the {Zoning.Name(e.FromPf)} -> {Zoning.Name(e.ToPf)} border failed twice; routing round all of it until I restart.");
+            }
         }
+        private readonly HashSet<(int, int)> _badBorders = new HashSet<(int, int)>();
+        private readonly Dictionary<(int, int), int> _borderFails = new Dictionary<(int, int), int>();
 
         // RubiKa2019 has no Scotty (owner, 2026-09-24): a Scotty leg there is a wait for nobody.
         private static bool NoScotty => Client.Dimension == AOSharp.Clientless.Common.Dimension.RubiKa2019;
@@ -1064,6 +1276,9 @@ namespace AOBuddy
 
         private int _sellRounds, _sellStage, _sellMoves;
         private List<Identity> _lastBatch;
+        private Identity? _lastVendor;
+        private int _wholeRefusals;
+        private readonly HashSet<Identity> _badVendors = new HashSet<Identity>();
         private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
         private bool _sellBagsOpened;
         private double _sellSentAt = -99;
@@ -1085,7 +1300,9 @@ namespace AOBuddy
         //   'key' or 'mission' in them (a mission key's name isn't in the item data).
         private bool SellableItem(Item i, HashSet<string> keep)
         {
-            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || IsNano(i) || keep.Contains(i.Name)) return false;
+            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || Bankable(i) || keep.Contains(i.Name)) return false;
+            // NODROP is never sold (owner, 2026-09-24): the item data's Flags bit 26.
+            if (ItemValues.IsNoDrop(i.Id, i.HighId)) return false;
             if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
             if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !PetController.IsMeleeLoadout(DynelManager.LocalPlayer)) return false;
             return true;
@@ -1158,7 +1375,38 @@ namespace AOBuddy
         }
 
         private static bool IsNano(Item i) => i?.Name != null && (i.Name.StartsWith("Nano Crystal", StringComparison.OrdinalIgnoreCase) || i.Name.StartsWith("NanoCrystal", StringComparison.OrdinalIgnoreCase));
-        private static List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && IsNano(i)).ToList();
+        private List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && Bankable(i)).ToList();
+
+        // KEPT AND BANKED with the nanos (owner, 2026-09-24, for his 220 main): implants from QL <n> up.
+        // 'mission run keep implant <ql>' / 'keep implant off'; saved in bankrules.json (per bot folder).
+        // ...and items by exact name from a QL up (owner, 2026-09-24: 'QL 200+ Robot Junk is also a keeper').
+        // 'mission run keep ql <ql> <exact name>' / 'keep ql off <exact name>'.
+        private bool Bankable(Item i) => IsNano(i) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId))
+                                         || (i?.Name != null && NameRules().TryGetValue(i.Name, out int nq) && i.Ql >= nq);
+        private int _implantMinQl = -1;
+        private Dictionary<string, int> _nameRules;
+        private string BankRulesPath => Path.Combine(_pluginDir, "bankrules.json");
+        private void LoadBankRules()
+        {
+            if (_nameRules != null) return;
+            _implantMinQl = 0; _nameRules = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                if (!File.Exists(BankRulesPath)) return;
+                var o = JObject.Parse(File.ReadAllText(BankRulesPath));
+                _implantMinQl = (int?)o["implantMinQl"] ?? 0;
+                if (o["names"] is JObject n) foreach (var kv in n) _nameRules[kv.Key] = (int)kv.Value;
+            }
+            catch { }
+        }
+        private void SaveBankRules()
+        {
+            var n = new JObject(); foreach (var kv in _nameRules) n[kv.Key] = kv.Value;
+            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString()); } catch { }
+        }
+        private int ImplantMinQl() { LoadBankRules(); return _implantMinQl; }
+        private Dictionary<string, int> NameRules() { LoadBankRules(); return _nameRules; }
+        private void SetImplantMinQl(int ql) { LoadBankRules(); _implantMinQl = ql; SaveBankRules(); }
         private static Item InvItem(Identity? unique) => unique.HasValue ? Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity == unique.Value) : null;
 
         private bool StartShop(string why)
@@ -1166,7 +1414,7 @@ namespace AOBuddy
             if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
             _shopTriedAt = _clock;
             _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear();
-            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade. Selling is not built yet (no capture of a sale).");
+            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade to sell, bank the keepers and make room.");
             _tell($"Out of room ({why}); going to Fair Trade to bank my nano crystals and buy a bag. (Test switch: mission run shop on|off.)");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
             Enter(Phase.Shop, "housekeeping");
@@ -1175,11 +1423,38 @@ namespace AOBuddy
 
         private void ShopNext(ShopStep s, string log) { _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log); }
 
+        private int _shopPrevPf = -1;
+        private string FairTradePath => Path.Combine(_pluginDir, "fairtrade.json");
+        private Vector3? LoadFairTradeLanding()
+        {
+            try
+            {
+                if (!File.Exists(FairTradePath)) return null;
+                var o = JObject.Parse(File.ReadAllText(FairTradePath));
+                return new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
+            }
+            catch { return null; }
+        }
+        private void SaveFairTradeLanding(Vector3 v)
+        {
+            try { File.WriteAllText(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString()); } catch { }
+        }
+
         private bool ShopTick(LocalPlayer me)
         {
             double t = _clock - _shopStepAt;
             int pf = (int)Playfield.ModelId;
-            if (pf == FairTradePf && !_shopArrival.HasValue) { _shopArrival = me.Transform.Position; _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0})."); }
+            if (pf == FairTradePf && !_shopArrival.HasValue)
+            {
+                // Zoned in just now (the tick before was elsewhere): that's the door's landing spot - keep it. Logged in
+                // inside (a restart, 13:25 2026-09-24): where he stands is no door; use the landing spot kept from before.
+                bool zonedIn = _shopPrevPf > 0 && _shopPrevPf != FairTradePf;
+                var kept = LoadFairTradeLanding();
+                _shopArrival = zonedIn || !kept.HasValue ? me.Transform.Position : kept.Value;
+                if (zonedIn) SaveFairTradeLanding(_shopArrival.Value);
+                _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({me.Transform.Position.X:0.0},{me.Transform.Position.Z:0.0}); the way out is at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0}){(zonedIn ? "" : " (kept from an earlier visit)")}.");
+            }
+            _shopPrevPf = pf;
             switch (_shopStep)
             {
                 case ShopStep.Travel:
@@ -1194,7 +1469,7 @@ namespace AOBuddy
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
-                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear();
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null; _wholeRefusals = 0;
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
 
@@ -1216,8 +1491,20 @@ namespace AOBuddy
                     // What the last batch left behind was refused (08:04: three items offered eight times): skip them.
                     if (_lastBatch != null)
                     {
-                        foreach (var slot in _lastBatch) if (Inventory.Items.Any(i => i != null && i.Slot == slot)) _refusedSlots.Add(slot);
-                        if (_refusedSlots.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {_refusedSlots.Count} item(s); leaving them.");
+                        var left = _lastBatch.Where(slot => Inventory.Items.Any(i => i != null && i.Slot == slot)).ToList();
+                        // A whole batch refused is the TERMINAL, not the items (13:24, 2026-09-24: 'Superior ICC
+                        // Accessories' took none of 14; at 08:04 'Basic ICC Armor' bought the same kinds). Leave that
+                        // terminal and try the next nearest; only items left over from a partly sold batch are refused.
+                        // ...but the same items refused by two terminals are the ITEMS (15:45, 2026-09-24: an Omni-Med Cloak
+                        // and a Trimmer offered to eight terminals in a row).
+                        if (left.Count == _lastBatch.Count && _lastVendor.HasValue && ++_wholeRefusals < 2 && _badVendors.Add(_lastVendor.Value))
+                            _ctx.Log($"MISSIONRUN: shop: that terminal took none of {left.Count}; trying another.");
+                        else
+                        {
+                            foreach (var slot in left) _refusedSlots.Add(slot);
+                            _wholeRefusals = 0;
+                            if (left.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {left.Count} item(s); leaving them.");
+                        }
                         _lastBatch = null;
                     }
                     var sell = Sellable().Where(i => !_refusedSlots.Contains(i.Slot)).ToList();
@@ -1237,7 +1524,7 @@ namespace AOBuddy
                             return false;
                         }
                     }
-                    var vm = DynelManager.VendingMachines.OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
+                    var vm = DynelManager.VendingMachines.Where(v => !_badVendors.Contains(v.Identity) && me.DistanceFrom(v) < 40f).OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
                     if (sell.Count == 0 || vm == null || _sellRounds >= 12)
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
@@ -1259,7 +1546,7 @@ namespace AOBuddy
                         Client.Send(new TradeMessage { Version = 2, Action = TradeAction.AddItem, Param1 = (int)me.Identity.Type, Param2 = me.Identity.Instance, Param3 = (int)it.Slot.Type, Param4 = it.Slot.Instance });
                     Client.Send(new TradeMessage { Version = 2, Action = TradeAction.Accept });
                     _ctx.Log($"MISSIONRUN: shop: selling {string.Join(", ", batch.Select(b => b.Name))} to '{vm.Name}'.");
-                    _lastBatch = batch.Select(b => b.Slot).ToList();
+                    _lastBatch = batch.Select(b => b.Slot).ToList(); _lastVendor = vm.Identity;
                     _sellStage = 0; _sellRounds++; _sellSentAt = _clock;
                     return false;
                 }
@@ -1333,7 +1620,15 @@ namespace AOBuddy
                 case ShopStep.Exit:
                 {
                     if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
-                    if (t > 30 || !_shopArrival.HasValue) { _follow.ClearMovement(); _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false; }
+                    // No landing spot (logged in inside, 13:26 2026-09-24) or it didn't take him out: the hike's own way
+                    // out - the nearest door, stood on - toward the terminal. It hands back to this step once out.
+                    if (t > 30 || !_shopArrival.HasValue)
+                    {
+                        _follow.ClearMovement();
+                        _hikeLastHike = -99;
+                        if (StartHike(me, _termPf, _termPos, "the terminal")) return false;
+                        _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false;
+                    }
                     // Back the way he came in: to where he landed, then 3 m on past it, away from the shop spot.
                     Vector3 a = _shopArrival.Value;
                     var d = new Vector3(a.X - ShopSpot.X, 0, a.Z - ShopSpot.Z);
@@ -1409,12 +1704,15 @@ namespace AOBuddy
             {
                 // Second time and after: walk our own clean trail back ~15 m (further each time) to a spot the
                 // server accepted, then try again from there.
-                float want = Math.Min(15f * (_backoffs - 1), 60f), got = 0;
+                float want = Math.Min(T("trailstep") * (_backoffs - 1), T("trailmax")), got = 0;
                 var back = new List<Vector3>();
                 Vector3 last = pos;
                 for (int i = _good.Count - 1; i >= 0 && got < want; i--)
                 {
                     if (Vector3.Distance(_good[i], pos) < 2f && back.Count == 0) continue;
+                    // Never across a jump: a teleporter or zone in the trail is not walkable back (09:16:43,
+                    // 2026-09-24: 'walking my clean trail back 2030 m' through Lush Fields' teleporter).
+                    if (Movement.Flat(last, _good[i]) > 20f) break;
                     got += Movement.Flat(last, _good[i]); last = _good[i];
                     back.Add(_good[i]);
                 }
@@ -1430,23 +1728,206 @@ namespace AOBuddy
             Vector3 fwd = me.MovementComponent.Heading.Forward;
             var flat = new Vector3(fwd.X, 0, fwd.Z);
             float len = flat.Magnitude;
-            _backoffTo = len > 0.1f ? pos - flat * (6f / len) : (Vector3?)null;
+            _backoffTo = len > 0.1f ? pos - flat * (T("backoff") / len) : (Vector3?)null;
             _ctx.Log($"MISSIONRUN: stopped short; backing off {(len > 0.1f ? "6 m" : "0 m (no facing)")} before trying to {next} again.");
             Enter(Phase.Backoff, "backing off");
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
+        private int _straightTries;
+
+        // On the hike's walk grid to the reachable ground nearest the goal, with the ground's height every 3 m, then
+        // straight. Same zone only; a far goal only when the grid has a way. The first version only set a target
+        // and returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
+        private bool TryWalkMyself(LocalPlayer me, int pf, Vector3 goal, string what, string why)
+        {
+            if ((int)Playfield.ModelId != pf || _straightTries >= T("walktries")) return false;
+            float far = Movement.Flat(me.Transform.Position, goal);
+            var grid = HikeGrid();
+            if (far >= T("walkto") && grid == null) return false;
+            var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
+            if (path == null && far >= T("walkto")) return false;   // far and no grid way: no straight walk
+            _straightTries++;
+            _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
+            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
+            _ctx.Log($"MISSIONRUN: {why} to {what} {far:0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
+            return true;
+        }
+        // Zones he died in / couldn't reach / skipped, with the (UTC) time: kept in danger.json so a restart
+        // doesn't send him straight back (he is restarted often while the run is being fixed).
+        // Each mark in the same zone doubles how long it lasts (The Longest Road: died 12:14, 12:33, and 13:52 -
+        // the hour from the second had just run out and the route to Athen Shire went through it again, past level
+        // 70-120 Bileswarm and Shade-Y44). dangermins x 2^(marks-1), kept in danger.json with the count.
+        private Dictionary<int, (DateTime at, int n)> _dangerStore;
+        private Dictionary<int, (DateTime at, int n)> _danger
+        {
+            get
+            {
+                if (_dangerStore != null) return _dangerStore;
+                _dangerStore = new Dictionary<int, (DateTime, int)>();
+                try
+                {
+                    if (File.Exists(DangerPath))
+                        foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath)))
+                            _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
+                }
+                catch { }
+                return _dangerStore;
+            }
+        }
+        private string DangerPath => Path.Combine(_pluginDir, "danger.json");
+        private void MarkDanger(int pf)
+        {
+            int n = _danger.TryGetValue(pf, out var old) ? old.n + 1 : 1;
+            _danger[pf] = (DateTime.UtcNow, n);
+            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n }; File.WriteAllText(DangerPath, o.ToString()); } catch { }
+        }
+        private double DangerMinutes(int n) => T("dangermins") * Math.Pow(2, Math.Min(6, Math.Max(0, n - 1)));
+        private bool Dangerous(int pf) => _danger.TryGetValue(pf, out var d) && (DateTime.UtcNow - d.at).TotalMinutes < DangerMinutes(d.n);
+        private bool _diedOnWay;
+        private double _fleeUntil = -99;
+        public bool Fleeing => Active && _clock < _fleeUntil;
+
+        private bool StartFlee(LocalPlayer me)
+        {
+            Vector3 pos = me.Transform.Position;
+            var back = new List<Vector3>();
+            float got = 0; Vector3 last = pos;
+            for (int i = _good.Count - 1; i >= 0 && got < T("fleedist"); i--)
+            {
+                if (Movement.Flat(last, _good[i]) > 20f) break;       // never across a teleport or zone jump
+                if (Movement.Flat(_good[i], pos) < 2f && back.Count == 0) continue;
+                got += Movement.Flat(last, _good[i]); last = _good[i];
+                back.Add(_good[i]);
+            }
+            if (back.Count == 0 || got < 15f) return false;  // nowhere to run: keep fighting
+            var from = DynelManager.Npcs.Where(n => n != null && n.FightingIdentity.HasValue && n.FightingIdentity.Value == me.Identity).ToList();
+            foreach (var n in from) _combat.SetAside(me, n.Identity, T("fleesecs"));
+            if (me.IsAttacking) me.StopAttack();
+            _fleeUntil = _clock + T("fleesecs");
+            _travelReturn = _fightReturn == Phase.Hike ? _hikeReturn : _fightReturn;
+            _backoffNext = "flee"; _backoffTo = back[back.Count - 1];
+            _follow.ClearMovement();
+            _follow.LoadReplay(back, false);
+            _ctx.Log($"MISSIONRUN: fleeing at {_selfHp()}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(n => n.Name).Distinct())}): running {got:0} m back the way I came.");
+            Enter(Phase.Backoff, "fleeing");
+            return true;
+        }
+
+        // ---- TUNE (owner, 2026-09-24): the distances and waits of OUR walking (hike, walk-to-it, terminal and
+        // door stands, pull-back and backoff), changeable live with 'mission run tune <name> <value>' and kept in
+        // tune.json, so what works where can be learned from the log (each change is logged, and the crossing
+        // lines carry the values they used). Algorithman's travel planner is not touched by any of these.
+        private static readonly Dictionary<string, (float def, string what)> TuneDefaults = new Dictionary<string, (float, string)>
+        {
+            ["reach"]     = (1.5f,  "metres from a goal the walk grid counts as arrived (hike, walk-to-it)"),
+            ["snap"]      = (8f,    "metres the walk grid looks for open ground under my feet"),
+            ["ring"]      = (24f,   "metres out round a blocked goal the walk grid looks for reachable ground"),
+            ["ringstep"]  = (4f,    "metres between those rings"),
+            ["padtop"]    = (0.285f,"metres above a whompa's recorded height I stand (the pad's top)"),
+            ["aimpast"]   = (1.2f,  "metres past a whompa's/door's centre I aim, so the walker stops on it"),
+            ["standwait"] = (4f,    "seconds I stand on a whompa before stepping on again"),
+            ["standtries"]= (4f,    "times I stand on a whompa/line before leaving it"),
+            ["usetries"]  = (3f,    "times I use a terminal/teleporter before leaving it"),
+            ["termnear"]  = (12f,   "metres from the terminal I finish on foot, straight at it"),
+            ["termstop"]  = (3.5f,  "metres from the terminal I stop"),
+            ["termroll"]  = (6f,    "metres from the terminal I may roll"),
+            ["pullgap"]   = (5f,    "metres a server snap-back must move me to count"),
+            ["pulls"]     = (2f,    "snap-backs within pullsecs that mean 'pulled back'"),
+            ["pullsecs"]  = (8f,    "seconds the snap-backs are counted over"),
+            ["held"]      = (15f,   "seconds I stand still when held (rooted/snared)"),
+            ["backoff"]   = (6f,    "metres of the first backoff"),
+            ["trailstep"] = (15f,   "metres more of my trail walked back each further backoff"),
+            ["trailmax"]  = (60f,   "most metres of trail walked back"),
+            ["walkto"]    = (120f,  "metres within which I walk to a goal myself when travel finds no way"),
+            ["walktries"] = (2f,    "walk-to-it tries per arrival"),
+            ["chain"]     = (10f,   "zone crossings I hike in a row before travel takes over"),
+            ["fleehp"]    = (40f,   "HP % under which, still being hit outside a mission, I break off and run back the way I came (0 = never)"),
+            ["fleedist"]  = (80f,   "metres of my trail I run back when fleeing"),
+            ["fleesecs"]  = (30f,   "seconds the mobs I flee from are left alone"),
+            ["dangermins"]= (60f,   "minutes I take no missions in a zone I died in out in the open"),
+        };
+        private Dictionary<string, float> _tuneStore;
+        private Dictionary<string, float> _tune
+        {
+            get
+            {
+                if (_tuneStore != null) return _tuneStore;
+                _tuneStore = new Dictionary<string, float>();
+                try { if (File.Exists(TunePath)) foreach (var kv in JObject.Parse(File.ReadAllText(TunePath))) if (TuneDefaults.ContainsKey(kv.Key)) _tuneStore[kv.Key] = (float)kv.Value; } catch { }
+                return _tuneStore;
+            }
+        }
+        private string TunePath => Path.Combine(_pluginDir, "tune.json");
+        private float T(string k) => _tune.TryGetValue(k, out float v) ? v : TuneDefaults[k].def;
+        // Owner settings given by tell survive a restart (2026-09-24: 'difficulty 5' was lost to one): written into
+        // the plugin's config.json, key by key, leaving the rest of the file as it is.
+        private void SaveConfigValue(string key, JToken value)
+        {
+            try
+            {
+                string path = Path.Combine(_pluginDir, "config.json");
+                var o = File.Exists(path) ? JObject.Parse(File.ReadAllText(path)) : new JObject();
+                o[key] = value;
+                File.WriteAllText(path, o.ToString());
+            }
+            catch (Exception ex) { _ctx.Log($"MISSIONRUN: couldn't save {key} to config.json: {ex.Message}"); }
+        }
+        private void SaveTune() { try { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; File.WriteAllText(TunePath, o.ToString()); } catch { } }
+        private string TuneText() => string.Join(", ", TuneDefaults.Select(kv => $"{kv.Key}={T(kv.Key)}{(_tune.ContainsKey(kv.Key) ? "*" : "")}"));
+        private string StandTune() => $"padtop={T("padtop")} aimpast={T("aimpast")} standwait={T("standwait")}";
+        private double _straightUntil;
+        private Vector3 _straightGoal;
+
+        // A walk-grid path to the reachable ground nearest 'at' (rings out to 24 m round it).
+        private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft)
+        {
+            List<Vector3> best = null; bestLeft = float.MaxValue;
+            float step = Math.Max(0.5f, T("ringstep")), max = Math.Max(0f, T("ring"));
+            for (float r = 0; r <= max + 0.01f; r += step)
+                for (int k = 0; k < (r == 0 ? 1 : 8); k++)
+                {
+                    double t = k * Math.PI / 4;
+                    var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
+                    var path = grid.FindPath(pos, goal, null, T("snap"), T("reach"), out _);
+                    if (path == null) continue;
+                    float left = Movement.Flat(path[path.Count - 1], at);
+                    if (left < bestLeft) { bestLeft = left; best = path; }
+                }
+            return best;
+        }
         private int _blitzTries;
         private double _doorStepTime;
 
         // travelto, once per leg, through the command it already has; retried twice on failure.
         private bool Travel(LocalPlayer me, int pf, Vector3 goal, string what)
         {
+            // Inside Fair Trade the zone data has no ways out: leave by the shop's own exit (its landing spot) first.
+            if ((int)Playfield.ModelId == FairTradePf && _phase != Phase.Shop)
+            {
+                _shopStep = ShopStep.Exit; _shopStepAt = _clock;
+                Enter(Phase.Shop, "out of Fair Trade first");
+                return false;
+            }
+            _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
             if (_overland.Active)
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
+                else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;
+                // Same zone on RubiKa2019: no Scotty and no crossing for the hike, so walk it myself (Athen Shire,
+                // 15:04-15:09, 2026-09-24: travel planned four Scotty warps in a row, 90 s each, and none came).
+                else if (_overland.Status().Contains("scty") && NoScotty && (int)Playfield.ModelId == pf)
+                {
+                    _overland.Stop("no Scotty on RubiKa2019");
+                    if (TryWalkMyself(me, pf, goal, what, "no Scotty here")) return true;
+                }   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
                 return false;
+            }
+            if (_clock < _straightUntil)
+            {
+                if (_follow.ReplayCount > 0) return true;
+                if (Movement.Flat(me.Transform.Position, _straightGoal) > 2f) { _follow.SetManualTarget(_straightGoal); return true; }
+                _follow.ClearManual(); _straightUntil = 0;
             }
             if (_clock < _travelWaitUntil) return false;
             if (_travelStarted)
@@ -1454,7 +1935,16 @@ namespace AOBuddy
                 _travelStarted = false;
                 bool there = (int)Playfield.ModelId == pf && Movement.Flat(me.Transform.Position, goal) <= 12f;
                 if (!there && StartHike(me, pf, goal, what)) return false;
-                if (there) { _backoffs = 0; _travelBacks = 0; }
+                if (there) { _backoffs = 0; _travelBacks = 0; _straightTries = 0; }
+                // Same zone and close, but travel found no way (Andromeda's terminal at (3233,921), 'walled off: no
+                // open ground within 3 m', 08:37-08:40, 2026-09-24 - he had rolled there five minutes before): walk
+                // straight at it, twice, before the backoffs.
+                // Far goals too, on the grid only (Holes in the Wall, 12:53, 2026-09-24: the door at (441,1512)
+                // 'walled off' 1.5 km away, and the mission was dropped without a try on foot).
+                if (!there && TryWalkMyself(me, pf, goal, what, "travel found no way")) return true;
+                // The walk grid still loading (a few seconds after a login or a zone): wait for it rather than back
+                // off - the backoff at 15:09:48 (2026-09-24) stepped him back over the zone line he had just crossed.
+                if (!there && (int)Playfield.ModelId == pf && _straightTries < T("walktries") && HikeGrid() == null) { _travelStarted = true; return false; }
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
                 // back, it had planned the same trip fine.
@@ -1468,7 +1958,13 @@ namespace AOBuddy
                 if (!there && ++_travelTries >= 3)
                 {
                     _travelTries = 0;
-                    if (_phase == Phase.ToDoor) { Skip($"can't get to its door ({_overland.Status()})"); return false; }
+                    if (_phase == Phase.ToDoor)
+                    {
+                        // Unreachable from here: leave the zone alone for a while too (Galway County, 09:41-10:06,
+                        // 2026-09-24: every point of the Galway Shire border pulled him back, for travel and hike).
+                        if (_current != null) MarkDanger(_current.Playfield.Instance);
+                        Skip($"can't get to its door ({_overland.Status()})"); return false;
+                    }
                     _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
                     _travelWaitUntil = _clock + 60;
                     return false;
@@ -1481,6 +1977,10 @@ namespace AOBuddy
             if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
+            // Pulled back on travel's own walk in this zone already (Deep Artery Valley, 13:45-13:48, 2026-09-24:
+            // Scotty never came, travel's walk snapped back in 2 s, backed off, the same again every 2 minutes):
+            // walk it myself on the grid with the ground's heights instead of handing travel the same walk.
+            if (_backoffs >= 1 && TryWalkMyself(me, pf, goal, what, "pulled back on travel's walk")) return true;
             _overland.Command(args, s => _ctx.Log("MISSIONRUN: travel: " + s));
             _travelStarted = true;
             return false;
@@ -1798,6 +2298,7 @@ namespace AOBuddy
         public SimpleChar Attacker(LocalPlayer me)
         {
             if (!Active || me == null) return null;
+            if (_clock < _fleeUntil) return null;
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
             // THE PERSON WE CAME TO FIND is never an enemy. The moment the bot selects him and the mission
             // completes, the server shows him 'fighting' the bot (Kirby Schatz 23:38, Levi McDannold 00:22:18,
@@ -1899,6 +2400,9 @@ namespace AOBuddy
             _phase = p; _phaseTime = 0;
             if (p == Phase.ToDoor || p == Phase.Rolling) { _blitzTries = 0; _exitStands = 0; _exitDoor = null; }
             if (p == Phase.Rolling) _rollWarned = false;
+            // The walk-to-it tries are per arrival: he reaches the terminal through its own approach (not travel's
+            // 'there'), so without this the count stayed at 2 and the next trip had none (09:23-09:28, 2026-09-24).
+            if (p == Phase.Rolling || p == Phase.EnterDoor || p == Phase.Hike) _straightTries = 0;
             if (p == Phase.Leaving) _leaveWarned = false;
             if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
             _approach = 0;

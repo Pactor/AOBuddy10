@@ -23,6 +23,8 @@
     <None Update="GameData\perks.sql"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
     <None Update="GameData\Perks.xml"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None>
     <None Update="GameData\ItemValues.bin"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="GameData\ItemNoDrop.bin"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="GameData\ItemImplants.bin"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\Zoning.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\Nav\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\ScottyWarps.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>

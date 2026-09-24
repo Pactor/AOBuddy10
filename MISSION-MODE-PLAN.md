@@ -305,6 +305,64 @@ missions may be taken in (empty = any zone).
    into the Borealis whompa. The Grid needs Computer Literacy, and some Grid exits are over the bot's skill,
    so the whompa is the route of choice.
 
+10. **Coarse grid "walled off" at small goals** (2026-09-24). On big zones the grid gets 4 m cells (MaxCells cap),
+    and `Search` only looks `reach` (3 m) round a blocked goal: the ICC terminal (3233,921) and the whompa pockets
+    come out "walled off: no open ground within 3 m" though the bot had just walked there. Suggest: when the goal
+    cell is blocked, search a ring of ~1.5 cells (not a fixed 3 m), or plan the last 20-30 m on a fine local grid.
+    The run works round it by walking itself on the hike grid (rings out to 24 m, then straight).
+11. **"searched 1500000 cells without reaching it"** (Lush Fields 2825,2856, 2048x2048 cells of 2 m). `MaxExpand`
+    can't tell "no way" from "a long way". A flood fill from the goal when it gives up would say which (the goal's
+    region size, and whether it joins the start's) - then the cap can be raised only where it helps.
+12. **Travel detours through a zone it can't leave: Galway Shire (687) on RubiKa2019** (09:46-10:45, 2026-09-24).
+    In Galway County (1414,1086) travel planned County -> Shire at (1037,1023) -> back to County at (1000,1045).
+    The first crossing worked (arrived at 996,16,1045). After that, the server pulled him back at every exit:
+    - the County border at x ~989-1003 (19 segments, both travel and the hike, 15 m snap-backs to the same spot);
+    - short of the Rome Blue border at x ~308-323, while the line is at x=159.
+    Inside the Shire the server's ground is up to 10 m above our heightmap: (919,1055) server 37 vs our 27,
+    (929,1054) 33 vs 25. The Shire likely has walls or buildings that aren't in our terrain/walls data, or its
+    RK2019 layout differs. The run was stopped and the owner walks him out.
+    Suggest for travel: a playfield avoid list (`Options().Filter`), with Galway Shire on it for RK2019. Also, a
+    detour through another zone that ends back in the same zone should cost more than walking round.
+13. **Find person that never completes** (Lush Fields, building 2186128, 09:05, 2026-09-24). The quest record's
+    target (Eldridge Vallegos, SimpleChar:EA3FAD5) was found at 2.7 m and selected six times, and no
+    MissionChanged came. The same mission type completed before. One difference: the target was selected at
+    09:04:48, the same moment a fight started. Not guessed further; a capture of a manual find-person hand-in
+    would settle it.
+14. **Mutant Domain packs on travel routes** (09:33 and 09:39): Hammer Broodlings (26-29) and Minibulls (30) in
+    groups of 4 at (550-620, 1100-1170) killed the level 36 bot twice on the way to one mission door. The run now
+    flees (outside missions, under 40% HP and still being hit) and leaves a zone alone for an hour after a death
+    there. Travel routing round known mob camps would be better.
+
+15. **Water: the walker runs at run speed while swimming** (the owner's 220 main, Deep Artery Valley, 13:56-14:00,
+    2026-09-24). Run skill 1912 -> 13.8 u/s, but the server moved him ~5 u/s (1346 -> 1426 -> 1514 over ~15 s
+    each) and snapped him back 30-38 m every ~10 s. He held a constant y=9 while our ground there is 2.7-6.3
+    (1346,695 / 1426,685 / 1514,674): a river surface. On land (y 21-25) his height matched the ground. The
+    grid has no water, so routes go down rivers. Suggest: water extents from the client data (or 'server keeps
+    y flat above ground' as a live signal) -> swim speed while in water, and a cost for water in the grid.
+16. **Scotty inside one zone never warps** (the main, Deep Artery Valley, 'tell scty Ljotur', 2 tries x3, 13:45-14:00).
+    Travel keeps planning it first. A same-zone Scotty leg that failed once could be dropped for the trip.
+17. **Fair Trade bag purchase**: ResupplyController's container kind visited 16 terminals in Fair Trade and none
+    offered 'Large Backpack' (13:24:43-13:25:19, 2026-09-24). Which terminal sold it in the owner's capture is
+    not in our notes - to be checked against capture 20260924 before changing anything.
+
+18. **The Longest Road deaths were FALLS off the raised road, not mobs** (owner: nothing there attacks him unless
+    he attacks). 12:33: height 38 -> 34 -> 28 -> 22 -> 16 in 3 s, a Bloodcreeper had taken him only to 96%.
+    13:52: combat=False the whole time, walking at y=37 over ground at 15 (4390,1590), dead a second later.
+    12:14: 100% -> 47% in one second with no combat, then dead. The hike walks the grid's route as straight
+    legs; the grid knows ground and walls but not a road deck above the valley floor, so a leg that cuts a bend
+    walks off the edge. Needs the walkable floor surfaces (collision data) - the navmesh case.
+19. **Raised mission doors** (the main, Omni-1 HQ, 14:27-14:32): door at y 23-24, the server held him at 17 - the
+    way up (stairs/ramp) isn't in our walking; 16 door-side tries, then dropped. Same need as 18.
+
+### Run changes, 2026-09-24 (ours, `MissionRun.cs`)
+- The hike walks **every** zone crossing (not only the first) and skips the Grid; in-zone teleporters count as crossed.
+- Zone lines are crossed 10 m past, alternating sides every 12 s. Pulled back at a line = that line failed.
+  Two failed segments of a border close the whole border (session only).
+- "Walk to it myself" when travel finds no way to a goal under 120 m (hike grid, then straight).
+- Flee from a losing fight outside missions. A zone is left alone for `dangermins` after a death there, an
+  unreachable door, or a skip.
+- `mission run tune <name> <value>` (tune.json): 26 distances/waits of our walking, logged with each crossing.
+
 ### Later (owner, 2026-09-23)
 - **Out of room (done):** he always needs **4 free inventory slots** (not bags, not items) to pull mission keys
   and rewards. The run stops and tells the owner when fewer are free at the terminal, after the stash has
