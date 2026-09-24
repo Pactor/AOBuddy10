@@ -922,6 +922,7 @@ namespace AOBuddy
 
         private int _hikeChain;
         private double _hikeAtExitAt = -1;
+        private int _hikeChainFrom = -1;
         private volatile NavGround _hikeGround;
         private volatile int _hikeGroundPf = -1;
 
@@ -971,8 +972,17 @@ namespace AOBuddy
             // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
             // at 12:14, then walked through again on the way to Athen Shire and killed there).
             var plain = opt.Filter;
-            opt.Filter = e => plain(e) && !(Dangerous(e.ToPf) && e.ToPf != pf);
+            // Never straight back into the zone this chain just came from (15:39-15:40, 2026-09-24: ten crossings
+            // between Stret West Bank and Holes in the Wall - each landing sits by the line, and from there the way
+            // back over it looked cheapest). Tried first; dropped only if it leaves no route.
+            int back = _hikeChain > 0 ? _hikeChainFrom : -1;
+            opt.Filter = e => plain(e) && !(Dangerous(e.ToPf) && e.ToPf != pf) && e.ToPf != back;
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            if (route == null || route.Hops.Count == 0)
+            {
+                opt.Filter = e => plain(e) && e.ToPf != back;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
             if (route == null || route.Hops.Count == 0)
             {
                 opt.Filter = plain;
@@ -1005,6 +1015,7 @@ namespace AOBuddy
                 // (the 20 s gap between hikes is for failed ones); after 10 crossings travel takes over.
                 if (now != _hikeTargetPf && ++_hikeChain <= T("chain"))
                 {
+                    _hikeChainFrom = _hikeFromPf;
                     _ctx.Log($"MISSIONRUN: through to {Zoning.Name(now)}; on to the next crossing myself ({_hikeChain}; stand try {_hikePass + 1}, use try {_hikeUses}, {StandTune()}).");
                     Enter(_hikeReturn, "through the exit");
                     _hikeLastHike = -99;
