@@ -35,10 +35,10 @@ namespace AOBuddy
         private readonly OverlandController _overland;
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
-        private readonly Func<bool> _dead, _recovering, _buffing;
+        private readonly Func<bool> _dead, _recovering, _buffing, _fighting;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -65,10 +65,10 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing)
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting;
             _roll.ListArrived += OnList;
         }
 
@@ -232,8 +232,43 @@ namespace AOBuddy
             if (!Active || me == null) return false;
             RecordGood(me);
 
+            // FIGHT FIRST. Walking on while mobs hit him is what killed him twice (21:56, 22:11): blitz marched
+            // from room to room with two mobs on his back, melee weapon swinging at nothing. Anything moving him
+            // stops; he stands and fights (combat + stims + pets as usual), and picks up where he was 3 s after.
+            bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
+                          || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
+                          || _phase == Phase.Stash;
+            if (moving && _fighting())
+            {
+                _fightReturn = _phase;
+                if (_mission.Active) _mission.Stop("fighting");
+                if (_overland.Active) _overland.Stop("fighting");
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: under attack during {_phase}; standing to fight.");
+                Enter(Phase.Fight, "fighting");
+                return false;
+            }
+
             switch (_phase)
             {
+                case Phase.Fight:
+                    if (_fighting()) { _phaseTime = 0; return false; }
+                    if (_phaseTime < 3) return false;          // a moment for stragglers and loot
+                    _ctx.Log("MISSIONRUN: fight over; carrying on.");
+                    switch (_fightReturn)
+                    {
+                        case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
+                            if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
+                            else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }
+                            else Enter(Phase.ToTerminal, "fight over");
+                            break;
+                        case Phase.Leaving: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "back to leaving"); break;
+                        case Phase.Hike: Enter(_hikeReturn, "back to travel"); break;
+                        case Phase.Stash: Enter(Phase.Stash, "back to stashing"); break;
+                        default: Enter(_fightReturn, "back to it"); break;
+                    }
+                    return false;
+
                 case Phase.Dead:
                     // The owner's order after a death: run back to the mission terminal and wait out the rez
                     // sickness there (and rebuff); then go back to the open mission, or roll a new one.
@@ -383,7 +418,7 @@ namespace AOBuddy
                     // The owner's rule: judge the mission at the entrance, where leaving is one step away. Blitz's own
                     // planner says whether it has a walkable path to the target; none, or no way to look for it, and
                     // the mission is dropped right here instead of being fought over deep inside.
-                    if (_blitzTries == 0)
+                    if (_blitzTries == 0 && !_resumeBlitz)
                     {
                         string report = null;
                         _mission.Command("route", r => report = r);
@@ -393,6 +428,7 @@ namespace AOBuddy
                                        && report.IndexOf("search", StringComparison.OrdinalIgnoreCase) < 0;
                         if (noPath || noRoute) { Skip("I can't do it from the entrance: " + report); return false; }
                     }
+                    _resumeBlitz = false;
                     _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
                     Enter(Phase.Blitz, "blitzing");
                     return false;
@@ -481,6 +517,8 @@ namespace AOBuddy
 
         private int _doorDir = -1, _doorStart, _doorStep;
         private double _approach, _travelWaitUntil;
+        private Phase _fightReturn;
+        private bool _resumeBlitz;
         private Vector3? _backoffTo;
         private string _backoffNext;
 
