@@ -176,7 +176,8 @@ namespace AOBuddy
         public int MissionSliderPhysicalMystical = 0;
         public int MissionSliderHeadonStealth = 0;
         public int MissionSliderCreditsXp = 0;
-        public List<string> MissionZones = new List<string>();   // zone names or ids missions may be taken in; empty = any
+        public List<string> MissionZones = new List<string>();
+        public int MissionFightBelowPercent = 40;                // mission run: stop and fight only when hit below this HP %   // zone names or ids missions may be taken in; empty = any
         public float AttackRange = 8f;             // close to within this before attacking
         public float CombatLeashMeters = 18f;      // only assist mobs within this range of the OWNER (don't bolt after distant fights)
         public float CombatRestCooldownSec = 6f;   // don't sit to rest until combat has been over this long (multi-mob lull guard)

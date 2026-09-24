@@ -175,8 +175,17 @@ namespace AOBuddy
                 () => _dead,
                 () => _support.Resting,    // only while actually sitting: a low HP the rest logic won't sit for must not park the run
                 () => _support.HasPendingCasts || _support.Resting || _support.SecondsSinceCast < 15,
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); },
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); });
+                // Stop to fight only in an EMERGENCY (the owner's call: run to the end and heal with stims): in a
+                // fight and HP under MissionFightBelowPercent. Otherwise keep going; stims and pets carry on.
+                () =>
+                {
+                    var lp = DynelManager.LocalPlayer;
+                    if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
+                    int hp = _support.SelfHpPct(lp);
+                    return hp != SupportController.Unknown && hp < _config.MissionFightBelowPercent;
+                },
+                () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); },
+                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); });
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
