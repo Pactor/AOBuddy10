@@ -64,6 +64,7 @@ namespace AOBuddy
         private ResupplyController _resupply;
         private NavController _nav;
         private MissionController _mission;
+        private HuntController _hunt;
         private bool _missionWasActive;
         private OverlandController _overland;
         private bool _overlandWasActive;
@@ -154,7 +155,7 @@ namespace AOBuddy
             _move = new Movement();
             _follow = new FollowController(_ctx, _move);
             _combat = new CombatController(_ctx);
-            _pets = new PetController(_ctx);
+            _pets = new PetController(_ctx, pluginDir);
             _travel = new TravelController(_ctx, _move);
             _support = new SupportController(_ctx, _move);
             _resupply = new ResupplyController(_ctx, _move, pluginDir);
@@ -163,6 +164,8 @@ namespace AOBuddy
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
             _overland = new OverlandController(_ctx, _move, pluginDir,
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
+
+            _hunt = new HuntController(_ctx, () => _mission.InMission);
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
@@ -423,6 +426,7 @@ namespace AOBuddy
             _resupply.Stop(me, "died");
             _mission.Stop("died");
             _overland.Stop("died");
+            _hunt.Stop("died");
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
@@ -826,10 +830,17 @@ namespace AOBuddy
             SimpleChar target = _combat.SelectAndEngage(me, owner);
             bool fighting = target != null;
 
+            // HUNT (off unless the owner started it): with no fight of the owner's, the PETS go after the
+            // nearest huntable mob around the bot. The bot itself neither moves nor swings for it.
+            SimpleChar petHunt = null;
+            if (!fighting && _hunt.Active && !_mission.Active && !_overland.Active)
+                petHunt = _hunt.Tick(me, owner, _config.TickMs / 1000.0);
+
             // 2) PETS ATTACK THE SAME MOB, at the same moment he does — once per target, and only the
             //    attack/mezz pets, so the heal pet is left healing.
             bool retargeted = false;
             if (fighting) retargeted |= _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
+            else if (petHunt != null) _pets.EngageTarget(me, petHunt, _config.TickMs / 1000.0);
 
             // 3) HEAL — stims work in combat and do NOT interrupt it: Item.Use is a GenericCmd, it never
             //    sets IsCasting, so the bot keeps swinging and keeps walking through it. Himself first.
@@ -838,7 +849,7 @@ namespace AOBuddy
 
             // 4) HEAL PET keeps the right ally alive — the master himself when he is melee, the attack pet
             //    when he is ranged, read from the equipped weapon's reach. Issued once per summon.
-            retargeted |= _pets.MaintainHealPet(me, fighting ? target : null, _config.TickMs / 1000.0);
+            retargeted |= _pets.MaintainHealPet(me, fighting ? target : petHunt, _config.TickMs / 1000.0);
 
             // 5) PUT THE TARGET BACK. Every action above can move the bot's target: a stim retargets to the
             //    recipient, a pet command retargets to what the pet must act on. Targeting a friendly does
@@ -849,7 +860,7 @@ namespace AOBuddy
             // Call the pets back in. A pet left where its fight ended keeps pulling mobs, and a pet in
             // combat holds US in combat - which suppresses health and nano regen and makes the server
             // refuse heal items. One straggler can stop the bot recovering entirely.
-            _pets.RecallStragglers(me, fighting);
+            _pets.RecallStragglers(me, fighting || petHunt != null);   // a hunting pet is far away on purpose
 
             if (fighting)
             {
@@ -988,10 +999,14 @@ namespace AOBuddy
             switch (cmd)
             {
                 case "assist": _mode = Mode.Assist; reply("Mode: Assist."); break;
+                case "hunt":
+                    if (_mode != Mode.Assist && !(parts.Length > 1 && (arg == "off" || arg == "status"))) { _mode = Mode.Assist; }
+                    _hunt.Command(parts.Length > 1 ? parts[1] : "", reply);
+                    break;
                 case "solo": _mode = Mode.Solo; reply("Mode: Solo."); break;
                 case "stop":
                 case "idle":
-                    _mode = Mode.Idle; _follow.ClearMovement(); _combat.Reset();
+                    _mode = Mode.Idle; _hunt.Stop("stop command"); _follow.ClearMovement(); _combat.Reset();
                     _resupply.Stop(DynelManager.LocalPlayer, "stop command");
                     _overland.Stop("stop command");
                     { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }

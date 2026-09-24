@@ -84,6 +84,7 @@ namespace AOBuddy
                     new Cmd("specials", "toggle weapon specials (Brawl, Fast Attack, Burst, ...)"),
                     new Cmd("status", "level, mode, health, current target"),
                     new Cmd("stat", "read any stat by name or number", "<name|number>"),
+                    new Cmd("hunt", "send my pets at every mob within a radius of me (I stay put), next one when it dies, again when they respawn", "[radius|off|status]"),
                     new Cmd("mission", "mission mode: where I am in the building, the next hop, run it, walk back outside, stop", "[status|route|blitz|backoutside|stop]"),
                 },
             },

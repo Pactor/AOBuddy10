@@ -163,6 +163,7 @@ namespace AOBuddy
 
         /// <summary>Don't engage targets farther than this (assist safety leash).</summary>
         public float AssistMaxDistance = 40f;
+        public float HuntRadius = 30f;             // 'hunt' with no radius: hunt mobs within this many metres of the OWNER
         public float AttackRange = 8f;             // close to within this before attacking
         public float CombatLeashMeters = 18f;      // only assist mobs within this range of the OWNER (don't bolt after distant fights)
         public float CombatRestCooldownSec = 6f;   // don't sit to rest until combat has been over this long (multi-mob lull guard)

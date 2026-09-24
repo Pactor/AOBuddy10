@@ -1,0 +1,1090 @@
+{
+ "_about": "Pet summon nanos that make a SHELL item (spell function SpawnItem, 53064) instead of summoning directly; the shell is then used to make the pet. Extracted from OmniCell's nanos.ocp (client data) via the class profiles, 2026-09-23. level = the pet level the shell makes (SpawnItem's 2nd argument): higher is the better pet.",
+ "nanos": [
+  {
+   "id": 43325,
+   "name": "Feeble Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 1
+  },
+  {
+   "id": 45692,
+   "name": "Patchwork Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 2
+  },
+  {
+   "id": 45710,
+   "name": "Lesser Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 3
+  },
+  {
+   "id": 45704,
+   "name": "Inferior Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 4
+  },
+  {
+   "id": 45718,
+   "name": "Flawed Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 5
+  },
+  {
+   "id": 45724,
+   "name": "Common Automaton",
+   "profession": 3,
+   "template": "ENAU",
+   "level": 6
+  },
+  {
+   "id": 45737,
+   "name": "Automaton",
+   "profession": 3,
+   "template": "EGAU",
+   "level": 7
+  },
+  {
+   "id": 45676,
+   "name": "Upgraded Automaton",
+   "profession": 3,
+   "template": "EGAU",
+   "level": 9
+  },
+  {
+   "id": 45731,
+   "name": "Advanced Automaton",
+   "profession": 3,
+   "template": "EGAU",
+   "level": 11
+  },
+  {
+   "id": 45698,
+   "name": "Perfected Automaton",
+   "profession": 3,
+   "template": "EGAU",
+   "level": 13
+  },
+  {
+   "id": 45681,
+   "name": "Semi-Sentient Automaton",
+   "profession": 3,
+   "template": "EGAU",
+   "level": 15
+  },
+  {
+   "id": 45712,
+   "name": "Feeble Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 17
+  },
+  {
+   "id": 45691,
+   "name": "Patchwork Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 19
+  },
+  {
+   "id": 45709,
+   "name": "Lesser Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 21
+  },
+  {
+   "id": 45703,
+   "name": "Inferior Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 23
+  },
+  {
+   "id": 45717,
+   "name": "Flawed Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 25
+  },
+  {
+   "id": 45723,
+   "name": "Common Android",
+   "profession": 3,
+   "template": "ENAN",
+   "level": 28
+  },
+  {
+   "id": 45736,
+   "name": "Android",
+   "profession": 3,
+   "template": "EGAN",
+   "level": 31
+  },
+  {
+   "id": 45675,
+   "name": "Upgraded Android",
+   "profession": 3,
+   "template": "EGAN",
+   "level": 34
+  },
+  {
+   "id": 45730,
+   "name": "Advanced Android",
+   "profession": 3,
+   "template": "EGAN",
+   "level": 37
+  },
+  {
+   "id": 45697,
+   "name": "Perfected Android",
+   "profession": 3,
+   "template": "EGAN",
+   "level": 40
+  },
+  {
+   "id": 45680,
+   "name": "Semi-Sentient Android",
+   "profession": 3,
+   "template": "EGAN",
+   "level": 43
+  },
+  {
+   "id": 45713,
+   "name": "Feeble Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 46
+  },
+  {
+   "id": 45693,
+   "name": "Patchwork Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 49
+  },
+  {
+   "id": 45711,
+   "name": "Lesser Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 52
+  },
+  {
+   "id": 45705,
+   "name": "Inferior Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 55
+  },
+  {
+   "id": 45719,
+   "name": "Flawed Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 58
+  },
+  {
+   "id": 45725,
+   "name": "Common Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 61
+  },
+  {
+   "id": 45701,
+   "name": "Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 64
+  },
+  {
+   "id": 45664,
+   "name": "Upgraded Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 67
+  },
+  {
+   "id": 45732,
+   "name": "Advanced Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 70
+  },
+  {
+   "id": 45699,
+   "name": "Perfected Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 73
+  },
+  {
+   "id": 45682,
+   "name": "Semi-Sentient Gladiatorbot",
+   "profession": 3,
+   "template": "ENGA",
+   "level": 76
+  },
+  {
+   "id": 45714,
+   "name": "Feeble Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 79
+  },
+  {
+   "id": 45694,
+   "name": "Patchwork Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 82
+  },
+  {
+   "id": 45686,
+   "name": "Lesser Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 85
+  },
+  {
+   "id": 45706,
+   "name": "Inferior Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 88
+  },
+  {
+   "id": 45720,
+   "name": "Flawed Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 91
+  },
+  {
+   "id": 45726,
+   "name": "Common Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 94
+  },
+  {
+   "id": 45702,
+   "name": "Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 97
+  },
+  {
+   "id": 45665,
+   "name": "Upgraded Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 100
+  },
+  {
+   "id": 223325,
+   "name": "Prototype Predator M-30",
+   "profession": 3,
+   "template": "EGPR",
+   "level": 100
+  },
+  {
+   "id": 45733,
+   "name": "Advanced Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 103
+  },
+  {
+   "id": 45700,
+   "name": "Perfected Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 106
+  },
+  {
+   "id": 45683,
+   "name": "Semi-Sentient Guardbot",
+   "profession": 3,
+   "template": "ENGU",
+   "level": 109
+  },
+  {
+   "id": 45715,
+   "name": "Feeble Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 112
+  },
+  {
+   "id": 45695,
+   "name": "Patchwork Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 115
+  },
+  {
+   "id": 45687,
+   "name": "Lesser Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 118
+  },
+  {
+   "id": 45707,
+   "name": "Inferior Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 121
+  },
+  {
+   "id": 45721,
+   "name": "Flawed Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 124
+  },
+  {
+   "id": 45727,
+   "name": "Common Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 127
+  },
+  {
+   "id": 45668,
+   "name": "Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 130
+  },
+  {
+   "id": 45666,
+   "name": "Upgraded Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 133
+  },
+  {
+   "id": 45734,
+   "name": "Advanced Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 136
+  },
+  {
+   "id": 45677,
+   "name": "Perfected Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 139
+  },
+  {
+   "id": 45684,
+   "name": "Semi-Sentient Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 142
+  },
+  {
+   "id": 45689,
+   "name": "Military-Grade Warbot",
+   "profession": 3,
+   "template": "ENWA",
+   "level": 145
+  },
+  {
+   "id": 45716,
+   "name": "Feeble Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 148
+  },
+  {
+   "id": 301855,
+   "name": "Predator M-30",
+   "profession": 3,
+   "template": "EIPR",
+   "level": 150
+  },
+  {
+   "id": 45696,
+   "name": "Patchwork Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 151
+  },
+  {
+   "id": 45688,
+   "name": "Lesser Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 154
+  },
+  {
+   "id": 45708,
+   "name": "Inferior Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 157
+  },
+  {
+   "id": 45722,
+   "name": "Flawed Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 160
+  },
+  {
+   "id": 45728,
+   "name": "Common Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 163
+  },
+  {
+   "id": 45669,
+   "name": "Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 166
+  },
+  {
+   "id": 45667,
+   "name": "Upgraded Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 169
+  },
+  {
+   "id": 45735,
+   "name": "Advanced Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 172
+  },
+  {
+   "id": 45678,
+   "name": "Perfected Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 175
+  },
+  {
+   "id": 223327,
+   "name": "Upgraded Predator M-30",
+   "profession": 3,
+   "template": "ENUP",
+   "level": 175
+  },
+  {
+   "id": 45670,
+   "name": "Semi-Sentient Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 178
+  },
+  {
+   "id": 45690,
+   "name": "Military-Grade Warmachine",
+   "profession": 3,
+   "template": "EGWA",
+   "level": 181
+  },
+  {
+   "id": 45729,
+   "name": "Decommissioned Wardroid",
+   "profession": 3,
+   "template": "ENWR",
+   "level": 184
+  },
+  {
+   "id": 45679,
+   "name": "Reactivated Wardroid",
+   "profession": 3,
+   "template": "ENWR",
+   "level": 187
+  },
+  {
+   "id": 45685,
+   "name": "Semi-Sentient Wardroid",
+   "profession": 3,
+   "template": "ENWR",
+   "level": 190
+  },
+  {
+   "id": 45672,
+   "name": "Slayerdroid Protector",
+   "profession": 3,
+   "template": "ENSL",
+   "level": 193
+  },
+  {
+   "id": 45674,
+   "name": "Slayerdroid Warden",
+   "profession": 3,
+   "template": "ENSL",
+   "level": 196
+  },
+  {
+   "id": 45673,
+   "name": "Slayerdroid Sentinel",
+   "profession": 3,
+   "template": "ENSA",
+   "level": 198
+  },
+  {
+   "id": 45671,
+   "name": "Slayerdroid Guardian",
+   "profession": 3,
+   "template": "ENSA",
+   "level": 200
+  },
+  {
+   "id": 223313,
+   "name": "Slayerdroid Annihilator",
+   "profession": 3,
+   "template": "ENSY",
+   "level": 201
+  },
+  {
+   "id": 223329,
+   "name": "Advanced Predator M-30",
+   "profession": 3,
+   "template": "ENAV",
+   "level": 203
+  },
+  {
+   "id": 223315,
+   "name": "Devastator Drone",
+   "profession": 3,
+   "template": "ENDV",
+   "level": 205
+  },
+  {
+   "id": 223331,
+   "name": "Semi-Sentient Predator M-30",
+   "profession": 3,
+   "template": "EGSE",
+   "level": 207
+  },
+  {
+   "id": 223317,
+   "name": "Battlefield Devastator Drone",
+   "profession": 3,
+   "template": "EGBA",
+   "level": 209
+  },
+  {
+   "id": 223333,
+   "name": "Military-Grade Predator M-30",
+   "profession": 3,
+   "template": "EIMA",
+   "level": 211
+  },
+  {
+   "id": 223319,
+   "name": "Fieldsweeper Devastator Drone",
+   "profession": 3,
+   "template": "ENFE",
+   "level": 213
+  },
+  {
+   "id": 223335,
+   "name": "Marauder M-45",
+   "profession": 3,
+   "template": "EGMR",
+   "level": 215
+  },
+  {
+   "id": 223321,
+   "name": "Desolator Assault Drone",
+   "profession": 3,
+   "template": "EGDE",
+   "level": 217
+  },
+  {
+   "id": 223337,
+   "name": "Military-Grade Marauder M-45",
+   "profession": 3,
+   "template": "MIMD",
+   "level": 219
+  },
+  {
+   "id": 223323,
+   "name": "Widowmaker Battle Drone",
+   "profession": 3,
+   "template": "EGDS",
+   "level": 220
+  },
+  {
+   "id": 275815,
+   "name": "Ravening M-60",
+   "profession": 3,
+   "template": "RAM6",
+   "level": 220
+  },
+  {
+   "id": 46397,
+   "name": "Basic Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 2
+  },
+  {
+   "id": 46362,
+   "name": "Limited Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 3
+  },
+  {
+   "id": 46363,
+   "name": "Faithful Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 6
+  },
+  {
+   "id": 46399,
+   "name": "Advanced Worker",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 8
+  },
+  {
+   "id": 46351,
+   "name": "Supervisor-Grade Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 10
+  },
+  {
+   "id": 46385,
+   "name": "Executive-Grade Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 12
+  },
+  {
+   "id": 46386,
+   "name": "Director-Grade Worker-Droid",
+   "profession": 8,
+   "template": "BUWO",
+   "level": 14
+  },
+  {
+   "id": 46405,
+   "name": "Basic Helper-Droid",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 16
+  },
+  {
+   "id": 46359,
+   "name": "Limited Helper-Bot",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 18
+  },
+  {
+   "id": 46374,
+   "name": "Faithful Helper-Droid",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 20
+  },
+  {
+   "id": 46411,
+   "name": "Advanced Helper",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 22
+  },
+  {
+   "id": 46357,
+   "name": "Supervisor-Grade Helper-Droid",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 24
+  },
+  {
+   "id": 46382,
+   "name": "Executive-Grade Helper-Droid",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 26
+  },
+  {
+   "id": 46392,
+   "name": "Director-Grade Helper-Droid",
+   "profession": 8,
+   "template": "BUHE",
+   "level": 28
+  },
+  {
+   "id": 46403,
+   "name": "Basic Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 30
+  },
+  {
+   "id": 46367,
+   "name": "Limited Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 33
+  },
+  {
+   "id": 46372,
+   "name": "Faithful Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 36
+  },
+  {
+   "id": 46409,
+   "name": "Advanced Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 39
+  },
+  {
+   "id": 46355,
+   "name": "Supervisor-Grade Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 42
+  },
+  {
+   "id": 46380,
+   "name": "Executive-Grade Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 45
+  },
+  {
+   "id": 46390,
+   "name": "Director-Grade Attendant-Droid",
+   "profession": 8,
+   "template": "BUAT",
+   "level": 48
+  },
+  {
+   "id": 46402,
+   "name": "Basic Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 51
+  },
+  {
+   "id": 46366,
+   "name": "Limited Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 54
+  },
+  {
+   "id": 46371,
+   "name": "Faithful Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 57
+  },
+  {
+   "id": 46408,
+   "name": "Advanced Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 60
+  },
+  {
+   "id": 46354,
+   "name": "Supervisor-Grade Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 63
+  },
+  {
+   "id": 46379,
+   "name": "Executive-Grade Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 66
+  },
+  {
+   "id": 46389,
+   "name": "Director-Grade Assistant-Droid",
+   "profession": 8,
+   "template": "BUAS",
+   "level": 69
+  },
+  {
+   "id": 46401,
+   "name": "Basic Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 72
+  },
+  {
+   "id": 46365,
+   "name": "Limited Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 75
+  },
+  {
+   "id": 46370,
+   "name": "Faithful Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 78
+  },
+  {
+   "id": 46407,
+   "name": "Advanced Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 81
+  },
+  {
+   "id": 46353,
+   "name": "Supervisor-Grade Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 84
+  },
+  {
+   "id": 46378,
+   "name": "Executive-Grade Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 87
+  },
+  {
+   "id": 46388,
+   "name": "Director-Grade Aide-Droid",
+   "profession": 8,
+   "template": "BUAI",
+   "level": 91
+  },
+  {
+   "id": 46396,
+   "name": "Basic Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 95
+  },
+  {
+   "id": 46361,
+   "name": "Limited Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 99
+  },
+  {
+   "id": 46376,
+   "name": "Faithful Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 103
+  },
+  {
+   "id": 46398,
+   "name": "Advanced Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 107
+  },
+  {
+   "id": 46350,
+   "name": "Supervisor-Grade Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 111
+  },
+  {
+   "id": 46384,
+   "name": "Executive-Grade Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 115
+  },
+  {
+   "id": 46394,
+   "name": "Director-Grade Secretary-Droid",
+   "profession": 8,
+   "template": "BUSC",
+   "level": 119
+  },
+  {
+   "id": 46400,
+   "name": "Basic Administrator",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 123
+  },
+  {
+   "id": 46364,
+   "name": "Limited Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 127
+  },
+  {
+   "id": 46369,
+   "name": "Faithful Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 131
+  },
+  {
+   "id": 46406,
+   "name": "Advanced Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 135
+  },
+  {
+   "id": 46352,
+   "name": "Supervisor-Grade Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 139
+  },
+  {
+   "id": 46377,
+   "name": "Executive-Grade Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 143
+  },
+  {
+   "id": 46387,
+   "name": "Director-Grade Administrator-Droid",
+   "profession": 8,
+   "template": "BUAD",
+   "level": 147
+  },
+  {
+   "id": 46395,
+   "name": "Basic Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 151
+  },
+  {
+   "id": 46360,
+   "name": "Limited Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 155
+  },
+  {
+   "id": 46375,
+   "name": "Faithful Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 159
+  },
+  {
+   "id": 46412,
+   "name": "Advanced Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 163
+  },
+  {
+   "id": 46358,
+   "name": "Supervisor-Grade Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 167
+  },
+  {
+   "id": 46383,
+   "name": "Executive-Grade Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 171
+  },
+  {
+   "id": 46393,
+   "name": "Director-Grade Minion",
+   "profession": 8,
+   "template": "BUMI",
+   "level": 175
+  },
+  {
+   "id": 46404,
+   "name": "Basic Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 179
+  },
+  {
+   "id": 46368,
+   "name": "Limited Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 183
+  },
+  {
+   "id": 46373,
+   "name": "Faithful Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 187
+  },
+  {
+   "id": 46410,
+   "name": "Advanced Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 191
+  },
+  {
+   "id": 46356,
+   "name": "Supervisor-Grade Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 194
+  },
+  {
+   "id": 46381,
+   "name": "Executive-Grade Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 197
+  },
+  {
+   "id": 46391,
+   "name": "Director-Grade Bodyguard",
+   "profession": 8,
+   "template": "BUBO",
+   "level": 200
+  },
+  {
+   "id": 235386,
+   "name": "Corporate Guardian",
+   "profession": 8,
+   "template": "BRBD",
+   "level": 205
+  },
+  {
+   "id": 273300,
+   "name": "CEO Guardian",
+   "profession": 8,
+   "template": "BRBY",
+   "level": 215
+  }
+ ]
+}

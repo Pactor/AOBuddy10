@@ -88,9 +88,10 @@ namespace AOBuddy
         private static readonly NanoLine[] PetLines =
             { NanoLine.AttackPets, NanoLine.HealPets, NanoLine.SupportPets };
 
-        public PetController(BotContext ctx)
+        public PetController(BotContext ctx, string pluginDir)
         {
             _ctx = ctx;
+            LoadShellNanos(pluginDir);
         }
 
         public int PetCount => DynelManager.LocalPlayer?.Pets.Count() ?? 0;
@@ -197,6 +198,25 @@ namespace AOBuddy
             // Short a pet. Summon the first type we haven't summoned within SummonRecastSec — each pet needs a
             // few seconds to appear and register, and re-casting the same summon before then replaces the pet
             // and drains nano. The list is attack-first, so the attack pet is always re-established first.
+            // SHELLS (Engineer robots, Bureaucrat droids): the summon nano makes a shell item, and using the shell
+            // makes the pet. So: a shell already in the bags is used first; only with none there is the nano cast,
+            // and the shell it makes is used on the next pass. A shell we cannot use yet holds the nano back -
+            // casting again would only make another shell, and most robot nanos charge credits for each one.
+            var shell = ShellCheck(me, out Item unusable);
+            if (shell != null)
+            {
+                _ctx.Log($"PET: using shell '{shell.Name}' id={shell.Id} ql={shell.Ql} (have {have}/{summons.Count}).");
+                _shellUsedAt[(shell.Id, shell.Slot.Instance)] = _petClock;
+                shell.Use();
+                return true;
+            }
+            if (_shellPending) return false;                     // just used one: wait for the pet
+            if (unusable != null)
+            {
+                if (_shellWarned != unusable.Id) { _shellWarned = unusable.Id; _ctx.Log($"PET: shell '{unusable.Name}' ql={unusable.Ql} is in the bags but its requirements aren't met; not casting another."); }
+                return false;
+            }
+
             foreach (int nanoId in summons)
             {
                 if (_summonAt.TryGetValue(nanoId, out double last) && _petClock - last < SummonRecastSec)
@@ -207,6 +227,57 @@ namespace AOBuddy
                 return true;
             }
             return false;
+        }
+
+        // ---- Shells -----------------------------------------------------------------------
+        // A shell is known by its requirements, not its name (item data, 2026-09-23: all 175 items carrying the
+        // pet-slot gate were read): it needs OUR profession (Profession == 3 on every Engineer shell, 8 on every
+        // Bureaucrat one) and a free attack-pet slot (TestNumPets 1). That leaves out towers (5001), charm
+        // critters (7001/7002), the Unicorn Intercom and other classes' shells. Only the bags count - never the
+        // bank or a worn slot.
+        private readonly Dictionary<(int, int), double> _shellUsedAt = new Dictionary<(int, int), double>();
+        private int _shellWarned;
+        private bool _shellPending;
+
+        private static bool IsOurShell(Item i, int profession)
+        {
+            if (i?.Criteria == null || !i.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var use)) return false;
+            return use.Any(c => c.Operator == UseCriteriaOperator.TestNumPets && c.Param2 / 1000 == 0)
+                && use.Any(c => c.Operator == UseCriteriaOperator.EqualTo && c.Param1 == (int)Stat.Profession && c.Param2 == profession);
+        }
+
+        /// <summary>The best shell in the bags we can use now (highest QL), or null; `unusable` = one we hold
+        /// but cannot use yet. Sets _shellPending while a shell we used is still waiting to become a pet.</summary>
+        private Item ShellCheck(LocalPlayer me, out Item unusable)
+        {
+            unusable = null; _shellPending = false;
+            if (Inventory.Items == null || !me.TryGetStat(Stat.Profession, out int prof)) return null;
+            Item best = null;
+            foreach (Item i in Inventory.Items)
+            {
+                if (i == null || i.Slot.Type != IdentityType.Inventory || !IsOurShell(i, prof)) continue;
+                if (_shellUsedAt.TryGetValue((i.Id, i.Slot.Instance), out double at) && _petClock - at < SummonRecastSec) { _shellPending = true; continue; }
+                bool ok; try { ok = i.MeetsUseReqs(me); } catch { ok = false; }
+                if (!ok) { if (unusable == null || i.Ql > unusable.Ql) unusable = i; continue; }
+                if (best == null || i.Ql > best.Ql) best = i;
+            }
+            return best;
+        }
+
+        // Summon nanos that make a shell (SpawnItem) rather than a pet: GameData/PetShellNanos.json, id -> the
+        // level of the pet it makes. Their nano line is NOSTACKING, so the pet-line search never finds them.
+        private readonly Dictionary<int, int> _shellNanos = new Dictionary<int, int>();
+
+        private void LoadShellNanos(string pluginDir)
+        {
+            try
+            {
+                string f = System.IO.Path.Combine(pluginDir ?? "", "GameData", "PetShellNanos.json");
+                if (!System.IO.File.Exists(f)) { _ctx.Log("PET: GameData/PetShellNanos.json missing - Engineer/Bureaucrat shell pets won't be summoned."); return; }
+                var doc = Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(f));
+                foreach (var n in doc["nanos"]) _shellNanos[(int)n["id"]] = (int)n["level"];
+            }
+            catch (Exception e) { _ctx.Log("PET: couldn't read PetShellNanos.json: " + e.Message); }
         }
 
         // ---- Pet buffs ------------------------------------------------------------
@@ -344,8 +415,22 @@ namespace AOBuddy
                 }
             }
 
+            // Shell-making summons (Engineer robot, Bureaucrat droid): the highest-level one he knows and can cast.
+            int shellId = 0, shellLevel = -1; bool shellKnown = false;
+            if (spells != null)
+                foreach (int id in spells)
+                {
+                    if (!_shellNanos.TryGetValue(id, out int lvl)) continue;
+                    shellKnown = true;
+                    if (lvl <= shellLevel || !ItemData.Find(id, out NanoItem sn) || sn == null) continue;
+                    bool castable; try { castable = sn.MeetsUseReqs(me, false, true); } catch { castable = false; }
+                    if (castable) { shellId = id; shellLevel = lvl; }
+                }
+
             var result = new List<int>();
             var dbg = new List<string>();
+            if (shellId != 0) { result.Add(shellId); dbg.Add($"Shell:{shellId}(L{shellLevel})"); }
+            else if (shellKnown) dbg.Add("Shell:none-castable");
             foreach (NanoLine line in PetLines)
             {
                 if (bestCastId.TryGetValue(line, out int cid)) { result.Add(cid); dbg.Add($"{line}:{cid}"); }
@@ -546,6 +631,7 @@ namespace AOBuddy
         public void ResummonAll(LocalPlayer me)
         {
             _summonAt.Clear();
+            _shellUsedAt.Clear();
             _healTaskedRoster = "\0";
             _attackTaskedRoster = "\0";
             _lastAttackTarget = null;
