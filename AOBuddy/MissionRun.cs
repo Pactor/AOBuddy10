@@ -1247,6 +1247,8 @@ namespace AOBuddy
 
         private int _sellRounds, _sellStage, _sellMoves;
         private List<Identity> _lastBatch;
+        private Identity? _lastVendor;
+        private readonly HashSet<Identity> _badVendors = new HashSet<Identity>();
         private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
         private bool _sellBagsOpened;
         private double _sellSentAt = -99;
@@ -1397,7 +1399,7 @@ namespace AOBuddy
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
-                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear();
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null;
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
 
@@ -1419,8 +1421,17 @@ namespace AOBuddy
                     // What the last batch left behind was refused (08:04: three items offered eight times): skip them.
                     if (_lastBatch != null)
                     {
-                        foreach (var slot in _lastBatch) if (Inventory.Items.Any(i => i != null && i.Slot == slot)) _refusedSlots.Add(slot);
-                        if (_refusedSlots.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {_refusedSlots.Count} item(s); leaving them.");
+                        var left = _lastBatch.Where(slot => Inventory.Items.Any(i => i != null && i.Slot == slot)).ToList();
+                        // A whole batch refused is the TERMINAL, not the items (13:24, 2026-09-24: 'Superior ICC
+                        // Accessories' took none of 14; at 08:04 'Basic ICC Armor' bought the same kinds). Leave that
+                        // terminal and try the next nearest; only items left over from a partly sold batch are refused.
+                        if (left.Count == _lastBatch.Count && _lastVendor.HasValue && _badVendors.Add(_lastVendor.Value))
+                            _ctx.Log($"MISSIONRUN: shop: that terminal took none of {left.Count}; trying another.");
+                        else
+                        {
+                            foreach (var slot in left) _refusedSlots.Add(slot);
+                            if (left.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {left.Count} item(s); leaving them.");
+                        }
                         _lastBatch = null;
                     }
                     var sell = Sellable().Where(i => !_refusedSlots.Contains(i.Slot)).ToList();
@@ -1440,7 +1451,7 @@ namespace AOBuddy
                             return false;
                         }
                     }
-                    var vm = DynelManager.VendingMachines.OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
+                    var vm = DynelManager.VendingMachines.Where(v => !_badVendors.Contains(v.Identity) && me.DistanceFrom(v) < 40f).OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
                     if (sell.Count == 0 || vm == null || _sellRounds >= 12)
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
@@ -1462,7 +1473,7 @@ namespace AOBuddy
                         Client.Send(new TradeMessage { Version = 2, Action = TradeAction.AddItem, Param1 = (int)me.Identity.Type, Param2 = me.Identity.Instance, Param3 = (int)it.Slot.Type, Param4 = it.Slot.Instance });
                     Client.Send(new TradeMessage { Version = 2, Action = TradeAction.Accept });
                     _ctx.Log($"MISSIONRUN: shop: selling {string.Join(", ", batch.Select(b => b.Name))} to '{vm.Name}'.");
-                    _lastBatch = batch.Select(b => b.Slot).ToList();
+                    _lastBatch = batch.Select(b => b.Slot).ToList(); _lastVendor = vm.Identity;
                     _sellStage = 0; _sellRounds++; _sellSentAt = _clock;
                     return false;
                 }
