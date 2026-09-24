@@ -396,6 +396,11 @@ namespace AOBuddy
                 {
                     if (_overland.Active) _overland.Stop("pulled back");
                     _follow.ClearMovement();
+                    // Pulled back AT a zone line is that line refusing him: Galway Shire's border, 10:35-10:37
+                    // (2026-09-24), three pull-backs within 60 m of the line and the same line planned each time.
+                    if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.ZoneLine
+                        && Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
+                        MarkBadExit(_hike.Exit);
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
