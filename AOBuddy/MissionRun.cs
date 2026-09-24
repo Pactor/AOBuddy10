@@ -1054,7 +1054,20 @@ namespace AOBuddy
         private double _shopStepAt, _shopTriedAt = -9999;
         private const int FairTradePf = 1187;
         private static readonly Vector3 ShopSpot = new Vector3(197.74f, 5.01f, 142.38f);
-        private static readonly Identity BankTerminal = new Identity(IdentityType.Terminal, 0x0EE5BBFF);
+        // The bank terminal is looked up live: the id in the owner's capture (C73D:0EE5BBFF) didn't answer on another
+        // game server, where the zone had 'Rubi-Ka Banking Service Terminal' Terminal:C00104A3 at (195.7,144.4)
+        // (08:05, 2026-09-24). The captured id stays as the fallback.
+        private static Identity BankTerminal
+        {
+            get
+            {
+                var me = DynelManager.LocalPlayer;
+                var t = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.Terminal && d.Name != null
+                                                          && d.Name.IndexOf("Bank", StringComparison.OrdinalIgnoreCase) >= 0)
+                                              .OrderBy(d => me == null ? 0 : Vector3.Distance(me.Transform.Position, d.Transform.Position)).FirstOrDefault();
+                return t != null ? t.Identity : new Identity(IdentityType.Terminal, 0x0EE5BBFF);
+            }
+        }
         private Vector3? _shopArrival;
         private Identity? _shopBag;
         private bool _shopBoughtForNanos, _shopBoughtForRoom;
@@ -1063,6 +1076,8 @@ namespace AOBuddy
         private readonly HashSet<Identity> _shopFullBags = new HashSet<Identity>();
 
         private int _sellRounds, _sellStage, _sellMoves;
+        private List<Identity> _lastBatch;
+        private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
         private bool _sellBagsOpened;
         private double _sellSentAt = -99;
 
@@ -1192,7 +1207,7 @@ namespace AOBuddy
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
-                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false;
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear();
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
 
@@ -1211,7 +1226,14 @@ namespace AOBuddy
                         _sellBagsOpened = true; _sellSentAt = _clock;
                         return false;
                     }
-                    var sell = Sellable();
+                    // What the last batch left behind was refused (08:04: three items offered eight times): skip them.
+                    if (_lastBatch != null)
+                    {
+                        foreach (var slot in _lastBatch) if (Inventory.Items.Any(i => i != null && i.Slot == slot)) _refusedSlots.Add(slot);
+                        if (_refusedSlots.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {_refusedSlots.Count} item(s); leaving them.");
+                        _lastBatch = null;
+                    }
+                    var sell = Sellable().Where(i => !_refusedSlots.Contains(i.Slot)).ToList();
                     if (sell.Count == 0 && _sellStage == 0)
                     {
                         // Nothing loose: bring a few out of the bags (owner: you can't sell from a backpack).
@@ -1232,8 +1254,9 @@ namespace AOBuddy
                     if (sell.Count == 0 || vm == null || _sellRounds >= 12)
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
-                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = BankTerminal, Count = 1, Temp4 = 1 });
-                        ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank.");
+                        var bank = BankTerminal;
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bank, Count = 1, Temp4 = 1 });
+                        ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank ({bank}).");
                         return false;
                     }
                     if (_sellStage == 0)
@@ -1249,6 +1272,7 @@ namespace AOBuddy
                         Client.Send(new TradeMessage { Version = 2, Action = TradeAction.AddItem, Param1 = (int)me.Identity.Type, Param2 = me.Identity.Instance, Param3 = (int)it.Slot.Type, Param4 = it.Slot.Instance });
                     Client.Send(new TradeMessage { Version = 2, Action = TradeAction.Accept });
                     _ctx.Log($"MISSIONRUN: shop: selling {string.Join(", ", batch.Select(b => b.Name))} to '{vm.Name}'.");
+                    _lastBatch = batch.Select(b => b.Slot).ToList();
                     _sellStage = 0; _sellRounds++; _sellSentAt = _clock;
                     return false;
                 }
