@@ -293,6 +293,12 @@ namespace AOBuddy
         {
             if (!_ctx.Config.AutoBuff) return;
             if (inCombat && !_ctx.Config.BuffInCombat) return;
+            // Rez sickness: the server refuses casts, but a queued buff still marked itself as cast, and a buff
+            // just 'cast' is not tried again for most of its duration - so buffs queued while sick never went
+            // back on (2026-09-23 22:16: Vengeance of the Loyal and Impartiality of the Blade). Wait it out,
+            // and when it ends forget what was 'cast' during it.
+            if (IsRezSick(me)) { _wasRezSick = true; return; }
+            if (_wasRezSick) { _wasRezSick = false; _lastBuffCastAt.Clear(); _castQueue.Clear(); _ctx.Log("AUTO-BUFF: rez sickness over - rebuffing everything missing."); }
 
             // Startup/zone grace: right after login (or a zone) the server hasn't sent our ActiveNanos yet,
             // so me.Buffs is momentarily empty and an already-running buff would look "missing" and get
@@ -516,7 +522,8 @@ namespace AOBuddy
 
         private static string BuffKey(SimpleChar target, int nanoId) => target.Identity.Instance + ":" + nanoId;
 
-        public void OnDeathResetBuffs() => _lastBuffCastAt.Clear();   // buffs drop on death — allow rebuff after reclaim
+        public void OnDeathResetBuffs() { _lastBuffCastAt.Clear(); _castQueue.Clear(); }   // buffs drop on death — allow rebuff after reclaim
+        private bool _wasRezSick;
 
         // ---- Owner-land learning (which buffs actually apply to the owner) -------
         private void EnsureNoLandLoaded()
