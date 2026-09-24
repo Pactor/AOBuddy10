@@ -288,3 +288,8 @@ missions may be taken in (empty = the terminal's own zone only).
    out to 6 m past, one side at a time (4 sides). Travel's pad wait might want the same.
    The owner's route: reclaim -> the Newland whompa at the back of the whompa row -> in Newland turn right
    into the Borealis whompa.
+
+### Later (owner, 2026-09-23)
+- **Out of room:** the run now stops and tells the owner when fewer than 2 inventory slots are free at the
+  terminal (a key + a reward), after the stash has filled what bags it could. Later: sell rewards with
+  Algorithman's shop code, and always put nano crystals in the bank instead of selling them.
