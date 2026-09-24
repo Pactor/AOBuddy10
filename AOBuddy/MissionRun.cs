@@ -1274,8 +1274,7 @@ namespace AOBuddy
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
-            // came back as feedback 110. 30 s like that and the mob is set aside for 5 minutes. Only when both
-            // HPs read and neither moved, so a real fight (either side hurt) is never dropped.
+            // came back as feedback 110. When our blows don't lower a mob's HP, it is set aside for 5 minutes.
             bool readable = a.TryGetStat(Stat.Health, out int ahp);
             int mine = _selfHp();
             if (_defId != a.Identity) { _defId = a.Identity; _defSince = _clock; _defHp = ahp; _defMyMin = mine < 0 ? 100 : mine; }
@@ -1283,9 +1282,12 @@ namespace AOBuddy
             {
                 if (mine >= 0) _defMyMin = Math.Min(_defMyMin, mine);
                 if (readable && ahp < _defHp) { _defHp = ahp; _defSince = _clock; }
-                else if (readable && _defMyMin >= 90 && _clock - _defSince > 30)
+                // ...and one we can't hurt while it hurts us: a Guard Turret 12.6 m off, the bot standing with a
+                // melee weapon for 4 minutes until it died (00:08-00:12, 2026-09-24), the mission already done.
+                // 20 s of fighting it without its HP dropping at all: leave it.
+                else if (readable && _clock - _defSince > (_defMyMin >= 90 ? 30 : 20))
                 {
-                    _ctx.Log($"MISSIONRUN: 30 s on '{a.Name}' and neither of us is hurt (its HP {ahp}); leaving it alone for 5 minutes.");
+                    _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' and its HP hasn't moved ({ahp}); leaving it alone for 5 minutes.");
                     _combat.SetAside(me, a.Identity, 300);
                     _defId = null;
                     return null;
