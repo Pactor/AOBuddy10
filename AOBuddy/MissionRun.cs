@@ -890,6 +890,7 @@ namespace AOBuddy
         }
 
         private int _hikeChain;
+        private double _hikeAtExitAt = -1;
         private volatile NavGround _hikeGround;
         private volatile int _hikeGroundPf = -1;
 
@@ -948,7 +949,7 @@ namespace AOBuddy
             }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -984,7 +985,10 @@ namespace AOBuddy
                 Enter(_hikeReturn, "through the exit");
                 return false;
             }
-            if (_phaseTime > 150)
+            // 150 s AT the exit, not from the start: the walk there can be over a kilometre (Eastern Fouls Plains,
+            // 13:09-13:15, 2026-09-24: two good lines timed out mid-walk, marked bad, 4-5 km detours). The walk
+            // itself gets 15 minutes.
+            if ((_hikeAtExitAt >= 0 && _clock - _hikeAtExitAt > 150) || _phaseTime > 900)
             {
                 _follow.ClearMovement();
                 MarkBadExit(_hike.Exit);   // or the next plan picks the same exit (four times, 09:50-10:00)
@@ -1014,6 +1018,7 @@ namespace AOBuddy
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
             }
             if (_follow.ReplayCount > 0) return true;                 // still on the grid leg
+            if (_hikeAtExitAt < 0) _hikeAtExitAt = _clock;
 
             if (e.Kind == ExitKind.ZoneLine)
             {
@@ -1041,7 +1046,7 @@ namespace AOBuddy
             // Fair Trade door was Used six times with no zone (07:59, 2026-09-24).
             if (e.Kind != ExitKind.Line && e.ObjType != 51016)
             {
-                if (Movement.Flat(pos, at) > 3f && _hikeUses == 0 && _phaseTime < 140) { _follow.SetManualTarget(at); return true; }
+                if (Movement.Flat(pos, at) > 3f && _hikeUses == 0 && _clock - _hikeAtExitAt < 140) { _follow.SetManualTarget(at); return true; }
                 _follow.ClearMovement();
                 if (_clock - _hikeUsedAt < 4) return false;
                 if (_hikeUses >= T("usetries"))
