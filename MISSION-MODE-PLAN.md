@@ -324,3 +324,9 @@ missions may be taken in (empty = any zone).
   - bank moves appear as `Bank:0` containers, and a bag comes out of the bank to inventory slot 111.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
+
+10. **`travelto` gives up where the run would back off** (owner, 2026-09-24 07:05): from (3191,886) in ICC toward
+    the Newland whompa, 'no progress ... routing round it' 4 times at (3190,885), then "stuck ... something is in
+    the way". Same spot where the server pulled the run back at 07:02. The mission run backs off, walks its clean
+    trail back and replans; plain travel could do the same before giving up (owner: "backtrack to the last
+    known good position and try again").
