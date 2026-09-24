@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace AONavExtractor
@@ -26,6 +27,9 @@ namespace AONavExtractor
             try
             {
                 if (args.Length >= 1 && args[0] == "--collision-worker") return CollisionWorker(args);
+                if (args.Length >= 3 && args[0] == "--hostwater") return HostWater(args[1], int.Parse(args[2]));
+                if (args.Length >= 4 && args[0] == "--dump") { string db0 = Path.Combine(args[1], "cd_image", "data", "db"); using (var r0 = new Rdb(db0)) { byte[] rec = r0.Read(int.Parse(args[2]), int.Parse(args[3])); Console.WriteLine("// length {0}", rec.Length); Dump(rec, 0, rec.Length, "record"); } return 0; }
+                if (args.Length >= 3 && args[0] == "--probe") return Probe(args[1], int.Parse(args[2]));
                 if (args.Length < 2) { Console.Error.WriteLine("usage: AONavExtractor <AO install dir> <out dir> [--nav <dir>] [--only pf,pf] [--no-collision] [--tri <dir>] [--keep-tri]"); return 2; }
                 return Run(args);
             }
@@ -167,6 +171,214 @@ namespace AONavExtractor
             if (ownTri && !keepTri && Directory.Exists(triDir) && Directory.GetFileSystemEntries(triDir).Length == 0) Directory.Delete(triDir);
             Console.WriteLine("wrote {0} playfields to {1} in {2:F0} s", index.Count, outDir, sw.Elapsed.TotalSeconds);
             return 0;
+        }
+
+        // ---------------------------------------------------------------- hostwater: the client's own playfield reader, water hunt 2026-09-24
+
+        /// <summary>
+        /// Constructs the client's RDBPlayfield_t over the framed 1000001 record (its ReadBlob is
+        /// the only authoritative parse of that format) and dumps the object graph it produces,
+        /// hunting the water polylines n3Room_t::ReadBlob builds into (room+0x88/+0x8c) and the
+        /// 40-byte triangle entries (3x Vector3 + int level/320). x86 only, like the collision step.
+        /// </summary>
+        static unsafe int HostWater(string client, int pf)
+        {
+            if (IntPtr.Size != 4) { Console.Error.WriteLine("x86 build required"); return 1; }
+            [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)] static extern bool SetDllDirectoryW(string path);
+            [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)] static extern IntPtr LoadLibraryExA(string path, IntPtr file, uint flags);
+            [DllImport("kernel32", CharSet = CharSet.Ansi)] static extern IntPtr GetProcAddress(IntPtr m, string name);
+            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 8;
+            SetDllDirectoryW(client);
+            IntPtr Load(string name) => LoadLibraryExA(Path.Combine(client, name), IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
+            Load("msvcr100.dll"); Load("msvcp100.dll");
+            IntPtr bs = Load("BinaryStream.dll");
+            Load("InstanceManager.dll"); Load("DatabaseController.dll"); Load("ResourceManager.dll");
+            Load("GameData.dll"); Load("Utils.dll"); Load("Collision.dll"); Load("PathFinder.dll");
+            IntPtr n3 = Load("N3.dll");
+            if (bs == IntPtr.Zero || n3 == IntPtr.Zero) { Console.Error.WriteLine("DLL load failed"); return 1; }
+            IntPtr Sym(IntPtr m, string n) { var p = GetProcAddress(m, n); if (p == IntPtr.Zero) throw new EntryPointNotFoundException(n); return p; }
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr> pfCtor = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr>)Sym(n3, "??0RDBPlayfield_t@@IAE@ABVIdentity_t@@@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, byte> pfRead = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, byte>)Sym(n3, "?ReadBlob@RDBPlayfield_t@@UAE_NAAVBinaryStream@@@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> pfDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(n3, "??1RDBPlayfield_t@@MAE@XZ");
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, uint, IntPtr> lsCtor = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, uint, IntPtr>)Sym(bs, "??0BinaryLStream@@QAE@PAXI@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> lsDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(bs, "??1BinaryLStream@@QAE@XZ");
+
+            string db = Path.Combine(client, "cd_image", "data", "db");
+            using (var rdb = new Rdb(db))
+            {
+                byte[] blob = rdb.ReadFramed(1000001, pf);
+                Console.WriteLine($"pf {pf}: framed record {blob.Length} bytes");
+                IntPtr data = Marshal.AllocHGlobal(blob.Length);
+                IntPtr ident = Marshal.AllocHGlobal(8);
+                IntPtr obj = Marshal.AllocHGlobal(0x400);
+                IntPtr strm = Marshal.AllocHGlobal(0x400);
+                try
+                {
+                    Marshal.Copy(blob, 0, data, blob.Length);
+                    Marshal.WriteInt32(ident, 0, 1000001); Marshal.WriteInt32(ident, 4, pf);
+                    ZeroMem(obj, 0x400); ZeroMem(strm, 0x400);
+                    pfCtor(obj, ident);
+                    lsCtor(strm, data, (uint)blob.Length);
+                    bool ok = (pfRead(obj, strm) & 1) != 0;
+                    Console.WriteLine("ReadBlob -> " + ok);
+                    lsDtor(strm);
+                    if (ok)
+                    {
+                        Console.WriteLine("RDBPlayfield_t object dwords:");
+                        for (int o = 0; o < 0xC0; o += 4)
+                            Console.WriteLine($"  +0x{o:X2}: 0x{Marshal.ReadInt32(obj, o):X8}");
+                        // the zone vector at +0x44 (populated by ReadBlob's outdoor branch); each 0x38-byte
+                        // zone carries +0x20 = vector<VisualWaterInfo*> — the water boxes.
+                        IntPtr groups = (IntPtr)Marshal.ReadInt32(obj, 0x44);
+                        IntPtr zbegin = (IntPtr)Marshal.ReadInt32(groups, 0), zend = (IntPtr)Marshal.ReadInt32(groups, 4);
+                        int zn = (int)((zend.ToInt64() - zbegin.ToInt64()) / 4);
+                        Console.WriteLine($"zones: {zn}");
+                        int wiTotal = 0;
+                        foreach (int zi in new[] { 0, 900, zn - 1 })
+                        {
+                            IntPtr zone = (IntPtr)Marshal.ReadInt32(zbegin, zi * 4);
+                            Console.WriteLine($"zone[{zi}] @0x{(zone == IntPtr.Zero ? 0 : zone.ToInt64()):X}:");
+                            if (zone == IntPtr.Zero) continue;
+                            for (int o = 0; o < 0x38; o += 4)
+                            {
+                                int dw = Marshal.ReadInt32(zone, o);
+                                float fv = BitConverter.ToSingle(BitConverter.GetBytes(dw), 0);
+                                string note = (Math.Abs(fv) > 0.001f && Math.Abs(fv) < 100000f) ? $" ({fv:0.00})" : "";
+                                Console.WriteLine($"   +0x{o:X2}: 0x{dw:X8}{note}");
+                            }
+                        }
+                        for (int zi = 0; zi < zn && zi < 3000; zi++)
+                        {
+                            IntPtr zone = (IntPtr)Marshal.ReadInt32(zbegin, zi * 4);
+                            if (zone == IntPtr.Zero) continue;
+                            IntPtr wi = (IntPtr)Marshal.ReadInt32(zone, 0x20);
+                            if (wi == IntPtr.Zero) continue;
+                            IntPtr wb = (IntPtr)Marshal.ReadInt32(wi, 0), we2 = (IntPtr)Marshal.ReadInt32(wi, 4);
+                            long span = we2.ToInt64() - wb.ToInt64();
+                            if (span <= 0 || span > 400000 || (span % 4) != 0) continue;
+                            int wc2 = (int)(span / 4);
+                            for (int k = 0; k < wc2; k++)
+                            {
+                                IntPtr w = (IntPtr)Marshal.ReadInt32(wb, k * 4);
+                                if (w == IntPtr.Zero) continue;
+                                wiTotal++;
+                                if (wiTotal <= 6)
+                                {
+                                    var sb = new StringBuilder();
+                                    for (int d = 0; d < 16; d++)
+                                    {
+                                        int dw = Marshal.ReadInt32(w, d * 4);
+                                        float fv = BitConverter.ToSingle(BitConverter.GetBytes(dw), 0);
+                                        sb.Append($" {d:00}:0x{dw:X8}");
+                                        if (Math.Abs(fv) > 0.001f && Math.Abs(fv) < 100000f) sb.Append($"({fv:0.0})");
+                                    }
+                                    Console.WriteLine($"  zone {zi} WI[{k}] @0x{w.ToInt64():X}:{sb}");
+                                }
+                            }
+                        }
+                        Console.WriteLine($"total VisualWaterInfo entries: {wiTotal}");
+                    }
+                    pfDtor(obj);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data); Marshal.FreeHGlobal(ident); Marshal.FreeHGlobal(obj); Marshal.FreeHGlobal(strm);
+                }
+            }
+            return 0;
+        }
+
+        static void ZeroMem(IntPtr p, int n) { for (int i = 0; i < n; i += 8) Marshal.WriteInt64(p, i, 0); }
+
+        static float readF(IntPtr p, int off) { float[] f = new float[1]; Marshal.Copy(p + off, f, 0, 1); return f[0]; }
+
+        // ---------------------------------------------------------------- probe: dump a playfield's records
+
+        /// <summary>
+        /// Exploration dump for one playfield: every field of the ground record's reflective tree,
+        /// the playfield record's tail (where the water-plane table lives), and the RDB's type
+        /// inventory. Water-region hunt, 2026-09-24.
+        /// </summary>
+        static int Probe(string client, int pf)
+        {
+            string db = Path.Combine(client, "cd_image", "data", "db");
+            using (var rdb = new Rdb(db))
+            {
+                Console.WriteLine("== RDB types ==");
+                foreach (var t in rdb.Types) Console.WriteLine("  {0,-8} {1} records", t, new List<int>(rdb.Instances(t)).Count);
+
+                byte[] blob = rdb.Read(1000001, pf);
+                Console.WriteLine("== playfield record 1000001/{0}: {1} bytes ==", pf, blob.Length);
+                Console.WriteLine("  (water levels print with the ground record below — tile-derived)");
+
+                if (rdb.HasType(1000010))
+                {
+                    foreach (int inst in rdb.Instances(1000010))
+                    {
+                        byte[] tt = rdb.Read(1000010, inst);
+                        Console.WriteLine("== tile-type record 1000010/{0}: {1} bytes ==", inst, tt.Length);
+                        int nt = Util.IndexOf(tt, "DB_t");
+                        if (nt > 0)
+                        {
+                            var r2 = new ReflectiveRecord(tt, nt - 21);
+                            foreach (var o in r2.Objects)
+                            {
+                                Console.WriteLine("object {0} class '{1}':", o.Index, o.Class);
+                                foreach (var e in o.Entries)
+                                {
+                                    string preview = e.ValueType == ReflectiveRecord.T_STR ? "'" + e.Str + "'"
+                                        : e.ValueType == ReflectiveRecord.T_INT && e.Raw.Length == 4 ? e.Int.ToString()
+                                        : e.Raw.Length <= 48 ? Hex(e.Raw, 0, e.Raw.Length) : Hex(e.Raw, 0, 48) + " ...";
+                                    Console.WriteLine("  {0,-36} vt {1,-3} es {2,-4} len {3,-9} {4}", e.Name, e.ValueType, e.ElemSize, e.Raw.Length, preview);
+                                }
+                            }
+                        }
+                        else Dump(tt, 0, Math.Min(tt.Length, 512), "raw head");
+                    }
+                }
+
+                byte[] g = rdb.Read(1000009, pf);
+                Console.WriteLine("== ground record 1000009/{0}: {1} bytes ==", pf, g.Length);
+                Console.WriteLine("  water levels: " + string.Join(", ", Ground.WaterPlanes(blob).Select(y => y.ToString("0.###"))));
+                int i = Util.IndexOf(g, "AnarchyGroundDataDB_t");
+                var rec = new ReflectiveRecord(g, i - 21);
+                foreach (var o in rec.Objects)
+                {
+                    Console.WriteLine("object {0} class '{1}' at 0x{2:X}:", o.Index, o.Class, o.Offset);
+                    foreach (var e in o.Entries)
+                    {
+                        string preview;
+                        if (e.ValueType == ReflectiveRecord.T_INT && e.Raw.Length == 4) preview = e.Int.ToString();
+                        else if (e.ValueType == ReflectiveRecord.T_FLOAT && e.Raw.Length == 4) preview = e.Float.ToString("0.###");
+                        else if (e.ValueType == ReflectiveRecord.T_STR) preview = "'" + e.Str + "'";
+                        else if (e.Raw.Length <= 32) preview = Hex(e.Raw, 0, e.Raw.Length);
+                        else preview = Hex(e.Raw, 0, 32) + " ...";
+                        Console.WriteLine("  {0,-36} vt {1,-3} es {2,-4} len {3,-9} {4}", e.Name, e.ValueType, e.ElemSize, e.Raw.Length, preview);
+                    }
+                }
+                int after = rec.DataEnd;
+                Console.WriteLine("reflective data ends at 0x{0:X}; record has {1} trailing bytes", after, g.Length - after);
+                if (g.Length - after > 0) Dump(g, after, Math.Min(g.Length - after, 256), "after-reflective");
+            }
+            return 0;
+        }
+
+        static string Hex(byte[] b, int at, int n)
+        {
+            var sb = new StringBuilder();
+            for (int k = 0; k < n && at + k < b.Length; k++) sb.AppendFormat("{0:X2} ", b[at + k]);
+            return sb.ToString();
+        }
+
+        static void Dump(byte[] b, int at, int n, string label)
+        {
+            Console.WriteLine("-- {0} from 0x{1:X} --", label, at);
+            for (int r = 0; r < n; r += 16)
+            {
+                var sb = new StringBuilder();
+                for (int k = 0; k < 16 && at + r + k < b.Length; k++) sb.AppendFormat("{0:X2} ", b[at + r + k]);
+                Console.WriteLine("  0x{0:X6}  {1}", at + r, sb.ToString());
+            }
         }
 
         // ---------------------------------------------------------------- collision, out of process

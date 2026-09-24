@@ -510,13 +510,13 @@ namespace AOBuddy
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
 
             // WATER — the captured client's exact contract (20260924-215811 s116, this very shore):
-            // NO swim-mode packet ever; Y = THE WATER PLANE while the bottom is deeper than a wade
+            // NO swim-mode packet ever; Y = THE WATER SURFACE while the bottom is deeper than a wade
             // (it sent 32.09 over our floor of 24.8 — swimming at the surface), Y = THE BOTTOM once
             // it rises inside wading range (30.95, 31.67, 31.90 up the sandbar), plain Update
             // packets throughout at ~5.5 u/s. Our four failures each sent one wrong leg of that
             // triangle plus the mode packet the client never sends.
             float probe = Math.Min(d, 0.5f);
-            double plane = _ground?.Ground != null && _ground.Ground.WaterY.Length > 0
+            double plane = _ground?.Ground != null
                 ? _ground.Ground.SwimY(pos.X + dir.X * probe, pos.Z + dir.Z * probe, 0.3) : double.NaN;
             _inWater = !double.IsNaN(plane);
 

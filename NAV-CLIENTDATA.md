@@ -1151,3 +1151,50 @@ an in-playfield `N3Teleport` and a `FollowTarget` path about itself if one comes
 about itself while it stands on a pad ("PAD: server sent ..."). Postponed by the owner since the assumption
 works; to settle it, read those PAD / SERVER MOVE lines from a beam ride, or a capture of one, and replace
 the assumption with the real message. The same question stands for the exit pads and for dropping down.
+
+---
+
+# Where outdoor water actually is (2026-09-25)
+
+The bot crossed Newland's lake fine and then swam 7 m over Newland **City's** dry pit: the
+"water planes" table below (four 12-byte entries before the arrival table) was applied
+playfield-wide, and the city pit sits lower than the lake. Finding the real region went
+through everything the client offers, so here is the full map of its water machinery:
+
+- **The playfield record (1000001) plane table is LEVELS, not regions.** Newland and Newland
+  City both carry 32.1 - the lake's surface (the capture swam 32.09). ICC's four entries
+  (10.5/9.0/10.9/15.4) sit *under* its 17.1 tile-12 basin and are most likely arrival
+  coordinates that happened to sit in the same slots. Hosting `RDBPlayfield_t::ReadBlob`
+  over the framed record (the `--hostwater` probe in `tools/AONavExtractor`) parses the whole
+  thing cleanly: 567 yields 1850 zone objects, every zone's water list empty - the record
+  itself does not place outdoor water anywhere.
+- **RDB 1000008 (39 records, water playfields only) is the renderer's water SIM data, not a
+  region mask.** `01 00 00 00 | u16 w | u16 h | ceil(w/8)-byte rows` parses exactly (567:
+  500x370, ICC 1300x760), and the client's `RDBWater_c`/`WaterDataGenerator_c` names line up
+  - but the set bits form two perfect rectangles over Newland (wave-equation solver domains),
+  80% of them on dry ground in every world alignment that fits. It never describes the lake.
+- **`n3WaterData_t` triangles** (three Vector3s + int level in 1/320 units, the level's low
+  bits doubling as liquid-type flags - read straight out of
+  `CheetahLiquidGenerator_c::AddData`/`Create` -> `ClipAndAddTriangle`) are DUNGEON water:
+  they are built from delta-encoded polylines in the room record's water section
+  (`(count+1)*1009` tag, then `{flags, n, x/z/y delta triples, m, u16 triangle indices}` per
+  polyline - decoded from `n3Room_t::ReadBlob` at N3+0x139B9). Outdoor playfields never run
+  that code path.
+- **The tilemap knows the region.** Cells whose tile id's low byte is **12** are the water
+  band the designers paint over the shore (all four rotations `?00C`; the city pit is type
+  11, dry land 7/0x14, the deep lake bottom mixes 135/150/119/86/0 - which is why no single
+  tile type is the answer). Newland's lake tiles cap at 32.0, one decimeter under the 32.1
+  surface; the band deliberately overlaps the shore (strays at 32.4-33.2).
+
+So the water model that works, and what `NavGround.SwimY` now does: **region = flood from
+the tile-12 band through cells whose lowest corner sits under the level; level = the highest
+stored plane above the band's core (p10)**. The shore ring above the level closes the bowl,
+so Newland's dry lowlands (22% of the map is under the plane!) never connect: 567 floods
+22,847 cells, covers 22/25 captured swim points (the rest are wade-fringe, correctly), 566
+has 7 stray type-12 cells on a roof and no qualifying plane - completely dry, pit fixed.
+ICC's basin (169 cells at 17.1, above all four stored levels) comes out dry: a known
+limitation, noted rather than papered over.
+
+What is still OPEN: ICC's canal water (and whether those four plane-table entries are really
+its levels), and the 39-record 1000008 set's exact world mapping (two sim rectangles per
+playfield, purpose unknown).
