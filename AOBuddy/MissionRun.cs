@@ -303,7 +303,9 @@ namespace AOBuddy
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
             // into the snap-back for minutes (2026-09-23 23:01). The owner: roots and snares both happen.
-            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2)
+            // ...but never while something is hurting him: at a Longest Road door (07:00, 2026-09-24) he stood 15 s
+            // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
+            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
                 _heldUntil = _clock + 15;
