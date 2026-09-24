@@ -1275,6 +1275,7 @@ namespace AOBuddy
         private int _sellRounds, _sellStage, _sellMoves;
         private List<Identity> _lastBatch;
         private Identity? _lastVendor;
+        private int _wholeRefusals;
         private readonly HashSet<Identity> _badVendors = new HashSet<Identity>();
         private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
         private bool _sellBagsOpened;
@@ -1466,7 +1467,7 @@ namespace AOBuddy
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
                     if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _follow.ClearMovement();
-                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null;
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null; _wholeRefusals = 0;
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
 
@@ -1492,11 +1493,14 @@ namespace AOBuddy
                         // A whole batch refused is the TERMINAL, not the items (13:24, 2026-09-24: 'Superior ICC
                         // Accessories' took none of 14; at 08:04 'Basic ICC Armor' bought the same kinds). Leave that
                         // terminal and try the next nearest; only items left over from a partly sold batch are refused.
-                        if (left.Count == _lastBatch.Count && _lastVendor.HasValue && _badVendors.Add(_lastVendor.Value))
+                        // ...but the same items refused by two terminals are the ITEMS (15:45, 2026-09-24: an Omni-Med Cloak
+                        // and a Trimmer offered to eight terminals in a row).
+                        if (left.Count == _lastBatch.Count && _lastVendor.HasValue && ++_wholeRefusals < 2 && _badVendors.Add(_lastVendor.Value))
                             _ctx.Log($"MISSIONRUN: shop: that terminal took none of {left.Count}; trying another.");
                         else
                         {
                             foreach (var slot in left) _refusedSlots.Add(slot);
+                            _wholeRefusals = 0;
                             if (left.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {left.Count} item(s); leaving them.");
                         }
                         _lastBatch = null;
