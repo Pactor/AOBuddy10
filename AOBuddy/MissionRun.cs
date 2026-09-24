@@ -37,6 +37,7 @@ namespace AOBuddy
         private readonly Action<string> _tell;
         private readonly Func<bool> _dead, _recovering, _buffing, _fighting, _needsRecovery, _inCombat;
         private readonly Func<int> _selfHp;
+        private readonly CombatController _combat;
         private double _fightStart, _fightIgnoreUntil = -1;
         private int _fightHpMin = 100;
         private readonly string _pluginDir;
@@ -68,10 +69,10 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat, Func<int> selfHp)
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat, Func<int> selfHp, CombatController combat)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat; _selfHp = selfHp;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat; _selfHp = selfHp; _combat = combat;
             _roll.ListArrived += OnList;
         }
 
@@ -1264,12 +1265,37 @@ namespace AOBuddy
         {
             if (!Active || me == null) return null;
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
-            return DynelManager.Npcs
+            var a = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
+                            && !_combat.IsSetAside(n.Identity)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+            if (a == null) { _defId = null; return null; }
+            // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
+            // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
+            // came back as feedback 110. 30 s like that and the mob is set aside for 5 minutes. Only when both
+            // HPs read and neither moved, so a real fight (either side hurt) is never dropped.
+            bool readable = a.TryGetStat(Stat.Health, out int ahp);
+            int mine = _selfHp();
+            if (_defId != a.Identity) { _defId = a.Identity; _defSince = _clock; _defHp = ahp; _defMyMin = mine < 0 ? 100 : mine; }
+            else
+            {
+                if (mine >= 0) _defMyMin = Math.Min(_defMyMin, mine);
+                if (readable && ahp < _defHp) { _defHp = ahp; _defSince = _clock; }
+                else if (readable && _defMyMin >= 90 && _clock - _defSince > 30)
+                {
+                    _ctx.Log($"MISSIONRUN: 30 s on '{a.Name}' and neither of us is hurt (its HP {ahp}); leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, a.Identity, 300);
+                    _defId = null;
+                    return null;
+                }
+            }
+            return a;
         }
+        private Identity? _defId;
+        private double _defSince;
+        private int _defHp, _defMyMin = 100;
 
         private void Enter(Phase p, string why)
         {

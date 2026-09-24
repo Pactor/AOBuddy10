@@ -39,6 +39,17 @@ namespace AOBuddy
             _ctx = ctx;
         }
 
+        // Targets not to fight for a while: a mob our blows don't touch (MissionRun.Attacker, 2026-09-23: 12
+        // minutes on a find-person NPC, every blow refused with feedback 110). Stop swinging at it now.
+        private readonly Dictionary<Identity, DateTime> _setAside = new Dictionary<Identity, DateTime>();
+        public bool IsSetAside(Identity id) => _setAside.TryGetValue(id, out var until) && DateTime.UtcNow < until;
+        public void SetAside(LocalPlayer me, Identity id, double seconds)
+        {
+            _setAside[id] = DateTime.UtcNow.AddSeconds(seconds);
+            if (_attackedTarget == id) _attackedTarget = null;
+            if (me != null && me.FightingIdentity.HasValue && me.FightingIdentity.Value == id) me.StopAttack();
+        }
+
         // Pick the owner's fight and, if it's a NEW target, issue the attack a single time. Returns
         // the target (null = no owner fight). Called each decision tick.
         public SimpleChar SelectAndEngage(LocalPlayer me, PlayerChar owner, SimpleChar defend = null)
@@ -56,6 +67,7 @@ namespace AOBuddy
             // that resets the weapon timer (swing once, then wait — the "not swinging" bug). The
             // _attackedTarget check below is what prevents it.
             SimpleChar target = GetAssistTarget(me, owner);
+            if (target != null && IsSetAside(target.Identity)) target = null;
             // SOLO (mission run): with no owner fight, whatever is attacking the bot or its pets.
             if (target == null && defend != null) target = LogTarget(defend, "defending");
 
@@ -64,7 +76,7 @@ namespace AOBuddy
             if (target == null && _attackedTarget.HasValue)
             {
                 SimpleChar current = DynelManager.Characters.FirstOrDefault(c => c.Identity == _attackedTarget.Value);
-                if (current != null && IsHostile(current, me, owner) && IsAlive(current)
+                if (current != null && !IsSetAside(current.Identity) && IsHostile(current, me, owner) && IsAlive(current)
                     && me.DistanceFrom(current) <= _ctx.Config.AssistMaxDistance)
                     target = current;
             }
