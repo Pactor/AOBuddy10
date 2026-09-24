@@ -3,25 +3,28 @@
  "name": "Area X",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 385,
   "samplesZ": 385,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 16,
   "worldSize": [
-   1536.0,
-   1536.0
+   1536,
+   1536
   ],
   "heightRange": [
-   0.0,
+   0,
    51.1992
   ],
-  "heightVerifiable": false
+  "heightVerifiable": false,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 662,

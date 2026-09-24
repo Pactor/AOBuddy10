@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace AONavExtractor
 {
@@ -21,6 +22,36 @@ namespace AONavExtractor
         public ushort[] Heights;                 // [z * SamplesX + x]
         public ushort[] Tiles;                   // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;                  // same shape, nibble per cell (order OPEN)
+        public float[] WaterY = Array.Empty<float>();   // the playfield's water-plane heights (see WaterPlanes)
+
+        /// <summary>
+        /// The playfield record's water-plane table: four 12-byte entries ([f32 planeY][f32][f32]),
+        /// a fixed 48-byte block ending 50 bytes before the arrival table (which is itself found by
+        /// walking back from the record end until the int there equals the entries passed). Found
+        /// 2026-09-24 hunting why the bot could not cross Newland's lake: Newland (567) and Newland
+        /// City (566) both say 32.1 — matching the lake exactly (the underwater tiles cap at 32.0,
+        /// the bot was server-held on the shore at 31.9, the shore-ring tiles start at 32.4). ICC
+        /// (655) carries FOUR different planes (its canal levels); a plane below all terrain (the
+        /// Grid's -32) is simply never reached. Distinct values only.
+        /// </summary>
+        public static float[] WaterPlanes(byte[] playfieldBlob)
+        {
+            // Walk back over the arrival table: count 28-byte entries until the int names them.
+            // That int sits AT the table's head, so the body (everything before it) ends at pos.
+            int pos = playfieldBlob.Length - 4, k = 0;
+            while (pos >= 4 && BitConverter.ToInt32(playfieldBlob, pos) != k) { k++; pos -= 28; }
+            int bodyEnd = pos;
+            var planes = new List<float>();
+            for (int e = 0; e < 4; e++)
+            {
+                int at = bodyEnd - 98 + e * 12;
+                if (at < 0 || at + 4 > bodyEnd - 50) break;
+                float y = BitConverter.ToSingle(playfieldBlob, at);
+                if (float.IsNaN(y) || Math.Abs(y) > 2000f) continue;
+                if (!planes.Any(p => Math.Abs(p - y) < 0.05f)) planes.Add(y);   // the table's copies differ in low bits
+            }
+            return planes.ToArray();
+        }
 
         public static Ground Read(Rdb rdb, int gid)
         {
@@ -134,7 +165,9 @@ namespace AONavExtractor
             using (var f = new BinaryWriter(File.Create(path)))
             {
                 f.Write(new byte[] { (byte)'A', (byte)'O', (byte)'N', (byte)'G' });
-                f.Write(2); f.Write(SamplesX); f.Write(SamplesZ); f.Write(Cell); f.Write(HeightScale); f.Write(SourceBits);
+                // v3 = v2 + the water-plane list (WaterY) after SourceBits; readers take v2 or v3.
+                f.Write(3); f.Write(SamplesX); f.Write(SamplesZ); f.Write(Cell); f.Write(HeightScale); f.Write(SourceBits);
+                f.Write(WaterY.Length); foreach (float y in WaterY) f.Write(y);
                 f.Write(raw.Length); f.Write(z.Length); f.Write(z);
             }
         }

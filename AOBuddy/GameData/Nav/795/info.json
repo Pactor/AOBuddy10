@@ -3,50 +3,93 @@
  "name": "The Longest Road",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1537,
   "samplesZ": 513,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   6144.0,
-   2048.0
+   6144,
+   2048
   ],
   "heightRange": [
-   0.0,
-   51.0
+   0,
+   51
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   23.81
+  ]
+ },
+ "verification": {
+  "walkedPoints": 279,
+  "toleranceM": 1,
+  "explainedByFloor": 252,
+  "explainedByCollision": 0,
+  "unexplained": 27,
+  "explainedPct": 90.3,
+  "unexplainedSamples": [
+   [
+    3719.2,
+    51.12,
+    1554.2
+   ],
+   [
+    3720.1,
+    52.65,
+    1552.6
+   ],
+   [
+    3721.6,
+    54.74,
+    1550.6
+   ],
+   [
+    3722.8,
+    55.65,
+    1550.3
+   ],
+   [
+    3724.4,
+    58.21,
+    1547.6
+   ],
+   [
+    3725.8,
+    58.41,
+    1544.8
+   ],
+   [
+    3726.8,
+    58.41,
+    1542.7
+   ],
+   [
+    3728,
+    58.41,
+    1540.2
+   ],
+   [
+    3728.4,
+    58.41,
+    1538.1
+   ],
+   [
+    3728.5,
+    58.41,
+    1535.1
+   ]
+  ]
  },
  "collision": {
   "records": 3989,
   "trianglesTotal": 297462,
   "trianglesWalkable": 126134,
   "chunks": 4041
- },
- "verification": {
-  "walkedPoints": 132,
-  "toleranceM": 1.0,
-  "explainedByFloor": 130,
-  "explainedByCollision": 0,
-  "unexplained": 2,
-  "explainedPct": 98.5,
-  "unexplainedSamples": [
-   [
-    2044.1,
-    17.47,
-    891.3
-   ],
-   [
-    2044.1,
-    17.47,
-    891.3
-   ]
-  ]
  }
 }

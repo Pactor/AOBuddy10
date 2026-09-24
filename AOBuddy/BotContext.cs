@@ -40,6 +40,11 @@ namespace AOBuddy
             return Math.Max(1.5f, Math.Min(15.5f, 5.5f + LastRunSpeed / 230f));
         }
 
+        // SWIM: patch 18.7 derives swim speed from the run-speed stat (the owner's factor: 50%). Same
+        // unknown/snares handling as RunVelocity — a snare slows the swim the same way.
+        public float SwimVelocity(AOSharp.Clientless.LocalPlayer me)
+            => Math.Max(1.0f, RunVelocity(me) * Config.SwimSpeedFactor);
+
         private string _behavior = "";
         public string Behavior => _behavior;
 

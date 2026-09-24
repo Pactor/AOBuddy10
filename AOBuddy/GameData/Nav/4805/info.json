@@ -3,14 +3,15 @@
  "name": "The Crypt of Home",
  "playfieldVersion": 10,
  "files": [
+  "collision.bin",
   "rooms.json",
-  "collision.bin"
+  "walls.bin"
  ],
  "kind": "dungeon",
  "dungeon": {
   "tilemap": 4804,
   "rooms": 15,
-  "cell": 2.0,
+  "cell": 2,
   "heightScale": 0.10000000149011612
  },
  "collision": {

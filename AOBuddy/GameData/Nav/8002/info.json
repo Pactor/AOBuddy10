@@ -3,25 +3,28 @@
  "name": "Race PF",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 193,
   "samplesZ": 385,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   768.0,
-   1536.0
+   768,
+   1536
   ],
   "heightRange": [
-   0.0,
-   49.0
+   0,
+   49
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 300,

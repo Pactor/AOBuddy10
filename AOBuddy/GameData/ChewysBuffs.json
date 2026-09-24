@@ -653,14 +653,6 @@
      "note": "not one nano: the Fixer team Max-NCU line, +20/+40/+60/+150 Max NCU. ids = the team-cast nanos Chewy casts; landIds = what actually runs on the receiver (one per tier, ~5h) — match running buffs against landIds"
     },
     {
-     "name": "Gridspace Freedom (Team)",
-     "effect": "+680 RS",
-     "ncu": 44,
-     "team": true,
-     "id": 162595,
-     "tell": "gsfteam"
-    },
-    {
      "name": "Gridspace Freedom",
      "effect": "+720 RS, +79 Evades",
      "ncu": 48,
@@ -1271,41 +1263,6 @@
      "ncu": 3,
      "id": 121330,
      "tell": "3"
-    },
-    {
-     "name": "Lend Nano: 1000",
-     "effect": "+1000 Max Nano",
-     "ncu": 53,
-     "id": 30732,
-     "tell": "lend1000"
-    },
-    {
-     "name": "Lend Nano: 500",
-     "effect": "+500 Max Nano",
-     "ncu": 36,
-     "id": 30731,
-     "tell": "lend500"
-    },
-    {
-     "name": "Lend Nano: 250",
-     "effect": "+250 Max Nano",
-     "ncu": 17,
-     "id": 30729,
-     "tell": "lend250"
-    },
-    {
-     "name": "Lend Nano: 100",
-     "effect": "+100 Max Nano",
-     "ncu": 8,
-     "id": 30265,
-     "tell": "lend100"
-    },
-    {
-     "name": "Lend Nano: 50",
-     "effect": "+50 Max Nano",
-     "ncu": 4,
-     "id": 30730,
-     "tell": "lend50"
     },
     {
      "name": "Maestro: Electrical Engineering",

@@ -87,11 +87,36 @@ def read_ground(rdb, gid):
     return w, h, cell, hs, heights, tiles, building, bits
 
 
-def write_ground(path, w, h, cell, hs, heights, tiles, building, bits):
+def water_planes(blob):
+    """The playfield record's water-plane table: four 12-byte entries ([f32 planeY][f32][f32]) in a
+    fixed 48-byte block ending 50 bytes before the arrival table (found by walking back from the
+    record end until the int there equals the entries passed). Newland/Newland City carry 32.1 (the
+    lake); ICC carries four (its canal levels). Distinct values, 5 cm tolerance."""
+    pos, k = len(blob) - 4, 0
+    while pos >= 4 and struct.unpack_from("<i", blob, pos)[0] != k:
+        k += 1
+        pos -= 28
+    body_end = pos
+    out = []
+    for e in range(4):
+        at = body_end - 98 + e * 12
+        if at < 0 or at + 4 > body_end - 50:
+            break
+        y = struct.unpack_from("<f", blob, at)[0]
+        if abs(y) > 2000 or any(abs(y - o) < 0.05 for o in out):
+            continue
+        out.append(y)
+    return out
+
+
+def write_ground(path, w, h, cell, hs, heights, tiles, building, bits, water=()):
     body = heights.astype("<u2").tobytes() + tiles.astype("<u2").tobytes() + building.tobytes()
     with open(path, "wb") as f:
         f.write(b"AONG")
-        f.write(struct.pack("<iiiffi", 2, w, h, cell, hs, bits))
+        f.write(struct.pack("<iiiffi", 3, w, h, cell, hs, bits))
+        f.write(struct.pack("<i", len(water)))
+        for y in water:
+            f.write(struct.pack("<f", y))
         z = zlib.compress(body, 9)
         f.write(struct.pack("<ii", len(body), len(z)))
         f.write(z)
@@ -322,12 +347,16 @@ def main():
         info["kind"] = kind
         if kind == "outdoor":
             w, h, cell, hs, heights, tiles, building, bits = ground
-            write_ground(os.path.join(folder, "ground.bin"), w, h, cell, hs, heights, tiles, building, bits)
+            water = water_planes(blob)
+            write_ground(os.path.join(folder, "ground.bin"), w, h, cell, hs, heights, tiles, building, bits, water)
             info["files"].append("ground.bin")
-            info["ground"] = dict(samplesX=w, samplesZ=h, cell=cell, heightScale=hs, sourceHeightBits=bits,
-                                  worldSize=[(w - 1) * cell, (h - 1) * cell],
-                                  heightRange=[round(float(heights.min()) * hs, 4), round(float(heights.max()) * hs, 4)],
-                                  heightVerifiable=(bits == 8))
+            g = dict(samplesX=w, samplesZ=h, cell=cell, heightScale=hs, sourceHeightBits=bits,
+                     worldSize=[(w - 1) * cell, (h - 1) * cell],
+                     heightRange=[round(float(heights.min()) * hs, 4), round(float(heights.max()) * hs, 4)],
+                     heightVerifiable=(bits == 8))
+            if water:
+                g["waterPlanes"] = [round(y, 2) for y in water]
+            info["ground"] = g
         elif kind == "dungeon":
             json.dump(dungeon, open(os.path.join(folder, "rooms.json"), "w"), separators=(",", ":"))
             info["files"].append("rooms.json")

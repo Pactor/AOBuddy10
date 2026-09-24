@@ -3,25 +3,28 @@
  "name": "Rome Blue",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 257,
   "samplesZ": 193,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   1024.0,
-   768.0
+   1024,
+   768
   ],
   "heightRange": [
    13.6,
    49.6
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 203,

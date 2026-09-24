@@ -3,25 +3,28 @@
  "name": "Newland Desert",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1025,
   "samplesZ": 897,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0011718750465661287,
   "sourceHeightBits": 8,
   "worldSize": [
-   4096.0,
-   3584.0
+   4096,
+   3584
   ],
   "heightRange": [
-   0.0,
+   0,
    76.5
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   49.2
+  ]
  },
  "collision": {
   "records": 2148,

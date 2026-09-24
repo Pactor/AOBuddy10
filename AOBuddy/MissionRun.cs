@@ -346,7 +346,9 @@ namespace AOBuddy
             // into the snap-back for minutes (2026-09-23 23:01). The owner: roots and snares both happen.
             // ...but never while something is hurting him: at a Longest Road door (07:00, 2026-09-24) he stood 15 s
             // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
-            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
+            // And never while overland is SWIMMING: afloat the server corrects often (the surface trues our
+            // float Y) — that is the mode working, not a pull (Newland lake, 2026-09-24).
+            if (moving && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < 8) >= 2 && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
@@ -810,7 +812,7 @@ namespace AOBuddy
             int here = (int)Playfield.ModelId;
             if (here == pf) return false;                            // same zone: nothing to cross
             var opt = Zoning.RouteOptions(me);
-            opt.UseScotty = false;   // the hike crosses on foot: doors stood on, not Scotty
+            // opt.UseScotty = false;   // the hike crosses on foot: doors stood on, not Scotty
             opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e);
             ZoneRoute route;
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }

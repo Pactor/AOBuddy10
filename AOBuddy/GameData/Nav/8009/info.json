@@ -3,25 +3,28 @@
  "name": "Crashed Alien Ship",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 25,
   "samplesZ": 25,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   96.0,
-   96.0
+   96,
+   96
   ],
   "heightRange": [
-   0.0,
-   0.0
+   0,
+   0
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 4,

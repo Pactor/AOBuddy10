@@ -317,6 +317,19 @@ namespace AOBuddy
         public float NavWeldMeters = 3f;           // join points from different runs within this distance (same walked junction)
         public float NavAutosaveSec = 20f;         // flush the file this often while dirty
 
+        // --- WATER CROSSING -----------------------------------------------------------------------
+        // The captured client (20260924-215811 s116, wading at Newland's shore) sends NO swim-mode
+        // packet: plain Update packets, Y tracking the lake bottom, at ~5.5-6 u/s. The bot does the
+        // same — Y from the floor data, speed cut to SwimVelocity while the floor is under the water
+        // plane (ground.bin v3), and if the server floats it in deep water its corrections are ridden.
+        // Water is known from the playfield's water planes, never from the bank's slope — a cliff
+        // drops just as hard. Patch 18.7 derives swim speed from the run-speed stat (renamed Movement
+        // Speed); the owner's call for the factor: 50%.
+        public float SwimSpeedFactor = 0.5f;       // wet velocity = RunVelocity * this (capture: ~5.5 u/s)
+        public float SwimWadeMeters = 1.2f;        // bottom deeper than this under the plane = Y at the plane
+                                                   // (swimming); shallower = Y at the bottom (wading). The capture:
+                                                   // plane-Y over a 7 m-deep floor, bottom-Y from ~1.2 m depth in
+
         public int TickMs = 200;                   // decision interval (combat/heal/buff)
         public int SendIntervalMs = 100;           // movement packet send throttle
         public float MaxStep = 1.5f;               // hard cap on movement per frame (never warp, even on a lag spike)

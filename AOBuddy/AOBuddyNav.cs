@@ -399,7 +399,7 @@ namespace AOBuddy
 
     }
 
-    /// <summary>ground.bin (AONG v2): outdoor heightfield + tile ids + building nibbles.</summary>
+    /// <summary>ground.bin (AONG v2/v3): outdoor heightfield + tile ids + building nibbles; v3 adds the water planes.</summary>
     public sealed class NavGround
     {
         public int SamplesX, SamplesZ, SourceBits;
@@ -407,6 +407,7 @@ namespace AOBuddy
         public ushort[] Heights;     // [z * SamplesX + x], height = value * HeightScale
         public ushort[] Tiles;       // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;
+        public float[] WaterY = new float[0];   // v3: the playfield's water-plane heights (empty in v2)
 
         public static NavGround Read(string path)
         {
@@ -414,8 +415,14 @@ namespace AOBuddy
             {
                 if (Encoding.ASCII.GetString(r.ReadBytes(4)) != "AONG") throw new InvalidDataException(path + ": not AONG");
                 int version = r.ReadInt32();
-                if (version != 2) throw new InvalidDataException(path + ": AONG version " + version);
+                if (version != 2 && version != 3) throw new InvalidDataException(path + ": AONG version " + version);
                 var g = new NavGround { SamplesX = r.ReadInt32(), SamplesZ = r.ReadInt32(), Cell = r.ReadSingle(), HeightScale = r.ReadSingle(), SourceBits = r.ReadInt32() };
+                if (version >= 3)
+                {
+                    int wc = r.ReadInt32();
+                    g.WaterY = new float[wc];
+                    for (int i = 0; i < wc; i++) g.WaterY[i] = r.ReadSingle();
+                }
                 int rawLen = r.ReadInt32(), zLen = r.ReadInt32();
                 byte[] raw = Inflate(r.ReadBytes(zLen), rawLen);
                 int w = g.SamplesX, h = g.SamplesZ, p = 0;
@@ -427,6 +434,22 @@ namespace AOBuddy
                 Buffer.BlockCopy(raw, p, g.Building, 0, g.Building.Length);
                 return g;
             }
+        }
+
+        /// <summary>
+        /// The water surface to swim on at (x, z): the LOWEST plane sitting more than wadeDepth above
+        /// the floor there (Newland: floor 20-26 under the lake, plane 32.1 — from the shore, where
+        /// the floor is within wading depth of the plane, there is nothing to swim on). NaN = dry
+        /// ground. Layered planes (ICC's canals) resolve to the first surface above the bed.
+        /// </summary>
+        public double SwimY(double x, double z, double wadeDepth)
+        {
+            double floor = HeightAt(x, z);
+            if (double.IsNaN(floor) || WaterY.Length == 0) return double.NaN;
+            double best = double.NaN;
+            foreach (float p in WaterY)
+                if (p - floor > wadeDepth && (double.IsNaN(best) || p < best)) best = p;
+            return best;
         }
 
         internal static byte[] Inflate(byte[] z, int rawLen)

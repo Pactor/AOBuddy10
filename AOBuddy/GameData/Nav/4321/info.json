@@ -3,25 +3,28 @@
  "name": "Penumbra Valley",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1025,
   "samplesZ": 769,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0023437500931322575,
   "sourceHeightBits": 8,
   "worldSize": [
-   4096.0,
-   3072.0
+   4096,
+   3072
   ],
   "heightRange": [
-   0.0,
-   153.0
+   0,
+   153
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   31.3
+  ]
  },
  "collision": {
   "records": 2162,

@@ -3,25 +3,28 @@
  "name": "Deep Artery Valley",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1025,
   "samplesZ": 1537,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   4096.0,
-   6144.0
+   4096,
+   6144
   ],
   "heightRange": [
-   0.0,
-   51.0
+   0,
+   51
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   9.7
+  ]
  },
  "collision": {
   "records": 7906,
