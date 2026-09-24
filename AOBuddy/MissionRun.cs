@@ -360,6 +360,15 @@ namespace AOBuddy
                         _rolls = 0;
                     }
                     if (!((int)Playfield.ModelId == _termPf && Flat(me.Transform.Position, _termPos) <= 6f)) { Enter(Phase.ToTerminal, "not at the terminal"); return false; }
+                    // Rolling with no mission in hand: anything the quest log still holds is stale (failed, died in,
+                    // or left from before a restart). The owner found three at 23:24 and cleared them by hand; the
+                    // keys go with them.
+                    if (_current == null && HeldMissionIds().Count > 0)
+                    {
+                        int n = DeleteHeldMissions();
+                        _tell($"Cleared {n} old mission(s) from my log before rolling.");
+                        return false;
+                    }
                     _rolls++;
                     _roll.Roll(s => { });
                     Enter(Phase.AwaitList, "rolled");
@@ -1051,6 +1060,14 @@ namespace AOBuddy
                     bool fromTerminal = false;
                     for (int i = starts[k].at + 8; i + 4 <= end && !fromTerminal; i++)
                         fromTerminal = b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xDA && b[i + 3] == 0xC1;
+                    // The login quest log names the terminal as a 0xC350 identity with the terminal's instance, not
+                    // as 0xDAC1 (capture 20260923-232359: all three held missions, none with 0xDAC1), so missions
+                    // from before a restart were invisible here and never deleted. This terminal has shown up as
+                    // C0000320 and C0010320 (bot log 23:13 and the same capture), so the third byte is not compared.
+                    if (_termId.Instance != 0)
+                        for (int i = starts[k].at + 8; i + 8 <= end && !fromTerminal; i++)
+                            fromTerminal = b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xC3 && b[i + 3] == 0x50
+                                && b[i + 4] == (byte)(_termId.Instance >> 24) && b[i + 6] == (byte)(_termId.Instance >> 8) && b[i + 7] == (byte)_termId.Instance;
                     var id = new Identity(IdentityType.Mission, starts[k].inst);
                     if (fromTerminal && !ids.Contains(id)) ids.Add(id);
                 }
