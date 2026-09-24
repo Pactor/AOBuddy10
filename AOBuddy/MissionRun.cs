@@ -860,6 +860,7 @@ namespace AOBuddy
                 _hikeGridTask = System.Threading.Tasks.Task.Run(() =>
                 {
                     var nav = AOBuddyNav.Load(dir, pf);
+                    _hikeGround = nav?.Ground; _hikeGroundPf = pf;
                     return (IWalkGrid)OverlandGrid.Build(dir, pf, nav, log) ?? FloorGrid.Build(dir, pf, nav, log);
                 });
                 return null;
@@ -872,6 +873,41 @@ namespace AOBuddy
         }
 
         private int _hikeChain;
+        private volatile NavGround _hikeGround;
+        private volatile int _hikeGroundPf = -1;
+
+        // ON THE GROUND BETWEEN POINTS (2026-09-24): the grid's route is smoothed into long straight legs, and the
+        // walker moves along each leg in a straight 3D line, so over a hill it walks INSIDE the hill. In Galway
+        // Shire it sent heights of 27 and 25 where the ground is 37 and 33 - and our ground data matched the
+        // server there (919,1055: 37.3 vs 37; 929,1054: 33.0 vs 33) - so the server snapped him back again and
+        // again. Every leg is cut into 3 m steps with the ground's height at each, where both ends of the leg
+        // are on the ground (within 3 m of it); legs off the ground (floors, bridges) are left straight.
+        private List<Vector3> OnGround(IEnumerable<Vector3> pts, Vector3 from)
+        {
+            var list = pts.ToList();
+            var g = _hikeGroundPf == (int)Playfield.ModelId ? _hikeGround : null;
+            if (g == null || list.Count == 0) return list;
+            var outp = new List<Vector3>();
+            Vector3 a = from;
+            foreach (var b in list)
+            {
+                double ha = g.HeightAt(a.X, a.Z), hb = g.HeightAt(b.X, b.Z);
+                bool ground = !double.IsNaN(ha) && !double.IsNaN(hb) && Math.Abs(a.Y - ha) < 3 && Math.Abs(b.Y - hb) < 3;
+                float len = Flat(a, b);
+                int n = ground ? (int)(len / 3f) : 0;
+                for (int k = 1; k <= n; k++)
+                {
+                    float t = k / (float)(n + 1);
+                    float x = a.X + (b.X - a.X) * t, z = a.Z + (b.Z - a.Z) * t;
+                    double h = g.HeightAt(x, z);
+                    outp.Add(new Vector3(x, double.IsNaN(h) ? a.Y + (b.Y - a.Y) * t : (float)h, z));
+                }
+                outp.Add(ground ? new Vector3(b.X, (float)hb, b.Z) : b);
+                a = b;
+            }
+            return outp;
+        }
+
         private bool StartHike(LocalPlayer me, int pf, Vector3 goal, string what)
         {
             if (_clock - _hikeLastHike < 20) return false;          // one attempt at a time
@@ -949,7 +985,7 @@ namespace AOBuddy
                 if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
-                    _follow.LoadReplay(best.Skip(1), false);
+                    _follow.LoadReplay(OnGround(best.Skip(1), pos), false);
                     _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
@@ -1684,7 +1720,7 @@ namespace AOBuddy
                     _straightGoal = goal; _straightUntil = _clock + 30;
                     var grid = HikeGrid();
                     var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
-                    if (path != null && path.Count > 1) _follow.LoadReplay(path.Skip(1), false);
+                    if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
                     _ctx.Log($"MISSIONRUN: travel found no way to {what} {Flat(me.Transform.Position, goal):0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
                     return true;
                 }
