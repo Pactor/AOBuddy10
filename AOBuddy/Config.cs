@@ -183,6 +183,7 @@ namespace AOBuddy
         public int MissionFightNoStimBelowPercent = 80;          // ...or below this HP % with no stim ready
         public int MissionFightAttackers = 2;                    // ...or when this many mobs are on him at once
         public string MissionStyle = "blitz";
+        public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
         public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
         public int MissionCashReserve = 20000;
         public List<string> KeepItems = new List<string> { "Health and Nano Stim", "Health and Nano Recharger" };   // never sold by housekeeping (exact names)                   // credits never spent on bags: kept for running missions

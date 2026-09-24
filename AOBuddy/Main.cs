@@ -206,6 +206,14 @@ namespace AOBuddy
             _run.Resupply = _resupply;
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
+
+            // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
+            _api = new BotApi(_config.BotApiPort, Log, ApiStatus, (text, reply) =>
+            {
+                try { HandleCommand(text, reply); }
+                catch (Exception ex) { Log($"COMMAND EXCEPTION (api): {ex}"); reply("error: " + ex.Message); }
+            });
+            _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
             Client.OnUpdate += OnUpdate;
@@ -1051,6 +1059,34 @@ namespace AOBuddy
             if (int.TryParse(arg.Trim(), out int id)) stat = (Stat)id;
             else if (!Enum.TryParse(arg.Trim(), true, out stat)) return $"No stat named '{arg}'.";
             return me.TryGetStat(stat, out int v) ? $"{stat} ({(int)stat}) = {v} (0x{v:X})" : $"{stat} ({(int)stat}) has not been sent to me.";
+        }
+
+        private BotApi _api;
+
+        // What the MCP server's bot_status returns: the heartbeat line plus the facts worth reading at a glance.
+        private Newtonsoft.Json.Linq.JObject ApiStatus()
+        {
+            var o = new Newtonsoft.Json.Linq.JObject();
+            try
+            {
+                var me = DynelManager.LocalPlayer;
+                o["heartbeat"] = StatusLine();
+                o["missionRun"] = _run.Status();
+                o["playfield"] = (int)Playfield.ModelId;
+                o["zone"] = Playfield.TryGetPlayfieldNameFromId((int)Playfield.ModelId, out string zn) ? zn : Playfield.ModelId.ToString();
+                if (me != null)
+                {
+                    var p = me.Transform.Position;
+                    o["position"] = $"{p.X:0.0} {p.Y:0.0} {p.Z:0.0}";
+                    o["hpPct"] = _support.SelfHpPct(me);
+                    if (me.TryGetStat(Stat.Cash, out int cash)) o["credits"] = cash;
+                    if (me.TryGetStat(Stat.Level, out int lvl)) o["level"] = lvl;
+                }
+                o["freeSlots"] = Inventory.NumFreeSlots;
+                o["dead"] = _dead;
+            }
+            catch (Exception ex) { o["error"] = ex.Message; }
+            return o;
         }
 
         private void HandleCommand(string message, Action<string> reply)
