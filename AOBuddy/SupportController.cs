@@ -94,7 +94,9 @@ namespace AOBuddy
         private HashSet<int> _ownerNoLand;
         private readonly Dictionary<int, double> _ownerVerify = new Dictionary<int, double>();  // nanoId -> sessionSeconds cast on owner
         private const double OwnerVerifyGraceSec = 20.0;
-        private const string OwnerNoLandFile = "buff_owner_noland.txt";
+        // Next to the plugin DLL, not CWD-relative (an earlier build wrote it into whatever directory
+        // the host happened to start from — silently a different file from another CWD). See EnsureNoLandLoaded.
+        private string OwnerNoLandFile => System.IO.Path.Combine(_pluginDir, "buff_owner_noland.txt");
         private double _buffScanAccum;
         private const double BuffScanSec = 2.0;
         private double _buffGrace = 10.0;   // wait for ActiveNanos to load after login before the first scan
@@ -165,11 +167,14 @@ namespace AOBuddy
         public double OwnerStillFor => _sessionSeconds - _ownerLastMovedAt;
         public bool HasQueuedCasts => _castQueue.Count > 0;
 
-        public SupportController(BotContext ctx, Movement move)
+        public SupportController(BotContext ctx, Movement move, string pluginDir)
         {
             _ctx = ctx;
             _move = move;
+            _pluginDir = pluginDir;
         }
+
+        private readonly string _pluginDir;
 
         private double _lastCastAt = -999;   // sessionSeconds of the last cast queued/fired — rest yields to casting
         public void QueueCast(CastRequest req) { _castQueue.Enqueue(req); _lastCastAt = _sessionSeconds; }
@@ -532,6 +537,19 @@ namespace AOBuddy
             _ownerNoLand = new HashSet<int>();
             try
             {
+                // Carry over a file an older, CWD-relative build left in the host's working directory,
+                // so the learned no-land set is not silently forgotten.
+                string legacy = Path.Combine(Environment.CurrentDirectory, "buff_owner_noland.txt");
+                if (!File.Exists(OwnerNoLandFile) && File.Exists(legacy))
+                {
+                    try { File.Move(legacy, OwnerNoLandFile); _ctx.Log($"NO-LAND: moved the old CWD-relative file to {OwnerNoLandFile}."); }
+                    catch (Exception ex) { _ctx.Log($"NO-LAND: couldn't move the old {legacy}: {ex.Message}"); }
+                }
+                // Say where the file lives, once: an absent file is a learning-start state, not an error,
+                // but it must be visible instead of a silent CWD mismatch.
+                _ctx.Log(File.Exists(OwnerNoLandFile)
+                    ? $"NO-LAND: using {OwnerNoLandFile}."
+                    : $"NO-LAND: no buff_owner_noland.txt yet — owner-land learning starts empty (will be written to {OwnerNoLandFile}).");
                 if (File.Exists(OwnerNoLandFile))
                     foreach (string tok in File.ReadAllText(OwnerNoLandFile).Split(new[] { ',', '\n', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries))
                         if (int.TryParse(tok, out int id)) _ownerNoLand.Add(id);

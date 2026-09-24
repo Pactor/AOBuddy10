@@ -887,7 +887,7 @@ namespace AOBuddy
 
         private void Tell(string text)
         {
-            try { Client.Chat.SendPrivateMessage(_ctx.Config.Owner, text); } catch { }
+            _ctx.TellOwner(text);
         }
     }
 }

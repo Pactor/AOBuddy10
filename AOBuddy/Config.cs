@@ -5,7 +5,7 @@ namespace AOBuddy
     /// <summary>
     /// A class of heal item and how it behaves, so the bot picks the right one per situation. RK stims and
     /// rechargers plus Shadowlands Coils and the reusable Veterans Healing Laboratory all describe here by
-    /// name-match — no hardcoded ids. See NANO_BUFF_DESIGN / the heal notes.
+    /// name-match — no hardcoded ids.
     /// </summary>
     public class HealProfile
     {
@@ -43,7 +43,8 @@ namespace AOBuddy
 
         // Pet buffs: once the full pet complement is up, the best castable nano he knows in each line is kept
         // up. NanoLine names (or numbers). Which pet a nano may go on is still checked against its own target
-        // requirements. NB: Newtonsoft APPENDS a config.json list to these defaults; duplicates are harmless.
+        // requirements. NB: a list in config.json REPLACES these defaults (see Main.LoadConfig) — write the
+        // full list you want, not just the additions.
         public bool BuffPets = true;                           // toggle: 'petbuffs'
         public List<string> AttackPetBuffLines = new List<string>
         {
@@ -149,8 +150,8 @@ namespace AOBuddy
         // Fully auto-detected from the nanos he has learned (me.SpellList) — no hardcoded ids. Each learned
         // nano is classified from its OWN data: a keep-up BUFF = takes NCU + beneficial effect + castable on
         // a friendly target (probed via MeetsUseReqs). He keeps those up on whoever they're valid on, out of
-        // combat, recasting before they expire, refilling nano with rechargers/stims as needed. See
-        // NANO_BUFF_DESIGN.md. Only category toggles + margins here; the ids come from the wire.
+        // combat, recasting before they expire, refilling nano with rechargers/stims as needed. Only category
+        // toggles + margins here; the ids come from the wire.
         public bool AutoBuff = true;               // master switch for the auto keep-up
         public bool BuffSelf = true;
         public bool BuffOwner = false;             // OFF: owner asks for the buffs he wants ('buff <name>'), we don't push
@@ -305,7 +306,7 @@ namespace AOBuddy
         // --- NAV (persistent per-playfield walkable memory) ----------------------
         // Records the OWNER's clean footsteps into nav/<playfieldId>.json so ground we've walked is never
         // guessed again, and, when lost, the bot can fall back to a known walked route instead of flailing
-        // into a wall. Only owner-walked edges are stored (wall-safe by construction). See NAV_DESIGN.md.
+        // into a wall. Only owner-walked edges are stored (wall-safe by construction).
         public bool NavRecord = true;              // master record switch
         public bool NavUse = true;                 // use a saved route as the lost-fallback (after zone-sweep)
         public float NavPointSpacing = 1.5f;       // clean-line thinning, metres (bigger than breadcrumb 0.3)

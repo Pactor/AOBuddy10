@@ -15,7 +15,7 @@ namespace AOBuddy
     ///
     /// WALL-SAFETY BY CONSTRUCTION: we have no collision data, so the graph holds ONLY edges the owner
     /// actually walked (consecutive points in a segment). No synthetic shortcuts, no straightening across
-    /// un-walked space — a recorded run cannot pass through a wall because the owner didn't. See NAV_DESIGN.md.
+    /// un-walked space — a recorded run cannot pass through a wall because the owner didn't.
     ///
     /// This controller NEVER moves the body. It only supplies a route (a list of already-walked points)
     /// that FOLLOW replays through its proven LoadReplay walker — so nav can't break follow/combat/travel/zone.
