@@ -1377,7 +1377,7 @@ namespace AOBuddy
                 case "status": reply(StatusLine()); break;
                 case "navdata": reply(NavDataCommand(arg)); break;
                 case "mission":
-                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? parts[2] : "", reply); }
+                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? string.Join(" ", parts.Skip(2)) : "", reply); }   // all of it: "style fight" was cut to "style"
                     else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
                         _mission.Command(parts.Length > 1 ? parts[1] : "", reply);
                     break;
