@@ -1268,6 +1268,8 @@ namespace AOBuddy
             }
         }
         private Vector3? _shopArrival;
+        private int _bankUses;
+        private double _bankUsedAt = -99;
         private Identity? _shopBag;
         private bool _shopBoughtForNanos, _shopBoughtForRoom;
         private Identity? _nanoSlot;
@@ -1529,7 +1531,7 @@ namespace AOBuddy
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
                         var bank = BankTerminal;
-                        GameCommands.UseObject(me, bank);
+                        _bankUses = 0; _bankUsedAt = -99;
                         ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank ({bank}).");
                         return false;
                     }
@@ -1554,8 +1556,23 @@ namespace AOBuddy
                 case ShopStep.OpenBank:
                     if (!Inventory.Bank.IsOpen)
                     {
-                        if (t < 5) return false;
+                        // Walk up to it, face it, use it (13:26 and 15:45, 2026-09-24: used from up to 40 m off, where the
+                        // last sale left him, and the server never answered; in the owner's capture he stood at it).
+                        var bankId = BankTerminal;
+                        var bankDyn = DynelManager.AllDynels.FirstOrDefault(d => d != null && d.Identity == bankId);
+                        if (bankDyn != null && me.DistanceFrom(bankDyn) > 3f && t < 20) { _follow.SetManualTarget(bankDyn.Transform.Position); return true; }
+                        _follow.ClearMovement();
+                        if (_bankUses < 3 && _clock - _bankUsedAt > 3)
+                        {
+                            Client.Send(new LookAtMessage { Target = bankId, ReturnInfo = 0 });
+                            GameCommands.UseObject(me, bankId);
+                            _bankUses++; _bankUsedAt = _clock;
+                            _ctx.Log($"MISSIONRUN: shop: using the bank ({bankId}) from {(bankDyn != null ? me.DistanceFrom(bankDyn) : -1):0.0} m (try {_bankUses}).");
+                            return false;
+                        }
+                        if (_bankUses < 3 || _clock - _bankUsedAt < 4) return false;
                         _tell("The bank terminal didn't answer; skipping the banking.");
+                        _ctx.Log("MISSIONRUN: shop: the bank didn't answer three uses; skipping the banking.");
                         return ShopAfterNanos(me);
                     }
                     if (InvNanos().Count == 0) { _ctx.Log("MISSIONRUN: shop: no nano crystals to bank."); return ShopAfterNanos(me); }
