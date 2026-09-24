@@ -272,7 +272,7 @@ namespace AOBuddy
                 _follow.ClearMovement();
                 _ctx.Log(string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
                     ? $"MISSIONRUN: attacked during {_phase}; standing to fight (fight style)."
-                    : $"MISSIONRUN: emergency during {_phase} (HP under {_ctx.Config.MissionFightBelowPercent}%, no stim ready); standing to fight.");
+                    : $"MISSIONRUN: turning to fight during {_phase} ({_ctx.Config.MissionFightAttackers}+ mobs on me, HP under {_ctx.Config.MissionFightBelowPercent}%, or under {_ctx.Config.MissionFightNoStimBelowPercent}% with no stim).");
                 Enter(Phase.Fight, "fighting");
                 return false;
             }
@@ -613,6 +613,7 @@ namespace AOBuddy
         private List<Vector3> _hikeRoute;
         private Vector3? _hikeBackTo, _hikeCameFrom;
         private double _hikeBackAt, _hikeOnAt = -1;
+        private bool _hikeHandedOver;
 
         // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
         // thread the way travel builds it.
@@ -656,7 +657,7 @@ namespace AOBuddy
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeHandedOver = false; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -737,6 +738,17 @@ namespace AOBuddy
                     Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
                     _ctx.Log($"MISSIONRUN: used {e} at the exit.");
                 }
+            }
+            else if (_clock - _hikeOnAt > 3 && !_hikeHandedOver)
+            {
+                // Didn't take us: hand the last metres to travel. ICC 22:13:31 (2026-09-23): 80 s of Use and back
+                // off at the Newland whompa did nothing; travel, planning from 2 m away, walked the 5 m to its exit
+                // pad and the server zoned him 0.3 s later. (Its plan only fails from far off: the 4 m grid.)
+                _hikeHandedOver = true;
+                _follow.ClearMovement();
+                _ctx.Log("MISSIONRUN: at the exit; handing the last metres to travel (it knows the exit pad).");
+                Enter(_hikeReturn, "travel takes the exit from here");
+                return false;
             }
             else if (_clock - _hikeOnAt > 3)
             {

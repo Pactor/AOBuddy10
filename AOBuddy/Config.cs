@@ -177,7 +177,9 @@ namespace AOBuddy
         public int MissionSliderHeadonStealth = 0;
         public int MissionSliderCreditsXp = 0;
         public List<string> MissionZones = new List<string>();
-        public int MissionFightBelowPercent = 40;                // mission run, blitz style: stop and fight only when hit below this HP % with no stim ready
+        public int MissionFightBelowPercent = 60;                // mission run, blitz style: stop and fight when hit below this HP % (stim or not)
+        public int MissionFightNoStimBelowPercent = 80;          // ...or below this HP % with no stim ready
+        public int MissionFightAttackers = 2;                    // ...or when this many mobs are on him at once
         public string MissionStyle = "blitz";
         // Mission types the run takes (any of "find person", "repair", "find item"). Find item left out for now:
         // in the solo buildings the item never showed up as a loose item (2026-09-23).

@@ -182,10 +182,17 @@ namespace AOBuddy
                     var lp = DynelManager.LocalPlayer;
                     if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
                     if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)) return true;   // fight style: anything that attacks
+                    // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
+                    // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
+                    // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
+                    int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
+                                                              && c.Identity != lp.Identity && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
+                    if (onMe >= _config.MissionFightAttackers) return true;
                     int hp = _support.SelfHpPct(lp);
-                    // ...and no stim to fall back on: stims share the FirstAid lock (40 s after each use).
-                    bool canStim = lp.IsSpecialReady(Stat.FirstAid);
-                    return hp != SupportController.Unknown && hp < _config.MissionFightBelowPercent && !canStim;
+                    if (hp == SupportController.Unknown) return false;
+                    if (hp < _config.MissionFightBelowPercent) return true;
+                    // stims share the FirstAid lock (40 s after each use)
+                    return hp < _config.MissionFightNoStimBelowPercent && !lp.IsSpecialReady(Stat.FirstAid);
                 },
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); },
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); });
