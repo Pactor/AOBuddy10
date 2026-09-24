@@ -365,6 +365,12 @@ missions may be taken in (empty = any zone).
   - Unverified: the bank terminal id C73D:0EE5BBFF is used as captured, since the server never sends it as a
     dynel. Also unverified: the Temp4 flag on the Use of the bag before banking it.
   - Our zoning data has no exit from 1187.
+  - **There is one Fair Trade (Algorithman): playfield 1187**, confirmed by the owner's zone-in
+    `N3Teleport Playfield=51102:1187`. Each city's door leads to it on a different game server. Doors in Zoning.json:
+    Borealis (650,613), Newland City (296,323), Newland Desert (2211,1567), Stret West Bank (1115,2764),
+    Pleasant Meadows (1150,2356), Mort (2830,1892). The run travels to pf 1187 itself, so the planner picks the
+    cheapest door; the spots inside are the same. Unverified: whether the bank terminal's id (C73D:0EE5BBFF) is
+    the same on every game server.
 - **Selling (capture 20260924-074329, owner, 07:44-07:45):** LookAt + GenericCmd Use on the shop terminal. The
   server sends ShopUpdate + Trade open. The client sends `Trade AddItem` with **Target = own char (0xC350:me)** and
   **Container = Inventory:<slot>**, one per item (two in one trade), then `Trade Accept (0x01)` with **Target None**.
