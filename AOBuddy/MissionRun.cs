@@ -259,6 +259,17 @@ namespace AOBuddy
         {
             if (!Active) return;
             if (_current != null && !_completed) _deathsHere++;
+            // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
+            // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
+            // third time. A death out in the open marks the zone: no missions there for 'dangermins', and the
+            // mission he was walking to is dropped.
+            if (!_mission.InMission)
+            {
+                int pf = (int)Playfield.ModelId;
+                _danger[pf] = _clock;
+                if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
+                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions there for {T("dangermins"):0} minutes.");
+            }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
             _follow.ClearManual();
@@ -299,6 +310,8 @@ namespace AOBuddy
         {
             if (_phase != Phase.AwaitList) return;
             var ok = list.Where(Fits).ToList();
+            int dangerous = ok.RemoveAll(m => _danger.TryGetValue(m.Playfield.Instance, out double at) && _clock - at < T("dangermins") * 60);
+            if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
@@ -523,6 +536,7 @@ namespace AOBuddy
                         // Twice dead in the same mission (23:14 and 23:20, 2026-09-23: the same pack in the same corner
                         // of an Omnilab) is a bad mission: drop it and roll another.
                         if (_current != null && !_completed && _deathsHere >= 2) { Skip($"died {_deathsHere} times in it"); return false; }
+                        if (_current != null && !_completed && _diedOnWay) { _diedOnWay = false; Skip("I died on the way to its door"); return false; }
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
@@ -1498,6 +1512,8 @@ namespace AOBuddy
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
         private int _straightTries;
+        private readonly Dictionary<int, double> _danger = new Dictionary<int, double>();
+        private bool _diedOnWay;
         private double _fleeUntil = -99;
         public bool Fleeing => Active && _clock < _fleeUntil;
 
@@ -1558,6 +1574,7 @@ namespace AOBuddy
             ["fleehp"]    = (40f,   "HP % under which, still being hit outside a mission, I break off and run back the way I came (0 = never)"),
             ["fleedist"]  = (80f,   "metres of my trail I run back when fleeing"),
             ["fleesecs"]  = (30f,   "seconds the mobs I flee from are left alone"),
+            ["dangermins"]= (60f,   "minutes I take no missions in a zone I died in out in the open"),
         };
         private Dictionary<string, float> _tuneStore;
         private Dictionary<string, float> _tune
