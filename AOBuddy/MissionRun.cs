@@ -574,6 +574,7 @@ namespace AOBuddy
                     return false;
 
                 case Phase.ToTerminal:
+                    if (_shopAfterOut && !_mission.InMission) { _shopAfterOut = false; _shopTriedAt = -9999; if (StartShop("owner asked")) return false; }
                     if (_recovering()) { _phaseTime = 0; return false; }
                     if ((int)Playfield.ModelId == _termPf && !_overland.Active)
                     {
@@ -1446,6 +1447,7 @@ namespace AOBuddy
         }
 
         private int _shopPrevPf = -1;
+        private bool _shopAfterOut;
         private string FairTradePath => Path.Combine(_pluginDir, "fairtrade.json");
         private Vector3? LoadFairTradeLanding()
         {
@@ -1480,6 +1482,15 @@ namespace AOBuddy
             switch (_shopStep)
             {
                 case ShopStep.Travel:
+                    // Inside a mission building there's no route anywhere: walk out first, then set off (17:00 and
+                    // 16:12, 2026-09-24: a shop trip started inside a finished mission stood there 'no zone route').
+                    if (_mission.InMission)
+                    {
+                        _shopAfterOut = true;
+                        _mission.Command("backoutside", OnOutsideReply);
+                        Enter(Phase.Leaving, "out of the building before the shop");
+                        return false;
+                    }
                     if (pf != FairTradePf)
                     {
                         // Travel Uses a door and, when it doesn't take, replans to another city's door (07:58,
