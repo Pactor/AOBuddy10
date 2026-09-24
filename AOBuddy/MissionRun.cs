@@ -1398,6 +1398,7 @@ namespace AOBuddy
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
                             && !_combat.IsSetAside(n.Identity)
                             && !TooStrong(me, n)
+                            && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
             if (a == null) { _defId = null; return null; }
@@ -1432,6 +1433,21 @@ namespace AOBuddy
             }
             return a;
         }
+        /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
+        /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
+        /// not fought even when they show as fighting him: on the way to a Longest Road door (06:58, 2026-09-24)
+        /// he attacked a Male Watcher, an NPC, 37 m off (owner: "stop him from attacking the npcs on the way").
+        /// Inside a building every NPC left is fair game.</summary>
+        public static bool IsMob(SimpleChar n, bool inMission)
+        {
+            if (n == null) return false;
+            if (inMission) return true;
+            int flags = (int)n.Flags;
+            if ((flags & (0x200000 | 0x800000 | 0x8000000)) != 0) return false;
+            if (n is NpcChar npc && (npc.Owner.HasValue || npc.PetTypeId != 0)) return false;
+            return (int)n.Side == 3;
+        }
+
         // A mob far above his level is never fought: run (a level 50 Male Watcher killed him at 36, 06:51).
         private static bool TooStrong(LocalPlayer me, SimpleChar n)
             => me.TryGetStat(Stat.Level, out int mine) && n.TryGetStat(Stat.Level, out int theirs) && theirs > mine + 5;
