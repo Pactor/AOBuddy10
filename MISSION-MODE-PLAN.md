@@ -322,6 +322,66 @@ missions may be taken in (empty = any zone).
   - the purchase is a Use on the VendingMachine, then ShopUpdate, then Trade messages with a TempBag, and
     ClientContainerAddItem into the IncomingTradeWindow;
   - bank moves appear as `Bank:0` containers, and a bag comes out of the bank to inventory slot 111.
+- **Housekeeping design (owner + Algorithman OK, 2026-09-24).** On `mission run`, and whenever the stash
+  finds no room:
+  1. Are his bags full? What are they full of?
+  2. Sell everything that is not a nano crystal and not on the keep list (`KeepItems`, to be written).
+  3. If he holds nano crystals and has no bag in the bank with room: buy the cheapest bag, keeping a credit
+     reserve for more missions. Fill it with the nanos and put it in the bank.
+  4. If he still needs room to keep running, buy one more bag.
+- **Wire evidence for it (capture 20260923-234203, Fair Trade stream s8, marks 23:46-23:49):**
+  - Fair Trade = playfield **1187 "Neutral Supermarket Advanced"**. It is entered by the proxy 51016:-1072299232
+    at (650.25,68.49,612.86) in Borealis, which is in Zoning.json, so travel routes there. The exit puts you at
+    about (660.6,72.8,559.9) in Borealis, next to the mission terminal.
+  - **Buy:** LookAt the VendingMachine (42685979, the container terminal at (199,5,129)), then GenericCmd Use on
+    it. The server answers with ShopUpdate (62 lines) and Trade Open with a TempBag. The client sends
+    `Trade AddItem(machine, container 0x6F:1)` (stock line 1, the cheapest bag), then `Trade End` (target None).
+    The server replies with InventoryUpdate: the new bag 51017:27906825 in slot 112 (Open=0), plus
+    ChestItemFullUpdate and Trade op 4. This is the same protocol ResupplyController uses.
+  - **Open the bank:** GenericCmd Use on the bank terminal **C73D:0EE5BBFF**. The server answers
+    `BankMessage Contents=[...]` (his was empty).
+  - **Item into the bank:** `ClientContainerAddItem Container=0xDEAD:<own char id>` (IncomingTradeWindow), with
+    `Item=Inventory:<slot>`. The server confirms with ContainerAddItem Inventory:slot -> IncomingTradeWindow.
+  - **Out of the bank:** `MoveItem Source=Bank:<bank slot> Destination=111`. The server confirms with
+    ContainerAddItem Bank:n -> char, placement 111.
+  - **Nano into a bag:** GenericCmd Use on the bag's inventory slot (Inventory:69) to open it, then
+    `ClientContainerAddItem Container=<bag identity 51017:x> Item=Inventory:<nano slot>`. The server confirms
+    with ContainerAddItem and ActionMessage 102.
+  - **Bag back into the bank:** GenericCmd Use on the bag identity, then
+    `ClientContainerAddItem Container=0xDEAD:<me> Item=Inventory:<bag slot>`.
+  - **Selling: NOT captured yet.** Needs one capture of selling an item at a shop terminal.
+- **Built as a test switch (2026-09-24, `MissionShop`, off by default; `mission run shop on|off|now`).** When the
+  stash finds no bag with room, or fewer than 4 slots are free before a roll, he travels to Fair Trade (1187)
+  and stands at the owner's spot. He opens the bank and puts his nano crystals into a bank bag: he takes it
+  out, opens it, moves the nanos in until one is refused, and puts it back. If no bank bag has room he buys a
+  Large Backpack for them, keeping `MissionCashReserve` (20,000). If he is still under 4 free slots he buys one
+  more bag to carry. He leaves the way he came in: back to where he landed and on through it (owner).
+  - Selling is not done (not captured).
+  - **For Algorithman:** `ResupplyController` got a `Container` supply kind and `StartContainers(me, n, reply)`.
+    It matches by exact name `ResupplyContainerName`, "Large Backpack" (template 143832, the owner's buy), and
+    takes the cheapest line with no skill check. The machine ranking prefers names containing "Container".
+    Your buy sends `Trade Accept` with the **machine** as target; the owner's client sent Accept (0x01) with
+    **Target None** (capture seq 16). Unchanged; the first live bag purchase will show whether it matters.
+  - Unverified: the bank terminal id C73D:0EE5BBFF is used as captured, since the server never sends it as a
+    dynel. Also unverified: the Temp4 flag on the Use of the bag before banking it.
+  - Our zoning data has no exit from 1187.
+  - **There is one Fair Trade (Algorithman): playfield 1187**, confirmed by the owner's zone-in
+    `N3Teleport Playfield=51102:1187`. Each city's door leads to it on a different game server. Doors in Zoning.json:
+    Borealis (650,613), Newland City (296,323), Newland Desert (2211,1567), Stret West Bank (1115,2764),
+    Pleasant Meadows (1150,2356), Mort (2830,1892). The run travels to pf 1187 itself, so the planner picks the
+    cheapest door; the spots inside are the same. Unverified: whether the bank terminal's id (C73D:0EE5BBFF) is
+    the same on every game server.
+- **Selling (capture 20260924-074329, owner, 07:44-07:45):** LookAt + GenericCmd Use on the shop terminal. The
+  server sends ShopUpdate + Trade open. The client sends `Trade AddItem` with **Target = own char (0xC350:me)** and
+  **Container = Inventory:<slot>**, one per item (two in one trade), then `Trade Accept (0x01)` with **Target None**.
+  The server pays (Stat Cash) and closes the window (Trade op 4). The next batch must Use the terminal again. An item
+  can't be sold from a backpack; it is moved to the inventory first, a few at a time (owner). Built: the SDK's
+  `MoveItemToInventory(Backpack:(handle<<16|slot))`, unverified live.
+  **Owner's sell rules:** sell everything in the inventory and bags except: bags; nano crystals (banked); stims
+  and rechargers; ammo ("Ammo: Box of ..." in the item data) when ranged, since a melee loadout sells it; anything
+  in a bag marked personal; the keep list (exact names: config KeepItems + `mission run keep add <name>`,
+  keepitems.json). Also kept for safety: names containing "key" or "mission". Equipped items are never
+  considered. Commands: `mission run shop list|bags|personal <n>`, `mission run keep`.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
 

@@ -122,6 +122,7 @@ namespace AOBuddy
         // What to buy, by exact name (a keyword would also catch Boosted Stim, Burst of Speed Stim...), and how
         // many to carry. Only the highest QL whose First Aid / Treatment requirement the bot meets is bought.
         public string ResupplyStimName = "Health and Nano Stim";
+        public string ResupplyContainerName = "Large Backpack";   // the bag bought for room: the cheapest, template 143832 (owner's buy, capture 20260923-234203)
         public string ResupplyRechargerName = "Health and Nano Recharger";
         public int ResupplyStimTarget = 2;        // top usable stims back up to this many (times 25)
         public int ResupplyRechargerTarget = 3;   // top usable rechargers back up to this many (times 20)
@@ -214,6 +215,10 @@ namespace AOBuddy
         public int MissionFightNoStimBelowPercent = 80;          // ...or below this HP % with no stim ready
         public int MissionFightAttackers = 2;                    // ...or when this many mobs are on him at once
         public string MissionStyle = "blitz";
+        public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
+        public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
+        public int MissionCashReserve = 20000;
+        public List<string> KeepItems = new List<string> { "Health and Nano Stim", "Health and Nano Recharger" };   // never sold by housekeeping (exact names)                   // credits never spent on bags: kept for running missions
         // Mission types the run takes (any of "find person", "repair", "find item"). Find item left out for now:
         // in the solo buildings the item never showed up as a loose item (2026-09-23).
         public List<string> MissionTypes = new List<string> { "find person", "repair", "find item" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any

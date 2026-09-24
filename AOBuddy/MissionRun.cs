@@ -43,7 +43,7 @@ namespace AOBuddy
         private double _lastHurt = -999;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -84,6 +84,51 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("keep"))
+            {
+                KeepSet();
+                string rest = args.Trim().Length > 4 ? args.Trim().Substring(4).Trim() : "";   // original case for the name
+                if (rest.StartsWith("add ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(4).Trim(); _keepAdded.Add(nm); SaveKeep(); reply($"Keeping '{nm}': never sold."); return; }
+                if (rest.StartsWith("remove ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(7).Trim(); reply(_keepAdded.Remove(nm) ? $"'{nm}' off the keep list." : $"'{nm}' isn't on the list I added to (config KeepItems is edited in config.json)."); SaveKeep(); return; }
+                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + ". 'mission run keep add <exact item name>' / 'keep remove <name>'.");
+                return;
+            }
+            if (a.StartsWith("shop"))
+            {
+                string v = a.Substring(4).Trim();
+                if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
+                if (v == "now")
+                {
+                    // Starts the run first if it isn't going (07:56, 2026-09-24: 'shop now' on a fresh start did nothing).
+                    if (!Active) Command("", reply);
+                    if (!Active) return;
+                    _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true;
+                    bool went = StartShop("owner asked"); _ctx.Config.MissionShop = was;
+                    if (!went) reply("Couldn't start the housekeeping (see the log).");
+                    return;
+                }
+                if (v == "list") { reply(SellPreview()); return; }
+                if (v == "bags")
+                {
+                    LoadPersonal();
+                    var bags = Bags();
+                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => $"{n + 1}) {b.Name}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")}")) + ". 'mission run shop personal <n>' toggles.");
+                    return;
+                }
+                if (v.StartsWith("personal"))
+                {
+                    LoadPersonal();
+                    var bags = Bags();
+                    if (!int.TryParse(v.Substring(8).Trim(), out int n) || n < 1 || n > bags.Count) { reply("Which bag? 'mission run shop bags' lists them."); return; }
+                    var id = bags[n - 1].UniqueIdentity;
+                    bool on = !_personalBags.Remove(id); if (on) _personalBags.Add(id);
+                    SavePersonal();
+                    reply($"Bag {n} ({bags[n - 1].Name}) is {(on ? "personal: nothing in it is ever sold" : "no longer personal")}.");
+                    return;
+                }
+                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list|bags|personal <n>', 'mission run keep'.");
+                return;
+            }
             if (a.StartsWith("difficulty"))
             {
                 // The terminal's difficulty for the style he's on: blitz uses MissionDifficulty, fight rolls at least
@@ -245,7 +290,7 @@ namespace AOBuddy
             var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
             _rewardIds.Clear();
-            foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
+            foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) { _rewardIds.Add((r.LowId, r.HighId)); RememberReward(r.LowId, r.HighId); }
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
             Save(pick);
             _cashBefore = DynelManager.LocalPlayer != null && DynelManager.LocalPlayer.TryGetStat(Stat.Cash, out int cb) ? cb : (int?)null;
@@ -298,7 +343,7 @@ namespace AOBuddy
             // stops; he stands and fights (combat + stims + pets as usual), and picks up where he was 3 s after.
             bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
                           || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
-                          || _phase == Phase.Stash;
+                          || _phase == Phase.Stash || (_phase == Phase.Shop && (_shopStep == ShopStep.Travel || _shopStep == ShopStep.Exit));
             // SNARED: the walker moves at the snared speed now (BotContext.RunVelocity counts a negative Stat 156).
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
@@ -311,11 +356,11 @@ namespace AOBuddy
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
                 // at the wall by the Grid, stood 15 s, then walked the same route into the same wall. The owner: "resetting
                 // to last known good pos is a must". So walk the clean trail back and plan again from there.
-                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike)
+                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike || (_phase == Phase.Shop && _shopStep == ShopStep.Travel))
                 {
                     if (_overland.Active) _overland.Stop("pulled back");
                     _follow.ClearMovement();
-                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;
+                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
                     return false;
@@ -454,6 +499,7 @@ namespace AOBuddy
                     // Out of room: he always needs 4 free inventory slots (not bags, not items) to pull the mission
                     // keys and rewards (owner, 2026-09-23), and the stash has already filled every bag it could. He
                     // can't go on; buying bags, selling and banking nano crystals come later (MISSION-MODE-PLAN.md).
+                    if (Inventory.NumFreeSlots < 4 && StartShop($"only {Inventory.NumFreeSlots} free slot(s)")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -653,6 +699,9 @@ namespace AOBuddy
                 case Phase.Hike:
                     return HikeTick(me);
 
+                case Phase.Shop:
+                    return ShopTick(me);
+
                 case Phase.ExitStand:
                 {
                     if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? Phase.ToTerminal : Phase.Blitz, "out through the exit"); return false; }
@@ -848,7 +897,11 @@ namespace AOBuddy
             }
             // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
             // does it (ICC Grid terminal, first try, 23:18 and 23:37). Three tries 4 s apart.
-            if (e.Kind != ExitKind.Line)
+            // Only a TERMINAL is used (the Grid terminal, 23:18 and 23:37). A DOOR (type 51016, whompas and shop
+            // doors alike) is entered by standing on it: the owner walked onto the Borealis Fair Trade door
+            // (649.96,611.42 by its centre 650.25,612.86) and was zoned (capture 20260923-234203); the Newland Desert
+            // Fair Trade door was Used six times with no zone (07:59, 2026-09-24).
+            if (e.Kind != ExitKind.Line && e.ObjType != 51016)
             {
                 if (Flat(pos, at) > 3f && _hikeUses == 0 && _phaseTime < 140) { _follow.SetManualTarget(at); return true; }
                 _follow.ClearMovement();
@@ -892,7 +945,9 @@ namespace AOBuddy
             var dir = new Vector3((float)(_hikeDir0.X * Math.Cos(ang) - _hikeDir0.Z * Math.Sin(ang)), 0, (float)(_hikeDir0.X * Math.Sin(ang) + _hikeDir0.Z * Math.Cos(ang)));
             // CONFIRMED 00:14 (2026-09-24): 0.3 m from the centre at 35.74 did nothing for 12 s; 0.2 m at 36.05
             // zoned him 0.6 s later. The pad's top first, then our data's height.
-            float padY = e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
+            // A door's recorded position is its centre, ~1.4 m up (Borealis Fair Trade door 68.49 over ground 67.07,
+            // where the owner stood): stand on the ground. Only a whompa pad needs its top surface.
+            float padY = e.Kind == ExitKind.Proxy ? pos.Y : e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
             var aim = new Vector3(e.A.X + dir.X * 1.2f, padY, e.A.Z + dir.Z * 1.2f);
@@ -985,6 +1040,378 @@ namespace AOBuddy
         // RubiKa2019 has no Scotty (owner, 2026-09-24): a Scotty leg there is a wait for nobody.
         private static bool NoScotty => Client.Dimension == AOSharp.Clientless.Common.Dimension.RubiKa2019;
 
+        // ---- Shop: housekeeping at Fair Trade (testing switch MissionShop) ---------------------------------------
+        // The owner's design (2026-09-24, Algorithman agreed): bags full -> sell what isn't a nano crystal or on the
+        // keep list (NOT BUILT: selling isn't captured yet) -> nanos go into a bag in the bank (buy one if no bank bag
+        // has room, keeping MissionCashReserve) -> one more bag to carry if still short of room. From capture
+        // 20260923-234203 (owner, Fair Trade): the proxy into playfield 1187 'Neutral Supermarket Advanced' at
+        // (650,613) in Borealis; he stood at (197.7,142.4) inside and used both the container terminal
+        // (VendingMachine 42685979 at (199,129)) and the bank terminal (C73D:0EE5BBFF) from there. The way out is
+        // back the way he came in (owner): where he landed on zoning in, then on through it.
+        public ResupplyController Resupply;
+        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Exit }
+        private ShopStep _shopStep;
+        private double _shopStepAt, _shopTriedAt = -9999;
+        private const int FairTradePf = 1187;
+        private static readonly Vector3 ShopSpot = new Vector3(197.74f, 5.01f, 142.38f);
+        // The bank terminal is looked up live: the id in the owner's capture (C73D:0EE5BBFF) didn't answer on another
+        // game server, where the zone had 'Rubi-Ka Banking Service Terminal' Terminal:C00104A3 at (195.7,144.4)
+        // (08:05, 2026-09-24). The captured id stays as the fallback.
+        private static Identity BankTerminal
+        {
+            get
+            {
+                var me = DynelManager.LocalPlayer;
+                var t = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.Terminal && d.Name != null
+                                                          && d.Name.IndexOf("Bank", StringComparison.OrdinalIgnoreCase) >= 0)
+                                              .OrderBy(d => me == null ? 0 : Vector3.Distance(me.Transform.Position, d.Transform.Position)).FirstOrDefault();
+                return t != null ? t.Identity : new Identity(IdentityType.Terminal, 0x0EE5BBFF);
+            }
+        }
+        private Vector3? _shopArrival;
+        private Identity? _shopBag;
+        private bool _shopBoughtForNanos, _shopBoughtForRoom;
+        private Identity? _nanoSlot;
+        private readonly HashSet<Identity> _shopKnownBags = new HashSet<Identity>();
+        private readonly HashSet<Identity> _shopFullBags = new HashSet<Identity>();
+
+        private int _sellRounds, _sellStage, _sellMoves;
+        private List<Identity> _lastBatch;
+        private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
+        private bool _sellBagsOpened;
+        private double _sellSentAt = -99;
+
+        // What housekeeping may sell: only items the run got as mission rewards (their ids are recorded at each
+        // accept - so gear, keys and supplies never are), in the main inventory, not a bag, not a nano crystal, not
+        // on KeepItems. Items inside bags aren't sold yet: that needs a capture of selling out of a bag.
+        private List<Item> Sellable()
+        {
+            LoadRewards();
+            var keep = KeepSet();
+            return Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && SellableItem(i, keep)).ToList();
+        }
+        // THE OWNER'S RULES (2026-09-24): sell everything in the inventory and bags EXCEPT
+        //   bags; nano crystals (they go to the bank); stims and rechargers; ammo when he fights at range (a melee
+        //   loadout sells it - PetController.IsMeleeLoadout, from the weapon's AttackRange stat; ammo = the item data's
+        //   'Ammo: Box of ...' names); anything in a bag marked personal; anything on the keep list (exact names).
+        //   Equipped items are never looked at (only inventory and bag slots). Also kept, to be safe: names with
+        //   'key' or 'mission' in them (a mission key's name isn't in the item data).
+        private bool SellableItem(Item i, HashSet<string> keep)
+        {
+            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || IsNano(i) || keep.Contains(i.Name)) return false;
+            if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
+            if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !PetController.IsMeleeLoadout(DynelManager.LocalPlayer)) return false;
+            return true;
+        }
+
+        // Sellable items still inside bags: they can't be sold from there (owner), so they're moved to the
+        // inventory a few at a time first. The SDK names a bag item Backpack:(bag handle << 16 | slot).
+        private List<Item> SellableInBags()
+        {
+            var keep = KeepSet();
+            LoadPersonal();
+            return Inventory.Containers.Where(c => c?.Items != null && !_personalBags.Contains(c.Identity)).SelectMany(c => c.Items).Where(i => i != null && SellableItem(i, keep)).ToList();
+        }
+        private HashSet<string> _rewardNames;
+
+        // KEEP LIST: exact item names never sold - config KeepItems plus what the owner adds by command
+        // ('mission run keep add <name>'), saved in keepitems.json. Stims and rechargers always.
+        private HashSet<string> _keepAdded;
+        private string KeepPath => Path.Combine(_pluginDir, "keepitems.json");
+        private HashSet<string> KeepSet()
+        {
+            if (_keepAdded == null)
+            {
+                _keepAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                try { if (File.Exists(KeepPath)) foreach (var t in JArray.Parse(File.ReadAllText(KeepPath))) _keepAdded.Add((string)t); } catch { }
+            }
+            var k = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            k.UnionWith(_keepAdded);
+            k.Add(_ctx.Config.ResupplyStimName); k.Add(_ctx.Config.ResupplyRechargerName);
+            return k;
+        }
+        private void SaveKeep() { try { File.WriteAllText(KeepPath, new JArray(_keepAdded.ToArray()).ToString()); } catch { } }
+
+        // PERSONAL BAGS: nothing in them is ever sold. Marked by the bag's own identity ('mission run shop bags'
+        // lists them numbered, 'mission run shop personal <n>' toggles), saved in personalbags.json.
+        private HashSet<Identity> _personalBags;
+        private string PersonalPath => Path.Combine(_pluginDir, "personalbags.json");
+        private void LoadPersonal()
+        {
+            if (_personalBags != null) return;
+            _personalBags = new HashSet<Identity>();
+            try { if (File.Exists(PersonalPath)) foreach (var t in JArray.Parse(File.ReadAllText(PersonalPath))) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
+        }
+        private void SavePersonal() { try { File.WriteAllText(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString()); } catch { } }
+        private List<Item> Bags() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container).OrderBy(i => i.Slot.Instance).ToList();
+        private HashSet<int> _rewardHistory;
+        private string RewardsPath => Path.Combine(_pluginDir, "rewardids.json");
+        private string RewardNamesPath => Path.Combine(_pluginDir, "rewardnames.json");   // names too: seeded from the log's accepted rewards
+        private void LoadRewards()
+        {
+            if (_rewardHistory != null) return;
+            _rewardHistory = new HashSet<int>();
+            _rewardNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            try { if (File.Exists(RewardsPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardsPath))) _rewardHistory.Add((int)t); } catch { }
+            try { if (File.Exists(RewardNamesPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardNamesPath))) _rewardNames.Add((string)t); } catch { }
+        }
+        private void RememberReward(int low, int high)
+        {
+            LoadRewards();
+            bool added = _rewardHistory.Add(low) | _rewardHistory.Add(high);
+            if (added) try { File.WriteAllText(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString()); } catch { }
+            if (ItemData.Find(low, out DummyItem it) && it?.Name != null && _rewardNames.Add(it.Name))
+                try { File.WriteAllText(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString()); } catch { }
+        }
+        public string SellPreview()
+        {
+            var s = Sellable(); var b = SellableInBags();
+            if (s.Count + b.Count == 0) return "Nothing I'd sell right now (open bags are checked; a bag not opened this session isn't).";
+            return $"I'd sell {s.Count + b.Count} ({b.Count} from bags): " + string.Join(", ", s.Concat(b).Select(i => i.Name));
+        }
+
+        private static bool IsNano(Item i) => i?.Name != null && (i.Name.StartsWith("Nano Crystal", StringComparison.OrdinalIgnoreCase) || i.Name.StartsWith("NanoCrystal", StringComparison.OrdinalIgnoreCase));
+        private static List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && IsNano(i)).ToList();
+        private static Item InvItem(Identity? unique) => unique.HasValue ? Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity == unique.Value) : null;
+
+        private bool StartShop(string why)
+        {
+            if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
+            _shopTriedAt = _clock;
+            _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear();
+            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade. Selling is not built yet (no capture of a sale).");
+            _tell($"Out of room ({why}); going to Fair Trade to bank my nano crystals and buy a bag. (Test switch: mission run shop on|off.)");
+            _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
+            Enter(Phase.Shop, "housekeeping");
+            return true;
+        }
+
+        private void ShopNext(ShopStep s, string log) { _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log); }
+
+        private bool ShopTick(LocalPlayer me)
+        {
+            double t = _clock - _shopStepAt;
+            int pf = (int)Playfield.ModelId;
+            if (pf == FairTradePf && !_shopArrival.HasValue) { _shopArrival = me.Transform.Position; _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0})."); }
+            switch (_shopStep)
+            {
+                case ShopStep.Travel:
+                    if (pf != FairTradePf)
+                    {
+                        // Travel Uses a door and, when it doesn't take, replans to another city's door (07:58,
+                        // 2026-09-24: Borealis -> Newland Desert -> Mort, never in). The hike stands on doors, so
+                        // it goes first; travel only for the zones between.
+                        if (!_overland.Active && StartHike(me, FairTradePf, ShopSpot, "Fair Trade")) return false;
+                        return Travel(me, FairTradePf, ShopSpot, "Fair Trade");
+                    }
+                    if (_overland.Active) _overland.Stop("inside Fair Trade");
+                    if (Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
+                    _follow.ClearMovement();
+                    _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear();
+                    ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
+                    return false;
+
+                case ShopStep.Sell:
+                {
+                    // SELL (capture 20260924-074329, owner, 07:44-07:45): LookAt + Use the shop terminal, Trade AddItem
+                    // with HIMSELF as target and Inventory:<slot> as the container (one per item; two in one trade),
+                    // then Trade Accept with no target. The server pays (Cash stat) and closes the window, so every
+                    // batch opens the terminal again.
+                    if (_sellSentAt > 0 && _clock - _sellSentAt < 2.5) return false;
+                    if (!_sellBagsOpened)
+                    {
+                        // Open every bag so its contents are known (the stash's proven open: Use with Temp4 0).
+                        foreach (var b in Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container))
+                            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = b.Slot, Count = 1, Temp4 = 0 });
+                        _sellBagsOpened = true; _sellSentAt = _clock;
+                        return false;
+                    }
+                    // What the last batch left behind was refused (08:04: three items offered eight times): skip them.
+                    if (_lastBatch != null)
+                    {
+                        foreach (var slot in _lastBatch) if (Inventory.Items.Any(i => i != null && i.Slot == slot)) _refusedSlots.Add(slot);
+                        if (_refusedSlots.Count > 0) _ctx.Log($"MISSIONRUN: shop: the shop refused {_refusedSlots.Count} item(s); leaving them.");
+                        _lastBatch = null;
+                    }
+                    var sell = Sellable().Where(i => !_refusedSlots.Contains(i.Slot)).ToList();
+                    if (sell.Count == 0 && _sellStage == 0)
+                    {
+                        // Nothing loose: bring a few out of the bags (owner: you can't sell from a backpack).
+                        var inBags = SellableInBags();
+                        int room = Inventory.NumFreeSlots - 1;
+                        if (inBags.Count > 0 && room > 0 && _sellMoves < 20)
+                        {
+                            foreach (var it in inBags.Take(Math.Min(5, room)))
+                            {
+                                Item.MoveItemToInventory(it.Slot, 0x6F);
+                                _ctx.Log($"MISSIONRUN: shop: '{it.Name}' out of a bag ({it.Slot}).");
+                            }
+                            _sellMoves++; _sellSentAt = _clock;
+                            return false;
+                        }
+                    }
+                    var vm = DynelManager.VendingMachines.OrderBy(v => me.DistanceFrom(v)).FirstOrDefault();
+                    if (sell.Count == 0 || vm == null || _sellRounds >= 12)
+                    {
+                        if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
+                        var bank = BankTerminal;
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bank, Count = 1, Temp4 = 1 });
+                        ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank ({bank}).");
+                        return false;
+                    }
+                    if (_sellStage == 0)
+                    {
+                        Client.Send(new LookAtMessage { Target = vm.Identity, ReturnInfo = 0 });
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = vm.Identity, Count = 1, Temp4 = 1 });
+                        _sellStage = 1; _shopStepAt = _clock;
+                        return false;
+                    }
+                    if (t < 1) return false;   // the window opens (ShopUpdate + Trade open)
+                    var batch = sell.Take(5).ToList();
+                    foreach (var it in batch)
+                        Client.Send(new TradeMessage { Version = 2, Action = TradeAction.AddItem, Param1 = (int)me.Identity.Type, Param2 = me.Identity.Instance, Param3 = (int)it.Slot.Type, Param4 = it.Slot.Instance });
+                    Client.Send(new TradeMessage { Version = 2, Action = TradeAction.Accept });
+                    _ctx.Log($"MISSIONRUN: shop: selling {string.Join(", ", batch.Select(b => b.Name))} to '{vm.Name}'.");
+                    _lastBatch = batch.Select(b => b.Slot).ToList();
+                    _sellStage = 0; _sellRounds++; _sellSentAt = _clock;
+                    return false;
+                }
+
+                case ShopStep.OpenBank:
+                    if (!Inventory.Bank.IsOpen)
+                    {
+                        if (t < 5) return false;
+                        _tell("The bank terminal didn't answer; skipping the banking.");
+                        return ShopAfterNanos(me);
+                    }
+                    if (InvNanos().Count == 0) { _ctx.Log("MISSIONRUN: shop: no nano crystals to bank."); return ShopAfterNanos(me); }
+                    return ShopPickBag(me);
+
+                case ShopStep.TakeBag:
+                {
+                    // Out of the bank (MoveItem Bank:n -> 111, capture seq 27): wait for it in the inventory, then open it.
+                    var bag = InvItem(_shopBag);
+                    if (bag == null) { if (t < 5) return false; _tell("A bag didn't come out of the bank."); return ShopAfterNanos(me); }
+                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.Slot, Count = 1, Temp4 = 0 });
+                    _nanoSlot = null;
+                    ShopNext(ShopStep.FillBag, $"filling '{bag.Name}' with nano crystals.");
+                    return false;
+                }
+
+                case ShopStep.FillBag:
+                {
+                    if (t < 0.8) return false;
+                    var bag = InvItem(_shopBag);
+                    var cont = Inventory.Containers.FirstOrDefault(c => c.Identity == _shopBag);
+                    if (bag == null || cont == null) { if (t < 5) return false; _tell("Couldn't open the bag for the nanos."); return ShopAfterNanos(me); }
+                    var nanos = InvNanos();
+                    // The last move still in the inventory 2 s later: the bag refused it, it's full (as in the stash).
+                    if (_nanoSlot.HasValue)
+                    {
+                        if (t < 2) return false;
+                        bool stuck = nanos.Any(n => n.Slot == _nanoSlot.Value);
+                        _nanoSlot = null;
+                        if (stuck) { ShopStore(me, bag, "full"); return false; }
+                    }
+                    if (nanos.Count == 0) { ShopStore(me, bag, "all nanos in"); return false; }
+                    Item.ContainerAddItem(nanos[0].Slot, cont.Identity);
+                    _nanoSlot = nanos[0].Slot; _shopStepAt = _clock;
+                    _ctx.Log($"MISSIONRUN: shop: '{nanos[0].Name}' into '{bag.Name}'.");
+                    return false;
+                }
+
+                case ShopStep.StoreBag:
+                    if (t < 1.5) return false;
+                    if (InvNanos().Count > 0) return ShopPickBag(me);   // that bag was full: the next one
+                    return ShopAfterNanos(me);
+
+                case ShopStep.Buy:
+                {
+                    if (Resupply.Active || t < 1) return false;
+                    var bought = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container)
+                                                .Select(i => i.UniqueIdentity).Where(id => !_shopKnownBags.Contains(id)).ToList();
+                    if (bought.Count == 0) { _tell("Couldn't buy a bag (see RESUPPLY in the log)."); ShopNext(ShopStep.Exit, "leaving."); return false; }
+                    if (_shopBoughtForNanos && !_shopBoughtForRoom && InvNanos().Count > 0)
+                    {
+                        _shopBag = bought[0];
+                        var bag = InvItem(_shopBag);
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.Slot, Count = 1, Temp4 = 0 });
+                        _nanoSlot = null;
+                        ShopNext(ShopStep.FillBag, "filling the new bag with nano crystals.");
+                        return false;
+                    }
+                    return ShopAfterNanos(me);
+                }
+
+                case ShopStep.Exit:
+                {
+                    if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
+                    if (t > 30 || !_shopArrival.HasValue) { _follow.ClearMovement(); _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false; }
+                    // Back the way he came in: to where he landed, then 3 m on past it, away from the shop spot.
+                    Vector3 a = _shopArrival.Value;
+                    var d = new Vector3(a.X - ShopSpot.X, 0, a.Z - ShopSpot.Z);
+                    float len = d.Magnitude;
+                    var target = len > 0.5f ? new Vector3(a.X + d.X / len * 3f, a.Y, a.Z + d.Z / len * 3f) : a;
+                    _follow.SetManualTarget(Flat(me.Transform.Position, a) > 1.5f ? a : target);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // A bag from the bank that isn't known full, or buy one.
+        private bool ShopPickBag(LocalPlayer me)
+        {
+            var seen = new HashSet<int>();   // the SDK appends each BankMessage without clearing: one per bank slot
+            var bankBags = Inventory.Bank.Items.Where(i => i != null && seen.Add(i.Slot.Instance) && i.UniqueIdentity.Type == IdentityType.Container
+                                                          && !_shopFullBags.Contains(i.UniqueIdentity) && InvItem(i.UniqueIdentity) == null).ToList();
+            if (bankBags.Count > 0)
+            {
+                var b = bankBags[0];
+                _shopBag = b.UniqueIdentity;
+                Item.MoveItemToInventory(new Identity(IdentityType.BankByRef, b.Slot.Instance), 0x6F);
+                ShopNext(ShopStep.TakeBag, $"taking '{b.Name}' out of the bank.");
+                return false;
+            }
+            return ShopBuy(me, forNanos: true);
+        }
+
+        private void ShopStore(LocalPlayer me, Item bag, string why)
+        {
+            if (why == "full") _shopFullBags.Add(bag.UniqueIdentity);
+            // Back into the bank (capture seq 35-36: Use on the bag, then ClientContainerAddItem to Bank 0xDEAD:<me>).
+            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.UniqueIdentity, Count = 1, Temp4 = 1 });
+            bag.MoveToBank();
+            ShopNext(ShopStep.StoreBag, $"'{bag.Name}' into the bank ({why}).");
+        }
+
+        private bool ShopAfterNanos(LocalPlayer me)
+        {
+            if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
+            ShopNext(ShopStep.Exit, "leaving the way I came in.");
+            return false;
+        }
+
+        private bool ShopBuy(LocalPlayer me, bool forNanos)
+        {
+            me.TryGetStat(Stat.Cash, out int cash);
+            if (cash < _ctx.Config.MissionCashReserve)
+            {
+                _tell($"Not buying a bag: {cash:N0} credits, and I keep {_ctx.Config.MissionCashReserve:N0} for missions.");
+                ShopNext(ShopStep.Exit, "leaving (credits).");
+                return false;
+            }
+            _shopKnownBags.Clear();
+            foreach (var i in Inventory.Items.Where(i => i != null && i.UniqueIdentity.Type == IdentityType.Container)) _shopKnownBags.Add(i.UniqueIdentity);
+            if (forNanos) _shopBoughtForNanos = true; else _shopBoughtForRoom = true;
+            int keep = _ctx.Config.ResupplyCashReserve;
+            _ctx.Config.ResupplyCashReserve = Math.Max(keep, _ctx.Config.MissionCashReserve);
+            Resupply.StartContainers(me, 1, s => _ctx.Log("MISSIONRUN: shop: " + s));
+            _ctx.Config.ResupplyCashReserve = keep;
+            ShopNext(ShopStep.Buy, forNanos ? "buying a bag for the nano crystals." : "buying a bag to carry.");
+            return false;
+        }
+
         private void StartBackoff(LocalPlayer me, string next)
         {
             Vector3 pos = me.Transform.Position;
@@ -1061,6 +1488,10 @@ namespace AOBuddy
                 }
                 if (there) return false;                  // the phase check picks it up next frame
             }
+            // Another zone: the hike takes the first crossing. Travel stands on a whompa at ground height and Uses
+            // doors, which never takes (08:12, 2026-09-24: Stret West Bank's Borealis whompa, 3 tries, then a 5-leg
+            // detour); the hike stops on a pad's top and stands on doors, and hands back to travel after the zone.
+            if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
             _overland.Command(args, s => _ctx.Log("MISSIONRUN: travel: " + s));
@@ -1096,7 +1527,13 @@ namespace AOBuddy
             }
             if (_bag == null)
             {
-                if (_bagsToTry.Count == 0) { _tell("No backpack with room for the reward; it stays in my inventory."); _rewardIds.Clear(); Enter(Phase.ToTerminal, "no bag room"); return; }
+                if (_bagsToTry.Count == 0)
+                {
+                    _rewardIds.Clear();
+                    if (StartShop("no bag has room for the reward")) return;
+                    _tell("No backpack with room for the reward; it stays in my inventory.");
+                    Enter(Phase.ToTerminal, "no bag room"); return;
+                }
                 _bag = _bagsToTry.Dequeue();
                 _bagOpenedAt = _clock;
                 Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = _bag.Slot, Count = 1, Temp4 = 0 });
