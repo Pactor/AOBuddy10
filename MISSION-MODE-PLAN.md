@@ -322,6 +322,34 @@ missions may be taken in (empty = any zone).
   - the purchase is a Use on the VendingMachine, then ShopUpdate, then Trade messages with a TempBag, and
     ClientContainerAddItem into the IncomingTradeWindow;
   - bank moves appear as `Bank:0` containers, and a bag comes out of the bank to inventory slot 111.
+- **Housekeeping design (owner + Algorithman OK, 2026-09-24).** On `mission run`, and whenever the stash
+  finds no room:
+  1. Are his bags full? What are they full of?
+  2. Sell everything that is not a nano crystal and not on the keep list (`KeepItems`, to be written).
+  3. If he holds nano crystals and has no bag in the bank with room: buy the cheapest bag, keeping a credit
+     reserve for more missions. Fill it with the nanos and put it in the bank.
+  4. If he still needs room to keep running, buy one more bag.
+- **Wire evidence for it (capture 20260923-234203, Fair Trade stream s8, marks 23:46-23:49):**
+  - Fair Trade = playfield **1187 "Neutral Supermarket Advanced"**. It is entered by the proxy 51016:-1072299232
+    at (650.25,68.49,612.86) in Borealis, which is in Zoning.json, so travel routes there. The exit puts you at
+    about (660.6,72.8,559.9) in Borealis, next to the mission terminal.
+  - **Buy:** LookAt the VendingMachine (42685979, the container terminal at (199,5,129)), then GenericCmd Use on
+    it. The server answers with ShopUpdate (62 lines) and Trade Open with a TempBag. The client sends
+    `Trade AddItem(machine, container 0x6F:1)` (stock line 1, the cheapest bag), then `Trade End` (target None).
+    The server replies with InventoryUpdate: the new bag 51017:27906825 in slot 112 (Open=0), plus
+    ChestItemFullUpdate and Trade op 4. This is the same protocol ResupplyController uses.
+  - **Open the bank:** GenericCmd Use on the bank terminal **C73D:0EE5BBFF**. The server answers
+    `BankMessage Contents=[...]` (his was empty).
+  - **Item into the bank:** `ClientContainerAddItem Container=0xDEAD:<own char id>` (IncomingTradeWindow), with
+    `Item=Inventory:<slot>`. The server confirms with ContainerAddItem Inventory:slot -> IncomingTradeWindow.
+  - **Out of the bank:** `MoveItem Source=Bank:<bank slot> Destination=111`. The server confirms with
+    ContainerAddItem Bank:n -> char, placement 111.
+  - **Nano into a bag:** GenericCmd Use on the bag's inventory slot (Inventory:69) to open it, then
+    `ClientContainerAddItem Container=<bag identity 51017:x> Item=Inventory:<nano slot>`. The server confirms
+    with ContainerAddItem and ActionMessage 102.
+  - **Bag back into the bank:** GenericCmd Use on the bag identity, then
+    `ClientContainerAddItem Container=0xDEAD:<me> Item=Inventory:<bag slot>`.
+  - **Selling: NOT captured yet.** Needs one capture of selling an item at a shop terminal.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
 
