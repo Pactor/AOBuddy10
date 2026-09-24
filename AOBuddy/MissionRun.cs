@@ -1283,6 +1283,7 @@ namespace AOBuddy
         private Identity? _lastVendor;
         private int _wholeRefusals;
         private Identity? _sellWalkTo;
+        private double _ftInAt = -1;
         private double _sellWalkAt = -99;
         private readonly HashSet<Identity> _badVendors = new HashSet<Identity>();
         private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
@@ -1473,7 +1474,11 @@ namespace AOBuddy
                         return Travel(me, FairTradePf, ShopSpot, "Fair Trade");
                     }
                     if (_overland.Active) _overland.Stop("inside Fair Trade");
-                    if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
+                    // 30 s from walking IN, not from the start of the trip (16:07, 2026-09-24: the trip there took 70 s,
+                    // so he sold from the door, out of reach of every terminal).
+                    if (_ftInAt < 0) _ftInAt = _clock;
+                    if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && _clock - _ftInAt < 30) { _follow.SetManualTarget(ShopSpot); return true; }
+                    _ftInAt = -1;
                     _follow.ClearMovement();
                     _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null; _wholeRefusals = 0;
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
@@ -1543,9 +1548,9 @@ namespace AOBuddy
                     {
                         // Up to it first (16:05, 2026-09-24: 'took none' from terminal after terminal, used from where the
                         // last one left him; the sales that worked were the ones that happened to be close).
+                        if (_sellWalkTo != vm.Identity) { _sellWalkTo = vm.Identity; _sellWalkAt = _clock; }
                         if (me.DistanceFrom(vm) > 3f && _clock - _sellWalkAt < 15)
                         {
-                            if (_sellWalkTo != vm.Identity) { _sellWalkTo = vm.Identity; _sellWalkAt = _clock; }
                             _follow.SetManualTarget(vm.Transform.Position);
                             return true;
                         }
@@ -1577,6 +1582,11 @@ namespace AOBuddy
                         _follow.ClearMovement();
                         if (_bankUses < 3 && _clock - _bankUsedAt > 3)
                         {
+                            // What the owner's client used (capture, MISSION-MODE-PLAN): the static object C73D (51005)
+                            // :0EE5BBFF, not the Terminal dynel standing there. Earlier tries sent the dynel, or the
+                            // captured number with the Terminal type - neither is what the client sends. The dynel
+                            // is only the place to stand; the third try falls back to it.
+                            if (_bankUses < 2) bankId = new Identity((IdentityType)0xC73D, 0x0EE5BBFF);
                             Client.Send(new LookAtMessage { Target = bankId, ReturnInfo = 0 });
                             GameCommands.UseObject(me, bankId);
                             _bankUses++; _bankUsedAt = _clock;
