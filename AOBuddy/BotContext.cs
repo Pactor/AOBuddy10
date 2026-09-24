@@ -29,10 +29,15 @@ namespace AOBuddy
         // (19 u/s) there made the server reject every step and snap the bot back to where it started. So
         // keep the last good reading; before the first one, the 0-skill base speed, which is always legal.
         public int LastRunSpeed = -1;
+        private bool _runRead;
         public float RunVelocity(AOSharp.Clientless.LocalPlayer me)
         {
-            if (me != null && me.TryGetStat(AOSharp.Common.GameData.Stat.RunSpeed, out int rs) && rs >= 0) LastRunSpeed = rs;
-            return LastRunSpeed < 0 ? 5.5f : Math.Min(15.5f, 5.5f + LastRunSpeed / 230f);
+            // A snare drives the stat negative (-289 from 23:00:47, 2026-09-23, still -289 after a relog): that
+            // is a real reading, and ignoring it kept the walker at full speed and the server snapped him back
+            // every 3 s for minutes. Only -1 means unreadable. Floor 1.5 u/s (the formula below 0 is unverified).
+            if (me != null && me.TryGetStat(AOSharp.Common.GameData.Stat.RunSpeed, out int rs) && rs != -1) { LastRunSpeed = rs; _runRead = true; }
+            if (!_runRead) return 5.5f;
+            return Math.Max(1.5f, Math.Min(15.5f, 5.5f + LastRunSpeed / 230f));
         }
 
         private string _behavior = "";

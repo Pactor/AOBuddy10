@@ -247,11 +247,7 @@ namespace AOBuddy
             bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
                           || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
                           || _phase == Phase.Stash;
-            // SNARED: a mob's run-speed debuff (Stat 156 read -289 from 23:00:47 on, 2026-09-23) makes the server
-            // take only the slowed speed, and every step at the normal speed was snapped back ~17 m every 3 s for
-            // minutes, travel "routing round" an obstacle that wasn't there. A different way gets snapped back the
-            // same, so he stands where the server has him until it wears off. (-1 is 'unreadable', not a snare.)
-            bool snared = me.TryGetStat(Stat.RunSpeed, out int runSkill) && runSkill < -1;
+            // SNARED: the walker moves at the snared speed now (BotContext.RunVelocity counts a negative Stat 156).
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
             // into the snap-back for minutes (2026-09-23 23:01). The owner: roots and snares both happen.
@@ -265,16 +261,6 @@ namespace AOBuddy
                 _follow.ClearMovement();
                 _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase} (rooted or snared?); standing still 15 s.");
                 Enter(Phase.Fight, "held");
-                return false;
-            }
-            if (moving && snared && !_fighting())
-            {
-                _fightReturn = _phase;
-                if (_mission.Active) _mission.Stop("snared");
-                if (_overland.Active) _overland.Stop("snared");
-                _follow.ClearMovement();
-                _ctx.Log($"MISSIONRUN: snared during {_phase} (run speed {runSkill}); the server won't let me move at full speed, standing until it wears off.");
-                Enter(Phase.Fight, "snared");
                 return false;
             }
             if (moving && _fighting())
@@ -294,7 +280,7 @@ namespace AOBuddy
             {
                 case Phase.Fight:
                     // Stay until the fight is really over (not just back above the emergency line).
-                    if (_inCombat() || snared) { _phaseTime = 0; return false; }
+                    if (_inCombat()) { _phaseTime = 0; return false; }
                     if (_clock < _heldUntil) return false;
                     if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                     // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts

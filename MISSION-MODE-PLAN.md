@@ -275,6 +275,8 @@ missions may be taken in (empty = the terminal's own zone only).
    good 141, so the walker ran at ~6.1 u/s and the server snapped him back ~17 m every 3 s for minutes
    (Borealis, 615,467 -> 644,475), with overland "routing round" a wall that wasn't there. Only -1 means
    unreadable; a negative skill probably slows him (5.5 + rs/230 gives 4.2 u/s, but the server let him
-   advance slower than that, so the formula for negative values is unverified). The run now stands still
-   while the stat reads below -1 and resumes the same leg afterwards (MissionRun, fight pause reused).
+   advance slower than that, so the formula for negative values is unverified). **Changed in your
+   `RunVelocity` with the owner's OK:** any reading but -1 counts, speed floored at 1.5 u/s. A snared char
+   still moves, just slower (owner, 23:10); the snare timer (~3 min) doesn't run while logged off.
+   Separately, the run stands still 15 s when the server pulls him back >5 m twice in 8 s (roots).
    Also worth making "snapped back to the same spot N times" read as a speed problem, not an obstacle.
