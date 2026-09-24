@@ -1104,12 +1104,24 @@ namespace AOBuddy
         // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
         private readonly HashSet<string> _badExits = new HashSet<string>();
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
-        private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e));
+        private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
         private void MarkBadExit(ZoneExit e)
         {
             if (_badExits.Add(ExitKey(e)))
                 _ctx.Log($"MISSIONRUN: {e} didn't take me; routing round it until I restart.");
+            // A BORDER is a chain of zone-line segments: the Galway Shire -> Galway County border is 19 of them and
+            // pulled him back at every one tried (09:46-10:09, 2026-09-24), the hike trying them one by one at up
+            // to 150 s each. Two failed segments of one border close the whole border.
+            if (e.Kind == ExitKind.ZoneLine)
+            {
+                var key = (e.FromPf, e.ToPf);
+                _borderFails[key] = (_borderFails.TryGetValue(key, out int n) ? n : 0) + 1;
+                if (_borderFails[key] >= 2 && _badBorders.Add(key))
+                    _ctx.Log($"MISSIONRUN: the {Zoning.Name(e.FromPf)} -> {Zoning.Name(e.ToPf)} border failed twice; routing round all of it until I restart.");
+            }
         }
+        private readonly HashSet<(int, int)> _badBorders = new HashSet<(int, int)>();
+        private readonly Dictionary<(int, int), int> _borderFails = new Dictionary<(int, int), int>();
 
         // RubiKa2019 has no Scotty (owner, 2026-09-24): a Scotty leg there is a wait for nobody.
         private static bool NoScotty => Client.Dimension == AOSharp.Clientless.Common.Dimension.RubiKa2019;
