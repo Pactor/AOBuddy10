@@ -1924,6 +1924,9 @@ namespace AOBuddy
                 // Far goals too, on the grid only (Holes in the Wall, 12:53, 2026-09-24: the door at (441,1512)
                 // 'walled off' 1.5 km away, and the mission was dropped without a try on foot).
                 if (!there && TryWalkMyself(me, pf, goal, what, "travel found no way")) return true;
+                // The walk grid still loading (a few seconds after a login or a zone): wait for it rather than back
+                // off - the backoff at 15:09:48 (2026-09-24) stepped him back over the zone line he had just crossed.
+                if (!there && (int)Playfield.ModelId == pf && _straightTries < T("walktries") && HikeGrid() == null) { _travelStarted = true; return false; }
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
                 // back, it had planned the same trip fine.
