@@ -85,7 +85,7 @@ namespace AOBuddy
                     new Cmd("status", "level, mode, health, current target"),
                     new Cmd("stat", "read any stat by name or number", "<name|number>"),
                     new Cmd("hunt", "send my pets at every mob within a radius of me (I stay put), next one when it dies, again when they respawn", "[radius|off|status|why]"),
-                    new Cmd("mission", "missions: 'run' at a solo terminal loops roll/travel/blitz/stash on my own; roll/accept by hand; in the building: status, route, blitz, backoutside", "[run|run skip|run stop|run status|roll|list|accept n|status|route|blitz|backoutside|stop]"),
+                    new Cmd("mission", "missions: 'run' at a solo terminal loops roll/travel/blitz/stash on my own; roll/accept by hand; in the building: status, route, blitz, backoutside", "[run|run skip|run style fight/blitz|run stop|run status|roll|list|accept n|status|route|blitz|backoutside|stop]"),
                 },
             },
             new Page

@@ -79,13 +79,20 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("style"))
+            {
+                string st = a.Length > 5 ? a.Substring(5).Trim() : "";
+                if (st == "fight" || st == "blitz") { _ctx.Config.MissionStyle = st; reply(st == "fight" ? "Style: fight - I'll stop and fight anything that attacks me." : $"Style: blitz - I run to the end and stim, and only stop to fight under {_ctx.Config.MissionFightBelowPercent}% with no stim ready."); }
+                else reply($"Style is {_ctx.Config.MissionStyle}. 'mission run style fight' or 'mission run style blitz'.");
+                return;
+            }
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
-            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run stop | mission run status"); return; }
+            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run style fight|blitz | mission run stop | mission run status"); return; }
             if (Active) { reply("Already running: " + Status()); return; }
 
             var me = DynelManager.LocalPlayer;
@@ -110,7 +117,7 @@ namespace AOBuddy
             string termZone = Playfield.TryGetPlayfieldNameFromId(_termPf, out string tz) ? tz : _termPf.ToString();
             string zones = _ctx.Config.MissionZones != null && _ctx.Config.MissionZones.Count > 0 ? string.Join(", ", _ctx.Config.MissionZones) : termZone + " only";
             _ctx.Log($"MISSIONRUN: start; terminal {_termId} in {termZone} ({_termPos.X:0},{_termPos.Z:0}); zones: {zones}.");
-            reply($"Running missions from the terminal in {termZone} ({zones}). 'mission run stop' to stop, 'mission run status' for where I am.");
+            reply($"Running missions from the terminal in {termZone} ({zones}), {_ctx.Config.MissionStyle} style. 'mission run stop' to stop, 'mission run status' for where I am.");
             if (_mission.InMission && !held && !fresh)
             {
                 // Inside a building with no mission to do (already done, or deleted): just walk out and carry on.
@@ -244,7 +251,9 @@ namespace AOBuddy
                 if (_mission.Active) _mission.Stop("fighting");
                 if (_overland.Active) _overland.Stop("fighting");
                 _follow.ClearMovement();
-                _ctx.Log($"MISSIONRUN: emergency during {_phase} (HP under {_ctx.Config.MissionFightBelowPercent}% in a fight); standing to fight.");
+                _ctx.Log(string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+                    ? $"MISSIONRUN: attacked during {_phase}; standing to fight (fight style)."
+                    : $"MISSIONRUN: emergency during {_phase} (HP under {_ctx.Config.MissionFightBelowPercent}%, no stim ready); standing to fight.");
                 Enter(Phase.Fight, "fighting");
                 return false;
             }

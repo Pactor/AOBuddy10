@@ -181,6 +181,7 @@ namespace AOBuddy
                 {
                     var lp = DynelManager.LocalPlayer;
                     if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
+                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)) return true;   // fight style: anything that attacks
                     int hp = _support.SelfHpPct(lp);
                     // ...and no stim to fall back on: stims share the FirstAid lock (40 s after each use).
                     bool canStim = lp.IsSpecialReady(Stat.FirstAid);
