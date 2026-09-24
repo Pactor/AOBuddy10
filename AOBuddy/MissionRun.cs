@@ -176,7 +176,7 @@ namespace AOBuddy
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
                 // A skipped mission's zone is left alone for a while, so the next roll doesn't send him straight back.
-                if (_current != null && !_completed) _danger[_current.Playfield.Instance] = _clock;
+                if (_current != null && !_completed) MarkDanger(_current.Playfield.Instance);
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
@@ -269,7 +269,7 @@ namespace AOBuddy
             if (!_mission.InMission)
             {
                 int pf = (int)Playfield.ModelId;
-                _danger[pf] = _clock;
+                MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
                 _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions there for {T("dangermins"):0} minutes.");
             }
@@ -313,7 +313,7 @@ namespace AOBuddy
         {
             if (_phase != Phase.AwaitList) return;
             var ok = list.Where(Fits).ToList();
-            int dangerous = ok.RemoveAll(m => _danger.TryGetValue(m.Playfield.Instance, out double at) && _clock - at < T("dangermins") * 60);
+            int dangerous = ok.RemoveAll(m => Dangerous(m.Playfield.Instance));
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
@@ -345,7 +345,8 @@ namespace AOBuddy
             {
                 Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
                 UnknownPasses = true,
-                Filter = e => (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0) && !BadExit(e),
+                Filter = e => (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0) && !BadExit(e)
+                              && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance),
             };
             try
             {
@@ -463,7 +464,12 @@ namespace AOBuddy
                             var foe = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == me.FightingIdentity.Value);
                             // Only one that is hurting us: a mob that merely shows as fighting us from afar (the level
                             // 50 Watcher, 06:51) is not walked up to.
-                            if (foe != null && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                            // ...but not into a nest: at 12:33 (2026-09-24) walking up to a level 27 Bloodcreeper took him
+                            // down a slope among Bileswarm Defenders of level 116-118, dead in 3 s. Outside a mission,
+                            // nothing too strong for him within 30 m of the foe, or he stays where he is.
+                            bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
+                                            && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
                         if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
@@ -923,7 +929,16 @@ namespace AOBuddy
                 Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152,
             };
             ZoneRoute route;
+            // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
+            // at 12:14, then walked through again on the way to Athen Shire and killed there).
+            var plain = opt.Filter;
+            opt.Filter = e => plain(e) && !(Dangerous(e.ToPf) && e.ToPf != pf);
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            if (route == null || route.Hops.Count == 0)
+            {
+                opt.Filter = plain;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
@@ -1582,7 +1597,26 @@ namespace AOBuddy
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
         private int _straightTries;
-        private readonly Dictionary<int, double> _danger = new Dictionary<int, double>();
+        // Zones he died in / couldn't reach / skipped, with the (UTC) time: kept in danger.json so a restart
+        // doesn't send him straight back (he is restarted often while the run is being fixed).
+        private Dictionary<int, DateTime> _dangerStore;
+        private Dictionary<int, DateTime> _danger
+        {
+            get
+            {
+                if (_dangerStore != null) return _dangerStore;
+                _dangerStore = new Dictionary<int, DateTime>();
+                try { if (File.Exists(DangerPath)) foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath))) _dangerStore[int.Parse(kv.Key)] = (DateTime)kv.Value; } catch { }
+                return _dangerStore;
+            }
+        }
+        private string DangerPath => Path.Combine(_pluginDir, "danger.json");
+        private void MarkDanger(int pf)
+        {
+            _danger[pf] = DateTime.UtcNow;
+            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = kv.Value; File.WriteAllText(DangerPath, o.ToString()); } catch { }
+        }
+        private bool Dangerous(int pf) => _danger.TryGetValue(pf, out DateTime at) && (DateTime.UtcNow - at).TotalMinutes < T("dangermins");
         private bool _diedOnWay;
         private double _fleeUntil = -99;
         public bool Fleeing => Active && _clock < _fleeUntil;
@@ -1755,7 +1789,7 @@ namespace AOBuddy
                     {
                         // Unreachable from here: leave the zone alone for a while too (Galway County, 09:41-10:06,
                         // 2026-09-24: every point of the Galway Shire border pulled him back, for travel and hike).
-                        if (_current != null) _danger[_current.Playfield.Instance] = _clock;
+                        if (_current != null) MarkDanger(_current.Playfield.Instance);
                         Skip($"can't get to its door ({_overland.Status()})"); return false;
                     }
                     _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
