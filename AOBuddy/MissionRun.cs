@@ -39,7 +39,8 @@ namespace AOBuddy
         private readonly Func<int> _selfHp;
         private readonly CombatController _combat;
         private double _fightStart, _fightIgnoreUntil = -1;
-        private int _fightHpMin = 100;
+        private int _fightHpMin = 100, _prevHp = -1;
+        private double _lastHurt = -999;
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
@@ -271,6 +272,7 @@ namespace AOBuddy
                 return false;
             }
             int hpTick = _selfHp();
+            if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
             if (moving && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
@@ -295,7 +297,9 @@ namespace AOBuddy
                     // sent him to (23:38-23:51, 2026-09-23), HP at 100% throughout and every blow answered with
                     // feedback 110. Combat never ends, so neither did this pause. 30 s without dropping under 90%
                     // HP: carry on, and don't stop for a fight again for a minute unless HP falls.
-                    if (_clock - _fightStart > 30 && _fightHpMin >= 90 && _clock >= _heldUntil)
+                    // Measured over the last 30 s, not the whole fight: at 00:22 (2026-09-24) one early hit to 68%
+                    // kept him 'fighting' Levi McDannold, a find-person target 34 m off, for 15 minutes at 100% HP.
+                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil)
                     {
                         _fightIgnoreUntil = _clock + 60;
                         _ctx.Log("MISSIONRUN: 30 s of 'fighting' and nothing hurts me; carrying on.");
@@ -1300,10 +1304,18 @@ namespace AOBuddy
             {
                 if (mine >= 0) _defMyMin = Math.Min(_defMyMin, mine);
                 if (readable && ahp < _defHp) { _defHp = ahp; _defSince = _clock; }
+                // Its HP unreadable: judge by us. 30 s on it without being hurt once (Levi McDannold, 00:22-00:37).
+                else if (!readable && _clock - _defSince > 30 && _clock - _lastHurt > 30)
+                {
+                    _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' (HP unreadable) and nothing has hurt me for 30 s; leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, a.Identity, 300);
+                    _defId = null;
+                    return null;
+                }
                 // ...and one we can't hurt while it hurts us: a Guard Turret 12.6 m off, the bot standing with a
                 // melee weapon for 4 minutes until it died (00:08-00:12, 2026-09-24), the mission already done.
                 // 20 s of fighting it without its HP dropping at all: leave it.
-                else if (readable && _clock - _defSince > (_defMyMin >= 90 ? 30 : 20))
+                else if (readable && _clock - _defSince > 20)
                 {
                     _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' and its HP hasn't moved ({ahp}); leaving it alone for 5 minutes.");
                     _combat.SetAside(me, a.Identity, 300);
