@@ -186,7 +186,8 @@ namespace AOBuddy
                     // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
                     // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
                     int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
-                                                              && c.Identity != lp.Identity && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
+                                                              && c.Identity != lp.Identity && !_combat.IsSetAside(c.Identity)
+                                                              && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
                     if (onMe >= _config.MissionFightAttackers) return true;
                     int hp = _support.SelfHpPct(lp);
                     if (hp == SupportController.Unknown) return false;

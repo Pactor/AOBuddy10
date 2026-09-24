@@ -289,7 +289,11 @@ missions may be taken in (empty = the terminal's own zone only).
    - Used the Door object.
    The trips that did work tonight were follow copying the owner's own packets. The run's hike now walks onto the
    centre and stops (4 tries, alternating the data's height and +0.285), and logs which one takes him.
-   `ArriveWalk` likely needs the same: stop within ~0.5 m, and possibly at the pad's top height.
+   **Confirmed live 2026-09-24 00:14:** at 0.3 m from the centre and height 35.74 (our data's height), nothing
+   happened for 12 s. At 0.2 m and height 36.05 (the pad's top), he zoned 0.6 s later. **The height decides it.**
+   `ArriveWalk` needs the same: stop within ~0.5 m of the centre, **on the pad's top surface**. Our data's height
+   (35.89) is the ground under the pad; the pad here is 0.285 m higher. The Newland -> Borealis whompa worked
+   through travel on the same run.
    The owner's route: reclaim -> the Newland whompa at the back of the whompa row -> in Newland turn right
    into the Borealis whompa. The Grid needs Computer Literacy, and some Grid exits are over the bot's skill,
    so the whompa is the route of choice.

@@ -813,7 +813,9 @@ namespace AOBuddy
             }
             double ang = (_hikePass / 2) * Math.PI / 2;
             var dir = new Vector3((float)(_hikeDir0.X * Math.Cos(ang) - _hikeDir0.Z * Math.Sin(ang)), 0, (float)(_hikeDir0.X * Math.Sin(ang) + _hikeDir0.Z * Math.Cos(ang)));
-            float padY = e.A.Y + (_hikePass % 2 == 1 ? 0.285f : 0f);
+            // CONFIRMED 00:14 (2026-09-24): 0.3 m from the centre at 35.74 did nothing for 12 s; 0.2 m at 36.05
+            // zoned him 0.6 s later. The pad's top first, then our data's height.
+            float padY = e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
             var aim = new Vector3(e.A.X + dir.X * 1.2f, padY, e.A.Z + dir.Z * 1.2f);
@@ -1265,6 +1267,22 @@ namespace AOBuddy
         {
             if (!Active || me == null) return null;
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            // STATIONARY SHOOTERS: guard turrets don't follow, just run past them (owner, 2026-09-24; the bot stood
+            // 4 minutes swinging a melee weapon at a Guard Turret 12.6 m off until it died). No flag marks them
+            // (same flags as a summoned pet), so by behaviour: attacking us from more than 6 m and not moved at
+            // all in 5 s. Set aside for a minute; it doesn't count as a mob on him either (Main).
+            foreach (var n in DynelManager.Npcs)
+            {
+                if (n == null || !n.FightingIdentity.HasValue || n.FightingIdentity.Value != me.Identity || _combat.IsSetAside(n.Identity)) { if (n != null) _still.Remove(n.Identity); continue; }
+                var p = n.Transform.Position;
+                if (!_still.TryGetValue(n.Identity, out var st) || Vector3.Distance(st.pos, p) > 0.5f) { _still[n.Identity] = (p, _clock); continue; }
+                if (_clock - st.since > 5 && me.DistanceFrom(n) > 6f)
+                {
+                    _ctx.Log($"MISSIONRUN: '{n.Name}' shoots from {me.DistanceFrom(n):0} m and hasn't moved in {(_clock - st.since):0} s: a stationary shooter; running past it.");
+                    _combat.SetAside(me, n.Identity, 60);
+                    _still.Remove(n.Identity);
+                }
+            }
             var a = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
@@ -1295,6 +1313,7 @@ namespace AOBuddy
             }
             return a;
         }
+        private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
         private double _defSince;
         private int _defHp, _defMyMin = 100;
