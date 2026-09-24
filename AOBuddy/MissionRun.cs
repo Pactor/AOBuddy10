@@ -97,7 +97,16 @@ namespace AOBuddy
             {
                 string v = a.Substring(4).Trim();
                 if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
-                if (v == "now" && Active) { _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true; StartShop("owner asked"); _ctx.Config.MissionShop = was; }
+                if (v == "now")
+                {
+                    // Starts the run first if it isn't going (07:56, 2026-09-24: 'shop now' on a fresh start did nothing).
+                    if (!Active) Command("", reply);
+                    if (!Active) return;
+                    _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true;
+                    bool went = StartShop("owner asked"); _ctx.Config.MissionShop = was;
+                    if (!went) reply("Couldn't start the housekeeping (see the log).");
+                    return;
+                }
                 if (v == "list") { reply(SellPreview()); return; }
                 if (v == "bags")
                 {
