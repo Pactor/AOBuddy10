@@ -1547,7 +1547,15 @@ namespace AOBuddy
                 case ShopStep.Exit:
                 {
                     if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
-                    if (t > 30 || !_shopArrival.HasValue) { _follow.ClearMovement(); _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false; }
+                    // No landing spot (logged in inside, 13:26 2026-09-24) or it didn't take him out: the hike's own way
+                    // out - the nearest door, stood on - toward the terminal. It hands back to this step once out.
+                    if (t > 30 || !_shopArrival.HasValue)
+                    {
+                        _follow.ClearMovement();
+                        _hikeLastHike = -99;
+                        if (StartHike(me, _termPf, _termPos, "the terminal")) return false;
+                        _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false;
+                    }
                     // Back the way he came in: to where he landed, then 3 m on past it, away from the shop spot.
                     Vector3 a = _shopArrival.Value;
                     var d = new Vector3(a.X - ShopSpot.X, 0, a.Z - ShopSpot.Z);
