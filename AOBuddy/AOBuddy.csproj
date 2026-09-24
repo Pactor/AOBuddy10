@@ -27,6 +27,7 @@
     <None Update="GameData\Nav\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\ScottyWarps.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="GameData\PetShellNanos.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="GameData\ChewysBuffs.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
   </ItemGroup>
 
 </Project>

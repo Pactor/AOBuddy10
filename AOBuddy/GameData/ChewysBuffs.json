@@ -1,0 +1,1329 @@
+{
+ "_about": "Buff list (from Chewy's buff list, corrected 2026-09-24 against the live game), grouped by profession. 'effect' and 'ncu' as given; 'team': true marks a buff cast on the team. 'id' is the nano id, resolved by name (client names differ slightly for some entries - see 'note') against the 18.8.50_EP1 client data: omnicell/OmniCell/Datafiles/nanos.ocp (OmniCell content pack) for the nano records and their profession gates, with names from OmniCell.Database SqlTables/itemnames.sql (rows of type 'Nano'). Where several ids share a name, the one whose cast requirements gate it to this list's profession was taken.",
+ "professions": [
+  {
+   "name": "Generic",
+   "buffs": [
+    {
+     "name": "L33t Transformation",
+     "effect": "Leet Transformation",
+     "ncu": 5,
+     "id": 288774,
+     "tell": "leet"
+    },
+    {
+     "name": "Composite Attribute Boost",
+     "effect": "+12 Attributes",
+     "ncu": 4,
+     "id": 223372,
+     "tell": "c1"
+    },
+    {
+     "name": "Composite Nano Expertise",
+     "effect": "+20 Nano Skills",
+     "ncu": 4,
+     "id": 223380,
+     "tell": "c2"
+    },
+    {
+     "name": "Composite Utility Expertise",
+     "effect": "+20 Conc., Perc., B&E, Comp. Lit, Treat., First A., Psy.",
+     "ncu": 4,
+     "id": 287046,
+     "tell": "c3"
+    },
+    {
+     "name": "Composite Tradeskill Expertise",
+     "effect": "+20 Mec. E., Ele E., QFT, Weap. Sm., Pharm., Chem., Nano P.",
+     "ncu": 4,
+     "id": 287040,
+     "tell": "c4"
+    },
+    {
+     "name": "Composite Martial Prowess Expertise",
+     "effect": "+20 Riposte, Deflect, HD, ND, Sharp Obj., RS",
+     "ncu": 4,
+     "id": 302158,
+     "tell": "c5"
+    },
+    {
+     "name": "Composite Ranged Expertise",
+     "effect": "+20 Ranged Weapon Skills",
+     "ncu": 4,
+     "id": 223348,
+     "tell": "c6"
+    },
+    {
+     "name": "Composite Ranged Special Expertise",
+     "effect": "+20 Ranged Weapon Skills",
+     "ncu": 4,
+     "id": 223364,
+     "tell": "c7"
+    },
+    {
+     "name": "Composite Melee Expertise",
+     "effect": "+20 1HB, 2HB, 1HE, 2HE, Piercing, Melee E.",
+     "ncu": 4,
+     "id": 223360,
+     "tell": "c8"
+    },
+    {
+     "name": "Composite Physical Special Expertise",
+     "effect": "+20 Fast At., Sneak At., Brawl, Dimach, Mult M., Mart. A.",
+     "ncu": 4,
+     "id": 215264,
+     "tell": "c9"
+    }
+   ]
+  },
+  {
+   "name": "Agent",
+   "buffs": [
+    {
+     "name": "Assassin's Grin",
+     "effect": "+45 Damage",
+     "ncu": 27,
+     "id": 81856,
+     "tell": "ag"
+    },
+    {
+     "name": "Feline Grace",
+     "effect": "+25 Agility",
+     "ncu": 17,
+     "id": 25989,
+     "tell": "fg"
+    },
+    {
+     "name": "Enhanced Senses",
+     "effect": "+15 Sense",
+     "ncu": 9,
+     "id": 25988,
+     "tell": "es"
+    },
+    {
+     "name": "Enhanced Sureshot",
+     "effect": "+11 crit inc",
+     "ncu": 49,
+     "id": 160791,
+     "tell": "ess"
+    },
+    {
+     "name": "Take the Shot",
+     "effect": "+165 Aimed Shot",
+     "ncu": 47,
+     "id": 32065,
+     "tell": "tts"
+    },
+    {
+     "name": "Unexpected Attack",
+     "effect": "+120 Rifle",
+     "ncu": 42,
+     "id": 32067,
+     "tell": "ua"
+    }
+   ]
+  },
+  {
+   "name": "Bureaucrat",
+   "buffs": [
+    {
+     "name": "Improved Cut Red Tape",
+     "effect": "+75 AAD, -3% Crit Dec., -3% Skill Lock",
+     "ncu": 49,
+     "id": 222695,
+     "tell": "icrt"
+    },
+    {
+     "name": "Soothing Calm",
+     "effect": "+60 Nano Delta",
+     "ncu": 32,
+     "id": 222853,
+     "tell": "sc"
+    },
+    {
+     "name": "Baton of Command",
+     "effect": "+19 Experience",
+     "ncu": 35,
+     "team": true,
+     "id": 90444,
+     "tell": "com"
+    },
+    {
+     "name": "Baton of Leadership",
+     "effect": "+14 Experience",
+     "ncu": 22,
+     "id": 90445,
+     "tell": "lea"
+    },
+    {
+     "name": "Baton of Authority",
+     "effect": "+11 Experience",
+     "ncu": 4,
+     "team": true,
+     "id": 90446,
+     "tell": "aut"
+    }
+   ]
+  },
+  {
+   "name": "Doctor",
+   "buffs": [
+    {
+     "name": "Continuous Reconstruction",
+     "effect": "+65 Healdelta",
+     "ncu": 45,
+     "id": 222824,
+     "tell": "cr"
+    },
+    {
+     "name": "Instinctive Control",
+     "effect": "NanoC. Init. +200, NR +25, Max Nano +150",
+     "ncu": 35,
+     "id": 28669,
+     "tell": "inc"
+    },
+    {
+     "name": "Improved Instinctive Control",
+     "effect": "NanoC. Init. +350, NR +75, Max Nano +350",
+     "ncu": 56,
+     "id": 222856,
+     "tell": "iic"
+    },
+    {
+     "name": "Improved Nano Repulsor",
+     "effect": "+200 NR",
+     "ncu": 31,
+     "id": 222823,
+     "tell": "inr"
+    },
+    {
+     "name": "Iron Circle",
+     "effect": "+20 Str/Stam",
+     "ncu": 26,
+     "id": 42400,
+     "tell": "ic"
+    },
+    {
+     "name": "Superior Omni-Med Enhancement",
+     "effect": "+920 Max Health, 111-169 HoT",
+     "ncu": 45,
+     "team": true,
+     "id": 95709,
+     "tell": "hp"
+    },
+    {
+     "name": "Specialist Treatment",
+     "effect": "+35 Treatment, +20 First Aid",
+     "ncu": 11,
+     "id": 28674,
+     "tell": "st"
+    },
+    {
+     "name": "Superior First Aid",
+     "effect": "+80 FA/Treat",
+     "ncu": 37,
+     "id": 28675,
+     "tell": "sfa"
+    }
+   ]
+  },
+  {
+   "name": "Enforcer",
+   "buffs": [
+    {
+     "name": "Improved Essence of Behemoth",
+     "effect": "+1998 HP, +54 str, +54 sta, increases size (Essence)",
+     "ncu": 56,
+     "id": 273629,
+     "tell": "es1"
+    },
+    {
+     "name": "Essence of Behemoth",
+     "effect": "+996 HP, +27 str, +27 sta, increases size (Essence)",
+     "ncu": 47,
+     "id": 95708,
+     "tell": "es2"
+    },
+    {
+     "name": "Essence of Leviathan",
+     "effect": "+819 HP, +24 str, +24 sta, increases size (Essence)",
+     "ncu": 41,
+     "id": 95700,
+     "tell": "es3"
+    },
+    {
+     "name": "Essence of Gargantua",
+     "effect": "+707 HP, +22 str, +22 sta, increases size (Essence)",
+     "ncu": 38,
+     "id": 95701,
+     "tell": "es4"
+    },
+    {
+     "name": "Essence of Cyclops",
+     "effect": "+401 HP, +17 str, +17 sta, increases size (Essence)",
+     "ncu": 18,
+     "id": 95702,
+     "tell": "es5"
+    },
+    {
+     "name": "Essence of Boundless Health",
+     "effect": "+240 HP, +11 str, +11 sta, increases size (Essence)",
+     "ncu": 11,
+     "id": 95704,
+     "tell": "es7"
+    },
+    {
+     "name": "Essence of Might",
+     "effect": "+171 HP, +8 str, +8 sta, increases size (Essence)",
+     "ncu": 8,
+     "id": 95706,
+     "tell": "es9"
+    },
+    {
+     "name": "Essence of Vitality",
+     "effect": "+112 HP, +5 str, +5 sta, increases size (Essence)",
+     "ncu": 5,
+     "id": 95707,
+     "tell": "es10"
+    },
+    {
+     "name": "Coruscating Screen",
+     "effect": "+479 Max Health, +60 Shield AC",
+     "ncu": 45,
+     "id": 55751,
+     "tell": "ds1"
+    },
+    {
+     "name": "Lick of Fire",
+     "effect": "+412 HP (Damage Shield)",
+     "ncu": 42,
+     "id": 29646,
+     "tell": "ds3"
+    },
+    {
+     "name": "Glacial Cloak",
+     "effect": "+381 HP (Damage Shield)",
+     "ncu": 41,
+     "id": 55748,
+     "tell": "ds4"
+    },
+    {
+     "name": "Toxic Barrier",
+     "effect": "+357 HP (Damage Shield)",
+     "ncu": 39,
+     "id": 29658,
+     "tell": "ds5"
+    },
+    {
+     "name": "Lightning Shield",
+     "effect": "+310 HP (Damage Shield)",
+     "ncu": 33,
+     "id": 55749,
+     "tell": "ds6"
+    },
+    {
+     "name": "Barbaric Blades",
+     "effect": "+256 HP (Damage Shield)",
+     "ncu": 26,
+     "id": 55747,
+     "tell": "ds7"
+    },
+    {
+     "name": "Bristling Guard",
+     "effect": "+228 HP (Damage Shield)",
+     "ncu": 23,
+     "id": 55745,
+     "tell": "ds8"
+    },
+    {
+     "name": "Immolation Shield",
+     "effect": "+201 HP (Damage Shield)",
+     "ncu": 20,
+     "id": 29645,
+     "tell": "ds9"
+    },
+    {
+     "name": "Poison Stingers",
+     "effect": "+161 HP (Damage Shield)",
+     "ncu": 15,
+     "id": 55746,
+     "tell": "ds10"
+    },
+    {
+     "name": "Arctic Cloak",
+     "effect": "+128 HP (Damage Shield)",
+     "ncu": 12,
+     "id": 55743,
+     "tell": "ds11"
+    },
+    {
+     "name": "Glowing Retribution",
+     "effect": "+99 HP (Damage Shield)",
+     "ncu": 9,
+     "id": 29642,
+     "tell": "ds12"
+    },
+    {
+     "name": "Field of Sparks",
+     "effect": "+73 HP (Damage Shield)",
+     "ncu": 7,
+     "id": 55744,
+     "tell": "ds13"
+    },
+    {
+     "name": "Bristling Shield",
+     "effect": "+44 HP (Damage Shield)",
+     "ncu": 4,
+     "id": 55742,
+     "tell": "ds14"
+    },
+    {
+     "name": "Avenging Shield",
+     "effect": "+18 HP (Damage Shield)",
+     "ncu": 2,
+     "id": 55741,
+     "tell": "ds15"
+    },
+    {
+     "name": "Failing Impregnability",
+     "effect": "745 Layers (Absorb Shield)",
+     "ncu": 46,
+     "id": 117686,
+     "tell": "as2"
+    },
+    {
+     "name": "Absorb Punishment",
+     "effect": "697 Layers (Absorb Shield)",
+     "ncu": 43,
+     "id": 117688,
+     "tell": "as3"
+    },
+    {
+     "name": "Shrug Off Blows",
+     "effect": "642 Layers (Absorb Shield)",
+     "ncu": 42,
+     "id": 117682,
+     "tell": "as4"
+    },
+    {
+     "name": "Deaden Pain",
+     "effect": "594 Layers (Absorb Shield)",
+     "ncu": 41,
+     "id": 117687,
+     "tell": "as5"
+    },
+    {
+     "name": "Physical Dominance",
+     "effect": "+107 init (Initiative Buff)",
+     "ncu": 35,
+     "id": 29649,
+     "tell": "in1"
+    },
+    {
+     "name": "Focused Anger",
+     "effect": "+72 init (Initiative Buff)",
+     "ncu": 19,
+     "id": 29641,
+     "tell": "in2"
+    },
+    {
+     "name": "Thug's Delight",
+     "effect": "+14 1hb (Thug's Delight)",
+     "ncu": 1,
+     "id": 43371,
+     "tell": "td1"
+    },
+    {
+     "name": "Brutal Thug",
+     "effect": "+87 1hb/2hb (Brutal Thug)",
+     "ncu": 24,
+     "id": 29630,
+     "tell": "bt"
+    },
+    {
+     "name": "Prodigious Strength",
+     "effect": "+40 Str",
+     "ncu": 42,
+     "id": 29652,
+     "tell": "prod"
+    }
+   ]
+  },
+  {
+   "name": "Engineer",
+   "buffs": [
+    {
+     "name": "Gift of Assurance",
+     "effect": "+5000 AC's",
+     "ncu": 55,
+     "id": 227680,
+     "tell": "ga"
+    },
+    {
+     "name": "Aegis Barrier",
+     "effect": "+720 AC's",
+     "ncu": 58,
+     "id": 29789,
+     "tell": "ab"
+    },
+    {
+     "name": "Extreme Prejudice",
+     "effect": "+120 Grenade, +120 Heavy Weapons, +120 Pistol",
+     "ncu": 43,
+     "id": 29762,
+     "tell": "ep"
+    },
+    {
+     "name": "Philosopher's Stone",
+     "effect": "+62 Chem., +62 Pharma Tech",
+     "ncu": 17,
+     "id": 29772,
+     "tell": "phil"
+    },
+    {
+     "name": "Rapid Weapon",
+     "effect": "+114 Ranged. Init",
+     "ncu": 40,
+     "id": 29779,
+     "tell": "rapidwep"
+    },
+    {
+     "name": "Pistol Mastery",
+     "effect": "+40 Pistol",
+     "ncu": 8,
+     "id": 29246,
+     "tell": "pm"
+    }
+   ]
+  },
+  {
+   "name": "Fixer",
+   "buffs": [
+    {
+     "name": "Improved Semi-Sentient Augmentation Cloud",
+     "effect": "+40 damage",
+     "ncu": 40,
+     "id": 222838,
+     "tell": "issac"
+     
+    },
+    {
+     "name": "Lasting Ultimatum",
+     "effect": "+466-502 HoT (10s tick) Long HoT",
+     "ncu": 25,
+     "id": 252050,
+     "tell": "lh1"
+    },
+    {
+     "name": "Life Bond",
+     "effect": "+434-471 HoT (10s tick) Long HoT",
+     "ncu": 25,
+     "id": 252048,
+     "tell": "lh2"
+    },
+    {
+     "name": "Lasting Life",
+     "effect": "+406-439 HoT (10s tick) Long HoT",
+     "ncu": 25,
+     "id": 252046,
+     "tell": "lh3"
+    },
+    {
+     "name": "Dr Hack 'n Quack",
+     "effect": "+362-370 HoT (10s tick) Long HoT",
+     "ncu": 25,
+     "id": 162734,
+     "tell": "lh4"
+    },
+    {
+     "name": "Cellular Crashcart",
+     "effect": "+326-335 HoT (10s tick) Long HoT",
+     "ncu": 24,
+     "id": 162732,
+     "tell": "lh5"
+    },
+    {
+     "name": "Backyard Revitalization",
+     "effect": "+276-283 HoT (10s tick) Long HoT",
+     "ncu": 22,
+     "id": 162730,
+     "tell": "lh6"
+    },
+    {
+     "name": "Systolic Equalizer",
+     "effect": "+235-243 HoT (10s tick) Long HoT",
+     "ncu": 20,
+     "id": 162728,
+     "tell": "lh7"
+    },
+    {
+     "name": "Hacked Diagnosis",
+     "effect": "+58-64 HoT (10s tick) Long HoT",
+     "ncu": 6,
+     "id": 162718,
+     "tell": "lh12"
+    },
+    {
+     "name": "Rebinding Sutures",
+     "effect": "+35-41 HoT (10s tick) Long HoT",
+     "ncu": 4,
+     "id": 162716,
+     "tell": "lh13"
+    },
+    {
+     "name": "Relieving Salve",
+     "effect": "+15-18 HoT (10s tick) Long HoT",
+     "ncu": 2,
+     "id": 162714,
+     "tell": "lh14"
+    },
+    {
+     "name": "Omni-Med Incursion",
+     "effect": "+122-276 HoT (5s tick) Short HoT",
+     "ncu": 24,
+     "id": 85226,
+     "tell": "sh3"
+    },
+    {
+     "name": "Policy Skim",
+     "effect": "+83-168 HoT (5s tick) Short HoT",
+     "ncu": 20,
+     "id": 85229,
+     "tell": "sh6"
+    },
+    {
+     "name": "Advanced Insurance Hack",
+     "effect": "+64-139 HoT (5s tick) Short HoT",
+     "ncu": 17,
+     "id": 85228,
+     "tell": "sh7"
+    },
+    {
+     "name": "Detailed Medical Claim",
+     "effect": "+43-92 HoT (5s tick) Short HoT",
+     "ncu": 12,
+     "id": 85230,
+     "tell": "sh8"
+    },
+    {
+     "name": "Basic Policy Skim",
+     "effect": "+38-82 HoT (5s tick) Short HoT",
+     "ncu": 11,
+     "id": 85231,
+     "tell": "sh9"
+    },
+    {
+     "name": "Insurance Hack",
+     "effect": "+26-63 HoT (5s tick) Short HoT",
+     "ncu": 8,
+     "id": 85232,
+     "tell": "sh10"
+    },
+    {
+     "name": "Falsify Medical Records",
+     "effect": "+17-39 HoT (5s tick) Short HoT",
+     "ncu": 5,
+     "id": 85233,
+     "tell": "sh11"
+    },
+    {
+     "name": "Medical Claim",
+     "effect": "+10-21 HoT (5s tick) Short HoT",
+     "ncu": 3,
+     "id": 85234,
+     "tell": "sh12"
+    },
+    {
+     "name": "Basic Insurance Hack",
+     "effect": "+2-6 HoT (5s tick) Short HoT",
+     "ncu": 1,
+     "id": 85215,
+     "tell": "sh13"
+    },
+    {
+     "name": "Back Pain",
+     "effect": "+70 Sneak Attack",
+     "ncu": 17,
+     "id": 31409,
+     "tell": "bp"
+    },
+    {
+     "name": "NCU Nanos",
+     "effect": "All NCU Buffs",
+     "ncu": 1,
+     "team": true,
+     "ids": [
+      162995,
+      163079,
+      163081,
+      163087
+     ],
+     "tell": "ncu",
+     "note": "not one nano: the Fixer team Max-NCU line, +20/+40/+60/+150 Max NCU (162995 NCU Compressor, 163079 Retool NCU, 163081 Jury-rigged NCU Analyzer, 163087 QuarkStor NCU Core)"
+    },
+    {
+     "name": "Gridspace Freedom (Team)",
+     "effect": "+680 RS",
+     "ncu": 44,
+     "team": true,
+     "id": 162595,
+     "tell": "gsfteam"
+    },
+    {
+     "name": "Gridspace Freedom",
+     "effect": "+720 RS, +79 Evades",
+     "ncu": 48,
+     "id": 93132,
+     "tell": "gsf"
+    },
+    {
+     "name": "Partial Grid Jump",
+     "effect": "+450 RS, +61 Evades",
+     "ncu": 35,
+     "id": 93127,
+     "tell": "pgj"
+    },
+    {
+     "name": "Grid Surfer",
+     "effect": "+390 RS, +37 Evades",
+     "ncu": 26,
+     "id": 93128,
+     "tell": "gs"
+    },
+    {
+     "name": "Leech Grid Vector",
+     "effect": "+310 RS, +25 Evades",
+     "ncu": 20,
+     "id": 93129,
+     "tell": "lgv"
+    },
+    {
+     "name": "Grid Runner",
+     "effect": "+260 RS, +16 Evades",
+     "ncu": 14,
+     "id": 93130,
+     "tell": "gr"
+    },
+    {
+     "name": "Hack Grid Vector",
+     "effect": "+190 RS, +7 Evades",
+     "ncu": 10,
+     "id": 93131,
+     "tell": "hgv"
+    },
+    {
+     "name": "Blood Makes Noise",
+     "effect": "+240 Perception",
+     "ncu": 48,
+     "id": 31380,
+     "tell": "bmn"
+    }
+   ]
+  },
+  {
+   "name": "MartialArtist",
+   "buffs": [
+    {
+     "name": "Dirty Fighter",
+     "effect": "+45 Brawling",
+     "ncu": 11,
+     "id": 28870,
+     "tell": "df"
+    },
+    {
+     "name": "Fervor of the Devotee",
+     "effect": "+70 Fast Attack",
+     "ncu": 14,
+     "id": 210323,
+     "tell": "fer"
+    },
+    {
+     "name": "Horde",
+     "effect": "+12 Add All Dmg",
+     "ncu": 5,
+     "team": true,
+     "id": 28890,
+     "tell": "horde"
+    },
+    {
+     "name": "Lesser Controlled Rage",
+     "effect": "+12 MA, +8 Physic. Init",
+     "ncu": 1,
+     "id": 43369,
+     "tell": "lcr"
+    },
+    {
+     "name": "Limbo Mastery",
+     "effect": "+30 Duck-Exp",
+     "ncu": 6,
+     "id": 28894,
+     "tell": "lm"
+    },
+    {
+     "name": "Mark of Peril",
+     "effect": "+11 Crit Inc",
+     "ncu": 49,
+     "id": 160574,
+     "tell": "mop"
+    },
+    {
+     "name": "Martial Arts Mastery",
+     "effect": "+60 MA, +30 SharpObj",
+     "ncu": 16,
+     "id": 28895,
+     "tell": "mama"
+    },
+    {
+     "name": "Reduce Inertia",
+     "effect": "+120 Evades",
+     "ncu": 42,
+     "id": 28903,
+     "tell": "ri"
+    }
+   ]
+  },
+  {
+   "name": "Metaphysicist",
+   "buffs": [
+    {
+     "name": "Neuronal Stimulator",
+     "effect": "+23 Intel and Psychic",
+     "ncu": 7,
+     "id": 220345,
+     "note": "profession gate says castable by Bureaucrat, not Metaphysicist",
+     "tell": "ns"
+    },
+    {
+     "name": "Composite Mochams (8 hour)",
+     "effect": "+140 all Nano Skills 8 Hour",
+     "ncu": 55,
+     "id": 220343,
+     "tell": "compmoch8"
+    },
+    {
+     "name": "Composite Mochams (4 hour)",
+     "effect": "+140 all Nano Skills 4 Hour",
+     "ncu": 54,
+     "id": 220341,
+     "tell": "compmoch4"
+    },
+    {
+     "name": "Composite Mochams (2 hour)",
+     "effect": "+140 all Nano Skills 2 Hour",
+     "ncu": 51,
+     "id": 220339,
+     "tell": "compmoch2"
+    },
+    {
+     "name": "Composite Mochams (1 hour)",
+     "effect": "+140 all Nano Skills 1 Hour",
+     "ncu": 48,
+     "id": 220337,
+     "tell": "compmoch1"
+    },
+    {
+     "name": "Mocham's Gift: BioMet",
+     "effect": "+140 BioMet",
+     "ncu": 51,
+     "id": 29299,
+     "tell": "bmmo"
+    },
+    {
+     "name": "Mocham's Gift: MatCrea",
+     "effect": "+140 MatCrea",
+     "ncu": 51,
+     "id": 29300,
+     "tell": "mcmo"
+    },
+    {
+     "name": "Mocham's Gift: SpaceTime",
+     "effect": "+140 SpaceTime",
+     "ncu": 50,
+     "id": 29301,
+     "tell": "stmo"
+    },
+    {
+     "name": "Mocham's Gift: MatMet",
+     "effect": "+140 MatMet",
+     "ncu": 50,
+     "id": 29302,
+     "tell": "mmmo"
+    },
+    {
+     "name": "Mocham's Gift: PsyMod",
+     "effect": "+140 PsyMod",
+     "ncu": 52,
+     "id": 29303,
+     "tell": "pmmo"
+    },
+    {
+     "name": "Mocham's Gift: SenseImp",
+     "effect": "+140 SenseImp",
+     "ncu": 51,
+     "id": 29304,
+     "tell": "simo"
+    },
+    {
+     "name": "Composite Infuse With Knowledge",
+     "effect": "+90 To All Nano Skills",
+     "ncu": 25,
+     "id": 220335,
+     "tell": "cominf"
+    },
+    {
+     "name": "Infuse With Knowledge: Biological Metamorphose",
+     "effect": "+90 BioMet",
+     "ncu": 38,
+     "id": 151761,
+     "tell": "bmi"
+    },
+    {
+     "name": "Infuse With Knowledge: Material Creation",
+     "effect": "+90 MatCre",
+     "ncu": 40,
+     "id": 151762,
+     "tell": "mci"
+    },
+    {
+     "name": "Infuse With Knowledge: Time and Space",
+     "effect": "+90 SpaceTime",
+     "ncu": 40,
+     "id": 151758,
+     "tell": "tsi"
+    },
+    {
+     "name": "Infuse With Knowledge: Material Metamorphose",
+     "effect": "+90 MatMet",
+     "ncu": 39,
+     "id": 151759,
+     "tell": "mmi"
+    },
+    {
+     "name": "Infuse With Knowledge: Psychological Modification",
+     "effect": "+90 PsyMod",
+     "ncu": 42,
+     "id": 151760,
+     "tell": "pmi"
+    },
+    {
+     "name": "Infuse With Knowledge: Sensory Improvement",
+     "effect": "+90 SenImp",
+     "ncu": 41,
+     "id": 151757,
+     "tell": "sii"
+    },
+    {
+     "name": "Composite Mastery",
+     "effect": "+50 To All Nano Skills",
+     "ncu": 13,
+     "id": 220333,
+     "tell": "compmast"
+    },
+    {
+     "name": "Mastery: Biological Metamorphose",
+     "effect": "+50 BioMet",
+     "ncu": 12,
+     "id": 29275,
+     "tell": "bmma"
+    },
+    {
+     "name": "Mastery: Material Creation",
+     "effect": "+50 MatCrea",
+     "ncu": 14,
+     "id": 29294,
+     "tell": "mcma"
+    },
+    {
+     "name": "Mastery: Time and Space",
+     "effect": "+50 SpaceTime",
+     "ncu": 13,
+     "id": 29295,
+     "tell": "stma"
+    },
+    {
+     "name": "Mastery: Material Metamorphose",
+     "effect": "+50 MatMet",
+     "ncu": 16,
+     "id": 29296,
+     "tell": "mmma"
+    },
+    {
+     "name": "Mastery: Psychological Modification",
+     "effect": "+50 PsyMod",
+     "ncu": 15,
+     "id": 29312,
+     "tell": "pmma"
+    },
+    {
+     "name": "Mastery: Sensory Improvement",
+     "effect": "+50 Sense Imp",
+     "ncu": 14,
+     "id": 29315,
+     "tell": "sima"
+    },
+    {
+     "name": "Composite Teachings",
+     "effect": "+25 To All Nano Skills",
+     "ncu": 6,
+     "id": 220331,
+     "tell": "compt"
+    },
+    {
+     "name": "Teachings: Biological Metamorphose",
+     "effect": "+25 BioMet",
+     "ncu": 6,
+     "id": 151768,
+     "tell": "bmte"
+    },
+    {
+     "name": "Teachings: Material Creation",
+     "effect": "+25 MatCrea",
+     "ncu": 7,
+     "id": 151765,
+     "tell": "mcte"
+    },
+    {
+     "name": "Teachings: Time and Space",
+     "effect": "+25 SpaceTime",
+     "ncu": 7,
+     "id": 151766,
+     "tell": "stte"
+    },
+    {
+     "name": "Teachings: Material Metamorphose",
+     "effect": "+25 MatMet",
+     "ncu": 6,
+     "id": 151767,
+     "tell": "mmte"
+    },
+    {
+     "name": "Teachings: Psychological Modification",
+     "effect": "+25 PsyMod",
+     "ncu": 8,
+     "id": 151763,
+     "tell": "pmte"
+    },
+    {
+     "name": "Teachings: Sensory Improvement",
+     "effect": "+25 Sense Imp",
+     "ncu": 7,
+     "id": 151764,
+     "tell": "site"
+    },
+    {
+     "name": "Coherent Notum Web",
+     "effect": "Nano Cost -15%",
+     "ncu": 28,
+     "id": 95411,
+     "tell": "cnw"
+    },
+    {
+     "name": "Advanced Symbol Manipulation",
+     "effect": "+92 Nano Programing",
+     "ncu": 29,
+     "id": 29327,
+     "tell": "np"
+    }
+   ]
+  },
+  {
+   "name": "NanoTechnician",
+   "buffs": [
+    {
+     "name": "Izgimmer's Obfuscated Recompiler",
+     "effect": "Nano Cost -28%",
+     "ncu": 55,
+     "id": 95417,
+     "tell": "cost"
+    },
+    {
+     "name": "Notum Overload",
+     "effect": "Nano Cost +4%, RangeInc. NF 104",
+     "ncu": 54,
+     "id": 95443,
+     "tell": "range"
+    },
+    {
+     "name": "Personal Notum Harvester",
+     "effect": "+235 Nano HoT",
+     "ncu": 52,
+     "id": 90406,
+     "tell": "pnh"
+    }
+   ]
+  },
+  {
+   "name": "Soldier",
+   "buffs": [
+    {
+     "name": "Full Automatic Targeting",
+     "effect": "+74 AAO",
+     "ncu": 37,
+     "id": 270248,
+     "tell": "fat"
+    },
+    {
+     "name": "Riot Control",
+     "effect": "+110 Burst",
+     "ncu": 39,
+     "id": 29251,
+     "tell": "rc"
+    },
+    {
+     "name": "Assault Rifle Weapon Mastery",
+     "effect": "+60 Assault Rifle",
+     "ncu": 16,
+     "id": 29220,
+     "tell": "arm"
+    },
+    {
+     "name": "LR Weapon Mastery",
+     "effect": "+70 Ranged Energy",
+     "ncu": 20,
+     "id": 29230,
+     "tell": "lr"
+    },
+    {
+     "name": "Offensive Steamroller",
+     "effect": "+30 Fling Shot, +133 Inits",
+     "ncu": 48,
+     "id": 29240,
+     "tell": "os"
+    },
+    {
+     "name": "Reactive Reflective Field (Extended)",
+     "effect": "+30 Reflect AC, +49 Reflect Dmg",
+     "ncu": 44,
+     "id": 70311,
+     "tell": "rrfe"
+    },
+    {
+     "name": "Minor Reflective Field (Extended)",
+     "effect": "+22 Reflect AC, +29 Reflect Dmg",
+     "ncu": 37,
+     "id": 70319,
+     "tell": "mrf"
+    },
+    {
+     "name": "Partial Reflective Field (Extended)",
+     "effect": "+21 Reflect AC, +25 Reflect Dmg",
+     "ncu": 31,
+     "id": 70315,
+     "tell": "prf"
+    },
+    {
+     "name": "Reactive Deflection Shield (Extended)",
+     "effect": "+19 Reflect AC, +21 Reflect Dmg",
+     "ncu": 26,
+     "id": 70313,
+     "tell": "rds"
+    },
+    {
+     "name": "Greater Deflection Shield (Extended)",
+     "effect": "+15 Reflect AC, +14 Reflect Dmg",
+     "ncu": 18,
+     "id": 70335,
+     "tell": "gds"
+    },
+    {
+     "name": "Deflection Shield (Extended)",
+     "effect": "+14 Reflect AC, +10 Reflect Dmg",
+     "ncu": 12,
+     "id": 70336,
+     "tell": "ds"
+    },
+    {
+     "name": "Lesser Deflection Shield (Extended)",
+     "effect": "+13 Reflect AC, +7 Reflect Dmg",
+     "ncu": 10,
+     "id": 70331,
+     "tell": "lds"
+    },
+    {
+     "name": "Partial Deflection Shield (Extended)",
+     "effect": "+10 Reflect AC, +2 Reflect Dmg",
+     "ncu": 3,
+     "id": 70317,
+     "tell": "pds"
+    }
+   ]
+  },
+  {
+   "name": "Trader",
+   "buffs": [
+    {
+     "name": "Skill Wrangler (Premium)",
+     "effect": "+131 Weap/Nano skills",
+     "ncu": 58,
+     "id": 121335,
+     "tell": "131"
+    },
+    {
+     "name": "Team Skill Wrangler (Premium)",
+     "effect": "+132 Weap/Nano skills",
+     "ncu": 58,
+     "team": true,
+     "id": 121320,
+     "tell": "132"
+    },
+    {
+     "name": "Umbral Wrangler (Premium)",
+     "effect": "Umbral 153",
+     "ncu": 0,
+     "team": true,
+     "id": 235291,
+     "tell": "umb1"
+    },
+    {
+     "name": "Umbral Wrangler (Exceptional)",
+     "effect": "Umbral 146",
+     "ncu": 0,
+     "team": true,
+     "id": 235289,
+     "tell": "umb2"
+    },
+    {
+     "name": "Umbral Wrangler (Greater)",
+     "effect": "Umbral 138",
+     "ncu": 0,
+     "team": true,
+     "id": 235287,
+     "tell": "umb3"
+    },
+    {
+     "name": "Skill Wrangler (Advanced)",
+     "effect": "+74 Weap/Nano skills",
+     "ncu": 35,
+     "id": 121345,
+     "tell": "74"
+    },
+    {
+     "name": "Skill Wrangler (Major)",
+     "effect": "+65 Weap/Nano skills",
+     "ncu": 30,
+     "id": 121338,
+     "tell": "65"
+    },
+    {
+     "name": "Skill Wrangler",
+     "effect": "+56 Weap/Nano skills",
+     "ncu": 26,
+     "id": 121346,
+     "tell": "56"
+    },
+    {
+     "name": "Skill Wrangler (Inferior)",
+     "effect": "+46 Weap/Nano skills",
+     "ncu": 22,
+     "id": 121341,
+     "tell": "46"
+    },
+    {
+     "name": "Skill Wrangler (Lesser)",
+     "effect": "+37 Weap/Nano skills",
+     "ncu": 17,
+     "id": 121340,
+     "tell": "37"
+    },
+    {
+     "name": "Skill Wrangler (Lossy)",
+     "effect": "+27 Weap/Nano skills",
+     "ncu": 13,
+     "id": 121339,
+     "tell": "27"
+    },
+    {
+     "name": "Skill Wrangler (Commonplace)",
+     "effect": "+22 Weap/Nano skills",
+     "ncu": 11,
+     "id": 121344,
+     "tell": "22"
+    },
+    {
+     "name": "Skill Wrangler (Minor)",
+     "effect": "+13 Weap/Nano skills",
+     "ncu": 7,
+     "id": 121337,
+     "tell": "13"
+    },
+    {
+     "name": "Skill Wrangler (Patchy)",
+     "effect": "+9 Weap/Nano skills",
+     "ncu": 5,
+     "id": 121336,
+     "tell": "9"
+    },
+    {
+     "name": "Skill Wrangler (Weak)",
+     "effect": "+3 Weap/Nano skills",
+     "ncu": 3,
+     "id": 121330,
+     "tell": "3"
+    },
+    {
+     "name": "Lend Nano: 1000",
+     "effect": "+1000 Max Nano",
+     "ncu": 53,
+     "id": 30732,
+     "tell": "lend1000"
+    },
+    {
+     "name": "Lend Nano: 500",
+     "effect": "+500 Max Nano",
+     "ncu": 36,
+     "id": 30731,
+     "tell": "lend500"
+    },
+    {
+     "name": "Lend Nano: 250",
+     "effect": "+250 Max Nano",
+     "ncu": 17,
+     "id": 30729,
+     "tell": "lend250"
+    },
+    {
+     "name": "Lend Nano: 100",
+     "effect": "+100 Max Nano",
+     "ncu": 8,
+     "id": 30265,
+     "tell": "lend100"
+    },
+    {
+     "name": "Lend Nano: 50",
+     "effect": "+50 Max Nano",
+     "ncu": 4,
+     "id": 30730,
+     "tell": "lend50"
+    },
+    {
+     "name": "Maestro: Electrical Engineering",
+     "effect": "+125 EE",
+     "ncu": 47,
+     "id": 30734,
+     "tell": "maestroee"
+    },
+    {
+     "name": "Maestro: Mechanical Engineering",
+     "effect": "+125 ME",
+     "ncu": 47,
+     "id": 30736,
+     "tell": "maestrome"
+    },
+    {
+     "name": "Maestro: Pharmaceutical",
+     "effect": "+125 Pharm",
+     "ncu": 48,
+     "id": 30737,
+     "tell": "maestropt"
+    },
+    {
+     "name": "Maestro: Weapon Smithing",
+     "effect": "+125 WS",
+     "ncu": 48,
+     "id": 30738,
+     "tell": "maestrows"
+    }
+   ]
+  }
+ ]
+}
