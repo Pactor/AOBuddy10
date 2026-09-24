@@ -350,6 +350,21 @@ missions may be taken in (empty = any zone).
   - **Bag back into the bank:** GenericCmd Use on the bag identity, then
     `ClientContainerAddItem Container=0xDEAD:<me> Item=Inventory:<bag slot>`.
   - **Selling: NOT captured yet.** Needs one capture of selling an item at a shop terminal.
+- **Built as a test switch (2026-09-24, `MissionShop`, off by default; `mission run shop on|off|now`).** When the
+  stash finds no bag with room, or fewer than 4 slots are free before a roll, he travels to Fair Trade (1187)
+  and stands at the owner's spot. He opens the bank and puts his nano crystals into a bank bag: he takes it
+  out, opens it, moves the nanos in until one is refused, and puts it back. If no bank bag has room he buys a
+  Large Backpack for them, keeping `MissionCashReserve` (20,000). If he is still under 4 free slots he buys one
+  more bag to carry. He leaves the way he came in: back to where he landed and on through it (owner).
+  - Selling is not done (not captured).
+  - **For Algorithman:** `ResupplyController` got a `Container` supply kind and `StartContainers(me, n, reply)`.
+    It matches by exact name `ResupplyContainerName`, "Large Backpack" (template 143832, the owner's buy), and
+    takes the cheapest line with no skill check. The machine ranking prefers names containing "Container".
+    Your buy sends `Trade Accept` with the **machine** as target; the owner's client sent Accept (0x01) with
+    **Target None** (capture seq 16). Unchanged; the first live bag purchase will show whether it matters.
+  - Unverified: the bank terminal id C73D:0EE5BBFF is used as captured, since the server never sends it as a
+    dynel. Also unverified: the Temp4 flag on the Use of the bag before banking it.
+  - Our zoning data has no exit from 1187.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
 
