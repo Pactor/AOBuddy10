@@ -165,7 +165,8 @@ namespace AOBuddy
         public void OnDied()
         {
             if (!Active) return;
-            _ctx.Log("MISSIONRUN: died; waiting for the reclaim, rez sickness and buffs, then back to it.");
+            if (_current != null && !_completed) _deathsHere++;
+            _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
             _follow.ClearManual();
             Enter(Phase.Dead, "died");
@@ -212,7 +213,7 @@ namespace AOBuddy
             var pick = ok.OrderBy(x => x.Playfield.Instance == _termPf ? 0 : 1)
                          .ThenBy(x => { float dx = x.Location.X - from.X, dz = x.Location.Z - from.Z; return dx * dx + dz * dz; })
                          .First();
-            _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _doorTries = 0; _door = null;
+            _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
@@ -345,6 +346,9 @@ namespace AOBuddy
                         if (_phaseTime < 3) return false;
                         _afterDeath = false;
                         _tell("Rez sickness is over and my buffs are back up; back to work.");
+                        // Twice dead in the same mission (23:14 and 23:20, 2026-09-23: the same pack in the same corner
+                        // of an Omnilab) is a bad mission: drop it and roll another.
+                        if (_current != null && !_completed && _deathsHere >= 2) { Skip($"died {_deathsHere} times in it"); return false; }
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
@@ -560,7 +564,7 @@ namespace AOBuddy
 
         private int _doorDir = -1, _doorStart, _doorStep;
         private double _approach, _travelWaitUntil;
-        private int _travelBacks;
+        private int _travelBacks, _deathsHere;
         private int? _cashBefore;
         private string _tookLine = "";
         private Phase _travelReturn;
