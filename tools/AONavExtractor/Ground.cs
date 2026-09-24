@@ -22,17 +22,21 @@ namespace AONavExtractor
         public ushort[] Heights;                 // [z * SamplesX + x]
         public ushort[] Tiles;                   // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;                  // same shape, nibble per cell (order OPEN)
-        public float[] WaterY = Array.Empty<float>();   // the playfield's water-plane heights (see WaterPlanes)
+        public float[] WaterY = Array.Empty<float>();   // candidate water-surface LEVELS (see WaterPlanes) — the region
+                                                        // is NOT playfield-wide: the bot floods it from the tile-12 band
 
         /// <summary>
-        /// The playfield record's water-plane table: four 12-byte entries ([f32 planeY][f32][f32]),
+        /// The playfield record's water-level table: four 12-byte entries ([f32 levelY][f32][f32]),
         /// a fixed 48-byte block ending 50 bytes before the arrival table (which is itself found by
         /// walking back from the record end until the int there equals the entries passed). Found
         /// 2026-09-24 hunting why the bot could not cross Newland's lake: Newland (567) and Newland
-        /// City (566) both say 32.1 — matching the lake exactly (the underwater tiles cap at 32.0,
-        /// the bot was server-held on the shore at 31.9, the shore-ring tiles start at 32.4). ICC
-        /// (655) carries FOUR different planes (its canal levels); a plane below all terrain (the
-        /// Grid's -32) is simply never reached. Distinct values only.
+        /// City (566) both say 32.1 — matching the lake surface exactly (the capture swam 32.09).
+        /// 2026-09-25 correction, after the bot swam 7 m over Newland City's dry pit: these are
+        /// LEVELS, not regions — applying one playfield-wide puts water over any dry ground below
+        /// it (ICC's four entries, 10.5-15.4, sit UNDER its 17.1 tile-12 basin and are likely
+        /// arrivals). Where water actually is: the tilemap's band of tile type 12 painted over the
+        /// shore, flooded through ground under the level — that is the bot's NavGround.SwimY. This
+        /// table is kept as the level source only. Distinct values only.
         /// </summary>
         public static float[] WaterPlanes(byte[] playfieldBlob)
         {

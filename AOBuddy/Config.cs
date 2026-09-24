@@ -321,14 +321,16 @@ namespace AOBuddy
         // The captured client (20260924-215811 s116, wading at Newland's shore) sends NO swim-mode
         // packet: plain Update packets, Y tracking the lake bottom, at ~5.5-6 u/s. The bot does the
         // same — Y from the floor data, speed cut to SwimVelocity while the floor is under the water
-        // plane (ground.bin v3), and if the server floats it in deep water its corrections are ridden.
-        // Water is known from the playfield's water planes, never from the bank's slope — a cliff
-        // drops just as hard. Patch 18.7 derives swim speed from the run-speed stat (renamed Movement
-        // Speed); the owner's call for the factor: 50%.
+        // surface, and if the server floats it in deep water its corrections are ridden.
+        // Water is known from the ground's WATER TILES (tile id low byte 12; surface 0.1 above the
+        // highest water tile) — never from the bank's slope, and, since 2026-09-24, never from the
+        // playfield record's "planes" (those were arrival coordinates: they made the bot swim 7 m
+        // over Newland City's dry pit). A cliff drops just as hard. Patch 18.7 derives swim speed
+        // from the run-speed stat (renamed Movement Speed); the owner's call for the factor: 50%.
         public float SwimSpeedFactor = 0.5f;       // wet velocity = RunVelocity * this (capture: ~5.5 u/s)
-        public float SwimWadeMeters = 1.2f;        // bottom deeper than this under the plane = Y at the plane
+        public float SwimWadeMeters = 1.2f;        // bottom deeper than this under the surface = Y at the surface
                                                    // (swimming); shallower = Y at the bottom (wading). The capture:
-                                                   // plane-Y over a 7 m-deep floor, bottom-Y from ~1.2 m depth in
+                                                   // surface-Y over a 7 m-deep floor, bottom-Y from ~1.2 m depth in
 
         public int TickMs = 200;                   // decision interval (combat/heal/buff)
         public int SendIntervalMs = 100;           // movement packet send throttle

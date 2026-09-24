@@ -407,7 +407,8 @@ namespace AOBuddy
         public ushort[] Heights;     // [z * SamplesX + x], height = value * HeightScale
         public ushort[] Tiles;       // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;
-        public float[] WaterY = new float[0];   // v3: the playfield's water-plane heights (empty in v2)
+        public float[] WaterY = new float[0];   // v3 legacy: playfield-wide plane heights from the old byte-hunt. Informational
+                                                // only — SwimY gets both region AND level from the water tiles (see SwimY)
 
         public static NavGround Read(string path)
         {
@@ -437,19 +438,77 @@ namespace AOBuddy
         }
 
         /// <summary>
-        /// The water surface to swim on at (x, z): the LOWEST plane sitting more than wadeDepth above
-        /// the floor there (Newland: floor 20-26 under the lake, plane 32.1 — from the shore, where
-        /// the floor is within wading depth of the plane, there is nothing to swim on). NaN = dry
-        /// ground. Layered planes (ICC's canals) resolve to the first surface above the bed.
+        /// The water surface to swim on at (x, z): NaN = dry ground. 2026-09-24/25: the bot swam 7 m
+        /// over Newland City's dry pit because the RDB "water planes" (ground.bin v3's WaterY) were
+        /// applied playfield-wide. The actual water REGION is found from the tilemap: cells whose
+        /// tile id's low byte is 12 form the water band the designers paint over the shore, and the
+        /// water body is the flood from that band through ground sitting under the plane (the shore
+        /// ring above the plane closes the bowl — Newland's dry lowlands, also under the plane,
+        /// never connect). The LEVEL is the stored plane that sits above the band's core (32.1 for
+        /// Newland; the capture swam 32.09). Playfields with no band (Newland City) are dry, and a
+        /// band above every stored plane (ICC's 17.1 basin vs its 10.5-15.4 entries) is dry too.
+        /// From the shore, where the floor is within wadeDepth of the surface, there is nothing to
+        /// swim on.
         /// </summary>
         public double SwimY(double x, double z, double wadeDepth)
         {
+            if (_wet == null) BuildWater();
+            if (float.IsNaN(_waterLevel)) return double.NaN;
+            int ix = (int)Math.Floor(x / Cell), iz = (int)Math.Floor(z / Cell);
+            if (ix < 0 || iz < 0 || ix >= SamplesX - 1 || iz >= SamplesZ - 1) return double.NaN;
+            if (!_wet[iz * (SamplesX - 1) + ix]) return double.NaN;
             double floor = HeightAt(x, z);
-            if (double.IsNaN(floor) || WaterY.Length == 0) return double.NaN;
-            double best = double.NaN;
-            foreach (float p in WaterY)
-                if (p - floor > wadeDepth && (double.IsNaN(best) || p < best)) best = p;
-            return best;
+            if (double.IsNaN(floor)) return double.NaN;
+            return _waterLevel - floor > wadeDepth ? _waterLevel : double.NaN;
+        }
+
+        private bool[] _wet;                 // [(SamplesZ-1)*(SamplesX-1)]: the flooded water body
+        private float _waterLevel = float.NaN;
+
+        /// <summary>Flood the water body from the tile-12 band at the stored plane that caps it.</summary>
+        private void BuildWater()
+        {
+            int w = SamplesX - 1, h = SamplesZ - 1;
+            _wet = new bool[w * h];
+            // the band: tile low byte 12. A handful of strays (Newland City has 7 on high ground) is not a body.
+            int seeds = 0;
+            for (int i = 0; i < w * h; i++) if ((Tiles[i] & 0xFF) == 12) seeds++;
+            if (seeds < 8) return;
+            // the band's core height (p10 of the cells' lowest corner — the band slopes into the depths)
+            var band = new List<float>(seeds);
+            for (int z = 0; z < h; z++)
+                for (int x = 0; x < w; x++)
+                    if ((Tiles[z * w + x] & 0xFF) == 12)
+                        band.Add(Math.Min(Math.Min(Corner(z, x), Corner(z, x + 1)), Math.Min(Corner(z + 1, x), Corner(z + 1, x + 1))));
+            band.Sort();
+            float core = band[band.Count / 10];
+            float level = float.NaN;
+            foreach (float y in WaterY) if (y > core && (float.IsNaN(level) || y > level)) level = y;
+            if (float.IsNaN(level)) return;
+            // flood from the band through cells whose lowest corner is under the surface
+            var stack = new Stack<int>(seeds);
+            for (int i = 0; i < w * h; i++)
+                if ((Tiles[i] & 0xFF) == 12) { _wet[i] = true; stack.Push(i); }
+            while (stack.Count > 0)
+            {
+                int c = stack.Pop();
+                int cx = c % w, cz = c / w;
+                for (int n = 0; n < 4; n++)
+                {
+                    int nx = cx + (n == 0 ? -1 : n == 1 ? 1 : 0), nz = cz + (n == 2 ? -1 : n == 3 ? 1 : 0);
+                    if (nx < 0 || nz < 0 || nx >= w || nz >= h) continue;
+                    int nc = nz * w + nx;
+                    if (_wet[nc]) continue;
+                    if (Math.Min(Math.Min(Corner(nz, nx), Corner(nz, nx + 1)), Math.Min(Corner(nz + 1, nx), Corner(nz + 1, nx + 1))) < level)
+                    {
+                        _wet[nc] = true;
+                        stack.Push(nc);
+                    }
+                }
+            }
+            _waterLevel = level;
+
+            float Corner(int sz, int sx_) => Heights[sz * SamplesX + sx_] * HeightScale;
         }
 
         internal static byte[] Inflate(byte[] z, int rawLen)
