@@ -1716,6 +1716,24 @@ namespace AOBuddy
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
         private int _straightTries;
+
+        // On the hike's walk grid to the reachable ground nearest the goal, with the ground's height every 3 m, then
+        // straight. Same zone only; a far goal only when the grid has a way. The first version only set a target
+        // and returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
+        private bool TryWalkMyself(LocalPlayer me, int pf, Vector3 goal, string what, string why)
+        {
+            if ((int)Playfield.ModelId != pf || _straightTries >= T("walktries")) return false;
+            float far = Movement.Flat(me.Transform.Position, goal);
+            var grid = HikeGrid();
+            if (far >= T("walkto") && grid == null) return false;
+            var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
+            if (path == null && far >= T("walkto")) return false;   // far and no grid way: no straight walk
+            _straightTries++;
+            _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
+            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
+            _ctx.Log($"MISSIONRUN: {why} to {what} {far:0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
+            return true;
+        }
         // Zones he died in / couldn't reach / skipped, with the (UTC) time: kept in danger.json so a restart
         // doesn't send him straight back (he is restarted often while the run is being fixed).
         private Dictionary<int, DateTime> _dangerStore;
@@ -1887,22 +1905,7 @@ namespace AOBuddy
                 // straight at it, twice, before the backoffs.
                 // Far goals too, on the grid only (Holes in the Wall, 12:53, 2026-09-24: the door at (441,1512)
                 // 'walled off' 1.5 km away, and the mission was dropped without a try on foot).
-                float far = Movement.Flat(me.Transform.Position, goal);
-                if (!there && (int)Playfield.ModelId == pf && (far < T("walkto") || HikeGrid() != null) && _straightTries < T("walktries"))
-                {
-                    // On the hike's walk grid to the reachable ground nearest it (the grid that walked him from this
-                    // terminal to the whompa at 08:42), then straight. The first version only set a target and
-                    // returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
-                    var grid = HikeGrid();
-                    var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
-                    if (path == null && far >= T("walkto")) goto noWalk;   // far and no grid way: no straight walk
-                    _straightTries++;
-                    _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
-                    if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
-                    _ctx.Log($"MISSIONRUN: travel found no way to {what} {Movement.Flat(me.Transform.Position, goal):0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
-                    return true;
-                }
-                noWalk:
+                if (!there && TryWalkMyself(me, pf, goal, what, "travel found no way")) return true;
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
                 // back, it had planned the same trip fine.
@@ -1935,6 +1938,10 @@ namespace AOBuddy
             if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
+            // Pulled back on travel's own walk in this zone already (Deep Artery Valley, 13:45-13:48, 2026-09-24:
+            // Scotty never came, travel's walk snapped back in 2 s, backed off, the same again every 2 minutes):
+            // walk it myself on the grid with the ground's heights instead of handing travel the same walk.
+            if (_backoffs >= 1 && TryWalkMyself(me, pf, goal, what, "pulled back on travel's walk")) return true;
             _overland.Command(args, s => _ctx.Log("MISSIONRUN: travel: " + s));
             _travelStarted = true;
             return false;
