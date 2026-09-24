@@ -862,26 +862,17 @@ namespace AOBuddy
             return best;
         }
 
-        // Exits that failed him (a whompa walked across from all four sides without a zone: ICC Newland whompa,
-        // 23:36, 2026-09-23). Kept in badexits.json so the hike routes round them next time (from ICC: the Grid).
-        private HashSet<string> _badExits;
+        // Exits that failed him this session (a whompa walked across from all four sides without a zone: ICC
+        // Newland whompa, 23:36, 2026-09-23); the hike routes round them until a restart. Not saved: the whompa is
+        // the route of choice (the Grid needs Computer Literacy, and some Grid exits are over his skill - the
+        // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
+        private readonly HashSet<string> _badExits = new HashSet<string>();
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
-        private string BadExitsPath => Path.Combine(_pluginDir, "badexits.json");
-        private bool BadExit(ZoneExit e)
-        {
-            if (_badExits == null)
-            {
-                _badExits = new HashSet<string>();
-                try { if (File.Exists(BadExitsPath)) foreach (var t in JArray.Parse(File.ReadAllText(BadExitsPath))) _badExits.Add((string)t); } catch { }
-            }
-            return _badExits.Contains(ExitKey(e));
-        }
+        private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e));
         private void MarkBadExit(ZoneExit e)
         {
-            BadExit(e);
-            if (!_badExits.Add(ExitKey(e))) return;
-            _ctx.Log($"MISSIONRUN: remembering {e} as an exit that doesn't take me; routing round it from now on.");
-            try { File.WriteAllText(BadExitsPath, new JArray(_badExits.ToArray()).ToString()); } catch { }
+            if (_badExits.Add(ExitKey(e)))
+                _ctx.Log($"MISSIONRUN: {e} didn't take me; routing round it until I restart.");
         }
 
         private void StartBackoff(LocalPlayer me, string next)
