@@ -1471,6 +1471,25 @@ namespace AOBuddy
         }
         private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
         private int _straightTries;
+        private double _straightUntil;
+        private Vector3 _straightGoal;
+
+        // A walk-grid path to the reachable ground nearest 'at' (rings out to 24 m round it).
+        private static List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft)
+        {
+            List<Vector3> best = null; bestLeft = float.MaxValue;
+            foreach (float r in new[] { 0f, 4f, 8f, 12f, 16f, 24f })
+                for (int k = 0; k < (r == 0 ? 1 : 8); k++)
+                {
+                    double t = k * Math.PI / 4;
+                    var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
+                    var path = grid.FindPath(pos, goal, null, 8f, 1.5f, out _);
+                    if (path == null) continue;
+                    float left = Flat(path[path.Count - 1], at);
+                    if (left < bestLeft) { bestLeft = left; best = path; }
+                }
+            return best;
+        }
         private int _blitzTries;
         private double _doorStepTime;
 
@@ -1483,6 +1502,12 @@ namespace AOBuddy
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
                 else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
                 return false;
+            }
+            if (_clock < _straightUntil)
+            {
+                if (_follow.ReplayCount > 0) return true;
+                if (Flat(me.Transform.Position, _straightGoal) > 2f) { _follow.SetManualTarget(_straightGoal); return true; }
+                _follow.ClearManual(); _straightUntil = 0;
             }
             if (_clock < _travelWaitUntil) return false;
             if (_travelStarted)
@@ -1497,10 +1522,15 @@ namespace AOBuddy
                 if (!there && (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) < 120f && _straightTries < 2)
                 {
                     _straightTries++;
-                    _follow.SetManualTarget(goal);
-                    _travelWaitUntil = _clock + 25;
-                    _ctx.Log($"MISSIONRUN: travel found no way to {what} {Flat(me.Transform.Position, goal):0} m off; walking straight at it (try {_straightTries}).");
-                    return false;
+                    // On the hike's walk grid to the reachable ground nearest it (the grid that walked him from this
+                    // terminal to the whompa at 08:42), then straight. The first version only set a target and
+                    // returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
+                    _straightGoal = goal; _straightUntil = _clock + 30;
+                    var grid = HikeGrid();
+                    var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
+                    if (path != null && path.Count > 1) _follow.LoadReplay(path.Skip(1), false);
+                    _ctx.Log($"MISSIONRUN: travel found no way to {what} {Flat(me.Transform.Position, goal):0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
+                    return true;
                 }
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
