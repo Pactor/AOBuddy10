@@ -613,7 +613,10 @@ namespace AOBuddy
         private List<Vector3> _hikeRoute;
         private Vector3? _hikeBackTo, _hikeCameFrom;
         private double _hikeBackAt, _hikeOnAt = -1;
-        private bool _hikeHandedOver;
+        private int _hikePass = -1, _hikePassStage;
+        private double _hikePassAt;
+        private bool _hikeUsedHere;
+        private Vector3 _hikeDir0;
 
         // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
         // thread the way travel builds it.
@@ -657,7 +660,7 @@ namespace AOBuddy
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeHandedOver = false; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUsedAt = -99; _hikeRoute = null; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -674,7 +677,7 @@ namespace AOBuddy
                 Enter(_hikeReturn, "through the exit");
                 return false;
             }
-            if (_phaseTime > 90)
+            if (_phaseTime > 150)
             {
                 _follow.ClearMovement();
                 _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; back to travel.");
@@ -721,45 +724,44 @@ namespace AOBuddy
                 _follow.SetManualTarget(Flat(pos, at) > 2f ? at : cross);
                 return true;
             }
-            // The owner's way with an exit that doesn't take you: back off it and come at it again.
-            if (_hikeBackTo.HasValue)
+            // WALK THROUGH IT, don't stand on it. Every time this bot got through the ICC Newland whompa it was
+            // moving: following the owner with a 10 m push past his spot (14:13, 15:34), or walking into it from the
+            // east (22:13:31). Every time it stood on the spot and Used it (hike and travel, 22:12 and 23:16-23:18)
+            // the server answered and didn't move him. So: from 6 m out, walk across it to 6 m past; if that
+            // doesn't take him, come at it from the next side (four), then leave it to travel.
+            if (_hikePass < 0)
             {
-                if (Flat(pos, _hikeBackTo.Value) > 1.5f && _clock - _hikeBackAt < 4) { _follow.SetManualTarget(_hikeBackTo.Value); return true; }
-                _hikeBackTo = null; _hikeOnAt = -1;
+                Vector3 from = _hikeCameFrom ?? pos;
+                var d0 = new Vector3(e.A.X - from.X, 0, e.A.Z - from.Z);
+                if (d0.Magnitude < 0.5f) d0 = new Vector3(-1, 0, 0);
+                _hikeDir0 = d0 * (1f / d0.Magnitude);
+                _hikePass = 0; _hikePassStage = 0;
             }
-            if (Flat(pos, e.A) > 1.5f) { _follow.SetManualTarget(e.A); _hikeCameFrom = pos; return true; }
-            // On it: a pad takes you by standing on it; an object is used. Use it once, then give it 3 s.
-            _follow.ClearManual();
-            if (_hikeOnAt < 0)
+            if (_hikePass >= 4)
             {
-                _hikeOnAt = _clock;
-                if (e.ObjInstance != 0)
-                {
-                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
-                    _ctx.Log($"MISSIONRUN: used {e} at the exit.");
-                }
-            }
-            else if (_clock - _hikeOnAt > 3 && !_hikeHandedOver)
-            {
-                // Didn't take us: hand the last metres to travel. ICC 22:13:31 (2026-09-23): 80 s of Use and back
-                // off at the Newland whompa did nothing; travel, planning from 2 m away, walked the 5 m to its exit
-                // pad and the server zoned him 0.3 s later. (Its plan only fails from far off: the 4 m grid.)
-                _hikeHandedOver = true;
                 _follow.ClearMovement();
-                _ctx.Log("MISSIONRUN: at the exit; handing the last metres to travel (it knows the exit pad).");
-                Enter(_hikeReturn, "travel takes the exit from here");
+                _ctx.Log("MISSIONRUN: walked across the exit from all four sides and it didn't take me; leaving it to travel.");
+                Enter(_hikeReturn, "hike failed");
                 return false;
             }
-            else if (_clock - _hikeOnAt > 3)
+            double ang = _hikePass * Math.PI / 2;
+            var dir = new Vector3((float)(_hikeDir0.X * Math.Cos(ang) - _hikeDir0.Z * Math.Sin(ang)), 0, (float)(_hikeDir0.X * Math.Sin(ang) + _hikeDir0.Z * Math.Cos(ang)));
+            var start = new Vector3(e.A.X - dir.X * 6f, pos.Y, e.A.Z - dir.Z * 6f);
+            var past = new Vector3(e.A.X + dir.X * 6f, pos.Y, e.A.Z + dir.Z * 6f);
+            if (_hikePassStage == 0)
             {
-                // Didn't take us: step 5 m back the way we came, then onto it again.
-                Vector3 from = _hikeCameFrom ?? new Vector3(pos.X + 5, pos.Y, pos.Z);
-                var away = new Vector3(from.X - e.A.X, 0, from.Z - e.A.Z);
-                float len = away.Magnitude;
-                _hikeBackTo = len > 0.1f ? new Vector3(e.A.X + away.X / len * 5f, pos.Y, e.A.Z + away.Z / len * 5f) : from;
-                _hikeBackAt = _clock;
-                _ctx.Log($"MISSIONRUN: the exit didn't take me; backing off it and trying again.");
+                if (Flat(pos, start) > 1.2f && _clock - _hikePassAt < 8) { _follow.SetManualTarget(start); return true; }
+                _hikePassStage = 1; _hikePassAt = _clock; _hikeUsedHere = false;
+                _ctx.Log($"MISSIONRUN: walking across {e} (side {_hikePass + 1}/4).");
             }
+            if (!_hikeUsedHere && Flat(pos, e.A) <= 2f && e.ObjInstance != 0)
+            {
+                _hikeUsedHere = true;   // what the owner's client may also do; harmless if it isn't needed
+                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
+            }
+            if (Flat(pos, past) > 1.2f && _clock - _hikePassAt < 6) { _follow.SetManualTarget(past); return true; }
+            if (_clock - _hikePassAt < 8) { _follow.ClearManual(); return false; }   // a moment for the zone to come
+            _hikePass++; _hikePassStage = 0; _hikePassAt = _clock;
             return false;
         }
 

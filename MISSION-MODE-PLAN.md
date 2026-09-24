@@ -280,3 +280,11 @@ missions may be taken in (empty = the terminal's own zone only).
    still moves, just slower (owner, 23:10); the snare timer (~3 min) doesn't run while logged off.
    Separately, the run stands still 15 s when the server pulls him back >5 m twice in 8 s (roots).
    Also worth making "snapped back to the same spot N times" read as a speed problem, not an obstacle.
+9. **ICC Newland whompa (Door C012028F at 3173,866) needs walking through, not standing on.** Every trip this
+   bot made through it was while moving: following the owner with the 10 m push past his spot (14:13, 15:34),
+   or walking in from the east (22:13:31, zoned 0.3 s after). Standing on the pad and Using it, which is what travel
+   and the run's hike both did, got a GenericCmd reply and no zone every time (22:12, 23:16-23:18; 3 tries in
+   `OverlandController` then it replanned via the Grid, which worked). The hike now walks across it from 6 m
+   out to 6 m past, one side at a time (4 sides). Travel's pad wait might want the same.
+   The owner's route: reclaim -> the Newland whompa at the back of the whompa row -> in Newland turn right
+   into the Borealis whompa.
