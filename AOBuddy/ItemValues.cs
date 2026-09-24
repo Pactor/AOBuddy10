@@ -34,6 +34,28 @@ namespace AOBuddy
         private static HashSet<int> _noDrop;
         public static bool IsNoDrop(int lowId, int highId) => _noDrop != null && (_noDrop.Contains(lowId) || _noDrop.Contains(highId));
 
+        // IMPLANTS: ItemClass (stat 0x4C) = 3, from items.ocp by tools/eng-gear-extractor --implants into
+        // GameData/ItemImplants.bin ("AOIM", 1, count, ids). For the owner's keep-and-bank rule by QL.
+        private static HashSet<int> _implants;
+        public static bool IsImplant(int lowId, int highId) => _implants != null && (_implants.Contains(lowId) || _implants.Contains(highId));
+
+        private static HashSet<int> ReadIds(string file, string magic, Action<string> log, string what)
+        {
+            try
+            {
+                using (var r = new BinaryReader(File.OpenRead(file)))
+                {
+                    if (Encoding.ASCII.GetString(r.ReadBytes(4)) != magic || r.ReadInt32() != 1) { log($"ITEMVALUES: {file} is not a version 1 {what} table."); return null; }
+                    int n = r.ReadInt32();
+                    var set = new HashSet<int>();
+                    for (int i = 0; i < n; i++) set.Add(r.ReadInt32());
+                    log($"ITEMVALUES: {set.Count} {what} templates loaded.");
+                    return set;
+                }
+            }
+            catch (Exception ex) { log($"ITEMVALUES: couldn't load {file}: {ex.Message}"); return null; }
+        }
+
         public static void Load(string pluginDir, Action<string> log)
         {
             _values = new Dictionary<int, (int, int)>();
@@ -64,20 +86,8 @@ namespace AOBuddy
                 log($"ITEMVALUES: {_values.Count} item values, {_shops.Count} shop terminal modifiers loaded.");
             }
             catch (Exception ex) { log($"ITEMVALUES: couldn't load {file}: {ex.Message}"); }
-            string nf = Path.Combine(pluginDir, "GameData", "ItemNoDrop.bin");
-            try
-            {
-                using (var r = new BinaryReader(File.OpenRead(nf)))
-                {
-                    if (Encoding.ASCII.GetString(r.ReadBytes(4)) != "AOND" || r.ReadInt32() != 1) { log($"ITEMVALUES: {nf} is not a version 1 NODROP table."); return; }
-                    int n = r.ReadInt32();
-                    var set = new HashSet<int>();
-                    for (int i = 0; i < n; i++) set.Add(r.ReadInt32());
-                    _noDrop = set;
-                }
-                log($"ITEMVALUES: {_noDrop.Count} NODROP templates loaded.");
-            }
-            catch (Exception ex) { log($"ITEMVALUES: couldn't load {nf}: {ex.Message}"); }
+            _noDrop = ReadIds(Path.Combine(pluginDir, "GameData", "ItemNoDrop.bin"), "AOND", log, "NODROP");
+            _implants = ReadIds(Path.Combine(pluginDir, "GameData", "ItemImplants.bin"), "AOIM", log, "implant");
         }
 
         public static bool TryGet(int lowId, int highId, int ql, out int value)

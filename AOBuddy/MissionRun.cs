@@ -109,6 +109,14 @@ namespace AOBuddy
             {
                 KeepSet();
                 string rest = args.Trim().Length > 4 ? args.Trim().Substring(4).Trim() : "";   // original case for the name
+                if (rest.StartsWith("implant", StringComparison.OrdinalIgnoreCase))
+                {
+                    string q = rest.Substring(7).Trim().TrimStart('s').Trim();
+                    if (q.Equals("off", StringComparison.OrdinalIgnoreCase)) { SetImplantMinQl(0); reply("Implants are sold like anything else again."); return; }
+                    if (int.TryParse(q, out int ql) && ql > 0) { SetImplantMinQl(ql); reply($"Implants QL {ql}+ are kept and banked with the nanos."); return; }
+                    reply(ImplantMinQl() > 0 ? $"Implants QL {ImplantMinQl()}+ are kept and banked. 'mission run keep implant <ql>|off'." : "Implants aren't kept. 'mission run keep implant <ql>' keeps and banks them from that QL up.");
+                    return;
+                }
                 if (rest.StartsWith("add ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(4).Trim(); _keepAdded.Add(nm); SaveKeep(); reply($"Keeping '{nm}': never sold."); return; }
                 if (rest.StartsWith("remove ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(7).Trim(); reply(_keepAdded.Remove(nm) ? $"'{nm}' off the keep list." : $"'{nm}' isn't on the list I added to (config KeepItems is edited in config.json)."); SaveKeep(); return; }
                 reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + ". 'mission run keep add <exact item name>' / 'keep remove <name>'.");
@@ -1255,7 +1263,7 @@ namespace AOBuddy
         //   'key' or 'mission' in them (a mission key's name isn't in the item data).
         private bool SellableItem(Item i, HashSet<string> keep)
         {
-            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || IsNano(i) || keep.Contains(i.Name)) return false;
+            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || Bankable(i) || keep.Contains(i.Name)) return false;
             // NODROP is never sold (owner, 2026-09-24): the item data's Flags bit 26.
             if (ItemValues.IsNoDrop(i.Id, i.HighId)) return false;
             if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
@@ -1330,7 +1338,25 @@ namespace AOBuddy
         }
 
         private static bool IsNano(Item i) => i?.Name != null && (i.Name.StartsWith("Nano Crystal", StringComparison.OrdinalIgnoreCase) || i.Name.StartsWith("NanoCrystal", StringComparison.OrdinalIgnoreCase));
-        private static List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && IsNano(i)).ToList();
+        private List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && Bankable(i)).ToList();
+
+        // KEPT AND BANKED with the nanos (owner, 2026-09-24, for his 220 main): implants from QL <n> up.
+        // 'mission run keep implant <ql>' / 'keep implant off'; saved in bankrules.json (per bot folder).
+        private bool Bankable(Item i) => IsNano(i) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId));
+        private int _implantMinQl = -1;
+        private string BankRulesPath => Path.Combine(_pluginDir, "bankrules.json");
+        private int ImplantMinQl()
+        {
+            if (_implantMinQl >= 0) return _implantMinQl;
+            _implantMinQl = 0;
+            try { if (File.Exists(BankRulesPath)) _implantMinQl = (int?)JObject.Parse(File.ReadAllText(BankRulesPath))["implantMinQl"] ?? 0; } catch { }
+            return _implantMinQl;
+        }
+        private void SetImplantMinQl(int ql)
+        {
+            _implantMinQl = ql;
+            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = ql }.ToString()); } catch { }
+        }
         private static Item InvItem(Identity? unique) => unique.HasValue ? Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity == unique.Value) : null;
 
         private bool StartShop(string why)

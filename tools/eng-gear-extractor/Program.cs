@@ -822,7 +822,11 @@ class Program
         // --nodrop <out.bin>: every template whose item Flags (stat 0) has NoDrop (bit 26, OmniCell ItemFlags /
         // ItemTemplate.IsNoDrop), for AOBuddy's sell rule (GameData/ItemNoDrop.bin: "AOND", 1, count, ids).
         int nd = Array.IndexOf(args, "--nodrop");
-        if (nd >= 0) { NoDropTable(ocp, namesPath, args[nd + 1]); return; }
+        if (nd >= 0) { NoDropTable(ocp, namesPath, args[nd + 1], "AOND", st => st.TryGetValue(0, out var f) && (f & (1 << 26)) != 0); return; }
+        // --implants <out.bin>: every template whose ItemClass (stat 0x4C) is 3 = Implant (AOSharp ItemClass),
+        // for the owner's keep-and-bank rule (GameData/ItemImplants.bin: "AOIM", 1, count, ids).
+        int im = Array.IndexOf(args, "--implants");
+        if (im >= 0) { NoDropTable(ocp, namesPath, args[im + 1], "AOIM", st => st.TryGetValue(0x4C, out var c) && c == 3); return; }
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -960,7 +964,7 @@ class Program
         Console.WriteLine($"dump written: {outPath}");
     }
 
-    static void NoDropTable(string ocp, string namesPath, string outBin)
+    static void NoDropTable(string ocp, string namesPath, string outBin, string magic, Func<Dictionary<int, int>, bool> keep)
     {
         var names = LoadNames(namesPath);
         var ids = new List<int>();
@@ -981,15 +985,15 @@ class Program
                 ReadActions(r); ReadEvents(r, version);
                 if (version >= 2) ReadRecordData(r, version);
                 total++;
-                if (stats.TryGetValue(0, out var f) && (f & (1 << 26)) != 0) ids.Add(id);
+                if (keep(stats)) ids.Add(id);
             }
         }
         using (var w = new BinaryWriter(File.Create(outBin)))
         {
-            w.Write(Encoding.ASCII.GetBytes("AOND")); w.Write(1); w.Write(ids.Count);
+            w.Write(Encoding.ASCII.GetBytes(magic)); w.Write(1); w.Write(ids.Count);
             foreach (var id in ids) w.Write(id);
         }
-        Console.WriteLine($"templates={total} nodrop={ids.Count} -> {outBin}");
+        Console.WriteLine($"templates={total} {magic}={ids.Count} -> {outBin}");
         foreach (var id in ids.Where(names.ContainsKey).Take(25)) Console.WriteLine($"  {id} {names[id].name}");
     }
 
