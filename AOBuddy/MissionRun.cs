@@ -309,7 +309,7 @@ namespace AOBuddy
                 int pf = (int)Playfield.ModelId;
                 MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
-                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions there for {T("dangermins"):0} minutes.");
+                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n}).");
             }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
@@ -1736,24 +1736,35 @@ namespace AOBuddy
         }
         // Zones he died in / couldn't reach / skipped, with the (UTC) time: kept in danger.json so a restart
         // doesn't send him straight back (he is restarted often while the run is being fixed).
-        private Dictionary<int, DateTime> _dangerStore;
-        private Dictionary<int, DateTime> _danger
+        // Each mark in the same zone doubles how long it lasts (The Longest Road: died 12:14, 12:33, and 13:52 -
+        // the hour from the second had just run out and the route to Athen Shire went through it again, past level
+        // 70-120 Bileswarm and Shade-Y44). dangermins x 2^(marks-1), kept in danger.json with the count.
+        private Dictionary<int, (DateTime at, int n)> _dangerStore;
+        private Dictionary<int, (DateTime at, int n)> _danger
         {
             get
             {
                 if (_dangerStore != null) return _dangerStore;
-                _dangerStore = new Dictionary<int, DateTime>();
-                try { if (File.Exists(DangerPath)) foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath))) _dangerStore[int.Parse(kv.Key)] = (DateTime)kv.Value; } catch { }
+                _dangerStore = new Dictionary<int, (DateTime, int)>();
+                try
+                {
+                    if (File.Exists(DangerPath))
+                        foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath)))
+                            _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
+                }
+                catch { }
                 return _dangerStore;
             }
         }
         private string DangerPath => Path.Combine(_pluginDir, "danger.json");
         private void MarkDanger(int pf)
         {
-            _danger[pf] = DateTime.UtcNow;
-            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = kv.Value; File.WriteAllText(DangerPath, o.ToString()); } catch { }
+            int n = _danger.TryGetValue(pf, out var old) ? old.n + 1 : 1;
+            _danger[pf] = (DateTime.UtcNow, n);
+            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n }; File.WriteAllText(DangerPath, o.ToString()); } catch { }
         }
-        private bool Dangerous(int pf) => _danger.TryGetValue(pf, out DateTime at) && (DateTime.UtcNow - at).TotalMinutes < T("dangermins");
+        private double DangerMinutes(int n) => T("dangermins") * Math.Pow(2, Math.Min(6, Math.Max(0, n - 1)));
+        private bool Dangerous(int pf) => _danger.TryGetValue(pf, out var d) && (DateTime.UtcNow - d.at).TotalMinutes < DangerMinutes(d.n);
         private bool _diedOnWay;
         private double _fleeUntil = -99;
         public bool Fleeing => Active && _clock < _fleeUntil;
