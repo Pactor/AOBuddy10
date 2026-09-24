@@ -1488,6 +1488,10 @@ namespace AOBuddy
                 }
                 if (there) return false;                  // the phase check picks it up next frame
             }
+            // Another zone: the hike takes the first crossing. Travel stands on a whompa at ground height and Uses
+            // doors, which never takes (08:12, 2026-09-24: Stret West Bank's Borealis whompa, 3 tries, then a 5-leg
+            // detour); the hike stops on a pad's top and stands on doors, and hands back to travel after the zone.
+            if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
             _overland.Command(args, s => _ctx.Log("MISSIONRUN: travel: " + s));
