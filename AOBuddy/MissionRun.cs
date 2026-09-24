@@ -327,6 +327,13 @@ namespace AOBuddy
                 if (qfu.Quests != null) foreach (var q in qfu.Quests) _quests[q.QuestId] = q;
             }
             if (m?.Body is QuestMessage gone && gone.Action == QuestAction.Delete) _quests.Remove(gone.Mission);
+            // Bank diagnosis: every server message while the bank is being opened (the SDK drops what it can't read).
+            if (Active && _phase == Phase.Shop && _shopStep == ShopStep.OpenBank && m != null)
+            {
+                string what = m.Body?.GetType().Name ?? "(unreadable)";
+                if (what != "CharDCMoveMessage" && what != "FollowTargetMessage")
+                    _ctx.Log($"MISSIONRUN: shop: server sent {what} during the bank open{(m.RawPacket != null ? $" ({m.RawPacket.Length} bytes)" : "")}.");
+            }
             if (!Active || m?.Body == null) return;
             var me = DynelManager.LocalPlayer;
             if (me == null) return;
