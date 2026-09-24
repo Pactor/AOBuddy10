@@ -170,6 +170,7 @@ namespace AOBuddy
         // (captures 20260923-120056 and -201746, where every slider was set to both ends). Difficulty is the
         // terminal's own value (captures: 1, 6, 11).
         public int MissionDifficulty = 5;
+        public int MissionFightDifficulty = 5;   // fight style rolls at least this (owner: blitz at 1, fight at 5 or more)
         public int MissionSliderGoodBad = -100;
         public int MissionSliderOrderChaos = 100;
         public int MissionSliderOpenHidden = -100;

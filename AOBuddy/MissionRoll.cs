@@ -129,7 +129,8 @@ namespace AOBuddy
             var c = _ctx.Config;
             var sliders = new MissionSliders
             {
-                Difficulty = (byte)Math.Max(0, Math.Min(255, c.MissionDifficulty)),
+                Difficulty = (byte)Math.Max(0, Math.Min(255, string.Equals(c.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+                    ? Math.Max(c.MissionDifficulty, c.MissionFightDifficulty) : c.MissionDifficulty)),
                 GoodBad = Slider(c.MissionSliderGoodBad),
                 OrderChaos = Slider(c.MissionSliderOrderChaos),
                 OpenHidden = Slider(c.MissionSliderOpenHidden),
