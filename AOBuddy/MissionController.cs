@@ -179,6 +179,9 @@ namespace AOBuddy
             catch (Exception ex) { _ctx.Log("MISSION: could not compose the instance: " + ex.Message); _grid = null; _nav = null; }
         }
 
+        private readonly HashSet<int> _savedQuestFor = new HashSet<int>();
+        private double _itemsLoggedAt = -99;
+
         private void ParseRecord()
         {
             var me = DynelManager.LocalPlayer;
@@ -187,6 +190,21 @@ namespace AOBuddy
             _record = all.FirstOrDefault(r => _instance != 0 && r.Building == _instance);
             if (_record != null)
                 _ctx.Log($"MISSION: record {_record.TypeName} building {_record.Building} target {(_record.TargetA?.ToString() ?? "none (not the holder)")}{(_record.TargetB.HasValue ? " object " + _record.TargetB : "")}");
+            // No target read for a mission the bot rolled itself (2026-09-23 21:55, find item): keep the raw quest
+            // update so the record layout can be checked against it.
+            if (_record != null && !_record.TargetA.HasValue && !_savedQuestFor.Contains(_record.Building))
+            {
+                _savedQuestFor.Add(_record.Building);
+                try
+                {
+                    string dir = System.IO.Path.Combine(_pluginDir, "missions");
+                    System.IO.Directory.CreateDirectory(dir);
+                    string f = System.IO.Path.Combine(dir, $"questupdate-b{_record.Building}-{DateTime.Now:yyyyMMdd-HHmmss}.bin");
+                    System.IO.File.WriteAllBytes(f, _lastQuestUpdate);
+                    _ctx.Log($"MISSION: no target in the record; quest update saved ({_lastQuestUpdate.Length} bytes) to {f}");
+                }
+                catch (Exception ex) { _ctx.Log("MISSION: couldn't save the quest update: " + ex.Message); }
+            }
         }
 
         // =====================================================================================================
@@ -656,6 +674,11 @@ namespace AOBuddy
                 }
             }
             how = "no item in sight is named in the mission text";
+            if (Now - _itemsLoggedAt > 20)
+            {
+                _itemsLoggedAt = Now;
+                _ctx.Log($"MISSION: items in sight ({candidates.Count}): {string.Join(", ", candidates.Select(kv => $"'{ItemName(kv.Value.Template)}' tpl {kv.Value.Template} at ({kv.Value.Pos.X:0},{kv.Value.Pos.Y:0},{kv.Value.Pos.Z:0})"))}");
+            }
             return null;
         }
 
@@ -691,9 +714,22 @@ namespace AOBuddy
                 {
                     // GenericCmd UseItemOnItem: the tool from the inventory, then the object (capture
                     // 20260910-203534 client seq 1292). The quest record lists the tool first.
-                    int toolTpl = _record.TargetA.HasValue && _items.TryGetValue(_record.TargetA.Value, out var tool) ? tool.Template : 0;
-                    var inv = toolTpl == 0 ? null : Inventory.Items.FirstOrDefault(i => i.Id == toolTpl || i.HighId == toolTpl);
-                    if (inv == null) { Fail("the repair tool is not in my inventory"); return; }
+                    // Which bag item is the tool: the one whose identity the quest record names (it names two - the
+                    // object in the building and the tool), else the item the mission text names ("use the Targeted
+                    // Radiation Extractor to ..."). The first version looked the tool up among items seen lying in
+                    // the building and never found it (2026-09-23 21:40, three blitzes in a row).
+                    var bag = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory).ToList();
+                    var inv = bag.FirstOrDefault(i => (_record.TargetA.HasValue && i.UniqueIdentity == _record.TargetA.Value)
+                                                   || (_record.TargetB.HasValue && i.UniqueIdentity == _record.TargetB.Value));
+                    string text = _record.Text ?? "";
+                    if (inv == null)
+                        inv = bag.Where(i => !string.IsNullOrEmpty(i.Name) && i.Name.Length >= 6 && text.IndexOf(i.Name, StringComparison.OrdinalIgnoreCase) >= 0)
+                                 .OrderByDescending(i => i.Name.Length).FirstOrDefault();
+                    if (inv == null)
+                    {
+                        _ctx.Log($"MISSION: no bag item matches the tool; record names {_record.TargetA} / {_record.TargetB}; bag: {string.Join(", ", bag.Select(i => $"'{i.Name}' {i.UniqueIdentity}"))}");
+                        Fail("the repair tool is not in my inventory"); return;
+                    }
                     Client.Send(new GenericCmdMessage
                     {
                         Action = GenericCmdAction.UseItemOnItem,

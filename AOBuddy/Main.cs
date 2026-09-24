@@ -65,6 +65,8 @@ namespace AOBuddy
         private NavController _nav;
         private MissionController _mission;
         private HuntController _hunt;
+        private MissionRoll _roll;
+        private MissionRun _run;
         private bool _missionWasActive;
         private OverlandController _overland;
         private bool _overlandWasActive;
@@ -166,6 +168,11 @@ namespace AOBuddy
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
 
             _hunt = new HuntController(_ctx, () => _mission.InMission);
+            _roll = new MissionRoll(_ctx);
+            _run = new MissionRun(_ctx, _roll, _mission, _overland, _follow, pluginDir,
+                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } },
+                () => _dead,
+                () => _support.Resting);   // only while actually sitting: a low HP the rest logic won't sit for must not park the run
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
@@ -178,6 +185,8 @@ namespace AOBuddy
                 catch (Exception ex) { Log("VITALS feed error: " + ex.Message); }
                 try { _resupply.OnMessage(m); }
                 catch (Exception ex) { Log("RESUPPLY feed error: " + ex.Message); }
+                try { _roll.OnMessage(m); } catch (Exception e) { Log("MISSIONROLL: " + e.Message); }
+                try { _run.OnMessage(m); } catch (Exception e) { Log("MISSIONRUN: " + e.Message); }
                 try { _mission.OnMessage(m); }
                 catch (Exception ex) { Log("MISSION feed error: " + ex.Message); }
                 try { OnServerMovedMe(m); }
@@ -270,7 +279,9 @@ namespace AOBuddy
 
             Client.Chat.PrivateMessageReceived += (s, msg) =>
             {
-                if (!IsOwnerSender(msg.SenderName, msg.SenderId)) { Logger.Debug($"[ignored tell] {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
+                // Tells from anyone else are never obeyed, but they are logged: Scotty answers warp requests by tell,
+                // and those answers were invisible while travel waited on warps that never came (2026-09-23).
+                if (!IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
                 Log($"CMD from {msg.SenderName}: '{msg.Message}'");
                 try { HandleCommand(msg.Message, text => Client.SendPrivateMessage(msg.SenderId, text)); }
                 catch (Exception ex) { Logger.Error($"command error: {ex.Message}"); Log($"COMMAND EXCEPTION: {ex}"); }
@@ -378,6 +389,7 @@ namespace AOBuddy
             float gap = Vector3.Distance(local, pos);
 
             // A mission blitz always takes the server's word (MissionController.OnServerCorrection).
+            _run.OnServerCorrection();
             if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
             // ...and so does overland travel: its route is planned on data that can miss a surface the server has.
             if (_overland.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
@@ -427,6 +439,7 @@ namespace AOBuddy
             _mission.Stop("died");
             _overland.Stop("died");
             _hunt.Stop("died");
+            _run.OnDied();
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
@@ -545,6 +558,9 @@ namespace AOBuddy
                 {
                     Log($"POSITION JUMP {Vector3.Distance(curPos, _lastFramePos.Value):0}m ({_lastFramePos.Value.X:0},{_lastFramePos.Value.Y:0},{_lastFramePos.Value.Z:0})->({curPos.X:0},{curPos.Y:0},{curPos.Z:0}) — treating as zone/teleport.");
                     _zoneCrossPos = _lastFramePos; _zoneCrossAge = 0;
+                    // A correction from before the jump is in the OLD place's coordinates: leashing the first steps here
+                    // to it dragged the bot back to mission coordinates in Borealis (2026-09-23 21:11:06).
+                    _serverAnchor = null;
                     // If the owner USED an object just before this teleport, learn it as a WARP (floor button /
                     // lift) — stored in the CURRENT playfield's file before ClearNav, so same-floor buttons
                     // (which don't change the playfield id) are captured too.
@@ -609,7 +625,7 @@ namespace AOBuddy
                     _travel.OnOwnerLost(_lastOwnerPos);
                 }
 
-                if (ownerVisible || _overland.Active) _arrivedAlone = 0;   // zoning alone is the point of overland travel
+                if (ownerVisible || _overland.Active || _run.Active) _arrivedAlone = 0;   // zoning alone is the point of overland travel
                 else if (_arrivedAlone > 0)
                 {
                     _arrivedAlone += dt;
@@ -648,7 +664,7 @@ namespace AOBuddy
                 // engages when BOTH we and the owner are near the same recorded run (RouteToward enforces it),
                 // so it can't send us the wrong way; off recorded ground it returns null and normal follow /
                 // the zone-sweep handle it. Nav only supplies the points; FOLLOW's replay walker moves the body.
-                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat && !_mission.Active && !_overland.Active
+                bool navEligible = _config.NavUse && !_navReplaying && !_travel.Active && !_combat.InCombat && !_mission.Active && !_overland.Active && !_run.Active
                     && _config.Follow && _mode == Mode.Assist && !me.IsCasting && !_support.Resting && !_follow.ZoneSweeping;
                 if (navEligible)
                 {
@@ -698,7 +714,7 @@ namespace AOBuddy
                 // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
                 // spot he disappeared from, and he is still gone: he crossed something. Work the line.
                 bool crossingLikely = _ownerLostDist <= ZoneLossMeters && _ownerLostMoving;
-                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active && !_overland.Active
+                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active && !_overland.Active && !_run.Active
                     && !_follow.ZoneSweeping && !_navReplaying
                     && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
                     && _lastOwnerPos.HasValue && !_follow.HasWork)
@@ -753,6 +769,7 @@ namespace AOBuddy
                 _serverAnchorAge += dt;
                 _move.SetLeash(_serverAnchorAge < _config.MoveLeashWindowSec ? _serverAnchor : (Vector3?)null, _config.MoveLeashMeters);
 
+                _roll.Tick(dt);
                 Walk(me, owner, dt);
 
                 _decisionAccum += dt;
@@ -784,12 +801,22 @@ namespace AOBuddy
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }
+            // MISSION RUN (solo loop, off unless the owner started it): drives travel and blitz below; walks the
+            // bot itself only into a mission door (follow's manual walker).
+            bool runWalks = _run.Tick(me, dt);
             // MISSION blitz (off unless the owner started it): owns the body until it is done or stopped.
             if (_mission.Tick(me, dt)) { _follow.BreakMirror(); _missionWasActive = true; return; }
             if (_missionWasActive) { _missionWasActive = false; _follow.ClearMovement(); }   // hand back to follow clean
             // OVERLAND travel ('travelto', off unless the owner started it): owns the body until it arrives or stops.
             if (_overland.Tick(me, dt)) { _follow.BreakMirror(); _overlandWasActive = true; return; }
             if (_overlandWasActive) { _overlandWasActive = false; _follow.ClearMovement(); }
+            if (_run.Active)
+            {
+                _follow.BreakMirror();
+                if (runWalks && (_follow.ManualActive || _follow.ReplayCount > 0)) _follow.WalkTick(me, null, dt);   // its manual/replay walker only - never the owner-lost chase
+                else _move.Stop(me, _config.SendIntervalMs);
+                return;   // on its own: no following, no owner-lost chasing
+            }
             if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
             _follow.WalkTick(me, owner, dt);
         }
@@ -827,13 +854,13 @@ namespace AOBuddy
             // to heal" actually was. Nothing here stops the legs either; MOVE already ran this frame.
 
             // 1) WHO ARE WE FIGHTING. COMBAT takes the owner's target and issues Attack once for it.
-            SimpleChar target = _combat.SelectAndEngage(me, owner);
+            SimpleChar target = _combat.SelectAndEngage(me, owner, _run.Attacker(me));
             bool fighting = target != null;
 
             // HUNT (off unless the owner started it): with no fight of the owner's, the PETS go after the
             // nearest huntable mob around the bot. The bot itself neither moves nor swings for it.
             SimpleChar petHunt = null;
-            if (!fighting && _hunt.Active && !_mission.Active && !_overland.Active)
+            if (!fighting && _hunt.Active && !_mission.Active && !_overland.Active && !_run.Active)
                 petHunt = _hunt.Tick(me, owner, _config.TickMs / 1000.0);
 
             // 2) PETS ATTACK THE SAME MOB, at the same moment he does — once per target, and only the
@@ -1006,7 +1033,7 @@ namespace AOBuddy
                 case "solo": _mode = Mode.Solo; reply("Mode: Solo."); break;
                 case "stop":
                 case "idle":
-                    _mode = Mode.Idle; _hunt.Stop("stop command"); _follow.ClearMovement(); _combat.Reset();
+                    _mode = Mode.Idle; _hunt.Stop("stop command"); _run.Stop("stop command"); _follow.ClearMovement(); _combat.Reset();
                     _resupply.Stop(DynelManager.LocalPlayer, "stop command");
                     _overland.Stop("stop command");
                     { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
@@ -1321,7 +1348,11 @@ namespace AOBuddy
                     break;
                 case "status": reply(StatusLine()); break;
                 case "navdata": reply(NavDataCommand(arg)); break;
-                case "mission": _mission.Command(parts.Length > 1 ? parts[1] : "", reply); break;
+                case "mission":
+                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? parts[2] : "", reply); }
+                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
+                        _mission.Command(parts.Length > 1 ? parts[1] : "", reply);
+                    break;
                 case "travelto": _overland.Command(parts.Skip(1).Where(p => p.Length > 0).ToArray(), reply); break;
                 case "stat": reply(StatCommand(parts.Length > 1 ? parts[1] : "")); break;
 

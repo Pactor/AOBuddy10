@@ -57,10 +57,23 @@ namespace AOBuddy
                     : "Hunt is off.");
                 return;
             }
+            if (a == "why")
+            {
+                var me = DynelManager.LocalPlayer;
+                if (me == null) { reply("Not in game."); return; }
+                var pets = new HashSet<Identity>(me.Pets.Where(p => p.Role == PetType.Attack || p.Role == PetType.Support).Select(p => p.Identity));
+                var lines = DynelManager.Npcs.Where(n => n != null && !pets.Contains(n.Identity) && Flat(n.Transform.Position, me.Transform.Position) <= Radius + 20)
+                    .OrderBy(n => me.DistanceFrom(n))
+                    .Select(n => $"'{n.Name}' {me.DistanceFrom(n):0}m: {Why(n, me, pets)}").ToList();
+                _ctx.Log($"HUNT why ({lines.Count} NPCs within {Radius + 20:0} m):");
+                foreach (var l in lines) _ctx.Log("HUNT why:   " + l);
+                reply(lines.Count == 0 ? "No NPCs near me." : $"{lines.Count} NPCs near me (full list in my log): " + string.Join(" | ", lines.Take(8)));
+                return;
+            }
             if (a.Length > 0)
             {
                 if (!float.TryParse(a, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float r) || r < 5f || r > 100f)
-                { reply("Usage: hunt [radius 5-100] | hunt off | hunt status"); return; }
+                { reply("Usage: hunt [radius 5-100] | hunt off | hunt status | hunt why"); return; }
                 Radius = r;
             }
             Active = true; _kills = 0; _setAside.Clear(); _noPetLogged = false;
@@ -92,6 +105,10 @@ namespace AOBuddy
             _noPetLogged = false;
 
             Vector3 centre = me.Transform.Position;
+            // The pet walks from where it is, so the next mob is the one nearest the PET: ranking by distance
+            // from the bot sent it running past mobs on its way back toward the bot.
+            var petDyn = me.Pets.Where(p => pets.Contains(p.Identity)).ToList();
+            Vector3 from = petDyn.Count > 0 ? petDyn[0].Transform.Position : centre;
             SimpleChar mob = _current.HasValue ? DynelManager.Characters.FirstOrDefault(c => c.Identity == _current.Value) : null;
 
             if (_current.HasValue && (mob == null || !IsAlive(mob)))
@@ -120,7 +137,7 @@ namespace AOBuddy
                                 && !(_setAside.TryGetValue(n.Identity, out double until) && until > _clock)
                                 && IsHuntable(n, me, owner, _inMission(), pets))
                     .OrderBy(n => OnUs(n, me, owner, pets) ? 0 : 1)      // anything already on us or the pets first
-                    .ThenBy(n => me.DistanceFrom(n))
+                    .ThenBy(n => Flat(n.Transform.Position, from))
                     .FirstOrDefault();
                 if (mob == null)
                 {
@@ -130,7 +147,7 @@ namespace AOBuddy
                 }
                 _current = mob.Identity; _sentAt = _clock; _idleLog = 0;
                 _hpAtSend = mob.TryGetStat(Stat.Health, out int hp) ? hp : -1;
-                _ctx.Log($"HUNT: pets -> '{mob.Name}' L{mob.Level} id={mob.Identity.Instance} {me.DistanceFrom(mob):0} m away");
+                _ctx.Log($"HUNT: pets -> '{mob.Name}' L{mob.Level} id={mob.Identity.Instance} {me.DistanceFrom(mob):0} m from me, {Flat(mob.Transform.Position, from):0} m from the pet");
             }
             Target = mob;
             return mob;
@@ -163,6 +180,20 @@ namespace AOBuddy
                 return f == me.Identity || (owner != null && f == owner.Identity) || pets.Contains(f) || Team.Members.Any(m => m.Identity == f);
             }
             return inMission || (int)n.Side == SideMonster;
+        }
+
+        private string Why(NpcChar n, LocalPlayer me, HashSet<Identity> pets)
+        {
+            int flags = (int)n.Flags;
+            if (!IsAlive(n)) return "dead";
+            if ((flags & FlagSells) != 0) return "sells items";
+            if ((flags & FlagTalk) != 0) return "talk-to NPC (flag 0x800000)";
+            if ((flags & FlagPet) != 0 || n.Owner.HasValue || n.PetTypeId != 0) return "a pet";
+            if (n.FightingIdentity.HasValue && !IsHuntable(n, me, null, _inMission(), pets)) return $"fighting someone else ({n.FightingIdentity.Value.Instance})";
+            if (!IsHuntable(n, me, null, _inMission(), pets)) return $"side {(int)n.Side}, not Monster (3)";
+            if (Flat(n.Transform.Position, me.Transform.Position) > Radius) return $"outside the {Radius:0} m radius";
+            if (_setAside.TryGetValue(n.Identity, out double until) && until > _clock) return $"set aside for {until - _clock:0} s more";
+            return _current.HasValue && _current.Value == n.Identity ? "CURRENT target" : "huntable (queued)";
         }
 
         private static bool OnUs(SimpleChar n, LocalPlayer me, PlayerChar owner, HashSet<Identity> pets) =>

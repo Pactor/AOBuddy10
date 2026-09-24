@@ -1,0 +1,914 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using AOSharp.Clientless;
+using AOSharp.Common.GameData;
+using Newtonsoft.Json.Linq;
+using SmokeLounge.AOtomation.Messaging.GameData;
+using SmokeLounge.AOtomation.Messaging.Messages;
+using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
+
+namespace AOBuddy
+{
+    /// <summary>
+    /// MISSION RUN — the solo loop, off until the owner says `mission run` with the bot standing at a mission
+    /// terminal. That terminal is the one it keeps using: roll (MissionRoll) until a mission it can do in an
+    /// allowed zone comes up, accept it, travel to the door (OverlandController, `travelto`), walk into the door
+    /// (capture 20260923-201746: no message, the server moves you in), blitz (MissionController), and once it
+    /// has walked back out, stash the reward in a backpack and travel back to the terminal. Again, until
+    /// `mission run stop`. It never gives up on its own: a mission it can't finish (door, travel, blitz) is deleted
+    /// and another rolled; only the owner stops the run.
+    ///
+    /// It drives the other controllers only through what they already offer (their commands and Active flags),
+    /// so it changes nothing about how travel or blitz behave. While it runs the bot is on its own: no follow,
+    /// no owner-lost chasing (Main checks Active), and it fights whatever attacks it or its pets.
+    ///
+    /// Death: after the reclaim, back to the terminal, wait out rez sickness and rebuff there, then go back to
+    /// the mission it was on (still in the quest log) and finish it; with none open, roll a new one.
+    /// </summary>
+    public class MissionRun
+    {
+        private readonly BotContext _ctx;
+        private readonly MissionRoll _roll;
+        private readonly MissionController _mission;
+        private readonly OverlandController _overland;
+        private readonly FollowController _follow;
+        private readonly Action<string> _tell;
+        private readonly Func<bool> _dead, _recovering;
+        private readonly string _pluginDir;
+
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike }
+        private Phase _phase = Phase.Off;
+        private double _phaseTime, _clock;
+        public bool Active => _phase != Phase.Off;
+
+        // The terminal, remembered where the run was started.
+        private int _termPf;
+        private Identity _termId;
+        private Vector3 _termPos;
+
+        // The mission in hand.
+        private MissionInfo _current;
+        private bool _completed;
+        private int _rolls, _done, _travelTries, _doorTries;
+        private bool _travelStarted;
+        private Vector3? _door;
+        private readonly HashSet<(int, int)> _rewardIds = new HashSet<(int, int)>();
+
+        // Stashing.
+        private readonly Queue<Item> _bagsToTry = new Queue<Item>();
+        private Item _bag;
+        private double _lastMove;
+
+        private const int MaxRolls = 40;
+        private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
+
+        public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering)
+        {
+            _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering;
+            _roll.ListArrived += OnList;
+        }
+
+        // ---- Commands ----------------------------------------------------------------------------------
+
+        public void Command(string args, Action<string> reply)
+        {
+            string a = (args ?? "").Trim().ToLowerInvariant();
+            if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
+            if (a == "status") { reply(Status()); return; }
+            if (a == "skip")
+            {
+                if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
+                Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
+            }
+            bool fresh = a == "new";
+            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run stop | mission run status"); return; }
+            if (Active) { reply("Already running: " + Status()); return; }
+
+            var me = DynelManager.LocalPlayer;
+            if (me == null) { reply("Not in game."); return; }
+            var term = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
+                                             .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
+            if (term != null && me.DistanceFrom(term) <= 6f)
+            {
+                // Standing at one: this is the terminal from now on (remembered across restarts).
+                _termPf = (int)Playfield.ModelId; _termId = term.Identity; _termPos = term.Transform.Position;
+                SaveTerminal();
+            }
+            else if (!LoadTerminal())
+            { reply("Stand me next to the mission terminal you want me to use (within 6 m), then say 'mission run'. After that I remember it."); return; }
+            _done = 0; _current = null;
+            // Resume only a mission the quest log actually holds (one from a mission terminal). With none held
+            // the server sends no quest log at all, so a saved copy then means a mission deleted or done
+            // elsewhere (2026-09-23 21:36: it walked back to a door it had no key for).
+            bool held = HeldMissionIds().Count > 0;
+            if (fresh || !held) ClearSaved();
+            var saved = fresh || !held ? null : FromQuestLog() ?? LoadSaved();
+            string termZone = Playfield.TryGetPlayfieldNameFromId(_termPf, out string tz) ? tz : _termPf.ToString();
+            string zones = _ctx.Config.MissionZones != null && _ctx.Config.MissionZones.Count > 0 ? string.Join(", ", _ctx.Config.MissionZones) : termZone + " only";
+            _ctx.Log($"MISSIONRUN: start; terminal {_termId} in {termZone} ({_termPos.X:0},{_termPos.Z:0}); zones: {zones}.");
+            reply($"Running missions from the terminal in {termZone} ({zones}). 'mission run stop' to stop, 'mission run status' for where I am.");
+            if (_mission.InMission && !held && !fresh)
+            {
+                // Inside a building with no mission to do (already done, or deleted): just walk out and carry on.
+                reply("I'm inside a mission building with nothing left to do here: walking out first.");
+                _mission.Command("backoutside", s => _ctx.Log("MISSIONRUN: " + s));
+                Enter(Phase.Leaving, "started inside, nothing to do");
+                return;
+            }
+            if (_mission.InMission)
+            {
+                // Already inside a mission building (e.g. logged in there): blitz it, then carry on.
+                _current = fresh || !held ? null : (FromQuestLog() ?? LoadSaved());
+                if (_current == null) _current = new MissionInfo { MissionIdentity = new Identity(IdentityType.Mission, 0), Playfield = new Identity(IdentityType.Playfield2, 0), MissionItemData = new MissionItemReward[0] };
+                _completed = false; _rewardIds.Clear();
+                foreach (var rw in _current.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((rw.LowId, rw.HighId));
+                reply("I'm inside a mission: finishing it first.");
+                Enter(Phase.AwaitBlitz, "started inside a mission");
+                return;
+            }
+            if (saved != null)
+            {
+                // A mission taken before a restart is still in the quest log: finish it first.
+                _current = saved; _completed = false; _rewardIds.Clear();
+                foreach (var rw in saved.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((rw.LowId, rw.HighId));
+                reply($"First finishing the mission I already have: {(saved.MissionIcon == 0 ? $"in {MissionRoll.Zone(saved)} ({saved.Location.X:0},{saved.Location.Z:0})" : MissionRoll.Line(saved))}. ('mission run new' ignores it.)");
+                Enter(Phase.ToDoor, "resuming the saved mission");
+                return;
+            }
+            Enter(Phase.Rolling, "start");
+        }
+
+        public void Stop(string why)
+        {
+            if (!Active) return;
+            if (_phase == Phase.Blitz && _mission.Active) _mission.Stop("mission run stopped");
+            if (_overland.Active) _overland.Stop("mission run stopped");
+            _follow.ClearManual();
+            _ctx.Log($"MISSIONRUN: stopped ({why}) after {_done} mission(s).");
+            _phase = Phase.Off;
+        }
+
+        public string Status() => !Active ? "No mission run going." :
+            $"{_phase} ({_phaseTime:0}s); {_done} done; {(_current == null ? "no mission in hand" : "on " + MissionRoll.Line(_current))}.";
+
+        public void OnDied()
+        {
+            if (!Active) return;
+            _ctx.Log("MISSIONRUN: died; waiting for the reclaim, rez sickness and buffs, then back to it.");
+            if (_overland.Active) _overland.Stop("died");
+            _follow.ClearManual();
+            Enter(Phase.Dead, "died");
+        }
+
+        // ---- Wire --------------------------------------------------------------------------------------
+
+        public void OnMessage(Message m)
+        {
+            if (m?.Body is QuestFullUpdateMessage qfu)
+            {
+                if (m.RawPacket != null) _lastQuestLog = m.RawPacket;
+                if (qfu.Quests != null) foreach (var q in qfu.Quests) _quests[q.QuestId] = q;
+            }
+            if (m?.Body is QuestMessage gone && gone.Action == QuestAction.Delete) _quests.Remove(gone.Mission);
+            if (!Active || m?.Body == null) return;
+            var me = DynelManager.LocalPlayer;
+            if (me == null) return;
+            // Completion, as MissionController reads it: CharacterAction MissionChanged (0x3B) for the holder,
+            // or the quest removal.
+            if (m.Body is CharacterActionMessage ca && (int)ca.Action == 0x3B && ca.Identity.Instance == me.Identity.Instance && _current != null
+                && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz))
+                MarkDone("MissionChanged");
+            else if (m.Body is QuestMessage qm && qm.Identity.Instance == me.Identity.Instance && _current != null
+                     && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz))
+                MarkDone("quest removed");
+        }
+
+        private void MarkDone(string how)
+        {
+            if (_completed) return;
+            _completed = true;
+            _ctx.Log($"MISSIONRUN: mission complete ({how}).");
+        }
+
+        private void OnList(IReadOnlyList<MissionInfo> list)
+        {
+            if (_phase != Phase.AwaitList) return;
+            var ok = list.Where(Fits).ToList();
+            if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
+            var me = DynelManager.LocalPlayer;
+            Vector3 from = me?.Transform.Position ?? _termPos;
+            // Same zone as the terminal first, then the nearest door.
+            var pick = ok.OrderBy(x => x.Playfield.Instance == _termPf ? 0 : 1)
+                         .ThenBy(x => { float dx = x.Location.X - from.X, dz = x.Location.Z - from.Z; return dx * dx + dz * dz; })
+                         .First();
+            _current = pick; _completed = false; _travelTries = 0; _doorTries = 0; _door = null;
+            _rewardIds.Clear();
+            foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
+            _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
+            Save(pick);
+            _tell($"Took: {MissionRoll.Line(pick)} (after {_rolls} roll(s)).");
+            Enter(Phase.Accepting, "accepted");
+        }
+
+        private bool Fits(MissionInfo m)
+        {
+            if (!MissionRoll.BlitzCan(m.MissionIcon)) return false;
+            var zones = _ctx.Config.MissionZones;
+            if (zones == null || zones.Count == 0) return m.Playfield.Instance == _termPf;   // default: the terminal's own zone
+            return _roll.Allowed(m, out _);
+        }
+
+        // ---- Tick ----------------------------------------------------------------------------------------
+
+        /// <summary>One frame. Returns true while the run is walking the bot itself (into a door); the caller then
+        /// lets follow's manual walker move it. Travel and blitz move the bot through their own Ticks.</summary>
+        public bool Tick(LocalPlayer me, double dt)
+        {
+            _clock += dt; _phaseTime += dt;
+            if (!Active || me == null) return false;
+            RecordGood(me);
+
+            switch (_phase)
+            {
+                case Phase.Dead:
+                    // The owner's order after a death: run back to the mission terminal and wait out the rez
+                    // sickness there (and rebuff); then go back to the open mission, or roll a new one.
+                    if (_dead()) { _phaseTime = 0; return false; }
+                    if (_phaseTime < 3) return false;          // let the reclaim land
+                    _afterDeath = true;
+                    Enter(Phase.ToTerminal, "reclaimed; to the terminal to wait out rez sickness");
+                    return false;
+
+                case Phase.ToTerminal:
+                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if ((int)Playfield.ModelId == _termPf && !_overland.Active)
+                    {
+                        // Travel stops a few metres short and the terminal's own body keeps us ~5 m from its centre
+                        // (2026-09-23 21:29: 'Arrived' at 5.4 m, over and over). So finish on foot, straight at it,
+                        // and roll from wherever that ends within the roll's 6 m.
+                        float dT = Flat(me.Transform.Position, _termPos);
+                        if (dT <= 12f)
+                        {
+                            _approach += dt;
+                            if (dT <= 3.5f || _approach > 5)
+                            {
+                                _follow.ClearManual();
+                                if (dT <= 6f) { Enter(Phase.Rolling, "at the terminal"); return false; }
+                                _approach = 0;   // couldn't close in: travel again
+                            }
+                            else { _follow.SetManualTarget(_termPos); return true; }
+                        }
+                    }
+                    return Travel(me, _termPf, _termPos, "the terminal");
+
+                case Phase.Rolling:
+                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_afterDeath)
+                    {
+                        // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
+                        if (SupportController.IsRezSick(me) || me.IsCasting) { _phaseTime = 0; return false; }
+                        if (_phaseTime < 8) return false;
+                        _afterDeath = false;
+                        _tell("Rez sickness is over and I'm buffed; back to work.");
+                        if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
+                    }
+                    if (_phaseTime < 1.5) return false;
+                    if (Inventory.NumFreeSlots < 2 && !_fullWarned) { _fullWarned = true; _tell("My inventory is full and the bags have no room; carrying on, but rewards will pile up."); }
+                    if (_rolls >= MaxRolls)
+                    {
+                        // Nothing suitable for a long stretch: say so once, wait a minute, and keep rolling.
+                        if (_phaseTime < 60) { if (!_rollWarned) { _rollWarned = true; _tell($"{MaxRolls} rolls and nothing I can take here; waiting a minute and rolling on."); } return false; }
+                        _rolls = 0;
+                    }
+                    if (!((int)Playfield.ModelId == _termPf && Flat(me.Transform.Position, _termPos) <= 6f)) { Enter(Phase.ToTerminal, "not at the terminal"); return false; }
+                    _rolls++;
+                    _roll.Roll(s => { });
+                    Enter(Phase.AwaitList, "rolled");
+                    return false;
+
+                case Phase.AwaitList:
+                    if (_phaseTime > ListTimeout) { _ctx.Log("MISSIONRUN: no list came back; rolling again."); Enter(Phase.Rolling, "no answer"); }
+                    return false;
+
+                case Phase.Accepting:
+                    if (_phaseTime < 2) return false;
+                    _rolls = 0;
+                    Enter(Phase.ToDoor, "going to the door");
+                    return false;
+
+                case Phase.ToDoor:
+                {
+                    if (_recovering()) { _phaseTime = 0; return false; }
+                    int pf = _current.Playfield.Instance;
+                    Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
+                    if (!_overland.Active && (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) <= 12f)
+                    { _door = FindDoor(pf, goal); _follow.ClearMovement(); _doorDir = -1; Enter(Phase.EnterDoor, "at the door"); return false; }
+                    return Travel(me, pf, goal, "the mission door");
+                }
+
+                case Phase.EnterDoor:
+                {
+                    if (_mission.InMission) { Enter(Phase.AwaitBlitz, "inside"); _follow.ClearMovement(); return false; }
+                    // The data gives the door's position but not which way it faces, so walking at its centre can
+                    // run into the frame (2026-09-23 21:03: stuck 2 m off its side). Try it from each side in turn:
+                    // travel to a spot 5 m out on a real route, then walk straight through the centre to the far
+                    // side. The side it opens to takes us in; the walls stop the others.
+                    Vector3 d = _door ?? new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
+                    Vector3 pos = me.Transform.Position;
+                    if (_doorDir < 0)
+                    {
+                        // First side: the one we arrived from.
+                        double ang = Math.Atan2(pos.Z - d.Z, pos.X - d.X);
+                        _doorStart = (int)Math.Round(ang / (Math.PI / 4)) & 7;
+                        _doorDir = 0; _doorStep = 0; _doorStepTime = 0;
+                    }
+                    _doorStepTime += dt;
+                    if (_doorDir >= 8)
+                    {
+                        _follow.ClearMovement();
+                        if (++_doorTries >= 2) { _doorTries = 0; Skip("can't get through its door from any side"); return false; }
+                        _doorDir = -1;
+                        return false;
+                    }
+                    int k = (_doorStart + (_doorDir % 2 == 0 ? _doorDir / 2 : 8 - (_doorDir + 1) / 2)) & 7;   // alternate either side of the first
+                    double t = k * Math.PI / 4;
+                    var side = new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t));
+                    Vector3 outside = new Vector3(d.X + side.X * 5f, d.Y, d.Z + side.Z * 5f);
+                    Vector3 through = new Vector3(d.X - side.X * 2.5f, d.Y, d.Z - side.Z * 2.5f);
+                    if (_doorStep == 0)
+                    {
+                        // Get to this side's spot on a real route (travelto: the zone's floor and wall grid), so a bot
+                        // wedged in the door frame paths out first instead of pushing into the wall.
+                        _follow.ClearManual();
+                        if (!_overland.Active)
+                        {
+                            if (Flat(pos, outside) <= 3.5f) { _doorStep = 2; _doorStepTime = 0; return false; }
+                            var args = new[] { outside.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), outside.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), ((int)Playfield.ModelId).ToString() };
+                            _overland.Command(args, s2 => _ctx.Log("MISSIONRUN: door approach: " + s2));
+                            _doorStep = 1; _doorStepTime = 0;
+                        }
+                        return false;
+                    }
+                    if (_doorStep == 1)
+                    {
+                        if (_overland.Active && _doorStepTime < 30) return false;
+                        if (_overland.Active) _overland.Stop("door approach too long");
+                        _doorStep = 2; _doorStepTime = 0;
+                        return false;
+                    }
+                    // Last few metres: straight through the door's centre to its far side.
+                    _follow.SetManualTarget(through);
+                    if (_doorStepTime > 4)
+                    {
+                        _ctx.Log($"MISSIONRUN: door side {k} didn't take me in; next side.");
+                        _follow.ClearManual();
+                        _doorDir++; _doorStep = 0; _doorStepTime = 0;
+                        return false;
+                    }
+                    return true;
+                }
+
+                case Phase.AwaitBlitz:
+                {
+                    if (_phaseTime < 2.5) return false;       // the quest update arrives just after the zone-in
+                    // The owner's rule: judge the mission at the entrance, where leaving is one step away. Blitz's own
+                    // planner says whether it has a walkable path to the target; none, or no way to look for it, and
+                    // the mission is dropped right here instead of being fought over deep inside.
+                    if (_blitzTries == 0)
+                    {
+                        string report = null;
+                        _mission.Command("route", r => report = r);
+                        _ctx.Log("MISSIONRUN: at the entrance: " + report);
+                        bool noPath = report != null && report.IndexOf("no walkable path", StringComparison.OrdinalIgnoreCase) >= 0;
+                        bool noRoute = report != null && report.StartsWith("No route", StringComparison.OrdinalIgnoreCase)
+                                       && report.IndexOf("search", StringComparison.OrdinalIgnoreCase) < 0;
+                        if (noPath || noRoute) { Skip("I can't do it from the entrance: " + report); return false; }
+                    }
+                    _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
+                    Enter(Phase.Blitz, "blitzing");
+                    return false;
+                }
+
+                case Phase.Blitz:
+                    if (_mission.Active)
+                    {
+                        if (_phaseTime > BlitzTimeout) Skip("it was taking too long");
+                        return false;
+                    }
+                    if (_mission.InMission)
+                    {
+                        if (_completed) { StartBackoff(me, "walk out"); return false; }
+                        // A fresh blitz clears the cells a run of server snap-backs blocked (2026-09-23 21:31: two
+                        // snaps at the start blocked the only way and it gave up), so try again before giving up.
+                        if (++_blitzTries <= 1 && _phaseTime > 3)
+                        {
+                            _ctx.Log($"MISSIONRUN: blitz ended before the mission was done; trying once more.");
+                            StartBackoff(me, "blitz");
+                            return false;
+                        }
+                        if (_blitzTries <= 1) return false;
+                        Skip("blitz failed twice - check my log (MISSION: lines)");
+                        return false;
+                    }
+                    if (!_completed) { Skip("I ended up outside without completing it"); return false; }
+                    _done++;
+                    _tell($"Mission {_done} done.");
+                    _current = null;
+                    ClearSaved();
+                    StartStash();
+                    return false;
+
+                case Phase.Stash:
+                    StashTick(me);
+                    return false;
+
+                case Phase.Backoff:
+                {
+                    // The owner's way out of a spot the server keeps stopping you at: turn round, run back to the
+                    // edge of the room, turn again and go. Up to 6 m back along our own facing, then retry.
+                    if (!_mission.InMission && _backoffNext != "blitz") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
+                    bool replaying = _follow.ReplayCount > 0 && !_follow.ManualActive;
+                    bool done = _phaseTime > (replaying ? 25 : 4) || (_backoffTo.HasValue && Flat(me.Transform.Position, _backoffTo.Value) <= 1.2f);
+                    if (!done && replaying) return true;
+                    if (!done && _backoffTo.HasValue) { _follow.SetManualTarget(_backoffTo.Value); return true; }
+                    _follow.ClearMovement();
+                    switch (_backoffNext)
+                    {
+                        case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
+                        case "leave": _mission.Command("backoutside", s2 => _ctx.Log("MISSIONRUN: " + s2)); Enter(Phase.Leaving, "walking out again"); break;
+                        default: _mission.Command("backoutside", s2 => _ctx.Log("MISSIONRUN: " + s2)); Enter(Phase.Blitz, "walking out"); break;
+                    }
+                    return false;
+                }
+
+                case Phase.Hike:
+                    return HikeTick(me);
+
+                case Phase.Leaving:
+                    if (!_mission.InMission) { Enter(Phase.ToTerminal, "outside"); return false; }
+                    if (!_mission.Active)
+                    {
+                        if (_phaseTime > 60 && !_leaveWarned) { _leaveWarned = true; _tell("I'm having trouble walking out of the mission building; still trying."); }
+                        if (_phaseTime > 5) { StartBackoff(me, "leave"); return false; }
+                    }
+                    return false;
+            }
+            return false;
+        }
+
+        private int _doorDir = -1, _doorStart, _doorStep;
+        private double _approach, _travelWaitUntil;
+        private Vector3? _backoffTo;
+        private string _backoffNext;
+
+        // GOOD POSITIONS: inside a building, every 1.5 m walked without a server correction in the last 2 s is
+        // kept (up to 200). They are ground the server has accepted, so walking them backwards cannot hit a wall.
+        private readonly List<Vector3> _good = new List<Vector3>();
+        private double _lastCorrection = -99;
+        private int _backoffs;
+
+        /// <summary>Main: the server corrected our position (SetPos).</summary>
+        public void OnServerCorrection() => _lastCorrection = _clock;
+
+        private void RecordGood(LocalPlayer me)
+        {
+            if (!_mission.InMission) { if (_good.Count > 0) _good.Clear(); _backoffs = 0; return; }
+            if (_clock - _lastCorrection < 2) return;
+            Vector3 p = me.Transform.Position;
+            if (_good.Count == 0 || Vector3.Distance(_good[_good.Count - 1], p) >= 1.5f)
+            {
+                _good.Add(p);
+                if (_good.Count > 200) _good.RemoveAt(0);
+            }
+        }
+
+        // ---- Hike: walk to the first exit of the zone route ourselves ----------------------------------------
+        // Travel plans the zone route well (ICC -> Newland whompa -> Borealis whompa), but its walking grid can
+        // call the way to the first exit 'walled off' (ICC, pf 655, 4 m cells: 2026-09-23 21:58) and then fall back
+        // on Scotty, who has never answered this bot. So: take the planner's route without Scotty, walk straight to
+        // its first exit, step onto it / use it / cross it, and once the zone changes hand back to travel.
+        private ZoneHop _hike;
+        private int _hikeFromPf, _hikeTargetPf;
+        private Vector3 _hikeGoal;
+        private string _hikeWhat;
+        private Phase _hikeReturn;
+        private double _hikeUsedAt = -99, _hikeLastHike = -99;
+
+        private bool StartHike(LocalPlayer me, int pf, Vector3 goal, string what)
+        {
+            if (_clock - _hikeLastHike < 20) return false;          // one attempt at a time
+            int here = (int)Playfield.ModelId;
+            if (here == pf) return false;                            // same zone: nothing to cross
+            var opt = new ZoneRouteOptions
+            {
+                UseScotty = false, UnknownPasses = true,
+                Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
+                Filter = e => e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0,
+            };
+            ZoneRoute route;
+            try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99;
+            if (_overland.Active) _overland.Stop("mission run walks this leg itself");
+            var e = _hike.Exit;
+            _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
+            Enter(Phase.Hike, "walking to the exit myself");
+            return true;
+        }
+
+        private bool HikeTick(LocalPlayer me)
+        {
+            if ((int)Playfield.ModelId != _hikeFromPf)
+            {
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: through to {Zoning.Name((int)Playfield.ModelId)}; travel takes it from here.");
+                Enter(_hikeReturn, "through the exit");
+                return false;
+            }
+            if (_phaseTime > 90)
+            {
+                _follow.ClearMovement();
+                _ctx.Log("MISSIONRUN: couldn't get through that exit on foot; back to travel.");
+                Enter(_hikeReturn, "hike failed");
+                return false;
+            }
+            var e = _hike.Exit;
+            Vector3 pos = me.Transform.Position;
+            Vector3 at = _hike.WalkTo ?? e.A;
+            if (e.Kind == ExitKind.ZoneLine)
+            {
+                // Walk to the line, then on across it.
+                Vector3 cross = _hike.CrossTo ?? at;
+                _follow.SetManualTarget(Flat(pos, at) > 2f ? at : cross);
+                return true;
+            }
+            if (Flat(pos, e.A) > 1.5f) { _follow.SetManualTarget(e.A); return true; }
+            // On it: a pad takes you by standing on it; an object is used. Use it every few seconds either way.
+            _follow.ClearManual();
+            if (_clock - _hikeUsedAt > 4 && e.ObjInstance != 0)
+            {
+                _hikeUsedAt = _clock;
+                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = new Identity((IdentityType)e.ObjType, e.ObjInstance), Count = 1, Temp4 = 1 });
+                _ctx.Log($"MISSIONRUN: used {e} at the exit.");
+            }
+            return false;
+        }
+
+        private void StartBackoff(LocalPlayer me, string next)
+        {
+            Vector3 pos = me.Transform.Position;
+            _backoffNext = next;
+            _backoffTo = null;
+            _backoffs++;
+            if (_backoffs >= 2 && _good.Count >= 2)
+            {
+                // Second time and after: walk our own clean trail back ~15 m (further each time) to a spot the
+                // server accepted, then try again from there.
+                float want = Math.Min(15f * (_backoffs - 1), 60f), got = 0;
+                var back = new List<Vector3>();
+                Vector3 last = pos;
+                for (int i = _good.Count - 1; i >= 0 && got < want; i--)
+                {
+                    if (Vector3.Distance(_good[i], pos) < 2f && back.Count == 0) continue;
+                    got += Flat(last, _good[i]); last = _good[i];
+                    back.Add(_good[i]);
+                }
+                if (back.Count > 0)
+                {
+                    _follow.LoadReplay(back, false);
+                    _backoffTo = back[back.Count - 1];
+                    _ctx.Log($"MISSIONRUN: stopped short again; walking my clean trail back {got:0} m to ({_backoffTo.Value.X:0},{_backoffTo.Value.Z:0}), then trying to {next} again.");
+                    Enter(Phase.Backoff, "back to a good position");
+                    return;
+                }
+            }
+            Vector3 fwd = me.MovementComponent.Heading.Forward;
+            var flat = new Vector3(fwd.X, 0, fwd.Z);
+            float len = flat.Magnitude;
+            _backoffTo = len > 0.1f ? pos - flat * (6f / len) : (Vector3?)null;
+            _ctx.Log($"MISSIONRUN: stopped short; backing off {(len > 0.1f ? "6 m" : "0 m (no facing)")} before trying to {next} again.");
+            Enter(Phase.Backoff, "backing off");
+        }
+        private bool _fullWarned, _rollWarned, _leaveWarned, _afterDeath;
+        private int _blitzTries;
+        private double _doorStepTime;
+
+        // travelto, once per leg, through the command it already has; retried twice on failure.
+        private bool Travel(LocalPlayer me, int pf, Vector3 goal, string what)
+        {
+            if (_overland.Active)
+            {
+                if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
+                // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
+                else if (_overland.Status().Contains("scty") && _phaseTime > 15 && StartHike(me, pf, goal, what)) return false;
+                return false;
+            }
+            if (_clock < _travelWaitUntil) return false;
+            if (_travelStarted)
+            {
+                _travelStarted = false;
+                bool there = (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) <= 12f;
+                if (!there && StartHike(me, pf, goal, what)) return false;
+                if (!there && ++_travelTries >= 3)
+                {
+                    _travelTries = 0;
+                    if (_phase == Phase.ToDoor) { Skip($"can't get to its door ({_overland.Status()})"); return false; }
+                    _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
+                    _travelWaitUntil = _clock + 60;
+                    return false;
+                }
+                if (there) return false;                  // the phase check picks it up next frame
+            }
+            var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
+            _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
+            _overland.Command(args, s => _ctx.Log("MISSIONRUN: travel: " + s));
+            _travelStarted = true;
+            return false;
+        }
+
+        // ---- Stash -----------------------------------------------------------------------------------------
+        // Capture 20260923-201746: a bag is opened by Using it (Flag 0); the server answers with the bag's
+        // contents (InventoryUpdate: 21 slots, the entries, open), which the SDK keeps as a Container; each item
+        // is then ClientContainerAddItem'd into the bag and the server confirms it with ContainerAddItem.
+
+        private void StartStash()
+        {
+            _bagsToTry.Clear(); _bag = null;
+            foreach (var b in Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container))
+                _bagsToTry.Enqueue(b);
+            Enter(Phase.Stash, "stashing the reward");
+        }
+
+        private List<Item> Rewards() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory
+            && _rewardIds.Any(r => i.Id == r.Item1 || i.HighId == r.Item2 || i.Id == r.Item2)).ToList();
+
+        private void StashTick(LocalPlayer me)
+        {
+            var rewards = Rewards();
+            if (rewards.Count == 0 || _phaseTime > 60)
+            {
+                if (rewards.Count > 0) _tell($"Couldn't stash {rewards.Count} reward item(s); they stay in my inventory.");
+                _rewardIds.Clear();
+                Enter(Phase.ToTerminal, "back to the terminal");
+                return;
+            }
+            if (_bag == null)
+            {
+                if (_bagsToTry.Count == 0) { _tell("No backpack with room for the reward; it stays in my inventory."); _rewardIds.Clear(); Enter(Phase.ToTerminal, "no bag room"); return; }
+                _bag = _bagsToTry.Dequeue();
+                _bagOpenedAt = _clock;
+                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = _bag.Slot, Count = 1, Temp4 = 0 });
+                _ctx.Log($"MISSIONRUN: opening bag '{_bag.Name}' at {_bag.Slot}.");
+                return;
+            }
+            var cont = Inventory.Containers.FirstOrDefault(c => c.Identity == _bag.UniqueIdentity);
+            if (cont == null)
+            {
+                if (_clock - _bagOpenedAt > 4) { _ctx.Log($"MISSIONRUN: bag '{_bag.Name}' did not open."); _bag = null; }
+                return;
+            }
+            if (cont.IsFull) { _ctx.Log($"MISSIONRUN: bag '{_bag.Name}' is full."); _bag = null; return; }
+            if (_clock - _lastMove < 0.6) return;
+            var item = rewards[0];
+            item.MoveToContainer(cont);
+            _lastMove = _clock;
+            _ctx.Log($"MISSIONRUN: stashed '{item.Name}' into '{_bag.Name}'.");
+        }
+
+        private double _bagOpenedAt;
+
+        // ---- Doors -----------------------------------------------------------------------------------------
+
+        private Dictionary<int, List<Vector3>> _doors;
+
+        /// <summary>The mission door (Zoning.json missionEntrances) nearest the spot the terminal gave.</summary>
+        private Vector3? FindDoor(int pf, Vector3 near)
+        {
+            if (_doors == null)
+            {
+                _doors = new Dictionary<int, List<Vector3>>();
+                try
+                {
+                    var root = JObject.Parse(File.ReadAllText(Path.Combine(_pluginDir, "GameData", "Zoning.json")));
+                    foreach (var p in (JObject)root["playfields"])
+                    {
+                        var list = new List<Vector3>();
+                        foreach (var e in (JArray)p.Value["missionEntrances"] ?? new JArray())
+                        { var q = e["pos"]; list.Add(new Vector3((float)q[0], (float)q[1], (float)q[2])); }
+                        if (list.Count > 0) _doors[int.Parse(p.Key)] = list;
+                    }
+                }
+                catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read mission doors from Zoning.json: " + ex.Message); }
+            }
+            if (!_doors.TryGetValue(pf, out var doors)) return null;
+            var best = doors.OrderBy(d => Flat(d, near)).FirstOrDefault();
+            if (Flat(best, near) > 25f) return null;
+            _ctx.Log($"MISSIONRUN: door at ({best.X:0},{best.Y:0},{best.Z:0}), {Flat(best, near):0.0} m from the terminal's spot.");
+            return best;
+        }
+
+        // ---- The mission in hand, kept across restarts ------------------------------------------------------
+        // The quest log does not carry the door's position in a form we read, so the run writes down what the
+        // terminal said about the mission it took (missionrun.json beside the plugin) and clears it when done.
+
+        private string SavePath => Path.Combine(_pluginDir, "missionrun.json");
+        private readonly Dictionary<Identity, Quest> _quests = new Dictionary<Identity, Quest>();
+
+        // Deleting a mission, as the owner's client does it (capture 20260910-200346, client seq 54):
+        // QuestMessage Action=Delete (1) with the quest identity from the quest log. Only quests that came from a
+        // mission terminal (the quest log names the terminal: UnknownId1 is a MissionTerminal identity) are
+        // touched - never an ordinary quest.
+        private int DeleteHeldMissions()
+        {
+            int n = 0;
+            foreach (var id in HeldMissionIds())
+            {
+                Client.Send(new QuestMessage { Action = QuestAction.Delete, Mission = id });
+                _ctx.Log($"MISSIONRUN: deleted mission {id}.");
+                _quests.Remove(id);
+                n++;
+            }
+            _deleted.UnionWith(HeldMissionIds());
+            ClearSaved();
+            return n;
+        }
+
+        private readonly HashSet<Identity> _deleted = new HashSet<Identity>();
+
+        /// <summary>The missions from a mission terminal in the quest log. The SDK's own decode of the quest log
+        /// came back empty live (21:40, "deleted 0"), so this reads the raw message the way MissionRecords does:
+        /// each quest starts with its Mission identity (0xDAC3); a quest from a terminal carries the terminal's
+        /// identity (0xDAC1) before the next quest starts (capture 20260923-201746).</summary>
+        private List<Identity> HeldMissionIds()
+        {
+            var ids = new List<Identity>();
+            foreach (var q in _quests.Values) if (q.UnknownId1.Type == IdentityType.MissionTerminal) ids.Add(q.QuestId);
+            var b = _lastQuestLog;
+            if (b != null)
+            {
+                var starts = new List<(int at, int inst)>();
+                for (int i = 0; i + 8 <= b.Length; i++)
+                    if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xDA && b[i + 3] == 0xC3)
+                    {
+                        int inst = (b[i + 4] << 24) | (b[i + 5] << 16) | (b[i + 6] << 8) | b[i + 7];
+                        if (!starts.Any(x => x.inst == inst)) starts.Add((i, inst));
+                    }
+                for (int k = 0; k < starts.Count; k++)
+                {
+                    int end = k + 1 < starts.Count ? starts[k + 1].at : b.Length;
+                    bool fromTerminal = false;
+                    for (int i = starts[k].at + 8; i + 4 <= end && !fromTerminal; i++)
+                        fromTerminal = b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xDA && b[i + 3] == 0xC1;
+                    var id = new Identity(IdentityType.Mission, starts[k].inst);
+                    if (fromTerminal && !ids.Contains(id)) ids.Add(id);
+                }
+            }
+            ids.RemoveAll(x => _deleted.Contains(x));
+            return ids;
+        }
+
+        /// <summary>Give up on the mission in hand: delete it, walk out if inside, and carry on rolling.</summary>
+        private void Skip(string why)
+        {
+            int n = DeleteHeldMissions();
+            _tell($"Skipping this mission ({why}); deleted {n}.");
+            _current = null; _completed = false;
+            if (_mission.Active) _mission.Stop("skipping the mission");
+            if (_mission.InMission) { _mission.Command("backoutside", s => _ctx.Log("MISSIONRUN: " + s)); Enter(Phase.Leaving, "walking out to skip it"); }
+            else Enter(Phase.ToTerminal, "skipped");
+        }
+        private string TerminalPath => Path.Combine(_pluginDir, "missionterminal.json");
+
+        private void SaveTerminal()
+        {
+            try { File.WriteAllText(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString()); }
+            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the terminal: " + ex.Message); }
+        }
+
+        private bool LoadTerminal()
+        {
+            try
+            {
+                if (!File.Exists(TerminalPath)) return false;
+                var o = JObject.Parse(File.ReadAllText(TerminalPath));
+                _termPf = (int)o["pf"]; _termId = new Identity((IdentityType)(int)o["type"], (int)o["id"]);
+                _termPos = new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
+                return true;
+            }
+            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read the saved terminal: " + ex.Message); return false; }
+        }
+        private byte[] _lastQuestLog;
+
+        // The quest log (QuestFullUpdate, sent at every zone-in) carries each mission's destination the same way
+        // the terminal list does: Identity(Playfield2 0x9C50, pf), 8 bytes, then the door's x, y, z as floats.
+        // Checked on capture 20260923-201746: mission 55EE1C4C, offered at pf 570 (748,35,1721), sits in the
+        // quest log at offset 675 as 9C50:570, then (748.19, 35.28, 1720.71). This is what "upload to map" shows.
+        private MissionInfo FromQuestLog()
+        {
+            var b = _lastQuestLog;
+            if (b == null) return null;
+            var found = new List<(int pf, Vector3 at)>();
+            for (int i = 0; i + 28 <= b.Length; i++)
+            {
+                if (b[i] != 0 || b[i + 1] != 0 || b[i + 2] != 0x9C || b[i + 3] != 0x50) continue;
+                int pf = (b[i + 4] << 24) | (b[i + 5] << 16) | (b[i + 6] << 8) | b[i + 7];
+                if (pf <= 0 || pf > 20000) continue;
+                float x = BeFloat(b, i + 16), y = BeFloat(b, i + 20), z = BeFloat(b, i + 24);
+                if (!(x > 0 && x < 10000 && z > 0 && z < 10000 && y > -500 && y < 3000)) continue;
+                found.Add((pf, new Vector3(x, y, z)));
+            }
+            var saved = LoadSaved();
+            var pick = found.Where(f => FitsZone(f.pf))
+                            .OrderBy(f => saved != null && saved.Playfield.Instance == f.pf && Flat(f.at, saved.Location) < 20 ? 0 : 1)
+                            .Select(f => ((int, Vector3)?)f).FirstOrDefault();
+            if (pick == null) { if (found.Count == 0) ClearSaved(); return null; }
+            _ctx.Log($"MISSIONRUN: quest log has a mission in pf {pick.Value.Item1} at ({pick.Value.Item2.X:0},{pick.Value.Item2.Z:0}).");
+            var m = saved != null && saved.Playfield.Instance == pick.Value.Item1 && Flat(pick.Value.Item2, saved.Location) < 20 ? saved : new MissionInfo
+            {
+                MissionIdentity = new Identity(IdentityType.Mission, 0), MissionIcon = 0, Credits = 0,
+                MissionItemData = new MissionItemReward[0],
+                Playfield = new Identity(IdentityType.Playfield2, pick.Value.Item1),
+            };
+            m.Location = pick.Value.Item2;
+            return m;
+        }
+
+        private static float BeFloat(byte[] b, int i) => BitConverter.ToSingle(new[] { b[i + 3], b[i + 2], b[i + 1], b[i] }, 0);
+
+        private bool FitsZone(int pf)
+        {
+            var zones = _ctx.Config.MissionZones;
+            if (zones == null || zones.Count == 0) return pf == _termPf;
+            string name = Playfield.TryGetPlayfieldNameFromId(pf, out string n) ? n : "";
+            return zones.Any(z => string.Equals(z?.Trim(), name, StringComparison.OrdinalIgnoreCase) || (int.TryParse(z, out int id) && id == pf));
+        }
+
+        private void Save(MissionInfo m)
+        {
+            try
+            {
+                var o = new JObject
+                {
+                    ["id"] = m.MissionIdentity.Instance, ["type"] = m.MissionIcon, ["pf"] = m.Playfield.Instance,
+                    ["x"] = m.Location.X, ["y"] = m.Location.Y, ["z"] = m.Location.Z, ["credits"] = m.Credits,
+                    ["rewards"] = new JArray((m.MissionItemData ?? new MissionItemReward[0]).Select(r => new JArray(r.LowId, r.HighId, r.Ql))),
+                };
+                File.WriteAllText(SavePath, o.ToString());
+            }
+            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the mission: " + ex.Message); }
+        }
+
+        private void ClearSaved() { try { if (File.Exists(SavePath)) File.Delete(SavePath); } catch { } }
+
+        private MissionInfo LoadSaved()
+        {
+            try
+            {
+                if (!File.Exists(SavePath)) return null;
+                var o = JObject.Parse(File.ReadAllText(SavePath));
+                return new MissionInfo
+                {
+                    MissionIdentity = new Identity(IdentityType.Mission, (int)o["id"]),
+                    MissionIcon = (int)o["type"],
+                    Playfield = new Identity(IdentityType.Playfield2, (int)o["pf"]),
+                    Location = new Vector3((float)o["x"], (float)o["y"], (float)o["z"]),
+                    Credits = (int)o["credits"],
+                    MissionItemData = ((JArray)o["rewards"]).Select(r => new MissionItemReward { LowId = (int)r[0], HighId = (int)r[1], Ql = (int)r[2] }).ToArray(),
+                };
+            }
+            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read the saved mission: " + ex.Message); return null; }
+        }
+
+        // ---- Helpers ---------------------------------------------------------------------------------------
+
+        /// <summary>The nearest NPC fighting the bot or one of its pets: what a solo run defends against.</summary>
+        public SimpleChar Attacker(LocalPlayer me)
+        {
+            if (!Active || me == null) return null;
+            var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            return DynelManager.Npcs
+                .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
+                            && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
+                            && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
+                .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+        }
+
+        private void Enter(Phase p, string why)
+        {
+            if (p != _phase) _ctx.Log($"MISSIONRUN: {_phase} -> {p} ({why})");
+            _phase = p; _phaseTime = 0;
+            if (p == Phase.ToDoor || p == Phase.Rolling) _blitzTries = 0;
+            if (p == Phase.Rolling) _rollWarned = false;
+            if (p == Phase.Leaving) _leaveWarned = false;
+            if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
+            _approach = 0;
+        }
+
+        private static float Flat(Vector3 a, Vector3 b) { float dx = a.X - b.X, dz = a.Z - b.Z; return (float)Math.Sqrt(dx * dx + dz * dz); }
+    }
+}

@@ -163,7 +163,20 @@ namespace AOBuddy
 
         /// <summary>Don't engage targets farther than this (assist safety leash).</summary>
         public float AssistMaxDistance = 40f;
-        public float HuntRadius = 30f;             // 'hunt' with no radius: hunt mobs within this many metres of the OWNER
+        public float HuntRadius = 30f;             // 'hunt' with no radius: pets hunt mobs within this many metres of the bot
+
+        // Solo missions ('mission roll' at a SOLO terminal). Sliders are the values the game sends: -100 to +100,
+        // 0 = the middle (the terminal's default). -100 is the left end (credits on CreditsXp), +100 the right
+        // (captures 20260923-120056 and -201746, where every slider was set to both ends). Difficulty is the
+        // terminal's own value (captures: 1, 6, 11).
+        public int MissionDifficulty = 6;
+        public int MissionSliderGoodBad = 0;
+        public int MissionSliderOrderChaos = 0;
+        public int MissionSliderOpenHidden = 0;
+        public int MissionSliderPhysicalMystical = 0;
+        public int MissionSliderHeadonStealth = 0;
+        public int MissionSliderCreditsXp = 0;
+        public List<string> MissionZones = new List<string>();   // zone names or ids missions may be taken in; empty = any
         public float AttackRange = 8f;             // close to within this before attacking
         public float CombatLeashMeters = 18f;      // only assist mobs within this range of the OWNER (don't bolt after distant fights)
         public float CombatRestCooldownSec = 6f;   // don't sit to rest until combat has been over this long (multi-mob lull guard)

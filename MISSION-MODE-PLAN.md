@@ -162,3 +162,94 @@ Follow, combat, stand-up, move speed, use-travel and the zone sweep (CLAUDE.md "
 WORKING" and "KNOWN-GOOD BASE"). Mission mode adds a movement source to the arbiter in
 `Main.Walk()` below cast/rest and beside travel; it never sends StopAttack, never applies SetPos,
 and hands control back to follow the moment the owner turns it off or is lost.
+
+## Solo mission run (2026-09-23, night) - running live
+
+The bot now runs missions on its own from a solo terminal, in a loop, until the owner stops it. Live tonight
+in Borealis: missions completed end to end (roll, travel, door, blitz, walk out, reward into a backpack, back
+to the terminal). It drives the existing controllers only through their commands and `Active` flags, so
+blitz (`MissionController`) and travel (`OverlandController`) behave exactly as before.
+
+### Commands (tell the bot)
+
+| command | what it does |
+|---|---|
+| `mission run` | start the loop. Standing at a mission terminal: that terminal is used from now on (saved to `missionterminal.json`). Anywhere else: the saved terminal. Started inside a mission building: finishes that mission first, or walks out if there is nothing left to do. |
+| `mission run status` | the step it is on, missions done, the mission in hand |
+| `mission run skip` | delete the mission in hand, walk out if inside, carry on rolling. With no run going it only deletes. |
+| `mission run new` | start without resuming a held mission |
+| `mission run stop` / `stop` | the only thing that ends the run |
+| `mission roll` / `mission list` / `mission accept n` | roll by hand at the terminal, show the list, accept one |
+
+### Config (`config.json`, read at start-up)
+
+`MissionDifficulty` (terminal value, captures show 1/6/11, default 6); the six sliders `MissionSliderGoodBad`,
+`...OrderChaos`, `...OpenHidden`, `...PhysicalMystical`, `...HeadonStealth`, `...CreditsXp` as the wire values
+-100..+100 (0 = middle = terminal default; -100 = left end, e.g. all credits); `MissionZones` = zone names or ids
+missions may be taken in (empty = the terminal's own zone only).
+
+### The loop (`AOBuddy/MissionRun.cs`, `AOBuddy/MissionRoll.cs`)
+
+1. **Roll** (`MissionRoll`): Use the terminal once, then `QuestAlternative` with difficulty + all six sliders on
+   every roll, Scope Solo. The bot's serializer reproduces the owner's client bytes (capture 20260923-201746).
+   The answer's 5 `MissionInfo`s carry type (`MissionIcon` 0x2C47/49/4E/41/42), destination playfield, door
+   x/y/z, credits, XP, reward item. It takes the first mission blitz can do (find person / find item / repair)
+   in an allowed zone, terminal's zone first then nearest door; rerolls otherwise.
+2. **Accept**: `CreateQuest(mission id)`. Saved to `missionrun.json` (type, zone, door, reward ids).
+3. **Travel to the door**: `travelto x z pf` through `OverlandController.Command`.
+4. **Enter**: walking in is all it takes (capture: no client message, the server moves you). The door's
+   position comes from `Zoning.json` `missionEntrances`, but not which way it faces, so it tries each side:
+   travel to a spot 5 m out, then walk straight through the centre to the far side; next side if not in.
+5. **Judge at the entrance**: `mission route`. No walkable path to the target, or no way to find it: drop it
+   right there (delete + walk out + roll again).
+6. **Blitz**: `mission blitz`. One retry if it stops short, then the mission is dropped.
+7. **Walk out**: blitz's own exit; if that stops short, `backoutside` again.
+8. **Stash**: open each backpack (`GenericCmd Use` Flag 0 on the bag; the server answers `InventoryUpdate`, the
+   SDK's `Container`), move that mission's reward item in with `ClientContainerAddItem`, skip full bags.
+   Only the reward item is ever moved. Proven live 21:28.
+9. **Back to the terminal**: travel, then the last metres on foot (the terminal's body keeps you ~5 m out).
+
+### Recovery (the run never stops itself)
+
+- **Stopped short inside a building** (blitz or walking out): turn round and run 6 m back, retry; after that,
+  walk the bot's own clean trail back 15 m (further each time, max 60) - the trail is only positions the server
+  accepted (no correction in the last 2 s) - and retry.
+- **Blitz fails twice / door fails from every side / can't reach the door / 20 min in a mission / outside but
+  not complete**: `QuestMessage Delete` on the held mission (copied from capture 20260910-200346 client seq 54;
+  only quests whose quest-log entry names a mission terminal, read from the raw `QuestFullUpdate` because the
+  SDK's decode came back empty live), walk out, roll another.
+- **Death**: after the reclaim, travel to the terminal, wait out rez sickness + 8 s of rebuffs there, then back
+  to the open mission (still in the quest log) or roll.
+- **Travel gives up or waits on Scotty > 15 s**: take the zone route from `Zoning.FindRoute` without Scotty and
+  walk straight to its first exit (step on / Use it), then hand back to travel in the next zone.
+- **Resume after a restart**: the quest log carries each mission's destination the same way the terminal list
+  does (`Identity(0x9C50, pf)`, 8 bytes, x/y/z floats - checked on capture 20260923-201746), so `mission run`
+  finds the held mission there. `missionrun.json` only adds type and reward ids when it matches.
+
+### Also changed tonight (outside the run)
+
+- `Main.cs`: the movement leash anchor is dropped on every position jump. A correction taken inside a mission
+  building leashed the first steps outside back to mission coordinates and walked the bot to (21,260) in
+  Borealis (21:11). Tells from anyone but the owner are now logged (`TELL (not obeyed) from ...`) so Scotty's
+  answers show.
+- `MissionController.cs` (the repair step, our original code): the tool is found in the bags by the identity the
+  quest record names or by its name in the mission text; it used to look among items lying in the building.
+  When a mission's record has no target, the raw quest update is saved to `missions/questupdate-b*.bin` and the
+  items in sight are logged.
+
+### Open problems for Algorithman (in blitz / travel, not touched)
+
+1. **Exit push**: "walked 8 m through the exit door at (300,75) / (0,185) / (300,265) and did not leave the
+   building" several times. Same as the entry door: one push direction. The entry side-by-side approach (step 4)
+   might carry over.
+2. **Server snaps back mid-route**: e.g. Midtech repair 2224329, snapped to (5,5,185) every try just east of the
+   landing (2,5,185), cells 3,92 / 4,92 blocked, then "no walkable path". Another building: snapped to
+   (258,5,101) repeatedly on the way out, 58 m from the exit. Zone-ins are saved in `missions/`.
+3. **Find item on another floor**: Omnilab 2224336 composed as 1 floor; the owner says the item is on the top or
+   bottom floor. The bot searched every room of floor 0.
+4. **Quest record says "not the holder"** for a find-item mission the bot rolled itself, so no target identity;
+   raw quest update is now saved for the next one.
+5. **ICC (pf 655) grid, 4 m cells**: the reclaim spot (3231,35,915) and the whompa to Newland (3173,866) both
+   "walled off: no open ground"; the Grid proxy (3179,881) too. Travel then falls back to Scotty.
+6. **Scotty has never warped this bot** (borft x3, deidre x1); its replies are now in the log.
+7. **The bot's own HP reading** (`SupportController` predicted HP) sat at 51% while the owner saw full HP.

@@ -41,7 +41,7 @@ namespace AOBuddy
 
         // Pick the owner's fight and, if it's a NEW target, issue the attack a single time. Returns
         // the target (null = no owner fight). Called each decision tick.
-        public SimpleChar SelectAndEngage(LocalPlayer me, PlayerChar owner)
+        public SimpleChar SelectAndEngage(LocalPlayer me, PlayerChar owner, SimpleChar defend = null)
         {
             _sinceCombat += _ctx.Config.TickMs / 1000.0;
 
@@ -56,6 +56,8 @@ namespace AOBuddy
             // that resets the weapon timer (swing once, then wait — the "not swinging" bug). The
             // _attackedTarget check below is what prevents it.
             SimpleChar target = GetAssistTarget(me, owner);
+            // SOLO (mission run): with no owner fight, whatever is attacking the bot or its pets.
+            if (target == null && defend != null) target = LogTarget(defend, "defending");
 
             // His FightingTarget flickers to null for a tick mid-fight. Don't read that as "fight over" and
             // drop the mob we are on — hold the current one while it is still a live, hostile, in-range mob.
