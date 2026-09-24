@@ -333,6 +333,18 @@ missions may be taken in (empty = any zone).
     flees (outside missions, under 40% HP and still being hit) and leaves a zone alone for an hour after a death
     there. Travel routing round known mob camps would be better.
 
+15. **Water: the walker runs at run speed while swimming** (the owner's 220 main, Deep Artery Valley, 13:56-14:00,
+    2026-09-24). Run skill 1912 -> 13.8 u/s, but the server moved him ~5 u/s (1346 -> 1426 -> 1514 over ~15 s
+    each) and snapped him back 30-38 m every ~10 s. He held a constant y=9 while our ground there is 2.7-6.3
+    (1346,695 / 1426,685 / 1514,674): a river surface. On land (y 21-25) his height matched the ground. The
+    grid has no water, so routes go down rivers. Suggest: water extents from the client data (or 'server keeps
+    y flat above ground' as a live signal) -> swim speed while in water, and a cost for water in the grid.
+16. **Scotty inside one zone never warps** (the main, Deep Artery Valley, 'tell scty Ljotur', 2 tries x3, 13:45-14:00).
+    Travel keeps planning it first. A same-zone Scotty leg that failed once could be dropped for the trip.
+17. **Fair Trade bag purchase**: ResupplyController's container kind visited 16 terminals in Fair Trade and none
+    offered 'Large Backpack' (13:24:43-13:25:19, 2026-09-24). Which terminal sold it in the owner's capture is
+    not in our notes - to be checked against capture 20260924 before changing anything.
+
 ### Run changes, 2026-09-24 (ours, `MissionRun.cs`)
 - The hike walks **every** zone crossing (not only the first) and skips the Grid; in-zone teleporters count as crossed.
 - Zone lines are crossed 10 m past, alternating sides every 12 s. Pulled back at a line = that line failed.
