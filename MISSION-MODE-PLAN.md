@@ -270,3 +270,11 @@ missions may be taken in (empty = the terminal's own zone only).
    "walled off: no open ground"; the Grid proxy (3179,881) too. Travel then falls back to Scotty.
 6. **Scotty has never warped this bot** (borft x3, deidre x1); its replies are now in the log.
 7. **The bot's own HP reading** (`SupportController` predicted HP) sat at 51% while the owner saw full HP.
+8. **Snares read as "unreadable"** (`BotContext.RunVelocity`): a mob's run-speed debuff put Stat 156 at -289
+   (23:00:47, also -286/-153/-131 in earlier fights). `rs >= 0` drops every negative value and keeps the last
+   good 141, so the walker ran at ~6.1 u/s and the server snapped him back ~17 m every 3 s for minutes
+   (Borealis, 615,467 -> 644,475), with overland "routing round" a wall that wasn't there. Only -1 means
+   unreadable; a negative skill probably slows him (5.5 + rs/230 gives 4.2 u/s, but the server let him
+   advance slower than that, so the formula for negative values is unverified). The run now stands still
+   while the stat reads below -1 and resumes the same leg afterwards (MissionRun, fight pause reused).
+   Also worth making "snapped back to the same spot N times" read as a speed problem, not an obstacle.

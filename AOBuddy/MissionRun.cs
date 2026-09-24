@@ -247,6 +247,21 @@ namespace AOBuddy
             bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
                           || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
                           || _phase == Phase.Stash;
+            // SNARED: a mob's run-speed debuff (Stat 156 read -289 from 23:00:47 on, 2026-09-23) makes the server
+            // take only the slowed speed, and every step at the normal speed was snapped back ~17 m every 3 s for
+            // minutes, travel "routing round" an obstacle that wasn't there. A different way gets snapped back the
+            // same, so he stands where the server has him until it wears off. (-1 is 'unreadable', not a snare.)
+            bool snared = me.TryGetStat(Stat.RunSpeed, out int runSkill) && runSkill < -1;
+            if (moving && snared && !_fighting())
+            {
+                _fightReturn = _phase;
+                if (_mission.Active) _mission.Stop("snared");
+                if (_overland.Active) _overland.Stop("snared");
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: snared during {_phase} (run speed {runSkill}); the server won't let me move at full speed, standing until it wears off.");
+                Enter(Phase.Fight, "snared");
+                return false;
+            }
             if (moving && _fighting())
             {
                 _fightReturn = _phase;
@@ -264,7 +279,7 @@ namespace AOBuddy
             {
                 case Phase.Fight:
                     // Stay until the fight is really over (not just back above the emergency line).
-                    if (_inCombat()) { _phaseTime = 0; return false; }
+                    if (_inCombat() || snared) { _phaseTime = 0; return false; }
                     if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                     // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
                     // 6 s after the last blow) instead of walking off into the next room half dead. At most a
