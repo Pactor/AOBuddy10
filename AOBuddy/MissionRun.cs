@@ -1282,6 +1282,8 @@ namespace AOBuddy
         private List<Identity> _lastBatch;
         private Identity? _lastVendor;
         private int _wholeRefusals;
+        private Identity? _sellWalkTo;
+        private double _sellWalkAt = -99;
         private readonly HashSet<Identity> _badVendors = new HashSet<Identity>();
         private readonly HashSet<Identity> _refusedSlots = new HashSet<Identity>();
         private bool _sellBagsOpened;
@@ -1539,6 +1541,15 @@ namespace AOBuddy
                     }
                     if (_sellStage == 0)
                     {
+                        // Up to it first (16:05, 2026-09-24: 'took none' from terminal after terminal, used from where the
+                        // last one left him; the sales that worked were the ones that happened to be close).
+                        if (me.DistanceFrom(vm) > 3f && _clock - _sellWalkAt < 15)
+                        {
+                            if (_sellWalkTo != vm.Identity) { _sellWalkTo = vm.Identity; _sellWalkAt = _clock; }
+                            _follow.SetManualTarget(vm.Transform.Position);
+                            return true;
+                        }
+                        _follow.ClearMovement(); _sellWalkTo = null;
                         Client.Send(new LookAtMessage { Target = vm.Identity, ReturnInfo = 0 });
                         GameCommands.UseObject(me, vm.Identity);
                         _sellStage = 1; _shopStepAt = _clock;
