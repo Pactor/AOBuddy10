@@ -224,6 +224,8 @@ namespace AOBuddy
         private bool Fits(MissionInfo m)
         {
             if (!MissionRoll.BlitzCan(m.MissionIcon)) return false;
+            var types = _ctx.Config.MissionTypes;
+            if (types != null && types.Count > 0 && !types.Any(t => string.Equals(t?.Trim(), MissionRoll.TypeName(m.MissionIcon), StringComparison.OrdinalIgnoreCase))) return false;
             var zones = _ctx.Config.MissionZones;
             if (zones == null || zones.Count == 0) return m.Playfield.Instance == _termPf;   // default: the terminal's own zone
             return _roll.Allowed(m, out _);

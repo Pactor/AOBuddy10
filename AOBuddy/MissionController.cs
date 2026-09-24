@@ -165,7 +165,37 @@ namespace AOBuddy
             float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
             var pos = new Vector3(F(41), F(45), F(49));
             if (float.IsNaN(pos.X) || Math.Abs(pos.X) > 100000) return;
-            _items[new Identity((IdentityType)type, inst)] = new SeenItem { Template = 0, Pos = pos, Seen = Now };
+            var cid = new Identity((IdentityType)type, inst);
+            _items[cid] = new SeenItem { Template = 0, Pos = pos, Seen = Now };
+            _chestRaw[cid] = b;
+            if (_chestSaved < 12 && _instance != 0)
+            {
+                _chestSaved++;
+                try
+                {
+                    string dir = System.IO.Path.Combine(_pluginDir, "missions");
+                    System.IO.Directory.CreateDirectory(dir);
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, $"chest-b{_instance}-{inst:X}.bin"), b);
+                }
+                catch { }
+            }
+        }
+
+        private readonly Dictionary<Identity, byte[]> _chestRaw = new Dictionary<Identity, byte[]>();
+        private int _chestSaved;
+
+        /// <summary>The container whose update carries the item id (big-endian int), if any: a find-item target
+        /// that names an item TYPE (0xC74E) sits inside one of the building's containers (2026-09-23 22:38: seven
+        /// containers and no loose item were all the server sent).</summary>
+        private Identity? ContainerHolding(int itemId)
+        {
+            foreach (var kv in _chestRaw)
+            {
+                var b = kv.Value;
+                for (int i = 29; i + 4 <= b.Length; i++)
+                    if (((b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3]) == itemId) return kv.Key;
+            }
+            return null;
         }
 
         private static bool IsMe(Identity id)
@@ -178,7 +208,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear();
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear();
             try
             {
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
@@ -670,6 +700,12 @@ namespace AOBuddy
                     // An item-type reference: the target is the seen item carrying that template.
                     foreach (var kv in _items)
                         if (kv.Value.Template == _record.TargetA.Value.Instance) { pos = kv.Value.Pos; return kv.Key; }
+                    var holder = ContainerHolding(_record.TargetA.Value.Instance);
+                    if (holder.HasValue && _items.TryGetValue(holder.Value, out var hc))
+                    {
+                        how = $"the container {holder.Value} holds item {_record.TargetA.Value.Instance}";
+                        pos = hc.Pos; return holder.Value;
+                    }
                     pos = null; return null;
                 }
                 return Locate(_record.TargetA, out pos) ? _record.TargetA : null;
@@ -742,6 +778,10 @@ namespace AOBuddy
                     break;
                 case TypeFindItem:
                     // One LookAt with ReturnInfo=0 on the floor item (capture 20260923-125821 s4 13:04:11.152).
+                    // A container holding the item is opened first (GenericCmd Use, the way the owner opened his
+                    // backpack in capture 20260923-201746), then selected. UNVERIFIED which of the two completes it.
+                    if ((int)target.Value.Type == (int)IdentityType.Container)
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = target.Value, Count = 1, Temp4 = 0 });
                     Client.Send(new LookAtMessage { Target = target.Value, ReturnInfo = 0 });
                     _ctx.Log($"MISSION: selected item {target.Value} ({how}).");
                     break;
