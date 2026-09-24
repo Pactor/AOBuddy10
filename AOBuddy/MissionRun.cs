@@ -306,8 +306,15 @@ namespace AOBuddy
                     }
                     else
                     {
+                        // CLOSE IN: he fights with a melee weapon and used to stand swinging at a mob 11-16 m away that
+                        // shot him to death (06:33, 2026-09-24). Walk up to what we're fighting.
+                        if (me.FightingIdentity.HasValue && !_combat.IsSetAside(me.FightingIdentity.Value))
+                        {
+                            var foe = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == me.FightingIdentity.Value);
+                            if (foe != null && me.DistanceFrom(foe) > 4f) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                        }
                         // Stay until the fight is really over (not just back above the emergency line).
-                        if (_inCombat()) { _phaseTime = 0; return false; }
+                        if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
                         if (_clock < _heldUntil) return false;
                         if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                         // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
@@ -1298,7 +1305,10 @@ namespace AOBuddy
                 if (n == null || !n.FightingIdentity.HasValue || n.FightingIdentity.Value != me.Identity || _combat.IsSetAside(n.Identity)) { if (n != null) _still.Remove(n.Identity); continue; }
                 var p = n.Transform.Position;
                 if (!_still.TryGetValue(n.Identity, out var st) || Vector3.Distance(st.pos, p) > 0.5f) { _still[n.Identity] = (p, _clock); continue; }
-                if (_clock - st.since > 5 && me.DistanceFrom(n) > 6f)
+                // OFF (06:31-06:36, 2026-09-24): ordinary ranged mobs stand still while they shoot too (Rollerrats,
+                // Blubbags, Probes); setting them all aside meant he never fought back and died twice. Mobs out of
+                // reach are now walked up to (Fight phase); one his blows can't hurt is dropped after 20 s.
+                if (false && _clock - st.since > 5 && me.DistanceFrom(n) > 6f)
                 {
                     _ctx.Log($"MISSIONRUN: '{n.Name}' shoots from {me.DistanceFrom(n):0} m and hasn't moved in {(_clock - st.since):0} s: a stationary shooter; running past it.");
                     _combat.SetAside(me, n.Identity, 60);
