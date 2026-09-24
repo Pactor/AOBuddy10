@@ -169,10 +169,10 @@ namespace AOBuddy
         // 0 = the middle (the terminal's default). -100 is the left end (credits on CreditsXp), +100 the right
         // (captures 20260923-120056 and -201746, where every slider was set to both ends). Difficulty is the
         // terminal's own value (captures: 1, 6, 11).
-        public int MissionDifficulty = 6;
-        public int MissionSliderGoodBad = 0;
-        public int MissionSliderOrderChaos = 0;
-        public int MissionSliderOpenHidden = 0;
+        public int MissionDifficulty = 5;
+        public int MissionSliderGoodBad = -100;
+        public int MissionSliderOrderChaos = 100;
+        public int MissionSliderOpenHidden = -100;
         public int MissionSliderPhysicalMystical = 0;
         public int MissionSliderHeadonStealth = 0;
         public int MissionSliderCreditsXp = 0;
@@ -183,7 +183,7 @@ namespace AOBuddy
         public string MissionStyle = "blitz";
         // Mission types the run takes (any of "find person", "repair", "find item"). Find item left out for now:
         // in the solo buildings the item never showed up as a loose item (2026-09-23).
-        public List<string> MissionTypes = new List<string> { "find person", "repair" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any
+        public List<string> MissionTypes = new List<string> { "find person", "repair", "find item" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any
         public float AttackRange = 8f;             // close to within this before attacking
         public float CombatLeashMeters = 18f;      // only assist mobs within this range of the OWNER (don't bolt after distant fights)
         public float CombatRestCooldownSec = 6f;   // don't sit to rest until combat has been over this long (multi-mob lull guard)

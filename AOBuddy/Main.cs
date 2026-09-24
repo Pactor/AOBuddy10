@@ -853,6 +853,10 @@ namespace AOBuddy
         {
             _support.UpdateOwnerSpeed(owner);
 
+            // A mission blitz is selecting its target and waiting for the completion: no cast, stim, combat
+            // retarget or pet command until it is done - each of them sends a LookAt of its own.
+            if (_mission.HoldsSelection) { _ctx.SetBehavior("Mission: holding the selection"); return; }
+
             // Shopping holds everything else: no casting, sitting, fighting or following until it's done.
             if (_resupply.Active) { _support.SetIdleState(me); _ctx.SetBehavior("Resupplying"); return; }
 
@@ -1374,10 +1378,19 @@ namespace AOBuddy
                     }
                     break;
                 case "status": reply(StatusLine()); break;
+                case "pos":
+                {
+                    LocalPlayer meP = DynelManager.LocalPlayer;
+                    if (meP == null) { reply("Not in game."); break; }
+                    Vector3 p = meP.Transform.Position;
+                    // Map coordinates as the game shows them (x, then z as the map's y), height after - the same
+                    // order 'travelto <x> <y> <playfield>' takes.
+                    reply($"{Playfield.Name} ({(int)Playfield.ModelId}): {p.X:0} {p.Z:0}, height {p.Y:0}");
+                    break;
+                }
                 case "navdata": reply(NavDataCommand(arg)); break;
                 case "mission":
-                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? parts[2] : "", reply); }
-                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
+                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? parts[2] : "", reply); }                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
                         _mission.Command(parts.Length > 1 ? parts[1] : "", reply);
                     break;
                 case "travelto": _overland.Command(parts.Skip(1).Where(p => p.Length > 0).ToArray(), reply); break;

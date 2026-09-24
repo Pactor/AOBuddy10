@@ -273,7 +273,10 @@ namespace AOSharp.Clientless.Net
                         // which field broke. Log where it actually threw: type, message, and the deepest
                         // frame (file+line) — that names the exact read that failed.
                         Exception root = dropEx; while (root.InnerException != null) root = root.InnerException;
-                        string frame = (root.StackTrace ?? "").Split('\n').LastOrDefault(s => s.Contains("AOSharp"))?.Trim() ?? "?";
+                        // FIRST line = innermost frame (where it threw); LastOrDefault here named the outermost,
+                        // ProcessCachedPacket itself, every time.
+                        string frame = (root.StackTrace ?? "").Split('\n').FirstOrDefault(s => s.Contains(" in "))?.Trim()
+                                       ?? (root.StackTrace ?? "").Split('\n').FirstOrDefault()?.Trim() ?? "?";
                         _logger.Error($"Dropping unparseable packet: n3type=0x{typeId:X8} len={(packet == null ? 0 : packet.Length)} EX={root.GetType().Name}: {root.Message} AT {frame}");
                         _logger.Error($"  hex={(packet == null ? "" : packet.ToHexString())}");
                     }

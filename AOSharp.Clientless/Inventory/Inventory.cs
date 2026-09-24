@@ -25,7 +25,7 @@ namespace AOSharp.Clientless
         public static IReadOnlyList<UniqueItem> UniqueItems => _items.OfType<UniqueItem>().ToList();
         public static IReadOnlyList<TempItem> TempItems => _items.OfType<TempItem>().ToList();
         private static Item _lastProxyItem;
-        private static List<Item> _items;
+        private static List<Item> _items = new List<Item>();
         private static List<Container> _containers = new List<Container>();
 
         public static Action<Container> ContainerOpened;
@@ -200,6 +200,7 @@ namespace AOSharp.Clientless
 
         private static void OnSpawnItemAction()
         {
+            if (_lastProxyItem == null) return;
             AddToNextAvailableSlot(_lastProxyItem);
             ItemAdded?.Invoke(_lastProxyItem);
         }

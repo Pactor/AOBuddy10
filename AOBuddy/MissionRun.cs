@@ -101,9 +101,17 @@ namespace AOBuddy
 
             var me = DynelManager.LocalPlayer;
             if (me == null) { reply("Not in game."); return; }
-            var term = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
-                                             .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
-            if (term != null && me.DistanceFrom(term) <= 6f)
+            // The terminal his team status calls for (team terminal in a team, solo terminal alone), among the
+            // terminals standing where he is - they stand side by side.
+            var term = MissionRoll.MatchingTerminal(me, me.Transform.Position, TerminalRowMetres);
+            var nearAny = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
+                                                .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
+            if (term == null && nearAny != null && me.DistanceFrom(nearAny) <= 6f)
+            {
+                reply($"I'm {(MissionRoll.WantTeam(me) ? "" : "not ")}in a team, so I need a {(MissionRoll.WantTeam(me) ? "team" : "solo")} mission terminal, and there's none next to '{nearAny.Name}'. Stand me by one.");
+                return;
+            }
+            if (term != null)
             {
                 // Standing at one: this is the terminal from now on (remembered across restarts).
                 _termPf = (int)Playfield.ModelId; _termId = term.Identity; _termPos = term.Transform.Position;
@@ -119,7 +127,7 @@ namespace AOBuddy
             if (fresh || !held) ClearSaved();
             var saved = fresh || !held ? null : FromQuestLog() ?? LoadSaved();
             string termZone = Playfield.TryGetPlayfieldNameFromId(_termPf, out string tz) ? tz : _termPf.ToString();
-            string zones = _ctx.Config.MissionZones != null && _ctx.Config.MissionZones.Count > 0 ? string.Join(", ", _ctx.Config.MissionZones) : termZone + " only";
+            string zones = _ctx.Config.MissionZones != null && _ctx.Config.MissionZones.Count > 0 ? string.Join(", ", _ctx.Config.MissionZones) : "any zone";
             _ctx.Log($"MISSIONRUN: start; terminal {_termId} in {termZone} ({_termPos.X:0},{_termPos.Z:0}); zones: {zones}.");
             reply($"Running missions from the terminal in {termZone} ({zones}), {_ctx.Config.MissionStyle} style. 'mission run stop' to stop, 'mission run status' for where I am.");
             if (_mission.InMission && !held && !fresh)
@@ -212,11 +220,14 @@ namespace AOBuddy
             var ok = list.Where(Fits).ToList();
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
-            Vector3 from = me?.Transform.Position ?? _termPos;
-            // Same zone as the terminal first, then the nearest door.
-            var pick = ok.OrderBy(x => x.Playfield.Instance == _termPf ? 0 : 1)
-                         .ThenBy(x => { float dx = x.Location.X - from.X, dz = x.Location.Z - from.Z; return dx * dx + dz * dz; })
-                         .First();
+            // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
+            // crossing), with the options travel plans with, so the weight is the route he will actually take.
+            // A door with no route at all is left alone.
+            var weighed = ok.Select(x => (m: x, cost: TravelCost(me, x))).ToList();
+            _ctx.Log($"MISSIONRUN: roll {_rolls} travel weights: {string.Join("; ", weighed.Select(w => $"{Zoning.Name(w.m.Playfield.Instance)} ({w.m.Location.X:0},{w.m.Location.Z:0}) {(w.cost.HasValue ? w.cost.Value.ToString("0") : "no route")}"))}");
+            weighed = weighed.Where(w => w.cost.HasValue).ToList();
+            if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
+            var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
@@ -227,13 +238,33 @@ namespace AOBuddy
             Enter(Phase.Accepting, "accepted");
         }
 
+        /// <summary>What travel to a mission's door weighs, from where he stands: Zoning.FindRoute's cost (the route
+        /// Zoning.Waypoints hands travel), with OverlandController's options plus the exits that failed him this
+        /// session. Null when there is no route.</summary>
+        private double? TravelCost(LocalPlayer me, MissionInfo m)
+        {
+            if (me == null) return null;
+            var opt = new ZoneRouteOptions
+            {
+                Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
+                UnknownPasses = true,
+                Filter = e => (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0) && !BadExit(e),
+            };
+            try
+            {
+                var r = Zoning.FindRoute((int)Playfield.ModelId, me.Transform.Position, m.Playfield.Instance, new Vector3(m.Location.X, 0f, m.Location.Z), opt);
+                return r?.Cost;
+            }
+            catch { return null; }
+        }
+
         private bool Fits(MissionInfo m)
         {
             if (!MissionRoll.BlitzCan(m.MissionIcon)) return false;
             var types = _ctx.Config.MissionTypes;
             if (types != null && types.Count > 0 && !types.Any(t => string.Equals(t?.Trim(), MissionRoll.TypeName(m.MissionIcon), StringComparison.OrdinalIgnoreCase))) return false;
             var zones = _ctx.Config.MissionZones;
-            if (zones == null || zones.Count == 0) return m.Playfield.Instance == _termPf;   // default: the terminal's own zone
+            if (zones == null || zones.Count == 0) return true;   // default: any zone (the pick still prefers the terminal's own)
             return _roll.Allowed(m, out _);
         }
 
@@ -391,6 +422,7 @@ namespace AOBuddy
                         _rolls = 0;
                     }
                     if (!((int)Playfield.ModelId == _termPf && Flat(me.Transform.Position, _termPos) <= 6f)) { Enter(Phase.ToTerminal, "not at the terminal"); return false; }
+                    if (!TerminalFitsTeam(me)) return false;
                     // Rolling with no mission in hand: anything the quest log still holds is stale (failed, died in,
                     // or left from before a restart). The owner found three at 23:24 and cleared them by hand; the
                     // keys go with them.
@@ -1217,9 +1249,37 @@ namespace AOBuddy
         private bool FitsZone(int pf)
         {
             var zones = _ctx.Config.MissionZones;
-            if (zones == null || zones.Count == 0) return pf == _termPf;
+            if (zones == null || zones.Count == 0) return true;
             string name = Playfield.TryGetPlayfieldNameFromId(pf, out string n) ? n : "";
             return zones.Any(z => string.Equals(z?.Trim(), name, StringComparison.OrdinalIgnoreCase) || (int.TryParse(z, out int id) && id == pf));
+        }
+
+        private const float TerminalRowMetres = 15f;   // how far apart terminals standing side by side may be
+        private bool _termKindWarned;
+
+        /// <summary>Before a roll: the terminal must be the kind his team status calls for - joining or leaving a
+        /// team since the run started changes it. Switches to one of the right kind standing by the terminal, or
+        /// says once that there is none and waits (false).</summary>
+        private bool TerminalFitsTeam(LocalPlayer me)
+        {
+            bool team = MissionRoll.WantTeam(me);
+            var cur = DynelManager.AllDynels.FirstOrDefault(d => d != null && d.Identity == _termId);
+            if (cur != null && MissionRoll.IsTeamTerminal(cur) == team) { _termKindWarned = false; return true; }
+            var other = MissionRoll.MatchingTerminal(me, _termPos, TerminalRowMetres);
+            if (other != null)
+            {
+                _ctx.Log($"MISSIONRUN: {(team ? "in" : "not in")} a team: switching from '{cur?.Name}' {_termId} to '{other.Name}' {other.Identity}.");
+                _termId = other.Identity; _termPos = other.Transform.Position; SaveTerminal();
+                _termKindWarned = false;
+                Enter(Phase.ToTerminal, "to the " + (team ? "team" : "solo") + " terminal");
+                return false;
+            }
+            if (!_termKindWarned)
+            {
+                _termKindWarned = true;
+                _tell($"I'm {(team ? "" : "not ")}in a team, but there's no {(team ? "team" : "solo")} mission terminal here. Waiting until that changes.");
+            }
+            return false;
         }
 
         private void Save(MissionInfo m)
