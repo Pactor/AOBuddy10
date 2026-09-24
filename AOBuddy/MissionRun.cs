@@ -84,13 +84,40 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("keep"))
+            {
+                KeepSet();
+                string rest = args.Trim().Length > 4 ? args.Trim().Substring(4).Trim() : "";   // original case for the name
+                if (rest.StartsWith("add ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(4).Trim(); _keepAdded.Add(nm); SaveKeep(); reply($"Keeping '{nm}': never sold."); return; }
+                if (rest.StartsWith("remove ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(7).Trim(); reply(_keepAdded.Remove(nm) ? $"'{nm}' off the keep list." : $"'{nm}' isn't on the list I added to (config KeepItems is edited in config.json)."); SaveKeep(); return; }
+                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + ". 'mission run keep add <exact item name>' / 'keep remove <name>'.");
+                return;
+            }
             if (a.StartsWith("shop"))
             {
                 string v = a.Substring(4).Trim();
                 if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
                 if (v == "now" && Active) { _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true; StartShop("owner asked"); _ctx.Config.MissionShop = was; }
                 if (v == "list") { reply(SellPreview()); return; }
-                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list'.");
+                if (v == "bags")
+                {
+                    LoadPersonal();
+                    var bags = Bags();
+                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => $"{n + 1}) {b.Name}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")}")) + ". 'mission run shop personal <n>' toggles.");
+                    return;
+                }
+                if (v.StartsWith("personal"))
+                {
+                    LoadPersonal();
+                    var bags = Bags();
+                    if (!int.TryParse(v.Substring(8).Trim(), out int n) || n < 1 || n > bags.Count) { reply("Which bag? 'mission run shop bags' lists them."); return; }
+                    var id = bags[n - 1].UniqueIdentity;
+                    bool on = !_personalBags.Remove(id); if (on) _personalBags.Add(id);
+                    SavePersonal();
+                    reply($"Bag {n} ({bags[n - 1].Name}) is {(on ? "personal: nothing in it is ever sold" : "no longer personal")}.");
+                    return;
+                }
+                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now|list|bags|personal <n>', 'mission run keep'.");
                 return;
             }
             if (a.StartsWith("difficulty"))
@@ -1030,24 +1057,63 @@ namespace AOBuddy
         private List<Item> Sellable()
         {
             LoadRewards();
-            var keep = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-            keep.Add(_ctx.Config.ResupplyStimName); keep.Add(_ctx.Config.ResupplyRechargerName);
+            var keep = KeepSet();
             return Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && SellableItem(i, keep)).ToList();
         }
+        // THE OWNER'S RULES (2026-09-24): sell everything in the inventory and bags EXCEPT
+        //   bags; nano crystals (they go to the bank); stims and rechargers; ammo when he fights at range (a melee
+        //   loadout sells it - PetController.IsMeleeLoadout, from the weapon's AttackRange stat; ammo = the item data's
+        //   'Ammo: Box of ...' names); anything in a bag marked personal; anything on the keep list (exact names).
+        //   Equipped items are never looked at (only inventory and bag slots). Also kept, to be safe: names with
+        //   'key' or 'mission' in them (a mission key's name isn't in the item data).
         private bool SellableItem(Item i, HashSet<string> keep)
-            => i.UniqueIdentity.Type != IdentityType.Container && !IsNano(i) && i.Name != null && !keep.Contains(i.Name)
-               && (_rewardHistory.Contains(i.Id) || _rewardHistory.Contains(i.HighId) || _rewardNames.Contains(i.Name));
+        {
+            if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || IsNano(i) || keep.Contains(i.Name)) return false;
+            if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
+            if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !PetController.IsMeleeLoadout(DynelManager.LocalPlayer)) return false;
+            return true;
+        }
 
         // Sellable items still inside bags: they can't be sold from there (owner), so they're moved to the
         // inventory a few at a time first. The SDK names a bag item Backpack:(bag handle << 16 | slot).
         private List<Item> SellableInBags()
         {
-            LoadRewards();
-            var keep = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-            keep.Add(_ctx.Config.ResupplyStimName); keep.Add(_ctx.Config.ResupplyRechargerName);
-            return Inventory.Containers.Where(c => c?.Items != null).SelectMany(c => c.Items).Where(i => i != null && SellableItem(i, keep)).ToList();
+            var keep = KeepSet();
+            LoadPersonal();
+            return Inventory.Containers.Where(c => c?.Items != null && !_personalBags.Contains(c.Identity)).SelectMany(c => c.Items).Where(i => i != null && SellableItem(i, keep)).ToList();
         }
         private HashSet<string> _rewardNames;
+
+        // KEEP LIST: exact item names never sold - config KeepItems plus what the owner adds by command
+        // ('mission run keep add <name>'), saved in keepitems.json. Stims and rechargers always.
+        private HashSet<string> _keepAdded;
+        private string KeepPath => Path.Combine(_pluginDir, "keepitems.json");
+        private HashSet<string> KeepSet()
+        {
+            if (_keepAdded == null)
+            {
+                _keepAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                try { if (File.Exists(KeepPath)) foreach (var t in JArray.Parse(File.ReadAllText(KeepPath))) _keepAdded.Add((string)t); } catch { }
+            }
+            var k = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            k.UnionWith(_keepAdded);
+            k.Add(_ctx.Config.ResupplyStimName); k.Add(_ctx.Config.ResupplyRechargerName);
+            return k;
+        }
+        private void SaveKeep() { try { File.WriteAllText(KeepPath, new JArray(_keepAdded.ToArray()).ToString()); } catch { } }
+
+        // PERSONAL BAGS: nothing in them is ever sold. Marked by the bag's own identity ('mission run shop bags'
+        // lists them numbered, 'mission run shop personal <n>' toggles), saved in personalbags.json.
+        private HashSet<Identity> _personalBags;
+        private string PersonalPath => Path.Combine(_pluginDir, "personalbags.json");
+        private void LoadPersonal()
+        {
+            if (_personalBags != null) return;
+            _personalBags = new HashSet<Identity>();
+            try { if (File.Exists(PersonalPath)) foreach (var t in JArray.Parse(File.ReadAllText(PersonalPath))) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
+        }
+        private void SavePersonal() { try { File.WriteAllText(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString()); } catch { } }
+        private List<Item> Bags() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container).OrderBy(i => i.Slot.Instance).ToList();
         private HashSet<int> _rewardHistory;
         private string RewardsPath => Path.Combine(_pluginDir, "rewardids.json");
         private string RewardNamesPath => Path.Combine(_pluginDir, "rewardnames.json");   // names too: seeded from the log's accepted rewards

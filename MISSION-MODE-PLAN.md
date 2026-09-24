@@ -365,6 +365,17 @@ missions may be taken in (empty = any zone).
   - Unverified: the bank terminal id C73D:0EE5BBFF is used as captured, since the server never sends it as a
     dynel. Also unverified: the Temp4 flag on the Use of the bag before banking it.
   - Our zoning data has no exit from 1187.
+- **Selling (capture 20260924-074329, owner, 07:44-07:45):** LookAt + GenericCmd Use on the shop terminal. The
+  server sends ShopUpdate + Trade open. The client sends `Trade AddItem` with **Target = own char (0xC350:me)** and
+  **Container = Inventory:<slot>**, one per item (two in one trade), then `Trade Accept (0x01)` with **Target None**.
+  The server pays (Stat Cash) and closes the window (Trade op 4). The next batch must Use the terminal again. An item
+  can't be sold from a backpack; it is moved to the inventory first, a few at a time (owner). Built: the SDK's
+  `MoveItemToInventory(Backpack:(handle<<16|slot))`, unverified live.
+  **Owner's sell rules:** sell everything in the inventory and bags except: bags; nano crystals (banked); stims
+  and rechargers; ammo ("Ammo: Box of ..." in the item data) when ranged, since a melee loadout sells it; anything
+  in a bag marked personal; the keep list (exact names: config KeepItems + `mission run keep add <name>`,
+  keepitems.json). Also kept for safety: names containing "key" or "mission". Equipped items are never
+  considered. Commands: `mission run shop list|bags|personal <n>`, `mission run keep`.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
 
