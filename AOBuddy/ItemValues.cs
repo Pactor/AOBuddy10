@@ -28,6 +28,12 @@ namespace AOBuddy
 
         public static int Count => _values?.Count ?? 0;
 
+        // NODROP templates: item Flags (stat 0) bit 26 (OmniCell ItemFlags.NoDrop / ItemTemplate.IsNoDrop),
+        // extracted from items.ocp by tools/eng-gear-extractor --nodrop into GameData/ItemNoDrop.bin
+        // ("AOND", 1, count, ids). 11,050 of 120,842 templates (quest items, access cards, pet shells...).
+        private static HashSet<int> _noDrop;
+        public static bool IsNoDrop(int lowId, int highId) => _noDrop != null && (_noDrop.Contains(lowId) || _noDrop.Contains(highId));
+
         public static void Load(string pluginDir, Action<string> log)
         {
             _values = new Dictionary<int, (int, int)>();
@@ -58,6 +64,20 @@ namespace AOBuddy
                 log($"ITEMVALUES: {_values.Count} item values, {_shops.Count} shop terminal modifiers loaded.");
             }
             catch (Exception ex) { log($"ITEMVALUES: couldn't load {file}: {ex.Message}"); }
+            string nf = Path.Combine(pluginDir, "GameData", "ItemNoDrop.bin");
+            try
+            {
+                using (var r = new BinaryReader(File.OpenRead(nf)))
+                {
+                    if (Encoding.ASCII.GetString(r.ReadBytes(4)) != "AOND" || r.ReadInt32() != 1) { log($"ITEMVALUES: {nf} is not a version 1 NODROP table."); return; }
+                    int n = r.ReadInt32();
+                    var set = new HashSet<int>();
+                    for (int i = 0; i < n; i++) set.Add(r.ReadInt32());
+                    _noDrop = set;
+                }
+                log($"ITEMVALUES: {_noDrop.Count} NODROP templates loaded.");
+            }
+            catch (Exception ex) { log($"ITEMVALUES: couldn't load {nf}: {ex.Message}"); }
         }
 
         public static bool TryGet(int lowId, int highId, int ql, out int value)

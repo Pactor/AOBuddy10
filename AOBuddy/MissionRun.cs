@@ -1190,6 +1190,8 @@ namespace AOBuddy
         private bool SellableItem(Item i, HashSet<string> keep)
         {
             if (i?.Name == null || i.UniqueIdentity.Type == IdentityType.Container || IsNano(i) || keep.Contains(i.Name)) return false;
+            // NODROP is never sold (owner, 2026-09-24): the item data's Flags bit 26.
+            if (ItemValues.IsNoDrop(i.Id, i.HighId)) return false;
             if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
             if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !PetController.IsMeleeLoadout(DynelManager.LocalPlayer)) return false;
             return true;
