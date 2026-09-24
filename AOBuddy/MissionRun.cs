@@ -212,7 +212,7 @@ namespace AOBuddy
             var pick = ok.OrderBy(x => x.Playfield.Instance == _termPf ? 0 : 1)
                          .ThenBy(x => { float dx = x.Location.X - from.X, dz = x.Location.Z - from.Z; return dx * dx + dz * dz; })
                          .First();
-            _current = pick; _completed = false; _travelTries = 0; _doorTries = 0; _door = null;
+            _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _doorTries = 0; _door = null;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) _rewardIds.Add((r.LowId, r.HighId));
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
@@ -252,6 +252,21 @@ namespace AOBuddy
             // minutes, travel "routing round" an obstacle that wasn't there. A different way gets snapped back the
             // same, so he stands where the server has him until it wears off. (-1 is 'unreadable', not a snare.)
             bool snared = me.TryGetStat(Stat.RunSpeed, out int runSkill) && runSkill < -1;
+            // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
+            // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
+            // into the snap-back for minutes (2026-09-23 23:01). The owner: roots and snares both happen.
+            if (moving && _phase != Phase.Fight && _bigSnaps.Count(t => _clock - t < 8) >= 2)
+            {
+                _bigSnaps.Clear();
+                _heldUntil = _clock + 15;
+                _fightReturn = _phase;
+                if (_mission.Active) _mission.Stop("held");
+                if (_overland.Active) _overland.Stop("held");
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase} (rooted or snared?); standing still 15 s.");
+                Enter(Phase.Fight, "held");
+                return false;
+            }
             if (moving && snared && !_fighting())
             {
                 _fightReturn = _phase;
@@ -280,6 +295,7 @@ namespace AOBuddy
                 case Phase.Fight:
                     // Stay until the fight is really over (not just back above the emergency line).
                     if (_inCombat() || snared) { _phaseTime = 0; return false; }
+                    if (_clock < _heldUntil) return false;
                     if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                     // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
                     // 6 s after the last blow) instead of walking off into the next room half dead. At most a
@@ -502,7 +518,7 @@ namespace AOBuddy
                 {
                     // The owner's way out of a spot the server keeps stopping you at: turn round, run back to the
                     // edge of the room, turn again and go. Up to 6 m back along our own facing, then retry.
-                    if (!_mission.InMission && _backoffNext != "blitz") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
+                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
                     bool replaying = _follow.ReplayCount > 0 && !_follow.ManualActive;
                     bool done = _phaseTime > (replaying ? 25 : 4) || (_backoffTo.HasValue && Flat(me.Transform.Position, _backoffTo.Value) <= 1.2f);
                     if (!done && replaying) return true;
@@ -511,6 +527,7 @@ namespace AOBuddy
                     switch (_backoffNext)
                     {
                         case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
+                        case "travel": Enter(_travelReturn, "travel again from a good spot"); break;
                         case "leave": _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out again"); break;
                         default: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "walking out"); break;
                     }
@@ -548,6 +565,8 @@ namespace AOBuddy
 
         private int _doorDir = -1, _doorStart, _doorStep;
         private double _approach, _travelWaitUntil;
+        private int _travelBacks;
+        private Phase _travelReturn;
         private Phase _fightReturn;
         private bool _resumeBlitz;
         private Vector3? _backoffTo;
@@ -560,11 +579,20 @@ namespace AOBuddy
         private int _backoffs;
 
         /// <summary>Main: the server corrected our position (SetPos).</summary>
-        public void OnServerCorrection() => _lastCorrection = _clock;
+        public void OnServerCorrection(float gap)
+        {
+            _lastCorrection = _clock;
+            if (gap > 5f) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
+        }
+        private readonly List<double> _bigSnaps = new List<double>();
+        private double _heldUntil = -1;
+        private int _goodPf = -1;
+        private bool _goodInMission;
 
         private void RecordGood(LocalPlayer me)
         {
-            if (!_mission.InMission) { if (_good.Count > 0) _good.Clear(); _backoffs = 0; return; }
+            int pfNow = (int)Playfield.ModelId; bool inM = _mission.InMission;
+            if (pfNow != _goodPf || inM != _goodInMission) { _good.Clear(); _backoffs = 0; _goodPf = pfNow; _goodInMission = inM; }
             if (_clock - _lastCorrection < 2) return;
             Vector3 p = me.Transform.Position;
             if (_good.Count == 0 || Vector3.Distance(_good[_good.Count - 1], p) >= 1.5f)
@@ -836,6 +864,17 @@ namespace AOBuddy
                 _travelStarted = false;
                 bool there = (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) <= 12f;
                 if (!there && StartHike(me, pf, goal, what)) return false;
+                if (there) { _backoffs = 0; _travelBacks = 0; }
+                // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
+                // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
+                // back, it had planned the same trip fine.
+                if (!there && (int)Playfield.ModelId == pf && !_mission.InMission && _travelBacks < 3)
+                {
+                    _travelBacks++;
+                    _travelReturn = _phase;
+                    StartBackoff(me, "travel");
+                    if (_phase == Phase.Backoff) return false;
+                }
                 if (!there && ++_travelTries >= 3)
                 {
                     _travelTries = 0;

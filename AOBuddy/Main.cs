@@ -405,7 +405,7 @@ namespace AOBuddy
             float gap = Vector3.Distance(local, pos);
 
             // A mission blitz always takes the server's word (MissionController.OnServerCorrection).
-            _run.OnServerCorrection();
+            _run.OnServerCorrection(gap);
             if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
             // ...and so does overland travel: its route is planned on data that can miss a surface the server has.
             if (_overland.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
