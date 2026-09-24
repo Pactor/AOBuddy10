@@ -84,6 +84,20 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("difficulty"))
+            {
+                // The terminal's difficulty for the style he's on: blitz uses MissionDifficulty, fight rolls at least
+                // MissionFightDifficulty. Takes effect on the next roll.
+                bool fightStyle = string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase);
+                string v = a.Substring("difficulty".Length).Trim();
+                if (int.TryParse(v, out int d) && d >= 0 && d <= 255)
+                {
+                    if (fightStyle) _ctx.Config.MissionFightDifficulty = d; else _ctx.Config.MissionDifficulty = d;
+                    reply($"Difficulty for {_ctx.Config.MissionStyle} style set to {d}; from the next roll.");
+                }
+                else reply($"Difficulty: blitz {_ctx.Config.MissionDifficulty}, fight {Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty)} (now on {_ctx.Config.MissionStyle}). 'mission run difficulty <n>' sets it for the current style (captures: 1 easy, 6 his level, 11 hard).");
+                return;
+            }
             if (a.StartsWith("style"))
             {
                 string st = a.Length > 5 ? a.Substring(5).Trim() : "";
@@ -97,7 +111,7 @@ namespace AOBuddy
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
-            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run style fight|blitz | mission run stop | mission run status"); return; }
+            if (a.Length > 0 && !fresh) { reply("mission run | mission run new (ignore a held mission) | mission run skip (delete it and go on) | mission run style fight|blitz | mission run difficulty <n> | mission run stop | mission run status"); return; }
             if (Active) { reply("Already running: " + Status()); return; }
 
             var me = DynelManager.LocalPlayer;
