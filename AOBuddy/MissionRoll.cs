@@ -114,7 +114,7 @@ namespace AOBuddy
             if (_usedTerminals.Add(term.Identity))
             {
                 // The owner's client Uses the terminal once, then rolls; rolls after that need no Use.
-                Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = term.Identity, Count = 1, Temp4 = 1 });
+                GameCommands.UseObject(me, term.Identity);
                 _ctx.Log($"MISSIONROLL: used terminal {term.Identity} ('{term.Name}').");
                 _rollAt = _clock + 1.0;
             }

@@ -708,8 +708,6 @@ namespace AOBuddy
 
         // The buff spot (BuffTravelX/Z/Playfield): close enough that Chewy's toons can cast on us there.
         private const float SpotMetres = 15f;
-        private static float Flat(Vector3 a, float x, float z)
-            => (float)Math.Sqrt((a.X - x) * (a.X - x) + (a.Z - z) * (a.Z - z));
 
         public bool Asking => _stage != Stage.Idle && _stage != Stage.Done;
 
@@ -729,7 +727,7 @@ namespace AOBuddy
 
         private bool AtSpot(LocalPlayer me)
             => (int)Playfield.ModelId == _ctx.Config.BuffTravelPlayfield
-               && Flat(me.Transform.Position, _ctx.Config.BuffTravelX, _ctx.Config.BuffTravelZ) <= SpotMetres;
+               && Movement.Flat(me.Transform.Position, _ctx.Config.BuffTravelX, _ctx.Config.BuffTravelZ) <= SpotMetres;
 
         /// <summary>Stage 0: travel to the buff spot (travelto does the routing; we just wait it out).
         /// Returns true when the trip is underway and the ask should continue from Tick.</summary>

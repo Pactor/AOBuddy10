@@ -312,7 +312,6 @@ namespace AOBuddy
         // coefficient. When the stat can't be read, the last good reading (BotContext.RunVelocity).
         public int LastRunSpeed => _ctx.LastRunSpeed;
 
-        private float MoveSpeed(LocalPlayer me) => _ctx.RunVelocity(me);
 
         public void WalkTick(LocalPlayer me, double dt) => WalkTick(me, null, dt);
 
@@ -340,7 +339,7 @@ namespace AOBuddy
             if (!_ctx.Config.Follow)
             {
                 _ctx.WalkState = "idle (follow=off)";
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 return;
             }
 
@@ -358,7 +357,7 @@ namespace AOBuddy
             if (_lostTarget.HasValue) { LostTick(me, dt); return; }
 
             _ctx.WalkState = "idle (owner not visible, chase spent)";
-            Hold(me);
+            _move.Hold(me, _ctx.Config.SendIntervalMs);
         }
 
         // ---- The three beats: turn to him, move to him, then take his heading ----
@@ -385,7 +384,7 @@ namespace AOBuddy
                 // HIS facing so that when he runs we're already pointing the right way. We do NOT turn
                 // while he's moving: the turn would be obsolete the instant we set off, and burning
                 // frames on it is what left the bot pirouetting while he walked away.
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 if (OwnerMoving)
                 {
                     _aligning = false;
@@ -422,7 +421,7 @@ namespace AOBuddy
         /// </summary>
         private void StackTick(LocalPlayer me, PlayerChar owner, Vector3 pos, Vector3 tgt, float dist, double dt)
         {
-            float maxStep = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
+            float maxStep = Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep);
 
             if (dist > maxStep)
             {
@@ -448,7 +447,7 @@ namespace AOBuddy
             {
                 // He's standing and we're on his spot — stop the movement stream entirely (no packets to
                 // send while nothing changes) and just keep our facing matched to his.
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 _move.Face(me, owner.Transform.Heading, _ctx.Config.FollowTurnDegPerSec, dt, _ctx.Config.SendIntervalMs);
                 // On his spot, facing his way, both standing: from here on just replay his packets.
                 if (_ctx.Config.FollowMirror && Movement.HeadingOffsetDeg(me.MovementComponent.Heading, owner.Transform.Heading) < 2f)
@@ -497,7 +496,7 @@ namespace AOBuddy
             _outrunAccum += dt;
             if (_outrunAccum < 5.0 || !OwnerMoving || _ownerSpeed <= 0.1) return;
             _outrunAccum = 0;
-            float mine = MoveSpeed(me);
+            float mine = _ctx.RunVelocity(me);
             if (_ownerSpeed > mine + 0.5)
                 _ctx.Log($"FOLLOW: he's faster than me — his {_ownerSpeed:0.0} u/s vs my {mine:0.0} u/s (RunSpeed {LastRunSpeed}). Can't close while he runs; I re-stack when he slows.");
         }
@@ -520,7 +519,7 @@ namespace AOBuddy
                     return;
                 }
                 _lostTarget = null;   // chase spent — Main's zone-sweep / NAV fallback takes it from here
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 return;
             }
 
@@ -531,7 +530,7 @@ namespace AOBuddy
         {
             Vector3 pos = me.MovementComponent.Position;
             float dist = Vector3.Distance(pos, _manualTarget.Value);
-            if (dist <= 1.5f) { _manualTarget = null; Hold(me); return; }
+            if (dist <= 1.5f) { _manualTarget = null; _move.Hold(me, _ctx.Config.SendIntervalMs); return; }
             Step(me, _manualTarget.Value, dist, dt, "manual");
         }
 
@@ -543,7 +542,7 @@ namespace AOBuddy
         {
             Vector3 pos = me.MovementComponent.Position;
             Vector3 delta = target - pos;
-            if (delta.Magnitude < 0.05f) { Hold(me); return; }
+            if (delta.Magnitude < 0.05f) { _move.Hold(me, _ctx.Config.SendIntervalMs); return; }
 
             Vector3 dir = delta.Normalize();
             Quaternion want = Movement.SafeLook(dir, me.MovementComponent.Heading);
@@ -556,7 +555,7 @@ namespace AOBuddy
             // we face him and set off in the SAME frame.
             if (!instantTurn && off > _ctx.Config.FollowTurnFirstDeg)
             {
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 _move.Face(me, want, _ctx.Config.FollowTurnDegPerSec, dt, _ctx.Config.SendIntervalMs);
                 _ctx.WalkState = $"{what} turn-to d={dist:0.0} off={off:0}";
                 return;
@@ -567,15 +566,9 @@ namespace AOBuddy
             Quaternion heading = instantTurn
                 ? want
                 : Movement.RotateToward(me.MovementComponent.Heading, want, (float)(_ctx.Config.FollowTurnDegPerSec * dt));
-            float step = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
-            step = Math.Min(step, dist);
+            float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, dist);
             _ctx.WalkState = $"{what} tgt=({target.X:0},{target.Y:0},{target.Z:0}) d={dist:0.0} off={off:0} step={step:0.00}";
             _move.Advance(me, pos + dir * step, heading, run: true, dt, _ctx.Config.SendIntervalMs);
-        }
-
-        private void Hold(LocalPlayer me)
-        {
-            if (_move.Moving) _move.Stop(me, _ctx.Config.SendIntervalMs);
         }
 
         // ---- Recorded-route replay (NAV catch-up and saved paths) ----------------
