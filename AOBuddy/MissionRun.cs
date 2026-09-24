@@ -1014,7 +1014,7 @@ namespace AOBuddy
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > 15 && StartHike(me, pf, goal, what)) return false;   // Scotty has never warped this bot (all night 2026-09-23): 15 s, then on foot
+                else if (_overland.Status().Contains("scty") && _phaseTime > 40 && StartHike(me, pf, goal, what)) return false;   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
                 return false;
             }
             if (_clock < _travelWaitUntil) return false;
