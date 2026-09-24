@@ -1895,7 +1895,14 @@ namespace AOBuddy
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
+                else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;
+                // Same zone on RubiKa2019: no Scotty and no crossing for the hike, so walk it myself (Athen Shire,
+                // 15:04-15:09, 2026-09-24: travel planned four Scotty warps in a row, 90 s each, and none came).
+                else if (_overland.Status().Contains("scty") && NoScotty && (int)Playfield.ModelId == pf)
+                {
+                    _overland.Stop("no Scotty on RubiKa2019");
+                    if (TryWalkMyself(me, pf, goal, what, "no Scotty here")) return true;
+                }   // Scotty's warp comes ~20 s after the tell (Algorithman, 2026-09-24): 40 s, then on foot
                 return false;
             }
             if (_clock < _straightUntil)
