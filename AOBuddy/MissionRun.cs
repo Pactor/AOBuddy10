@@ -1271,6 +1271,20 @@ namespace AOBuddy
         {
             if (!Active || me == null) return null;
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            // THE PERSON WE CAME TO FIND is never an enemy. The moment the bot selects him and the mission
+            // completes, the server shows him 'fighting' the bot (Kirby Schatz 23:38, Levi McDannold 00:22:18,
+            // 0.3 s after completion) though he never lands a blow; the bot then swung at him for 12 and 70+
+            // minutes. Set aside for 10 minutes: no swings, and he doesn't count as a mob on us.
+            var findTarget = _mission.FindPersonTarget;
+            if (findTarget.HasValue && !_combat.IsSetAside(findTarget.Value))
+            {
+                var fp = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == findTarget.Value);
+                if (fp != null && fp.FightingIdentity.HasValue && fp.FightingIdentity.Value == me.Identity)
+                {
+                    _ctx.Log($"MISSIONRUN: '{fp.Name}' is the person this mission sent me to find, not an enemy; not fighting him.");
+                    _combat.SetAside(me, fp.Identity, 600);
+                }
+            }
             // STATIONARY SHOOTERS: guard turrets don't follow, just run past them (owner, 2026-09-24; the bot stood
             // 4 minutes swinging a melee weapon at a Guard Turret 12.6 m off until it died). No flag marks them
             // (same flags as a summoned pet), so by behaviour: attacking us from more than 6 m and not moved at
