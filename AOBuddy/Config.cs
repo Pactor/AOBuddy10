@@ -162,6 +162,38 @@ namespace AOBuddy
                                                    // we have the same buff on ourselves, then we use its real timer)
         public List<int> ExcludeNanoIds = new List<int>();  // never auto-cast these (auto-detect got it wrong)
 
+        // --- BUFF REQUESTS (asking a buffer toon, e.g. Chewysfix, for buffs) --------------------------
+        // The bot deducts which buffs to ask for from GameData/ChewysBuffs.json (one buff per nano line,
+        // fitted into free NCU), weighted by the three numbers below — they are relative to each other,
+        // e.g. 34/33/33 balanced, 70/20/10 offense-heavy. The asking is staged: the NCU-expander first,
+        // then requirement helpers, then a wrangle if something is to be self-cast under it (see
+        // WrangleCastNanoIds), the wrangle removed again, then the rest.
+        public string BufferName = "Chewysfix";   // who to /tell 'cast <codes>' to
+        // Team-cast buffs (the NCU line, Gridspace Freedom (Team), batons...) only land on TEAMMATES:
+        // invites from characters whose name starts with this prefix are accepted so Chewy's toons can
+        // team-cast on us. The ask also WAITS for that invite (reminding every minute) before giving up.
+        public bool BuffAcceptTeamInvite = true;
+        public string BufferTeamPrefix = "Chewy";
+        public double BuffTeamWaitSec = 300;      // how long the ask waits for the team invite
+        // Chewy buffs at a fixed meeting spot: the bot travels here first (travelto x y playfield).
+        // Default: ICC.
+        public bool BuffTravelToSpot = true;
+        public float BuffTravelX = 3260f;
+        public float BuffTravelZ = 865f;
+        public int BuffTravelPlayfield = 655;
+        public int BuffWeightOffense = 34;        // weapon/nano skills, damage adds, crit, initiatives
+        public int BuffWeightDefense = 33;        // max health, essences, damage/absorb/reflect shields, evades, AC
+        public int BuffWeightSustain = 33;        // long heal-over-times, heal/nano delta, nano pool
+        public int BuffWeightTradeskill = 0;      // chemistry/pharma/smithing/... — 0: never ask (mission bots
+                                                  // don't tradeskill mid-fight; raise for an implant session)
+        public bool BuffAskOnStart = true;        // run the ask once, shortly after login
+        public double BuffStartupDelaySec = 25;   // grace after login: buff timers sync, item data loads
+        public int BuffSkipRemainingPct = 50;     // don't re-ask a buff with more than this % of its duration left
+        // Learned nanos to self-cast while a wrangle is borrowed (the wrangle is asked for, these cast,
+        // the wrangle removed again to give its NCU back) — e.g. an MA self-buff whose skill requirement
+        // sits above what he has unbuffed. Checked against live requirements before each cast.
+        public List<int> WrangleCastNanoIds = new List<int>();
+
         /// <summary>Don't engage targets farther than this (assist safety leash).</summary>
         public float AssistMaxDistance = 40f;
         public float HuntRadius = 30f;             // 'hunt' with no radius: pets hunt mobs within this many metres of the bot

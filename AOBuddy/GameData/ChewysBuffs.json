@@ -26,20 +26,6 @@
      "tell": "c2"
     },
     {
-     "name": "Composite Utility Expertise",
-     "effect": "+20 Conc., Perc., B&E, Comp. Lit, Treat., First A., Psy.",
-     "ncu": 4,
-     "id": 287046,
-     "tell": "c3"
-    },
-    {
-     "name": "Composite Tradeskill Expertise",
-     "effect": "+20 Mec. E., Ele E., QFT, Weap. Sm., Pharm., Chem., Nano P.",
-     "ncu": 4,
-     "id": 287040,
-     "tell": "c4"
-    },
-    {
      "name": "Composite Martial Prowess Expertise",
      "effect": "+20 Riposte, Deflect, HD, ND, Sharp Obj., RS",
      "ncu": 4,
@@ -505,7 +491,6 @@
      "ncu": 40,
      "id": 222838,
      "tell": "issac"
-     
     },
     {
      "name": "Lasting Ultimatum",
@@ -658,8 +643,14 @@
       163081,
       163087
      ],
+     "landIds": [
+      162994,
+      163005,
+      163006,
+      163012
+     ],
      "tell": "ncu",
-     "note": "not one nano: the Fixer team Max-NCU line, +20/+40/+60/+150 Max NCU (162995 NCU Compressor, 163079 Retool NCU, 163081 Jury-rigged NCU Analyzer, 163087 QuarkStor NCU Core)"
+     "note": "not one nano: the Fixer team Max-NCU line, +20/+40/+60/+150 Max NCU. ids = the team-cast nanos Chewy casts; landIds = what actually runs on the receiver (one per tier, ~5h) — match running buffs against landIds"
     },
     {
      "name": "Gridspace Freedom (Team)",
@@ -1172,7 +1163,14 @@
      "ncu": 0,
      "team": true,
      "id": 235291,
-     "tell": "umb1"
+     "landIds": [
+      235064,
+      235263,
+      235264,
+      235265
+     ],
+     "tell": "umb1",
+     "note": "landIds: the nanos that actually land on the receiver (the cast nano 235291 team-casts these four); the receiver's level gate (Level >= 205; the landed nanos store 204 and GreaterThan is strict) lives on THEM, so check them, not the cast nano"
     },
     {
      "name": "Umbral Wrangler (Exceptional)",
@@ -1180,7 +1178,14 @@
      "ncu": 0,
      "team": true,
      "id": 235289,
-     "tell": "umb2"
+     "landIds": [
+      235063,
+      235260,
+      235261,
+      235262
+     ],
+     "tell": "umb2",
+     "note": "receiver's level gate (Level >= 195) lives on the landed nanos, see Umbral Wrangler (Premium)"
     },
     {
      "name": "Umbral Wrangler (Greater)",
@@ -1188,7 +1193,14 @@
      "ncu": 0,
      "team": true,
      "id": 235287,
-     "tell": "umb3"
+     "landIds": [
+      235062,
+      235257,
+      235258,
+      235259
+     ],
+     "tell": "umb3",
+     "note": "receiver's level gate (Level >= 185) lives on the landed nanos, see Umbral Wrangler (Premium)"
     },
     {
      "name": "Skill Wrangler (Advanced)",

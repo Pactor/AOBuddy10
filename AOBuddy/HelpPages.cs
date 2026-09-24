@@ -135,13 +135,22 @@ namespace AOBuddy
             },
             new Page
             {
-                Key = "heal", Title = "Healing and buffs", Blurb = "Stims, rechargers, and keeping nanos up.",
+                Key = "heal", Title = "Healing and buffs", Blurb = "Stims, rechargers, keeping nanos up, and asking Chewysfix for buffs.",
                 Commands = new[]
                 {
                     new Cmd("heal", "heal you now if I can"),
                     new Cmd("buff", "cast my keep-up buffs", "[self|owner|team|all]"),
                     new Cmd("autobuff", "toggle automatic buffing"),
                     new Cmd("keepup", "list what I classified as a keep-up buff"),
+                    new Cmd("buffs plan", "what I'd ask Chewysfix for and why (deduction from free NCU + weights)"),
+                    new Cmd("buffs ask", "ask for it: ncu first, helpers, wrangle, self-cast, unwrangle, rest"),
+                    new Cmd("buffs force", "ask fresh, ignoring buffs still running"),
+                    new Cmd("buffs focus", "weight offense/defense/sustain", "<o> <d> <s>"),
+                    new Cmd("buffs off/on", "skip or re-allow one tell code this session", "<code>"),
+                    new Cmd("buffs clear", "cancel every nano running on me except hostile ones"),
+                    new Cmd("buffs nanos", "my running nanos with time left, one per tell"),
+                    new Cmd("buffs status", "where the asking stands, weights, last summary"),
+                    new Cmd("buffs list", "Chewy's list per profession, or one profession's codes", "[profession]"),
                 },
             },
             new Page
