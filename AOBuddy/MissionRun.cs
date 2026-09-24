@@ -109,6 +109,18 @@ namespace AOBuddy
             {
                 KeepSet();
                 string rest = args.Trim().Length > 4 ? args.Trim().Substring(4).Trim() : "";   // original case for the name
+                if (rest.StartsWith("ql ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var w = rest.Substring(3).Trim();
+                    int sp = w.IndexOf(' ');
+                    string first = sp > 0 ? w.Substring(0, sp) : w, nm = sp > 0 ? w.Substring(sp + 1).Trim() : "";
+                    if (nm.Length == 0) { reply("'mission run keep ql <ql> <exact name>' or 'keep ql off <exact name>'."); return; }
+                    if (first.Equals("off", StringComparison.OrdinalIgnoreCase)) { reply(NameRules().Remove(nm) ? $"'{nm}' is sold like anything else again." : $"No rule for '{nm}'."); SaveBankRules(); return; }
+                    if (!int.TryParse(first, out int q) || q < 1) { reply($"'{first}' isn't a QL."); return; }
+                    NameRules()[nm] = q; SaveBankRules();
+                    reply($"'{nm}' QL {q}+ is kept and banked with the nanos.");
+                    return;
+                }
                 if (rest.StartsWith("implant", StringComparison.OrdinalIgnoreCase))
                 {
                     string q = rest.Substring(7).Trim().TrimStart('s').Trim();
@@ -119,7 +131,10 @@ namespace AOBuddy
                 }
                 if (rest.StartsWith("add ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(4).Trim(); _keepAdded.Add(nm); SaveKeep(); reply($"Keeping '{nm}': never sold."); return; }
                 if (rest.StartsWith("remove ", StringComparison.OrdinalIgnoreCase)) { string nm = rest.Substring(7).Trim(); reply(_keepAdded.Remove(nm) ? $"'{nm}' off the keep list." : $"'{nm}' isn't on the list I added to (config KeepItems is edited in config.json)."); SaveKeep(); return; }
-                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + ". 'mission run keep add <exact item name>' / 'keep remove <name>'.");
+                var banked = NameRules().Select(kv => $"{kv.Key} QL {kv.Value}+").ToList();
+                if (ImplantMinQl() > 0) banked.Insert(0, $"implants QL {ImplantMinQl()}+");
+                reply("Never sold: " + string.Join(", ", KeepSet().OrderBy(x => x)) + (banked.Count > 0 ? ". Kept and banked: nanos, " + string.Join(", ", banked) : "")
+                      + ". 'mission run keep add <exact item name>' / 'keep remove <name>' / 'keep ql <ql> <name>' / 'keep implant <ql>'.");
                 return;
             }
             if (a.StartsWith("shop"))
@@ -1349,21 +1364,34 @@ namespace AOBuddy
 
         // KEPT AND BANKED with the nanos (owner, 2026-09-24, for his 220 main): implants from QL <n> up.
         // 'mission run keep implant <ql>' / 'keep implant off'; saved in bankrules.json (per bot folder).
-        private bool Bankable(Item i) => IsNano(i) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId));
+        // ...and items by exact name from a QL up (owner, 2026-09-24: 'QL 200+ Robot Junk is also a keeper').
+        // 'mission run keep ql <ql> <exact name>' / 'keep ql off <exact name>'.
+        private bool Bankable(Item i) => IsNano(i) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId))
+                                         || (i?.Name != null && NameRules().TryGetValue(i.Name, out int nq) && i.Ql >= nq);
         private int _implantMinQl = -1;
+        private Dictionary<string, int> _nameRules;
         private string BankRulesPath => Path.Combine(_pluginDir, "bankrules.json");
-        private int ImplantMinQl()
+        private void LoadBankRules()
         {
-            if (_implantMinQl >= 0) return _implantMinQl;
-            _implantMinQl = 0;
-            try { if (File.Exists(BankRulesPath)) _implantMinQl = (int?)JObject.Parse(File.ReadAllText(BankRulesPath))["implantMinQl"] ?? 0; } catch { }
-            return _implantMinQl;
+            if (_nameRules != null) return;
+            _implantMinQl = 0; _nameRules = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                if (!File.Exists(BankRulesPath)) return;
+                var o = JObject.Parse(File.ReadAllText(BankRulesPath));
+                _implantMinQl = (int?)o["implantMinQl"] ?? 0;
+                if (o["names"] is JObject n) foreach (var kv in n) _nameRules[kv.Key] = (int)kv.Value;
+            }
+            catch { }
         }
-        private void SetImplantMinQl(int ql)
+        private void SaveBankRules()
         {
-            _implantMinQl = ql;
-            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = ql }.ToString()); } catch { }
+            var n = new JObject(); foreach (var kv in _nameRules) n[kv.Key] = kv.Value;
+            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString()); } catch { }
         }
+        private int ImplantMinQl() { LoadBankRules(); return _implantMinQl; }
+        private Dictionary<string, int> NameRules() { LoadBankRules(); return _nameRules; }
+        private void SetImplantMinQl(int ql) { LoadBankRules(); _implantMinQl = ql; SaveBankRules(); }
         private static Item InvItem(Identity? unique) => unique.HasValue ? Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity == unique.Value) : null;
 
         private bool StartShop(string why)
