@@ -203,6 +203,7 @@ namespace AOBuddy
                 () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); },
                 () => { var lp = DynelManager.LocalPlayer; return lp == null ? SupportController.Unknown : _support.SelfHpPct(lp); },
                 _combat);
+            _run.Resupply = _resupply;
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");

@@ -40,7 +40,7 @@ namespace AOBuddy
     public class ResupplyController
     {
         private enum Phase { Idle, Approach, Opening, Adding, Settling, WaitMoney }
-        private enum Supply { Stim, Recharger }
+        private enum Supply { Stim, Recharger, Container }
 
         private sealed class Offer { public int Slot; public Item Item; }
 
@@ -129,6 +129,7 @@ namespace AOBuddy
             if (Active) { reply("Already resupplying — " + Describe()); return; }
             EnsureLoaded();
 
+            _containersWanted = 0;
             _haveAtStart.Clear(); _bought.Clear();
             foreach (Supply s in new[] { Supply.Stim, Supply.Recharger }) { _haveAtStart[s] = Have(s); _bought[s] = 0; }
             List<Supply> needs = Needs();
@@ -151,6 +152,28 @@ namespace AOBuddy
             _ctx.Log($"RESUPPLY: start — needs {string.Join(", ", needs.Select(s => $"{s} have {Have(s)} want {Want(s)}"))}, cash {cash}, candidates {_candidates.Count}.");
             NextMachine(me);
         }
+
+        // CONTAINERS (mission run housekeeping, 2026-09-24): buy `count` bags - the cheapest, by exact name
+        // (ResupplyContainerName) - and nothing else. Same terminals and trade protocol as stims; the owner's
+        // client bought a Large Backpack this way (capture 20260923-234203: Use, Trade AddItem line 1, Trade End).
+        public void StartContainers(LocalPlayer me, int count, Action<string> reply)
+        {
+            if (Active) { reply("Already shopping - " + Describe()); return; }
+            EnsureLoaded();
+            _containersWanted = Math.Max(1, count);
+            _haveAtStart.Clear(); _bought.Clear();
+            foreach (Supply s in new[] { Supply.Stim, Supply.Recharger, Supply.Container }) { _haveAtStart[s] = Have(s); _bought[s] = 0; }
+            var needs = Needs();
+            BuildCandidates(me, needs);
+            if (_candidates.Count == 0) { _containersWanted = 0; reply($"No shop terminals within {_ctx.Config.ResupplySearchRadius:0}m that could sell bags."); return; }
+            _opens = 0; _retryCount = 0;
+            me.TryGetStat(Stat.Cash, out int cash);
+            reply($"Buying {_containersWanted} {Name(Supply.Container)}(s). {cash} credits, {_candidates.Count} terminal(s) to check.");
+            _ctx.Log($"RESUPPLY: start - containers {_containersWanted}, cash {cash}, candidates {_candidates.Count}.");
+            NextMachine(me);
+        }
+        private int _containersWanted;
+        public bool BuyingContainers => Active && _containersWanted > 0;
 
         // TEMPORARY (see _survey). Every terminal in the zone whose name contains the filter, visited
         // nearest-next from where the bot stands.
@@ -376,7 +399,7 @@ namespace AOBuddy
             List<Offer> offers = _stock.Select((s, i) => new Offer { Slot = i, Item = StockItem(s) })
                                        .Where(o => !string.IsNullOrEmpty(o.Item?.Name)).ToList();
             var sells = new List<Supply>();
-            foreach (Supply s in new[] { Supply.Stim, Supply.Recharger })
+            foreach (Supply s in new[] { Supply.Stim, Supply.Recharger, Supply.Container })
                 if (offers.Any(o => Is(o.Item, s))) sells.Add(s);
             Remember(_machine, sells);
             LogStock();
@@ -386,8 +409,11 @@ namespace AOBuddy
             foreach (Supply need in Needs())
             {
                 // Fitting = the highest QL whose First Aid / Treatment requirement he meets right now.
-                Offer best = offers.Where(o => Is(o.Item, need) && SupportController.MeetsHealReqs(o.Item, me))
-                                   .OrderByDescending(o => o.Item.Ql).FirstOrDefault();
+                // A container: the cheapest line, no skill to meet.
+                Offer best = need == Supply.Container
+                    ? offers.Where(o => Is(o.Item, need)).OrderBy(o => PriceEach(o.Item, out _)).FirstOrDefault()
+                    : offers.Where(o => Is(o.Item, need) && SupportController.MeetsHealReqs(o.Item, me))
+                            .OrderByDescending(o => o.Item.Ql).FirstOrDefault();
                 if (best == null)
                 {
                     if (sells.Contains(need)) _ctx.Log($"RESUPPLY: '{_machineName}' has {Plural(need)} but none I have the skill for.");
@@ -668,7 +694,9 @@ namespace AOBuddy
                     if (!needs.Any(n => sold.Split(',').Contains(n.ToString()))) continue;
                     rank = 0;
                 }
-                else rank = NameSuggestsSupplies(vm.Name) ? 1 : 2;
+                else rank = (needs.Contains(Supply.Container)
+                             ? !string.IsNullOrEmpty(vm.Name) && vm.Name.IndexOf("Container", StringComparison.OrdinalIgnoreCase) >= 0
+                             : NameSuggestsSupplies(vm.Name)) ? 1 : 2;
                 ranked.Add((vm.Identity, rank, d));
             }
             _candidates.Clear();
@@ -762,7 +790,8 @@ namespace AOBuddy
         private bool Is(Item it, Supply s)
             => it?.Name != null && string.Equals(it.Name, Name(s), StringComparison.OrdinalIgnoreCase);
 
-        private string Name(Supply s) => s == Supply.Stim ? _ctx.Config.ResupplyStimName : _ctx.Config.ResupplyRechargerName;
+        private string Name(Supply s) => s == Supply.Stim ? _ctx.Config.ResupplyStimName
+                                       : s == Supply.Container ? _ctx.Config.ResupplyContainerName : _ctx.Config.ResupplyRechargerName;
 
         // How many we carry that we can use: every stack of the item (main inventory and open bags) whose
         // First Aid / Treatment requirement we meet, by stack count.
@@ -774,23 +803,27 @@ namespace AOBuddy
             if (Inventory.Containers != null)
                 foreach (var c in Inventory.Containers)
                     if (c?.Items != null) items.AddRange(c.Items);
+            if (s == Supply.Container) return items.Count(it => Is(it, s));
             return items.Where(it => Is(it, s) && SupportController.MeetsHealReqs(it, me)).Sum(it => Math.Max(1, it.Count));
         }
 
-        private int Want(Supply s) => s == Supply.Stim ? _ctx.Config.ResupplyStimTarget : _ctx.Config.ResupplyRechargerTarget;
+        private int Want(Supply s) => s == Supply.Stim ? _ctx.Config.ResupplyStimTarget
+                                    : s == Supply.Container ? _containersWanted : _ctx.Config.ResupplyRechargerTarget;
 
         // Still to buy this run: what the inventory says is missing, but never more than the run set out to
         // buy — so a purchase the inventory model misses can't make us buy the same stims over and over.
         private int Remaining(Supply s)
         {
+            if (s == Supply.Container) return Math.Max(0, _containersWanted - (_bought.TryGetValue(s, out int b) ? b : 0));
             int byInventory = Want(s) - Have(s);
             if (!_haveAtStart.TryGetValue(s, out int start)) return Math.Max(0, byInventory);
             return Math.Max(0, Math.Min(byInventory, Want(s) - start - _bought[s]));
         }
 
-        private List<Supply> Needs() => new[] { Supply.Stim, Supply.Recharger }.Where(s => Remaining(s) > 0).ToList();
+        private List<Supply> Needs() => (_containersWanted > 0 ? new[] { Supply.Container } : new[] { Supply.Stim, Supply.Recharger })
+                                        .Where(s => Remaining(s) > 0).ToList();
 
-        private static string Plural(Supply s) => s == Supply.Stim ? "stims" : "rechargers";
+        private static string Plural(Supply s) => s == Supply.Stim ? "stims" : s == Supply.Container ? "bags" : "rechargers";
 
         // ---- Memory ---------------------------------------------------------------
 

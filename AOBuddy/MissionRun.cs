@@ -43,7 +43,7 @@ namespace AOBuddy
         private double _lastHurt = -999;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -84,6 +84,14 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a.StartsWith("shop"))
+            {
+                string v = a.Substring(4).Trim();
+                if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
+                if (v == "now" && Active) { _shopTriedAt = -9999; bool was = _ctx.Config.MissionShop; _ctx.Config.MissionShop = true; StartShop("owner asked"); _ctx.Config.MissionShop = was; }
+                reply($"Housekeeping at Fair Trade when out of room: {(_ctx.Config.MissionShop ? "ON" : "off")} (test). Keeps {_ctx.Config.MissionCashReserve:N0} credits. 'mission run shop on|off|now'.");
+                return;
+            }
             if (a.StartsWith("difficulty"))
             {
                 // The terminal's difficulty for the style he's on: blitz uses MissionDifficulty, fight rolls at least
@@ -298,7 +306,7 @@ namespace AOBuddy
             // stops; he stands and fights (combat + stims + pets as usual), and picks up where he was 3 s after.
             bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
                           || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
-                          || _phase == Phase.Stash;
+                          || _phase == Phase.Stash || (_phase == Phase.Shop && (_shopStep == ShopStep.Travel || _shopStep == ShopStep.Exit));
             // SNARED: the walker moves at the snared speed now (BotContext.RunVelocity counts a negative Stat 156).
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
@@ -454,6 +462,7 @@ namespace AOBuddy
                     // Out of room: he always needs 4 free inventory slots (not bags, not items) to pull the mission
                     // keys and rewards (owner, 2026-09-23), and the stash has already filled every bag it could. He
                     // can't go on; buying bags, selling and banking nano crystals come later (MISSION-MODE-PLAN.md).
+                    if (Inventory.NumFreeSlots < 4 && StartShop($"only {Inventory.NumFreeSlots} free slot(s)")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -652,6 +661,9 @@ namespace AOBuddy
 
                 case Phase.Hike:
                     return HikeTick(me);
+
+                case Phase.Shop:
+                    return ShopTick(me);
 
                 case Phase.ExitStand:
                 {
@@ -985,6 +997,198 @@ namespace AOBuddy
         // RubiKa2019 has no Scotty (owner, 2026-09-24): a Scotty leg there is a wait for nobody.
         private static bool NoScotty => Client.Dimension == AOSharp.Clientless.Common.Dimension.RubiKa2019;
 
+        // ---- Shop: housekeeping at Fair Trade (testing switch MissionShop) ---------------------------------------
+        // The owner's design (2026-09-24, Algorithman agreed): bags full -> sell what isn't a nano crystal or on the
+        // keep list (NOT BUILT: selling isn't captured yet) -> nanos go into a bag in the bank (buy one if no bank bag
+        // has room, keeping MissionCashReserve) -> one more bag to carry if still short of room. From capture
+        // 20260923-234203 (owner, Fair Trade): the proxy into playfield 1187 'Neutral Supermarket Advanced' at
+        // (650,613) in Borealis; he stood at (197.7,142.4) inside and used both the container terminal
+        // (VendingMachine 42685979 at (199,129)) and the bank terminal (C73D:0EE5BBFF) from there. The way out is
+        // back the way he came in (owner): where he landed on zoning in, then on through it.
+        public ResupplyController Resupply;
+        private enum ShopStep { Travel, OpenBank, TakeBag, FillBag, StoreBag, Buy, Exit }
+        private ShopStep _shopStep;
+        private double _shopStepAt, _shopTriedAt = -9999;
+        private const int FairTradePf = 1187;
+        private static readonly Vector3 ShopSpot = new Vector3(197.74f, 5.01f, 142.38f);
+        private static readonly Identity BankTerminal = new Identity(IdentityType.Terminal, 0x0EE5BBFF);
+        private Vector3? _shopArrival;
+        private Identity? _shopBag;
+        private bool _shopBoughtForNanos, _shopBoughtForRoom;
+        private Identity? _nanoSlot;
+        private readonly HashSet<Identity> _shopKnownBags = new HashSet<Identity>();
+        private readonly HashSet<Identity> _shopFullBags = new HashSet<Identity>();
+
+        private static bool IsNano(Item i) => i?.Name != null && (i.Name.StartsWith("Nano Crystal", StringComparison.OrdinalIgnoreCase) || i.Name.StartsWith("NanoCrystal", StringComparison.OrdinalIgnoreCase));
+        private static List<Item> InvNanos() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && IsNano(i)).ToList();
+        private static Item InvItem(Identity? unique) => unique.HasValue ? Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity == unique.Value) : null;
+
+        private bool StartShop(string why)
+        {
+            if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
+            _shopTriedAt = _clock;
+            _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear();
+            _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade. Selling is not built yet (no capture of a sale).");
+            _tell($"Out of room ({why}); going to Fair Trade to bank my nano crystals and buy a bag. (Test switch: mission run shop on|off.)");
+            _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
+            Enter(Phase.Shop, "housekeeping");
+            return true;
+        }
+
+        private void ShopNext(ShopStep s, string log) { _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log); }
+
+        private bool ShopTick(LocalPlayer me)
+        {
+            double t = _clock - _shopStepAt;
+            int pf = (int)Playfield.ModelId;
+            if (pf == FairTradePf && !_shopArrival.HasValue) { _shopArrival = me.Transform.Position; _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0})."); }
+            switch (_shopStep)
+            {
+                case ShopStep.Travel:
+                    if (pf != FairTradePf) return Travel(me, FairTradePf, ShopSpot, "Fair Trade");
+                    if (_overland.Active) _overland.Stop("inside Fair Trade");
+                    if (Flat(me.Transform.Position, ShopSpot) > 1.5f && t < 30) { _follow.SetManualTarget(ShopSpot); return true; }
+                    _follow.ClearMovement();
+                    // Bank first: what it holds decides whether a bag must be bought.
+                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = BankTerminal, Count = 1, Temp4 = 1 });
+                    ShopNext(ShopStep.OpenBank, "opening the bank.");
+                    return false;
+
+                case ShopStep.OpenBank:
+                    if (!Inventory.Bank.IsOpen)
+                    {
+                        if (t < 5) return false;
+                        _tell("The bank terminal didn't answer; skipping the banking.");
+                        return ShopAfterNanos(me);
+                    }
+                    if (InvNanos().Count == 0) { _ctx.Log("MISSIONRUN: shop: no nano crystals to bank."); return ShopAfterNanos(me); }
+                    return ShopPickBag(me);
+
+                case ShopStep.TakeBag:
+                {
+                    // Out of the bank (MoveItem Bank:n -> 111, capture seq 27): wait for it in the inventory, then open it.
+                    var bag = InvItem(_shopBag);
+                    if (bag == null) { if (t < 5) return false; _tell("A bag didn't come out of the bank."); return ShopAfterNanos(me); }
+                    Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.Slot, Count = 1, Temp4 = 0 });
+                    _nanoSlot = null;
+                    ShopNext(ShopStep.FillBag, $"filling '{bag.Name}' with nano crystals.");
+                    return false;
+                }
+
+                case ShopStep.FillBag:
+                {
+                    if (t < 0.8) return false;
+                    var bag = InvItem(_shopBag);
+                    var cont = Inventory.Containers.FirstOrDefault(c => c.Identity == _shopBag);
+                    if (bag == null || cont == null) { if (t < 5) return false; _tell("Couldn't open the bag for the nanos."); return ShopAfterNanos(me); }
+                    var nanos = InvNanos();
+                    // The last move still in the inventory 2 s later: the bag refused it, it's full (as in the stash).
+                    if (_nanoSlot.HasValue)
+                    {
+                        if (t < 2) return false;
+                        bool stuck = nanos.Any(n => n.Slot == _nanoSlot.Value);
+                        _nanoSlot = null;
+                        if (stuck) { ShopStore(me, bag, "full"); return false; }
+                    }
+                    if (nanos.Count == 0) { ShopStore(me, bag, "all nanos in"); return false; }
+                    Item.ContainerAddItem(nanos[0].Slot, cont.Identity);
+                    _nanoSlot = nanos[0].Slot; _shopStepAt = _clock;
+                    _ctx.Log($"MISSIONRUN: shop: '{nanos[0].Name}' into '{bag.Name}'.");
+                    return false;
+                }
+
+                case ShopStep.StoreBag:
+                    if (t < 1.5) return false;
+                    if (InvNanos().Count > 0) return ShopPickBag(me);   // that bag was full: the next one
+                    return ShopAfterNanos(me);
+
+                case ShopStep.Buy:
+                {
+                    if (Resupply.Active || t < 1) return false;
+                    var bought = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container)
+                                                .Select(i => i.UniqueIdentity).Where(id => !_shopKnownBags.Contains(id)).ToList();
+                    if (bought.Count == 0) { _tell("Couldn't buy a bag (see RESUPPLY in the log)."); ShopNext(ShopStep.Exit, "leaving."); return false; }
+                    if (_shopBoughtForNanos && !_shopBoughtForRoom && InvNanos().Count > 0)
+                    {
+                        _shopBag = bought[0];
+                        var bag = InvItem(_shopBag);
+                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.Slot, Count = 1, Temp4 = 0 });
+                        _nanoSlot = null;
+                        ShopNext(ShopStep.FillBag, "filling the new bag with nano crystals.");
+                        return false;
+                    }
+                    return ShopAfterNanos(me);
+                }
+
+                case ShopStep.Exit:
+                {
+                    if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
+                    if (t > 30 || !_shopArrival.HasValue) { _follow.ClearMovement(); _tell("Couldn't walk out of Fair Trade."); Stop("stuck in Fair Trade"); return false; }
+                    // Back the way he came in: to where he landed, then 3 m on past it, away from the shop spot.
+                    Vector3 a = _shopArrival.Value;
+                    var d = new Vector3(a.X - ShopSpot.X, 0, a.Z - ShopSpot.Z);
+                    float len = d.Magnitude;
+                    var target = len > 0.5f ? new Vector3(a.X + d.X / len * 3f, a.Y, a.Z + d.Z / len * 3f) : a;
+                    _follow.SetManualTarget(Flat(me.Transform.Position, a) > 1.5f ? a : target);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // A bag from the bank that isn't known full, or buy one.
+        private bool ShopPickBag(LocalPlayer me)
+        {
+            var seen = new HashSet<int>();   // the SDK appends each BankMessage without clearing: one per bank slot
+            var bankBags = Inventory.Bank.Items.Where(i => i != null && seen.Add(i.Slot.Instance) && i.UniqueIdentity.Type == IdentityType.Container
+                                                          && !_shopFullBags.Contains(i.UniqueIdentity) && InvItem(i.UniqueIdentity) == null).ToList();
+            if (bankBags.Count > 0)
+            {
+                var b = bankBags[0];
+                _shopBag = b.UniqueIdentity;
+                Item.MoveItemToInventory(new Identity(IdentityType.BankByRef, b.Slot.Instance), 0x6F);
+                ShopNext(ShopStep.TakeBag, $"taking '{b.Name}' out of the bank.");
+                return false;
+            }
+            return ShopBuy(me, forNanos: true);
+        }
+
+        private void ShopStore(LocalPlayer me, Item bag, string why)
+        {
+            if (why == "full") _shopFullBags.Add(bag.UniqueIdentity);
+            // Back into the bank (capture seq 35-36: Use on the bag, then ClientContainerAddItem to Bank 0xDEAD:<me>).
+            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bag.UniqueIdentity, Count = 1, Temp4 = 1 });
+            bag.MoveToBank();
+            ShopNext(ShopStep.StoreBag, $"'{bag.Name}' into the bank ({why}).");
+        }
+
+        private bool ShopAfterNanos(LocalPlayer me)
+        {
+            if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
+            ShopNext(ShopStep.Exit, "leaving the way I came in.");
+            return false;
+        }
+
+        private bool ShopBuy(LocalPlayer me, bool forNanos)
+        {
+            me.TryGetStat(Stat.Cash, out int cash);
+            if (cash < _ctx.Config.MissionCashReserve)
+            {
+                _tell($"Not buying a bag: {cash:N0} credits, and I keep {_ctx.Config.MissionCashReserve:N0} for missions.");
+                ShopNext(ShopStep.Exit, "leaving (credits).");
+                return false;
+            }
+            _shopKnownBags.Clear();
+            foreach (var i in Inventory.Items.Where(i => i != null && i.UniqueIdentity.Type == IdentityType.Container)) _shopKnownBags.Add(i.UniqueIdentity);
+            if (forNanos) _shopBoughtForNanos = true; else _shopBoughtForRoom = true;
+            int keep = _ctx.Config.ResupplyCashReserve;
+            _ctx.Config.ResupplyCashReserve = Math.Max(keep, _ctx.Config.MissionCashReserve);
+            Resupply.StartContainers(me, 1, s => _ctx.Log("MISSIONRUN: shop: " + s));
+            _ctx.Config.ResupplyCashReserve = keep;
+            ShopNext(ShopStep.Buy, forNanos ? "buying a bag for the nano crystals." : "buying a bag to carry.");
+            return false;
+        }
+
         private void StartBackoff(LocalPlayer me, string next)
         {
             Vector3 pos = me.Transform.Position;
@@ -1096,7 +1300,13 @@ namespace AOBuddy
             }
             if (_bag == null)
             {
-                if (_bagsToTry.Count == 0) { _tell("No backpack with room for the reward; it stays in my inventory."); _rewardIds.Clear(); Enter(Phase.ToTerminal, "no bag room"); return; }
+                if (_bagsToTry.Count == 0)
+                {
+                    _rewardIds.Clear();
+                    if (StartShop("no bag has room for the reward")) return;
+                    _tell("No backpack with room for the reward; it stays in my inventory.");
+                    Enter(Phase.ToTerminal, "no bag room"); return;
+                }
                 _bag = _bagsToTry.Dequeue();
                 _bagOpenedAt = _clock;
                 Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = _bag.Slot, Count = 1, Temp4 = 0 });
