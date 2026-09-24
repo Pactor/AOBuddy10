@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -81,6 +82,8 @@ namespace AONavExtractor
                         else if (rdb.Has(1000009, pf)) { ground = Ground.Read(rdb, pf); if (ground != null) kind = "outdoor"; }
                     }
                     catch (Exception e) { error = e.GetType().Name + ": " + e.Message; }
+                    if (ground != null)
+                        ground.WaterY = Ground.WaterPlanes(blob);
                     List<SurfaceRecord> recs = null;
                     string tri = triDir != null ? Path.Combine(triDir, pf + ".tri") : null;
                     if (tri != null && File.Exists(tri)) recs = TriFile.Read(tri, out _);
@@ -108,6 +111,12 @@ namespace AONavExtractor
                         info.Key("worldSize").Arr().Num((ground.SamplesX - 1) * (double)ground.Cell).Num((ground.SamplesZ - 1) * (double)ground.Cell).End();
                         info.Key("heightRange").Arr().Num(Math.Round(ground.MinHeight, 4)).Num(Math.Round(ground.MaxHeight, 4)).End();
                         info.Key("heightVerifiable").Bool(ground.SourceBits == 8);
+                        if (ground.WaterY.Length > 0)
+                        {
+                            info.Key("waterPlanes").Arr();
+                            foreach (float y in ground.WaterY) info.Num(Math.Round(y, 2));
+                            info.End();
+                        }
                         info.End();
                     }
                     if (dungeon != null)
@@ -146,7 +155,8 @@ namespace AONavExtractor
                     string infoText = info.ToString();
                     File.WriteAllText(Path.Combine(folder, "info.json"), infoText);
                     index.Add(infoText);
-                    Console.WriteLine("pf {0,-6} {1,-9} {2,-32} {3}", pf, kind, name.Length > 32 ? name.Substring(0, 32) : name,
+                    Console.WriteLine("pf {0,-6} {1,-9} {2,-32} {3}{4}", pf, kind, name.Length > 32 ? name.Substring(0, 32) : name,
+                        ground != null && ground.WaterY.Length > 0 ? "water " + string.Join("/", ground.WaterY.Select(y => y.ToString("0.#"))) + " " : "",
                         ver != null ? string.Format("verified {0:F1}%", ver.ExplainedPct) : "");
                     if (ownTri && !keepTri && tri != null && File.Exists(tri)) File.Delete(tri);
                 }

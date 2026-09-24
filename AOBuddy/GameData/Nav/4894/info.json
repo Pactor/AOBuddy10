@@ -3,25 +3,28 @@
  "name": "Coast of Harmony",
  "playfieldVersion": 8,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1537,
   "samplesZ": 769,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.001953125,
   "sourceHeightBits": 16,
   "worldSize": [
-   6144.0,
-   3072.0
+   6144,
+   3072
   ],
   "heightRange": [
-   0.0,
+   0,
    127.998
   ],
-  "heightVerifiable": false
+  "heightVerifiable": false,
+  "waterPlanes": [
+   8
+  ]
  },
  "collision": {
   "records": 3918,

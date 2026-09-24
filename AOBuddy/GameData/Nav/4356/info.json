@@ -3,14 +3,15 @@
  "name": "Advanced Player Market [dng]",
  "playfieldVersion": 10,
  "files": [
+  "collision.bin",
   "rooms.json",
-  "collision.bin"
+  "walls.bin"
  ],
  "kind": "dungeon",
  "dungeon": {
   "tilemap": 4566,
   "rooms": 1,
-  "cell": 2.0,
+  "cell": 2,
   "heightScale": 0.20000000298023224
  },
  "collision": {

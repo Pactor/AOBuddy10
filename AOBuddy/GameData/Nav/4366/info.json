@@ -3,25 +3,28 @@
  "name": "Sector 28",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 193,
   "samplesZ": 193,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.001953125,
   "sourceHeightBits": 16,
   "worldSize": [
-   768.0,
-   768.0
+   768,
+   768
   ],
   "heightRange": [
-   0.0,
+   0,
    65.0801
   ],
-  "heightVerifiable": false
+  "heightVerifiable": false,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 202,

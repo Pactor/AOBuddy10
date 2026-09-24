@@ -3,25 +3,28 @@
  "name": "Garden of Redeemed Penumbra",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 225,
   "samplesZ": 225,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0023437500931322575,
   "sourceHeightBits": 8,
   "worldSize": [
-   896.0,
-   896.0
+   896,
+   896
   ],
   "heightRange": [
-   0.0,
+   0,
    124.8
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   1
+  ]
  },
  "collision": {
   "records": 157,

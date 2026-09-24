@@ -3,25 +3,28 @@
  "name": "Uturn Canyon",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 769,
   "samplesZ": 449,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0011718750465661287,
   "sourceHeightBits": 8,
   "worldSize": [
-   3072.0,
-   1792.0
+   3072,
+   1792
   ],
   "heightRange": [
-   0.0,
+   0,
    76.5
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 432,

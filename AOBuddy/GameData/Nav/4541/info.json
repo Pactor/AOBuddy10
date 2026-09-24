@@ -3,25 +3,28 @@
  "name": "West of Elysium",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 513,
   "samplesZ": 769,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0015625000232830644,
   "sourceHeightBits": 8,
   "worldSize": [
-   2048.0,
-   3072.0
+   2048,
+   3072
   ],
   "heightRange": [
    0.4,
-   102.0
+   102
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   0
+  ]
  },
  "collision": {
   "records": 1803,

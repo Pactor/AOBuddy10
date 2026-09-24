@@ -3,25 +3,37 @@
  "name": "Old Athen",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 225,
   "samplesZ": 225,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   896.0,
-   896.0
+   896,
+   896
   ],
   "heightRange": [
-   0.0,
-   48.0
+   0,
+   48
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   5
+  ]
+ },
+ "verification": {
+  "walkedPoints": 82,
+  "toleranceM": 1,
+  "explainedByFloor": 82,
+  "explainedByCollision": 0,
+  "unexplained": 0,
+  "explainedPct": 100,
+  "unexplainedSamples": []
  },
  "collision": {
   "records": 144,

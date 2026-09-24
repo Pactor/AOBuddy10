@@ -97,7 +97,8 @@ namespace AOBuddy
         }
 
         private bool _moving;
-        private bool _run;          // last gait, so a run<->walk switch re-issues the start packet
+        private int _gait;          // last gait (0 walk, 1 run, 2 swim), so a switch re-issues the start packet
+        private bool _swim;         // the SWIM gait is switched into with its own wire mode (0x1a)
         private double _sendAccum;
         private int _turning;       // 0 = not turning, +1 = TurnRight in progress, -1 = TurnLeft
         private double _turnAccum;
@@ -116,6 +117,33 @@ namespace AOBuddy
         public void SetLeash(Vector3? anchor, float lead) { _leashAnchor = anchor; _leashLead = lead; }
 
         public bool Moving => _moving;
+        public bool Swimming => _swim;
+
+        /// <summary>
+        /// Switch the body into the client's SWIM movement mode (0x1a) — deep water refuses run-mode
+        /// steps outright and the server holds the body on the shore (Newland lake, 2026-09-24 20:46).
+        /// The next Advance re-issues the start packets in the new gait. Symmetric with LeaveSwim (0x23).
+        /// </summary>
+        public void EnterSwim(LocalPlayer me, int sendIntervalMs)
+        {
+            LeaveMirror(me, sendIntervalMs);
+            if (_swim) return;
+            me.MovementComponent.ChangeMovement(MovementAction.SwitchToSwim);
+            SendMove(me, MovementAction.Update, sendIntervalMs);
+            _swim = true;
+            _moving = false;   // force the start sequence again, in the swim gait
+        }
+
+        /// <summary>Back out of the swim mode onto land (the far shore: the floor rises to the plane).</summary>
+        public void LeaveSwim(LocalPlayer me, int sendIntervalMs)
+        {
+            LeaveMirror(me, sendIntervalMs);
+            if (!_swim) return;
+            me.MovementComponent.ChangeMovement(MovementAction.LeaveSwim);
+            SendMove(me, MovementAction.Update, sendIntervalMs);
+            _swim = false;
+            _moving = false;
+        }
 
         // Keep the sent transform (MovementComponent) and the read transform (Dynel.Transform,
         // used by DistanceFrom) in sync — they're separate objects on the LocalPlayer.
@@ -179,8 +207,11 @@ namespace AOBuddy
                 Unknown2 = m.Unknown2,
                 Unknown3 = m.Unknown3,
             });
-            if (m.MoveType == MovementAction.SwitchToRun) _run = true;
-            else if (m.MoveType == MovementAction.SwitchToWalk) _run = false;
+            if (m.MoveType == MovementAction.SwitchToRun) _gait = 1;
+            else if (m.MoveType == MovementAction.SwitchToWalk) _gait = 0;
+            else if (m.MoveType == MovementAction.SwitchToSwim) _gait = 2;
+            else if (m.MoveType == MovementAction.LeaveSwim) _gait = 1;
+            _swim = _gait == 2;   // his swim packets put us in swim too (mirroring replays them verbatim)
             _moving = (me.MovementComponent.Flags & ~(MovementFlags.TurningLeft | MovementFlags.TurningRight)) != MovementFlags.None;
             _turning = 0; _turnAccum = 0; _sendAccum = 0;
             _mirrored = true;
@@ -221,11 +252,13 @@ namespace AOBuddy
 
             StopTurn(me, sendIntervalMs);   // a turn-in-place and a run are different client states
 
-            if (!_moving || _run != run)
+            int gait = _swim ? 2 : run ? 1 : 0;
+            if (!_moving || _gait != gait)
             {
-                me.MovementComponent.ChangeMovement(run ? MovementAction.SwitchToRun : MovementAction.SwitchToWalk);
+                me.MovementComponent.ChangeMovement(_swim ? MovementAction.SwitchToSwim
+                                                  : run ? MovementAction.SwitchToRun : MovementAction.SwitchToWalk);
                 SendMove(me, MovementAction.ForwardStart, sendIntervalMs);
-                _moving = true; _run = run; _sendAccum = 0;
+                _moving = true; _gait = gait; _sendAccum = 0;
             }
             else
             {
@@ -342,6 +375,23 @@ namespace AOBuddy
         public void Reset()
         {
             _mirrored = false;
+            _moving = false;
+            _gait = 0;
+            _swim = false;
+            _sendAccum = 0;
+            _turning = 0;
+            _turnAccum = 0;
+        }
+
+        /// <summary>
+        /// Stop the packet bookkeeping after a server SetPos WITHOUT dropping the gait/mode: a
+        /// correction does not unswim the body server-side, and clearing the mode locally made the
+        /// walker re-send SwitchToSwim every correction (Newland 21:40: enter → correct → enter → …,
+        /// each rejection ejecting the body further back onto the dry shore). The walker's own water
+        /// check leaves swim when the ground says dry. Full Reset() stays for zones/stops.
+        /// </summary>
+        public void ResetKeepGait()
+        {
             _moving = false;
             _sendAccum = 0;
             _turning = 0;

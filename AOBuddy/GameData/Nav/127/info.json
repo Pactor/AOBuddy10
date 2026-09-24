@@ -3,14 +3,15 @@
  "name": "Condemned Subway (dng)",
  "playfieldVersion": 10,
  "files": [
+  "collision.bin",
   "rooms.json",
-  "collision.bin"
+  "walls.bin"
  ],
  "kind": "dungeon",
  "dungeon": {
   "tilemap": 126,
   "rooms": 46,
-  "cell": 2.0,
+  "cell": 2,
   "heightScale": 0.20000000298023224
  },
  "collision": {
@@ -18,65 +19,5 @@
   "trianglesTotal": 198132,
   "trianglesWalkable": 69056,
   "chunks": 62
- },
- "verification": {
-  "walkedPoints": 2390,
-  "toleranceM": 1.0,
-  "explainedByFloor": 2070,
-  "explainedByCollision": 293,
-  "unexplained": 27,
-  "explainedPct": 98.9,
-  "unexplainedSamples": [
-   [
-    79.4,
-    115.61,
-    318.0
-   ],
-   [
-    345.2,
-    102.81,
-    187.1
-   ],
-   [
-    345.0,
-    102.81,
-    187.9
-   ],
-   [
-    312.4,
-    102.31,
-    201.0
-   ],
-   [
-    323.3,
-    102.81,
-    187.9
-   ],
-   [
-    323.0,
-    102.81,
-    187.9
-   ],
-   [
-    287.9,
-    102.82,
-    164.9
-   ],
-   [
-    335.0,
-    107.01,
-    175.9
-   ],
-   [
-    335.0,
-    107.01,
-    175.9
-   ],
-   [
-    330.3,
-    106.69,
-    141.2
-   ]
-  ]
  }
 }

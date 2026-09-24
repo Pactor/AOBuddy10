@@ -3,25 +3,28 @@
  "name": "West Athen Backyard 9",
  "playfieldVersion": 8,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 49,
   "samplesZ": 49,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0007812500116415322,
   "sourceHeightBits": 8,
   "worldSize": [
-   192.0,
-   192.0
+   192,
+   192
   ],
   "heightRange": [
    23.2,
    25.2
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   24.3
+  ]
  },
  "collision": {
   "records": 16,

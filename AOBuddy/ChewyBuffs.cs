@@ -79,6 +79,7 @@ namespace AOBuddy
             public double Magnitude;            // normalized effect size for scoring
             public HashSet<int> OffenseStatIds; // the OFFENSE stats it boosts (weapon-relevance filter)
             public bool IsWrangler;             // the staged wrangle line (excluded from the normal fill)
+            public bool Movement;               // boosts run speed — its line is reserved before the score fill
         }
 
         public ChewyBuffController(BotContext ctx, SupportController support, OverlandController overland, string pluginDir, Action<string> tell)
@@ -163,7 +164,10 @@ namespace AOBuddy
             0xCD, 0xCE, 0xCF, 0xD0, 0xD8, 0xD9, 0xDA, 0xDB, 0xE1,                                        // reflect ACs
             0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA,                                        // shield ACs
             0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,                                        // absorb ACs
-            0x8F, 0x91, 0x99, 0x9A, 0x9B, 0xA8, 0x115);                                                 // riposte, parry, evades, nano resist, add-all-def
+            0x8F, 0x91, 0x99, 0x9A, 0x9B, 0xA8, 0x115,                                                  // riposte, parry, evades, nano resist, add-all-def
+            0x9C);                                                                                        // run speed: SPEED IS DEFENSE (owner, 2026-09-24) — without it,
+                                                                                                          // a +RS/+Evades buff scored on its evades alone (+79 -> ~0.07,
+                                                                                                          // always outcompeted) and no runspeed buff was ever asked
         private static readonly HashSet<int> SustainStats = NewSet(
             0x84, 0xDD, 0x157, 0x16C, 0x13E);                                                            // nano pool, max nano, heal delta, nano delta, nano cost
         // Pure tradeskills: chemistry, pharma tech, weapon smithing, nano programming, comp lit, psychology,
@@ -182,6 +186,7 @@ namespace AOBuddy
         // max-health pool per NCU — Dr Hack 'n Quack (366/10s, 25 NCU) beats Superior Omni-Med Enhancement
         // (+920 pool, 45 NCU), so when NCU gets tight the HoT wins the slot.
         private const double ScaleOffense = 130, ScaleDefense = 750, ScaleSustain = 150, ScaleUtility = 150;
+        private const int StatRunSpeed = 0x9C;   // Stat 156, the id BotContext.RunVelocity reads
 
         /// <summary>Resolve every buff's nano data (line, category, magnitude). Needs ItemData loaded;
         /// returns false to try again on a later tick. Text fallbacks keep the plan working without it.
@@ -203,11 +208,15 @@ namespace AOBuddy
                     b.Cat = CategoryOf(b, ni);
                     b.Magnitude = MagnitudeOf(b, ni, b.Cat);
                     if (ni.Modifiers != null && ni.Modifiers.TryGetValue(SpellListType.Use, out var use2) && use2 != null)
+                    {
                         b.OffenseStatIds = new HashSet<int>(use2.Where(kv => OffenseStats.Contains((int)kv.Key)).Select(kv => (int)kv.Key));
+                        b.Movement = use2.Keys.Any(k => (int)k == StatRunSpeed);
+                    }
                 }
                 else
                 {
                     // No item data (yet, or ever for this id): fall back to the effect text.
+                    b.Movement = Regex.IsMatch(b.Effect ?? "", @"\bRS\b|runspeed", RegexOptions.IgnoreCase);
                     b.LineKey = "T" + b.Tell;
                     b.Cat = CategoryOf(b, null);
                     b.Magnitude = MagnitudeOf(b, null, b.Cat);
@@ -626,6 +635,17 @@ namespace AOBuddy
             }
 
             int free = p.FreeNcuAtPlan;
+
+            // MOVEMENT: the runspeed line is RESERVED before the score fill (owner, 2026-09-24: there must
+            // always be at least a smaller runspeed buff — speed is the best defensive layer). The BIGGEST
+            // tier that fits the projected NCU — magnitude, not score, which divides by NCU and would
+            // always pick the smallest rung — stepping down the ladder only when it is tight. A line
+            // already running healthy was filtered out above, so this never re-asks what is up.
+            var move = candidates.Where(b => b.Movement && b.Ncu <= free)
+                                 .OrderByDescending(x => x.Magnitude)
+                                 .FirstOrDefault();
+            if (move != null) { p.Rest.Add(new Pick { Buff = move }); free -= move.Ncu; }
+
             foreach (var b in candidates.OrderByDescending(b => WeightOf(b.Cat) * b.Magnitude / Math.Max(1, b.Ncu)))
             {
                 // One per line: earlier pick of the same line wins.

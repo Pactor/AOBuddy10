@@ -3,45 +3,96 @@
  "name": "Andromeda",
  "playfieldVersion": 10,
  "files": [
-  "ground.bin",
-  "collision.bin"
+  "collision.bin",
+  "ground.bin"
  ],
  "kind": "outdoor",
  "ground": {
   "samplesX": 1537,
   "samplesZ": 769,
-  "cell": 4.0,
+  "cell": 4,
   "heightScale": 0.0011718750465661287,
   "sourceHeightBits": 8,
   "worldSize": [
-   6144.0,
-   3072.0
+   6144,
+   3072
   ],
   "heightRange": [
-   0.0,
+   0,
    76.5
   ],
-  "heightVerifiable": true
+  "heightVerifiable": true,
+  "waterPlanes": [
+   10.48,
+   9.02,
+   10.87,
+   15.41
+  ]
+ },
+ "verification": {
+  "walkedPoints": 481,
+  "toleranceM": 1,
+  "explainedByFloor": 426,
+  "explainedByCollision": 0,
+  "unexplained": 55,
+  "explainedPct": 88.6,
+  "unexplainedSamples": [
+   [
+    3178.5,
+    36.17,
+    860.1
+   ],
+   [
+    3161.3,
+    36.17,
+    865.2
+   ],
+   [
+    3159.8,
+    36.35,
+    865.9
+   ],
+   [
+    3156,
+    51.44,
+    866
+   ],
+   [
+    3153.5,
+    51.44,
+    866.4
+   ],
+   [
+    3151.5,
+    51.44,
+    867.6
+   ],
+   [
+    3198,
+    36.48,
+    864.3
+   ],
+   [
+    3199.6,
+    36.35,
+    864.2
+   ],
+   [
+    3199.8,
+    36.21,
+    866.6
+   ],
+   [
+    3197,
+    36.35,
+    866.8
+   ]
+  ]
  },
  "collision": {
   "records": 5195,
   "trianglesTotal": 299871,
   "trianglesWalkable": 132599,
   "chunks": 5295
- },
- "verification": {
-  "walkedPoints": 356,
-  "toleranceM": 1.0,
-  "explainedByFloor": 323,
-  "explainedByCollision": 32,
-  "unexplained": 1,
-  "explainedPct": 99.7,
-  "unexplainedSamples": [
-   [
-    3226.8,
-    36.48,
-    869.5
-   ]
-  ]
  }
 }

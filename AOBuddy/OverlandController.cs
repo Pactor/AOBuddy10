@@ -73,6 +73,13 @@ namespace AOBuddy
         private const int ScottyTells = 2;            // don't pester him
         private const int MaxReplans = 6;
         private const double StuckSeconds = 4;
+        public bool Swimming => _inWater;          // in the water band (no wire mode anymore — see WalkTick);
+                                                   // MissionRun stands down its pull-back counter while we're wet
+        private bool _inWater;
+        // The server's own vertical for our wet body, from its last correction: if it starts floating us
+        // where the bottom drops away, this is the surface Y we ride.
+        private float _wetY;
+        private double _wetYAt = -999;
         private const int MaxStuck = 4;               // re-routes around a stuck spot per leg
         private const float ClearOfLine = 4f;         // how far to step off a zone line we arrived on
 
@@ -101,12 +108,13 @@ namespace AOBuddy
             Vector3 local = me.MovementComponent.Position;
             float raw = RawFloorY(serverPos.X, serverPos.Y, serverPos.Z);
             float bias = float.IsNaN(raw) ? 0f : serverPos.Y - raw;
-            if (Math.Abs(bias) > 4f) bias = 0f;
+            if (Math.Abs(bias) > 4f || _move.Swimming) bias = 0f;   // over water the floor says nothing about the bias
             if (Math.Abs(bias - _yBias) > 0.3f || Movement.Flat(local, serverPos) > 2f)
                 _ctx.Log($"OVERLAND: server put me at ({serverPos.X:0},{serverPos.Y:0.0},{serverPos.Z:0}), {Vector3.Distance(local, serverPos):0.0} m from where I thought; its floor is {bias:+0.0;-0.0} m off our data here.");
             _yBias = bias;
+            _wetY = serverPos.Y; _wetYAt = Now;   // its vertical for us is wet truth while it is fresh
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
-            _move.Reset();
+            _move.ResetKeepGait();   // a correction stops the packet stream, not the swim mode
             _lastPos = serverPos;
             return true;
         }
@@ -500,10 +508,28 @@ namespace AOBuddy
 
             if (d < 0.01f) return;
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
-            float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
+
+            // WATER — the captured client's exact contract (20260924-215811 s116, this very shore):
+            // NO swim-mode packet ever; Y = THE WATER PLANE while the bottom is deeper than a wade
+            // (it sent 32.09 over our floor of 24.8 — swimming at the surface), Y = THE BOTTOM once
+            // it rises inside wading range (30.95, 31.67, 31.90 up the sandbar), plain Update
+            // packets throughout at ~5.5 u/s. Our four failures each sent one wrong leg of that
+            // triangle plus the mode packet the client never sends.
+            float probe = Math.Min(d, 0.5f);
+            double plane = _ground?.Ground != null && _ground.Ground.WaterY.Length > 0
+                ? _ground.Ground.SwimY(pos.X + dir.X * probe, pos.Z + dir.Z * probe, 0.3) : double.NaN;
+            _inWater = !double.IsNaN(plane);
+
+            float speed = _inWater ? _ctx.SwimVelocity(me) : _ctx.RunVelocity(me);
+            float step = Movement.CappedStep(speed, dt, _ctx.Config.MaxStep, d);
             float nx = pos.X + dir.X * step, nz = pos.Z + dir.Z * step;
-            Vector3 next = new Vector3(nx, FloorY(nx, pos.Y, nz), nz);
-            _ctx.WalkState = $"overland leg {_legNo}/{_legCount} wp {_pathIndex + 1}/{_path.Count} d={d:0}";
+            float floorY2 = FloorY(nx, pos.Y, nz);
+            bool floating = _inWater && Now - _wetYAt < 3 && _wetY > floorY2 + 0.4f && _wetY <= plane + 0.3f;
+            float nextY = floating ? _wetY                       // the server's own surface Y, while fresh
+                : _inWater && floorY2 < (float)plane - _ctx.Config.SwimWadeMeters ? (float)plane   // swim at the surface
+                : floorY2;                                      // wade the bottom / walk the shore
+            Vector3 next = new Vector3(nx, nextY, nz);
+            _ctx.WalkState = $"overland leg {_legNo}/{_legCount} wp {_pathIndex + 1}/{_path.Count} d={d:0}{(_inWater ? (floating ? " float" : nextY == floorY2 ? " wade" : " swim") : "")}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             _lastPos = next;   // our own step, not a jump
         }

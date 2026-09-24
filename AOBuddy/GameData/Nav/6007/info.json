@@ -3,14 +3,15 @@
  "name": "BS Signup (dng)",
  "playfieldVersion": 10,
  "files": [
+  "collision.bin",
   "rooms.json",
-  "collision.bin"
+  "walls.bin"
  ],
  "kind": "dungeon",
  "dungeon": {
   "tilemap": 6006,
   "rooms": 5,
-  "cell": 2.0,
+  "cell": 2,
   "heightScale": 0.20000000298023224
  },
  "collision": {
