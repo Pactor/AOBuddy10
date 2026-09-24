@@ -175,7 +175,8 @@ namespace AOBuddy
                 () => _dead,
                 () => _support.Resting,    // only while actually sitting: a low HP the rest logic won't sit for must not park the run
                 () => _support.HasPendingCasts || _support.Resting || _support.SecondsSinceCast < 15,
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); });
+                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); },
+                () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); });
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");

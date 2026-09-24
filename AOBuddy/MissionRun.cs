@@ -35,7 +35,7 @@ namespace AOBuddy
         private readonly OverlandController _overland;
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
-        private readonly Func<bool> _dead, _recovering, _buffing, _fighting;
+        private readonly Func<bool> _dead, _recovering, _buffing, _fighting, _needsRecovery;
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight }
@@ -65,10 +65,10 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting)
+                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting;
+            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery;
             _roll.ListArrived += OnList;
         }
 
@@ -254,6 +254,10 @@ namespace AOBuddy
                 case Phase.Fight:
                     if (_fighting()) { _phaseTime = 0; return false; }
                     if (_phaseTime < 3) return false;          // a moment for stragglers and loot
+                    // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
+                    // 6 s after the last blow) instead of walking off into the next room half dead. At most a
+                    // minute, in case the rest logic won't sit for a reason of its own.
+                    if ((_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
                     _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     switch (_fightReturn)
                     {
