@@ -1540,7 +1540,7 @@ namespace AOBuddy
                     {
                         if (vm == null && sell.Count > 0) _ctx.Log("MISSIONRUN: shop: no shop terminal in sight to sell to.");
                         var bank = BankTerminal;
-                        _bankUses = 0; _bankUsedAt = -99; _bankPulls = 0; _bankPulledAt = -99;
+                        _bankUses = 0; _bankUsedAt = -99; _bankPulls = 0; _bankPulledAt = -99; _ctx.Log("MISSIONRUN: shop: bank terminals here: " + string.Join(", ", DynelManager.AllDynels.Where(d => d?.Name != null && d.Name.IndexOf("Bank", StringComparison.OrdinalIgnoreCase) >= 0).Select(d => $"{d.Name} {d.Identity} at ({d.Transform.Position.X:0.0},{d.Transform.Position.Z:0.0})")));
                         ShopNext(ShopStep.OpenBank, $"sold what I could; {Inventory.NumFreeSlots} free slot(s). Opening the bank ({bank}).");
                         return false;
                     }
@@ -1586,9 +1586,13 @@ namespace AOBuddy
                             // :0EE5BBFF, not the Terminal dynel standing there. Earlier tries sent the dynel, or the
                             // captured number with the Terminal type - neither is what the client sends. The dynel
                             // is only the place to stand; the third try falls back to it.
-                            if (_bankUses < 2) bankId = new Identity((IdentityType)0xC73D, 0x0EE5BBFF);
-                            Client.Send(new LookAtMessage { Target = bankId, ReturnInfo = 0 });
-                            GameCommands.UseObject(me, bankId);
+                            // The owner's client numbers its uses (Count 1, 2, 3...; the bank open was 2) and sent no
+                            // LookAt before it; ours always sent 1. Each try is a different variant, logged, until the
+                            // server answers: 1) captured id, count 2; 2) live terminal id, count 2; 3) captured id, open flag.
+                            var captured = new Identity((IdentityType)0xC73D, 0x0EE5BBFF);
+                            if (_bankUses == 0) Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId = captured, Count = 2, Temp4 = 1 });
+                            else if (_bankUses == 1) Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId, Count = 2, Temp4 = 1 });
+                            else Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId = captured, Count = 3, Temp4 = 0 });
                             _bankUses++; _bankUsedAt = _clock;
                             _ctx.Log($"MISSIONRUN: shop: using the bank ({bankId}) from {(bankDyn != null ? me.DistanceFrom(bankDyn) : -1):0.0} m (try {_bankUses}).");
                             return false;
