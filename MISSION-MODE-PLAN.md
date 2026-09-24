@@ -330,3 +330,15 @@ missions may be taken in (empty = any zone).
     the way". Same spot where the server pulled the run back at 07:02. The mission run backs off, walks its clean
     trail back and replans; plain travel could do the same before giving up (owner: "backtrack to the last
     known good position and try again").
+
+11. **Stret West Bank (790): the grid seals the inner town** (probe 2026-09-24, `docs/img/stret790_town.png`:
+    dark = blocked, green = reachable from the Borealis whompa at (1276,2884), pink = open but unreachable,
+    blue = the bot's own walked segments from `nav/790.json`). The town is two walled octagons with a ring road
+    between. The ring road and the country outside connect, but the **whole inner octagon is cut off**. The bot has
+    walked through the inner wall on the NE side, where the grid has no gap: an arch narrower than a 2 m cell,
+    or its overhead stone stamped as wall (StampWalls blocks any cell with geometry at body height). Ideas:
+    open every cell on a walked segment (walked = walkable), and/or skip wall samples with ground clearance
+    above the body.
+    Separately, the door at (1047,2704) that live travel "searched 1500000 cells without reaching": on the plain
+    grid, FindPath from (1283,2891) finds it (26 points, snap 8). So the live failure came from travel's own
+    state (extra blocked cells or its snap), not the map. Probe: scratchpad navprobe (OverlandGrid.Build + IsOpen).
