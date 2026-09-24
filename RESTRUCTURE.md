@@ -46,7 +46,10 @@ dependencies) so Phase 5's risky work happens under the harness.
 
 ## Phase 0 — quick safety fixes (one afternoon, all batchable)
 
-### R0.1 BotApi commands run on the tick thread — [ ]
+### R0.1 BotApi commands run on the tick thread — [x] done 2026-09-24
+Commands enqueue into a `ConcurrentQueue` drained at the top of `OnUpdate` (before the
+`LocalPlayer` null return, so they run even before login); the `API CMD` log line moved there with
+them and carries the executing thread id. BotApi's reply collector is unchanged.
 **What.** `BotApi` (AOBuddy/BotApi.cs) executes `HandleCommand` inline on its listener `Thread`
 while the update thread ticks the same controllers — unsynchronized mutation of controller state.
 **Move.** Enqueue incoming command text into a `ConcurrentQueue<(string, Action<string> reply)>`;
@@ -57,7 +60,10 @@ reply delegate.
 the update thread (e.g. reuse the existing `API CMD` log, add thread id once for proof); no other
 behaviour change.
 
-### R0.2 Kill the CWD-relative paths (bot side) — [ ]
+### R0.2 Kill the CWD-relative paths (bot side) — [x] done 2026-09-24
+`SupportController` now takes `pluginDir`; `buff_owner_noland.txt` resolves under it. A legacy
+CWD-relative file is moved over on first load, and the resolved path is logged once (found or
+absent).
 **What.** `SupportController.OwnerNoLandFile = "buff_owner_noland.txt"` resolves against the
 process working directory; every other bot file is pluginDir-relative. It silently breaks (the
 read is try/catch-swallowed) whenever the host is started with another CWD.
@@ -70,7 +76,11 @@ Main.Init wiring.
 `Build\Test.exe` from `F:\`); a log line names the resolved path.
 **Related.** R7.2 does the same for `ItemData.bin` in the SDK.
 
-### R0.3 Config lists: replace, don't append — [ ]
+### R0.3 Config lists: replace, don't append — [x] done 2026-09-24
+`LoadConfig` deserializes with `ObjectCreationHandling.Replace`. Verified with a scratch harness:
+`[]` -> empty, absent key -> defaults, shorter list replaces (no union), dictionary still reads.
+NOTE the semantic change: a config.json list no longer unions with built-in defaults — hand-edited
+partial lists (e.g. a one-item `KeepItems`) must now be written in full.
 **What.** Newtonsoft merges a config.json list into the C# defaults (documented gotcha at
 Config.cs:46-47), so a user's shorter list silently unions with the built-in one.
 **Move.** In `Main.LoadConfig` (Main.cs:1971), deserialize with
@@ -80,7 +90,11 @@ attribute on the list properties in BuddyConfig). Add a comment removing the got
 existing configs with no such key still get the defaults.
 **Careful.** Dictionaries (`ResearchBonuses`) keep merge semantics — verify they still read fine.
 
-### R0.4 Dead documentation pointers — [ ]
+### R0.4 Dead documentation pointers — [x] done 2026-09-24
+Pointers stripped (MISSION-MODE-PLAN.md x3, Config.cs x3, NavController.cs x1) — the deleted docs
+were removed deliberately in 63d6382 ("carry the code and its data, not the notes"), so they are
+not restored; the plan's rule sentence was already inline. Root-level plan docs were LEFT at the
+root (active hand-off files, no references elsewhere). Grep is clean.
 **What.** References to deleted files: `AOBuddy/CLAUDE.md` (MISSION-MODE-PLAN.md intro),
 `NANO_BUFF_DESIGN.md` (Config.cs comment above AutoBuff), `NAV_DESIGN.md` (NavController.cs
 comment). `docs/` holds only `img/`.
@@ -91,7 +105,9 @@ README.md's layout table.
 **DONE WHEN.** `grep -rn "CLAUDE.md\|NANO_BUFF_DESIGN\|NAV_DESIGN" --include=*.cs --include=*.md .`
 (excluding `Build/`, `.git/`) returns nothing unresolved; README's links work.
 
-### R0.5 Deduplicate the `forward`/`run` and `zone` command bodies — [ ]
+### R0.5 Deduplicate the `forward`/`run` and `zone` command bodies — [x] done 2026-09-24
+Extracted `Main.WorkTheZoneLine(p, reply)`; `zone` keeps its attempt-reset prologue. Replies are
+the same strings as before.
 **What.** Main.cs `case "forward"/"run"` (≈1133-1177) and `case "zone"` (≈1178-1225) are the same
 ~40 lines; only the attempt-reset prologue differs.
 **Move.** Extract `WorkTheZoneLine(LocalPlayer me, Action<string> reply)`; `zone` resets the
@@ -100,7 +116,11 @@ episode counters first, then both call it.
 **DONE WHEN.** `forward` and `zone` produce byte-identical replies to before for: recorded-line
 route case, near-line sweep case, fallback sweep case.
 
-### R0.6 `ctx.TellOwner` — one owner-tell helper — [ ]
+### R0.6 `ctx.TellOwner` — one owner-tell helper — [x] done 2026-09-24
+`BotContext.TellOwner` added; the four Init lambdas, `ResupplyController.Tell`, and Main's four
+direct owner-tells (death/ding/arrived-alone/zone-gave-up) route through it. Left alone: the local
+`Tell` in `SupportController.CheckSupplies` sends by the owner's dynel ID (only works in view) and
+also logs — a different channel, not a duplicate of the by-name tell. Grep: one site, BotContext.
 **What.** The lambda `text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } }`
 is written 4× in Main.Init (≈167-177), plus `ResupplyController.Tell` (≈888) and a local `Tell`
 in SupportController (≈1336).
@@ -253,6 +273,14 @@ capture in the CharDCMove handler Main.cs:247-282); owner lookup + identity (`Fi
 corners and ramps is unchanged (trail counts in `hb` line similar, no `SETPOS IGNORED` storms).
 
 ### R3.2 `ZoneEpisode` (owner-loss / crossing coordinator) — [ ]
+> **FOUND DURING PHASE 0 (2026-09-24):** `Main._ownerLostDist` and `Main._ownerLostMoving` are
+> declared, read by the auto zone-sweep gate (`crossingLikely = _ownerLostDist <= ZoneLossMeters &&
+> _ownerLostMoving`), but **never assigned** (CS0649, pre-existing on HEAD before any restructure
+> work). So `crossingLikely` is always `false` and the whole auto zone-sweep ladder in OnUpdate is
+> unreachable — only the manual `zone`/`forward` commands and nav replay cross lines today. The
+> assignments (meant for the "he just dropped out of view" branch) were evidently lost in an edit.
+> Decide while extracting ZoneEpisode: restore the assignments (re-enables auto sweeps) or delete
+> the dead ladder and the fields. Do NOT silently restore — it is a behaviour change.
 **What moves.** `_zoneAttempts, _zoneEpisodeElapsed, _zoneGaveUp, _zoneSweepTried, _arrivedAlone`
 (+ `ArrivedAloneSeconds`, `ZoneLossMeters`, `ZoneMaxAttempts`, `ZoneEpisodeSeconds`) and the two
 OnUpdate blocks that use them: the auto zone-sweep/give-up ladder (≈755-801) and the

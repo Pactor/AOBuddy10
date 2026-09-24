@@ -109,7 +109,8 @@ namespace AOBuddy
             var replies = new List<string>();
             var gate = new object();
             DateTime last = DateTime.UtcNow, start = DateTime.UtcNow;
-            _log($"API CMD: '{text}'");
+            // The command itself is queued by _command and runs on the update thread (R0.1); the
+            // "API CMD" log line moves there with it. Replies arrive here through the delegate below.
             try { _command(text, r => { lock (gate) { replies.Add(r); last = DateTime.UtcNow; } }); }
             catch (Exception ex) { return new JObject { ["error"] = ex.Message }; }
             while (true)

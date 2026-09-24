@@ -54,5 +54,15 @@ namespace AOBuddy
             Config = config;
             Log = log;
         }
+
+        /// <summary>
+        /// Tell the owner BY NAME (via the chat server), so it reaches him wherever he is, even out of
+        /// view. The ONE helper for saying something to him — controllers take this as their tell
+        /// delegate instead of each hand-rolling the try/SendPrivateMessage/catch (R0.6).
+        /// </summary>
+        public void TellOwner(string text)
+        {
+            try { AOSharp.Clientless.Client.Chat.SendPrivateMessage(Config.Owner, text); } catch { }
+        }
     }
 }

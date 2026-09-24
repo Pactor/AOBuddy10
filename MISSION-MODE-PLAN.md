@@ -6,8 +6,8 @@ buttons, fight nothing, reach the top room, target the person or pick up the ite
 and hand us the reward as proof.
 
 This file is the hand-off for a new session. Every claim below names its evidence. Rules that
-apply throughout are in `AOBuddy/CLAUDE.md`: no guessing, verify on the wire or in `aobuddy.log`,
-one file per system, and never touch follow / combat / travel / zone-crossing as a side effect.
+apply throughout: no guessing, verify on the wire or in `aobuddy.log`, one file per system, and
+never touch follow / combat / travel / zone-crossing as a side effect.
 Mission mode goes in its own file, `AOBuddy/MissionController.cs`, wired through `Main.cs`
 only (a command, a tick call, and a slot in the movement arbiter). It must be off unless the
 owner turns it on, and every step below ends with a test the owner can watch.
@@ -29,8 +29,8 @@ touching any of it.
   in a mission answers from the composed rooms. `tools/navbridge/composemission.py` grades any
   saved packet (`Build/Plugins/AOBuddy/missions/`) against its walk (`nav/<instance>.json`).
 - Floor height is `pool room y + floor * worldHeight`: he walked at 5, 69 and 129.
-- Riding a floor button is wire-proven and works today (`TravelController`, CLAUDE.md
-  "USE-TRAVEL"): the button is a teleport object, used with `GenericCmd Use` on its identity;
+- Riding a floor button is wire-proven and works today (`TravelController`): the button is a
+  teleport object, used with `GenericCmd Use` on its identity;
   the server answers with `N3TeleportMessage` in the same playfield.
 - The terminal's mission list is `QuestAlternative` (0x5C436609), decoded per mission by
   `ClickSaver2026.Core/Missions/MissionListParser.cs`: type code at 0x2C, destination playfield
@@ -158,8 +158,8 @@ the place to start. Steps 3 and 5 each wait on one capture. Step 4 waits on two.
 
 ## Things that are settled elsewhere and must not be reopened
 
-Follow, combat, stand-up, move speed, use-travel and the zone sweep (CLAUDE.md "VERIFIED
-WORKING" and "KNOWN-GOOD BASE"). Mission mode adds a movement source to the arbiter in
+Follow, combat, stand-up, move speed, use-travel and the zone sweep (all wire-verified,
+known-good — do not reopen them). Mission mode adds a movement source to the arbiter in
 `Main.Walk()` below cast/rest and beside travel; it never sends StopAttack, never applies SetPos,
 and hands control back to follow the moment the owner turns it off or is lost.
 

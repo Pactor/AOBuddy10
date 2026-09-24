@@ -160,21 +160,21 @@ namespace AOBuddy
             _combat = new CombatController(_ctx);
             _pets = new PetController(_ctx, pluginDir);
             _travel = new TravelController(_ctx, _move);
-            _support = new SupportController(_ctx, _move);
+            _support = new SupportController(_ctx, _move, pluginDir);
             _resupply = new ResupplyController(_ctx, _move, pluginDir);
             _nav = new NavController(_ctx, pluginDir);
             _mission = new MissionController(_ctx, _move, pluginDir,
-                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
+                _ctx.TellOwner);
             _overland = new OverlandController(_ctx, _move, pluginDir,
-                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
+                _ctx.TellOwner);
 
             _hunt = new HuntController(_ctx, () => _mission.InMission);
             _chewy = new ChewyBuffController(_ctx, _support, _overland, pluginDir,
-                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
+                _ctx.TellOwner);
             Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
             _run = new MissionRun(_ctx, _roll, _mission, _overland, _follow, pluginDir,
-                text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } },
+                _ctx.TellOwner,
                 () => _dead,
                 () => _support.Resting,    // only while actually sitting: a low HP the rest logic won't sit for must not park the run
                 () => _support.HasPendingCasts || _support.Resting || _support.SecondsSinceCast < 15,
@@ -212,11 +212,9 @@ namespace AOBuddy
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
 
             // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
-            _api = new BotApi(_config.BotApiPort, Log, ApiStatus, (text, reply) =>
-            {
-                try { HandleCommand(text, reply); }
-                catch (Exception ex) { Log($"COMMAND EXCEPTION (api): {ex}"); reply("error: " + ex.Message); }
-            });
+            // The handler only ENQUEUES: HandleCommand mutates controller state, so it must run on the
+            // update thread (drained at the top of OnUpdate), not on the API listener thread.
+            _api = new BotApi(_config.BotApiPort, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)));
             _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
@@ -490,7 +488,7 @@ namespace AOBuddy
             string where = $"{Playfield.Name} ({_deathPos?.X ?? 0:0},{_deathPos?.Z ?? 0:0})";
             string next = _run.Active ? "I'll reclaim, go back to the mission terminal, wait out rez sickness there and carry on."
                                       : "Reclaiming; I'll hold at the reclaim point - come to me or send 'come' when you're close.";
-            try { Client.Chat.SendPrivateMessage(_config.Owner, $"I died in {where}. {next}"); } catch { }
+            _ctx.TellOwner($"I died in {where}. {next}");
         }
 
         // While dead: hold still and wait for the reclaim teleport, then recover and tell the owner where.
@@ -532,6 +530,16 @@ namespace AOBuddy
 
         private void OnUpdate(object _, double dt)
         {
+            // API commands run HERE, on the update thread — never on the API listener thread, which
+            // would race the tick for the same controller state (R0.1). They arrive via the queue the
+            // BotApi handshake enqueues into (see Init); replies still travel their own delegate.
+            while (_apiCommands.TryDequeue(out (string Text, Action<string> Reply) cmd))
+            {
+                Log($"API CMD: '{cmd.Text}' (upd #{Environment.CurrentManagedThreadId})");
+                try { HandleCommand(cmd.Text, cmd.Reply); }
+                catch (Exception ex) { Log($"COMMAND EXCEPTION (api): {ex}"); try { cmd.Reply("error: " + ex.Message); } catch { } }
+            }
+
             LocalPlayer me = DynelManager.LocalPlayer;
             if (me == null)
                 return;
@@ -588,7 +596,7 @@ namespace AOBuddy
                     if (_lastLevel > 0 && lvlNow > _lastLevel)
                     {
                         Log($"LEVEL UP: {_lastLevel} -> {lvlNow}");
-                        try { Client.Chat.SendPrivateMessage(_config.Owner, $"Ding! I hit level {lvlNow}."); } catch { }
+                        _ctx.TellOwner($"Ding! I hit level {lvlNow}.");
                     }
                     _lastLevel = lvlNow;
                 }
@@ -679,12 +687,7 @@ namespace AOBuddy
                         _arrivedAlone = 0;   // once per arrival
                         Vector3 ap = me.MovementComponent.Position;
                         Log($"ZONE: arrived in {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) and you are not here after {ArrivedAloneSeconds:0}s.");
-                        try
-                        {
-                            Client.Chat.SendPrivateMessage(_config.Owner,
-                                $"I zoned into {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) but you're not here. Holding.");
-                        }
-                        catch { }
+                        _ctx.TellOwner($"I zoned into {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) but you're not here. Holding.");
                     }
                 }
 
@@ -771,12 +774,7 @@ namespace AOBuddy
                         _zoneGaveUp = true;
                         Vector3 lp = _lastOwnerPos.Value;
                         Log($"ZONE: gave up after {_zoneAttempts} attempt(s) / {_zoneEpisodeElapsed:0}s at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name}.");
-                        try
-                        {
-                            Client.Chat.SendPrivateMessage(_config.Owner,
-                                $"I lost you at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name} and can't get across. Holding here — walk back or send 'zone'.");
-                        }
-                        catch { }
+                        _ctx.TellOwner($"I lost you at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name} and can't get across. Holding here — walk back or send 'zone'.");
                     }
                     else
                     {
@@ -1068,6 +1066,9 @@ namespace AOBuddy
         }
 
         private BotApi _api;
+        // Commands from the local control API, waiting to run on the update thread (R0.1).
+        private readonly System.Collections.Concurrent.ConcurrentQueue<(string Text, Action<string> Reply)> _apiCommands
+            = new System.Collections.Concurrent.ConcurrentQueue<(string, Action<string>)>();
 
         // What the MCP server's bot_status returns: the heartbeat line plus the facts worth reading at a glance.
         private Newtonsoft.Json.Linq.JObject ApiStatus()
@@ -1134,94 +1135,20 @@ namespace AOBuddy
                 case "forward":
                 case "run":
                 {
-                 LocalPlayer p = DynelManager.LocalPlayer;
+                    LocalPlayer p = DynelManager.LocalPlayer;
                     if (p == null) break;
-                    Vector3 mypos = p.MovementComponent.Position;
-
-                    // We RECORDED where this playfield's zone line is — the spot we came in through (the
-                    // entry point) / where the owner crossed out (a transition), in this zone's own coords.
-                    // HEAD THERE on our recorded route and cross. Do NOT sweep along the bot's stale facing
-                    // (that pointed him away from the line and he ran the wrong way). Aim the lookup at the
-                    // owner's last-seen spot so we pick the line he actually used.
-                    Vector3? line = _nav.NearestTransition(_lastOwnerPos ?? mypos) ?? _nav.EntryPoint();
-                    if (line.HasValue)
-                    {
-                        List<Vector3> route = _nav.RouteToward(mypos, line.Value);
-                        if (route != null && route.Count >= 2)
-                        {
-                            _follow.LoadReplay(route, true);   // zone-push: walk the recorded route to the line and cross
-                            _navReplaying = true;
-                            reply($"Heading to the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
-                            break;
-                        }
-                        // On/near the line but can't route to it — sweep across it, AIMED at the line.
-                        Vector3 toLine = line.Value - mypos;
-                        if (toLine.Length() > 0.5f)
-                        {
-                            _follow.StartManualSweep(mypos, toLine);
-                            reply($"Working the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
-                            break;
-                        }
-                    }
-
-                    // No recorded line here: fall back to the owner's TRAVEL direction (same source the
-                    // auto-sweep uses), then, last resort only, the bot's facing.
-                    if (!_follow.StartZoneSweep(mypos))
-                    {
-                        Vector3 dir = (_lastOwnerPos.HasValue && (_lastOwnerPos.Value - mypos).Length() > 0.5f)
-                                        ? _lastOwnerPos.Value - mypos
-                                        : p.MovementComponent.Heading.Forward;
-                        _follow.StartManualSweep(mypos, dir);
-                    }
-                    reply("Working the zone line (sweeping back and forth).");
+                    WorkTheZoneLine(p, reply);
                     break;
                 }
                 case "zone":
                 {
                     LocalPlayer p = DynelManager.LocalPlayer;
                     if (p == null) break;
-                    Vector3 mypos = p.MovementComponent.Position;
                     // He is asking again by hand, so the automatic attempts start over: a fresh budget and
                     // no "gave up" latch, otherwise this command would do nothing after the bot had already
                     // given up on the same spot.
                     _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
-
-                    // We RECORDED where this playfield's zone line is — the spot we came in through (the
-                    // entry point) / where the owner crossed out (a transition), in this zone's own coords.
-                    // HEAD THERE on our recorded route and cross. Do NOT sweep along the bot's stale facing
-                    // (that pointed him away from the line and he ran the wrong way). Aim the lookup at the
-                    // owner's last-seen spot so we pick the line he actually used.
-                    Vector3? line = _nav.NearestTransition(_lastOwnerPos ?? mypos) ?? _nav.EntryPoint();
-                    if (line.HasValue)
-                    {
-                        List<Vector3> route = _nav.RouteToward(mypos, line.Value);
-                        if (route != null && route.Count >= 2)
-                        {
-                            _follow.LoadReplay(route, true);   // zone-push: walk the recorded route to the line and cross
-                            _navReplaying = true;
-                            reply($"Heading to the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
-                            break;
-                        }
-                        // On/near the line but can't route to it — sweep across it, AIMED at the line.
-                        Vector3 toLine = line.Value - mypos;
-                        if (toLine.Length() > 0.5f)
-                        {
-                            _follow.StartManualSweep(mypos, toLine);
-                            reply($"Working the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
-                            break;
-                        }
-                    }
-
-                    // No recorded line here: fall back to the owner's TRAVEL direction (same source the
-                    // auto-sweep uses), then, last resort only, the bot's facing.
-                    if (!_follow.StartZoneSweep(mypos))
-                    {
-                        Vector3 dir = (_lastOwnerPos.HasValue && (_lastOwnerPos.Value - mypos).Length() > 0.5f)
-                                        ? _lastOwnerPos.Value - mypos
-                                        : p.MovementComponent.Heading.Forward;
-                        _follow.StartManualSweep(mypos, dir);
-                    }
-                    reply("Working the zone line (sweeping back and forth).");
+                    WorkTheZoneLine(p, reply);
                     break;
                 }
                 case "stand": DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.LeaveSit); reply("Standing up."); break;
@@ -1520,6 +1447,49 @@ namespace AOBuddy
                     break;
                 default: reply($"Unknown command '{cmd}'. Try 'help'."); break;
             }
+        }
+
+        // FORWARD/RUN and ZONE share this body (R0.5): head for a RECORDED zone line — the spot we came
+        // in through (the entry point) or where the owner crossed out (a transition), aimed at his
+        // last-seen spot so we pick the line he actually used — on our recorded route, and cross it.
+        // Do NOT sweep along the bot's stale facing (that once pointed him away from the line and he
+        // ran the wrong way). On/near the line but unable to route to it, sweep ACROSS it, aimed at the
+        // line. With nothing recorded, sweep along the owner's TRAVEL direction (the same source the
+        // auto-sweep uses), and last resort only the bot's facing.
+        private void WorkTheZoneLine(LocalPlayer p, Action<string> reply)
+        {
+            Vector3 mypos = p.MovementComponent.Position;
+            Vector3? line = _nav.NearestTransition(_lastOwnerPos ?? mypos) ?? _nav.EntryPoint();
+            if (line.HasValue)
+            {
+                List<Vector3> route = _nav.RouteToward(mypos, line.Value);
+                if (route != null && route.Count >= 2)
+                {
+                    _follow.LoadReplay(route, true);   // zone-push: walk the recorded route to the line and cross
+                    _navReplaying = true;
+                    reply($"Heading to the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
+                    return;
+                }
+                // On/near the line but can't route to it — sweep across it, AIMED at the line.
+                Vector3 toLine = line.Value - mypos;
+                if (toLine.Length() > 0.5f)
+                {
+                    _follow.StartManualSweep(mypos, toLine);
+                    reply($"Working the zone line at ({line.Value.X:0},{line.Value.Y:0},{line.Value.Z:0}).");
+                    return;
+                }
+            }
+
+            // No recorded line here: fall back to the owner's TRAVEL direction, then, last resort only,
+            // the bot's facing.
+            if (!_follow.StartZoneSweep(mypos))
+            {
+                Vector3 dir = (_lastOwnerPos.HasValue && (_lastOwnerPos.Value - mypos).Length() > 0.5f)
+                                ? _lastOwnerPos.Value - mypos
+                                : p.MovementComponent.Heading.Forward;
+                _follow.StartManualSweep(mypos, dir);
+            }
+            reply("Working the zone line (sweeping back and forth).");
         }
 
         private void QueueBuffs(string which, Action<string> reply)
@@ -1975,7 +1945,15 @@ namespace AOBuddy
             if (!File.Exists(path)) path = Path.Combine(pluginDir, "config.example.json");
             if (File.Exists(path))
             {
-                try { _config = JsonConvert.DeserializeObject<BuddyConfig>(File.ReadAllText(path)) ?? new BuddyConfig(); Logger.Information($"Loaded config from {path}"); }
+                try
+                {
+                    // A list in config.json REPLACES the C# defaults. Newtonsoft's default would POPULATE
+                    // the existing default list (append), so a user's shorter list silently unioned with
+                    // the built-ins and duplicates accumulated; Replace makes "what you write is the list".
+                    var settings = new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace };
+                    _config = JsonConvert.DeserializeObject<BuddyConfig>(File.ReadAllText(path), settings) ?? new BuddyConfig();
+                    Logger.Information($"Loaded config from {path}");
+                }
                 catch (Exception ex) { Logger.Error($"Failed to read {path}: {ex.Message}; using defaults."); }
             }
             else Logger.Warning($"No config.json in {pluginDir}; using defaults (owner unset).");
