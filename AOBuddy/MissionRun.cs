@@ -962,7 +962,7 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
-            if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
@@ -1380,11 +1380,38 @@ namespace AOBuddy
 
         private void ShopNext(ShopStep s, string log) { _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log); }
 
+        private int _shopPrevPf = -1;
+        private string FairTradePath => Path.Combine(_pluginDir, "fairtrade.json");
+        private Vector3? LoadFairTradeLanding()
+        {
+            try
+            {
+                if (!File.Exists(FairTradePath)) return null;
+                var o = JObject.Parse(File.ReadAllText(FairTradePath));
+                return new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
+            }
+            catch { return null; }
+        }
+        private void SaveFairTradeLanding(Vector3 v)
+        {
+            try { File.WriteAllText(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString()); } catch { }
+        }
+
         private bool ShopTick(LocalPlayer me)
         {
             double t = _clock - _shopStepAt;
             int pf = (int)Playfield.ModelId;
-            if (pf == FairTradePf && !_shopArrival.HasValue) { _shopArrival = me.Transform.Position; _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0})."); }
+            if (pf == FairTradePf && !_shopArrival.HasValue)
+            {
+                // Zoned in just now (the tick before was elsewhere): that's the door's landing spot - keep it. Logged in
+                // inside (a restart, 13:25 2026-09-24): where he stands is no door; use the landing spot kept from before.
+                bool zonedIn = _shopPrevPf > 0 && _shopPrevPf != FairTradePf;
+                var kept = LoadFairTradeLanding();
+                _shopArrival = zonedIn || !kept.HasValue ? me.Transform.Position : kept.Value;
+                if (zonedIn) SaveFairTradeLanding(_shopArrival.Value);
+                _ctx.Log($"MISSIONRUN: shop: in Fair Trade at ({me.Transform.Position.X:0.0},{me.Transform.Position.Z:0.0}); the way out is at ({_shopArrival.Value.X:0.0},{_shopArrival.Value.Z:0.0}){(zonedIn ? "" : " (kept from an earlier visit)")}.");
+            }
+            _shopPrevPf = pf;
             switch (_shopStep)
             {
                 case ShopStep.Travel:
@@ -1799,6 +1826,13 @@ namespace AOBuddy
         // travelto, once per leg, through the command it already has; retried twice on failure.
         private bool Travel(LocalPlayer me, int pf, Vector3 goal, string what)
         {
+            // Inside Fair Trade the zone data has no ways out: leave by the shop's own exit (its landing spot) first.
+            if ((int)Playfield.ModelId == FairTradePf && _phase != Phase.Shop)
+            {
+                _shopStep = ShopStep.Exit; _shopStepAt = _clock;
+                Enter(Phase.Shop, "out of Fair Trade first");
+                return false;
+            }
             _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
             if (_overland.Active)
             {
