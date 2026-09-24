@@ -1396,9 +1396,9 @@ namespace AOBuddy
             else _warnedRecharger = false;
         }
 
-        // Best (highest-QL) stim/recharger the bot can actually USE. Pools main inventory AND open bags.
-        // All items in the main inventory AND open bags (one place so every heal query pools the same set).
-        private static List<Item> AllInvItems()
+        // All items in the main inventory AND open bags — THE one pooling query (R1.8), so every
+        // inventory question (heal items, resupply stock) counts the same set.
+        public static List<Item> AllInvItems()
         {
             var all = new List<Item>();
             if (Inventory.Items != null) all.AddRange(Inventory.Items);

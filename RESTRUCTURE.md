@@ -139,60 +139,60 @@ The same walker primitives are hand-rolled per controller. Consolidate them onto
 constants** — where callers disagree (e.g. stuck timeouts), the shared helper takes them as
 parameters. Do not "unify" values; that is a behaviour change (ground rule 1).
 
-### R1.1 `Flat()` horizontal distance — [ ]
-6 copies: MissionRun.cs≈1923, MissionController.cs≈965, HuntController.cs≈210,
-OverlandController.cs≈595, Zoning.cs≈487, ChewyBuffs.cs≈711 (2-arg variant).
-One helper (suggest `Movement.Flat(Vector3 a, Vector3 b)`); callers delegate.
+### R1.1 `Flat()` horizontal distance — [x] done 2026-09-24
+`Movement.Flat(a, b)` + a `(a, x, z)` coordinate overload. The five float copies and ChewyBuffs'
+coordinate variant are gone. Zoning's private **double** Flat is KEPT on purpose: different return
+type and precision domain (route costs in the planner); folding it into the float helper would
+change comparison precision for no gain.
 
-### R1.2 `MoveSpeed(me)` wrapper — [ ]
-3 copies that just call `_ctx.RunVelocity(me)`: MissionController.cs≈975,
-OverlandController.cs≈506, FollowController.cs≈315. Delete the wrappers, call `_ctx.RunVelocity`
-directly (or one shared extension).
+### R1.2 `MoveSpeed(me)` wrapper — [x] done 2026-09-24
+Two wrappers existed (MissionController, FollowController) — OverlandController already called
+`_ctx.RunVelocity` directly (the survey's third "copy" was a direct call). Both wrappers deleted;
+call sites call `_ctx.RunVelocity(me)`.
 
-### R1.3 `Hold(me)` — [ ]
-`if (_move.Moving) _move.Stop(...)` copied in MissionController.cs≈546, OverlandController.cs≈542,
-FollowController.cs≈576. Move onto `Movement.StopIfMoving(LocalPlayer, int sendIntervalMs)`;
-each caller passes its current send-interval argument unchanged.
+### R1.3 `Hold(me)` — [x] done 2026-09-24
+`Movement.Hold(me, sendIntervalMs)` added beside Stop; all ~27 call sites in Follow/Mission/Overland
+rewritten; the three private copies deleted.
 
-### R1.4 Step-toward-waypoint primitive — [ ]
-The `dir = (wp - pos).Normalize(); step = min(speed*dt, MaxStep, dist); _move.Advance(...)` block:
-MissionController.WalkTick≈929-936, OverlandController.WalkTick≈505-511, FollowController.Step≈567-573,
-TravelController.Tick≈123-128, ResupplyController.ApproachTick≈369-372.
-One `Movement.StepToward(...)` returning the remaining distance. The five bodies differ only in
-speed source and cap arguments — parameterize, don't merge values.
+### R1.4 Step-toward-waypoint primitive — [x] done 2026-09-24, scope adjusted
+The five bodies differ in MORE than speed source: Y handling (grid sampling vs FloorY vs none),
+heading policy (turn beats vs SafeLook), run flag, walk-state strings. A single StepToward would
+need flag blindness — worse than the duplication. Extracted the genuinely shared SAFETY CLAMP as
+`Movement.CappedStep(speed, dt, maxStep, remain)`; every walker's step now goes through it.
+FollowController.StackTick's plain speed cap and MissionController's door-push cap stay inline
+(no remaining-distance term — different animal).
 
-### R1.5 Stuck detector — [ ]
-`if (d < _bestDist - 0.3f) {...} else _stuckTime += dt; if (_stuckTime > N) skip` copied 4×:
-MissionController≈914-927, OverlandController≈484-501, FollowController≈605-611,
-ResupplyController≈360-366. Extract a small `StuckWatch` struct (Reset/Update returns stuck?) on
-Movement; each site keeps its own instance and threshold.
+### R1.5 Stuck detector — [x] done 2026-09-24, scope adjusted
+Reading the four "copies" showed TWO are look-alikes with different algorithms, not parameters:
+FollowController's replay watch compares per-FRAME deltas (`_lastCrumbDist` tracks last, not best)
+and ResupplyController's uses absolute phase time. Forcing them into one helper would change
+behaviour. `Movement.StuckWatch` (best-distance form) migrates the two verbatim-identical sites
+(MissionController 0.3m/3s, OverlandController 0.3m/StuckSeconds); the other two stay, documented
+in StuckWatch's doc comment. They can join after R2.1 unifies clocks.
 
-### R1.6 Use-object packet helper — [ ]
-Hand-rolled `GenericCmdMessage { Command = Use, Temp4 = 1 }` in 8 sites: OverlandController≈535,
-TravelController≈110, ResupplyController≈739, MissionController≈479, MissionRun≈917/1225/1258/1265/1295.
-One `GameCommands.Use(Identity target)` (new small static, or on Movement) — send exactly the same
-bytes as today (verify one against a capture if unsure).
+### R1.6 Use-object packet helper — [x] done 2026-09-24
+`GameCommands.UseObject` (world object, Temp4=1) and `GameCommands.OpenContainer` (bag/container
+open, Temp4=0) in a new GameCommands.cs. All NINE sites migrated — including MissionRoll's terminal
+Use, which the survey missed. Exactly one definition remains.
 
-### R1.7 `IsMob` / `IsHuntable` share their flag masks — [ ]
-MissionRun.IsMob≈1893 and HuntController.IsHuntable≈171 encode the same dynel-flag masks
-(0x200000 / 0x800000 / 0x8000000, Side==3) with different extra conditions. Keep both predicates
-(they answer different questions) but move the mask constants + shared mask test into one place
-(e.g. `DynelFlags.IsMobLike(SimpleChar)` in a small shared file) with a comment citing the capture
-that settled each mask.
+### R1.7 `IsMob` / `IsHuntable` share their flag masks — [x] done 2026-09-24
+`MobFilter` (new file): the three flag constants, SideMonster, and `IsFightableKind` (kind test
+only). IsMob and IsHuntable keep their own extra conditions on top; HuntController's Why() strings
+read the shared constants.
 
-### R1.8 Inventory pooling over main + open bags — [ ]
-3 copies: SupportController.AllInvItems≈1383, ResupplyController.Have≈800, MissionRun.Bags≈1146.
-One `InventoryPool.AllItems()` / `.Bags()` helper (suggest on BotContext or a small static beside
-Config.cs).
+### R1.8 Inventory pooling over main + open bags — [x] done 2026-09-24
+`SupportController.AllInvItems()` is now public and THE pooling query; ResupplyController.Have uses
+it. MissionRun.Bags() is NOT a duplicate — it detects the bag items themselves (slot/identity type
+filter, no container pooling) and stays.
 
-### R1.9 Nav-grid async load — [ ]
-Verbatim duplicate: MissionRun.HikeGrid≈798-817 vs OverlandController.EnsureNav≈569-593
-(`Task.Run(() => AOBuddyNav.Load + OverlandGrid/FloorGrid.Build)`). Extract into one loader
-(e.g. a static on AOBuddyNav or OverlandController) both call. This is also the seam Phase 5's
-"overland as sole route executor" needs.
+### R1.9 Nav-grid async load — [x] done 2026-09-24
+`NavGridCache` (new file): one off-thread loader, one per consumer (OverlandController travel,
+MissionRun hikes). Behaviour note: MissionRun's hike now LOGS nav-load failures (tag MISSIONRUN)
+where it used to fail silently — a diagnostic addition, Overland's line is byte-identical.
 
-### R1.10 `ZoneRouteOptions` construction — [ ]
-Built 3×: MissionRun≈307, ≈824, OverlandController≈192. One factory next to the type.
+### R1.10 `ZoneRouteOptions` construction — [x] done 2026-09-24
+`Zoning.RouteOptions(me)` factory carries the shared Stat reader; the three sites keep their own
+Filter (deliberately different exit policies) and MissionRun's hike still sets UseScotty=false.
 
 **Phase 1 DONE WHEN.** `dotnet build` clean; grep for each duplicated signature finds one
 definition; a live follow + one mission run produce logs indistinguishable in shape from a

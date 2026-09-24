@@ -49,8 +49,7 @@ namespace AOBuddy
         // walking
         private readonly List<Vector3> _path = new List<Vector3>();
         private int _pathIndex;
-        private float _bestDist;
-        private double _stuckTime;
+        private Movement.StuckWatch _stuck;
 
         // zone detection
         private int _lastPf;
@@ -103,7 +102,7 @@ namespace AOBuddy
             float raw = RawFloorY(serverPos.X, serverPos.Y, serverPos.Z);
             float bias = float.IsNaN(raw) ? 0f : serverPos.Y - raw;
             if (Math.Abs(bias) > 4f) bias = 0f;
-            if (Math.Abs(bias - _yBias) > 0.3f || Flat(local, serverPos) > 2f)
+            if (Math.Abs(bias - _yBias) > 0.3f || Movement.Flat(local, serverPos) > 2f)
                 _ctx.Log($"OVERLAND: server put me at ({serverPos.X:0},{serverPos.Y:0.0},{serverPos.Z:0}), {Vector3.Distance(local, serverPos):0.0} m from where I thought; its floor is {bias:+0.0;-0.0} m off our data here.");
             _yBias = bias;
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
@@ -189,13 +188,13 @@ namespace AOBuddy
         // Planning
         // =====================================================================================================
 
-        private ZoneRouteOptions Options(LocalPlayer me) => new ZoneRouteOptions
+        // An object exit we cannot name can't be used; one that failed three times this trip is not tried again.
+        private ZoneRouteOptions Options(LocalPlayer me)
         {
-            Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
-            UnknownPasses = true,
-            // An object exit we cannot name can't be used; one that failed three times this trip is not tried again.
-            Filter = e => !_failed.Contains(e) && (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0),
-        };
+            var o = Zoning.RouteOptions(me);
+            o.Filter = e => !_failed.Contains(e) && (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0);
+            return o;
+        }
 
         private bool Plan(LocalPlayer me, out string summary)
         {
@@ -244,7 +243,7 @@ namespace AOBuddy
             Vector3 pos = me.MovementComponent.Position;
             _path.Clear(); _pathIndex = 0;
             if (_leg.Exit?.Kind == ExitKind.Scotty) { Enter(Phase.Use, "telling Scotty"); return; }
-            if (!EnsureNav()) { Hold(me); Enter(Phase.Loading, "loading this playfield's floor data"); return; }
+            if (!EnsureNav()) { _move.Hold(me, _ctx.Config.SendIntervalMs); Enter(Phase.Loading, "loading this playfield's floor data"); return; }
 
             // Where this leg walks to, and what comes after the routed part.
             Vector3 goal;
@@ -288,10 +287,10 @@ namespace AOBuddy
                     if (e.Kind == ExitKind.ZoneLine && e != _leg.Exit) _grid.CellsAlong(e.A, e.B, 2f, extra);
                 float reach = _leg.Exit == null ? GoalRange : _leg.Exit.Kind == ExitKind.ZoneLine ? 1.5f : IsPad(_leg.Exit) ? PadReach : UseReach;
                 var route = _grid.FindPath(from, goal, extra, 8f, reach, out string why);
-                if (route == null && Flat(from, goal) <= 40f)
+                if (route == null && Movement.Flat(from, goal) <= 40f)
                 {
                     // Close by, the data is more likely wrong than the way blocked (a gap in its walls, a missing surface).
-                    _ctx.Log($"OVERLAND: no route to {what} on the data ({why}); it's {Flat(from, goal):0} m, walking straight.");
+                    _ctx.Log($"OVERLAND: no route to {what} on the data ({why}); it's {Movement.Flat(from, goal):0} m, walking straight.");
                     route = new List<Vector3> { from, goal };
                 }
                 if (route == null)
@@ -319,7 +318,7 @@ namespace AOBuddy
                 if (len2 < 0.01f) continue;
                 float t = Math.Max(0f, Math.Min(1f, ((pos.X - e.A.X) * dx + (pos.Z - e.A.Z) * dz) / len2));
                 float cx = e.A.X + dx * t, cz = e.A.Z + dz * t;
-                if (Flat(pos, new Vector3(cx, 0, cz)) > ClearOfLine) continue;
+                if (Movement.Flat(pos, new Vector3(cx, 0, cz)) > ClearOfLine) continue;
                 float len = (float)Math.Sqrt(len2), nx = -dz / len, nz = dx / len;   // (-dz, dx) points into the playfield (Zoning)
                 var p = new Vector3(cx + nx * ClearOfLine, pos.Y, cz + nz * ClearOfLine);
                 _ctx.Log($"OVERLAND: on the zone line to {Zoning.Name(e.ToPf)}, stepping off it to ({p.X:0},{p.Z:0}).");
@@ -331,7 +330,7 @@ namespace AOBuddy
         private static float Length(List<Vector3> pts)
         {
             float l = 0;
-            for (int i = 1; i < pts.Count; i++) l += Flat(pts[i - 1], pts[i]);
+            for (int i = 1; i < pts.Count; i++) l += Movement.Flat(pts[i - 1], pts[i]);
             return l;
         }
 
@@ -346,7 +345,7 @@ namespace AOBuddy
         private void Enter(Phase p, string why)
         {
             if (p != _phase || why != _why) _ctx.Log($"OVERLAND: {_phase} -> {p}: {why}");
-            _phase = p; _why = why; _phaseTime = 0; _stuckTime = 0; _bestDist = float.MaxValue;
+            _phase = p; _why = why; _phaseTime = 0; _stuck.Reset();
         }
 
         private void Fail(string why)
@@ -389,7 +388,7 @@ namespace AOBuddy
             switch (_phase)
             {
                 case Phase.Arrived:
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (_phaseTime < 1.0 || Now < _rideUntil) return true;
                     if (_leg.Exit != null && pf == _leg.Exit.ToPf)
                     {
@@ -401,7 +400,7 @@ namespace AOBuddy
                     return true;
 
                 case Phase.Loading:
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (EnsureNav()) BeginLeg(me);
                     return true;
 
@@ -411,13 +410,13 @@ namespace AOBuddy
 
                 case Phase.Settle:
                     // Stand still a moment so the server has our stop before judging the use from where it has us.
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (_phaseTime >= 0.6) Enter(Phase.Use, "using it");
                     return true;
 
                 case Phase.Use:
                 {
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     _tries++;
                     var e = _leg.Exit;
                     if (e.Kind == ExitKind.Scotty)
@@ -439,7 +438,7 @@ namespace AOBuddy
 
                 case Phase.AwaitZone:
                 {
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     var e = _leg.Exit;
                     // A lift beam carries us up in everyone else's view, but the server may tell the bot nothing about it
                     // (2026-09-24 01:20: no teleport, no SetPos, no move; the owner saw it arrive on the next level). The
@@ -470,20 +469,18 @@ namespace AOBuddy
             Vector3 pos = me.MovementComponent.Position;
             if (_pathIndex >= _path.Count) { ArriveWalk(me); return; }
             Vector3 wp = _path[_pathIndex];
-            float d = Flat(pos, wp);
+            float d = Movement.Flat(pos, wp);
             bool last = _pathIndex == _path.Count - 1;
             float arrive = !last || _leg.Exit?.Kind == ExitKind.ZoneLine || IsPad(_leg.Exit) ? 0.5f : _leg.Exit == null ? GoalRange : ObjectRange;
             if (d <= arrive)
             {
                 _pathIndex++;
-                _bestDist = float.MaxValue; _stuckTime = 0;
+                _stuck.Reset();
                 if (_pathIndex >= _path.Count) { ArriveWalk(me); return; }
-                wp = _path[_pathIndex]; d = Flat(pos, wp);
+                wp = _path[_pathIndex]; d = Movement.Flat(pos, wp);
             }
 
-            if (d < _bestDist - 0.3f) { _bestDist = d; _stuckTime = 0; }
-            else _stuckTime += dt;
-            if (_stuckTime > StuckSeconds)
+            if (_stuck.Tick(d, dt, 0.3f, StuckSeconds))
             {
                 // Something the data does not show is in the way (a gap in the walls, a crate, a fence). Block the
                 // few metres ahead and route around them; after MaxStuck of those, say where we are.
@@ -496,15 +493,14 @@ namespace AOBuddy
                 Vector3 ahead = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
                 _grid.CellsAlong(new Vector3(pos.X + ahead.X, 0, pos.Z + ahead.Z), new Vector3(pos.X + ahead.X * 3, 0, pos.Z + ahead.Z * 3), 1f, _stuckCells);
                 _ctx.Log($"OVERLAND: no progress toward ({wp.X:0},{wp.Z:0}) for {StuckSeconds:0} s at ({pos.X:0},{pos.Z:0}), routing round it ({_stuckCount}/{MaxStuck}).");
-                Hold(me);
+                _move.Hold(me, _ctx.Config.SendIntervalMs);
                 BeginLeg(me);
                 return;
             }
 
             if (d < 0.01f) return;
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
-            float step = Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep);
-            step = Math.Min(step, d);
+            float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             float nx = pos.X + dir.X * step, nz = pos.Z + dir.Z * step;
             Vector3 next = new Vector3(nx, FloorY(nx, pos.Y, nz), nz);
             _ctx.WalkState = $"overland leg {_legNo}/{_legCount} wp {_pathIndex + 1}/{_path.Count} d={d:0}";
@@ -514,7 +510,7 @@ namespace AOBuddy
 
         private void ArriveWalk(LocalPlayer me)
         {
-            Hold(me);
+            _move.Hold(me, _ctx.Config.SendIntervalMs);
             if (_leg.Exit == null) { Done(me); return; }
             if (_leg.Exit.Kind == ExitKind.ZoneLine) { _tries++; Enter(Phase.AwaitZone, "over the line, waiting for the zone"); return; }
             if (IsPad(_leg.Exit))
@@ -535,13 +531,8 @@ namespace AOBuddy
         private void SendUse(LocalPlayer me, ZoneExit e)
         {
             var id = new Identity((IdentityType)e.ObjType, e.ObjInstance);
-            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = id, Count = 1, Temp4 = 1 });
+            GameCommands.UseObject(me, id);
             _ctx.Log($"OVERLAND: used {id} at ({e.A.X:0},{e.A.Y:0},{e.A.Z:0}) (try {_tries}).");
-        }
-
-        private void Hold(LocalPlayer me)
-        {
-            if (_move.Moving) _move.Stop(me, _ctx.Config.SendIntervalMs);
         }
 
         // The floor under (x, z) nearest our height, from the client's data for this playfield; our own height when there is none.
@@ -561,37 +552,21 @@ namespace AOBuddy
             return double.IsNaN(h) ? float.NaN : (float)h;
         }
 
-        // The playfield's floor data and walkable grid, loaded once per playfield, off the update thread: Lush Fields'
-        // grid took 6.3 s and froze the whole bot while it built (log 2026-09-24 01:36). True once it is ready.
-        private System.Threading.Tasks.Task<(AOBuddyNav, IWalkGrid)> _navTask;
-        private int _navTaskPf = -1;
+        // The playfield's floor data and walkable grid, built off the update thread by the shared
+        // NavGridCache (Lush Fields' grid took 6.3 s and froze the whole bot while it built; log
+        // 2026-09-24 01:36). True once it is ready.
+        private readonly NavGridCache _nav = new NavGridCache();
 
         private bool EnsureNav()
         {
             int pf = (int)Playfield.ModelId;
-            if (pf == _groundPf) return true;
-            if (_navTask == null || _navTaskPf != pf)
+            if (!_nav.Request(pf, _pluginDir, _ctx.Log, "OVERLAND")) return false;
+            if (_groundPf != pf)
             {
-                string dir = _pluginDir;
-                var log = _ctx.Log;
-                _navTaskPf = pf;
-                _navTask = System.Threading.Tasks.Task.Run(() =>
-                {
-                    var nav = AOBuddyNav.Load(dir, pf);
-                    IWalkGrid grid = (IWalkGrid)OverlandGrid.Build(dir, pf, nav, log) ?? FloorGrid.Build(dir, pf, nav, log);
-                    return (nav, grid);
-                });
-                return false;
+                _groundPf = pf; _yBias = 0f;
+                _ground = _nav.Nav; _grid = _nav.Grid;
             }
-            if (!_navTask.IsCompleted) return false;
-            var done = _navTask;
-            _navTask = null;
-            _groundPf = pf; _yBias = 0f; _ground = null; _grid = null;
-            if (done.IsFaulted) _ctx.Log($"OVERLAND: no nav data for pf {pf}: {done.Exception?.GetBaseException().Message}");
-            else (_ground, _grid) = done.Result;
             return true;
         }
-
-        private static float Flat(Vector3 a, Vector3 b) { float dx = a.X - b.X, dz = a.Z - b.Z; return (float)Math.Sqrt(dx * dx + dz * dz); }
     }
 }

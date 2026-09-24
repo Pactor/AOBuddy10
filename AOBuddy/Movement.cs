@@ -31,6 +31,19 @@ namespace AOBuddy
             return flat.Magnitude > 0.001f ? Quaternion.LookRotation(flat.Normalize(), Up) : fallback;
         }
 
+        // Horizontal (X/Z) distance — walkers steer on the ground plane; the Y gap to a goal (a ramp, a
+        // lift, a stacked floor) is not distance to walk. THE one definition (R1.1): five private copies
+        // used to live across the walkers and could drift apart.
+        public static float Flat(Vector3 a, Vector3 b) { float dx = a.X - b.X, dz = a.Z - b.Z; return (float)Math.Sqrt(dx * dx + dz * dz); }
+
+        // The same measure against bare coordinates (a configured spot, not a dynel position).
+        public static float Flat(Vector3 a, float x, float z) { float dx = a.X - x, dz = a.Z - z; return (float)Math.Sqrt(dx * dx + dz * dz); }
+
+        // The capped step EVERY walker takes (R1.4): never more than speed*dt, never more than MaxStep
+        // (a lag spike must not warp us across the world), never more than what remains to the goal.
+        public static float CappedStep(float speed, double dt, float maxStep, float remain)
+            => Math.Min(Math.Min((float)(speed * dt), maxStep), remain);
+
         // ---- Heading math: YAW ONLY, and NEVER Quaternion.Slerp -------------------
         // A character heading in AO is a pure yaw (LookRotation of a flattened direction returns a
         // quaternion with X=Z=0), so every turn is a scalar angle problem. We do it in yaw degrees and
@@ -294,6 +307,35 @@ namespace AOBuddy
             {
                 SendMove(me, MovementAction.ForwardStop, sendIntervalMs);
                 _moving = false;
+            }
+        }
+
+        /// <summary>Halt the body if it was moving — the "hold position" every walker issues on a frame
+        /// with nowhere to go this tick. Guarded so holding every frame sends no ForwardStop spam (R1.3).</summary>
+        public void Hold(LocalPlayer me, int sendIntervalMs)
+        {
+            if (_moving) Stop(me, sendIntervalMs);
+        }
+
+        /// <summary>
+        /// Watch for "not making progress toward a target" (R1.5): remembers the CLOSEST we have been,
+        /// and accumulates time whenever no new closest appears. Reset on progress and on retarget.
+        /// Each walker keeps its OWN instance, margin and threshold — those are behaviour, not plumbing.
+        /// Two look-alikes are deliberately NOT this: FollowController's replay walker compares
+        /// per-frame deltas (not best-ever), and ResupplyController's watch uses absolute phase time.
+        /// </summary>
+        public struct StuckWatch
+        {
+            private float _best;
+            private double _stuckFor;
+            public void Reset() { _best = float.MaxValue; _stuckFor = 0; }
+            /// <summary>One distance observation. True when stuck longer than stuckSec. margin = how much
+            /// closer than the best-ever distance still counts as progress.</summary>
+            public bool Tick(float dist, double dt, float margin, double stuckSec)
+            {
+                if (dist < _best - margin) { _best = dist; _stuckFor = 0; }
+                else _stuckFor += dt;
+                return _stuckFor > stuckSec;
             }
         }
 

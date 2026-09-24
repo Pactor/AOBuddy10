@@ -367,7 +367,7 @@ namespace AOBuddy
             }
 
             Vector3 dir = (goal - pos).Normalize();
-            float step = Math.Min(Math.Min((float)(WalkSpeed * dt), _ctx.Config.MaxStep), dist - _ctx.Config.ResupplyUseRange * 0.5f);
+            float step = Movement.CappedStep(WalkSpeed, dt, _ctx.Config.MaxStep, dist - _ctx.Config.ResupplyUseRange * 0.5f);
             _ctx.WalkState = $"resupply(walk) d={dist:0.0} -> '{_machineName}'";
             _move.Advance(me, pos + dir * Math.Max(step, 0f), Movement.SafeLook(dir, me.MovementComponent.Heading), run: false, dt, _ctx.Config.SendIntervalMs);
         }
@@ -736,14 +736,7 @@ namespace AOBuddy
         {
             _stock = null; _lastFeedback = null;
             _tradeDone = _tradeDeclined = false;
-            Client.Send(new GenericCmdMessage
-            {
-                Action = GenericCmdAction.Use,
-                User = me.Identity,
-                Target = _machine,
-                Count = 1,
-                Temp4 = 1,
-            });
+            GameCommands.UseObject(me, _machine);
             _ctx.Log($"RESUPPLY: opening '{_machineName}' ({_machine}).");
             SetPhase(Phase.Opening);
         }
@@ -798,11 +791,7 @@ namespace AOBuddy
         private int Have(Supply s)
         {
             LocalPlayer me = DynelManager.LocalPlayer;
-            var items = new List<Item>();
-            if (Inventory.Items != null) items.AddRange(Inventory.Items);
-            if (Inventory.Containers != null)
-                foreach (var c in Inventory.Containers)
-                    if (c?.Items != null) items.AddRange(c.Items);
+            List<Item> items = SupportController.AllInvItems();
             if (s == Supply.Container) return items.Count(it => Is(it, s));
             return items.Where(it => Is(it, s) && SupportController.MeetsHealReqs(it, me)).Sum(it => Math.Max(1, it.Count));
         }

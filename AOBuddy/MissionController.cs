@@ -57,8 +57,7 @@ namespace AOBuddy
         private Identity? _pendingButton;
         private Vector3 _pressedFrom;
         private double _phaseTime;               // seconds in the current phase
-        private double _stuckTime;
-        private float _bestDist;
+        private Movement.StuckWatch _stuck;
         private int _replans, _presses, _acts;
         private Vector3? _lastCorrection;        // where the server last snapped us to during a walk
         private readonly HashSet<(int, int, int)> _blocked = new HashSet<(int, int, int)>();
@@ -370,7 +369,7 @@ namespace AOBuddy
         {
             if (!Active || me == null) return false;
             Vector3 local = me.MovementComponent.Position;
-            float gap = Flat(local, serverPos);
+            float gap = Movement.Flat(local, serverPos);
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
             _move.Reset();
             _ctx.Log($"MISSION: server put me at ({serverPos.X:0},{serverPos.Y:0},{serverPos.Z:0}), {gap:0.0} m from where I thought I was; planning from there.");
@@ -379,7 +378,7 @@ namespace AOBuddy
                 // Snapped back to the same spot again: that is a wall the grid does not show, right ahead of
                 // where the server holds us. Block the cells we kept trying to walk into, so the next route
                 // takes another line instead of the same one (the first time can be plain lag, so not then).
-                if (_lastCorrection.HasValue && Flat(_lastCorrection.Value, serverPos) < 1.5f && gap > 0.5f)
+                if (_lastCorrection.HasValue && Movement.Flat(_lastCorrection.Value, serverPos) < 1.5f && gap > 0.5f)
                 {
                     var here = _grid.CellOf(serverPos);
                     float dx = (local.X - serverPos.X) / gap, dz = (local.Z - serverPos.Z) / gap;
@@ -403,7 +402,7 @@ namespace AOBuddy
         private void Enter(Phase p, string why)
         {
             if (p != _phase || why != _why) _ctx.Log($"MISSION: {_phase} -> {p}: {why}");
-            _phase = p; _why = why; _phaseTime = 0; _stuckTime = 0; _bestDist = float.MaxValue;
+            _phase = p; _why = why; _phaseTime = 0; _stuck.Reset();
             _actStill = 0;
         }
 
@@ -439,7 +438,7 @@ namespace AOBuddy
             {
                 case Phase.Plan:
                 case Phase.Exit:
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (_phase == Phase.Exit && !_announced)
                     {
                         if (_phaseTime < 1.5) return true;   // let the reward burst land
@@ -454,7 +453,7 @@ namespace AOBuddy
 
                 case Phase.PressButton:
                 {
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (!me.IsSpecialReady(Stat.Level))
                     {
                         _ctx.WalkState = "mission: waiting for the Level lock";
@@ -467,30 +466,23 @@ namespace AOBuddy
                     // and the bot pressed 12 times from the same spot (log 2026-09-23 22:31:20). So: stand still
                     // a moment so the server has our stop, and walk up again if a correction moved us off.
                     // (3.5 m: with wall data the route ends on the open cell nearest the button, up to 3 m off it.)
-                    if (_items.TryGetValue(_pendingButton.Value, out var btn) && Flat(pos, btn.Pos) > 3.5f)
+                    if (_items.TryGetValue(_pendingButton.Value, out var btn) && Movement.Flat(pos, btn.Pos) > 3.5f)
                     {
-                        Enter(Phase.Plan, $"{Flat(pos, btn.Pos):0.0} m from the button, walking up to it");
+                        Enter(Phase.Plan, $"{Movement.Flat(pos, btn.Pos):0.0} m from the button, walking up to it");
                         return true;
                     }
                     if (_phaseTime < 0.6) { _ctx.WalkState = "mission: settling before the press"; return true; }
                     _presses++;
                     if (_presses > 12) { Fail("pressed buttons 12 times without getting anywhere"); return true; }
                     _pressedFrom = pos;
-                    Client.Send(new GenericCmdMessage
-                    {
-                        Action = GenericCmdAction.Use,
-                        User = me.Identity,
-                        Target = _pendingButton.Value,
-                        Count = 1,
-                        Temp4 = 1,
-                    });
+                    GameCommands.UseObject(me, _pendingButton.Value);
                     _ctx.Log($"MISSION: pressed {KindName(_items.TryGetValue(_pendingButton.Value, out var it) ? it.Template : 0)} button {_pendingButton.Value}.");
                     Enter(Phase.AwaitTeleport, "pressed the button");
                     return true;
                 }
 
                 case Phase.AwaitTeleport:
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (Vector3.Distance(pos, _pressedFrom) > 10f)
                     {
                         _ctx.Log($"MISSION: rode to ({pos.X:0},{pos.Y:0},{pos.Z:0}), floor {_grid.FloorAt(pos)?.ToString() ?? "?"}.");
@@ -514,7 +506,7 @@ namespace AOBuddy
                         return true;
                     }
                     var dir = new Vector3((float)ex.Nx, 0, (float)ex.Nz);
-                    float step = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
+                    float step = Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep);
                     _pushed += step;
                     _ctx.WalkState = $"mission: out through the door {_pushed:0.0} m";
                     _move.Advance(me, new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step), Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
@@ -523,7 +515,7 @@ namespace AOBuddy
 
                 case Phase.Act:
                     if (_record?.Type == TypeFindItem && ApproachItem(me, dt)) return true;
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     // Stand still a moment first so the server has our stop (the button lesson, 2026-09-23
                     // 22:31:20: acting the instant we arrived was judged from where the server still had us).
                     if ((_actStill += dt) < 0.6) { _ctx.WalkState = "mission: settling before the selection"; return true; }
@@ -531,7 +523,7 @@ namespace AOBuddy
                     return true;
 
                 case Phase.AwaitComplete:
-                    Hold(me);
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (_completed) return true;
                     if (_phaseTime > 5)
                     {
@@ -543,10 +535,7 @@ namespace AOBuddy
             return false;
         }
 
-        private void Hold(LocalPlayer me)
-        {
-            if (_move.Moving) _move.Stop(me, _ctx.Config.SendIntervalMs);
-        }
+
 
         // ---- planning -------------------------------------------------------------------------------------
 
@@ -657,7 +646,7 @@ namespace AOBuddy
 
         private Hop? SearchHop(Vector3 pos, int floor, string tw, out string why)
         {
-            foreach (var r in _grid.RoomsOn(floor)) if (Flat(pos, r.Centre) < 6f) _visited.Add(r.Index);
+            foreach (var r in _grid.RoomsOn(floor)) if (Movement.Flat(pos, r.Centre) < 6f) _visited.Add(r.Index);
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
             foreach (var r in _grid.RoomsOn(floor))
             {
@@ -795,10 +784,10 @@ namespace AOBuddy
             FindTarget(out Vector3? tp, out _);
             if (!tp.HasValue) return false;
             Vector3 pos = me.MovementComponent.Position;
-            float d = Flat(pos, tp.Value);
+            float d = Movement.Flat(pos, tp.Value);
             if (d <= 2f || _phaseTime > 5) return false;
             Vector3 dir = new Vector3(tp.Value.X - pos.X, 0, tp.Value.Z - pos.Z).Normalize();
-            float step = Math.Min(Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep), d - 1.5f);
+            float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d - 1.5f);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
             next = new Vector3(next.X, _grid.HeightAt(next, pos.Y) ?? pos.Y, next.Z);
             _ctx.WalkState = $"mission: up to the item d={d:0.0}";
@@ -811,7 +800,7 @@ namespace AOBuddy
         {
             var target = FindTarget(out Vector3? tpos, out string how);
             if (!target.HasValue) { Enter(Phase.Plan, "lost sight of the target (" + how + ")"); return; }
-            if (tpos.HasValue) how += $", {Flat(me.MovementComponent.Position, tpos.Value):0.0} m away";
+            if (tpos.HasValue) how += $", {Movement.Flat(me.MovementComponent.Position, tpos.Value):0.0} m away";
             _acts++;
             switch (_record.Type)
             {
@@ -828,7 +817,7 @@ namespace AOBuddy
                     // A container holding the item is opened first (GenericCmd Use, the way the owner opened his
                     // backpack in capture 20260923-201746), then selected. UNVERIFIED which of the two completes it.
                     if ((int)target.Value.Type == (int)IdentityType.Container)
-                        Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = target.Value, Count = 1, Temp4 = 0 });
+                        GameCommands.OpenContainer(me, target.Value);
                     Client.Send(new LookAtMessage { Target = target.Value, ReturnInfo = 0 });
                     _ctx.Log($"MISSION: selected item {target.Value} ({how}).");
                     break;
@@ -897,7 +886,7 @@ namespace AOBuddy
             }
 
             Vector3 wp = _path[_pathIndex];
-            float d = Flat(pos, wp);
+            float d = Movement.Flat(pos, wp);
             bool last = _pathIndex == _path.Count - 1;
             // Corners are passed tightly: each step is clamped to land on the waypoint anyway, and a wide
             // radius cuts the corner into the door frame the waypoint was placed to clear.
@@ -905,16 +894,14 @@ namespace AOBuddy
             if (d <= arrive)
             {
                 _pathIndex++;
-                _bestDist = float.MaxValue; _stuckTime = 0;
+                _stuck.Reset();
                 if (_pathIndex >= _path.Count) { Arrive(me); return true; }
-                wp = _path[_pathIndex]; d = Flat(pos, wp);
+                wp = _path[_pathIndex]; d = Movement.Flat(pos, wp);
             }
 
             // Stuck: no progress on this waypoint for 3 s means something the tiles do not show is in the
             // way. Block that cell and plan around it.
-            if (d < _bestDist - 0.3f) { _bestDist = d; _stuckTime = 0; }
-            else _stuckTime += dt;
-            if (_stuckTime > 3.0)
+            if (_stuck.Tick(d, dt, 0.3f, 3.0))
             {
                 _replans++;
                 var cell = _grid.CellOf(wp);
@@ -927,8 +914,7 @@ namespace AOBuddy
             }
 
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
-            float step = Math.Min((float)(MoveSpeed(me) * dt), _ctx.Config.MaxStep);
-            step = Math.Min(step, d);
+            float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
             float? y = _grid.HeightAt(next, pos.Y);
             next = new Vector3(next.X, y ?? wp.Y, next.Z);
@@ -941,7 +927,7 @@ namespace AOBuddy
 
         private void Arrive(LocalPlayer me)
         {
-            Hold(me);
+            _move.Hold(me, _ctx.Config.SendIntervalMs);
             _path = null;
             switch (_purpose)
             {
@@ -962,17 +948,12 @@ namespace AOBuddy
             }
         }
 
-        private static float Flat(Vector3 a, Vector3 b) { float dx = a.X - b.X, dz = a.Z - b.Z; return (float)Math.Sqrt(dx * dx + dz * dz); }
-
         private static float FlatToSegment(Vector3 p, Vector3 a, Vector3 b)
         {
             float abx = b.X - a.X, abz = b.Z - a.Z, len2 = abx * abx + abz * abz;
             float t = len2 < 1e-6f ? 0f : Math.Max(0f, Math.Min(1f, ((p.X - a.X) * abx + (p.Z - a.Z) * abz) / len2));
-            return Flat(p, new Vector3(a.X + abx * t, a.Y, a.Z + abz * t));
+            return Movement.Flat(p, new Vector3(a.X + abx * t, a.Y, a.Z + abz * t));
         }
-
-        // The client's own run speed, the last good reading when the stat is unreadable (BotContext.RunVelocity).
-        private float MoveSpeed(LocalPlayer me) => _ctx.RunVelocity(me);
 
         private static string ItemName(int template)
         {

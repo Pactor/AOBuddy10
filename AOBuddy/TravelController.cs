@@ -107,22 +107,14 @@ namespace AOBuddy
                 // Send the Use straight to the captured identity. Travel objects (mission floor
                 // buttons/terminals, grid, whompas) aren't tracked as findable dynels, so a
                 // lookup-based Dynel.Use() never fires — we command the exact identity we captured.
-                Client.Send(new GenericCmdMessage
-                {
-                    Action = GenericCmdAction.Use,
-                    User = me.Identity,
-                    Target = _pendingUseTravel.Value,
-                    Count = 1,
-                    Temp4 = 1,
-                });
+                GameCommands.UseObject(me, _pendingUseTravel.Value);
                 _ctx.Log($"USE-TRAVEL: sent Use to {_pendingUseTravel.Value} at ({goal.X:0},{goal.Y:0},{goal.Z:0}) — expecting to zone.");
                 Clear();
                 return true;
             }
 
             Vector3 dir = (goal - pos).Normalize();
-            float step = Math.Min((float)(WalkSpeed * dt), _ctx.Config.MaxStep);
-            step = Math.Min(step, dist);
+            float step = Movement.CappedStep(WalkSpeed, dt, _ctx.Config.MaxStep, dist);
             _ctx.WalkState = $"use-travel(walk) d={dist:0.0} -> ({goal.X:0},{goal.Y:0},{goal.Z:0}) t={_useTravelElapsed:0.0}";
 
             _move.Advance(me, pos + dir * step, Movement.SafeLook(dir, me.MovementComponent.Heading), run: false, dt, _ctx.Config.SendIntervalMs);

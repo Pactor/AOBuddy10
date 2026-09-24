@@ -135,6 +135,16 @@ namespace AOBuddy
 
         public static string Name(int pf) => _names.TryGetValue(pf, out var n) ? $"{n} ({pf})" : pf.ToString();
 
+        /// <summary>
+        /// The options every route ask starts from (R1.10): read requirements live off the character
+        /// (a stat the server hasn't sent reads as unknown, never as zero), keep the class defaults.
+        /// Each asker then sets its own Filter — and UseScotty where it differs — for its exit policy.
+        /// </summary>
+        public static ZoneRouteOptions RouteOptions(AOSharp.Clientless.LocalPlayer me) => new ZoneRouteOptions
+        {
+            Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
+        };
+
         public static IReadOnlyList<ZoneExit> ExitsFrom(int pf) =>
             _exits.TryGetValue(pf, out var l) ? l : (IReadOnlyList<ZoneExit>)Array.Empty<ZoneExit>();
 
