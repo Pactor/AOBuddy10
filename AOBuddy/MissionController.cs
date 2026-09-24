@@ -620,7 +620,13 @@ namespace AOBuddy
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
                 if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Search }; }
             }
-            if (best == null) { why = $"searched every room on floor {floor} and the target never showed ({tw})"; return null; }
+            if (best == null)
+            {
+                why = $"searched every room on floor {floor} and the target never showed ({tw})";
+                _ctx.Log($"MISSION: gave up searching; target {(_record?.TargetA?.ToString() ?? "-")}; everything seen ({_items.Count}): "
+                         + string.Join(", ", _items.Select(kv => $"{kv.Key} tpl {kv.Value.Template} '{ItemName(kv.Value.Template)}' at ({kv.Value.Pos.X:0},{kv.Value.Pos.Z:0})")));
+                return null;
+            }
             why = $"searching: target not in sight yet ({tw}), trying room '{bestName}'";
             return best;
         }
@@ -659,6 +665,13 @@ namespace AOBuddy
             if (_record.TargetA.HasValue)
             {
                 how = "the quest record's target";
+                if (_record.TargetA.HasValue && (int)_record.TargetA.Value.Type == 0xC74E)
+                {
+                    // An item-type reference: the target is the seen item carrying that template.
+                    foreach (var kv in _items)
+                        if (kv.Value.Template == _record.TargetA.Value.Instance) { pos = kv.Value.Pos; return kv.Key; }
+                    pos = null; return null;
+                }
                 return Locate(_record.TargetA, out pos) ? _record.TargetA : null;
             }
 
@@ -701,6 +714,14 @@ namespace AOBuddy
             pos = null;
             if (!id.HasValue) return false;
             if (_items.TryGetValue(id.Value, out var it)) { pos = it.Pos; return true; }   // items and containers
+            // 0xC74E is an item-TYPE reference (OmniCell RecordData: item records start 0xC74E), not an object in
+            // the building: the record names WHICH item to find (e.g. FF865 = item 1046629, 'Leg Implant: Swimming,
+            // Shiny'). The object is whatever seen item carries that template.
+            if ((int)id.Value.Type == 0xC74E)
+            {
+                foreach (var kv in _items)
+                    if (kv.Value.Template == id.Value.Instance) { pos = kv.Value.Pos; return true; }
+            }
             if (DynelManager.Find(id.Value, out SimpleChar c)) { pos = c.Transform.Position; return true; }
             return false;
         }
