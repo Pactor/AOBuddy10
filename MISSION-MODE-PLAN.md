@@ -290,6 +290,13 @@ missions may be taken in (empty = the terminal's own zone only).
    into the Borealis whompa.
 
 ### Later (owner, 2026-09-23)
-- **Out of room:** the run now stops and tells the owner when fewer than 2 inventory slots are free at the
-  terminal (a key + a reward), after the stash has filled what bags it could. Later: sell rewards with
-  Algorithman's shop code, and always put nano crystals in the bank instead of selling them.
+- **Out of room (done):** he always needs **4 free inventory slots** (not bags, not items) to pull mission keys
+  and rewards. The run stops and tells the owner when fewer are free at the terminal, after the stash has
+  filled what bags it could.
+- **Shops (later, if Algorithman's shop code works for this):** configure a shop area. Shops sell different
+  things but almost always containers.
+  - **Room:** with plenty of credits, buy the cheapest container and carry on. The 4 free slots still hold.
+  - **Selling:** to start with, sell every reward that isn't a nano crystal. Later, a keep-list of items that are
+    never sold.
+- **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
+  bank, and fill them with nanos.

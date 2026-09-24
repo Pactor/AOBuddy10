@@ -352,10 +352,10 @@ namespace AOBuddy
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
-                    // Out of room: a mission needs a slot for its key and one for the reward, and the stash has already
-                    // filled every bag it could. He can't go on (owner, 2026-09-23); selling via the shop code and
-                    // banking nano crystals come later.
-                    if (Inventory.NumFreeSlots < 2)
+                    // Out of room: he always needs 4 free inventory slots (not bags, not items) to pull the mission
+                    // keys and rewards (owner, 2026-09-23), and the stash has already filled every bag it could. He
+                    // can't go on; buying bags, selling and banking nano crystals come later (MISSION-MODE-PLAN.md).
+                    if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
                         Stop("out of inventory room");
