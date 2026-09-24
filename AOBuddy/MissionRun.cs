@@ -38,7 +38,7 @@ namespace AOBuddy
         private readonly Func<bool> _dead, _recovering;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -115,7 +115,7 @@ namespace AOBuddy
             {
                 // Inside a building with no mission to do (already done, or deleted): just walk out and carry on.
                 reply("I'm inside a mission building with nothing left to do here: walking out first.");
-                _mission.Command("backoutside", s => _ctx.Log("MISSIONRUN: " + s));
+                _mission.Command("backoutside", OnOutsideReply);
                 Enter(Phase.Leaving, "started inside, nothing to do");
                 return;
             }
@@ -338,7 +338,10 @@ namespace AOBuddy
                     double t = k * Math.PI / 4;
                     var side = new Vector3((float)Math.Cos(t), 0, (float)Math.Sin(t));
                     Vector3 outside = new Vector3(d.X + side.X * 5f, d.Y, d.Z + side.Z * 5f);
-                    Vector3 through = new Vector3(d.X - side.X * 2.5f, d.Y, d.Z - side.Z * 2.5f);
+                    // Onto the door's own spot, not through it: the owner's client stopped within 0.2 m of the door's
+                    // position and the server moved him in 0.4 s later (capture 20260923-201746, 20:30:49; the exit
+                    // at 20:31:10 the same way). Follow's walker stops 1.5 m short of its target, so aim 1.2 m past.
+                    Vector3 through = new Vector3(d.X - side.X * 1.2f, d.Y, d.Z - side.Z * 1.2f);
                     if (_doorStep == 0)
                     {
                         // Get to this side's spot on a real route (travelto: the zone's floor and wall grid), so a bot
@@ -360,16 +363,16 @@ namespace AOBuddy
                         _doorStep = 2; _doorStepTime = 0;
                         return false;
                     }
-                    // Last few metres: straight through the door's centre to its far side.
-                    _follow.SetManualTarget(through);
-                    if (_doorStepTime > 4)
+                    // Last few metres: onto the door's spot, then stand still and let the server take us.
+                    if (_doorStep == 2) { _follow.SetManualTarget(through); _doorStep = 3; }
+                    if (_doorStepTime > 5)
                     {
                         _ctx.Log($"MISSIONRUN: door side {k} didn't take me in; next side.");
                         _follow.ClearManual();
                         _doorDir++; _doorStep = 0; _doorStepTime = 0;
                         return false;
                     }
-                    return true;
+                    return _follow.ManualActive;   // walking onto it, then standing on it
                 }
 
                 case Phase.AwaitBlitz:
@@ -401,7 +404,7 @@ namespace AOBuddy
                     }
                     if (_mission.InMission)
                     {
-                        if (_completed) { StartBackoff(me, "walk out"); return false; }
+                        if (_completed) { if (!StartExitStand(me, Phase.Blitz)) StartBackoff(me, "walk out"); return false; }
                         // A fresh blitz clears the cells a run of server snap-backs blocked (2026-09-23 21:31: two
                         // snaps at the start blocked the only way and it gave up), so try again before giving up.
                         if (++_blitzTries <= 1 && _phaseTime > 3)
@@ -439,8 +442,8 @@ namespace AOBuddy
                     switch (_backoffNext)
                     {
                         case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
-                        case "leave": _mission.Command("backoutside", s2 => _ctx.Log("MISSIONRUN: " + s2)); Enter(Phase.Leaving, "walking out again"); break;
-                        default: _mission.Command("backoutside", s2 => _ctx.Log("MISSIONRUN: " + s2)); Enter(Phase.Blitz, "walking out"); break;
+                        case "leave": _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out again"); break;
+                        default: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "walking out"); break;
                     }
                     return false;
                 }
@@ -448,12 +451,26 @@ namespace AOBuddy
                 case Phase.Hike:
                     return HikeTick(me);
 
+                case Phase.ExitStand:
+                {
+                    if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? Phase.ToTerminal : Phase.Blitz, "out through the exit"); return false; }
+                    if (_exitStep == 0) { _follow.SetManualTarget(_exitAim); _exitStep = 1; }
+                    if (_phaseTime > 7)
+                    {
+                        _follow.ClearMovement();
+                        _ctx.Log("MISSIONRUN: standing on the exit didn't take me out.");
+                        if (_exitReturn == Phase.Leaving) Enter(Phase.Leaving, "exit stand failed"); else StartBackoff(me, "walk out");
+                        return false;
+                    }
+                    return _follow.ManualActive;
+                }
+
                 case Phase.Leaving:
                     if (!_mission.InMission) { Enter(Phase.ToTerminal, "outside"); return false; }
                     if (!_mission.Active)
                     {
                         if (_phaseTime > 60 && !_leaveWarned) { _leaveWarned = true; _tell("I'm having trouble walking out of the mission building; still trying."); }
-                        if (_phaseTime > 5) { StartBackoff(me, "leave"); return false; }
+                        if (_phaseTime > 5) { if (!StartExitStand(me, Phase.Leaving)) StartBackoff(me, "leave"); return false; }
                     }
                     return false;
             }
@@ -497,6 +514,34 @@ namespace AOBuddy
         private string _hikeWhat;
         private Phase _hikeReturn;
         private double _hikeUsedAt = -99, _hikeLastHike = -99;
+        private List<Vector3> _hikeRoute;
+
+        // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
+        // thread the way travel builds it.
+        private System.Threading.Tasks.Task<IWalkGrid> _hikeGridTask;
+        private int _hikeGridPf = -1, _hikeGridTaskPf = -1;
+        private IWalkGrid _hikeGrid;
+
+        private IWalkGrid HikeGrid()
+        {
+            int pf = (int)Playfield.ModelId;
+            if (pf == _hikeGridPf) return _hikeGrid;
+            if (_hikeGridTask == null || _hikeGridTaskPf != pf)
+            {
+                string dir = _pluginDir; var log = _ctx.Log; _hikeGridTaskPf = pf;
+                _hikeGridTask = System.Threading.Tasks.Task.Run(() =>
+                {
+                    var nav = AOBuddyNav.Load(dir, pf);
+                    return (IWalkGrid)OverlandGrid.Build(dir, pf, nav, log) ?? FloorGrid.Build(dir, pf, nav, log);
+                });
+                return null;
+            }
+            if (!_hikeGridTask.IsCompleted) return null;
+            _hikeGrid = _hikeGridTask.IsFaulted ? null : _hikeGridTask.Result;
+            _hikeGridTask = null; _hikeGridPf = pf;
+            if (_hikeGrid == null) { _hikeRoute = new List<Vector3>(); }   // no grid: straight
+            return _hikeGrid;
+        }
 
         private bool StartHike(LocalPlayer me, int pf, Vector3 goal, string what)
         {
@@ -513,7 +558,7 @@ namespace AOBuddy
             try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             if (route == null || route.Hops.Count == 0) { _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikeUsedAt = -99; _hikeRoute = null;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -540,6 +585,36 @@ namespace AOBuddy
             var e = _hike.Exit;
             Vector3 pos = me.Transform.Position;
             Vector3 at = _hike.WalkTo ?? e.A;
+
+            // First leg on the zone's walk grid: to the reachable ground nearest the exit. ICC (pf 655): the
+            // whompa stands in a pocket whose opening is narrower than the grid's 4 m cells, so the exit itself is
+            // unreachable on the grid while the ground around the reclaim connects for 60 m (probe 2026-09-23).
+            if (_hikeRoute == null)
+            {
+                var grid = HikeGrid();
+                if (grid == null) return false;                       // still building (a few seconds)
+                _hikeRoute = new List<Vector3>();
+                List<Vector3> best = null; float bestLeft = float.MaxValue;
+                foreach (float r in new[] { 0f, 4f, 8f, 12f, 16f, 24f })
+                    for (int k = 0; k < (r == 0 ? 1 : 8); k++)
+                    {
+                        double t = k * Math.PI / 4;
+                        var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
+                        var path = grid.FindPath(pos, goal, null, 8f, 1.5f, out _);
+                        if (path == null) continue;
+                        float left = Flat(path[path.Count - 1], at);
+                        if (left < bestLeft) { bestLeft = left; best = path; }
+                    }
+                if (best != null && best.Count > 1)
+                {
+                    _hikeRoute = best;
+                    _follow.LoadReplay(best.Skip(1), false);
+                    _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
+                }
+                else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
+            }
+            if (_follow.ReplayCount > 0) return true;                 // still on the grid leg
+
             if (e.Kind == ExitKind.ZoneLine)
             {
                 // Walk to the line, then on across it.
@@ -557,6 +632,35 @@ namespace AOBuddy
                 _ctx.Log($"MISSIONRUN: used {e} at the exit.");
             }
             return false;
+        }
+
+        // THE EXIT, the owner's way: walk onto the exit door's spot and stand still. His client stopped 0.8 m
+        // short of the door's position and the server moved him out 0.2 s later (capture 20260923-201746,
+        // 20:31:10); blitz pushes 8 m through the door instead and sometimes doesn't leave. The door's
+        // position is the one blitz names in its 'Heading outside: the exit door on floor F (x,z)' reply.
+        private Vector3? _exitDoor;
+        private Vector3 _exitAim;
+        private int _exitStep, _exitStands;
+        private Phase _exitReturn;
+
+        private void OnOutsideReply(string text)
+        {
+            _ctx.Log("MISSIONRUN: " + text);
+            var m = System.Text.RegularExpressions.Regex.Match(text ?? "", @"exit door on floor -?\d+ \((-?\d+),(-?\d+)\)");
+            if (m.Success) _exitDoor = new Vector3(float.Parse(m.Groups[1].Value), 0, float.Parse(m.Groups[2].Value));
+        }
+
+        private bool StartExitStand(LocalPlayer me, Phase back)
+        {
+            if (!_exitDoor.HasValue || ++_exitStands > 3) return false;
+            Vector3 pos = me.Transform.Position, d = _exitDoor.Value;
+            var dir = new Vector3(d.X - pos.X, 0, d.Z - pos.Z);
+            float len = dir.Magnitude;
+            _exitAim = len > 0.1f ? new Vector3(d.X + dir.X / len * 1.2f, pos.Y, d.Z + dir.Z / len * 1.2f) : new Vector3(d.X, pos.Y, d.Z);
+            _exitStep = 0; _exitReturn = back;
+            _ctx.Log($"MISSIONRUN: walking onto the exit door at ({d.X:0},{d.Z:0}) and standing on it.");
+            Enter(Phase.ExitStand, "onto the exit door");
+            return true;
         }
 
         private void StartBackoff(LocalPlayer me, string next)
@@ -605,7 +709,7 @@ namespace AOBuddy
             {
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
-                else if (_overland.Status().Contains("scty") && _phaseTime > 15 && StartHike(me, pf, goal, what)) return false;
+                else if (_overland.Status().Contains("scty") && _phaseTime > 60 && StartHike(me, pf, goal, what)) return false;   // Scotty now gets the tell (name case fix); give it a minute
                 return false;
             }
             if (_clock < _travelWaitUntil) return false;
@@ -779,7 +883,7 @@ namespace AOBuddy
             _tell($"Skipping this mission ({why}); deleted {n}.");
             _current = null; _completed = false;
             if (_mission.Active) _mission.Stop("skipping the mission");
-            if (_mission.InMission) { _mission.Command("backoutside", s => _ctx.Log("MISSIONRUN: " + s)); Enter(Phase.Leaving, "walking out to skip it"); }
+            if (_mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out to skip it"); }
             else Enter(Phase.ToTerminal, "skipped");
         }
         private string TerminalPath => Path.Combine(_pluginDir, "missionterminal.json");
@@ -902,7 +1006,7 @@ namespace AOBuddy
         {
             if (p != _phase) _ctx.Log($"MISSIONRUN: {_phase} -> {p} ({why})");
             _phase = p; _phaseTime = 0;
-            if (p == Phase.ToDoor || p == Phase.Rolling) _blitzTries = 0;
+            if (p == Phase.ToDoor || p == Phase.Rolling) { _blitzTries = 0; _exitStands = 0; _exitDoor = null; }
             if (p == Phase.Rolling) _rollWarned = false;
             if (p == Phase.Leaving) _leaveWarned = false;
             if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }

@@ -237,6 +237,23 @@ missions may be taken in (empty = the terminal's own zone only).
   When a mission's record has no target, the raw quest update is saved to `missions/questupdate-b*.bin` and the
   items in sight are logged.
 
+### Night fixes (2026-09-23, after the list below was written)
+
+- 3 + 4 (find item): the target was a CONTAINER (quest record target 0xC74E:FF866). The record parser only took
+  0xC73D/0xC350 identities, and the SDK dropped every ChestFullUpdate (its reader throws). Now: containers are
+  passed on raw (`Client.ChestFullUpdateRaw`), blitz reads identity (offset 20) and position (floats at 41) into
+  its item table, and the parser accepts 0xC749/0xC74E targets. Not a floor problem: that building is 1 floor.
+- 6 (Scotty): `NameToIdMap` was case-sensitive; a tell to "scty" waited forever on the server's "Scty". Fixed.
+- 7 (HP): HealthDamage's HP belongs to the message Identity (the receiver); the field called Target is the source
+  (capture 20260910-200346: one healer, three receivers, three HPs). The SDK and VitalsTracker wrote it into the
+  healer: every stim the bot gave the owner set its own HP to his. Fixed in both.
+- 1 (exit): the owner's client stops ON the door's spot and is moved out 0.2 s later (entry the same, 0.4 s). The
+  run now walks onto the exit door blitz names and stands still before backing off; entry does the same.
+- 5 (ICC): the whompa sits in a pocket the 4 m grid seals; ground around the reclaim connects for 60 m. The run's
+  walk-to-exit fallback now routes on the grid to the nearest reachable ground, then straight.
+- 2 (snap-backs): no wall in the data at the Midtech spot; it is a room boundary. Likely a door that opens as you
+  come near (the client never Uses doors: 0 of 61 Uses in all captures) being run into before it opens.
+
 ### Open problems for Algorithman (in blitz / travel, not touched)
 
 1. **Exit push**: "walked 8 m through the exit door at (300,75) / (0,185) / (300,265) and did not leave the

@@ -36,7 +36,7 @@ namespace AOSharp.Clientless.Chat
 
         public uint CharId { internal set; get; }
         public Dictionary<uint, bool> FriendStatuses = new Dictionary<uint, bool>();
-        public Dictionary<string, uint> NameToIdMap = new Dictionary<string, uint>();
+        public Dictionary<string, uint> NameToIdMap = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);   // names are case-insensitive: a tell to "scty" waited forever on the server's "Scty"
         public Dictionary<uint, string> IdToNameMap = new Dictionary<uint, string>();
         internal Dictionary<int, string> ChannelToIdMap = new Dictionary<int, string>();
 

@@ -168,6 +168,7 @@ namespace AOBuddy
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } });
 
             _hunt = new HuntController(_ctx, () => _mission.InMission);
+            Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
             _run = new MissionRun(_ctx, _roll, _mission, _overland, _follow, pluginDir,
                 text => { try { Client.Chat.SendPrivateMessage(_config.Owner, text); } catch { } },
@@ -443,9 +444,11 @@ namespace AOBuddy
             ClearNav();
             _combat.Reset();
             _support.OnDeathResetBuffs();   // buffs drop on death — allow rebuff after reclaim
-            PlayerChar owner = FindOwner();
-            if (owner != null)
-                try { Client.SendPrivateMessage(owner.Identity.Instance, "I died — reclaiming. I'll hold at the reclaim point; come to me or send 'come' when you're close."); } catch { }
+            // Told BY NAME so it reaches the owner wherever he is (a solo mission run is usually out of his sight).
+            string where = $"{Playfield.Name} ({_deathPos?.X ?? 0:0},{_deathPos?.Z ?? 0:0})";
+            string next = _run.Active ? "I'll reclaim, go back to the mission terminal, wait out rez sickness there and carry on."
+                                      : "Reclaiming; I'll hold at the reclaim point - come to me or send 'come' when you're close.";
+            try { Client.Chat.SendPrivateMessage(_config.Owner, $"I died in {where}. {next}"); } catch { }
         }
 
         // While dead: hold still and wait for the reclaim teleport, then recover and tell the owner where.

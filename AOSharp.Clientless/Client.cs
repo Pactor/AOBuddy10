@@ -25,6 +25,12 @@ namespace AOSharp.Clientless
 
     public static class Client
     {
+        /// <summary>ChestFullUpdate packets, raw (header included). The stock reader throws on them, so they
+        /// are never deserialized; listeners read the fixed-position fields they need (identity at 20, position
+        /// floats at 41) - see NetworkSession.</summary>
+        public static event Action<byte[]> ChestFullUpdateRaw;
+        internal static void RaiseChestFullUpdateRaw(byte[] packet) { try { ChestFullUpdateRaw?.Invoke(packet); } catch { } }
+
         internal static Credentials Credentials;
         public static string CharacterName { get; internal set; }
         public static Dimension Dimension { get; internal set; }
@@ -490,7 +496,12 @@ namespace AOSharp.Clientless
 
                 // The packet names the stat it moved: a nano drain/refill carries CurrentNano, and writing
                 // that into Health put a nano number in someone's HP.
-                if (DynelManager.Find(hd.Target, out Dynel hpTarget))
+                // WHOSE HP: the message's own Identity is the character whose HP this is; the field called
+                // Target is the one who dealt it (OmniCell's messaging calls it Source). Capture 20260910-200346:
+                // one healer (Source 1999636446) heals three characters, each message carrying that receiver's
+                // own HP. Writing it into Target set the healer's HP to the patient's: the bot stimmed the owner
+                // (42% -> 79%, 322/402) and read its own HP as 51% = 322/638 until restart (2026-09-23 21:01).
+                if (DynelManager.Find(hd.Identity, out Dynel hpTarget))
                     hpTarget.SetStat(hd.Stat == Stat.CurrentNano ? Stat.CurrentNano : Stat.Health, hd.TargetHp);
             });
 

@@ -154,6 +154,20 @@ namespace AOBuddy
             }
         }
 
+        /// <summary>A ChestFullUpdate, raw: 16-byte header, N3 type at 16, the container's Identity at 20,
+        /// then a byte, version, owner identity, and its position as three big-endian floats at 41 (capture
+        /// 20260923-201746 s12 seq 11: 51017:196604570 at (279.9, 5.1, 267.8)).</summary>
+        public void OnChestRaw(byte[] b)
+        {
+            if (b == null || b.Length < 53) return;
+            int type = (b[20] << 24) | (b[21] << 16) | (b[22] << 8) | b[23];
+            int inst = (b[24] << 24) | (b[25] << 16) | (b[26] << 8) | b[27];
+            float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
+            var pos = new Vector3(F(41), F(45), F(49));
+            if (float.IsNaN(pos.X) || Math.Abs(pos.X) > 100000) return;
+            _items[new Identity((IdentityType)type, inst)] = new SeenItem { Template = 0, Pos = pos, Seen = Now };
+        }
+
         private static bool IsMe(Identity id)
         {
             var me = DynelManager.LocalPlayer;
@@ -686,7 +700,7 @@ namespace AOBuddy
         {
             pos = null;
             if (!id.HasValue) return false;
-            if ((int)id.Value.Type == IdentityTypeItem && _items.TryGetValue(id.Value, out var it)) { pos = it.Pos; return true; }
+            if (_items.TryGetValue(id.Value, out var it)) { pos = it.Pos; return true; }   // items and containers
             if (DynelManager.Find(id.Value, out SimpleChar c)) { pos = c.Transform.Position; return true; }
             return false;
         }
@@ -886,7 +900,9 @@ namespace AOBuddy
                 for (int j = i + 24; j + 8 <= b.Length && j < i + 24 + 56; j += 4)
                 {
                     int t = I32(b, j), inst = I32(b, j + 4);
-                    if ((t == 0xC73D || t == 0xC350) && inst != 0 && inst != holder) { ids.Add(new Identity((IdentityType)t, inst)); j += 4; }
+                    // Items (0xC73D), characters (0xC350), and containers (0xC749, 0xC74E): a find-item target can be
+                    // a container (quest update saved 2026-09-23 22:10: record target 0xC74E:FF866).
+                    if ((t == 0xC73D || t == 0xC350 || t == 0xC749 || t == 0xC74E) && inst != 0 && inst != holder) { ids.Add(new Identity((IdentityType)t, inst)); j += 4; }
                 }
                 if (ids.Count > 0) r.TargetA = ids[0];
                 if (ids.Count > 1) r.TargetB = ids[1];

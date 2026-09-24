@@ -71,8 +71,10 @@ namespace AOBuddy
                     SetNano(t.Character, t.CurrentNano, t.MaxNano);
                     break;
                 case HealthDamageMessage hd:
-                    if (hd.Stat == Stat.CurrentNano) SetNano(hd.Target, hd.TargetHp, -1);
-                    else SetHp(hd.Target, hd.TargetHp, -1, "dmg");
+                    // The HP is the RECEIVER's, and the receiver is the message's own Identity; hd.Target is the
+                    // one who dealt the damage or heal (see Client.cs, HealthDamage).
+                    if (hd.Stat == Stat.CurrentNano) SetNano(hd.Identity, hd.TargetHp, -1);
+                    else SetHp(hd.Identity, hd.TargetHp, -1, "dmg");
                     break;
                 case StatMessage s when s.Stats != null:
                     foreach (var st in s.Stats)

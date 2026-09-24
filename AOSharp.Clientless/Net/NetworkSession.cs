@@ -187,7 +187,13 @@ namespace AOSharp.Clientless.Net
                     // DROP these packets rather than let the broken serializer throw and spam the console.
                     // When looting is needed later, add a corrected reader here like the SimpleChar one.
                     if (IsN3MessageType(packet, N3MessageType.ChestFullUpdate))
+                    {
+                        // Still not deserialized, but handed on raw: a mission's find-item target can be one of
+                        // these containers (quest record target 0xC74E, 2026-09-23 22:10), and dropping them left
+                        // the bot unable to see it.
+                        Client.RaiseChestFullUpdateRaw(packet);
                         return;
+                    }
 
                     // SpellList: a nano was uploaded/learned mid-session. The stock serializer leaves this
                     // message empty (its body is undefined), so learned nanos never reached SpellList and the
