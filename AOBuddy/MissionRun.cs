@@ -356,11 +356,11 @@ namespace AOBuddy
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
                 // at the wall by the Grid, stood 15 s, then walked the same route into the same wall. The owner: "resetting
                 // to last known good pos is a must". So walk the clean trail back and plan again from there.
-                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike)
+                if (_phase == Phase.ToTerminal || _phase == Phase.ToDoor || _phase == Phase.Hike || (_phase == Phase.Shop && _shopStep == ShopStep.Travel))
                 {
                     if (_overland.Active) _overland.Stop("pulled back");
                     _follow.ClearMovement();
-                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;
+                    _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
                     return false;
@@ -897,7 +897,11 @@ namespace AOBuddy
             }
             // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
             // does it (ICC Grid terminal, first try, 23:18 and 23:37). Three tries 4 s apart.
-            if (e.Kind != ExitKind.Line)
+            // Only a TERMINAL is used (the Grid terminal, 23:18 and 23:37). A DOOR (type 51016, whompas and shop
+            // doors alike) is entered by standing on it: the owner walked onto the Borealis Fair Trade door
+            // (649.96,611.42 by its centre 650.25,612.86) and was zoned (capture 20260923-234203); the Newland Desert
+            // Fair Trade door was Used six times with no zone (07:59, 2026-09-24).
+            if (e.Kind != ExitKind.Line && e.ObjType != 51016)
             {
                 if (Flat(pos, at) > 3f && _hikeUses == 0 && _phaseTime < 140) { _follow.SetManualTarget(at); return true; }
                 _follow.ClearMovement();
@@ -941,7 +945,9 @@ namespace AOBuddy
             var dir = new Vector3((float)(_hikeDir0.X * Math.Cos(ang) - _hikeDir0.Z * Math.Sin(ang)), 0, (float)(_hikeDir0.X * Math.Sin(ang) + _hikeDir0.Z * Math.Cos(ang)));
             // CONFIRMED 00:14 (2026-09-24): 0.3 m from the centre at 35.74 did nothing for 12 s; 0.2 m at 36.05
             // zoned him 0.6 s later. The pad's top first, then our data's height.
-            float padY = e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
+            // A door's recorded position is its centre, ~1.4 m up (Borealis Fair Trade door 68.49 over ground 67.07,
+            // where the owner stood): stand on the ground. Only a whompa pad needs its top surface.
+            float padY = e.Kind == ExitKind.Proxy ? pos.Y : e.A.Y + (_hikePass % 2 == 0 ? 0.285f : 0f);
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
             var aim = new Vector3(e.A.X + dir.X * 1.2f, padY, e.A.Z + dir.Z * 1.2f);
