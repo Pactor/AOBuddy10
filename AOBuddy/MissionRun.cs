@@ -117,7 +117,7 @@ namespace AOBuddy
             if (a.StartsWith("shop"))
             {
                 string v = a.Substring(4).Trim();
-                if (v == "on" || v == "off") _ctx.Config.MissionShop = v == "on";
+                if (v == "on" || v == "off") { _ctx.Config.MissionShop = v == "on"; SaveConfigValue("MissionShop", v == "on"); }
                 if (v == "now")
                 {
                     // Starts the run first if it isn't going (07:56, 2026-09-24: 'shop now' on a fresh start did nothing).
@@ -159,6 +159,7 @@ namespace AOBuddy
                 if (int.TryParse(v, out int d) && d >= 0 && d <= 255)
                 {
                     if (fightStyle) _ctx.Config.MissionFightDifficulty = d; else _ctx.Config.MissionDifficulty = d;
+                    SaveConfigValue(fightStyle ? "MissionFightDifficulty" : "MissionDifficulty", d);
                     reply($"Difficulty for {_ctx.Config.MissionStyle} style set to {d}; from the next roll.");
                 }
                 else reply($"Difficulty: blitz {_ctx.Config.MissionDifficulty}, fight {Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty)} (now on {_ctx.Config.MissionStyle}). 'mission run difficulty <n>' sets it for the current style (captures: 1 easy, 6 his level, 11 hard).");
@@ -167,7 +168,7 @@ namespace AOBuddy
             if (a.StartsWith("style"))
             {
                 string st = a.Length > 5 ? a.Substring(5).Trim() : "";
-                if (st == "fight" || st == "blitz") { _ctx.Config.MissionStyle = st; reply(st == "fight" ? "Style: fight - I'll stop and fight anything that attacks me." : $"Style: blitz - I run to the end and stim, and only stop to fight under {_ctx.Config.MissionFightBelowPercent}% with no stim ready."); }
+                if (st == "fight" || st == "blitz") { _ctx.Config.MissionStyle = st; SaveConfigValue("MissionStyle", st); reply(st == "fight" ? "Style: fight - I'll stop and fight anything that attacks me." : $"Style: blitz - I run to the end and stim, and only stop to fight under {_ctx.Config.MissionFightBelowPercent}% with no stim ready."); }
                 else reply($"Style is {_ctx.Config.MissionStyle}. 'mission run style fight' or 'mission run style blitz'.");
                 return;
             }
@@ -1658,6 +1659,19 @@ namespace AOBuddy
         }
         private string TunePath => Path.Combine(_pluginDir, "tune.json");
         private float T(string k) => _tune.TryGetValue(k, out float v) ? v : TuneDefaults[k].def;
+        // Owner settings given by tell survive a restart (2026-09-24: 'difficulty 5' was lost to one): written into
+        // the plugin's config.json, key by key, leaving the rest of the file as it is.
+        private void SaveConfigValue(string key, JToken value)
+        {
+            try
+            {
+                string path = Path.Combine(_pluginDir, "config.json");
+                var o = File.Exists(path) ? JObject.Parse(File.ReadAllText(path)) : new JObject();
+                o[key] = value;
+                File.WriteAllText(path, o.ToString());
+            }
+            catch (Exception ex) { _ctx.Log($"MISSIONRUN: couldn't save {key} to config.json: {ex.Message}"); }
+        }
         private void SaveTune() { try { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; File.WriteAllText(TunePath, o.ToString()); } catch { } }
         private string TuneText() => string.Join(", ", TuneDefaults.Select(kv => $"{kv.Key}={T(kv.Key)}{(_tune.ContainsKey(kv.Key) ? "*" : "")}"));
         private string StandTune() => $"padtop={T("padtop")} aimpast={T("aimpast")} standwait={T("standwait")}";
