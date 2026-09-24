@@ -303,5 +303,13 @@ missions may be taken in (empty = the terminal's own zone only).
   - **Room:** with plenty of credits, buy the cheapest container and carry on. The 4 free slots still hold.
   - **Selling:** to start with, sell every reward that isn't a nano crystal. Later, a keep-list of items that are
     never sold.
+- **Evidence already captured:** 20260923-234203, with marks from 23:46:12 to 23:49:18. The owner walks into
+  Fair Trade, buys the cheapest bag at the container terminal, and opens the bank. He then puts an item in and
+  takes it out, and uses his way of filling the bank with nanos: take the bag out, fill it in the inventory, and
+  put it back. That is Fair Trade stream s8, decoded in order to `sniffs/work/decoded/20260923-234203_s8_shop.txt`.
+  It is not analysed yet. First look:
+  - the purchase is a Use on the VendingMachine, then ShopUpdate, then Trade messages with a TempBag, and
+    ClientContainerAddItem into the IncomingTradeWindow;
+  - bank moves appear as `Bank:0` containers, and a bag comes out of the bank to inventory slot 111.
 - **Bank (later):** learn to check his bank. Nano crystals are always kept: buy containers, put them in the
   bank, and fill them with nanos.
