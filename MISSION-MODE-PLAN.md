@@ -345,6 +345,15 @@ missions may be taken in (empty = any zone).
     offered 'Large Backpack' (13:24:43-13:25:19, 2026-09-24). Which terminal sold it in the owner's capture is
     not in our notes - to be checked against capture 20260924 before changing anything.
 
+18. **The Longest Road deaths were FALLS off the raised road, not mobs** (owner: nothing there attacks him unless
+    he attacks). 12:33: height 38 -> 34 -> 28 -> 22 -> 16 in 3 s, a Bloodcreeper had taken him only to 96%.
+    13:52: combat=False the whole time, walking at y=37 over ground at 15 (4390,1590), dead a second later.
+    12:14: 100% -> 47% in one second with no combat, then dead. The hike walks the grid's route as straight
+    legs; the grid knows ground and walls but not a road deck above the valley floor, so a leg that cuts a bend
+    walks off the edge. Needs the walkable floor surfaces (collision data) - the navmesh case.
+19. **Raised mission doors** (the main, Omni-1 HQ, 14:27-14:32): door at y 23-24, the server held him at 17 - the
+    way up (stairs/ramp) isn't in our walking; 16 door-side tries, then dropped. Same need as 18.
+
 ### Run changes, 2026-09-24 (ours, `MissionRun.cs`)
 - The hike walks **every** zone crossing (not only the first) and skips the Grid; in-zone teleporters count as crossed.
 - Zone lines are crossed 10 m past, alternating sides every 12 s. Pulled back at a line = that line failed.
