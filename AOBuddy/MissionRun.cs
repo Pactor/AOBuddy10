@@ -141,7 +141,22 @@ namespace AOBuddy
                 {
                     LoadPersonal();
                     var bags = Bags();
-                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => $"{n + 1}) {b.Name}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")}")) + ". 'mission run shop personal <n>' toggles.");
+                    // Bags all have the same name ('Large Backpack'), so each line says where it sits and what's in
+                    // it (owner, 2026-09-24). A bag not opened this session is opened now; ask again for its contents.
+                    var me0 = DynelManager.LocalPlayer;
+                    int opened = 0;
+                    foreach (var b in bags)
+                        if (me0 != null && !Inventory.Containers.Any(c => c?.Items != null && c.Identity == b.UniqueIdentity))
+                        { Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me0.Identity, Target = b.Slot, Count = 1, Temp4 = 0 }); opened++; }
+                    string Line(Item b, int n)
+                    {
+                        var c = Inventory.Containers.FirstOrDefault(x => x?.Items != null && x.Identity == b.UniqueIdentity);
+                        string what = c == null ? "not opened yet" : c.Items.Count == 0 ? "empty"
+                            : $"{c.Items.Count} item(s): " + string.Join(", ", c.Items.Where(i => i?.Name != null).Select(i => i.Name).Take(4)) + (c.Items.Count > 4 ? ", ..." : "");
+                        return $"{n + 1}) {b.Name} in slot {b.Slot.Instance}{(_personalBags.Contains(b.UniqueIdentity) ? " [personal]" : "")} - {what}";
+                    }
+                    reply(bags.Count == 0 ? "No bags in my inventory." : string.Join(" | ", bags.Select((b, n) => Line(b, n)))
+                          + (opened > 0 ? $". Opened {opened} bag(s) just now: ask again for their contents." : "") + " 'mission run shop personal <n>' toggles.");
                     return;
                 }
                 if (v.StartsWith("personal"))
