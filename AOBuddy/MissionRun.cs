@@ -380,7 +380,8 @@ namespace AOBuddy
         {
             if (me == null) return null;
             var opt = Zoning.RouteOptions(me);
-            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0) && !BadExit(e)
+            opt.UseScotty = !NoScotty;   // RubiKa2019 has no Scotty at all (owner): cost the trip as walked
+            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || (e.Kind == ExitKind.Scotty && !NoScotty) || e.ObjInstance != 0) && !BadExit(e)
                               && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance);
             try
             {
