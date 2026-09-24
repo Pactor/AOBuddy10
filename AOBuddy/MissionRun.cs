@@ -1773,19 +1773,24 @@ namespace AOBuddy
                 // Same zone and close, but travel found no way (Andromeda's terminal at (3233,921), 'walled off: no
                 // open ground within 3 m', 08:37-08:40, 2026-09-24 - he had rolled there five minutes before): walk
                 // straight at it, twice, before the backoffs.
-                if (!there && (int)Playfield.ModelId == pf && Flat(me.Transform.Position, goal) < T("walkto") && _straightTries < T("walktries"))
+                // Far goals too, on the grid only (Holes in the Wall, 12:53, 2026-09-24: the door at (441,1512)
+                // 'walled off' 1.5 km away, and the mission was dropped without a try on foot).
+                float far = Flat(me.Transform.Position, goal);
+                if (!there && (int)Playfield.ModelId == pf && (far < T("walkto") || HikeGrid() != null) && _straightTries < T("walktries"))
                 {
-                    _straightTries++;
                     // On the hike's walk grid to the reachable ground nearest it (the grid that walked him from this
                     // terminal to the whompa at 08:42), then straight. The first version only set a target and
                     // returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
-                    _straightGoal = goal; _straightUntil = _clock + 30;
                     var grid = HikeGrid();
                     var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
+                    if (path == null && far >= T("walkto")) goto noWalk;   // far and no grid way: no straight walk
+                    _straightTries++;
+                    _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
                     if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
                     _ctx.Log($"MISSIONRUN: travel found no way to {what} {Flat(me.Transform.Position, goal):0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
                     return true;
                 }
+                noWalk:
                 // The owner's rule: go back to the last known good spot and try another way. Travel said 'walled
                 // off' from a spot the snap-backs left him on (664,499, 23:02:58), where two minutes before, 40 m
                 // back, it had planned the same trip fine.
