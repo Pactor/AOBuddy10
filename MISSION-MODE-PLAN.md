@@ -476,3 +476,8 @@ missions may be taken in (empty = any zone).
     never came. MissionRun now holds only once per spot in a mission and leaves repeats to the blitz. Keeping the
     blocks across a GoOutside of the same instance would make that safe from other callers too.
 
+22. **For Algorithman: Holes in the Wall detour.** 20:32 (2026-09-24): from (197,623) to a mission door at (267,434),
+    about 200 m straight, the grid route was 26 points and 3161 m; it took 9 minutes. The first straight try was pulled
+    back 10.5 m at (198,47,619), so there is a real obstacle, but a 15x detour points at the 2 m grid closing a gap
+    (see finding 10).
+
