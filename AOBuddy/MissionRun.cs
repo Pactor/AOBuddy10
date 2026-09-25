@@ -254,6 +254,31 @@ namespace AOBuddy
                 else reply($"Style is {_ctx.Config.MissionStyle}. 'mission run style fight' or 'mission run style blitz'.");
                 return;
             }
+            // WANT LIST (owner, 2026-09-25): 'mission run want' rolls only for what wants.json asks for; the list
+            // is edited with 'want add|remove|list|mode|status' (or by hand - re-read before every roll).
+            if (a == "want" || a.StartsWith("want "))
+            {
+                var w = Wants;
+                string rest = a.Length > 4 ? a.Substring(5).Trim() : "";
+                if (rest.StartsWith("add ")) { var e = WantList.Parse(rest.Substring(4)); if (e == null) { reply("want add <exact item name> | want add nano engineer ql 20-30 | want add implant ql 200+"); return; } w.Entries.Add(e); w.Save(); reply($"Wanting {e}{WantCount(e)}."); return; }
+                if (rest.StartsWith("remove "))
+                {
+                    if (int.TryParse(rest.Substring(7).Trim(), out int k) && k >= 1 && k <= w.Entries.Count) { var e = w.Entries[k - 1]; w.Entries.RemoveAt(k - 1); w.Save(); reply($"Removed {e}."); }
+                    else reply("want remove <number from 'want list'>");
+                    return;
+                }
+                if (rest == "list") { reply(w.Entries.Count == 0 ? "The want list is empty." : $"Wants ({w.Mode}): " + string.Join("; ", w.Entries.Select((e, k) => $"{k + 1}) {e}"))); return; }
+                if (rest.StartsWith("mode ")) { string md = rest.Substring(5).Trim(); if (md == "always" || md == "list") { w.Mode = md; w.Save(); reply($"Want mode: {md}."); } else reply("want mode always|list"); return; }
+                if (rest == "status") { reply(WantStatus()); return; }
+                if (rest == "clear got") { w.Got.Clear(); w.Save(); reply("Forgot what the want runs collected."); return; }
+                if (rest.Length > 0) { reply("mission run want | want add <name or query> | want remove <n> | want list | want mode always|list | want status | want clear got"); return; }
+                w.Reload();
+                if (w.Entries.Count == 0) { reply("The want list is empty: 'mission run want add ...' first."); return; }
+                if (Active) { _wantRun = true; _wantRolls = 0; reply("Rolling for the want list from the next roll. " + WantStatus()); return; }
+                _wantRun = true; _wantRolls = 0;
+                a = "";
+            }
+            else if (a.Length == 0 || a == "new") _wantRun = false;
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
@@ -407,6 +432,13 @@ namespace AOBuddy
             if (_completed) return;
             _completed = true;
             _ctx.Log($"MISSIONRUN: mission complete ({how}).");
+            if (_wantRun && _current?.MissionItemData != null)
+                foreach (var r in _current.MissionItemData)
+                    if (Wants.Entries.Any(e => WantList.Fits(e, r.LowId, r.Ql)) && Wants.Got.Add(r.LowId))
+                    {
+                        Wants.Save();
+                        _tell($"Got a wanted item: {WantList.NameOf(r.LowId) ?? r.LowId.ToString()} QL {r.Ql}.");
+                    }
             if (_current != null) RememberDone(_current.Playfield.Instance, _current.Location);
         }
 
@@ -418,6 +450,7 @@ namespace AOBuddy
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
             if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
+            if (_wantRun && WantFilter(ok)) return;
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
@@ -1531,9 +1564,88 @@ namespace AOBuddy
         // 'mission run keep implant <ql>' / 'keep implant off'; saved in bankrules.json (per bot folder).
         // ...and items by exact name from a QL up (owner, 2026-09-24: 'QL 200+ Robot Junk is also a keeper').
         // 'mission run keep ql <ql> <exact name>' / 'keep ql off <exact name>'.
-        private bool Bankable(Item i) => IsNano(i) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId))
+        private bool Bankable(Item i) => IsNano(i) || (i != null && _wants != null && _wants.Entries.Any(e => WantList.Fits(e, i.Id, i.Ql))) || (i != null && ImplantMinQl() > 0 && i.Ql >= ImplantMinQl() && ItemValues.IsImplant(i.Id, i.HighId))
                                          || (i?.Name != null && NameRules().TryGetValue(i.Name, out int nq) && i.Ql >= nq);
         private int _implantMinQl = -1;
+
+        // ---- WANT RUN -----------------------------------------------------------------------------------------
+        private WantList _wants;
+        private WantList Wants => _wants ?? (_wants = new WantList(_pluginDir, _ctx.Log));
+        private bool _wantRun;
+        private int _wantRolls;
+        private const int WantRollCap = 300;   // rolls in a row with nothing wanted before he says so and stops
+
+        /// <summary>Templates he holds: inventory, bags, and the bank as last seen.</summary>
+        private HashSet<int> HeldTemplates()
+        {
+            var h = new HashSet<int>();
+            foreach (var i in Inventory.Items) if (i != null) h.Add(i.Id);
+            foreach (var c in Inventory.Containers) if (c?.Items != null) foreach (var i in c.Items) if (i != null) h.Add(i.Id);
+            try { foreach (var i in Inventory.Bank.Items) if (i != null) h.Add(i.Id); } catch { }
+            return h;
+        }
+
+        private string WantCount(WantList.Entry e)
+        {
+            if (e.Name != null || e.Kind != "nano") return "";
+            int n = WantList.CrystalsFor(e).Count;
+            return n == 0 ? " (no nano crystal in the item data fits that)" : $" ({n} nano crystals)";
+        }
+
+        private string WantStatus()
+        {
+            var w = Wants; w.Reload();
+            if (w.Entries.Count == 0) return "The want list is empty.";
+            var held = HeldTemplates();
+            var parts = new List<string>();
+            foreach (var r in w.Remaining(held))
+            {
+                if (r.left == null) { parts.Add($"{r.e}: open"); continue; }
+                if (r.e.Name != null) { parts.Add($"{r.e}: {(r.left.Count == 0 ? "have it" : "wanted")}"); continue; }
+                int all = WantList.CrystalsFor(r.e).Count;
+                string left = r.left.Count > 0 && r.left.Count <= 6
+                    ? " (left: " + string.Join(", ", r.left.Select(c => (WantList.NameOf(c) ?? c.ToString()).Replace("Nano Crystal (", "").TrimEnd(')'))) + ")" : "";
+                parts.Add($"{r.e}: {all - r.left.Count} of {all} had{left}");
+            }
+            return $"Wants ({w.Mode}{(_wantRun ? ", rolling for them" : "")}): " + string.Join("; ", parts);
+        }
+
+        /// <summary>Want run: keep only missions with a wanted reward. True when it handled the roll (done, or
+        /// nothing wanted this roll and it rolls again).</summary>
+        private bool WantFilter(List<MissionInfo> ok)
+        {
+            var w = Wants; w.Reload();
+            var held = HeldTemplates();
+            if (w.Mode == "list")
+            {
+                var rem = w.Remaining(held);
+                if (rem.Count > 0 && rem.All(r => r.left != null && r.left.Count == 0))
+                {
+                    _tell("Want list done: I have everything on it. " + WantStatus());
+                    _ctx.Log("MISSIONRUN: want list done; stopping.");
+                    _wantRun = false;
+                    Stop("want list done");
+                    return true;
+                }
+            }
+            int before = ok.Count;
+            ok.RemoveAll(m => m.MissionItemData == null || !m.MissionItemData.Any(r => w.Wanted(r.LowId, r.Ql, held) != null));
+            if (ok.Count > 0)
+            {
+                _wantRolls = 0;
+                _ctx.Log($"MISSIONRUN: roll {_rolls}: {ok.Count} of {before} mission(s) have a wanted reward.");
+                return false;
+            }
+            if (++_wantRolls >= WantRollCap)
+            {
+                _tell($"No wanted reward in {WantRollCap} rolls; stopping. {WantStatus()}");
+                _wantRun = false; _wantRolls = 0;
+                Stop("nothing wanted offered");
+                return true;
+            }
+            Enter(Phase.Rolling, "nothing wanted");
+            return true;
+        }
         private Dictionary<string, int> _nameRules;
         private string BankRulesPath => Path.Combine(_pluginDir, "bankrules.json");
         private void LoadBankRules()
