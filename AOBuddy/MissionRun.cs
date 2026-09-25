@@ -35,8 +35,6 @@ namespace AOBuddy
         private readonly OverlandController _overland;
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
-        private readonly Func<bool> _dead, _recovering, _buffing, _fighting, _needsRecovery, _inCombat;
-        private readonly Func<int> _selfHp;
         private readonly CombatController _combat;
         private double _fightStart, _fightIgnoreUntil = -1;
         private int _fightHpMin = 100, _prevHp = -1;
@@ -70,11 +68,44 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat, Func<int> selfHp, CombatController combat)
+                          FollowController follow, string pluginDir, Action<string> tell, CombatController combat)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat; _selfHp = selfHp; _combat = combat;
+            _pluginDir = pluginDir; _tell = tell; _combat = combat;
             _roll.ListArrived += OnList;
+        }
+
+        // ---- Live status, read off the shared read-model (R2.2) ------------------------------------------
+        // 'Buffing' is this system's own composition of three status facts (the 15 s window is the run's
+        // policy); the raw facts come from ctx.Status, refreshed by Main each tick before Walk.
+        private bool Buffing => _ctx.Status.HasPendingCasts || _ctx.Status.Resting || _ctx.Status.SecondsSinceCast < 15;
+
+        // FIGHT-OR-RUN POLICY (R2.2: was a ctor lambda closing over Main's privates — decision logic,
+        // not status, so it lives here as the named policy it is). Stop to fight only in an EMERGENCY
+        // (the owner's call: run to the end and heal with stims): in a fight and HP under
+        // MissionFightBelowPercent. Otherwise keep going; stims and pets carry on.
+        private bool FightOrRun()
+        {
+            var lp = DynelManager.LocalPlayer;
+            if (lp == null || !_ctx.Status.InCombat) return false;   // InCombat = combat OR hostiles engaged (us or the owner)
+            // fight style: anything that attacks - INSIDE a mission. On the way (06:51, 2026-09-24) it stopped
+            // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
+            // blitz rules apply whatever the style.
+            if (Fleeing) return false;   // running from a pack (in or out of a mission): no turning to fight
+            if (string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
+            // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
+            // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
+            // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
+            int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
+                                                      && c.Identity != lp.Identity && !_combat.IsSetAside(c.Identity)
+                                                      && c is NpcChar && IsMob(c, _mission.InMission)
+                                                      && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
+            if (onMe >= _ctx.Config.MissionFightAttackers) return true;
+            int hp = _ctx.Status.SelfHpPct;
+            if (hp == SupportController.Unknown) return false;
+            if (hp < _ctx.Config.MissionFightBelowPercent) return true;
+            // stims share the FirstAid lock (40 s after each use)
+            return hp < _ctx.Config.MissionFightNoStimBelowPercent && !lp.IsSpecialReady(Stat.FirstAid);
         }
 
         // ---- Commands ----------------------------------------------------------------------------------
@@ -495,7 +526,7 @@ namespace AOBuddy
                 Enter(Phase.Fight, "held");
                 return false;
             }
-            int hpTick = _selfHp();
+            int hpTick = _ctx.Status.SelfHpPct;
             if (hpTick >= 90) _hpHighAt = _clock;
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
             // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
@@ -514,7 +545,7 @@ namespace AOBuddy
                 Enter(Phase.Fight, "pinned while fleeing");
                 return false;
             }
-            if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -532,7 +563,7 @@ namespace AOBuddy
             {
                 case Phase.Fight:
                 {
-                    int hpNow = _selfHp();
+                    int hpNow = _ctx.Status.SelfHpPct;
                     if (hpNow >= 0) _fightHpMin = Math.Min(_fightHpMin, hpNow);
                     // FLEE (09:33, 2026-09-24): crossing Mutant Domain to a mission door, a pack of Hammer Broodlings
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
@@ -581,7 +612,7 @@ namespace AOBuddy
                             if (foe != null && !nest && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
-                        if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
+                        if (_ctx.Status.InCombat) { _follow.ClearManual(); _phaseTime = 0; return false; }
                         if (_clock < _heldUntil) return false;
                         if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                         // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
@@ -590,7 +621,7 @@ namespace AOBuddy
                         // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
                         // 06:33 2026-09-24): then get moving, stims on the way.
                         bool beingHit = _clock - _lastHurt < 5;
-                        if (!beingHit && (_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        if (!beingHit && (_ctx.Status.Resting || _ctx.Status.NeedsRecovery) && _phaseTime < 60) return false;
                         if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     }
@@ -617,7 +648,7 @@ namespace AOBuddy
                 case Phase.Dead:
                     // The owner's order after a death: run back to the mission terminal and wait out the rez
                     // sickness there (and rebuff); then go back to the open mission, or roll a new one.
-                    if (_dead()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Dead) { _phaseTime = 0; return false; }
                     if (_phaseTime < 3) return false;          // let the reclaim land
                     _afterDeath = true;
                     Enter(Phase.ToTerminal, "reclaimed; to the terminal to wait out rez sickness");
@@ -625,7 +656,7 @@ namespace AOBuddy
 
                 case Phase.ToTerminal:
                     if (_shopAfterOut && !_mission.InMission) { _shopAfterOut = false; _shopTriedAt = -9999; if (StartShop("owner asked")) return false; }
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if ((int)Playfield.ModelId == _termPf && !_overland.Active)
                     {
                         // Travel stops a few metres short and the terminal's own body keeps us ~5 m from its centre
@@ -647,13 +678,13 @@ namespace AOBuddy
                     return Travel(me, _termPf, TerminalApproach(), "the terminal");
 
                 case Phase.Rolling:
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if (_afterDeath)
                     {
                         // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
                         // Buffed = nothing cast or queued for 15 s (the buff scan runs every 2 s and puts up one buff
                         // at a time, refilling nano between them) - not just a fixed pause after the sickness.
-                        if (SupportController.IsRezSick(me) || me.IsCasting || _buffing()) { _phaseTime = 0; return false; }
+                        if (SupportController.IsRezSick(me) || me.IsCasting || Buffing) { _phaseTime = 0; return false; }
                         if (_phaseTime < 3) return false;
                         _afterDeath = false;
                         _tell("Rez sickness is over and my buffs are back up; back to work.");
@@ -719,7 +750,7 @@ namespace AOBuddy
 
                 case Phase.ToDoor:
                 {
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     int pf = _current.Playfield.Instance;
                     Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
                     if (!_overland.Active && (int)Playfield.ModelId == pf && Movement.Flat(me.Transform.Position, goal) <= 12f)
@@ -1667,7 +1698,7 @@ namespace AOBuddy
                         // server echoed each use but never opened the bank). Auto-buff paused for the bank step; each
                         // use waits for 2 s with nothing being cast.
                         if (_bankBuffWas == null) { _bankBuffWas = _ctx.Config.AutoBuff; _ctx.Config.AutoBuff = false; }
-                        if (t < 40 && (me.IsCasting || _buffing())) { _bankQuietAt = _clock; return false; }
+                        if (t < 40 && (me.IsCasting || Buffing)) { _bankQuietAt = _clock; return false; }
                         if (_clock - _bankQuietAt < 2) return false;
                         if (_bankUses < 3 && _clock - _bankUsedAt > 3)
                         {
@@ -2017,7 +2048,7 @@ namespace AOBuddy
             _backoffNext = "flee"; _backoffTo = back[back.Count - 1];
             _follow.ClearMovement();
             _follow.LoadReplay(back, false);
-            _ctx.Log($"MISSIONRUN: fleeing at {_selfHp()}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(n => n.Name).Distinct())}): running {got:0} m back the way I came.");
+            _ctx.Log($"MISSIONRUN: fleeing at {_ctx.Status.SelfHpPct}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(n => n.Name).Distinct())}): running {got:0} m back the way I came.");
             Enter(Phase.Backoff, "fleeing");
             return true;
         }
@@ -2555,7 +2586,7 @@ namespace AOBuddy
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
             // came back as feedback 110. When our blows don't lower a mob's HP, it is set aside for 5 minutes.
             bool readable = a.TryGetStat(Stat.Health, out int ahp);
-            int mine = _selfHp();
+            int mine = _ctx.Status.SelfHpPct;
             if (_defId != a.Identity) { _defId = a.Identity; _defSince = _clock; _defHp = ahp; _defMyMin = mine < 0 ? 100 : mine; }
             else
             {

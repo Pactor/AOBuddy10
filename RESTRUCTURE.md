@@ -224,25 +224,25 @@ own load for one log line, where the shared clock's identity is irrelevant. `Dat
 stamps are wall-calendar names, not a time base. Build clean; live smoke run (heartbeat offsets,
 stim interval, rest max, zone give-up) rides the owner's next session.
 
-### R2.2 `BotStatus` read-model on BotContext — [ ]
-**What.** MissionRun's constructor takes 7 lambdas (`tell, dead, recovering, buffing, fighting,
-needsRecovery, inCombat, selfHp`, MissionRun.cs:72-78) that close over Main's private fields — an
-implicit back-reference to Main. HuntController fabricates `Func<bool> inMission` for itself.
-**Move.** Add to BotContext a small read-model refreshed by Main once per tick, before `Walk`:
-```
-Dead, Resting (sitting), HasPendingCasts, SecondsSinceCast, InCombat (combat OR hostiles engaged,
-  exactly today's `_combat.InCombat || _combat.HostilesEngaged(me, owner)`),
-NeedsRecovery, SelfHpPct, Casting (me.IsCasting), OwnerVisible, OwnerDistance
-```
-MissionRun reads `ctx.Status.X` instead of the lambdas; its constructor loses all seven.
-HuntController's `inMission` becomes `() => ctx.Status.InMission` (add that field; Main sets it
-from `_mission.InMission`). ChewyBuffController and the `Decide` ladder can migrate opportunistically.
-**Careful.** The `fighting` lambda (Main.cs:182-204) is the mission fight-or-run policy — that is
-*decision logic*, not status. Keep it a delegate but move the delegate into MissionRun's own file
-(or a named `MissionFightPolicy` method on Main) so the policy reads as policy; only the raw
-condition lambdas become status reads.
-**DONE WHEN.** MissionRun's ctor parameter list is ctx/roll/mission/overland/follow/combat/tell/
-pluginDir only; a blitz run and a fight-style run behave as before (log the same fight turns).
+### R2.2 `BotStatus` read-model on BotContext — [x] done 2026-09-25
+`BotStatus.cs`: plain-fields read-model on `ctx.Status` (Dead, Resting, HasPendingCasts,
+SecondsSinceCast, InCombat, NeedsRecovery, SelfHpPct, Casting, InMission, OwnerVisible,
+OwnerDistance). `Main.RefreshStatus` fills it once per tick JUST BEFORE Walk — after Chewy has
+queued this frame's casts, so HasPendingCasts/SecondsSinceCast are current for systems that yield
+to casting. MissionRun's seven ctor lambdas are gone: raw conditions read `ctx.Status.X`, its
+`Buffing` composition (the <15 s window is the run's policy) and the fight-or-run POLICY are named
+members of MissionRun.cs now (`FightOrRun`, comments moved verbatim — reads as policy, lives in its
+own file, no delegate needed: Status.InCombat IS the old lambda's `InCombat ||
+HostilesEngaged(lp, FindOwner())` by construction). Ctor is ctx/roll/mission/overland/follow/
+pluginDir/tell/combat. HuntController's `inMission` reads `ctx.Status.InMission`.
+**Timing notes verified:** Status.Dead holds false through the reclaim wait (OnUpdate returns at
+the death handler before RefreshStatus) — identical to what the old lazy lambda could ever return,
+since MissionRun only ticks on frames Main isn't dead; command threads read the last snapshot,
+which is the freshness the lambdas gave a few statements later anyway. ChewyBuffController and the
+Decide ladder keep their direct reads (the opportunistic migration was optional; nothing needs it
+yet — they'll flip when R6.2's session seam or R3's extractions touch them). R5.2's residual is now
+only the `Resupply` ctor param. Build clean; blitz + fight-style smoke rides the owner's next
+session (same fight turns in the log is the regression test).
 
 ### R2.3 `JsonStore` — one persistence helper — [ ]
 **What.** Scattered file IO with silent catches: Main (paths/*.json, config, aobuddy.log,

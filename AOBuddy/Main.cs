@@ -168,44 +168,15 @@ namespace AOBuddy
             _overland = new OverlandController(_ctx, _move, pluginDir,
                 _ctx.TellOwner);
 
-            _hunt = new HuntController(_ctx, () => _mission.InMission);
+            _hunt = new HuntController(_ctx, () => _ctx.Status.InMission);
             _chewy = new ChewyBuffController(_ctx, _support, _overland, pluginDir,
                 _ctx.TellOwner);
             Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
+            // No condition lambdas anymore (R2.2): MissionRun reads ctx.Status, and its fight-or-run
+            // POLICY lives in its own file (FightOrRun) instead of a closure over Main's privates.
             _run = new MissionRun(_ctx, _roll, _mission, _overland, _follow, pluginDir,
                 _ctx.TellOwner,
-                () => _dead,
-                () => _support.Resting,    // only while actually sitting: a low HP the rest logic won't sit for must not park the run
-                () => _support.HasPendingCasts || _support.Resting || _support.SecondsSinceCast < 15,
-                // Stop to fight only in an EMERGENCY (the owner's call: run to the end and heal with stims): in a
-                // fight and HP under MissionFightBelowPercent. Otherwise keep going; stims and pets carry on.
-                () =>
-                {
-                    var lp = DynelManager.LocalPlayer;
-                    if (lp == null || !(_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner()))) return false;
-                    // fight style: anything that attacks - INSIDE a mission. On the way (06:51, 2026-09-24) it stopped
-                    // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
-                    // blitz rules apply whatever the style.
-                    if (_run.Fleeing) return false;   // running from a pack (in or out of a mission): no turning to fight
-                    if (string.Equals(_config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
-                    // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
-                    // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
-                    // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
-                    int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
-                                                              && c.Identity != lp.Identity && !_combat.IsSetAside(c.Identity)
-                                                              && c is NpcChar && MissionRun.IsMob(c, _mission.InMission)
-                                                              && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
-                    if (onMe >= _config.MissionFightAttackers) return true;
-                    int hp = _support.SelfHpPct(lp);
-                    if (hp == SupportController.Unknown) return false;
-                    if (hp < _config.MissionFightBelowPercent) return true;
-                    // stims share the FirstAid lock (40 s after each use)
-                    return hp < _config.MissionFightNoStimBelowPercent && !lp.IsSpecialReady(Stat.FirstAid);
-                },
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && _support.NeedsRecovery(lp); },
-                () => { var lp = DynelManager.LocalPlayer; return lp != null && (_combat.InCombat || _combat.HostilesEngaged(lp, FindOwner())); },
-                () => { var lp = DynelManager.LocalPlayer; return lp == null ? SupportController.Unknown : _support.SelfHpPct(lp); },
                 _combat);
             _run.Resupply = _resupply;
 
@@ -818,6 +789,7 @@ namespace AOBuddy
                 _roll.Tick(dt);
                 _chewy.StartupTick(me, dt);
                 _chewy.Tick(me, dt, _combat.InCombat);
+                RefreshStatus(me, owner);
                 Walk(me, owner, dt);
 
                 _decisionAccum += dt;
@@ -833,6 +805,27 @@ namespace AOBuddy
                 _support.CheckSupplies(owner, dt);
             }
             catch (Exception ex) { Logger.Error($"update error: {ex.Message}"); Log($"UPDATE EXCEPTION: {ex}"); }
+        }
+
+        // ---- Cross-system status read-model (R2.2) --------------------------------
+        // One refresh per tick, JUST BEFORE Walk — after Chewy has queued this frame's casts so
+        // HasPendingCasts/SecondsSinceCast are current for the systems that yield to casting, and
+        // before anything downstream (MissionRun ticks inside Walk) reads them. The values are the
+        // same expressions the old MissionRun ctor lambdas evaluated lazily a few statements later.
+        private void RefreshStatus(LocalPlayer me, PlayerChar owner)
+        {
+            BotStatus s = _ctx.Status;
+            s.Dead = _dead;
+            s.Resting = _support.Resting;
+            s.HasPendingCasts = _support.HasPendingCasts;
+            s.SecondsSinceCast = _support.SecondsSinceCast;
+            s.InCombat = _combat.InCombat || _combat.HostilesEngaged(me, owner);
+            s.NeedsRecovery = _support.NeedsRecovery(me);
+            s.SelfHpPct = _support.SelfHpPct(me);
+            s.Casting = me.IsCasting;
+            s.InMission = _mission.InMission;
+            s.OwnerVisible = owner != null;
+            s.OwnerDistance = owner != null ? me.DistanceFrom(owner) : 0f;
         }
 
         // ---- MOVE: exactly one system moves the body, every single frame --------

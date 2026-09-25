@@ -16,6 +16,9 @@ namespace AOBuddy
         // THE bot clock (R2.1): the one monotonic time base every controller reads. Created in Main.Init.
         public readonly IClock Clock;
 
+        // Cross-system status read-model (R2.2), refreshed by Main once per tick just before Walk.
+        public readonly BotStatus Status = new BotStatus();
+
         // What the movement arbiter decided this frame (shown in the heartbeat). Written by
         // whichever mover ran; read only by the heartbeat log.
         public string WalkState = "";
