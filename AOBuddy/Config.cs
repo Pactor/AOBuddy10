@@ -221,6 +221,9 @@ namespace AOBuddy
         public List<int> MissionAvoidZones = new List<int>();
         // Want runs: a wanted nano never offered in this many rolls near its QL is dropped as no mission reward.
         public int WantUnseenRolls = 500;
+        // Mission zones that rank lower (playfield ids; Athen Shire 550 by default): their travel cost goes up by this.
+        public List<int> MissionSlowZones = new List<int> { 550 };
+        public float MissionSlowZoneCost = 3000;
         public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
         public bool MissionRecord = false;                       // record every mission building's packets + a mob/door index (missions/records)
         public bool MissionClear = false;                        // clear mode: kill every mob in the building before the objective (mission run clear on|off)

@@ -485,7 +485,11 @@ namespace AOBuddy
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
             // crossing), with the options travel plans with, so the weight is the route he will actually take.
             // A door with no route at all is left alone.
-            var weighed = ok.Select(x => (m: x, cost: TravelCost(me, x))).ToList();
+            // Zones that are slow to get into rank lower (owner, 2026-09-25: Athen Shire - its zone lines refused him
+            // and he cycled Stret West Bank / Holes in the Wall / Aegean for 11 minutes, 17:06-17:17): their cost goes
+            // up by MissionSlowZoneCost, so he takes them only when nothing cheaper is offered.
+            var slow = _ctx.Config.MissionSlowZones ?? new List<int>();
+            var weighed = ok.Select(x => (m: x, cost: TravelCost(me, x) + (slow.Contains(x.Playfield.Instance) ? _ctx.Config.MissionSlowZoneCost : 0))).ToList();
             _ctx.Log($"MISSIONRUN: roll {_rolls} travel weights: {string.Join("; ", weighed.Select(w => $"{Zoning.Name(w.m.Playfield.Instance)} ({w.m.Location.X:0},{w.m.Location.Z:0}) {(w.cost.HasValue ? w.cost.Value.ToString("0") : "no route")}"))}");
             weighed = weighed.Where(w => w.cost.HasValue).ToList();
             if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
