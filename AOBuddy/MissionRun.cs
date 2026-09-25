@@ -1919,15 +1919,16 @@ namespace AOBuddy
                 var rem = w.Remaining(held);
                 if (rem.Count > 0 && rem.All(r => _unreachable.Contains(r.e) || (r.left != null && r.left.Count == 0)))
                 {
-                    _tell("Want list done: I have everything on it. " + WantStatus());
-                    _ctx.Log("MISSIONRUN: want list done; stopping.");
+                    // Done: carry on with ordinary missions (owner, 2026-09-25, reversing 'at the end, say done and stop').
+                    _tell("Want list done: I have everything on it. Carrying on with ordinary missions. " + WantStatus());
+                    _ctx.Log("MISSIONRUN: want list done; carrying on with ordinary missions.");
                     _wantRun = false; _roll.DifficultyOverride = null;
                     if (_unreachable.Count > 0) _tell("Out of reach: " + string.Join("; ", _unreachable) + ".");
-                    Stop("want list done");
-                    return true;
+                    return false;
                 }
             }
             int before = ok.Count;
+            var all = new List<MissionInfo>(ok);
             ok.RemoveAll(m => m.MissionItemData == null || !m.MissionItemData.Any(r => w.Wanted(r.LowId, r.Ql, held) != null));
             if (ok.Count > 0)
             {
@@ -1937,10 +1938,13 @@ namespace AOBuddy
             }
             if (++_wantRolls >= WantRollCap)
             {
-                _tell($"No wanted reward in {WantRollCap} rolls; stopping. {WantStatus()}");
-                _wantRun = false; _wantRolls = 0; _roll.DifficultyOverride = null;
-                Stop("nothing wanted offered");
-                return true;
+                // No wanted reward for a long stretch: take an ordinary mission from this roll and keep rolling for
+                // the wants after it (owner, 2026-09-25: 'just continue' instead of stopping).
+                _tell($"No wanted reward in {WantRollCap} rolls; taking an ordinary mission, then back to the want list. {WantStatus()}");
+                _ctx.Log($"MISSIONRUN: no wanted reward in {WantRollCap} rolls; an ordinary mission this time.");
+                _wantRolls = 0;
+                ok.Clear(); ok.AddRange(all);
+                return false;
             }
             Enter(Phase.Rolling, "nothing wanted");
             return true;
