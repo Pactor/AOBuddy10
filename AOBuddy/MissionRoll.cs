@@ -121,6 +121,11 @@ namespace AOBuddy
             else SendRoll();
         }
 
+        /// <summary>Set by the want run to aim the mission QL (step 4); null = the configured difficulty.</summary>
+        public int? DifficultyOverride;
+        /// <summary>The difficulty the last roll was sent with.</summary>
+        public int LastDifficulty { get; private set; }
+
         private void SendRoll()
         {
             _rollAt = -1;
@@ -129,8 +134,8 @@ namespace AOBuddy
             var c = _ctx.Config;
             var sliders = new MissionSliders
             {
-                Difficulty = (byte)Math.Max(0, Math.Min(255, string.Equals(c.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
-                    ? Math.Max(c.MissionDifficulty, c.MissionFightDifficulty) : c.MissionDifficulty)),
+                Difficulty = (byte)Math.Max(0, Math.Min(255, DifficultyOverride ?? (string.Equals(c.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+                    ? Math.Max(c.MissionDifficulty, c.MissionFightDifficulty) : c.MissionDifficulty))),
                 GoodBad = Slider(c.MissionSliderGoodBad),
                 OrderChaos = Slider(c.MissionSliderOrderChaos),
                 OpenHidden = Slider(c.MissionSliderOpenHidden),
@@ -138,6 +143,7 @@ namespace AOBuddy
                 HeadonStealth = Slider(c.MissionSliderHeadonStealth),
                 CreditsXp = Slider(c.MissionSliderCreditsXp),
             };
+            LastDifficulty = sliders.Difficulty;
             Client.Send(new QuestAlternativeMessage
             {
                 VersionId = 4, MissionSliders = sliders, Unknown2 = 0, Scope = _scope,

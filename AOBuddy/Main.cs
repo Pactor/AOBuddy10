@@ -118,6 +118,7 @@ namespace AOBuddy
             _perkBonuses = new PerkBonuses(pluginDir, _config, Log);
             _perkBonuses.Init();
             ItemValues.Load(pluginDir, Log);
+            WantData.Load(pluginDir, Log);
             Zoning.Load(pluginDir, Log);
 
             _ctx = new BotContext(_config, Log, new Clock());
