@@ -107,7 +107,10 @@ namespace AOBuddy
                 // Send the Use straight to the captured identity. Travel objects (mission floor
                 // buttons/terminals, grid, whompas) aren't tracked as findable dynels, so a
                 // lookup-based Dynel.Use() never fires — we command the exact identity we captured.
-                GameCommands.UseObject(me, _pendingUseTravel.Value);
+                // ...by its LIVE id: a use on a static statel id (C0xxxxxx, what the owner's use reports) is refused
+                // with feedback 110/184786807 - the Andromeda temple terminal Terminal:C004028F, 16:06-16:07
+                // 2026-09-25, twice. Same fix as the bank (Playfield.LiveIdentity, capture 20260924-192208).
+                GameCommands.UseObject(me, Playfield.LiveIdentity(_pendingUseTravel.Value));
                 _ctx.Log($"USE-TRAVEL: sent Use to {_pendingUseTravel.Value} at ({goal.X:0},{goal.Y:0},{goal.Z:0}) — expecting to zone.");
                 Clear();
                 return true;
