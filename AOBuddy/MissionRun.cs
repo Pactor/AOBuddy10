@@ -453,6 +453,13 @@ namespace AOBuddy
                     StartBackoff(me, "travel");
                     return false;
                 }
+                // Held once at a spot inside a mission; pulled back there again, it is a wall, not a root: leave it
+                // to the blitz, which blocks the cells it keeps walking into and gives up after 12 re-plans.
+                // Holding again restarted its walk out (backoutside), which cleared those blocks every time: 19:55-
+                // 20:02 (2026-09-24), ACD building, 18 holds at (53,5,237) re-planning the same 69 m route.
+                if (_mission.Active && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
+                    return false;
+                _heldAt = _mission.Active ? me.Transform.Position : (Vector3?)null;
                 _heldUntil = _clock + T("held");
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -874,6 +881,7 @@ namespace AOBuddy
             if (gap > T("pullgap")) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
         }
         private readonly List<double> _bigSnaps = new List<double>();
+        private Vector3? _heldAt;
         private double _heldUntil = -1;
         private int _goodPf = -1;
         private bool _goodInMission;

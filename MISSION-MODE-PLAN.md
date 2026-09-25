@@ -470,3 +470,9 @@ missions may be taken in (empty = any zone).
     (Newland FT), both what his client sent. Any other static terminal in an instanced zone needs the same mapping
     (Zoning/whompa uses in instanced zones, if any). Both captured Fair Trades were model 1186, not 1187.
 
+21. **For Algorithman: `backoutside` (GoOutside) clears `_blocked` and `_replans`.** 19:55-20:02 (2026-09-24), ACD
+    building: snapped back at (53,5,237) on the walk out; our 15 s 'held' pause restarted the walk with backoutside
+    each time, which wiped the blocked cells, so the same 69 m route was planned 18 times and the 12-re-plan give-up
+    never came. MissionRun now holds only once per spot in a mission and leaves repeats to the blitz. Keeping the
+    blocks across a GoOutside of the same instance would make that safe from other callers too.
+
