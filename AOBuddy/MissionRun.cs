@@ -270,8 +270,20 @@ namespace AOBuddy
                 if (rest == "list") { reply(w.Entries.Count == 0 ? "The want list is empty." : $"Wants ({w.Mode}): " + string.Join("; ", w.Entries.Select((e, k) => $"{k + 1}) {e}"))); return; }
                 if (rest.StartsWith("mode ")) { string md = rest.Substring(5).Trim(); if (md == "always" || md == "list") { w.Mode = md; w.Save(); reply($"Want mode: {md}."); } else reply("want mode always|list"); return; }
                 if (rest == "status") { reply(WantStatus()); return; }
+                if (rest.StartsWith("drop ") || rest.StartsWith("undrop "))
+                {
+                    bool drop = rest.StartsWith("drop ");
+                    string nm = rest.Substring(drop ? 5 : 7).Trim();
+                    var hits = WantData.Crystals.Where(kv => { var n = WantList.NameOf(kv.Key); return n != null && n.IndexOf(nm, StringComparison.OrdinalIgnoreCase) >= 0; }).Select(kv => kv.Value).Distinct().ToList();
+                    if (hits.Count == 0) { reply($"No nano crystal named like '{nm}'."); return; }
+                    LoadOffered();
+                    foreach (var n in hits) { if (drop) _notRollable.Add(n); else _notRollable.Remove(n); }
+                    SaveOffered();
+                    reply($"{(drop ? "Not rollable" : "Rollable again")}: {nm} ({hits.Count} nano{(hits.Count == 1 ? "" : "s")}).");
+                    return;
+                }
                 if (rest == "clear got") { w.Got.Clear(); w.Save(); reply("Forgot what the want runs collected."); return; }
-                if (rest.Length > 0) { reply("mission run want | want add <name or query> | want remove <n> | want list | want mode always|list | want status | want clear got"); return; }
+                if (rest.Length > 0) { reply("mission run want | want add <name or query> | want remove <n> | want list | want mode always|list | want status | want drop|undrop <nano name> | want clear got"); return; }
                 w.Reload();
                 if (w.Entries.Count == 0) { reply("The want list is empty: 'mission run want add ...' first."); return; }
                 if (Active) { _wantRun = true; _wantRolls = 0; _unreachable.Clear(); WantAim(); reply("Rolling for the want list from the next roll. " + WantStatus()); return; }
@@ -354,6 +366,7 @@ namespace AOBuddy
 
         public void Stop(string why)
         {
+            if (_offered != null && _offeredDirty > 0) SaveOffered();
             if (!Active) return;
             if (_phase == Phase.Blitz && _mission.Active) _mission.Stop("mission run stopped");
             if (_overland.Active) _overland.Stop("mission run stopped");
@@ -450,7 +463,8 @@ namespace AOBuddy
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
             if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
-            QlObserve(list);
+            int? rollQl = QlObserve(list);
+            RecordOffers(list, rollQl);
             if (_wantRun && WantFilter(ok)) { WantAim(); return; }
             if (_wantRun) WantAim();
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
@@ -1600,23 +1614,107 @@ namespace AOBuddy
         private readonly HashSet<WantList.Entry> _unreachable = new HashSet<WantList.Entry>();
 
         /// <summary>Record this roll's mission QL (the QL its gear/implant rewards share) for level + difficulty.</summary>
-        private void QlObserve(IReadOnlyList<MissionInfo> list)
+        private int? QlObserve(IReadOnlyList<MissionInfo> list)
         {
             var gear = list.SelectMany(m => m.MissionItemData ?? new MissionItemReward[0]).Where(r => r != null && !WantData.IsCrystal(r.LowId) && r.Ql > 1).Select(r => r.Ql).ToList();
-            if (gear.Count == 0) return;
+            if (gear.Count == 0) return null;
             int ql = gear.GroupBy(q => q).OrderByDescending(g => g.Count()).First().Key;
             string key = $"{MyLevel()}:{_roll.LastDifficulty}";
-            if (QlMap.TryGetValue(key, out int old) && old == ql) return;
+            if (QlMap.TryGetValue(key, out int old) && old == ql) return ql;
             QlMap[key] = ql;
             try { var o = new JObject(); foreach (var kv in QlMap) o[kv.Key] = kv.Value; JsonStore.Save(QlMapPath, o.ToString(), _ctx.Log); } catch { }
             _ctx.Log($"MISSIONRUN: level {MyLevel()}, difficulty {_roll.LastDifficulty} -> mission QL {ql}.");
+            return ql;
+        }
+
+        // ---- OFFERED REWARDS (owner, 2026-09-25: "some of these may not be rollable, but I don't know which") ----
+        // Every roll's rewards are counted (template -> times offered), and so are the rolls at each mission QL.
+        // A wanted nano never offered in UnseenCap rolls whose mission QL was within NanoWindow of its crystal's QL
+        // is taken as not a mission reward and dropped from the want list; 'want drop <name>' does it by hand.
+        // Kept in offered.json (per bot), so the evidence builds up across runs and restarts.
+        private const int UnseenCap = 500;
+        private Dictionary<int, int> _offered, _rollsAtQl;
+        private HashSet<int> _notRollable;   // nano program ids
+        private string OfferedPath => Path.Combine(_pluginDir, "offered.json");
+        private int _offeredDirty;
+        private void LoadOffered()
+        {
+            if (_offered != null) return;
+            _offered = new Dictionary<int, int>(); _rollsAtQl = new Dictionary<int, int>(); _notRollable = new HashSet<int>();
+            try
+            {
+                if (!File.Exists(OfferedPath)) return;
+                var o = JObject.Parse(File.ReadAllText(OfferedPath));
+                foreach (var kv in (JObject)o["offered"] ?? new JObject()) _offered[int.Parse(kv.Key)] = (int)kv.Value;
+                foreach (var kv in (JObject)o["rollsAtQl"] ?? new JObject()) _rollsAtQl[int.Parse(kv.Key)] = (int)kv.Value;
+                foreach (var n in (JArray)o["notRollable"] ?? new JArray()) _notRollable.Add((int)n);
+            }
+            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read offered.json: " + ex.Message); }
+        }
+        private void SaveOffered()
+        {
+            var o = new JObject
+            {
+                ["offered"] = new JObject(_offered.OrderBy(k => k.Key).Select(k => new JProperty(k.Key.ToString(), k.Value))),
+                ["rollsAtQl"] = new JObject(_rollsAtQl.OrderBy(k => k.Key).Select(k => new JProperty(k.Key.ToString(), k.Value))),
+                ["notRollable"] = new JArray(_notRollable.OrderBy(x => x)),
+            };
+            JsonStore.Save(OfferedPath, o.ToString(), _ctx.Log);
+            _offeredDirty = 0;
+        }
+        private void RecordOffers(IReadOnlyList<MissionInfo> list, int? ql)
+        {
+            LoadOffered();
+            foreach (var r in list.SelectMany(m => m.MissionItemData ?? new MissionItemReward[0]))
+                if (r != null) _offered[r.LowId] = (_offered.TryGetValue(r.LowId, out int c) ? c : 0) + 1;
+            if (ql.HasValue) _rollsAtQl[ql.Value] = (_rollsAtQl.TryGetValue(ql.Value, out int n) ? n : 0) + 1;
+            if (++_offeredDirty >= 10) SaveOffered();   // every 10 rolls
+        }
+        /// <summary>Times any crystal of this nano was offered.</summary>
+        private int NanoOffered(int nano) { LoadOffered(); return WantData.Crystals.Where(kv => kv.Value == nano).Sum(kv => _offered.TryGetValue(kv.Key, out int c) ? c : 0); }
+        /// <summary>Rolls whose mission QL was within the nano window of this crystal's QL.</summary>
+        private int RollsNear(int crystal)
+        {
+            LoadOffered();
+            int q = ItemData.Find(crystal, out DummyItem d) && d != null ? d.Ql : 0;
+            return _rollsAtQl.Where(kv => Math.Abs(kv.Key - q) <= NanoWindow).Sum(kv => kv.Value);
+        }
+        /// <summary>Held templates plus one crystal of each nano judged not rollable, so the list can finish.</summary>
+        private HashSet<int> HeldOrDropped()
+        {
+            var h = HeldTemplates();
+            LoadOffered();
+            foreach (var kv in WantData.Crystals) if (_notRollable.Contains(kv.Value)) h.Add(kv.Key);
+            return h;
+        }
+        /// <summary>Drop wanted nanos never offered in UnseenCap rolls near their QL; true when any was dropped.</summary>
+        private bool DropUnseen()
+        {
+            bool any = false;
+            foreach (var r in Wants.Remaining(HeldOrDropped()))
+            {
+                if (r.left == null || r.e.Kind != "nano") continue;
+                foreach (var c in r.left)
+                {
+                    int nano = WantData.NanoOf(c);
+                    if (nano == 0 || NanoOffered(nano) > 0) continue;
+                    int near = RollsNear(c);
+                    if (near < UnseenCap) continue;
+                    _notRollable.Add(nano); any = true;
+                    string nm = (WantList.NameOf(c) ?? c.ToString()).Replace("Nano Crystal (", "").TrimEnd(')');
+                    _tell($"{nm}: never offered in {near} rolls at its QL; taking it as no mission reward and dropping it.");
+                    _ctx.Log($"MISSIONRUN: want: {nm} (nano {nano}) never offered in {near} rolls near its QL; dropped.");
+                }
+            }
+            if (any) SaveOffered();
+            return any;
         }
 
         /// <summary>The QL band to aim at: the open entry with a QL band, most left first. Nano: the missing
         /// crystals' QLs, +-NanoWindow; gear/implant/spirit: its band.</summary>
         private (WantList.Entry e, int lo, int hi, int aim)? WantBand()
         {
-            var held = HeldTemplates();
+            var held = HeldOrDropped();
             (WantList.Entry, int, int, int)? best = null; int bestLeft = -1;
             foreach (var r in Wants.Remaining(held))
             {
@@ -1701,16 +1799,22 @@ namespace AOBuddy
         {
             var w = Wants; w.Reload();
             if (w.Entries.Count == 0) return "The want list is empty.";
-            var held = HeldTemplates();
+            var held = HeldOrDropped();
             var parts = new List<string>();
             foreach (var r in w.Remaining(held))
             {
                 if (r.left == null) { parts.Add($"{r.e}: open"); continue; }
                 if (r.e.Name != null) { parts.Add($"{r.e}: {(r.left.Count == 0 ? "have it" : "wanted")}"); continue; }
                 int all = WantList.NanosFor(r.e).Count;
-                string left = r.left.Count > 0 && r.left.Count <= 6
-                    ? " (left: " + string.Join(", ", r.left.Select(c => (WantList.NameOf(c) ?? c.ToString()).Replace("Nano Crystal (", "").TrimEnd(')'))) + ")" : "";
-                parts.Add($"{r.e}: {all - r.left.Count} of {all} had{left}");
+                string left = r.left.Count > 0 && r.left.Count <= 8
+                    ? " (left: " + string.Join(", ", r.left.Select(c =>
+                        {
+                            int nano = WantData.NanoOf(c), seen = NanoOffered(nano);
+                            string nm = (WantList.NameOf(c) ?? c.ToString()).Replace("Nano Crystal (", "").TrimEnd(')');
+                            return seen > 0 ? $"{nm} [offered {seen}x]" : $"{nm} [never offered in {RollsNear(c)} rolls at its QL]";
+                        })) + ")" : "";
+                int dropped = WantList.NanosFor(r.e).Count(c => _notRollable.Contains(WantData.NanoOf(c)));
+                parts.Add($"{r.e}: {all - r.left.Count - dropped} of {all} had{(dropped > 0 ? $", {dropped} not rollable" : "")}{left}");
             }
             return $"Wants ({w.Mode}{(_wantRun ? ", rolling for them" : "")}): " + string.Join("; ", parts);
         }
@@ -1720,7 +1824,8 @@ namespace AOBuddy
         private bool WantFilter(List<MissionInfo> ok)
         {
             var w = Wants; w.Reload();
-            var held = HeldTemplates();
+            DropUnseen();
+            var held = HeldOrDropped();
             if (w.Mode == "list")
             {
                 var rem = w.Remaining(held);

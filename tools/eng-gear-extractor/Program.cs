@@ -1029,7 +1029,7 @@ class Program
                 if (version >= 2) ReadRecordData(r, version);
                 if (!names.TryGetValue(id, out var nm) || nm.name.IndexOf(part, StringComparison.OrdinalIgnoreCase) < 0 || shown >= 6) continue;
                 shown++;
-                Console.WriteLine($"{id} '{nm.name}' QL={(stats.TryGetValue(54, out var q) ? q : -1)} class={(stats.TryGetValue(0x4C, out var c) ? c : -1)} actions=[{string.Join(",", acts.Select(a => a.type))}]");
+                Console.WriteLine($"{id} '{nm.name}' QL={(stats.TryGetValue(54, out var q) ? q : -1)} class={(stats.TryGetValue(0x4C, out var c) ? c : -1)} actions=[{string.Join(",", acts.Select(a => a.type))}] stats={string.Join(" ", stats.OrderBy(k => k.Key).Select(k => k.Key + "=" + k.Value))}");
                 foreach (var ev in evs) foreach (var f in ev.funcs) Console.WriteLine($"   ev {ev.type} fn {f.FunctionType} args [{string.Join(",", f.Args)}]");
             }
         }
