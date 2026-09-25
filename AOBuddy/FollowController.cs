@@ -12,7 +12,7 @@ namespace AOBuddy
     ///     1. TURN TO OWNER  — rotate in place (real TurnLeft/TurnRight packets) until we face him,
     ///                         instead of sliding sideways while pointing the wrong way.
     ///     2. MOVE TO OWNER  — run straight at his CURRENT position (interpolated, fed every frame by
-    ///                         Main's PredictOwnerPos) until we're inside FollowDistance.
+    ///                         OwnerTracker.PredictedPos) until we're inside FollowDistance.
     ///     3. TURN HIS WAY   — once parked, adopt the OWNER'S OWN heading, so the instant he runs off
     ///                         we're already pointing where he's going and start moving immediately
     ///                         instead of burning the first metres turning.

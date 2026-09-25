@@ -55,6 +55,7 @@ namespace AOBuddy
 
         // The isolated systems + their shared low-level movement and blackboard.
         private BotContext _ctx;
+        private OwnerTracker _owner;         // who the owner is, where he is, where he's going (R3.1)
         private Movement _move;
         private FollowController _follow;
         private CombatController _combat;
@@ -84,24 +85,13 @@ namespace AOBuddy
         private float _effAttackRange = 8f;  // her own weapon's reach (for the heartbeat log)
         private double _decisionAccum;       // decision-tick throttle
 
-        // Owner visibility bookkeeping (drives follow record/reacquire and travel arming).
+        // Self-position bookkeeping (the owner's visibility/position state lives in OwnerTracker, R3.1).
         private Vector3? _lastFramePos;      // to detect server teleports/zones (big position jumps)
-        private bool _ownerVisibleLast;
-        private Vector3? _lastOwnerPos;
-        private double _ownerLostSeconds;    // how long the owner has been continuously out of view
         private Vector3? _serverAnchor;      // the last position the server confirmed for us (from SetPos)
         private double _serverAnchorAge;     // seconds since that correction (leash only enforced while fresh)
         private Vector3? _zoneCrossPos;      // our position the instant before a real teleport (the zone line)
         private double _zoneCrossAge = 999;  // seconds since that teleport (a nav transition needs one to be recent)
         private int _diagOwnerMoves, _diagSelfMoves;   // DIAG: CharDCMove messages received per heartbeat (owner vs self)
-        // Owner-interpolation state: his latest movement keyframe + derived velocity, so we can predict his
-        // position between the server's sparse (~1/s) keyframes (see PredictOwnerPos). Keyframe times are
-        // ctx.Clock seconds (the one bot clock, R2.1).
-        private Vector3? _ownerKeyPos;
-        private double _ownerKeyTime;
-        private Vector3 _ownerVel;
-        private Quaternion _ownerKeyHeading;
-        private bool _ownerMovingKey;
         private Identity? _lastUsedObj;      // the object the owner most recently USED (button/lift/terminal)
         private Vector3? _lastUsedObjPos;
         private double _lastUsedObjAge = 999; // seconds since that use (a warp needs a teleport right after)
@@ -114,9 +104,8 @@ namespace AOBuddy
         //   * he simply outran us on open ground -> nothing to cross; keep walking his queued waypoints
         // We can tell the third from the second because a zone line is something he walked THROUGH from
         // close by while moving, not something he vanished from at forty metres. Sweeping on open ground
-        // is what made the bot pace back and forth in a field.
-        private float _ownerLostDist;        // how far off he was at the moment he vanished
-        private bool _ownerLostMoving;       // ...and whether he was actually travelling at the time
+        // is what made the bot pace back and forth in a field. (The vanished-close-and-moving facts
+        // themselves — LostDist/LostMoving — are OwnerTracker's; see the R3.2 note there.)
         private int _zoneAttempts;           // sweeps made this episode
         private double _zoneEpisodeElapsed;  // time since he vanished, for the overall give-up
         private bool _zoneGaveUp;            // told him we lost him; stop retrying until he is back
@@ -154,6 +143,7 @@ namespace AOBuddy
             Zoning.Load(pluginDir, Log);
 
             _ctx = new BotContext(_config, Log, new Clock());
+            _owner = new OwnerTracker(_ctx);
             _ctx.Vitals = new VitalsTracker(_ctx);
             _ctx.NavGrid = new NavGridCache();
             // MOVEDBG-OUT (2026-09-25, the Wailing Wastes rubberband): every movement packet we SEND while
@@ -230,26 +220,12 @@ namespace AOBuddy
                 {
                     if (m != null && m.Body is CharDCMoveMessage cm)
                     {
-                        if (cm.Identity.Instance == _ctx.OwnerCharId)
+                        if (cm.Identity.Instance == _owner.ChatId)
                         {
                             _diagOwnerMoves++;
-                            // Capture the owner's movement keyframe and derive his velocity for interpolation.
-                            double now = _ctx.Clock.Seconds;
-                            Vector3 p = cm.Position;
-                            // Speed is only measured between two MOVING keyframes: across a stop->start gap the
-                            // displacement/time is ~0 and would leave him unpredicted for his whole first second.
-                            if (_ownerKeyPos.HasValue && _ownerMovingKey)
-                            {
-                                double d = now - _ownerKeyTime;
-                                if (d > 0.03)
-                                {
-                                    Vector3 v = (p - _ownerKeyPos.Value) / (float)d;
-                                    if (v.Magnitude <= 20f) _ownerVel = v;   // ignore teleport-sized jumps
-                                }
-                            }
-                            _ownerKeyPos = p; _ownerKeyTime = now;
-                            _ownerKeyHeading = cm.Heading;
-                            _ownerMovingKey = IsMovingMove(cm.MoveType);
+                            // Capture the owner's movement keyframe and derive his velocity for interpolation
+                            // (R3.1: the state and the math live in the tracker).
+                            _owner.OnKeyframe(cm);
 
                             // MIRROR: stacked on him — his move is our move, sent the instant it arrives.
                             if (_follow.MirrorLocked && Movement.IsMirrorable(cm.MoveType))
@@ -310,7 +286,7 @@ namespace AOBuddy
             {
                 // Tells from anyone else are never obeyed, but they are logged: Scotty answers warp requests by tell,
                 // and those answers were invisible while travel waited on warps that never came (2026-09-23).
-                if (!IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
+                if (!_owner.IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
                 Log($"CMD from {msg.SenderName}: '{msg.Message}'");
                 try { HandleCommand(msg.Message, text => Client.SendPrivateMessage(msg.SenderId, text)); }
                 catch (Exception ex) { Logger.Error($"command error: {ex.Message}"); Log($"COMMAND EXCEPTION: {ex}"); }
@@ -500,7 +476,7 @@ namespace AOBuddy
             _support.OnZone();            // re-grace buffs/rest after the reclaim (stats read stale a moment)
             _ctx.Vitals.Clear();
             Log($"RECLAIMED/alive at ({pos.X:0},{pos.Y:0},{pos.Z:0}) after {_deadSeconds:0}s dead — resuming.");
-            PlayerChar owner = FindOwner();
+            PlayerChar owner = _owner.Find();
             if (owner != null)
                 try { Client.SendPrivateMessage(owner.Identity.Instance, $"Back up at the reclaim point ({pos.X:0},{pos.Y:0},{pos.Z:0}). Waiting for you — send 'come' when close or walk to me."); } catch { }
         }
@@ -510,7 +486,7 @@ namespace AOBuddy
         {
             try
             {
-                PlayerChar owner = FindOwner();
+                PlayerChar owner = _owner.Find();
                 if (owner == null || user.Instance != owner.Identity.Instance) return;
                 Vector3? pos = DynelManager.Find(target, out Dynel obj) ? (Vector3?)obj.Transform.Position : owner.Transform.Position;
                 _travel.OnOwnerUsed(target, pos);
@@ -616,7 +592,7 @@ namespace AOBuddy
                     ClearNav();
                 }
 
-                PlayerChar owner = FindOwner();
+                PlayerChar owner = _owner.Find();
 
                 // NAV: keep the persistent per-playfield memory pointed at the current zone (updates on
                 // zone-in, records the crossing), and autosave the file while it's dirty.
@@ -638,20 +614,20 @@ namespace AOBuddy
 
                 // Owner-visibility bookkeeping: FOLLOW records his footsteps while he's visible and
                 // clears a stale trail on a far reacquire; TRAVEL arms a ride when he vanishes right
-                // after using an object.
+                // after using an object. The tracker (R3.1) keeps Visible/LastPos/LostSeconds and the
+                // id caches; Main runs the edge orchestration — reacquire hands FOLLOW a clean slate,
+                // losing him hands TRAVEL its shot.
                 _travel.Age(dt);
-                _ownerLostSeconds = owner == null ? _ownerLostSeconds + dt : 0;
-
-                bool ownerVisible = owner != null;
+                bool wasVisible = _owner.Visible;
+                bool ownerVisible = _owner.UpdateVisible(owner, dt);
                 if (ownerVisible)
                 {
-                    _ctx.OwnerCharId = owner.Identity.Instance;
-                    if (!_ownerVisibleLast)
+                    if (!wasVisible)
                     {
                         _follow.OnReacquired(owner);
                         if (_navReplaying) { _follow.StopReplay(); _navReplaying = false; }   // back in view — drop the fallback route, follow live
                     }
-                    _follow.RecordAt(PredictOwnerPos(owner));   // interpolated owner position → smooth trail between sparse keyframes
+                    _follow.RecordAt(_owner.PredictedPos(owner));   // interpolated owner position → smooth trail between sparse keyframes
                     if (_follow.Recording) _follow.RecordPathPoint(owner);
 
                     // NAV record: only while following cleanly (Assist, follow on, NOT combat/rest/sweep/
@@ -660,13 +636,12 @@ namespace AOBuddy
                                     && !_support.Resting && !_follow.ZoneSweeping && !_travel.Active;
                     _nav.RecordOwner(owner.Transform.Position, navClean);
 
-                    _lastOwnerPos = owner.Transform.Position;
                     _zoneSweepTried = false;   // he's back in view — allow a fresh zone attempt next time he's lost
                 }
-                else if (_ownerVisibleLast)
+                else if (wasVisible)
                 {
                     // He just dropped out of view. Give TRAVEL its shot (rode an object?).
-                    _travel.OnOwnerLost(_lastOwnerPos);
+                    _travel.OnOwnerLost(_owner.LastPos);
                 }
 
                 if (ownerVisible || _overland.Active || _run.Active) _arrivedAlone = 0;   // zoning alone is the point of overland travel
@@ -707,12 +682,12 @@ namespace AOBuddy
                     && _config.Follow && _mode == Mode.Assist && !me.IsCasting && !_support.Resting && !_follow.ZoneSweeping;
                 if (navEligible)
                 {
-                    Vector3? tgt = ownerVisible ? (Vector3?)owner.Transform.Position : _lastOwnerPos;
+                    Vector3? tgt = ownerVisible ? (Vector3?)owner.Transform.Position : _owner.LastPos;
                     // Defer to TRAVEL and zoning: when the owner just blinked out (rode a button / crossed a
                     // zone line), that's travel's/the sweep's job — don't fire nav until he's been genuinely
                     // lost a couple seconds. When he's VISIBLE but far, catch up immediately (the ramp case).
                     bool needCatchup = (ownerVisible && owner != null && me.DistanceFrom(owner) > _config.NavCatchupMeters)
-                                       || (!ownerVisible && _ownerLostSeconds > 2.0);
+                                       || (!ownerVisible && _owner.LostSeconds > 2.0);
                     if (needCatchup && tgt.HasValue)
                     {
                         List<Vector3> route = _nav.RouteToward(me.MovementComponent.Position, tgt.Value);
@@ -752,18 +727,18 @@ namespace AOBuddy
                 // never while he needs to recover (don't wander off instead of healing).
                 // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
                 // spot he disappeared from, and he is still gone: he crossed something. Work the line.
-                bool crossingLikely = _ownerLostDist <= ZoneLossMeters && _ownerLostMoving;
+                bool crossingLikely = _owner.LostDist <= ZoneLossMeters && _owner.LostMoving;
                 if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active && !_overland.Active && !_run.Active
                     && !_follow.ZoneSweeping && !_navReplaying
                     && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
-                    && _lastOwnerPos.HasValue && !_follow.HasWork)
+                    && _owner.LastPos.HasValue && !_follow.HasWork)
                 {
                     if (_zoneAttempts >= ZoneMaxAttempts || _zoneEpisodeElapsed > ZoneEpisodeSeconds)
                     {
                         // Out of attempts. Say where we lost him rather than standing there silently — he
                         // can walk back, or send 'zone' to make us work the same spot again.
                         _zoneGaveUp = true;
-                        Vector3 lp = _lastOwnerPos.Value;
+                        Vector3 lp = _owner.LastPos.Value;
                         Log($"ZONE: gave up after {_zoneAttempts} attempt(s) / {_zoneEpisodeElapsed:0}s at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name}.");
                         _ctx.TellOwner($"I lost you at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name} and can't get across. Holding here — walk back or send 'zone'.");
                     }
@@ -773,9 +748,9 @@ namespace AOBuddy
                         // recorded transition is near where he vanished, sweep THAT instead: it is a spot
                         // that provably works, rather than our best guess at where the line runs.
                         Vector3 centre = me.MovementComponent.Position;
-                        Vector3? known = _config.NavUse ? _nav.NearestTransition(_lastOwnerPos.Value) : null;
+                        Vector3? known = _config.NavUse ? _nav.NearestTransition(_owner.LastPos.Value) : null;
                         string why = "owner vanished ahead while following (not combat)";
-                        if (known.HasValue && Vector3.Distance(known.Value, _lastOwnerPos.Value) <= _config.NavSnapMeters)
+                        if (known.HasValue && Vector3.Distance(known.Value, _owner.LastPos.Value) <= _config.NavSnapMeters)
                         {
                             centre = known.Value;
                             why = "a crossing we have made here before";
@@ -789,7 +764,6 @@ namespace AOBuddy
                             _zoneGaveUp = true;   // no usable direction from his path; stop trying this episode
                     }
                 }
-                _ownerVisibleLast = ownerVisible;
 
                 _support.UpdateVitals(me, dt, _combat.InCombat);
                 _ctx.Vitals.Poll(me, owner);
@@ -875,7 +849,7 @@ namespace AOBuddy
                 else _move.Stop(me, _config.SendIntervalMs);
                 return;   // on its own: no following, no owner-lost chasing
             }
-            if (_travel.Tick(me, dt, owner != null, _ownerLostSeconds)) { _follow.BreakMirror(); return; }
+            if (_travel.Tick(me, dt, owner != null, _owner.LostSeconds)) { _follow.BreakMirror(); return; }
             _follow.WalkTick(me, owner, dt);
         }
 
@@ -979,42 +953,6 @@ namespace AOBuddy
             _ctx.SetBehavior(active ? "Following" : "Idle");
         }
 
-        // A movement keyframe that means the owner is still moving (vs. a stop/sit).
-        private static bool IsMovingMove(MovementAction mt) =>
-            mt == MovementAction.ForwardStart || mt == MovementAction.Update
-            || mt == MovementAction.SwitchToWalk || mt == MovementAction.SwitchToRun;
-
-        // The owner's position, PREDICTED forward from his latest keyframe using his own reported velocity —
-        // fills the gap between the server's sparse (~1/s) owner keyframes so the trail is smooth and the bot
-        // keeps up. Extrapolates only while his last keyframe was "moving", only horizontally, only on flat
-        // ground (no vertical guess on ramps), and only for a capped time (bounds any stop-overshoot). Falls
-        // back to his raw position otherwise. Feeds crumbs, which stay wall-safe (it's his own motion).
-        private Vector3 PredictOwnerPos(PlayerChar owner)
-        {
-            if (!_config.OwnerInterp || !_ownerKeyPos.HasValue) return owner.Transform.Position;
-            double dtSince = _ctx.Clock.Seconds - _ownerKeyTime;
-            if (_ownerMovingKey && dtSince > 0)
-            {
-                // Past the cap, HOLD at the capped point rather than snapping back to the keyframe — snapping
-                // back put the target behind the bot, which then turned round to walk back to it.
-                float t = (float)Math.Min(dtSince, _config.OwnerInterpMaxSec);
-                Vector3 kp = _ownerKeyPos.Value;
-                // Direction from the heading HE REPORTED in that keyframe (he runs where he faces), not from
-                // the previous keyframe-to-keyframe delta: that one points along his OLD leg, so every turn he
-                // made sent the prediction — and the bot — shooting off past the corner. Speed is his own
-                // measured horizontal speed; Y keeps his measured climb rate so ramps stay on the surface.
-                Vector3 fwd = _ownerKeyHeading.Forward;
-                Vector3 flat = new Vector3(fwd.X, 0f, fwd.Z);
-                Vector3 velFlat = new Vector3(_ownerVel.X, 0f, _ownerVel.Z);
-                float speed = velFlat.Magnitude;
-                if (flat.Magnitude < 0.001f || speed < 0.1f) return kp;
-                // Backpedalling / strafing: he isn't moving where he faces, so trust his measured direction.
-                Vector3 h = Vector3.Dot(flat.Normalize(), velFlat) > 0.5f * speed ? flat.Normalize() * speed : velFlat;
-                return new Vector3(kp.X + h.X * t, kp.Y + _ownerVel.Y * t, kp.Z + h.Z * t);
-            }
-            return owner.Transform.Position;
-        }
-
         // Reset all navigation state on a detected zone/teleport so no system chases old coordinates.
         private void ClearNav()
         {
@@ -1026,7 +964,7 @@ namespace AOBuddy
             _support.OnZone();
             _ctx.Vitals.Clear();    // readings from the old playfield say nothing about anyone here
             _move.Reset();
-            _ownerLostSeconds = 0;
+            _owner.ResetOnZone();
             _navReplaying = false;
             _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
             _arrivedAlone = 0.001;   // start the "did he follow me here?" clock
@@ -1142,7 +1080,7 @@ namespace AOBuddy
                 case "stay": _config.Follow = false; reply("Staying put (follow off)."); break;
                 case "come":
                 {
-                    PlayerChar o = FindOwner();
+                    PlayerChar o = _owner.Find();
                     if (o != null) { _follow.SetManualTarget(o.Transform.Position); reply("On my way."); }
                     else reply("Can't see you (out of range?).");
                     break;
@@ -1227,7 +1165,7 @@ namespace AOBuddy
                 case "pethealme":
                 case "petheal":
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
+                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
                     if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
                     if (!_pets.HealTargetLatched(mp, po.Identity, "you")) { reply("No heal pet up."); break; }
                     reply("Heal pet is on you.");
@@ -1276,7 +1214,7 @@ namespace AOBuddy
 
                 case "pethealmytarget":
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
+                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
                     if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
                     // Only what you are FIGHTING is on the wire. A selection you have merely clicked is not:
                     // LookAtMessage, which carries a target change, is only ever sent with the sender's own
@@ -1307,7 +1245,7 @@ namespace AOBuddy
                 }
                 case "petattack":
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = FindOwner();
+                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
                     if (mp == null || po == null || po.FightingTarget == null) { reply("No target — are you fighting?"); break; }
                     _pets.EngageTarget(mp, po.FightingTarget, 999.0);   // force it through now
                     reply($"Pets: attacking {po.FightingTarget.Name}.");
@@ -1330,7 +1268,7 @@ namespace AOBuddy
                 }
                 case "buff": QueueBuffs(arg, reply); break;
                 case "heal":
-                    PlayerChar ht = FindOwner();
+                    PlayerChar ht = _owner.Find();
                     if (_config.HealNanoId > 0 && ht != null) { _support.QueueCast(new CastRequest { Target = ht.Identity, NanoId = _config.HealNanoId, Label = "heal owner" }); reply("Queued a heal."); }
                     else reply(ht == null ? "Can't see you (out of range?)." : "No heal nano configured (HealNanoId).");
                     break;
@@ -1407,7 +1345,7 @@ namespace AOBuddy
                 {
                     LocalPlayer meB = DynelManager.LocalPlayer;
                     if (meB == null) { reply("No character loaded."); break; }
-                    List<string> pl = _support.DescribeBuffPlans(meB, FindOwner());
+                    List<string> pl = _support.DescribeBuffPlans(meB, _owner.Find());
                     if (pl.Count == 0) { reply("Auto-buff: no learned nanos classified as keep-up buffs."); break; }
                     reply($"Auto-buff {(_config.AutoBuff ? "ON" : "OFF")} (self={_config.BuffSelf} owner={_config.BuffOwner} team={_config.BuffTeam}, margin {_config.RebuffMarginSeconds:0}s): {pl.Count} buffs.");
                     foreach (string s in pl.Take(20)) reply(s);
@@ -1474,7 +1412,7 @@ namespace AOBuddy
         private void WorkTheZoneLine(LocalPlayer p, Action<string> reply)
         {
             Vector3 mypos = p.MovementComponent.Position;
-            Vector3? line = _nav.NearestTransition(_lastOwnerPos ?? mypos) ?? _nav.EntryPoint();
+            Vector3? line = _nav.NearestTransition(_owner.LastPos ?? mypos) ?? _nav.EntryPoint();
             if (line.HasValue)
             {
                 List<Vector3> route = _nav.RouteToward(mypos, line.Value);
@@ -1499,8 +1437,8 @@ namespace AOBuddy
             // the bot's facing.
             if (!_follow.StartZoneSweep(mypos))
             {
-                Vector3 dir = (_lastOwnerPos.HasValue && (_lastOwnerPos.Value - mypos).Length() > 0.5f)
-                                ? _lastOwnerPos.Value - mypos
+                Vector3 dir = (_owner.LastPos.HasValue && (_owner.LastPos.Value - mypos).Length() > 0.5f)
+                                ? _owner.LastPos.Value - mypos
                                 : p.MovementComponent.Heading.Forward;
                 _follow.StartManualSweep(mypos, dir);
             }
@@ -1515,7 +1453,7 @@ namespace AOBuddy
                 foreach (int id in _config.SelfBuffNanoIds) { _support.QueueCast(new CastRequest { OnSelf = true, NanoId = id, Label = "self buff" }); queued++; }
             if (which == "owner" || which == "all")
             {
-                PlayerChar owner = FindOwner();
+                PlayerChar owner = _owner.Find();
                 if (owner != null) foreach (int id in _config.OwnerBuffNanoIds) { _support.QueueCast(new CastRequest { Target = owner.Identity, NanoId = id, Label = "owner buff" }); queued++; }
             }
             if (which == "team" || which == "all")
@@ -1715,7 +1653,7 @@ namespace AOBuddy
                 case "me":
                 case "you":
                 case "owner":
-                    return FindOwner();
+                    return _owner.Find();
                 case "him":
                 case "he":
                 case "self":
@@ -1733,31 +1671,6 @@ namespace AOBuddy
         private string HealWhoHint() =>
             "'pethealme' (you), 'pethealself' (me), 'pethealpet' (my attack pet), "
             + "or 'pethealtarget <name>' for anyone else I can see.";
-
-        private PlayerChar FindOwner() =>
-            DynelManager.Players.FirstOrDefault(p => string.Equals(p.Name, _config.Owner, StringComparison.OrdinalIgnoreCase));
-
-        private bool IsOwner(string name) =>
-            !string.IsNullOrEmpty(name) && string.Equals(name, _config.Owner, StringComparison.OrdinalIgnoreCase);
-
-        private uint _ownerChatId;   // sender id proven to be the owner, kept for when the name map is empty
-
-        /// <summary>
-        /// Owner check for an incoming tell. A tell's SenderName is looked up in ChatClient.IdToNameMap and is
-        /// literally "&lt;Unknown&gt;" until that map knows the id — so a name-only check silently DROPS the
-        /// owner's own commands. Fall back to the sender id: remembered once seen, else the owner's dynel id.
-        /// </summary>
-        private bool IsOwnerSender(string name, uint senderId)
-        {
-            if (IsOwner(name))
-            {
-                if (senderId != 0) _ownerChatId = senderId;
-                return true;
-            }
-            if (senderId != 0 && senderId == _ownerChatId) return true;
-            PlayerChar owner = FindOwner();
-            return owner != null && senderId != 0 && (uint)owner.Identity.Instance == senderId;
-        }
 
         private string StatusLine()
         {

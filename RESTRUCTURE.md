@@ -275,7 +275,19 @@ only.
 Target: Main.cs ≈400 lines. Each extraction is one commit; after each, Main still compiles and
 the smoke run is clean. Extraction order matters (R3.1 before R3.2; R3.4 anytime).
 
-### R3.1 `OwnerTracker` — [ ]
+### R3.1 `OwnerTracker` — [x] done 2026-09-25
+`OwnerTracker.cs` (new, ctor takes ctx): `Find()`/`IsOwnerSender` (identity, incl. the proven tell id
+`_tellId` and the dynel-id cache `ChatId`, mirrored into `ctx.OwnerCharId` for ResupplyController's
+trade check), `UpdateVisible(owner, dt)` (the per-frame bookkeeping: LostSeconds/LastPos/id caches,
+returns this frame's visibility while `Visible` still holds last frame's — Main reads the pair as the
+reacquire/lost edge), `OnKeyframe(cm)` + `PredictedPos` (interpolation, verbatim), `ResetOnZone()`
+(ClearNav's LostSeconds=0, nothing else — keyframes/LastPos kept exactly as the inline reset did).
+Main's CharDCMove handler keeps the identity test (`_owner.ChatId`), the DIAG counters and the MIRROR
+forward; the tell handler and every command's Find call route through the tracker. The never-assigned
+`_ownerLostDist`/`_ownerLostMoving` moved as `LostDist`/`LostMoving` properties (still dead — R3.2
+decides restore-vs-delete with the rest of the zone-episode state). FollowController's header doc
+pointer updated. Build clean; DONE-WHEN grep (KeyPos/Interp in Main.cs) empty; the corners-and-ramps
+follow smoke rides the owner's next session.
 **What moves.** Owner keyframe/velocity state and interpolation (`_ownerKeyPos, _ownerKeyTime,
 _ownerVel, _ownerKeyHeading, _ownerMovingKey`, `PredictOwnerPos`, `IsMovingMove`, the keyframe
 capture in the CharDCMove handler Main.cs:247-282); owner lookup + identity (`FindOwner`,
