@@ -1205,8 +1205,12 @@ namespace AOBuddy
             string target = me?.IsAttacking == true && me.FightingTarget != null ? me.FightingTarget.Name : "none";
             int hpPct = me != null ? _support.SelfHpPct(me) : SupportController.Unknown;
             string hp = hpPct == SupportController.Unknown ? "?" : hpPct + "%";
-            string lvl = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l.ToString() : "?";
-            return $"Lvl: {lvl}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}. Target: {target}. Waypoints: {_follow.TrailCount}.";
+            int level = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l : 0;
+            string lvl = level > 0 ? level.ToString() : "?";
+            // Stat.XP is the progress inside the current level; the table says what that level costs.
+            int xpPct = level > 0 && me != null && me.TryGetStat(Stat.XP, out int xpVal) ? XpTable.PercentToNext(level, xpVal) : -1;
+            string xp = xpPct >= 0 ? xpPct + "%" : "?";
+            return $"Lvl: {lvl}. XP: {xp}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}. Target: {target}. Waypoints: {_follow.TrailCount}.";
         }
 
         private static Mode ParseMode(string s)

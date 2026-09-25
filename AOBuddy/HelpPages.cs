@@ -83,7 +83,7 @@ namespace AOBuddy
                     new Cmd("solo", "fight anything nearby that is already fighting"),
                     new Cmd("idle", "stop fighting and stand down"),
                     new Cmd("specials", "toggle weapon specials (Brawl, Fast Attack, Burst, ...)"),
-                    new Cmd("status", "level, mode, health, current target"),
+                    new Cmd("status", "level, xp to next level, mode, health, current target"),
                     new Cmd("stat", "read any stat by name or number", "<name|number>"),
                     new Cmd("hunt", "send my pets at every mob within a radius of me (I stay put), next one when it dies, again when they respawn", "[radius|off|status|why]"),
                 },
