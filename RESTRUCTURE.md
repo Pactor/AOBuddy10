@@ -244,18 +244,29 @@ yet — they'll flip when R6.2's session seam or R3's extractions touch them). R
 only the `Resupply` ctor param. Build clean; blitz + fight-style smoke rides the owner's next
 session (same fight turns in the log is the regression test).
 
-### R2.3 `JsonStore` — one persistence helper — [ ]
-**What.** Scattered file IO with silent catches: Main (paths/*.json, config, aobuddy.log,
-missions/*.bin), MissionRun (six private JSONs: missionrun/missionterminal/keepitems/personalbags/
-rewardids/rewardnames), ResupplyController (resupply.json), NavController (nav/<pf>.json with its
-own snapshot-copy autosave).
-**Move.** One `JsonStore` static: `Load<T>(path)`, `SaveAtomic(path, Action<T> write or object
-graph)` — temp file + `File.Replace`/rename, log-once failure policy via ctx.Log, no silent
-swallows. Migrate the sites; NavController's dirty-autosave keeps its cadence but writes through
-the store.
-**DONE WHEN.** `grep -rn "File.WriteAllText" AOBuddy/*.cs` hits only JsonStore (and the .bin debug
-capture, which stays raw); corrupting resupply.json by hand produces one logged line and a clean
-recreate instead of silence.
+### R2.3 `JsonStore` — one persistence helper — [x] done 2026-09-25
+`JsonStore.cs`: `Load<T>(path, log)` (null when absent OR corrupt, ONE logged line per path+direction
+so a hand-corrupted file is visible and the caller starts clean) and `Save(path, text, log)`
+(serialize at the call site so each site keeps its own formatting; write `.tmp` then
+`File.Replace`/rename so a crash mid-write can never truncate state; returns bool, never throws).
+Migrated EVERY state write: Main's paths (SavePath returns bool; `savepath` reply now says when it
+failed), NavController's snapshot autosave (dirty stays set when the store reports failure, so it
+retries), ResupplyController (the corrupt-resupply.json test case), MissionRun's eleven (keepitems,
+personalbags, rewardids, rewardnames, bankrules, fairtrade, danger, tune, config.json key-save,
+missionterminal, missionrun state), NanoCatalog's export (gained the log param), and
+SupportController's noland file — not JSON, but the same job: an atomic state write with visible
+failure. Matching loads went through `Load<JObject/JArray/T>` with each site's interpretation
+try/catch KEPT (the store surfaces IO/parse failures; junk-token handling is the site's, as before).
+**Kept raw on purpose:** the .bin wire captures and aobuddy.log (append; not state files), the
+read-only GameData inputs (Zoning.json, FactionAreas, AOBuddyNav, PerkData, ChewyBuffs' read —
+inputs with their own fallbacks), Main.LoadConfig (already logged + needs the R0.3
+ObjectCreationHandling.Replace settings), and Main.LoadPath (an absent/corrupt path file throws to
+the `path` command, which replies "Load failed: ..." — its error surface). Per-site failure
+messages ("RESUPPLY: couldn't save...") are now the one JSONSTORE line per path. **Verified with a
+scratch harness** (R0.3's pattern): corrupt→null + exactly one logged line, second failure silent,
+absent file null+silent, atomic replace over a corrupt target, read-only target → false + one line
++ no throw, JArray round-trip — 10/10 pass. DONE-WHEN grep: `File.WriteAllText` hits JsonStore.cs
+only.
 
 ---
 

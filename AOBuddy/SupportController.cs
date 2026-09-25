@@ -569,7 +569,8 @@ namespace AOBuddy
 
         private void SaveNoLand()
         {
-            try { File.WriteAllText(OwnerNoLandFile, string.Join(",", _ownerNoLand)); } catch { }
+            // Not JSON, but the same job: an atomic state write whose failure is visible (R2.3).
+            JsonStore.Save(OwnerNoLandFile, string.Join(",", _ownerNoLand), _ctx.Log);
         }
 
         // A short while after we cast a buff on the owner, confirm it actually landed in his buff list. If

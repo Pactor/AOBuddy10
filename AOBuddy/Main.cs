@@ -1305,7 +1305,7 @@ namespace AOBuddy
                 case "catalog":
                 {
                     string dir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_logFile) ?? ".", "catalog");
-                    var r = NanoCatalog.ExportAll(dir);
+                    var r = NanoCatalog.ExportAll(dir, Log);
                     reply(r.Item1 >= 0 ? $"Exported {r.Item1} nanos to catalog/ (all + per-class json)." : $"Catalog failed: {r.Item2}");
                     break;
                 }
@@ -1323,7 +1323,7 @@ namespace AOBuddy
                 case "save":
                     if (string.IsNullOrEmpty(arg)) { reply("Usage: savepath <name>"); break; }
                     if (_follow.RecordCount == 0) { reply("Nothing recorded. Use 'record' first."); break; }
-                    try { SavePath(arg, _follow.RecordBuffer); reply($"Saved '{arg}' ({_follow.RecordCount} points)."); }
+                    try { if (SavePath(arg, _follow.RecordBuffer)) reply($"Saved '{arg}' ({_follow.RecordCount} points)."); else reply("Save failed (see log)."); }
                     catch (Exception ex) { reply("Save failed: " + ex.Message); }
                     break;
                 case "path":
@@ -1648,10 +1648,10 @@ namespace AOBuddy
 
         private string PathFile(string name) => Path.Combine(_pathsDir, name + ".json");
 
-        private void SavePath(string name, List<Vector3> pts)
+        private bool SavePath(string name, List<Vector3> pts)
         {
             var data = pts.Select(p => new[] { p.X, p.Y, p.Z }).ToList();
-            File.WriteAllText(PathFile(name), JsonConvert.SerializeObject(data));
+            return JsonStore.Save(PathFile(name), JsonConvert.SerializeObject(data), Log);
         }
 
         private List<Vector3> LoadPath(string name)

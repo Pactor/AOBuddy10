@@ -1432,14 +1432,14 @@ namespace AOBuddy
             if (_keepAdded == null)
             {
                 _keepAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                try { if (File.Exists(KeepPath)) foreach (var t in JArray.Parse(File.ReadAllText(KeepPath))) _keepAdded.Add((string)t); } catch { }
+                try { foreach (var t in JsonStore.Load<JArray>(KeepPath, _ctx.Log) ?? new JArray()) _keepAdded.Add((string)t); } catch { }
             }
             var k = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
             k.UnionWith(_keepAdded);
             k.Add(_ctx.Config.ResupplyStimName); k.Add(_ctx.Config.ResupplyRechargerName);
             return k;
         }
-        private void SaveKeep() { try { File.WriteAllText(KeepPath, new JArray(_keepAdded.ToArray()).ToString()); } catch { } }
+        private void SaveKeep() { JsonStore.Save(KeepPath, new JArray(_keepAdded.ToArray()).ToString(), _ctx.Log); }
 
         // PERSONAL BAGS: nothing in them is ever sold. Marked by the bag's own identity ('mission run shop bags'
         // lists them numbered, 'mission run shop personal <n>' toggles), saved in personalbags.json.
@@ -1449,9 +1449,9 @@ namespace AOBuddy
         {
             if (_personalBags != null) return;
             _personalBags = new HashSet<Identity>();
-            try { if (File.Exists(PersonalPath)) foreach (var t in JArray.Parse(File.ReadAllText(PersonalPath))) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(PersonalPath, _ctx.Log) ?? new JArray()) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
         }
-        private void SavePersonal() { try { File.WriteAllText(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString()); } catch { } }
+        private void SavePersonal() { JsonStore.Save(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString(), _ctx.Log); }
         private List<Item> Bags() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container).OrderBy(i => i.Slot.Instance).ToList();
         private HashSet<int> _rewardHistory;
         private string RewardsPath => Path.Combine(_pluginDir, "rewardids.json");
@@ -1461,16 +1461,16 @@ namespace AOBuddy
             if (_rewardHistory != null) return;
             _rewardHistory = new HashSet<int>();
             _rewardNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            try { if (File.Exists(RewardsPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardsPath))) _rewardHistory.Add((int)t); } catch { }
-            try { if (File.Exists(RewardNamesPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardNamesPath))) _rewardNames.Add((string)t); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(RewardsPath, _ctx.Log) ?? new JArray()) _rewardHistory.Add((int)t); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(RewardNamesPath, _ctx.Log) ?? new JArray()) _rewardNames.Add((string)t); } catch { }
         }
         private void RememberReward(int low, int high)
         {
             LoadRewards();
             bool added = _rewardHistory.Add(low) | _rewardHistory.Add(high);
-            if (added) try { File.WriteAllText(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString()); } catch { }
+            if (added) JsonStore.Save(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString(), _ctx.Log);
             if (ItemData.Find(low, out DummyItem it) && it?.Name != null && _rewardNames.Add(it.Name))
-                try { File.WriteAllText(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString()); } catch { }
+                JsonStore.Save(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString(), _ctx.Log);
         }
         public string SellPreview()
         {
@@ -1497,8 +1497,8 @@ namespace AOBuddy
             _implantMinQl = 0; _nameRules = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                if (!File.Exists(BankRulesPath)) return;
-                var o = JObject.Parse(File.ReadAllText(BankRulesPath));
+                var o = JsonStore.Load<JObject>(BankRulesPath, _ctx.Log);
+                if (o == null) return;
                 _implantMinQl = (int?)o["implantMinQl"] ?? 0;
                 if (o["names"] is JObject n) foreach (var kv in n) _nameRules[kv.Key] = (int)kv.Value;
             }
@@ -1507,7 +1507,7 @@ namespace AOBuddy
         private void SaveBankRules()
         {
             var n = new JObject(); foreach (var kv in _nameRules) n[kv.Key] = kv.Value;
-            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString()); } catch { }
+            JsonStore.Save(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString(), _ctx.Log);
         }
         private int ImplantMinQl() { LoadBankRules(); return _implantMinQl; }
         private Dictionary<string, int> NameRules() { LoadBankRules(); return _nameRules; }
@@ -1540,15 +1540,15 @@ namespace AOBuddy
         {
             try
             {
-                if (!File.Exists(FairTradePath)) return null;
-                var o = JObject.Parse(File.ReadAllText(FairTradePath));
+                var o = JsonStore.Load<JObject>(FairTradePath, _ctx.Log);
+                if (o == null) return null;
                 return new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
             }
             catch { return null; }
         }
         private void SaveFairTradeLanding(Vector3 v)
         {
-            try { File.WriteAllText(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString()); } catch { }
+            JsonStore.Save(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString(), _ctx.Log);
         }
 
         private bool ShopTick(LocalPlayer me)
@@ -1963,9 +1963,8 @@ namespace AOBuddy
                 _dangerStore = new Dictionary<int, (DateTime, int)>();
                 try
                 {
-                    if (File.Exists(DangerPath))
-                        foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath)))
-                            _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
+                    foreach (var kv in JsonStore.Load<JObject>(DangerPath, _ctx.Log) ?? new JObject())
+                        _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
                 }
                 catch { }
                 return _dangerStore;
@@ -1976,7 +1975,8 @@ namespace AOBuddy
         {
             int n = _danger.TryGetValue(pf, out var old) ? old.n + 1 : 1;
             _danger[pf] = (DateTime.UtcNow, n);
-            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n }; File.WriteAllText(DangerPath, o.ToString()); } catch { }
+            var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n };
+            JsonStore.Save(DangerPath, o.ToString(), _ctx.Log);
         }
         private double DangerMinutes(int n) => T("dangermins") * Math.Pow(2, Math.Min(6, Math.Max(0, n - 1)));
         private bool Dangerous(int pf) => (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false)
@@ -2093,7 +2093,7 @@ namespace AOBuddy
             {
                 if (_tuneStore != null) return _tuneStore;
                 _tuneStore = new Dictionary<string, float>();
-                try { if (File.Exists(TunePath)) foreach (var kv in JObject.Parse(File.ReadAllText(TunePath))) if (TuneDefaults.ContainsKey(kv.Key)) _tuneStore[kv.Key] = (float)kv.Value; } catch { }
+                try { foreach (var kv in JsonStore.Load<JObject>(TunePath, _ctx.Log) ?? new JObject()) if (TuneDefaults.ContainsKey(kv.Key)) _tuneStore[kv.Key] = (float)kv.Value; } catch { }
                 return _tuneStore;
             }
         }
@@ -2103,16 +2103,12 @@ namespace AOBuddy
         // the plugin's config.json, key by key, leaving the rest of the file as it is.
         private void SaveConfigValue(string key, JToken value)
         {
-            try
-            {
-                string path = Path.Combine(_pluginDir, "config.json");
-                var o = File.Exists(path) ? JObject.Parse(File.ReadAllText(path)) : new JObject();
-                o[key] = value;
-                File.WriteAllText(path, o.ToString());
-            }
-            catch (Exception ex) { _ctx.Log($"MISSIONRUN: couldn't save {key} to config.json: {ex.Message}"); }
+            string path = Path.Combine(_pluginDir, "config.json");
+            var o = JsonStore.Load<JObject>(path, _ctx.Log) ?? new JObject();
+            o[key] = value;
+            JsonStore.Save(path, o.ToString(), _ctx.Log);
         }
-        private void SaveTune() { try { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; File.WriteAllText(TunePath, o.ToString()); } catch { } }
+        private void SaveTune() { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; JsonStore.Save(TunePath, o.ToString(), _ctx.Log); }
         private string TuneText() => string.Join(", ", TuneDefaults.Select(kv => $"{kv.Key}={T(kv.Key)}{(_tune.ContainsKey(kv.Key) ? "*" : "")}"));
         private string StandTune() => $"padtop={T("padtop")} aimpast={T("aimpast")} standwait={T("standwait")}";
         private double _straightUntil;
@@ -2406,16 +2402,15 @@ namespace AOBuddy
 
         private void SaveTerminal()
         {
-            try { File.WriteAllText(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString()); }
-            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the terminal: " + ex.Message); }
+            JsonStore.Save(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString(), _ctx.Log);
         }
 
         private bool LoadTerminal()
         {
             try
             {
-                if (!File.Exists(TerminalPath)) return false;
-                var o = JObject.Parse(File.ReadAllText(TerminalPath));
+                var o = JsonStore.Load<JObject>(TerminalPath, _ctx.Log);
+                if (o == null) return false;
                 _termPf = (int)o["pf"]; _termId = new Identity((IdentityType)(int)o["type"], (int)o["id"]);
                 _termPos = new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
                 return true;
@@ -2506,7 +2501,7 @@ namespace AOBuddy
                     ["x"] = m.Location.X, ["y"] = m.Location.Y, ["z"] = m.Location.Z, ["credits"] = m.Credits,
                     ["rewards"] = new JArray((m.MissionItemData ?? new MissionItemReward[0]).Select(r => new JArray(r.LowId, r.HighId, r.Ql))),
                 };
-                File.WriteAllText(SavePath, o.ToString());
+                JsonStore.Save(SavePath, o.ToString(), _ctx.Log);
             }
             catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the mission: " + ex.Message); }
         }
@@ -2517,8 +2512,8 @@ namespace AOBuddy
         {
             try
             {
-                if (!File.Exists(SavePath)) return null;
-                var o = JObject.Parse(File.ReadAllText(SavePath));
+                var o = JsonStore.Load<JObject>(SavePath, _ctx.Log);
+                if (o == null) return null;
                 return new MissionInfo
                 {
                     MissionIdentity = new Identity(IdentityType.Mission, (int)o["id"]),

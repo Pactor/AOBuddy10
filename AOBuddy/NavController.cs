@@ -86,7 +86,7 @@ namespace AOBuddy
             {
                 if (File.Exists(file))
                 {
-                    _zone = JsonConvert.DeserializeObject<NavZone>(File.ReadAllText(file)) ?? NewZone(pf, name);
+                    _zone = JsonStore.Load<NavZone>(file, _ctx.Log) ?? NewZone(pf, name);
                     if (_zone.Segments == null) _zone.Segments = new List<List<float[]>>();
                     if (_zone.Transitions == null) _zone.Transitions = new List<NavTransition>();
                     _zone.Playfield = pf;
@@ -209,8 +209,8 @@ namespace AOBuddy
                 var snapshot = JsonConvert.DeserializeObject<NavZone>(JsonConvert.SerializeObject(_zone));
                 if (_seg.Count >= 2) snapshot.Segments.Add(new List<float[]>(_seg));
                 snapshot.Updated = DateTime.Now.ToString("s");
-                File.WriteAllText(FileFor(_zone.Playfield), JsonConvert.SerializeObject(snapshot, Formatting.Indented));
-                _dirty = false;
+                if (JsonStore.Save(FileFor(_zone.Playfield), JsonConvert.SerializeObject(snapshot, Formatting.Indented), _ctx.Log))
+                    _dirty = false;
             }
             catch (Exception ex) { _ctx.Log($"NAV: save failed ({ex.Message})."); }
         }

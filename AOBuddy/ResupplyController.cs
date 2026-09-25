@@ -863,15 +863,12 @@ namespace AOBuddy
         private void EnsureLoaded()
         {
             if (_mem != null) return;
-            try { _mem = File.Exists(_file) ? JsonConvert.DeserializeObject<Memory>(File.ReadAllText(_file)) : null; }
-            catch (Exception ex) { _ctx.Log($"RESUPPLY: couldn't read {_file}: {ex.Message}"); }
-            _mem = _mem ?? new Memory();
+            _mem = JsonStore.Load<Memory>(_file, _ctx.Log) ?? new Memory();
         }
 
         private void Save()
         {
-            try { File.WriteAllText(_file, JsonConvert.SerializeObject(_mem, Formatting.Indented)); }
-            catch (Exception ex) { _ctx.Log($"RESUPPLY: couldn't save {_file}: {ex.Message}"); }
+            JsonStore.Save(_file, JsonConvert.SerializeObject(_mem, Formatting.Indented), _ctx.Log);
         }
 
         private void Tell(string text)
