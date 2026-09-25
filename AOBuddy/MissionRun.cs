@@ -53,6 +53,7 @@ namespace AOBuddy
 
         // The mission in hand.
         private MissionInfo _current;
+        public string CurrentLine => _current == null ? null : MissionRoll.Line(_current);
         private bool _completed;
         private int _rolls, _done, _travelTries, _doorTries;
         private bool _travelStarted;
@@ -534,6 +535,7 @@ namespace AOBuddy
         public bool Tick(LocalPlayer me, double dt)
         {
             _clock += dt; _phaseTime += dt;
+            if (_restSaved != null && (_phase != Phase.Fight || !Active)) RestToFull(false);
             if (!Active || me == null) return false;
             RecordGood(me);
             UseTokens(me);
@@ -671,7 +673,7 @@ namespace AOBuddy
                     // HP: carry on, and don't stop for a fight again for a minute unless HP falls.
                     // Measured over the last 30 s, not the whole fight: at 00:22 (2026-09-24) one early hit to 68%
                     // kept him 'fighting' Levi McDannold, a find-person target 34 m off, for 15 minutes at 100% HP.
-                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil)
+                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil && _restSaved == null)
                     {
                         _fightIgnoreUntil = _clock + 60;
                         if (_pullId.HasValue) { _combat.SetAside(me, _pullId.Value, 120); _pullId = null; }
@@ -709,6 +711,15 @@ namespace AOBuddy
                         // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
                         // 06:33 2026-09-24): then get moving, stims on the way.
                         bool beingHit = _clock - _lastHurt < 5;
+                        // CLEAR MODE: back to full before the next room (owner, 2026-09-25: at 12:19 he walked on from a
+                        // fight into a room of six Probes and was at 38% in 3 s). The rest logic sits him down with a
+                        // recharger once its thresholds say so; they are raised to full for this wait. At most 150 s.
+                        if (_mission.Clearing && !beingHit && _phaseTime < 150)
+                        {
+                            int hpF = _ctx.Status.SelfHpPct, npF = NanoPct(me);
+                            if ((hpF >= 0 && hpF < 99) || (npF >= 0 && npF < 95)) { RestToFull(true); return false; }
+                        }
+                        RestToFull(false);
                         if (!beingHit && (_ctx.Status.Resting || _ctx.Status.NeedsRecovery) && _phaseTime < 60) return false;
                         if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
@@ -724,6 +735,10 @@ namespace AOBuddy
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
                             if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
                             else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }
+                            // Done and already outside (12:37-12:38, 2026-09-25: held at the exit door after a clear, the
+                            // hold ended out in Borealis): through the Blitz phase's outside step, which counts the
+                            // mission, clears it and stashes the reward. Straight to the terminal skipped all three.
+                            else if (_completed && _current != null) Enter(Phase.Blitz, "out; finishing the mission");
                             else Enter(Phase.ToTerminal, "fight over");
                             break;
                         case Phase.Leaving: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "back to leaving"); break;
@@ -1197,7 +1212,19 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
-            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            // Stranded by our own marks: in Wartorn Valley (12:53-12:59, 2026-09-25) the lines to Athen Shire and both
+            // to Aegean each failed once and were marked bad, which left no way out at all. With no route left, forget
+            // the marks (at most every 10 minutes) and plan again.
+            if ((route == null || route.Hops.Count == 0) && (_badExits.Count > 0 || _badBorders.Count > 0) && _clock - _badForgotAt > 600)
+            {
+                _badForgotAt = _clock;
+                _ctx.Log($"MISSIONRUN: no way out of {Zoning.Name(here)} round the {_badExits.Count} exit(s) I marked bad; forgetting the marks and trying them again.");
+                _badExits.Clear(); _badBorders.Clear(); _borderFails.Clear();
+                opt.Filter = plain;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
+            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _hikeNoRoute = true; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
@@ -1454,6 +1481,8 @@ namespace AOBuddy
         // the route of choice (the Grid needs Computer Literacy, and some Grid exits are over his skill - the
         // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
         private readonly HashSet<string> _badExits = new HashSet<string>();
+        private double _badForgotAt = -9999;
+        private bool _hikeNoRoute;
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
         private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
         private void MarkBadExit(ZoneExit e)
@@ -1796,21 +1825,24 @@ namespace AOBuddy
             if (band == null) { _roll.DifficultyOverride = null; return; }
             var (e, lo, hi, aim) = band.Value;
             int lvl = MyLevel();
+            // Never above the difficulty the owner set for this style (2026-09-25: 'drop it to difficulty 3, I
+            // realise that will change what nano QLs he can get').
+            int cap = Math.Min(DiffMax, RollDifficulty());
             var seen = new Dictionary<int, int>();
-            for (int d = DiffMin; d <= DiffMax; d++) if (QlMap.TryGetValue($"{lvl}:{d}", out int q)) seen[d] = q;
+            for (int d = DiffMin; d <= cap; d++) if (QlMap.TryGetValue($"{lvl}:{d}", out int q)) seen[d] = q;
             // A seen setting that lands in the band: use it.
             var inBand = seen.Where(kv => kv.Value >= lo && kv.Value <= hi).OrderBy(kv => Math.Abs(kv.Value - aim)).Select(kv => (int?)kv.Key).FirstOrDefault();
             if (inBand.HasValue) { SetDiff(inBand.Value, e, seen[inBand.Value]); return; }
             // None yet: step toward the band from the nearest seen setting (QL rises with difficulty), or start mid.
             int next;
-            if (seen.Count == 0) next = 6;
+            if (seen.Count == 0) next = Math.Min(6, cap);
             else
             {
                 var near = seen.OrderBy(kv => Math.Abs(kv.Value - aim)).First();
                 int dir = near.Value < lo ? 1 : -1;
                 next = near.Key + dir;
-                while (next >= DiffMin && next <= DiffMax && seen.ContainsKey(next)) next += dir;
-                if (next < DiffMin || next > DiffMax)
+                while (next >= DiffMin && next <= cap && seen.ContainsKey(next)) next += dir;
+                if (next < DiffMin || next > cap)
                 {
                     _unreachable.Add(e);
                     string range = $"{seen.Values.Min()}-{seen.Values.Max()}";
@@ -1822,6 +1854,10 @@ namespace AOBuddy
             }
             SetDiff(next, e, null);
         }
+
+        private int RollDifficulty()
+            => string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+               ? Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty) : _ctx.Config.MissionDifficulty;
 
         private void SetDiff(int d, WantList.Entry e, int? ql)
         {
@@ -1883,15 +1919,16 @@ namespace AOBuddy
                 var rem = w.Remaining(held);
                 if (rem.Count > 0 && rem.All(r => _unreachable.Contains(r.e) || (r.left != null && r.left.Count == 0)))
                 {
-                    _tell("Want list done: I have everything on it. " + WantStatus());
-                    _ctx.Log("MISSIONRUN: want list done; stopping.");
+                    // Done: carry on with ordinary missions (owner, 2026-09-25, reversing 'at the end, say done and stop').
+                    _tell("Want list done: I have everything on it. Carrying on with ordinary missions. " + WantStatus());
+                    _ctx.Log("MISSIONRUN: want list done; carrying on with ordinary missions.");
                     _wantRun = false; _roll.DifficultyOverride = null;
                     if (_unreachable.Count > 0) _tell("Out of reach: " + string.Join("; ", _unreachable) + ".");
-                    Stop("want list done");
-                    return true;
+                    return false;
                 }
             }
             int before = ok.Count;
+            var all = new List<MissionInfo>(ok);
             ok.RemoveAll(m => m.MissionItemData == null || !m.MissionItemData.Any(r => w.Wanted(r.LowId, r.Ql, held) != null));
             if (ok.Count > 0)
             {
@@ -1901,10 +1938,13 @@ namespace AOBuddy
             }
             if (++_wantRolls >= WantRollCap)
             {
-                _tell($"No wanted reward in {WantRollCap} rolls; stopping. {WantStatus()}");
-                _wantRun = false; _wantRolls = 0; _roll.DifficultyOverride = null;
-                Stop("nothing wanted offered");
-                return true;
+                // No wanted reward for a long stretch: take an ordinary mission from this roll and keep rolling for
+                // the wants after it (owner, 2026-09-25: 'just continue' instead of stopping).
+                _tell($"No wanted reward in {WantRollCap} rolls; taking an ordinary mission, then back to the want list. {WantStatus()}");
+                _ctx.Log($"MISSIONRUN: no wanted reward in {WantRollCap} rolls; an ordinary mission this time.");
+                _wantRolls = 0;
+                ok.Clear(); ok.AddRange(all);
+                return false;
             }
             Enter(Phase.Rolling, "nothing wanted");
             return true;
@@ -2627,6 +2667,18 @@ namespace AOBuddy
             _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
             if (_overland.Active)
             {
+                // Travel (Algorithman's) plans without the faction map: at 13:03 (2026-09-25) it sent him from Wartorn
+                // Valley through Old Athen, a Clan city whose guards kill him on sight. Any leg into a hostile whole
+                // zone stops it; the hike (which routes round them) gets the trip.
+                string ost = _overland.Status();
+                foreach (System.Text.RegularExpressions.Match hm in System.Text.RegularExpressions.Regex.Matches(ost ?? "", @"\((\d+)\)"))
+                    if (int.TryParse(hm.Groups[1].Value, out int hpf) && hpf != (int)Playfield.ModelId && HostileAt(hpf, float.NaN, float.NaN) != null)
+                    {
+                        _overland.Stop("route through " + Zoning.Name(hpf));
+                        _ctx.Log($"MISSIONRUN: travel's route goes through {Zoning.Name(hpf)} ({hpf}), the other side's city; not taking it.");
+                        _travelStarted = false; _travelWaitUntil = _clock + 20;
+                        return false;
+                    }
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
                 else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;
@@ -2694,6 +2746,10 @@ namespace AOBuddy
             // doors, which never takes (08:12, 2026-09-24: Stret West Bank's Borealis whompa, 3 tries, then a 5-leg
             // detour); the hike stops on a pad's top and stands on doors, and hands back to travel after the zone.
             if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
+            // ...and while the hike is only waiting out its 20 s between attempts, wait with it: travel is for when
+            // the hike has no route at all (13:03, 2026-09-25: a restart landed in that gap and travel took him
+            // toward Old Athen).
+            if ((int)Playfield.ModelId != pf && !_hikeNoRoute) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
             // Pulled back on travel's own walk in this zone already (Deep Artery Valley, 13:45-13:48, 2026-09-24:
@@ -3137,6 +3193,25 @@ namespace AOBuddy
             }
             return a;
         }
+        private int[] _restSaved;
+        private void RestToFull(bool on)
+        {
+            var c = _ctx.Config;
+            if (on && _restSaved == null)
+            {
+                _restSaved = new[] { c.RestBelowPercent, c.RestUntilPercent, c.RestNanoBelowPercent, c.RestNanoUntilPercent };
+                c.RestBelowPercent = 99; c.RestUntilPercent = 100; c.RestNanoBelowPercent = 95; c.RestNanoUntilPercent = 100;
+                _ctx.Log("MISSIONRUN: clearing: resting to full before the next room.");
+            }
+            else if (!on && _restSaved != null)
+            {
+                c.RestBelowPercent = _restSaved[0]; c.RestUntilPercent = _restSaved[1]; c.RestNanoBelowPercent = _restSaved[2]; c.RestNanoUntilPercent = _restSaved[3];
+                _restSaved = null;
+            }
+        }
+        private static int NanoPct(LocalPlayer me)
+            => me != null && me.TryGetStat(Stat.MaxNanoEnergy, out int max) && max > 0 && me.TryGetStat(Stat.CurrentNano, out int cur) ? (int)(100.0 * Math.Min(cur, max) / max) : -1;
+
         // CLEAR MODE: nothing on us, so go for the nearest mob close by on a walkable path (not through a wall),
         // same rules as a mob that attacks: alive, not a pet, not set aside, not far above his level, not the
         // person a find-person mission sent us to. Checked once a second; the one chosen is kept while it lives.

@@ -527,3 +527,10 @@ wanted band; a band no setting reaches is reported and dropped). Not yet tried l
     So he only buys at 0-1 stims, and a stims target in stims would buy that many stacks. MissionRun now only stops
     the run at 0 usable stims; the shop trip itself can't buy until the units agree.
 
+24. **For Algorithman: `travelto` plans through the other side's cities.** 13:03 (2026-09-25): the alt (Omni) in
+    Wartorn Valley asked travelto for the Borealis terminal; it planned 6 legs starting "zone line to Old Athen (540)",
+    a Clan city whose guards kill Omni on sight. The planner has no faction map. Ours is `GameData/FactionAreas.json`
+    (Clan/Omni cities as whole zones, r 0, plus each side's whompa stations at r 150) and the side is stat 33
+    (1 Clan, 2 Omni). MissionRun now stops travel when its status names a hostile whole zone and hikes instead
+    (`Travel()`), and waits for its own hike between attempts rather than handing the trip to travel; a filter in
+    the planner itself would cover every caller.

@@ -222,6 +222,7 @@ namespace AOBuddy
         // Want runs: a wanted nano never offered in this many rolls near its QL is dropped as no mission reward.
         public int WantUnseenRolls = 500;
         public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
+        public bool MissionRecord = false;                       // record every mission building's packets + a mob/door index (missions/records)
         public bool MissionClear = false;                        // clear mode: kill every mob in the building before the objective (mission run clear on|off)
         public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
         public int MissionCashReserve = 20000;

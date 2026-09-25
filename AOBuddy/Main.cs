@@ -70,6 +70,7 @@ namespace AOBuddy
         private ChewyBuffController _chewy;
         private MissionRoll _roll;
         private MissionRun _run;
+        private MissionRecorder _recorder;
         private bool _missionWasActive;
         private OverlandController _overland;
         private bool _overlandWasActive;
@@ -164,6 +165,8 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
+            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty);
+            Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             BuildCommands();
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
@@ -211,6 +214,9 @@ namespace AOBuddy
                 // Tells from anyone else are never obeyed, but they are logged: Scotty answers warp requests by tell,
                 // and those answers were invisible while travel waited on warps that never came (2026-09-23).
                 if (!_owner.IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
+                // The owner's AFK auto-reply ('Veganbacon is AFK (Away from keyboard) since 0 hours and 0 minutes
+                // ago.', 23:33, 2026-09-24) answers every tell we send him; it is not a command (owner, 2026-09-25).
+                if ((msg.Message ?? "").IndexOf(" is AFK (Away from keyboard)", StringComparison.OrdinalIgnoreCase) >= 0) return;
                 Log($"CMD from {msg.SenderName}: '{msg.Message}'");
                 try { HandleCommand(msg.Message, text => Client.SendPrivateMessage(msg.SenderId, text)); }
                 catch (Exception ex) { Logger.Error($"command error: {ex.Message}"); Log($"COMMAND EXCEPTION: {ex}"); }
@@ -733,6 +739,7 @@ namespace AOBuddy
         // to the player" means follow is first in the frame, not last behind a ladder of actions.
         private void Walk(LocalPlayer me, PlayerChar owner, double dt)
         {
+            try { _recorder?.Tick(me); } catch (Exception ex) { Log("MISSIONREC: " + ex.Message); }
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }

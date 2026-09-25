@@ -155,7 +155,9 @@ namespace AOSharp.Clientless.Net
             using (MemoryStream stream = new MemoryStream())
             {
                 _serializer.Serialize(stream, message);
-                _tcpClient.Send(stream.ToArray());
+                var bytes = stream.ToArray();
+                Client.RaisePacketRaw(bytes, false);
+                _tcpClient.Send(bytes);
             }
 
             _messageId++;
@@ -166,6 +168,7 @@ namespace AOSharp.Clientless.Net
 
         private void ProcessCachedPacket(byte[] packet)
         {
+            Client.RaisePacketRaw(packet, true);
             try
             {
                 // WORKAROUND (AOSharpSDK 1.0.89): the SimpleCharFullUpdate reader

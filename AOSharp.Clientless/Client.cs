@@ -31,6 +31,9 @@ namespace AOSharp.Clientless
         public static event Action<byte[]> ChestFullUpdateRaw;
         // N3 Action (0x2049527C) has no class in the SDK; handed on raw (a door unlocked by a lock pick is action 115).
         public static event Action<byte[]> ActionRaw;
+        // Every packet, both ways (true = from the server), for the mission recorder.
+        public static event Action<byte[], bool> PacketRaw;
+        internal static void RaisePacketRaw(byte[] packet, bool fromServer) { try { PacketRaw?.Invoke(packet, fromServer); } catch { } }
         internal static void RaiseActionRaw(byte[] packet) { try { ActionRaw?.Invoke(packet); } catch { } }
         // DoorFullUpdate, raw, whether or not the SDK reader copes: the lock flag is read from the bytes.
         public static event Action<byte[]> DoorFullUpdateRaw;
