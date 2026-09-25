@@ -481,3 +481,38 @@ missions may be taken in (empty = any zone).
     back 10.5 m at (198,47,619), so there is a real obstacle, but a 15x detour points at the 2 m grid closing a gap
     (see finding 10).
 
+## Want list: rolling for items (owner, 2026-09-25)
+
+**Goal.** Roll missions for chosen rewards: only implants, only gear, only nanos, only one profession's nanos, a QL
+band ("engineer nanos QL 20-30"), or a list of exact item names. Either a standing filter or a list to finish:
+when everything on it is collected (or found unrollable) he says **done** and stops; `mission run` resumes normal
+missions.
+
+**Decisions (owner).** Learned nanos do NOT count as had (we roll for other classes); only items held (inventory,
+bags, bank) or recorded as got count. One want list per bot. At the end: say done and stop. The list can be changed
+while he runs (commands, or editing wants.json - re-read before every roll).
+
+**Data, verified 2026-09-25:**
+- Every roll sends difficulty + all six sliders (MissionRoll.cs, QuestAlternative) - the QL lever is ours.
+- Offered rewards carry LowId/HighId/Ql (MissionItemReward) - exact template matching, no names.
+- Gear/implant rewards in one roll all share one QL, the mission QL, set by level and difficulty (alt log: diff 1 ->
+  QL25, diff 5 -> QL32-35 at level 36-39, diff 6 -> QL36).
+- Nano crystal rewards come from a window around the mission QL, about +-9 (mission QL25 -> nanos 16-34, QL32 ->
+  24-42, QL35 -> 27-44).
+- A crystal names its nano in its use event: 'Nano Crystal (Shatter Bone)' 82011 -> event 0, function 53019
+  (Upload), arg 82007 = the nano program (items.ocp, extractor --probe). The nano program carries its professions
+  and QL (NanoCatalog). So "engineer nanos QL20-30" expands to exact crystal templates from data.
+
+**Design.**
+1. wants.json per bot: ordered entries - exact name, or a query {kind: nano|implant|weapon|armor|any, profession,
+   qlMin, qlMax}; mode always|list.
+2. At load each query expands to concrete templates (extractor table: crystal -> nano -> professions, QL; item
+   class for gear/implants). `want status` = collected / remaining / unrollable.
+3. Roll: keep only missions whose reward template is still wanted; among them the cheapest trip. None: roll again.
+4. QL targeting: record the reward QLs seen per difficulty setting; move difficulty to centre the mission QL on the
+   wanted band (nanos: +-9 window). Band out of reach at the slider limits, or not seen in N rolls: report it
+   unrollable and drop it.
+5. Wanted items are always kept and banked (never sold); the keep/bank files fold into one rules file later.
+6. Commands: `mission run want add <name|query>`, `want remove`, `want list`, `want mode always|list`,
+   `want status`, and `mission run want` to start a want run.
+

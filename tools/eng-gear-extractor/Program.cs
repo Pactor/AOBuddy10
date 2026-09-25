@@ -825,6 +825,9 @@ class Program
         if (nd >= 0) { NoDropTable(ocp, namesPath, args[nd + 1], "AOND", st => st.TryGetValue(0, out var f) && (f & (1 << 26)) != 0); return; }
         // --implants <out.bin>: every template whose ItemClass (stat 0x4C) is 3 = Implant (AOSharp ItemClass),
         // for the owner's keep-and-bank rule (GameData/ItemImplants.bin: "AOIM", 1, count, ids).
+        // --probe <name part>: print the events/functions of templates whose name contains it (research).
+        int pr = Array.IndexOf(args, "--probe");
+        if (pr >= 0) { Probe(ocp, namesPath, args[pr + 1]); return; }
         int im = Array.IndexOf(args, "--implants");
         if (im >= 0) { NoDropTable(ocp, namesPath, args[im + 1], "AOIM", st => st.TryGetValue(0x4C, out var c) && c == 3); return; }
 
@@ -962,6 +965,33 @@ class Program
             items
         }, opts));
         Console.WriteLine($"dump written: {outPath}");
+    }
+
+    static void Probe(string ocp, string namesPath, string part)
+    {
+        var names = LoadNames(namesPath);
+        int shown = 0;
+        using (var fs = File.OpenRead(ocp))
+        using (var gz = new GZipStream(fs, CompressionMode.Decompress))
+        using (var r = new BinaryReader(gz, Encoding.UTF8))
+        {
+            if (r.ReadString() != "OMNICELL-CONTENT") throw new InvalidDataException("bad magic");
+            int version = r.ReadInt32(); r.ReadByte(); int count = r.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                int id = r.ReadInt32();
+                r.ReadInt32(); r.ReadInt32(); r.ReadInt32(); r.ReadInt32(); r.ReadInt32();
+                SkipDict(r); SkipDict(r);
+                var stats = ReadDict(r);
+                SkipIntList(r);
+                var acts = ReadActions(r); var evs = ReadEvents(r, version);
+                if (version >= 2) ReadRecordData(r, version);
+                if (!names.TryGetValue(id, out var nm) || nm.name.IndexOf(part, StringComparison.OrdinalIgnoreCase) < 0 || shown >= 6) continue;
+                shown++;
+                Console.WriteLine($"{id} '{nm.name}' QL={(stats.TryGetValue(54, out var q) ? q : -1)} class={(stats.TryGetValue(0x4C, out var c) ? c : -1)} actions=[{string.Join(",", acts.Select(a => a.type))}]");
+                foreach (var ev in evs) foreach (var f in ev.funcs) Console.WriteLine($"   ev {ev.type} fn {f.FunctionType} args [{string.Join(",", f.Args)}]");
+            }
+        }
     }
 
     static void NoDropTable(string ocp, string namesPath, string outBin, string magic, Func<Dictionary<int, int>, bool> keep)
