@@ -515,16 +515,12 @@ namespace AOBuddy
                 pinned = _clock - _lastHurt < 3 && _clock >= _noFleeUntil && Movement.Flat(me.Transform.Position, _pinSamplePos) < 3f;
                 _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock;
             }
+            // Outrun: 5 s into a flee and still being hit (04:21-04:22, 2026-09-25, Aegean: two Young Scab Hyenas
+            // bit him all along two 81 m flees, 25% -> 0-11% -> dead; running only stopped him hitting back).
+            if (Fleeing && _clock - _fleeStartedAt > 5 && _clock - _lastHurt < 1.5 && _clock >= _noFleeUntil) pinned = true;
             if (pinned)
             {
-                _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
-                foreach (var id in _fleeFrom) _combat.ClearAside(id);
-                if (_mission.Active) _mission.Stop("pinned");
-                if (_overland.Active) _overland.Stop("pinned");
-                _follow.ClearMovement();
-                _fightStart = _clock; _fightHpMin = 100; _fightReturn = _phase == Phase.Backoff ? _travelReturn : _phase;
-                _ctx.Log($"MISSIONRUN: can't get away (held at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP); fighting back.");
-                Enter(Phase.Fight, "pinned while fleeing");
+                StartFightBack(me, $"can't get away (at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP)");
                 return false;
             }
             if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
@@ -875,6 +871,8 @@ namespace AOBuddy
                         case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
                         case "travel": Enter(_travelReturn, "travel again from a good spot"); break;
                         case "flee":
+                            // Not away while still being bitten: stand and fight what followed (04:22, 2026-09-25).
+                            if (_clock - _lastHurt < 5) { StartFightBack(me, "still hit at the end of the flee"); return false; }
                             if (_travelReturn == Phase.ToDoor && _current != null && !_completed) { Skip("a pack I couldn't beat is on the way to its door"); break; }
                             Enter(_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop ? _travelReturn : Phase.ToTerminal, "got away");
                             break;
@@ -2054,6 +2052,17 @@ namespace AOBuddy
         private Vector3 _pinSamplePos;
         private double _pinSampleAt = -99;
         private readonly List<Identity> _fleeFrom = new List<Identity>();
+        private void StartFightBack(LocalPlayer me, string why)
+        {
+            _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
+            foreach (var id in _fleeFrom) _combat.ClearAside(id);
+            if (_mission.Active) _mission.Stop("fighting back");
+            if (_overland.Active) _overland.Stop("fighting back");
+            _follow.ClearMovement();
+            _fightStart = _clock; _fightHpMin = 100; _fightReturn = _phase == Phase.Backoff ? _travelReturn : _phase;
+            _ctx.Log($"MISSIONRUN: {why}; fighting back.");
+            Enter(Phase.Fight, "fighting back");
+        }
         private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
         {
             _fleeAt = me.Transform.Position; _fleeStartedAt = _clock;
