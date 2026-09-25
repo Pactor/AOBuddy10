@@ -485,13 +485,19 @@ namespace AOBuddy
             float level = float.NaN;
             foreach (float y in WaterY) if (y > core && (float.IsNaN(level) || y > level)) level = y;
             if (float.IsNaN(level)) return;
-            // flood from the band through cells whose lowest corner is under the surface
-            var stack = new Stack<int>(seeds);
+            // flood from the band through cells whose lowest corner is under the surface — but only so far:
+            // a real shore is a few cells of shallows around the band, while an unbounded flood spills through
+            // any lowland below the plane into basins that have no water at all (Wailing Wastes, 2026-09-25:
+            // the wompah station, 335 m from the nearest band cell and bone dry, read as a 4 m deep pool and
+            // the bot waded at the phantom surface until the server dropped it every step).
+            int maxShore = Math.Max(4, (int)(150 / Cell));
+            var queue = new Queue<(int cell, int dist)>(seeds);
             for (int i = 0; i < w * h; i++)
-                if ((Tiles[i] & 0xFF) == 12) { _wet[i] = true; stack.Push(i); }
-            while (stack.Count > 0)
+                if ((Tiles[i] & 0xFF) == 12) { _wet[i] = true; queue.Enqueue((i, 0)); }
+            while (queue.Count > 0)
             {
-                int c = stack.Pop();
+                var (c, dist) = queue.Dequeue();
+                if (dist >= maxShore) continue;
                 int cx = c % w, cz = c / w;
                 for (int n = 0; n < 4; n++)
                 {
@@ -502,7 +508,7 @@ namespace AOBuddy
                     if (Math.Min(Math.Min(Corner(nz, nx), Corner(nz, nx + 1)), Math.Min(Corner(nz + 1, nx), Corner(nz + 1, nx + 1))) < level)
                     {
                         _wet[nc] = true;
-                        stack.Push(nc);
+                        queue.Enqueue((nc, dist + 1));
                     }
                 }
             }
