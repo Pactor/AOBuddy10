@@ -474,6 +474,15 @@ namespace AOBuddy
                     if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.ZoneLine
                         && Movement.Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
                         MarkBadExit(_hike.Exit);
+                    // ...and any exit whose way there pulls him back three times, wherever (05:53-06:02, 2026-09-25,
+                    // Wartorn Valley: pulled back ~85 m short of the Aegean line at (980,290), backed off, and planned
+                    // the same line again for nine minutes).
+                    else if (_phase == Phase.Hike && _hike?.Exit != null)
+                    {
+                        string k = ExitKey(_hike.Exit);
+                        _exitPulls[k] = (_exitPulls.TryGetValue(k, out int np) ? np : 0) + 1;
+                        if (_exitPulls[k] >= 3) MarkBadExit(_hike.Exit);
+                    }
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
@@ -1362,6 +1371,7 @@ namespace AOBuddy
         private int _bankUses;
         private int _bankPulls;
         private Vector3? _hikeStillAt;
+        private readonly Dictionary<string, int> _exitPulls = new Dictionary<string, int>();
         private double _hikeStillSince, _hikeStillTick = -99;
         private bool? _bankBuffWas;
         private double _bankQuietAt = -99;
