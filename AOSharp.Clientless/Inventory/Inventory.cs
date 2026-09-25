@@ -86,6 +86,37 @@ namespace AOSharp.Clientless
             ContainerOpened?.Invoke(container);
         }
 
+        // A bag bought from a shop reaches us only as InventoryUpdate (the bag's container, Handle = a container
+        // number, not a slot) plus ChestItemFullUpdate (0x465A5D73), which the stock serializer can't read and
+        // NetworkSession hands on raw - so the new bag never showed up among the items and MissionRun thought the
+        // purchase had failed (21:55, 2026-09-24). Capture 20260923-234203 s8 seq 106-107: bag 51017:27906825,
+        // version 11, owner = the player, InventoryId 101, BodyLocation 0x6F (next free slot), stats 3F1-counted
+        // with the template in 702/703 (ACGItemTemplateID/ID2). Add it where the client would put it. Chests out
+        // in the world (mission containers) have another owner and are left alone.
+        internal static void OnChestItemRaw(byte[] b)
+        {
+            if (b == null || b.Length < 59 || b[32] != 0x0B) return;
+            int R(int p) => (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3];
+            var id = new Identity((IdentityType)R(20), R(24));
+            var me = DynelManager.LocalPlayer;
+            if (id.Type != IdentityType.Container || me == null) return;
+            if (new Identity((IdentityType)R(33), R(37)) != me.Identity) return;
+            if (_items.Any(i => i.UniqueIdentity == id) || Bank.Items.Any(i => i.UniqueIdentity == id)) return;
+            int low = 0, high = 0, ql = 1, n = R(55) / 1009 - 1;
+            for (int k = 0, p = 59; k < n && p + 8 <= b.Length; k++, p += 8)
+            {
+                int key = R(p), val = R(p + 4);
+                if (key == 702) low = val; else if (key == 703) high = val; else if (key == 54) ql = val;
+            }
+            int body = b[54];
+            int? slot = body == 0x6F ? GetNextAvailableSlot()
+                      : body >= INVENTORY_START && body < INVENTORY_START + INVENTORY_CAPACITY && !_items.Any(i => i.Slot.Type == IdentityType.Inventory && i.Slot.Instance == body) ? body : (int?)null;
+            if (slot == null) return;
+            var item = new Item(new Identity(IdentityType.Inventory, slot.Value), id, low, high == 0 ? low : high, ql);
+            _items.Add(item);
+            ItemAdded?.Invoke(item);
+        }
+
         internal static void ResetContainers()
         {
             foreach (Container container in _containers)

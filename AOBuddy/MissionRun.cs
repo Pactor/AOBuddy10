@@ -1726,7 +1726,8 @@ namespace AOBuddy
                     if (Resupply.Active || t < 1) return false;
                     var bought = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container)
                                                 .Select(i => i.UniqueIdentity).Where(id => !_shopKnownBags.Contains(id)).ToList();
-                    if (bought.Count == 0) { _tell("Couldn't buy a bag (see RESUPPLY in the log)."); ShopNext(ShopStep.Exit, "leaving."); return false; }
+                    if (bought.Count == 0 && t < 5) return false;   // the bag's full update lands just after the trade
+                    if (bought.Count == 0) { _tell("Couldn't buy a bag (see RESUPPLY in the log)."); ShopNext(ShopStep.Exit, "leaving (no new bag seen)."); return false; }
                     if (_shopBoughtForNanos && !_shopBoughtForRoom && InvNanos().Count > 0)
                     {
                         _shopBag = bought[0];

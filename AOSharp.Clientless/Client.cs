@@ -29,7 +29,11 @@ namespace AOSharp.Clientless
         /// are never deserialized; listeners read the fixed-position fields they need (identity at 20, position
         /// floats at 41) - see NetworkSession.</summary>
         public static event Action<byte[]> ChestFullUpdateRaw;
-        internal static void RaiseChestFullUpdateRaw(byte[] packet) { try { ChestFullUpdateRaw?.Invoke(packet); } catch { } }
+        internal static void RaiseChestFullUpdateRaw(byte[] packet)
+        {
+            try { Inventory.OnChestItemRaw(packet); } catch { }
+            try { ChestFullUpdateRaw?.Invoke(packet); } catch { }
+        }
 
         internal static Credentials Credentials;
         public static string CharacterName { get; internal set; }
