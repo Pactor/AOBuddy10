@@ -346,7 +346,27 @@ apply), `.Report(reply)`. Main calls Init once and Tick per frame; the `perks` c
 Report.
 **DONE WHEN.** The `perks` command output is byte-identical; login auto-detect log lines unchanged.
 
-### R3.4 Command routing out of the switch — [ ]
+### R3.4 Command routing out of the switch — [x] done 2026-09-25
+`HandleCommand` is now parse + dictionary lookup; the switch body is gone. `BuildCommands()` (called
+at the end of Init) fills `Dictionary<string, Action<Action<string>, string[]>>`; a local `Arg()`
+reproduces the old switch's lowercased `parts[1]`. What moved where, all bodies and replies verbatim:
+**PetController.Command** (+ ctor gains OwnerTracker) — the 20 pet commands plus their three helpers
+(FindCharByName/ResolveHealSubject/HealWhoHint), which were pet-heal-specific all along;
+**KnowledgeReports** (new, ctor ctx/support/owner) — class/whoami, nanos, active, learnable (+ the
+learnable cache, was a Main field), stat, supplies/SupplyLine/FormatTime, autobuff/keepup's
+ReportBuffPlans; **PathStore** (new, ctor pathsDir/log) — Save/Load/List for recorded paths (Load
+still throws to the command's "Load failed" reply); **ResupplyController.Command/Survey** — the
+resupply sub-switch and vendordebug. Staying in Main as closures over Main-owned state (per the
+item's Careful note): modes, follow/stay/come, forward/run/zone, stand/sit, specials, missiondbg,
+nanodump, catalog, buff/heal, record/savepath/path/paths, nav, status/pos/navdata, mission,
+travelto, buffs (the bare-vs-Chewy bridge), shop/whompa stubs, help. `stat`/`Truncate` had already
+found homes (KnowledgeReports/HelpPages in R3.3). HelpPages stays the usage catalog — no per-entry
+usage strings in the table, one source of truth. **Verified:** build 0 errors, warning SET identical
+before/after (stash-diffed, 66=66); command-coverage diff against HEAD's case list — all 75
+top-level commands present (55 grep-visible keys + the 20-word pet loop), the only old words absent
+are the 15 non-top-level ones (10 heal-subject + 5 sub-switch, now inside their owners). Main.cs
+1660 → 1300. Reply spot-checks (`pets`, `pethealtarget`, `mission run status`, `navdata`,
+`resupply machines`, `buffs plan`) ride the owner's next session.
 **What.** `HandleCommand` is a ~425-line switch (Main.cs:1097-1522) while three systems already
 own their commands (`_hunt.Command`, `_roll.Command`, `_overland.Command`).
 **Move.** Give each controller a `Command(string[] args, Action<string> reply)` (pet commands →

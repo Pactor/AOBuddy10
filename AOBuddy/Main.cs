@@ -101,7 +101,10 @@ namespace AOBuddy
         // Permanent stat bonuses (PERK + RESEARCH), one wiring line per lifecycle point (R3.3).
         private PerkBonuses _perkBonuses;
 
-        private List<NanoItem> _learnableCache;   // built on demand (heavy DB scan), reused
+        // The knowledge reports (class/nanos/active/learnable/stat/supplies) and path persistence,
+        // split out of the command switch (R3.4).
+        private KnowledgeReports _know;
+        private PathStore _paths;
 
         public override void Init(string pluginDir)
         {
@@ -133,10 +136,12 @@ namespace AOBuddy
             };
             _follow = new FollowController(_ctx, _move);
             _combat = new CombatController(_ctx);
-            _pets = new PetController(_ctx, pluginDir);
+            _pets = new PetController(_ctx, pluginDir, _owner);
             _travel = new TravelController(_ctx, _move);
             _support = new SupportController(_ctx, _move, pluginDir);
             _resupply = new ResupplyController(_ctx, _move, pluginDir);
+            _know = new KnowledgeReports(_ctx, _support, _owner);
+            _paths = new PathStore(_pathsDir, Log);
             _nav = new NavController(_ctx, pluginDir);
             _mission = new MissionController(_ctx, _move, pluginDir,
                 _ctx.TellOwner);
@@ -154,6 +159,7 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
+            BuildCommands();
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
 
@@ -922,18 +928,6 @@ namespace AOBuddy
 
         // ---- Commands ------------------------------------------------------------
 
-        // Read-only: any stat by name or number, as the server last sent it.
-        private static string StatCommand(string arg)
-        {
-            var me = DynelManager.LocalPlayer;
-            if (me == null) return "Not in play yet.";
-            if (string.IsNullOrWhiteSpace(arg)) return "Usage: stat <name or number>, e.g. stat 349";
-            Stat stat;
-            if (int.TryParse(arg.Trim(), out int id)) stat = (Stat)id;
-            else if (!Enum.TryParse(arg.Trim(), true, out stat)) return $"No stat named '{arg}'.";
-            return me.TryGetStat(stat, out int v) ? $"{stat} ({(int)stat}) = {v} (0x{v:X})" : $"{stat} ({(int)stat}) has not been sent to me.";
-        }
-
         private BotApi _api;
         // Commands from the local control API, waiting to run on the update thread (R0.1).
         private readonly System.Collections.Concurrent.ConcurrentQueue<(string Text, Action<string> Reply)> _apiCommands
@@ -970,345 +964,195 @@ namespace AOBuddy
             if (string.IsNullOrWhiteSpace(message)) return;
             string[] parts = message.Trim().TrimStart('!').Split(' ');
             string cmd = parts[0].ToLowerInvariant();
-            string arg = parts.Length > 1 ? parts[1].ToLowerInvariant() : "";
+            if (_commands != null && _commands.TryGetValue(cmd, out var handler)) handler(reply, parts);
+            else reply($"Unknown command '{cmd}'. Try 'help'.");
+        }
 
-            switch (cmd)
+        // ---- Command table (R3.4) -------------------------------------------------
+        // Every command the owner can send, as word -> handler(reply, parts), built once at Init.
+        // The systems own their commands (PetController, ResupplyController, KnowledgeReports,
+        // _hunt/_roll/_overland/_run/_chewy, HelpPages); what stays here are the entries wired over
+        // MAIN-owned state (mode, follow toggles, nav record, the zone-line walker) — small closures
+        // over Main, the win is locality not purity. Bodies and replies are verbatim from the old
+        // switch; Arg() is the old switch's lowercased parts[1].
+        private Dictionary<string, Action<Action<string>, string[]>> _commands;
+
+        private void BuildCommands()
+        {
+            string Arg(string[] p) => p.Length > 1 ? p[1].ToLowerInvariant() : "";
+            var t = new Dictionary<string, Action<Action<string>, string[]>>();
+
+            // -- mode / follow / the body --
+            t["assist"] = (reply, p) => { _mode = Mode.Assist; reply("Mode: Assist."); };
+            t["hunt"] = (reply, p) =>
             {
-                case "assist": _mode = Mode.Assist; reply("Mode: Assist."); break;
-                case "hunt":
-                    if (_mode != Mode.Assist && !(parts.Length > 1 && (arg == "off" || arg == "status"))) { _mode = Mode.Assist; }
-                    _hunt.Command(parts.Length > 1 ? parts[1] : "", reply);
-                    break;
-                case "solo": _mode = Mode.Solo; reply("Mode: Solo."); break;
-                case "stop":
-                case "idle":
-                    _mode = Mode.Idle; _hunt.Stop("stop command"); _run.Stop("stop command"); _follow.ClearMovement(); _combat.Reset();
-                    _resupply.Stop(DynelManager.LocalPlayer, "stop command");
-                    _overland.Stop("stop command");
-                    { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
-                    reply("Mode: Idle. Standing down.");
-                    break;
-                case "follow":
-                    _config.Follow = true;
-                    if (_mode == Mode.Idle) _mode = Mode.Assist;
-                    reply($"Following on (mode {_mode}).");
-                    break;
-                case "stay": _config.Follow = false; reply("Staying put (follow off)."); break;
-                case "come":
-                {
-                    PlayerChar o = _owner.Find();
-                    if (o != null) { _follow.SetManualTarget(o.Transform.Position); reply("On my way."); }
-                    else reply("Can't see you (out of range?).");
-                    break;
-                }
-                // 'zone' used to reset the auto-sweep attempt budget before sharing this body; that ladder
-                // was unreachable dead code (R3.2) and WorkTheZoneLine never read the budget — all three
-                // are the same ask now.
-                case "forward":
-                case "run":
-                case "zone":
-                {
-                    LocalPlayer p = DynelManager.LocalPlayer;
-                    if (p == null) break;
-                    WorkTheZoneLine(p, reply);
-                    break;
-                }
-                case "stand": DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.LeaveSit); reply("Standing up."); break;
-                case "sit": DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.SwitchToSit); reply("Sitting down."); break;
-                case "specials":
-                {
-                    _config.UseSpecials = !_config.UseSpecials;
-                    var meS = DynelManager.LocalPlayer;
-                    string known = meS != null && meS.KnownSpecials.Count > 0 ? string.Join(", ", meS.KnownSpecials) : "none learned yet";
-                    reply($"Special attacks {(_config.UseSpecials ? "ON" : "OFF")}. Known: {known}.");
-                    break;
-                }
-                case "weapon":
-                case "weapons":
-                {
-                    int n = _combat.DumpWeapons(DynelManager.LocalPlayer);
-                    reply($"Dumped {n} equipped weapon(s) to aobuddy.log (WEAPON: lines).");
-                    break;
-                }
-                case "pets":
-                {
-                    _config.UsePets = !_config.UsePets;
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    reply($"Pets {(_config.UsePets ? "ON" : "OFF")}. Up now: {(mp != null ? mp.Pets.Count() : 0)}.");
-                    break;
-                }
-                case "petdbg":
-                {
-                    _pets.DumpPets(DynelManager.LocalPlayer);
-                    reply("Dumped pet/owner diagnostics to aobuddy.log (PETDBG: lines).");
-                    break;
-                }
-                case "resummon": _config.AutoResummon = !_config.AutoResummon; reply($"Auto-resummon {(_config.AutoResummon ? "ON" : "OFF")}."); break;
-                case "petbuffs": _config.BuffPets = !_config.BuffPets; reply($"Pet buffs {(_config.BuffPets ? "ON" : "OFF")}."); break;
-                case "petfollow": _pets.FollowMaster(DynelManager.LocalPlayer); reply("Pets: follow me."); break;
+                if (_mode != Mode.Assist && !(p.Length > 1 && (Arg(p) == "off" || Arg(p) == "status"))) { _mode = Mode.Assist; }
+                _hunt.Command(p.Length > 1 ? p[1] : "", reply);
+            };
+            t["solo"] = (reply, p) => { _mode = Mode.Solo; reply("Mode: Solo."); };
+            t["stop"] = t["idle"] = (reply, p) =>
+            {
+                _mode = Mode.Idle; _hunt.Stop("stop command"); _run.Stop("stop command"); _follow.ClearMovement(); _combat.Reset();
+                _resupply.Stop(DynelManager.LocalPlayer, "stop command");
+                _overland.Stop("stop command");
+                { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
+                reply("Mode: Idle. Standing down.");
+            };
+            t["follow"] = (reply, p) =>
+            {
+                _config.Follow = true;
+                if (_mode == Mode.Idle) _mode = Mode.Assist;
+                reply($"Following on (mode {_mode}).");
+            };
+            t["stay"] = (reply, p) => { _config.Follow = false; reply("Staying put (follow off)."); };
+            t["come"] = (reply, p) =>
+            {
+                PlayerChar o = _owner.Find();
+                if (o != null) { _follow.SetManualTarget(o.Transform.Position); reply("On my way."); }
+                else reply("Can't see you (out of range?).");
+            };
+            // 'zone' used to reset the auto-sweep attempt budget before sharing this body; that ladder
+            // was unreachable dead code (R3.2) and WorkTheZoneLine never read the budget — all three
+            // are the same ask now.
+            t["forward"] = t["run"] = t["zone"] = (reply, p) =>
+            {
+                LocalPlayer lp = DynelManager.LocalPlayer;
+                if (lp == null) return;
+                WorkTheZoneLine(lp, reply);
+            };
+            t["stand"] = (reply, p) => { DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.LeaveSit); reply("Standing up."); };
+            t["sit"] = (reply, p) => { DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.SwitchToSit); reply("Sitting down."); };
+            t["specials"] = (reply, p) =>
+            {
+                _config.UseSpecials = !_config.UseSpecials;
+                var meS = DynelManager.LocalPlayer;
+                string known = meS != null && meS.KnownSpecials.Count > 0 ? string.Join(", ", meS.KnownSpecials) : "none learned yet";
+                reply($"Special attacks {(_config.UseSpecials ? "ON" : "OFF")}. Known: {known}.");
+            };
+            t["weapon"] = t["weapons"] = (reply, p) =>
+            {
+                int n = _combat.DumpWeapons(DynelManager.LocalPlayer);
+                reply($"Dumped {n} equipped weapon(s) to aobuddy.log (WEAPON: lines).");
+            };
+            t["missiondbg"] = (reply, p) => { _config.MissionDebug = !_config.MissionDebug; reply($"Mission debug {(_config.MissionDebug ? "ON" : "OFF")} (logs to aobuddy.log)."); };
+            t["nanodump"] = (reply, p) =>
+            {
+                LocalPlayer mn = DynelManager.LocalPlayer;
+                int n = mn != null ? _support.DumpNanos(mn) : 0;
+                reply($"Dumped {n} nanos to aobuddy.log.");
+            };
+            t["catalog"] = (reply, p) =>
+            {
+                string dir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_logFile) ?? ".", "catalog");
+                var r = NanoCatalog.ExportAll(dir, Log);
+                reply(r.Item1 >= 0 ? $"Exported {r.Item1} nanos to catalog/ (all + per-class json)." : $"Catalog failed: {r.Item2}");
+            };
+            t["buff"] = (reply, p) => QueueBuffs(Arg(p), reply);
+            t["heal"] = (reply, p) =>
+            {
+                PlayerChar ht = _owner.Find();
+                if (_config.HealNanoId > 0 && ht != null) { _support.QueueCast(new CastRequest { Target = ht.Identity, NanoId = _config.HealNanoId, Label = "heal owner" }); reply("Queued a heal."); }
+                else reply(ht == null ? "Can't see you (out of range?)." : "No heal nano configured (HealNanoId).");
+            };
 
-                case "petkill":
-                case "petterminate":
-                case "petdismiss":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    int had = _pets.OwnedCount(mp);
-                    _pets.Dismiss(mp);
-                    reply($"Dismissed {had} pet(s). 'petsummon' brings them back.");
-                    break;
-                }
+            // -- pets (PetController owns them, R3.4) --
+            foreach (string w in new[] { "pets", "petdbg", "resummon", "petbuffs", "petfollow",
+                                         "petkill", "petterminate", "petdismiss", "petsummon", "petresummon",
+                                         "pethealme", "petheal", "pethealself", "pethealme2", "pethealpet",
+                                         "pethealauto", "pethealtarget", "pethealmytarget", "petstatus", "petattack" })
+                t[w] = (reply, p) => _pets.Command(p, reply);
 
-                case "petsummon":
-                case "petresummon":
+            // -- recorded paths (FOLLOW walks them, PathStore keeps the files) --
+            t["record"] = (reply, p) =>
+            {
+                string arg = Arg(p);
+                if (arg == "stop") { _follow.StopRecording(); reply($"Recorded {_follow.RecordCount} points. Save with 'savepath <name>'."); }
+                else { _follow.StartRecording(); reply("Recording your path — walk the route, then 'record stop'."); }
+            };
+            t["savepath"] = t["save"] = (reply, p) =>
+            {
+                string arg = Arg(p);
+                if (string.IsNullOrEmpty(arg)) { reply("Usage: savepath <name>"); return; }
+                if (_follow.RecordCount == 0) { reply("Nothing recorded. Use 'record' first."); return; }
+                try { if (_paths.Save(arg, _follow.RecordBuffer)) reply($"Saved '{arg}' ({_follow.RecordCount} points)."); else reply("Save failed (see log)."); }
+                catch (Exception ex) { reply("Save failed: " + ex.Message); }
+            };
+            t["path"] = (reply, p) =>
+            {
+                string arg = Arg(p);
+                if (arg == "stop") { _follow.StopReplay(); reply("Path playback stopped."); return; }
+                if (string.IsNullOrEmpty(arg)) { reply("Usage: path <name> | path stop"); return; }
+                try
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    if (!_config.UsePets) { _config.UsePets = true; reply("Pets were off — turning them on."); }
-                    _config.AutoResummon = true;
-                    _pets.ResummonAll(mp);
-                    reply("Resummoning the full set — one at a time as nano allows.");
-                    break;
+                    List<Vector3> pts = _paths.Load(arg);
+                    _follow.LoadReplay(pts);
+                    reply($"Replaying '{arg}' ({pts.Count} points).");
                 }
+                catch (Exception ex) { reply("Load failed: " + ex.Message); }
+            };
+            t["paths"] = (reply, p) => reply("Saved paths: " + _paths.List());
 
-                case "pethealme":
-                case "petheal":
+            // -- nav / diagnostics / status --
+            t["nav"] = (reply, p) =>
+            {
+                switch (Arg(p))
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
-                    if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
-                    if (!_pets.HealTargetLatched(mp, po.Identity, "you")) { reply("No heal pet up."); break; }
-                    reply("Heal pet is on you.");
-                    break;
+                    case "save": _nav.Save(); reply($"Nav saved (pf {_nav.PlayfieldId})."); break;
+                    case "on": _config.NavRecord = true; reply("Nav recording ON."); break;
+                    case "off": _config.NavRecord = false; reply("Nav recording OFF."); break;
+                    case "use": _config.NavUse = !_config.NavUse; reply($"Nav lost-fallback {(_config.NavUse ? "ON" : "OFF")}."); break;
+                    default: reply(_nav.Status()); break;
                 }
+            };
+            t["status"] = (reply, p) => reply(StatusLine());
+            t["pos"] = (reply, p) =>
+            {
+                LocalPlayer meP = DynelManager.LocalPlayer;
+                if (meP == null) { reply("Not in game."); return; }
+                Vector3 v = meP.Transform.Position;
+                // Map coordinates as the game shows them (x, then z as the map's y), height after - the same
+                // order 'travelto <x> <y> <playfield>' takes.
+                reply($"{Playfield.Name} ({(int)Playfield.ModelId}): {v.X:0} {v.Z:0}, height {v.Y:0}");
+            };
+            t["navdata"] = (reply, p) => reply(NavDataCommand(Arg(p)));
+            t["mission"] = (reply, p) =>
+            {
+                string arg = Arg(p);
+                if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(p.Length > 2 ? string.Join(" ", p.Skip(2)) : "", reply); }   // all of it: "style fight" was cut to "style"
+                else if (!_roll.Command(arg, p.Length > 2 ? p[2] : "", reply))
+                    _mission.Command(p.Length > 1 ? p[1] : "", reply);
+            };
+            t["travelto"] = (reply, p) => _overland.Command(p.Skip(1).Where(x => x.Length > 0).ToArray(), reply);
+            t["stat"] = (reply, p) => reply(KnowledgeReports.StatCommand(p.Length > 1 ? p[1] : ""));
 
-                case "pethealself":
-                case "pethealme2":
+            // -- knowledge / reports (KnowledgeReports owns them, R3.4) --
+            t["class"] = t["whoami"] = (reply, p) => reply(_know.ClassLine());
+            t["nanos"] = (reply, p) => _know.ReportNanos(Arg(p), reply);
+            t["active"] = (reply, p) => _know.ReportActive(reply);
+            t["buffs"] = (reply, p) =>
+            {
+                // Bare 'buffs' = the running buffs; 'buffs plan/ask/...' = the Chewy request planner.
+                if (p.Length > 1 && ChewyBuffController.IsCommand(p[1]))
                 {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    if (!_pets.HealTargetLatched(mp, mp.Identity, "myself")) { reply("No heal pet up."); break; }
-                    reply("Heal pet is on me.");
-                    break;
+                    LocalPlayer meC = DynelManager.LocalPlayer;
+                    if (meC == null) { reply("Not in game."); return; }
+                    _chewy.Command(meC, p.Skip(1).ToArray(), reply);
                 }
+                else _know.ReportActive(reply);
+            };
+            t["autobuff"] = t["keepup"] = (reply, p) => _know.ReportBuffPlans(reply);
+            t["supplies"] = t["stims"] = (reply, p) => _know.ReportSupplies(reply);
+            t["learnable"] = t["learn"] = (reply, p) => _know.ReportLearnable(Arg(p), reply);
+            t["perks"] = t["perk"] = (reply, p) => _perkBonuses.Report(reply);
 
-                case "pethealpet":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    NpcChar tank = PetController.AttackPet(mp);
-                    if (tank == null) { reply("No attack pet up to heal."); break; }
-                    if (!_pets.HealTargetLatched(mp, tank.Identity, $"my attack pet ({tank.Name})")) { reply("No heal pet up."); break; }
-                    reply($"Heal pet is on {tank.Name}.");
-                    break;
-                }
+            // -- shopping (ResupplyController owns them, R3.4) --
+            t["resupply"] = (reply, p) => _resupply.Command(p, reply);
+            t["vendordebug"] = (reply, p) => _resupply.Survey(p, reply);
+            t["shop"] = t["sell"] = t["buy"] = (reply, p) => reply("Only 'resupply' (stims and rechargers) so far; general vendor buy/sell isn't implemented yet.");
+            t["whompa"] = t["travel"] = (reply, p) => reply("Use 'travelto <x> <y> <playfield>' (or 'travelto <playfield>'); it plans the zone lines, whompas and Scotty warps.");
+            t["help"] = t["commands"] = (reply, p) => reply(HelpPages.For(Arg(p)));
 
-                case "pethealauto":
-                {
-                    _pets.HealAuto();
-                    reply("Heal pet back to automatic: me when I'm melee, my attack pet when I'm ranged.");
-                    break;
-                }
-
-                case "pethealtarget":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    if (string.IsNullOrWhiteSpace(arg)) { reply($"Who? 'pethealtarget <name>', or {HealWhoHint()}"); break; }
-                    SimpleChar who = ResolveHealSubject(arg, mp);
-                    if (who == null) { reply($"I can't see anyone called '{arg}'."); break; }
-                    if (!_pets.HealTargetLatched(mp, who.Identity, who.Name)) { reply("No heal pet up."); break; }
-                    reply($"Heal pet is on {who.Name}.");
-                    break;
-                }
-
-                case "pethealmytarget":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
-                    if (mp == null || po == null) { reply("Can't — I don't see you."); break; }
-                    // Only what you are FIGHTING is on the wire. A selection you have merely clicked is not:
-                    // LookAtMessage, which carries a target change, is only ever sent with the sender's own
-                    // identity — in every capture under E:\Funcom\sniffs and E:\Funcom\captures, not once
-                    // relayed for another character. So outside combat there is nothing here to read, and
-                    // saying "no target" alone just leaves you stuck.
-                    SimpleChar t = po.FightingTarget;
-                    if (t == null)
-                    {
-                        reply("I can only see what you're FIGHTING — the server never tells me what you've "
-                              + $"merely clicked on. So name it instead: {HealWhoHint()}");
-                        break;
-                    }
-                    if (!_pets.HealTargetLatched(mp, t.Identity, t.Name)) { reply("No heal pet up."); break; }
-                    reply($"Heal pet is on your target, {t.Name}.");
-                    break;
-                }
-
-                case "petstatus":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer;
-                    if (mp == null) { reply("Not in play yet."); break; }
-                    var roster = mp.Pets.Select(p => $"{p.Name} ({p.Role}, {mp.DistanceFrom(p):0}m)").ToList();
-                    reply($"Owned {_pets.OwnedCount(mp)}, visible {roster.Count}"
-                          + (roster.Count > 0 ? ": " + string.Join(", ", roster) : "")
-                          + $". Heal pet targets {_pets.HealTargetDescription(mp)}.");
-                    break;
-                }
-                case "petattack":
-                {
-                    LocalPlayer mp = DynelManager.LocalPlayer; PlayerChar po = _owner.Find();
-                    if (mp == null || po == null || po.FightingTarget == null) { reply("No target — are you fighting?"); break; }
-                    _pets.EngageTarget(mp, po.FightingTarget, 999.0);   // force it through now
-                    reply($"Pets: attacking {po.FightingTarget.Name}.");
-                    break;
-                }
-                case "missiondbg": _config.MissionDebug = !_config.MissionDebug; reply($"Mission debug {(_config.MissionDebug ? "ON" : "OFF")} (logs to aobuddy.log)."); break;
-                case "nanodump":
-                {
-                    LocalPlayer mn = DynelManager.LocalPlayer;
-                    int n = mn != null ? _support.DumpNanos(mn) : 0;
-                    reply($"Dumped {n} nanos to aobuddy.log.");
-                    break;
-                }
-                case "catalog":
-                {
-                    string dir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_logFile) ?? ".", "catalog");
-                    var r = NanoCatalog.ExportAll(dir, Log);
-                    reply(r.Item1 >= 0 ? $"Exported {r.Item1} nanos to catalog/ (all + per-class json)." : $"Catalog failed: {r.Item2}");
-                    break;
-                }
-                case "buff": QueueBuffs(arg, reply); break;
-                case "heal":
-                    PlayerChar ht = _owner.Find();
-                    if (_config.HealNanoId > 0 && ht != null) { _support.QueueCast(new CastRequest { Target = ht.Identity, NanoId = _config.HealNanoId, Label = "heal owner" }); reply("Queued a heal."); }
-                    else reply(ht == null ? "Can't see you (out of range?)." : "No heal nano configured (HealNanoId).");
-                    break;
-                case "record":
-                    if (arg == "stop") { _follow.StopRecording(); reply($"Recorded {_follow.RecordCount} points. Save with 'savepath <name>'."); }
-                    else { _follow.StartRecording(); reply("Recording your path — walk the route, then 'record stop'."); }
-                    break;
-                case "savepath":
-                case "save":
-                    if (string.IsNullOrEmpty(arg)) { reply("Usage: savepath <name>"); break; }
-                    if (_follow.RecordCount == 0) { reply("Nothing recorded. Use 'record' first."); break; }
-                    try { if (SavePath(arg, _follow.RecordBuffer)) reply($"Saved '{arg}' ({_follow.RecordCount} points)."); else reply("Save failed (see log)."); }
-                    catch (Exception ex) { reply("Save failed: " + ex.Message); }
-                    break;
-                case "path":
-                    if (arg == "stop") { _follow.StopReplay(); reply("Path playback stopped."); break; }
-                    if (string.IsNullOrEmpty(arg)) { reply("Usage: path <name> | path stop"); break; }
-                    try
-                    {
-                        List<Vector3> pts = LoadPath(arg);
-                        _follow.LoadReplay(pts);
-                        reply($"Replaying '{arg}' ({pts.Count} points).");
-                    }
-                    catch (Exception ex) { reply("Load failed: " + ex.Message); }
-                    break;
-                case "paths": reply("Saved paths: " + ListPaths()); break;
-                case "nav":
-                    switch (arg)
-                    {
-                        case "save": _nav.Save(); reply($"Nav saved (pf {_nav.PlayfieldId})."); break;
-                        case "on": _config.NavRecord = true; reply("Nav recording ON."); break;
-                        case "off": _config.NavRecord = false; reply("Nav recording OFF."); break;
-                        case "use": _config.NavUse = !_config.NavUse; reply($"Nav lost-fallback {(_config.NavUse ? "ON" : "OFF")}."); break;
-                        default: reply(_nav.Status()); break;
-                    }
-                    break;
-                case "status": reply(StatusLine()); break;
-                case "pos":
-                {
-                    LocalPlayer meP = DynelManager.LocalPlayer;
-                    if (meP == null) { reply("Not in game."); break; }
-                    Vector3 p = meP.Transform.Position;
-                    // Map coordinates as the game shows them (x, then z as the map's y), height after - the same
-                    // order 'travelto <x> <y> <playfield>' takes.
-                    reply($"{Playfield.Name} ({(int)Playfield.ModelId}): {p.X:0} {p.Z:0}, height {p.Y:0}");
-                    break;
-                }
-                case "navdata": reply(NavDataCommand(arg)); break;
-                case "mission":
-                    if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(parts.Length > 2 ? string.Join(" ", parts.Skip(2)) : "", reply); }   // all of it: "style fight" was cut to "style"
-                    else if (!_roll.Command(arg, parts.Length > 2 ? parts[2] : "", reply))
-                        _mission.Command(parts.Length > 1 ? parts[1] : "", reply);
-                    break;
-                case "travelto": _overland.Command(parts.Skip(1).Where(p => p.Length > 0).ToArray(), reply); break;
-                case "stat": reply(StatCommand(parts.Length > 1 ? parts[1] : "")); break;
-
-                // ---- Knowledge (profession / nanos) ----
-                case "class":
-                case "whoami": reply(ClassLine()); break;
-                case "nanos": ReportNanos(arg, reply); break;
-                case "active": ReportActive(reply); break;
-                case "buffs":
-                    // Bare 'buffs' = the running buffs; 'buffs plan/ask/...' = the Chewy request planner.
-                    if (parts.Length > 1 && ChewyBuffController.IsCommand(parts[1]))
-                    {
-                        LocalPlayer meC = DynelManager.LocalPlayer;
-                        if (meC == null) { reply("Not in game."); break; }
-                        _chewy.Command(meC, parts.Skip(1).ToArray(), reply);
-                    }
-                    else ReportActive(reply);
-                    break;
-                case "autobuff":
-                case "keepup":
-                {
-                    LocalPlayer meB = DynelManager.LocalPlayer;
-                    if (meB == null) { reply("No character loaded."); break; }
-                    List<string> pl = _support.DescribeBuffPlans(meB, _owner.Find());
-                    if (pl.Count == 0) { reply("Auto-buff: no learned nanos classified as keep-up buffs."); break; }
-                    reply($"Auto-buff {(_config.AutoBuff ? "ON" : "OFF")} (self={_config.BuffSelf} owner={_config.BuffOwner} team={_config.BuffTeam}, margin {_config.RebuffMarginSeconds:0}s): {pl.Count} buffs.");
-                    foreach (string s in pl.Take(20)) reply(s);
-                    if (pl.Count > 20) reply($"…(+{pl.Count - 20} more)");
-                    break;
-                }
-                case "supplies":
-                case "stims": ReportSupplies(reply); break;
-                case "learnable":
-                case "learn": ReportLearnable(arg, reply); break;
-                case "perks":
-                case "perk": _perkBonuses.Report(reply); break;
-
-                case "resupply":
-                {
-                    LocalPlayer rp = DynelManager.LocalPlayer;
-                    if (rp == null) { reply("No character loaded."); break; }
-                    switch (arg)
-                    {
-                        case "stop": if (_resupply.Active) { _resupply.Stop(rp, "owner"); reply("Resupply stopped."); } else reply("Not resupplying."); break;
-                        case "status": reply("Resupply: " + _resupply.Describe()); break;
-                        case "forget": _resupply.Forget(); reply("Forgot which terminals sell what; the next resupply checks them all again."); break;
-                        case "machines":
-                        {
-                            List<string> ml = _resupply.DescribeMachines(rp);
-                            if (ml.Count == 0) { reply($"No terminals within {_config.ResupplySearchRadius:0}m."); break; }
-                            foreach (string l in ml.Take(15)) reply(HelpPages.Truncate(l, 440));
-                            if (ml.Count > 15) reply($"…(+{ml.Count - 15} more, all in the log)");
-                            break;
-                        }
-                        default: _resupply.Start(rp, reply); break;
-                    }
-                    break;
-                }
-                // TEMPORARY: open every matching terminal in the zone and log it (ResupplyController.StartSurvey).
-                case "vendordebug":
-                {
-                    LocalPlayer vp = DynelManager.LocalPlayer;
-                    if (vp == null) { reply("No character loaded."); break; }
-                    _resupply.StartSurvey(vp, parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "", reply);
-                    break;
-                }
-                case "shop":
-                case "sell":
-                case "buy": reply("Only 'resupply' (stims and rechargers) so far; general vendor buy/sell isn't implemented yet."); break;
-                case "whompa":
-                case "travel": reply("Use 'travelto <x> <y> <playfield>' (or 'travelto <playfield>'); it plans the zone lines, whompas and Scotty warps."); break;
-
-                case "help":
-                case "commands":
-                    reply(HelpPages.For(arg));
-                    break;
-                default: reply($"Unknown command '{cmd}'. Try 'help'."); break;
-            }
+            _commands = t;
         }
 
         // FORWARD/RUN and ZONE share this body (R0.5): head for a RECORDED zone line — the spot we came
@@ -1373,211 +1217,7 @@ namespace AOBuddy
 
         // ---- Knowledge: profession & nanos ---------------------------------------
 
-        private string ClassLine()
-        {
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me == null) return "No character loaded.";
-            me.TryGetStat(Stat.Level, out int lvl);
-            me.TryGetStat(Stat.Health, out int hp);
-            me.TryGetStat(Stat.MaxHealth, out int maxhp);
-            me.TryGetStat(Stat.CurrentNCU, out int ncu);
-            me.TryGetStat(Stat.MaxNCU, out int maxncu);
-            me.TryGetStat(Stat.Breed, out int breed);
-            me.TryGetStat(Stat.Strength, out int str);
-            me.TryGetStat(Stat.Agility, out int agi);
-            me.TryGetStat(Stat.Stamina, out int sta);
-            me.TryGetStat(Stat.Intelligence, out int intel);
-            me.TryGetStat(Stat.Sense, out int sen);
-            me.TryGetStat(Stat.Psychic, out int psy);
-            int uploaded = me.SpellList?.Length ?? 0;
-            return $"{me.Name}: {me.Profession} lvl {lvl} ({(Breed)breed}). HP {hp}/{maxhp}, NCU {ncu}/{maxncu} used. " +
-                   $"Str {str} Agi {agi} Sta {sta} Int {intel} Sen {sen} Psy {psy}. Uploaded nanos: {uploaded}.";
-        }
-
-        private void ReportNanos(string filter, Action<string> reply)
-        {
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me?.SpellList == null || me.SpellList.Length == 0) { reply("No uploaded nanos found."); return; }
-
-            var names = new List<string>();
-            foreach (int id in me.SpellList)
-            {
-                if (ItemData.Find(id, out NanoItem ni) && ni != null)
-                {
-                    if (filter.Length > 0 && ni.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                    names.Add($"{ni.Name} [{id}]");
-                }
-            }
-            names.Sort(StringComparer.OrdinalIgnoreCase);
-            if (names.Count == 0) { reply(filter.Length > 0 ? $"No uploaded nanos match '{filter}'." : "No named nanos resolved."); return; }
-            reply($"Uploaded ({names.Count}): " + HelpPages.Truncate(string.Join(", ", names), 440));
-        }
-
-        private void ReportActive(Action<string> reply)
-        {
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me == null) { reply("No character loaded."); return; }
-            var buffs = me.Buffs;
-            if (buffs == null || buffs.Count == 0) { reply("No active nanos."); return; }
-
-            var parts = new List<string>();
-            foreach (var b in buffs.OrderBy(b => b.Cooldown?.RemainingTime ?? 0))
-            {
-                string name = b.NanoItem != null ? b.NanoItem.Name : $"nano {b.Id}";
-                double rem = b.Cooldown?.RemainingTime ?? 0;
-                parts.Add($"{name} [{b.Id}] {FormatTime(rem)}");
-            }
-            reply($"Active ({parts.Count}): " + HelpPages.Truncate(string.Join(", ", parts), 440));
-        }
-
-        /// <summary>
-        /// What he is carrying, per QL, and which of it his skill can actually reach. Two lines, one per kind:
-        /// the bag, then the verdict and the skill behind it — so a number that looks wrong can be checked
-        /// against what is in the bag without reading the log.
-        /// </summary>
-        private void ReportSupplies(Action<string> reply)
-        {
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me == null) { reply("Not in play yet."); return; }
-
-            reply(SupplyLine("stims", _config.StimKeyword, _config.StimItemName, Stat.FirstAid, "First Aid", me));
-            reply(SupplyLine("rechargers", _config.RechargerKeyword, _config.RechargerItemName, Stat.Treatment, "Treatment", me));
-        }
-
-        private string SupplyLine(string what, string keyword, string exactName, Stat skill, string skillName, LocalPlayer me)
-        {
-            List<Item> carried = _support.HealItemPoolUnfiltered(keyword, exactName).ToList();
-            if (carried.Count == 0) return $"No {what} at all.";
-
-            // Group by QL so it reads the way he counts them: "24 QL7, 38 QL9".
-            var byQl = carried.GroupBy(it => it.Ql).OrderBy(g => g.Key)
-                .Select(g => new { Ql = g.Key, Count = g.Sum(it => Math.Max(1, it.Count)), Usable = g.Any(it => SupportController.MeetsHealReqs(it, me)) })
-                .ToList();
-
-            int total = byQl.Sum(g => g.Count);
-            int usable = byQl.Where(g => g.Usable).Sum(g => g.Count);
-            string skillHave = me.TryGetStat(skill, out int sv) ? sv.ToString() : "unknown";
-            string bag = string.Join(", ", byQl.Select(g => $"{g.Count} QL{g.Ql}"));
-
-            if (usable == total)
-                return $"{bag} — {total} {what}, all usable with my {skillName} of {skillHave}.";
-
-            string canUse = string.Join(", ", byQl.Where(g => g.Usable).Select(g => $"{g.Count} QL{g.Ql}"));
-            string tooHigh = string.Join(", ", byQl.Where(g => !g.Usable).Select(g => $"QL{g.Ql}"));
-            return $"{bag} — {total} {what}. {(usable == 0 ? "None" : canUse)} usable with my {skillName} "
-                   + $"of {skillHave}; {tooHigh} need more.";
-        }
-
-        private static string FormatTime(double seconds)
-        {
-            if (seconds <= 0) return "—";
-            int s = (int)seconds;
-            return s >= 60 ? $"{s / 60}m{s % 60:00}s" : $"{s}s";
-        }
-
-        private void ReportLearnable(string arg, Action<string> reply)
-        {
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me == null) { reply("No character loaded."); return; }
-
-            if (arg == "refresh") { _learnableCache = null; arg = ""; }
-
-            if (_learnableCache == null)
-            {
-                var have = new HashSet<int>(me.SpellList ?? new int[0]);
-                var found = new List<NanoItem>();
-                foreach (int id in ItemData.AllNanoIds())
-                {
-                    if (have.Contains(id)) continue;
-                    if (!ItemData.Find(id, out NanoItem ni) || ni == null) continue;
-                    if (ni.MeetsUseReqs(null, true)) found.Add(ni);
-                }
-                _learnableCache = found;
-            }
-
-            IEnumerable<NanoItem> list = _learnableCache;
-            if (arg.Length > 0)
-                list = list.Where(n => n.Name.IndexOf(arg, StringComparison.OrdinalIgnoreCase) >= 0);
-
-            var shown = list.OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase)
-                            .Select(n => n.Name).Distinct().ToList();
-            if (shown.Count == 0) { reply(arg.Length > 0 ? $"No qualifying nanos match '{arg}'." : "No qualifying nanos found."); return; }
-
-            int cap = 30;
-            string head = $"Can learn/cast ({shown.Count}{(arg.Length > 0 ? $" matching '{arg}'" : "")}): ";
-            reply(head + HelpPages.Truncate(string.Join(", ", shown.Take(cap)), 400) + (shown.Count > cap ? $" …(+{shown.Count - cap}, filter with 'learnable <text>')" : ""));
-        }
-
         // ---- Helpers -------------------------------------------------------------
-
-        private string PathFile(string name) => Path.Combine(_pathsDir, name + ".json");
-
-        private bool SavePath(string name, List<Vector3> pts)
-        {
-            var data = pts.Select(p => new[] { p.X, p.Y, p.Z }).ToList();
-            return JsonStore.Save(PathFile(name), JsonConvert.SerializeObject(data), Log);
-        }
-
-        private List<Vector3> LoadPath(string name)
-        {
-            var data = JsonConvert.DeserializeObject<List<float[]>>(File.ReadAllText(PathFile(name)));
-            return data.Select(a => new Vector3(a[0], a[1], a[2])).ToList();
-        }
-
-        private string ListPaths()
-        {
-            try
-            {
-                string[] files = Directory.GetFiles(_pathsDir, "*.json");
-                return files.Length == 0 ? "(none)" : string.Join(", ", files.Select(Path.GetFileNameWithoutExtension));
-            }
-            catch { return "(none)"; }
-        }
-
-        /// <summary>A visible character by name, for commands that name someone (case-insensitive, and a
-        /// unique prefix will do so you need not type a full name in a tell).</summary>
-        private static SimpleChar FindCharByName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return null;
-            name = name.Trim();
-            var all = DynelManager.Characters.Where(c => !string.IsNullOrEmpty(c.Name)).ToList();
-            SimpleChar exact = all.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
-            if (exact != null) return exact;
-            var starts = all.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
-            return starts.Count == 1 ? starts[0] : null;
-        }
-
-        /// <summary>
-        /// Who a heal-pet command means. A name works, and so do the words you'd actually type in a tell:
-        /// "me"/"you" is the owner, "him"/"self"/"bot" is the bot, "pet" is the attack pet. The two the owner
-        /// reaches for most — the bot and himself — are exactly the two that cannot be picked by clicking,
-        /// because a selection is never broadcast (see pethealmytarget).
-        /// </summary>
-        private SimpleChar ResolveHealSubject(string who, LocalPlayer me)
-        {
-            switch ((who ?? "").Trim().ToLowerInvariant())
-            {
-                case "me":
-                case "you":
-                case "owner":
-                    return _owner.Find();
-                case "him":
-                case "he":
-                case "self":
-                case "bot":
-                case "himself":
-                    return me;
-                case "pet":
-                case "attackpet":
-                    return PetController.AttackPet(me);
-            }
-            return FindCharByName(who);
-        }
-
-        /// <summary>The ways to name a heal-pet subject, for a reply that would otherwise be a dead end.</summary>
-        private string HealWhoHint() =>
-            "'pethealme' (you), 'pethealself' (me), 'pethealpet' (my attack pet), "
-            + "or 'pethealtarget <name>' for anyone else I can see.";
 
         private string StatusLine()
         {
