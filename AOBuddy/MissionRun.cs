@@ -376,6 +376,7 @@ namespace AOBuddy
             if (_completed) return;
             _completed = true;
             _ctx.Log($"MISSIONRUN: mission complete ({how}).");
+            if (_current != null) RememberDone(_current.Playfield.Instance, _current.Location);
         }
 
         private void OnList(IReadOnlyList<MissionInfo> list)
@@ -2447,6 +2448,35 @@ namespace AOBuddy
         }
         private byte[] _lastQuestLog;
 
+        // Missions finished lately (door pf + spot, UTC), in done.json: the quest log is the zone-in snapshot, and it
+        // still lists a mission finished after it. After a 'mission run' restart he walked back to the finished
+        // one's door, couldn't get in, and deleted it (01:12 Borealis, 01:32 Athen Shire, 2026-09-25).
+        private string DonePath => Path.Combine(_pluginDir, "done.json");
+        private List<(int pf, Vector3 at, DateTime when)> _doneStore;
+        private List<(int pf, Vector3 at, DateTime when)> Done
+        {
+            get
+            {
+                if (_doneStore != null) return _doneStore;
+                _doneStore = new List<(int, Vector3, DateTime)>();
+                try
+                {
+                    if (File.Exists(DonePath))
+                        foreach (JObject o in JArray.Parse(File.ReadAllText(DonePath)))
+                            _doneStore.Add(((int)o["pf"], new Vector3((float)o["x"], 0, (float)o["z"]), (DateTime)o["when"]));
+                }
+                catch { }
+                return _doneStore;
+            }
+        }
+        private void RememberDone(int pf, Vector3 at)
+        {
+            Done.RemoveAll(d => (DateTime.UtcNow - d.when).TotalHours > 1);
+            Done.Add((pf, at, DateTime.UtcNow));
+            try { File.WriteAllText(DonePath, new JArray(Done.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
+        }
+        private bool DoneLately(int pf, Vector3 at) => Done.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 20 && (DateTime.UtcNow - d.when).TotalHours < 1);
+
         // The quest log (QuestFullUpdate, sent at every zone-in) carries each mission's destination the same way
         // the terminal list does: Identity(Playfield2 0x9C50, pf), 8 bytes, then the door's x, y, z as floats.
         // Checked on capture 20260923-201746: mission 55EE1C4C, offered at pf 570 (748,35,1721), sits in the
@@ -2466,7 +2496,7 @@ namespace AOBuddy
                 found.Add((pf, new Vector3(x, y, z)));
             }
             var saved = LoadSaved();
-            var pick = found.Where(f => FitsZone(f.pf))
+            var pick = found.Where(f => FitsZone(f.pf) && !DoneLately(f.pf, f.at))
                             .OrderBy(f => saved != null && saved.Playfield.Instance == f.pf && Movement.Flat(f.at, saved.Location) < 20 ? 0 : 1)
                             .Select(f => ((int, Vector3)?)f).FirstOrDefault();
             if (pick == null) { if (found.Count == 0) ClearSaved(); return null; }
