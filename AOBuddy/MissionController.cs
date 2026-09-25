@@ -62,7 +62,7 @@ namespace AOBuddy
         private Vector3? _lastCorrection;        // where the server last snapped us to during a walk
         private readonly HashSet<(int, int, int)> _blocked = new HashSet<(int, int, int)>();
         private Purpose _purpose;
-        private enum Purpose { Button, Target, Entrance, Search }
+        private enum Purpose { Button, Target, Entrance, Search, Clear }
         private readonly HashSet<int> _visited = new HashSet<int>();   // rooms searched for an unseen target
         private double _lookAccum;
 
@@ -140,6 +140,14 @@ namespace AOBuddy
 
                 case CharacterActionMessage ca:
                     if ((int)ca.Action == MissionChangedAction && IsMe(ca.Identity)) OnCompleted("MissionChanged");
+                    break;
+
+                case FormatFeedbackMessage ff:
+                    if (IsMe(ff.Identity) && TryClearPct(ff.FormattedMessage, out float pct))
+                    {
+                        ClearPct = pct;
+                        _ctx.Log($"MISSION: cleared {pct:0.#}% of this mission's mobs.");
+                    }
                     break;
 
                 case FeedbackMessage fb:
@@ -225,6 +233,7 @@ namespace AOBuddy
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
                 if (_nav?.Layout == null) { _nav = null; return; }
                 _instance = _nav.Layout.Instance;
+                if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _clearPasses = 0; _clearGaveUp = false; }
                 _grid = MissionGrid.Build(_nav);
                 ParseRecord();
                 _ctx.Log($"MISSION: in {_nav.Name} instance {_instance}, {_grid.Describe()}");
@@ -591,6 +600,12 @@ namespace AOBuddy
             }
             else
             {
+                // CLEAR MODE: every room on every floor before the objective, until the server says 100%.
+                if (Clearing)
+                {
+                    var ch = ClearHop(pos, myFloor.Value, out why);
+                    if (ch.HasValue) return ch;
+                }
                 target = FindTarget(out Vector3? tpos, out string tw);
                 if (target.HasValue && tpos.HasValue && _grid.FloorAt(tpos.Value) is int tf)
                 {
@@ -624,6 +639,12 @@ namespace AOBuddy
                 return new Hop { Pos = goalPos.Value, Purpose = _completed ? Purpose.Entrance : Purpose.Target, Target = target };
             }
 
+            return ButtonHop(pos, myFloor.Value, goalFloor, out why);
+        }
+
+        /// <summary>The button on this floor that leads toward goalFloor, nearest by path.</summary>
+        private Hop? ButtonHop(Vector3 pos, int myFloor, int goalFloor, out string why)
+        {
             // Another floor: pick a button on this one. Button (boss) joins the boss room to the floor next to
             // it; up/down join the ordinary floors (all three runs 2026-09-23).
             var here = Buttons().Where(b => _grid.FloorAt(b.Value.Pos) == myFloor).ToList();
@@ -650,6 +671,95 @@ namespace AOBuddy
             if (best == null) { why = $"a {KindName(want)} button is on floor {myFloor} but I cannot reach it"; return null; }
             why = $"to the {KindName(_items[best.Value.Button.Value].Template)} button (floor {myFloor} -> {goalFloor})";
             return best;
+        }
+
+        // ---- clear mode -----------------------------------------------------------------------------------
+        // Kill every mob in the building before the objective: the XP, and for Omni and Clan a side token with
+        // the reward. The server counts it for us: after each kill, FormatFeedback category 110 message 79979934
+        // with one float, the share of the building's mobs dead (capture 20260925-110325: 38.5, 46.2 ... 100 in
+        // steps of 1/13; at 100 the owner completed the find person and the Omni-Tek Mission Token came with the
+        // reward, TemplateAction 87 into the overflow window). The person to find is not counted. The server only
+        // sends mobs near us (61 spawns, 175 despawns in capture 20260923-114223), so every room gets walked.
+        public bool ClearMode;
+        public float ClearPct { get; private set; } = -1;
+        public Func<NpcChar, bool> Fightable = _ => true;
+        public bool Clearing => ClearMode && _grid != null && _record != null && !_completed && !_clearGaveUp && ClearPct < 99.9f;
+        private readonly HashSet<int> _clearVisited = new HashSet<int>();
+        private int _clearInstance, _clearPasses;
+        private bool _clearGaveUp;
+        private const int ClearCategory = 110, ClearMessage = 79979934;
+
+        /// <summary>'~&' + category and message id (5 base-85 chars each) + 'f' + a base-85 float.</summary>
+        public static bool TryClearPct(string s, out float pct)
+        {
+            pct = 0;
+            if (s == null || s.Length < 18 || s[0] != '~' || s[1] != '&') return false;
+            if (B85(s, 2) != ClearCategory || B85(s, 7) != ClearMessage || s[12] != 'f') return false;
+            pct = BitConverter.ToSingle(BitConverter.GetBytes((int)(uint)B85(s, 13)), 0);
+            return pct >= 0 && pct <= 100.01f;
+        }
+        private static long B85(string s, int p)
+        {
+            long v = 0;
+            for (int i = 0; i < 5; i++) { int c = s[p + i] - 33; if (c < 0 || c > 84) return -1; v = v * 85 + c; }
+            return v;
+        }
+
+        /// <summary>A path length through the building, or null (no building, no path).</summary>
+        public float? PathLen(Vector3 a, Vector3 b)
+        {
+            if (_grid == null) return null;
+            var p = _grid.FindPath(a, b, _blocked, out _);
+            if (p == null) return null;
+            float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
+            return len;
+        }
+
+        private string ClearText => ClearPct < 0 ? "no kill counted yet" : $"{ClearPct:0.#}% cleared";
+
+        private Hop? ClearHop(Vector3 pos, int floor, out string why)
+        {
+            foreach (var r in _grid.RoomsOn(floor)) if (Movement.Flat(pos, r.Centre) < 6f) _clearVisited.Add(r.Index);
+            // 1) the nearest room on this floor not walked yet
+            Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
+            foreach (var r in _grid.RoomsOn(floor))
+            {
+                if (_clearVisited.Contains(r.Index)) continue;
+                var p = _grid.FindPath(pos, r.Centre, _blocked, out _);
+                if (p == null) { _clearVisited.Add(r.Index); continue; }
+                float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
+                if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Clear }; }
+            }
+            if (best != null) { why = $"clearing ({ClearText}): room '{bestName}' on floor {floor}"; return best; }
+            // 2) a live mob in sight on this floor (a patrol, or one standing between rooms)
+            var me = DynelManager.LocalPlayer;
+            foreach (var n in DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && (me == null || !me.Pets.Any(pp => pp.Identity == n.Identity))
+                                                          && (!n.TryGetStat(Stat.Health, out int h) || h > 0) && n.Identity != FindPersonTarget
+                                                          && _grid.FloorAt(n.Transform.Position) == floor && Fightable(n))
+                                              .OrderBy(n => Movement.Flat(pos, n.Transform.Position)).Take(3))
+            {
+                var len = PathLen(pos, n.Transform.Position);
+                if (len.HasValue) { why = $"clearing ({ClearText}): '{n.Name}' {len:0} m off"; return new Hop { Pos = n.Transform.Position, Purpose = Purpose.Clear }; }
+            }
+            // 3) another floor with rooms left, by a button seen here
+            foreach (int f in _grid.Floors.OrderBy(f => Math.Abs(f - floor)))
+            {
+                if (f == floor || _grid.RoomsOn(f).All(r => _clearVisited.Contains(r.Index))) continue;
+                var bh = ButtonHop(pos, floor, f, out string bw);
+                if (bh.HasValue) { why = $"clearing ({ClearText}): floor {f} has rooms left; {bw}"; return bh; }
+            }
+            // 4) all walked and still short of 100%: once more round (mobs wander into walked rooms), then give up.
+            if (_clearPasses == 0)
+            {
+                _clearPasses = 1; _clearVisited.Clear();
+                _ctx.Log($"MISSION: walked every room I can reach, {ClearText}; one more round.");
+                return ClearHop(pos, floor, out why);
+            }
+            _clearGaveUp = true;
+            _ctx.Log($"MISSION: clear mode gave up at {ClearText} after two rounds of every reachable room; on to the objective.");
+            _tell($"Couldn't clear this one ({ClearText}); doing the objective.");
+            why = "clear mode gave up";
+            return null;
         }
 
         private Hop? SearchHop(Vector3 pos, int floor, string tw, out string why)
@@ -932,7 +1042,7 @@ namespace AOBuddy
             return true;
         }
 
-        private float ArriveRadius() => _purpose == Purpose.Button ? 1.5f : _purpose == Purpose.Target ? 2.5f : _purpose == Purpose.Search ? 3f : 2.0f;
+        private float ArriveRadius() => _purpose == Purpose.Button ? 1.5f : _purpose == Purpose.Target ? 2.5f : _purpose == Purpose.Search || _purpose == Purpose.Clear ? 3f : 2.0f;
 
         private void Arrive(LocalPlayer me)
         {
@@ -943,6 +1053,7 @@ namespace AOBuddy
                 case Purpose.Button: Enter(Phase.PressButton, "at the button"); break;
                 case Purpose.Target: Enter(Phase.Act, "at the target"); break;
                 case Purpose.Search: Enter(Phase.Plan, "searched a room"); break;
+                case Purpose.Clear: Enter(Phase.Plan, "cleared a room"); break;
                 case Purpose.Entrance:
                     if (_nav.Exit == null)
                     {

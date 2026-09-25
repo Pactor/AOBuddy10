@@ -71,6 +71,7 @@ namespace AOBuddy
                           FollowController follow, string pluginDir, Action<string> tell, CombatController combat)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
+            _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             _roll.ListArrived += OnList;
         }
@@ -92,6 +93,7 @@ namespace AOBuddy
             // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
             // blitz rules apply whatever the style.
             if (Fleeing) return false;   // running from a pack (in or out of a mission): no turning to fight
+            if (_mission.Clearing && _mission.InMission) return true;   // clear mode: every fight is the job
             if (string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
             // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
             // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
@@ -115,6 +117,15 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a == "clear" || a.StartsWith("clear "))
+            {
+                // CLEAR MODE (owner, 2026-09-25): kill every mob in the building before the objective - XP, and for
+                // Omni/Clan a side token with the reward, used at once (UseTokens).
+                string v = a.Substring(5).Trim();
+                if (v == "on" || v == "off") { _ctx.Config.MissionClear = v == "on"; SaveConfigValue("MissionClear", v == "on"); }
+                reply($"Clear mode: {(_ctx.Config.MissionClear ? "ON" : "off")}{(_mission.InMission && _mission.ClearPct >= 0 ? $" ({_mission.ClearPct:0.#}% of this building cleared)" : "")}. 'mission run clear on|off'.");
+                return;
+            }
             if (a == "avoid" || a.StartsWith("avoid "))
             {
                 // 'mission run avoid' lists; 'mission run avoid <playfield id>' adds or removes one.
@@ -526,6 +537,7 @@ namespace AOBuddy
             if (!Active || me == null) return false;
             RecordGood(me);
             UseTokens(me);
+            _mission.ClearMode = _ctx.Config.MissionClear;
 
             // FIGHT FIRST. Walking on while mobs hit him is what killed him twice (21:56, 22:11): blitz marched
             // from room to room with two mobs on his back, melee weapon swinging at nothing. Anything moving him
@@ -678,7 +690,7 @@ namespace AOBuddy
                             // nothing too strong for him within 30 m of the foe, or he stays where he is.
                             bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
                                             && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
-                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing)) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
                         if (_ctx.Status.InCombat) { _follow.ClearManual(); _phaseTime = 0; return false; }
@@ -923,7 +935,7 @@ namespace AOBuddy
                 case Phase.Blitz:
                     if (_mission.Active)
                     {
-                        if (_phaseTime > BlitzTimeout) Skip("it was taking too long");
+                        if (_phaseTime > (_ctx.Config.MissionClear ? 3 * BlitzTimeout : BlitzTimeout)) Skip("it was taking too long");
                         return false;
                     }
                     if (_mission.InMission)
@@ -3085,6 +3097,7 @@ namespace AOBuddy
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+            if (a == null && _mission.Clearing && _mission.InMission) a = PullTarget(me, pets);
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
@@ -3117,6 +3130,37 @@ namespace AOBuddy
             }
             return a;
         }
+        // CLEAR MODE: nothing on us, so go for the nearest mob close by on a walkable path (not through a wall),
+        // same rules as a mob that attacks: alive, not a pet, not set aside, not far above his level, not the
+        // person a find-person mission sent us to. Checked once a second; the one chosen is kept while it lives.
+        private NpcChar PullTarget(LocalPlayer me, HashSet<Identity> pets)
+        {
+            if (_pullId.HasValue)
+            {
+                var cur = DynelManager.Npcs.FirstOrDefault(n => n != null && n.Identity == _pullId.Value);
+                if (cur != null && Pullable(me, cur, pets) && me.DistanceFrom(cur) <= 25f) return cur;
+                _pullId = null;
+            }
+            if (_clock - _pullCheckedAt < 1) return null;
+            _pullCheckedAt = _clock;
+            var pos = me.Transform.Position;
+            foreach (var n in DynelManager.Npcs.Where(n => Pullable(me, n, pets) && me.DistanceFrom(n) <= 15f && Math.Abs(n.Transform.Position.Y - pos.Y) < 3f)
+                                               .OrderBy(n => me.DistanceFrom(n)).Take(3))
+            {
+                var len = _mission.PathLen(pos, n.Transform.Position);
+                if (!len.HasValue || len.Value > 22f) continue;
+                _pullId = n.Identity;
+                _ctx.Log($"MISSIONRUN: clearing: going for '{n.Name}' ({me.DistanceFrom(n):0} m, {len.Value:0} m to walk).");
+                return n;
+            }
+            return null;
+        }
+        private bool Pullable(LocalPlayer me, NpcChar n, HashSet<Identity> pets)
+            => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity) && (!n.TryGetStat(Stat.Health, out int h) || h > 0)
+               && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget && IsMob(n, true);
+        private Identity? _pullId;
+        private double _pullCheckedAt = -9999;
+
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
         /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
         /// not fought even when they show as fighting him: on the way to a Longest Road door (06:58, 2026-09-24)
