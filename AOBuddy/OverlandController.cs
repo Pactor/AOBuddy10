@@ -601,6 +601,17 @@ namespace AOBuddy
             // The heightfield is solid ground outdoors: the step we claim can never be under it.
             double terr = _ground?.Ground != null ? _ground.Ground.HeightAt(nx, nz) : double.NaN;
             if (!double.IsNaN(terr) && terr > nextY) nextY = (float)terr;
+            if (!_inWater)
+            {
+                // ...AND STEP UP ONTO WHAT WE WALK INTO (the ICC steps, same day): under a staircase
+                // FloorNear's "nearest" floor is the TERRAIN BENEATH THE STAIRS, so the walk claimed the
+                // plaza's height while stepping into the rising treads, and the server pinned the bot at
+                // the foot of the steps. The surface we stand on at the next position is the HIGHEST floor
+                // at most a step above us (a riser or two — anything higher is a wall, anything the terrain
+                // clamp already covered is below); big drops keep the old fall behaviour.
+                float sf = StepFloor(nx, pos.Y, nz);
+                if (!float.IsNaN(sf) && sf >= pos.Y - 4f && sf > nextY) nextY = sf;
+            }
             Vector3 next = new Vector3(nx, nextY, nz);
             _ctx.WalkState = $"overland leg {_legNo}/{_legCount} wp {_pathIndex + 1}/{_path.Count} d={d:0}{(_inWater ? (floating ? " float" : nextY == floorY2 ? " wade" : " swim") : "")}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
@@ -654,6 +665,21 @@ namespace AOBuddy
             if (!EnsureNav() || _ground == null) return float.NaN;   // still loading: the old playfield's floor is no answer
             double h = _ground.FloorNear(x, y, z, out _);
             return double.IsNaN(h) ? float.NaN : (float)h;
+        }
+
+        // The HIGHEST surface at the next position that is at most a step above y (stairs, kerbs, sills) —
+        // the surface we would walk ONTO. NaN when nothing qualifies.
+        private float StepFloor(float x, float y, float z)
+        {
+            float best = float.NaN;
+            void Consider(double h)
+            {
+                if (double.IsNaN(h) || h > y + 0.8f) return;
+                if (float.IsNaN(best) || h > best) best = (float)h;
+            }
+            if (_ground?.Ground != null) Consider(_ground.Ground.HeightAt(x, z));
+            if (_ground?.Collision != null) foreach (double h in _ground.Collision.HeightsUnder(x, z)) Consider(h);
+            return best;
         }
 
         // The playfield's floor data and walkable grid, built off the update thread by the ONE shared
