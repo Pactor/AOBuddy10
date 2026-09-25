@@ -173,10 +173,15 @@ namespace AOBuddy
         }
 
         /// <summary>The crystals a nano query stands for: every crystal whose nano fits it.</summary>
+        // Expanding a query walks all ~6000 crystals through the item data (seconds): once per query, cached
+        // (want status answered after the API's 2 s window and every roll paid for it, 2026-09-25).
+        private static readonly Dictionary<string, List<int>> _expand = new Dictionary<string, List<int>>();
         public static List<int> CrystalsFor(Entry e)
         {
+            if (e.Name != null || e.Kind != "nano") return new List<int>();
+            string key = $"{e.Prof}:{e.QlMin}:{e.QlMax}";
+            lock (_expand) { if (_expand.TryGetValue(key, out var hit)) return hit; }
             var list = new List<int>();
-            if (e.Name != null || e.Kind != "nano") return list;
             foreach (var kv in WantData.Crystals)
             {
                 // The QL is the crystal's (Shatter Bone: crystal QL 37, what the terminal offers); the nano
@@ -186,6 +191,7 @@ namespace AOBuddy
                 if (e.Prof != 0 && !NanoProfs(kv.Value).Contains(e.Prof)) continue;
                 list.Add(kv.Key);
             }
+            lock (_expand) _expand[key] = list;
             return list;
         }
 
@@ -193,8 +199,16 @@ namespace AOBuddy
 
         /// <summary>The nanos a nano query stands for, one crystal each (the lowest QL one) - several crystals can
         /// carry the same nano.</summary>
-        public static List<int> NanosFor(Entry e) => CrystalsFor(e).GroupBy(WantData.NanoOf)
-            .Select(g => g.OrderBy(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).First()).ToList();
+        private static readonly Dictionary<string, List<int>> _nanos = new Dictionary<string, List<int>>();
+        public static List<int> NanosFor(Entry e)
+        {
+            string key = $"{e.Kind}:{e.Name}:{e.Prof}:{e.QlMin}:{e.QlMax}";
+            lock (_nanos) { if (_nanos.TryGetValue(key, out var hit)) return hit; }
+            var list = CrystalsFor(e).GroupBy(WantData.NanoOf)
+                .Select(g => g.OrderBy(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).First()).ToList();
+            lock (_nanos) _nanos[key] = list;
+            return list;
+        }
 
         /// <summary>Still to collect, per entry: templates left (nano query: one crystal per missing nano; named
         /// item: -1 while not had); open queries: null.</summary>
