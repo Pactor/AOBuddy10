@@ -151,6 +151,7 @@ namespace AOBuddy
             _mode = ParseMode(_config.DefaultMode);
             InitPermanentBonuses(pluginDir);
             ItemValues.Load(pluginDir, Log);
+            WantData.Load(pluginDir, Log);
             Zoning.Load(pluginDir, Log);
 
             _ctx = new BotContext(_config, Log, new Clock());

@@ -828,6 +828,11 @@ class Program
         // --probe <name part>: print the events/functions of templates whose name contains it (research).
         int pr = Array.IndexOf(args, "--probe");
         if (pr >= 0) { Probe(ocp, namesPath, args[pr + 1]); return; }
+        // --wantdata <out.bin>: the want list's item data. "AOWD" v1: crystals (count; crystal template, nano
+        // program it uploads - its use event's function 53019 Upload, e.g. 82011 -> 82007), then item classes
+        // (count; template, ItemClass stat 0x4C) for every template that has one.
+        int wd = Array.IndexOf(args, "--wantdata");
+        if (wd >= 0) { WantData(ocp, namesPath, args[wd + 1]); return; }
         int im = Array.IndexOf(args, "--implants");
         if (im >= 0) { NoDropTable(ocp, namesPath, args[im + 1], "AOIM", st => st.TryGetValue(0x4C, out var c) && c == 3); return; }
 
@@ -965,6 +970,42 @@ class Program
             items
         }, opts));
         Console.WriteLine($"dump written: {outPath}");
+    }
+
+    static void WantData(string ocp, string namesPath, string outBin)
+    {
+        var names = LoadNames(namesPath);
+        var crystals = new List<(int crystal, int nano)>();
+        var classes = new List<(int id, int cls)>();
+        using (var fs = File.OpenRead(ocp))
+        using (var gz = new GZipStream(fs, CompressionMode.Decompress))
+        using (var r = new BinaryReader(gz, Encoding.UTF8))
+        {
+            if (r.ReadString() != "OMNICELL-CONTENT") throw new InvalidDataException("bad magic");
+            int version = r.ReadInt32(); r.ReadByte(); int count = r.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                int id = r.ReadInt32();
+                r.ReadInt32(); r.ReadInt32(); r.ReadInt32(); r.ReadInt32(); r.ReadInt32();
+                SkipDict(r); SkipDict(r);
+                var stats = ReadDict(r);
+                SkipIntList(r);
+                ReadActions(r); var evs = ReadEvents(r, version);
+                if (version >= 2) ReadRecordData(r, version);
+                if (stats.TryGetValue(0x4C, out var c) && c > 0) classes.Add((id, c));
+                var up = evs.SelectMany(e => e.funcs).FirstOrDefault(f => f.FunctionType == 53019 && f.Args.Count > 0 && f.Args[0] is int);
+                if (up != null) crystals.Add((id, (int)up.Args[0]));
+            }
+        }
+        using (var w = new BinaryWriter(File.Create(outBin)))
+        {
+            w.Write(Encoding.ASCII.GetBytes("AOWD")); w.Write(1);
+            w.Write(crystals.Count); foreach (var (a, b) in crystals) { w.Write(a); w.Write(b); }
+            w.Write(classes.Count); foreach (var (a, b) in classes) { w.Write(a); w.Write((byte)b); }
+        }
+        Console.WriteLine($"crystals={crystals.Count} classes={classes.Count} -> {outBin}");
+        foreach (var g in classes.GroupBy(x => x.cls).OrderBy(g => g.Key)) Console.WriteLine($"  class {g.Key}: {g.Count()}");
+        foreach (var (a, b) in crystals.Where(x => names.ContainsKey(x.crystal)).Take(5)) Console.WriteLine($"  {a} {names[a].name} -> {b} {(names.TryGetValue(b, out var nn) ? nn.name : "?")}");
     }
 
     static void Probe(string ocp, string namesPath, string part)
