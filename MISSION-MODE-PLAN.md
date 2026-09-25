@@ -516,3 +516,7 @@ while he runs (commands, or editing wants.json - re-read before every roll).
 6. Commands: `mission run want add <name|query>`, `want remove`, `want list`, `want mode always|list`,
    `want status`, and `mission run want` to start a want run.
 
+**Built 2026-09-25** (steps 1-4): WantData (ItemWantData.bin), WantList (wants.json), 'mission run want ...' commands
+and the want run, QL targeting (qlmap.json: level:difficulty -> mission QL; difficulty 1-11 searched toward the
+wanted band; a band no setting reaches is reported and dropped). Not yet tried live.
+

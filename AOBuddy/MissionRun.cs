@@ -274,11 +274,11 @@ namespace AOBuddy
                 if (rest.Length > 0) { reply("mission run want | want add <name or query> | want remove <n> | want list | want mode always|list | want status | want clear got"); return; }
                 w.Reload();
                 if (w.Entries.Count == 0) { reply("The want list is empty: 'mission run want add ...' first."); return; }
-                if (Active) { _wantRun = true; _wantRolls = 0; reply("Rolling for the want list from the next roll. " + WantStatus()); return; }
-                _wantRun = true; _wantRolls = 0;
+                if (Active) { _wantRun = true; _wantRolls = 0; _unreachable.Clear(); WantAim(); reply("Rolling for the want list from the next roll. " + WantStatus()); return; }
+                _wantRun = true; _wantRolls = 0; _unreachable.Clear(); WantAim();
                 a = "";
             }
-            else if (a.Length == 0 || a == "new") _wantRun = false;
+            else if (a.Length == 0 || a == "new") { _wantRun = false; _roll.DifficultyOverride = null; _unreachable.Clear(); }
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
@@ -450,7 +450,9 @@ namespace AOBuddy
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
             int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
             if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
-            if (_wantRun && WantFilter(ok)) return;
+            QlObserve(list);
+            if (_wantRun && WantFilter(ok)) { WantAim(); return; }
+            if (_wantRun) WantAim();
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
@@ -1573,7 +1575,110 @@ namespace AOBuddy
         private WantList Wants => _wants ?? (_wants = new WantList(_pluginDir, _ctx.Log));
         private bool _wantRun;
         private int _wantRolls;
-        private const int WantRollCap = 300;   // rolls in a row with nothing wanted before he says so and stops
+        private const int WantRollCap = 300;
+
+        // ---- QL TARGETING (want list step 4) ------------------------------------------------------------------
+        // The mission QL (every gear/implant reward of a roll shares it) follows level and difficulty: alt log
+        // 2026-09-24/25, difficulty 1 -> QL25, 5 -> QL32-35 (level 36-39), 6 -> QL36. Nano crystals come within
+        // about +-9 of it (QL25 -> 16-34, QL35 -> 27-44). Seen difficulties 1-11 (captures 1/6/9/11).
+        // Recorded per level in qlmap.json; the want run sets the difficulty whose QL sits closest to the band it
+        // wants, tries unseen settings toward it, and reports a band out of reach once every setting is known.
+        private const int DiffMin = 1, DiffMax = 11, NanoWindow = 8;
+        private Dictionary<string, int> _qlMapStore;
+        private string QlMapPath => Path.Combine(_pluginDir, "qlmap.json");
+        private Dictionary<string, int> QlMap
+        {
+            get
+            {
+                if (_qlMapStore != null) return _qlMapStore;
+                _qlMapStore = new Dictionary<string, int>();
+                try { if (File.Exists(QlMapPath)) foreach (var kv in JObject.Parse(File.ReadAllText(QlMapPath))) _qlMapStore[kv.Key] = (int)kv.Value; } catch { }
+                return _qlMapStore;
+            }
+        }
+        private static int MyLevel() { var me = DynelManager.LocalPlayer; return me != null && me.TryGetStat(Stat.Level, out int l) ? l : 0; }
+        private readonly HashSet<WantList.Entry> _unreachable = new HashSet<WantList.Entry>();
+
+        /// <summary>Record this roll's mission QL (the QL its gear/implant rewards share) for level + difficulty.</summary>
+        private void QlObserve(IReadOnlyList<MissionInfo> list)
+        {
+            var gear = list.SelectMany(m => m.MissionItemData ?? new MissionItemReward[0]).Where(r => r != null && !WantData.IsCrystal(r.LowId) && r.Ql > 1).Select(r => r.Ql).ToList();
+            if (gear.Count == 0) return;
+            int ql = gear.GroupBy(q => q).OrderByDescending(g => g.Count()).First().Key;
+            string key = $"{MyLevel()}:{_roll.LastDifficulty}";
+            if (QlMap.TryGetValue(key, out int old) && old == ql) return;
+            QlMap[key] = ql;
+            try { var o = new JObject(); foreach (var kv in QlMap) o[kv.Key] = kv.Value; JsonStore.Save(QlMapPath, o.ToString(), _ctx.Log); } catch { }
+            _ctx.Log($"MISSIONRUN: level {MyLevel()}, difficulty {_roll.LastDifficulty} -> mission QL {ql}.");
+        }
+
+        /// <summary>The QL band to aim at: the open entry with a QL band, most left first. Nano: the missing
+        /// crystals' QLs, +-NanoWindow; gear/implant/spirit: its band.</summary>
+        private (WantList.Entry e, int lo, int hi, int aim)? WantBand()
+        {
+            var held = HeldTemplates();
+            (WantList.Entry, int, int, int)? best = null; int bestLeft = -1;
+            foreach (var r in Wants.Remaining(held))
+            {
+                if (_unreachable.Contains(r.e) || r.e.Name != null) continue;
+                if (r.e.Kind == "nano")
+                {
+                    if (r.left == null || r.left.Count == 0) continue;
+                    var qls = r.left.Select(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).Where(q => q > 0).OrderBy(q => q).ToList();
+                    if (qls.Count == 0 || qls.Count <= bestLeft) continue;
+                    int med = qls[qls.Count / 2];
+                    best = (r.e, med - NanoWindow, med + NanoWindow, med); bestLeft = qls.Count;
+                }
+                else if (r.e.QlMin > 0 || r.e.QlMax < 1000)
+                {
+                    if (bestLeft >= 1) continue;
+                    int lo = Math.Max(1, r.e.QlMin), hi = Math.Min(r.e.QlMax, 999);
+                    best = (r.e, lo, hi, (lo + hi) / 2); bestLeft = 1;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>Set the difficulty for the next roll toward the wanted band; drop a band no setting reaches.</summary>
+        private void WantAim()
+        {
+            var band = WantBand();
+            if (band == null) { _roll.DifficultyOverride = null; return; }
+            var (e, lo, hi, aim) = band.Value;
+            int lvl = MyLevel();
+            var seen = new Dictionary<int, int>();
+            for (int d = DiffMin; d <= DiffMax; d++) if (QlMap.TryGetValue($"{lvl}:{d}", out int q)) seen[d] = q;
+            // A seen setting that lands in the band: use it.
+            var inBand = seen.Where(kv => kv.Value >= lo && kv.Value <= hi).OrderBy(kv => Math.Abs(kv.Value - aim)).Select(kv => (int?)kv.Key).FirstOrDefault();
+            if (inBand.HasValue) { SetDiff(inBand.Value, e, seen[inBand.Value]); return; }
+            // None yet: step toward the band from the nearest seen setting (QL rises with difficulty), or start mid.
+            int next;
+            if (seen.Count == 0) next = 6;
+            else
+            {
+                var near = seen.OrderBy(kv => Math.Abs(kv.Value - aim)).First();
+                int dir = near.Value < lo ? 1 : -1;
+                next = near.Key + dir;
+                while (next >= DiffMin && next <= DiffMax && seen.ContainsKey(next)) next += dir;
+                if (next < DiffMin || next > DiffMax)
+                {
+                    _unreachable.Add(e);
+                    string range = $"{seen.Values.Min()}-{seen.Values.Max()}";
+                    _tell($"Can't roll {e}: at level {lvl} the mission QL only goes {range}. Leaving it and carrying on with the rest.");
+                    _ctx.Log($"MISSIONRUN: want {e} out of reach at level {lvl} (mission QL {range}).");
+                    WantAim();
+                    return;
+                }
+            }
+            SetDiff(next, e, null);
+        }
+
+        private void SetDiff(int d, WantList.Entry e, int? ql)
+        {
+            if (_roll.DifficultyOverride == d) return;
+            _roll.DifficultyOverride = d;
+            _ctx.Log($"MISSIONRUN: aiming for {e}: difficulty {d}{(ql.HasValue ? $" (mission QL {ql})" : " (trying it)")}.");
+        }   // rolls in a row with nothing wanted before he says so and stops
 
         /// <summary>Templates he holds: inventory, bags, and the bank as last seen.</summary>
         private HashSet<int> HeldTemplates()
@@ -1619,11 +1724,12 @@ namespace AOBuddy
             if (w.Mode == "list")
             {
                 var rem = w.Remaining(held);
-                if (rem.Count > 0 && rem.All(r => r.left != null && r.left.Count == 0))
+                if (rem.Count > 0 && rem.All(r => _unreachable.Contains(r.e) || (r.left != null && r.left.Count == 0)))
                 {
                     _tell("Want list done: I have everything on it. " + WantStatus());
                     _ctx.Log("MISSIONRUN: want list done; stopping.");
-                    _wantRun = false;
+                    _wantRun = false; _roll.DifficultyOverride = null;
+                    if (_unreachable.Count > 0) _tell("Out of reach: " + string.Join("; ", _unreachable) + ".");
                     Stop("want list done");
                     return true;
                 }
@@ -1639,7 +1745,7 @@ namespace AOBuddy
             if (++_wantRolls >= WantRollCap)
             {
                 _tell($"No wanted reward in {WantRollCap} rolls; stopping. {WantStatus()}");
-                _wantRun = false; _wantRolls = 0;
+                _wantRun = false; _wantRolls = 0; _roll.DifficultyOverride = null;
                 Stop("nothing wanted offered");
                 return true;
             }
