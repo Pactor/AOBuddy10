@@ -2210,6 +2210,9 @@ namespace AOBuddy
                     }
                     _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
                     _travelWaitUntil = _clock + 60;
+                    // ...and walking it myself again then: the tries were spent in the backoffs, and at 01:07-01:12
+                    // (2026-09-25) he stood at (720,637) in Borealis 5 minutes while travel said 'walled off' each minute.
+                    _straightTries = 0;
                     return false;
                 }
                 if (there) return false;                  // the phase check picks it up next frame
