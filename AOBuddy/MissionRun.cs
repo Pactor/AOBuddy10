@@ -270,6 +270,7 @@ namespace AOBuddy
                 if (rest == "list") { reply(w.Entries.Count == 0 ? "The want list is empty." : $"Wants ({w.Mode}): " + string.Join("; ", w.Entries.Select((e, k) => $"{k + 1}) {e}"))); return; }
                 if (rest.StartsWith("mode ")) { string md = rest.Substring(5).Trim(); if (md == "always" || md == "list") { w.Mode = md; w.Save(); reply($"Want mode: {md}."); } else reply("want mode always|list"); return; }
                 if (rest == "status") { reply(WantStatus()); return; }
+                if (rest == "lines" || rest.StartsWith("lines ")) { var ls = WantList.LineNames(rest.Length > 5 ? rest.Substring(6) : "").ToList(); reply(ls.Count == 0 ? "No nano line like that." : $"{ls.Count} nano line(s): " + string.Join(", ", ls.Take(40)) + (ls.Count > 40 ? " ..." : "")); return; }
                 if (rest.StartsWith("drop ") || rest.StartsWith("undrop "))
                 {
                     bool drop = rest.StartsWith("drop ");
@@ -283,7 +284,7 @@ namespace AOBuddy
                     return;
                 }
                 if (rest == "clear got") { w.Got.Clear(); w.Save(); reply("Forgot what the want runs collected."); return; }
-                if (rest.Length > 0) { reply("mission run want | want add <name or query> | want remove <n> | want list | want mode always|list | want status | want drop|undrop <nano name> | want clear got"); return; }
+                if (rest.Length > 0) { reply("mission run want | want add <name or query, e.g. nano engi line pet ql 20-60> | want remove <n> | want list | want lines [part] | want mode always|list | want status | want drop|undrop <nano name> | want clear got"); return; }
                 w.Reload();
                 if (w.Entries.Count == 0) { reply("The want list is empty: 'mission run want add ...' first."); return; }
                 if (Active) { _wantRun = true; _wantRolls = 0; _unreachable.Clear(); WantAim(); reply("Rolling for the want list from the next roll. " + WantStatus()); return; }

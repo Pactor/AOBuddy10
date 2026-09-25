@@ -28,12 +28,13 @@ namespace AOBuddy
             public string Kind = "any";      // nano | implant | weapon | armor | gear | spirit | any
             public int Prof;                 // Stat.Profession value, 0 = any
             public int QlMin, QlMax = 1000;
+            public string Line;              // nano line (NanoLine name, part of it, spaces/underscores ignored), or null
             public override string ToString()
             {
                 if (Name != null) return "'" + Name + "'";
                 string p = Prof > 0 ? " " + ProfName(Prof) : "";
                 string q = QlMin <= 0 && QlMax >= 1000 ? "" : QlMax >= 1000 ? $" QL {QlMin}+" : $" QL {QlMin}-{QlMax}";
-                return Kind + p + q;
+                return Kind + p + (Line != null ? " line " + Line : "") + q;
             }
         }
 
@@ -62,7 +63,7 @@ namespace AOBuddy
                 Mode = (string)o["mode"] ?? "list";
                 Entries.Clear();
                 foreach (JObject e in (JArray)o["entries"] ?? new JArray())
-                    Entries.Add(new Entry { Name = (string)e["name"], Kind = (string)e["kind"] ?? "any", Prof = (int?)e["prof"] ?? 0, QlMin = (int?)e["qlMin"] ?? 0, QlMax = (int?)e["qlMax"] ?? 1000 });
+                    Entries.Add(new Entry { Name = (string)e["name"], Kind = (string)e["kind"] ?? "any", Prof = (int?)e["prof"] ?? 0, QlMin = (int?)e["qlMin"] ?? 0, QlMax = (int?)e["qlMax"] ?? 1000, Line = (string)e["line"] });
                 Got.Clear();
                 foreach (var g in (JArray)o["got"] ?? new JArray()) Got.Add((int)g);
                 _log?.Invoke($"WANTS: loaded {Entries.Count} entr{(Entries.Count == 1 ? "y" : "ies")} ({Mode}).");
@@ -77,7 +78,7 @@ namespace AOBuddy
             {
                 ["mode"] = Mode,
                 ["entries"] = new JArray(Entries.Select(e => e.Name != null ? new JObject { ["name"] = e.Name }
-                    : new JObject { ["kind"] = e.Kind, ["prof"] = e.Prof, ["qlMin"] = e.QlMin, ["qlMax"] = e.QlMax })),
+                    : new JObject { ["kind"] = e.Kind, ["prof"] = e.Prof, ["qlMin"] = e.QlMin, ["qlMax"] = e.QlMax, ["line"] = e.Line })),
                 ["got"] = new JArray(Got.OrderBy(x => x)),
             };
             if (JsonStore.Save(_path, o.ToString(), _log)) { try { _stamp = File.GetLastWriteTimeUtc(_path); } catch { } }
@@ -114,7 +115,10 @@ namespace AOBuddy
                 e.QlMin = int.Parse(m.Groups[1].Value);
                 e.QlMax = m.Groups[2].Success ? int.Parse(m.Groups[2].Value) : m.Groups[3].Success ? 1000 : e.QlMin;
             }
-            foreach (var w in words.Skip(1)) if (Profs.TryGetValue(w, out int p)) e.Prof = p;
+            var ln = Regex.Match(text, @"\bline\s+(.+?)(?=\s+ql\b|$)", RegexOptions.IgnoreCase);
+            if (ln.Success) e.Line = ln.Groups[1].Value.Trim();
+            string beforeLine = ln.Success ? text.Substring(0, ln.Index) : text;
+            foreach (var w in beforeLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Skip(1)) if (Profs.TryGetValue(w, out int p)) e.Prof = p;
             return e;
         }
 
@@ -131,6 +135,17 @@ namespace AOBuddy
             return set;
         }
 
+        private static string Squash(string s) => new string((s ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+        /// <summary>The nano program's line fits the query's line words (AttackPets fits "attack pets", "pets", ...).</summary>
+        public static bool LineFits(int nanoId, string line)
+        {
+            if (string.IsNullOrEmpty(line)) return true;
+            if (!ItemData.Find(nanoId, out NanoItem ni) || ni == null) return false;
+            return Squash(ni.NanoLine.ToString()).Contains(Squash(line));
+        }
+        /// <summary>Every nano line name, for 'want lines'.</summary>
+        public static IEnumerable<string> LineNames(string part) => Enum.GetNames(typeof(NanoLine)).Where(n => Squash(n).Contains(Squash(part ?? "")));
+
         public static string NameOf(int template) => ItemData.Find(template, out DummyItem d) && d?.Name != null ? d.Name : null;
 
         /// <summary>Does this reward (template, QL) fit the entry?</summary>
@@ -144,7 +159,7 @@ namespace AOBuddy
                 case "nano":
                     int nano = WantData.NanoOf(low);
                     if (nano == 0) return false;
-                    return e.Prof == 0 || NanoProfs(nano).Contains(e.Prof);
+                    return (e.Prof == 0 || NanoProfs(nano).Contains(e.Prof)) && LineFits(nano, e.Line);
                 case "implant": return cls == WantData.Implant;
                 case "weapon": return cls == WantData.Weapon;
                 case "armor": return cls == WantData.Armor;
@@ -179,7 +194,7 @@ namespace AOBuddy
         public static List<int> CrystalsFor(Entry e)
         {
             if (e.Name != null || e.Kind != "nano") return new List<int>();
-            string key = $"{e.Prof}:{e.QlMin}:{e.QlMax}";
+            string key = $"{e.Prof}:{e.QlMin}:{e.QlMax}:{e.Line}";
             lock (_expand) { if (_expand.TryGetValue(key, out var hit)) return hit; }
             var list = new List<int>();
             foreach (var kv in WantData.Crystals)
@@ -189,6 +204,7 @@ namespace AOBuddy
                 if (!ItemData.Find(kv.Key, out DummyItem cr) || cr == null) continue;
                 if (cr.Ql < e.QlMin || cr.Ql > e.QlMax) continue;
                 if (e.Prof != 0 && !NanoProfs(kv.Value).Contains(e.Prof)) continue;
+                if (!LineFits(kv.Value, e.Line)) continue;
                 list.Add(kv.Key);
             }
             lock (_expand) _expand[key] = list;
@@ -202,7 +218,7 @@ namespace AOBuddy
         private static readonly Dictionary<string, List<int>> _nanos = new Dictionary<string, List<int>>();
         public static List<int> NanosFor(Entry e)
         {
-            string key = $"{e.Kind}:{e.Name}:{e.Prof}:{e.QlMin}:{e.QlMax}";
+            string key = $"{e.Kind}:{e.Name}:{e.Prof}:{e.QlMin}:{e.QlMax}:{e.Line}";
             lock (_nanos) { if (_nanos.TryGetValue(key, out var hit)) return hit; }
             var list = CrystalsFor(e).GroupBy(WantData.NanoOf)
                 .Select(g => g.OrderBy(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).First()).ToList();
