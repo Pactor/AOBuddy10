@@ -100,6 +100,67 @@ def profile_for(slug):
     return out
 
 
+# ROLLABLE (2026-09-25): per profession, every nano crystal (tools/rolldata -> profiles/rollable-<slug>.json)
+# with what the bots have seen of it as a mission reward: offered.json (per bot: offered counts by crystal,
+# rolls per mission QL, nanos judged not rollable) and wants.json (crystals collected). Icons are exported
+# locally by tools/aodb-icons into tools/aodb/icons (Funcom art, never committed).
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BOT_DIRS = [("alt", os.path.join(REPO, "Build", "Plugins", "AOBuddy")),
+            ("main", os.path.join(REPO, "Build-Main", "Plugins", "AOBuddy"))]
+ICONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icons")
+NANO_WINDOW = 8   # nano rewards come within about +-8 QL of the mission QL (MISSION-MODE-PLAN)
+
+
+def rollable_for(slug):
+    data = load_json(os.path.join(BASE, "rollable-" + slug + ".json"))
+    if not data:
+        return None
+    src = load_json(os.path.join(BASE, slug + "-nano-sources.json")) or {}
+    how = {}
+    for k, v in (src.get("sources") or {}).items():
+        if isinstance(v, dict):
+            how[str(k)] = v.get("how")
+    # Group by the profile's own nano categories (Heals / HoT, Debuffs ...) where it has them; else the nano line.
+    cat_of = {}
+    prof_nanos = load_json(os.path.join(BASE, slug + "-nanos.json")) or {}
+    cats = prof_nanos.get("categories") or {}
+    for cname, arr in (cats.items() if isinstance(cats, dict) else []):
+        for x in arr or []:
+            if isinstance(x, dict) and x.get("id") is not None:
+                cat_of[int(x["id"])] = cname
+    offered, rolls_at, not_rollable, got, bots = {}, {}, set(), set(), []
+    for label, d in BOT_DIRS:
+        o = load_json(os.path.join(d, "offered.json"))
+        w = load_json(os.path.join(d, "wants.json"))
+        if o:
+            bots.append(label)
+            for k, v in (o.get("offered") or {}).items():
+                offered[int(k)] = offered.get(int(k), 0) + int(v)
+            for k, v in (o.get("rollsAtQl") or {}).items():
+                rolls_at[int(k)] = rolls_at.get(int(k), 0) + int(v)
+            not_rollable.update(int(x) for x in (o.get("notRollable") or []))
+        if w:
+            got.update(int(x) for x in (w.get("got") or []))
+    nanos = {}
+    for c in data.get("crystals", []):
+        n = nanos.setdefault(c["nano"], {"nano": c["nano"], "name": c.get("nanoName") or c["name"], "line": c.get("line"),
+                                          "ql": c["ql"], "ncu": c.get("ncu"), "req": c.get("req") or {},
+                                          "icon": c.get("nanoIcon") or c.get("icon"), "crystals": [], "offered": 0,
+                                          "got": False, "how": how.get(str(c["nano"]))})
+        n["crystals"].append({"id": c["crystal"], "name": c["name"], "icon": c.get("icon")})
+        n["offered"] += offered.get(c["crystal"], 0)
+        n["got"] = n["got"] or c["crystal"] in got
+        n["ql"] = min(n["ql"], c["ql"])
+    for n in nanos.values():
+        line = n["line"] or ""
+        n["group"] = cat_of.get(n["nano"]) or (("Line " + line) if line.isdigit() else line) or "Other"
+        n["rollsNear"] = sum(v for q, v in rolls_at.items() if abs(q - n["ql"]) <= NANO_WINDOW)
+        n["notRollable"] = n["nano"] in not_rollable
+    rows = sorted(nanos.values(), key=lambda n: (n["group"], n["ql"]))
+    return {"profession": data.get("profession"), "bots": bots, "totalRolls": sum(rolls_at.values()),
+            "nanos": rows, "source": data.get("source")}
+
+
 def status():
     files = {
         "breeds": os.path.join(REF, "breeds.json"),
@@ -199,12 +260,12 @@ async function select(p){
   if(!BREEDS) BREEDS = await j('/api/breeds');
   if(!SKILLCAPS) SKILLCAPS = await j('/api/skillcaps');
   if(!IMPLANTS) IMPLANTS = await j('/api/implants');
-  curProfile = await j('/api/profile?prof='+encodeURIComponent(p.slug));
+  curProfile = escapeDeep(await j('/api/profile?prof='+encodeURIComponent(p.slug)));
   render();
 }
 
 function tabList(){
-  return [['overview','Overview'],['build','Build'],['skills','Skill Caps'],['pets','Pets'],['nanos','Nanos'],['weapons','Weapons'],['implants','Implants & Symbiants'],['gear','Gear'],['buffs','Buffs'],['leveling','Leveling'],['endgame','Endgame']];
+  return [['overview','Overview'],['build','Build'],['skills','Skill Caps'],['pets','Pets'],['nanos','Nanos'],['weapons','Weapons'],['implants','Implants & Symbiants'],['gear','Gear'],['buffs','Buffs'],['leveling','Leveling'],['endgame','Endgame'],['rollable','Rollable']];
 }
 function render(){
   const m=document.getElementById('main');
@@ -221,6 +282,28 @@ function setTab(t){curTab=t; renderTab();}
 
 function pending(what){ return `<div class="pending">The <b>${what}</b> data for ${cur.name} has not been generated yet. A background research pass writes it into the profiles folder; refresh once it lands.</div>`; }
 function pendingInline(what){ return `<div class="pending" style="margin-bottom:14px">${what} for ${cur.name} is still being generated &mdash; refresh once the pass lands.</div>`; }
+// Data-file text is NOT trusted as HTML. Acquisition notes legitimately contain
+// angle brackets (e.g. "Device + <base weapon QL 299/300>"), which the browser
+// would otherwise swallow as a tag.
+// The renderers build HTML with template literals and assign it via innerHTML, so any < > in the
+// DATA is parsed as a tag and silently disappears: "Craft it: <base Spirit> + <matching Beta>"
+// rendered as "Craft it: + .". Escaping at each interpolation missed most of them - sixty-odd sites,
+// and every new renderer another chance to forget. So the profile is escaped ONCE on load instead,
+// which covers every render path that exists now or later.
+function escapeString(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeDeep(v){
+  if(typeof v === 'string') return escapeString(v);
+  if(Array.isArray(v)) return v.map(escapeDeep);
+  if(v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=escapeDeep(v[k]); return o; }
+  return v;
+}
+// Kept as identity so the ~31 call sites that already wrapped a value do not escape it twice
+// (which would show a literal &amp;lt; on the page).
+function esc(s){ return s==null?'':String(s); }
+// anyOf: first non-empty of several alternative field names. Profession profiles name
+// the same column differently (petNotes / soldierNotes, mpRole / soldierRole ...), so the
+// renderers ask for every spelling instead of one class's.
+function anyOf(o){ for(let i=1;i<arguments.length;i++){ const k=arguments[i]; if(o && o[k]!=null && o[k]!=='') return o[k]; } return ''; }
 
 function renderTab(){
   const b=document.getElementById('tabbody'); if(!b)return;
@@ -235,6 +318,7 @@ function renderTab(){
   if(curTab==='buffs')    return b.innerHTML=renderBuffs();
   if(curTab==='leveling') return b.innerHTML=renderLeveling();
   if(curTab==='endgame')  return b.innerHTML=renderEndgame();
+  if(curTab==='rollable') return renderRollable(b);
 }
 
 function renderBuffs(){
@@ -255,8 +339,8 @@ function renderLeveling(){
   if(!d) return pending('leveling');
   let h='';
   if(d.froobVsPaid) h+=`<div class="card"><div class="grp">Froob vs paid</div><p class="muted">${d.froobVsPaid}</p></div>`;
-  if(d.brackets){ h+='<div class="grp">Level path</div><div class="card" style="padding:0"><table><tr><th>Levels</th><th>Where</th><th>Fight</th><th>Pet notes</th><th>XP</th></tr>'+
-    (d.brackets||[]).map(b=>`<tr><td><b>${b.levelRange}</b></td><td>${Array.isArray(b.where)?b.where.join(', '):(b.where||'')}</td><td class="muted">${b.fight||''}</td><td class="muted">${b.petNotes||''}</td><td class="muted">${b.xpType||''}</td></tr>`).join('')+'</table></div>'; }
+  if(d.brackets){ h+='<div class="grp">Level path</div><div class="card" style="padding:0"><table><tr><th>Levels</th><th>Where</th><th>Fight</th><th>Class notes</th><th>XP</th></tr>'+
+    (d.brackets||[]).map(b=>`<tr><td><b>${b.levelRange}</b></td><td>${Array.isArray(b.where)?b.where.join(', '):(b.where||'')}</td><td class="muted">${b.fight||''}</td><td class="muted">${anyOf(b,'petNotes','soldierNotes','classNotes','professionNotes','notes')}</td><td class="muted">${b.xpType||''}</td></tr>`).join('')+'</table></div>'; }
   if(d.keyQuests){ h+='<div class="grp">Key quests</div><div class="card" style="padding:0"><table><tr><th>Quest</th><th>Where</th><th>Reward</th><th>Level</th></tr>'+
     (d.keyQuests||[]).map(q=>`<tr><td>${q.name}</td><td class="muted">${q.where||''}</td><td class="muted">${q.reward||''}</td><td>${q.level||''}</td></tr>`).join('')+'</table></div>'; }
   if(d.keys){ h+='<div class="grp">Keys</div><div class="card" style="padding:0"><table><tr><th>Key</th><th>For</th><th>How</th></tr>'+
@@ -269,8 +353,11 @@ function renderEndgame(){
   const d = curProfile && curProfile.endgame;
   if(!d) return pending('endgame');
   let h='';
+  // Optional lead paragraph: what a raid wants from this class. Only renders when supplied.
+  const rrs = anyOf(d,'raidRoleSummary','roleSummary');
+  if(rrs) h+=`<div class="card"><div class="grp">Raid role</div><p class="muted">${rrs}</p></div>`;
   if(d.content){ h+='<div class="grp">Content &amp; raids</div><div class="card" style="padding:0"><table><tr><th>Content</th><th>Type</th><th>Lvl</th><th>Drops for this class</th><th>Role</th></tr>'+
-    (d.content||[]).map(c=>`<tr><td><b>${c.name}</b></td><td class="muted">${c.type||''}</td><td>${c.level||''}</td><td class="muted">${c.whatDropsForMP||c.whatDrops||''}</td><td class="muted">${c.mpRole||c.role||''}</td></tr>`).join('')+'</table></div>'; }
+    (d.content||[]).map(c=>`<tr><td><b>${c.name}</b></td><td class="muted">${c.type||''}</td><td>${c.level||''}</td><td class="muted">${anyOf(c,'whatDropsForMP','whatDropsForSoldier','whatDropsForClass','whatDropsForProfession','whatDrops')}</td><td class="muted">${anyOf(c,'mpRole','soldierRole','classRole','professionRole','role')}</td></tr>`).join('')+'</table></div>'; }
   if(d.progressionOrder){ h+='<div class="grp">Progression order</div><div class="card" style="padding:0"><table><tr><th>#</th><th>What</th><th>Why</th></tr>'+
     (d.progressionOrder||[]).map((s,i)=>`<tr><td>${i+1}</td><td>${s.what||s.step||''}</td><td class="muted">${s.why||''}</td></tr>`).join('')+'</table></div>'; }
   if(d.notes){ h+='<div class="card"><div class="grp">Notes</div><ul>'+(d.notes||[]).map(n=>`<li class="muted">${n}</li>`).join('')+'</ul></div>'; }
@@ -305,8 +392,13 @@ function renderBuild(){
   return h;
 }
 
+// Professions with no pets at all: an absent pets file is the finished answer for them, not a gap.
+// Saying "not generated yet" would send you back to look for work that does not exist.
+const PETLESS = ['soldier','martialartist','fixer','agent','adventurer','trader','enforcer','doctor','nanotechnician','keeper','shade'];
 function renderPets(){
   const d = curProfile && curProfile.pets;
+  if(!d && PETLESS.includes(cur.slug))
+    return `<div class="card"><div class="grp">Pets</div><p class="muted">${cur.name} has no pets &mdash; nothing to generate. Pet professions are Meta-Physicist, Engineer, Bureaucrat and (Charm only) Crat/Trader lines.</p></div>`;
   if(!d) return pending('pet');
   let h='';
   if(d.summary) h+=`<div class="card muted">${d.summary}</div>`;
@@ -334,9 +426,22 @@ function renderGearTab(){
     (d.armorSets||[]).map(a=>{ const kb=a.keyBonuses?Object.entries(a.keyBonuses).map(([k,v])=>`${k}: ${v}`).join(', '):''; return `<tr><td><b>${a.name}</b></td><td class="muted">${(a.slotsCovered||[]).join(', ')}</td><td class="muted" style="max-width:240px">${kb}</td><td>${a.levelRange||''}</td><td class="muted">${a.source||''}</td><td>${a.priority||''}</td></tr>`; }).join('')+'</table></div>'; }
   const grp=(title,arr,cols)=>{ if(!arr||!arr.length) return ''; let s=`<div class="grp">${title}</div><div class="card" style="padding:0"><table><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}</tr>`;
     arr.forEach(x=>{ s+='<tr>'+cols.map(c=>`<td class="${c[0]==='name'?'':'muted'}">${x[c[0]]??''}</td>`).join('')+'</tr>'; }); return s+'</table></div>'; };
+  // Class-specific "signature stat" block (Doctor: Heal Multiplier items). Optional - only
+  // renders when the profile file supplies it, so no other class's gear tab changes.
+  h+=grp('Heal Multiplier items', d.healMultiplierItems, [['name','Item'],['slot','Slot'],['ql','QL'],['effect','Effect'],['reqs','Requires'],['id','id']]);
   h+=grp('Headwear', d.headwear, [['name','Item'],['effect','Effect'],['id','id']]);
   h+=grp('NCU &amp; belt', d.ncuAndBelt, [['name','Item'],['effect','Effect'],['id','id']]);
   h+=grp('Misc / utility', d.misc, [['name','Item'],['slot','Slot'],['effect','Effect'],['id','id']]);
+  // ADDITIVE (Nano-Technician pass): a gear profile may supply any number of extra
+  // tables as gear.extraTables = [{title, columns?:[[key,header],...], rows:[...]}].
+  // Used for the NT's Nano Damage Multiplier list, its Cyberdeck ladder and its
+  // profession-locked catalog. Renders only when present, so no existing class's
+  // gear tab changes and nothing above is touched.
+  (d.extraTables||[]).forEach(t=>{
+    const cols=(t.columns&&t.columns.length)?t.columns
+              :[['name','Item'],['slot','Slot'],['ql','QL'],['effect','Effect'],['reqs','Requires'],['id','id']];
+    h+=grp(t.title||'More gear', t.rows, cols);
+  });
   return h;
 }
 
@@ -400,24 +505,81 @@ function renderSkills(){
   return h;
 }
 
+// --- symbiant acquisition ("where do I actually farm this") ------------------
+function farmText(f){
+  if(!f) return '';
+  if(!f.how || f.how==='unknown') return ' <span class="pill">farm: unknown</span>';
+  const bits=[f.mob,f.where||f.playfield].filter(x=>x&&x!=='unknown');
+  return `<br><span style="color:var(--acc2)">&rarr; ${bits.join(' &mdash; ')}</span>`
+       + (f.levelRange&&f.levelRange!=='unknown'?` <span class="muted">(lvl ${f.levelRange})</span>`:'')
+       + ((f.prerequisites&&f.prerequisites.length)?`<br><span class="muted">prereq: ${f.prerequisites.join('; ')}</span>`:'');
+}
+// Most professions wear symbiants in their implant slots; a Shade wears "Spirits"
+// instead (see shade-symbiants.json, which carries itemNoun:"Spirit"). Additive:
+// any profile without an itemNoun keeps the word "symbiant" exactly as before.
+function symNoun(sy,cap){ const n=(sy&&sy.itemNoun)||'symbiant';
+  return cap? n.charAt(0).toUpperCase()+n.slice(1) : n.toLowerCase(); }
+function symNounPl(sy){ return symNoun(sy)+'s'; }
+function renderFarming(sy){
+  let h='';
+  const runs = sy.farmingRuns||[];
+  if(runs.length){
+    h+='<div class="card"><div class="grp">Farming runs &mdash; grouped by location (one trip, several pieces)</div>';
+    h+='<table><tr><th>Location</th><th>How</th><th>Level</th><th>Prerequisites</th><th>What it yields</th></tr>';
+    runs.forEach(r=>{
+      const y=(r.yields||[]).map(v=>`${v.slot}${v.mob&&v.mob!=='unknown'?` <span class="muted">(${v.mob})</span>`:''}`).join('<br>');
+      h+=`<tr><td><b>${r.location||''}</b>${r.playfield&&r.playfield!==r.location?`<br><span class="muted">${r.playfield}</span>`:''}</td>`
+        +`<td class="muted">${r.how||''}</td><td class="muted">${r.levelRange||''}</td>`
+        +`<td class="muted" style="max-width:240px">${(r.prerequisites||[]).join('; ')||'-'}</td>`
+        +`<td class="muted" style="max-width:320px">${y}</td></tr>`;
+    });
+    h+='</table></div>';
+  }
+  const acq = sy.acquisitionBySlot||[];
+  if(acq.length){
+    h+='<div class="card"><div class="grp">Where do I actually get this &mdash; per slot</div>';
+    const cov=sy._farmCoverage;
+    // "<line>-unit symbiants" reads wrong for a profile whose itemNoun IS the line
+    // (the Shade's Spirits), so drop the "-unit" phrase in that case.
+    const covWhat = (sy.itemNoun? '' : (sy.line? sy.line+'-unit ' : '')) + symNounPl(sy);
+    if(cov) h+=`<p class="muted">Acquisition verified for <b>${cov.withVerifiedFarm}</b> of <b>${cov.lineItemsTotal}</b> ${covWhat}; ${cov.unknown} left as <i>unknown</i> on purpose.</p>`;
+    acq.forEach(b=>{
+      const steps=(b.steps||[]).filter(s=>s.how&&s.how!=='unknown');
+      if(!steps.length) return;
+      h+=`<div class="grp" style="margin-top:10px">${b.slotLabel||b.slot}</div>`;
+      h+=`<table><tr><th>QL</th><th>${symNoun(sy,true)}</th><th>Min lvl</th><th>How / where</th><th>Prerequisites</th></tr>`;
+      steps.forEach(s=>{
+        h+=`<tr><td>${s.ql??''}</td><td style="color:var(--acc2)">${s.symbiant||''}${s.noDrop?' <span class="pill">NODROP</span>':''}</td>`
+          +`<td class="muted">${s.minLevel??''}</td>`
+          +`<td class="muted">${[s.how,s.mob,s.where||s.playfield].filter(x=>x&&x!=='unknown').join(' &mdash; ')}</td>`
+          +`<td class="muted" style="max-width:240px">${(s.prerequisites||[]).join('; ')||'-'}</td></tr>`;
+      });
+      h+='</table>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
 function renderImplants(){
   let h='';
   // Symbiants first — for an endgame character these are the best-in-slot fillers.
   const sy = curProfile && curProfile.symbiants;
   if(sy){
     const rows = sy.bestInSlot||sy.slots||sy.build||[];
-    h+=`<div class="card"><div class="grp">Best-in-slot symbiants (endgame ${cur.name})</div>`;
+    h+=`<div class="card"><div class="grp">Best-in-slot ${symNounPl(sy)} (endgame ${cur.name})</div>`;
     if(sy.summary) h+=`<p class="muted">${sy.summary}</p>`;
-    h+='<table><tr><th>Slot</th><th>Symbiant</th><th>Line/Unit</th><th>QL</th><th>Key bonuses</th><th>Requires</th><th>Where</th></tr>';
+    h+=`<table><tr><th>Slot</th><th>${symNoun(sy,true)}</th><th>Line/Unit</th><th>QL</th><th>Key bonuses</th><th>Requires</th><th>Where</th></tr>`;
     rows.forEach(s=>{
       const kb=s.keyBonuses?Object.entries(s.keyBonuses).map(([k,v])=>`${k} +${v}`).join(', '):'';
       const rq=s.reqs?Object.entries(s.reqs).map(([k,v])=>`${k} ${v}`).join(', '):'';
       const lu=[s.line,s.unit].filter(Boolean).join(' / ');
-      h+=`<tr><td><b>${s.slotLabel||s.slot}</b></td><td style="color:var(--acc2)">${s.symbiant||'-'}</td><td class="muted">${lu}</td><td>${s.ql??''}</td><td class="muted" style="max-width:220px">${kb}</td><td class="muted">${rq}</td><td class="muted">${s.source||''}</td></tr>`;
+      h+=`<tr><td><b>${s.slotLabel||s.slot}</b></td><td style="color:var(--acc2)">${s.symbiant||'-'}</td><td class="muted">${lu}</td><td>${s.ql??''}</td><td class="muted" style="max-width:220px">${kb}</td><td class="muted">${rq}</td><td class="muted">${s.source||''}${farmText(s.farm)}</td></tr>`;
     });
     h+='</table>';
     if(sy.xanAlphaNote) h+=`<p class="muted" style="font-size:12px">${sy.xanAlphaNote}</p>`;
     h+='</div>';
+    h+=renderFarming(sy);
   } else {
     h+=pendingInline('Best-in-slot symbiants (the top-tier pick)');
   }
@@ -471,6 +633,14 @@ function srcText(o){
   return s+(tags.length?' '+tags.map(t=>`<span class="pill" style="color:var(--warn)">${t}</span>`).join(''):'');
 }
 
+// Weapon-skill cost pill: accepts the numeric skillCostFactor written by
+// gen-weapons-profile.ps1 or the legacy `mpSkillCost` string.
+function wCost(t){
+  if(t.skillCostFactor!=null) return ' &middot; IP cost '+t.skillCostFactor+(t.skillCostRank!=null?(' (rank '+t.skillCostRank+')'):'');
+  const legacy=t.mpSkillCost||t.skillCost;
+  return legacy?(' &middot; '+legacy):'';
+}
+
 function renderWeapons(){
   const w = curProfile && curProfile.weapons;
   if(!w) return pending('weapon');
@@ -478,17 +648,17 @@ function renderWeapons(){
   const types = w.usableWeaponTypes||w.weaponTypes||[];
   // Summary chips of usable weapon skills.
   h+='<div class="card"><div class="grp">Weapon types this profession can use</div>'+
-     types.map(t=>`<span class="badge on">${t.weaponSkill||t.skill||t.name} <span class="pill">${t.weaponsMpUsable??''}</span></span>`).join('')+
+     types.map(t=>`<span class="badge on">${t.weaponSkill||t.skill||t.name} <span class="pill">${t.weaponsMpUsable??t.weaponsUsable??''}</span></span>`).join('')+
      '<p class="muted" style="font-size:12px">A weapon\'s allowed specials come from its own criteria at runtime; below is the space per type.</p></div>';
   // One card per weapon type with its representative weapons.
   types.forEach(t=>{
     h+=`<div class="grp">${t.weaponSkill||t.skill} `+
-       `<span class="pill">${t.weaponsMpUsable??'?'} usable / ${t.weaponsTotalInData??'?'} total${t.mpSkillCost?(' &middot; '+t.mpSkillCost):''}</span></div>`;
+       `<span class="pill">${t.weaponsMpUsable??t.weaponsUsable??'?'} usable / ${t.weaponsTotalInData??'?'} total${wCost(t)}</span></div>`;
     if(t.role) h+=`<p class="muted" style="margin:0 0 6px">${t.role}</p>`;
     if(t.allowedSpecialsObservedForType) h+='<div style="margin-bottom:6px">Specials seen: '+(t.allowedSpecialsObservedForType.map(s=>`<span class="badge" style="color:var(--acc2)">${s}</span>`).join(''))+'</div>';
     const reps = t.representativeWeapons||t.weapons||[];
     if(reps.length){
-      h+='<div class="card" style="padding:0"><table><tr><th>Weapon</th><th>QL</th><th>Wield</th><th>Specials</th><th>Where to get</th><th>MP-only</th><th>id</th></tr>';
+      h+='<div class="card" style="padding:0"><table><tr><th>Weapon</th><th>QL</th><th>Wield</th><th>Specials</th><th>Where to get</th><th>Prof-locked</th><th>id</th></tr>';
       reps.forEach(it=>{
         const wield=(it.wield||[]).map(x=>`${x.skill} ${x.requiredValue}`).join(', ')||it.primaryWield||'';
         const specials=(it.specials||[]).map(s=>(s&&typeof s==='object')?`${s.special||s.skill} ${s.requiredValue??''}`.trim():s).join(', ');
@@ -498,28 +668,125 @@ function renderWeapons(){
       h+='</table></div>';
     }
   });
-  if(w.metaphysicistOnlyWeapons){ const mo=w.metaphysicistOnlyWeapons; const bws=Array.isArray(mo.byWeaponSkill)?mo.byWeaponSkill.map(x=>`${x.weaponSkill}:${x.count}`).join(', '):''; h+=`<p class="muted" style="font-size:12px">Profession-locked (MP-only) weapons: ${mo.count??''} &mdash; ${bws}</p>`; }
+  const profOnly = w.metaphysicistOnlyWeapons||w.professionOnlyWeapons||w.classOnlyWeapons;
+  if(profOnly){ const mo=profOnly; const bws=Array.isArray(mo.byWeaponSkill)?mo.byWeaponSkill.map(x=>`${x.weaponSkill}:${x.count}`).join(', '):''; h+=`<p class="muted" style="font-size:12px">Profession-locked (this class only) weapons: ${mo.count??''} &mdash; ${bws}</p>`; }
 
   // Exhaustive endgame / Xan weapons (companion file).
   const eg = curProfile && curProfile.weaponsEndgame;
   h+='<div class="grp" style="margin-top:20px">Endgame &amp; Xan weapons (exhaustive)</div>';
   if(!eg){ h+=pendingInline('The full endgame/Xan weapon list'); }
   else {
-    if(eg.totalModels!=null) h+=`<p class="muted" style="font-size:12px">${eg.totalModels} endgame weapon models an MP can wield.</p>`;
+    h+=renderXanWalkthrough(eg.xanWalkthrough);
+    h+=renderBestBySkill(eg.bestByWeaponSkill);
+    if(eg.totalModels!=null){
+      const tc=(eg.tierCounts||[]).map(t=>`${esc(t.tier)}:${t.models}`).join(', ');
+      const lc=(eg.lineCounts||[]).map(t=>`${esc(t.line)}:${t.models}`).join(', ');
+      const cov=eg.sourceCoverage||{};
+      h+=`<div class="grp" style="margin-top:18px">Full endgame catalog <span class="pill">${eg.totalModels} models</span></div>`+
+         `<p class="muted" style="font-size:12px">Tier &mdash; ${tc}. Line &mdash; ${lc}.`+
+         (cov.withSpecificSource!=null?` ${cov.withSpecificSource} carry a cited acquisition, ${cov.unknown} are <b>unknown</b> (no drop location asserted).`:'')+
+         `</p>`;
+      if(eg.definition&&eg.definition.endgameTiers) h+=`<p class="muted" style="font-size:12px">Inclusion rule: ${esc(eg.definition.endgameTiers)}</p>`;
+    }
+    h+='<div class="card"><input class="search" placeholder="filter endgame weapons..." oninput="filt(this,\'egrow\')"></div>';
     (eg.byType||[]).forEach(t=>{
       const arr=t.weapons||[]; if(!arr.length) return;
-      h+=`<div class="grp">${t.weaponSkill} <span class="pill">${t.count??arr.length}</span></div><div class="card" style="padding:0"><table><tr><th>Weapon</th><th>QL</th><th>Line</th><th>Wield</th><th>Specials</th><th>Exp</th><th>Where</th><th>id</th></tr>`;
+      h+=`<div class="grp">${esc(t.weaponSkill)} <span class="pill">${t.count??arr.length} models`+
+         (t.skillCostFactor!=null?` &middot; skill cost ${t.skillCostFactor}`:'')+`</span></div>`+
+         `<div class="card" style="padding:0"><table><tr><th>Weapon</th><th>QL</th><th>Tier</th><th>Line</th><th>Dmg</th><th>dps*</th><th>Wield</th><th>Specials</th><th>Exp</th><th>TL</th><th>Where to get</th><th>id</th></tr>`;
       arr.forEach(it=>{
-        const wield=(it.wield||[]).map(x=>`${x.skill} ${x.requiredValue}`).join(', ');
-        const sp=(it.specials||[]).map(s=>(s&&typeof s==='object')?`${s.special||s.skill} ${s.requiredValue??''}`.trim():s).join(', ');
-        h+=`<tr class="wrow"><td>${it.name}</td><td>${it.qlRange||it.ql||''}</td><td class="muted">${it.line||''}</td><td class="muted">${wield}</td><td class="pill" style="color:var(--acc2)">${sp}</td><td class="muted">${it.expansion||''}</td><td class="muted">${it.source||''}</td><td class="muted">${it.id??''}</td></tr>`;
+        const wield=(it.wield||[]).map(x=>`${esc(x.skill)} ${x.requiredValue}`).join(', ');
+        const sp=(it.specials||[]).map(s=>(s&&typeof s==='object')?esc(`${s.special||s.skill} ${s.requiredValue??''}`.trim()):esc(s)).join(', ');
+        const d=it.damage||{};
+        const dmg=(d.min!=null)?`${d.min}-${d.max}`:'';
+        const unk=/^unknown/i.test(it.source||'');
+        h+=`<tr class="egrow"><td>${esc(it.name)}</td><td>${esc(it.qlRange||it.ql||'')}</td>`+
+           `<td class="muted">${esc(it.tier||'')}</td><td class="muted">${esc(it.line||'')}</td>`+
+           `<td class="muted">${dmg}</td><td class="muted">${it.dpsProxy??''}</td>`+
+           `<td class="muted">${wield}</td><td class="pill" style="color:var(--acc2)">${sp}</td>`+
+           `<td class="muted">${esc(it.expansion||'')}</td><td class="muted">${it.titleLevelReq||''}</td>`+
+           `<td class="${unk?'muted':''}" title="${esc(it.source||'')}">${acqCell(it)}</td>`+
+           `<td class="muted">${it.id??''}</td></tr>`;
       });
       h+='</table></div>';
     });
+    h+=`<p class="muted" style="font-size:12px">* dps is a comparison proxy computed from the item's own damage and delay stats &mdash; not in-game DPS. Hover "Where to get" for the full acquisition steps.</p>`;
   }
   if(w.gear){ h+='<div class="card"><div class="grp">Key gear</div>'+renderGear(w.gear)+'</div>'; }
   return h;
 }
+// Short "where to get" cell; the full cited steps live in the title tooltip.
+function acqCell(it){
+  const a=it.acquisition||{};
+  if(!a.how || a.how==='unknown') return 'unknown';
+  const w=a.where||'';
+  return `<b>${esc(a.how)}</b>${w?' &mdash; '+esc(w):''}`;
+}
+
+// The Xan weapon line, start to finish.
+function renderXanWalkthrough(x){
+  if(!x) return '';
+  let h='<div class="grp" style="margin-top:6px">Xan weapon line &mdash; full acquisition walkthrough</div><div class="card">';
+  if(x.summary) h+=`<p>${esc(x.summary)}</p>`;
+  if(x.levelBand) h+=`<p class="muted" style="font-size:12px">${esc(x.levelBand)}</p>`;
+  if(x.expansionsNeeded) h+='<p class="muted" style="font-size:12px">'+x.expansionsNeeded.map(esc).join('<br>')+'</p>';
+  (x.steps||[]).forEach(s=>{
+    h+=`<div style="margin:10px 0 0"><b>Step ${esc(s.step)} &mdash; ${esc(s.what)}</b>`;
+    if(s.detail)   h+=`<div class="muted" style="font-size:12px;margin-top:2px">${esc(s.detail)}</div>`;
+    if(s.drops)    h+=`<div class="muted" style="font-size:12px;margin-top:2px"><b>Drops:</b> ${esc(s.drops)}</div>`;
+    if(s.whichOne) h+=`<div class="muted" style="font-size:12px;margin-top:2px"><b>Which one:</b> ${esc(s.whichOne)}</div>`;
+    if(s.refs&&s.refs.length) h+='<div style="font-size:11px;margin-top:2px">'+s.refs.map(u=>`<a href="${esc(u)}" target="_blank" rel="noopener">source</a>`).join(' &middot; ')+'</div>';
+    h+='</div>';
+  });
+  if(x.weapons&&x.weapons.length){
+    h+='<div class="grp" style="margin-top:12px">Xan-line weapons this profession can wield <span class="pill">'+x.weapons.length+'</span></div>';
+    h+='<table><tr><th>Weapon</th><th>Skill</th><th>QL</th><th>Tier</th><th>TL</th><th>Dmg</th><th>dps*</th><th>Wield</th><th>id</th></tr>';
+    x.weapons.forEach(w=>{
+      const wd=(w.wield||[]).map(k=>`${esc(k.skill)} ${k.requiredValue}`).join(', ');
+      h+=`<tr><td>${esc(w.name)}</td><td class="muted">${esc(w.weaponSkill)}</td><td>${esc(w.qlRange)}</td><td class="muted">${esc(w.tier)}</td><td class="muted">${w.titleLevelReq||''}</td><td class="muted">${esc(w.damage)}</td><td class="muted">${w.dpsProxy??''}</td><td class="muted">${wd}</td><td class="muted">${w.id}</td></tr>`;
+    });
+    h+='</table>';
+  }
+  const p=x.parallelLine;
+  if(p){
+    h+=`<div style="margin-top:12px"><b>Not part of the chain: ${esc(p.what||'')}</b>`;
+    if(p.why)      h+=`<div class="muted" style="font-size:12px">${esc(p.why)}</div>`;
+    if(p.howToGet) h+=`<div class="muted" style="font-size:12px">${esc(p.howToGet)}</div>`;
+    if(p.refs)     h+='<div style="font-size:11px">'+p.refs.map(u=>`<a href="${esc(u)}" target="_blank" rel="noopener">source</a>`).join(' &middot; ')+'</div>';
+    h+='</div>';
+  }
+  if(x.openQuestions&&x.openQuestions.length)
+    h+='<div style="margin-top:12px"><b>Still unknown</b><ul class="muted" style="font-size:12px;margin:4px 0 0 16px">'+x.openQuestions.map(q=>`<li>${esc(q)}</li>`).join('')+'</ul></div>';
+  return h+'</div>';
+}
+
+// "Best for this profession" per weapon skill, with the criteria shown.
+function renderBestBySkill(b){
+  if(!b||!b.picks||!b.picks.length) return '';
+  let h='<div class="grp" style="margin-top:18px">Best by weapon skill</div><div class="card">';
+  const c=b.criteria||{};
+  h+='<details style="margin-bottom:8px"><summary class="muted" style="cursor:pointer;font-size:12px">How these picks are chosen (read this before trusting them)</summary>'+
+     '<div class="muted" style="font-size:12px;margin-top:6px">'+
+     Object.keys(c).map(k=>`<div style="margin-bottom:4px"><b>${esc(k)}</b>: ${esc(c[k])}</div>`).join('')+
+     '</div></details>';
+  const rows=[['topDamage','Top damage'],['bestValue','Best value'],['bestWithoutExpansion','No expansion needed']];
+  b.picks.forEach(p=>{
+    h+=`<div class="grp" style="margin-top:10px">${esc(p.weaponSkill)} <span class="pill">${p.modelsConsidered} models`+
+       (p.skillCostFactor!=null?` &middot; skill cost ${p.skillCostFactor}`:'')+`</span></div>`;
+    h+='<table><tr><th>Pick</th><th>Weapon</th><th>Dmg</th><th>dps*</th><th>IP-weighted req</th><th>Gates</th><th>Why</th><th>id</th></tr>';
+    rows.forEach(([k,label])=>{
+      const m=p[k];
+      if(!m){ h+=`<tr><td class="muted">${label}</td><td colspan="7" class="muted">none</td></tr>`; return; }
+      const gates=[m.expansion?esc(m.expansion):'', m.titleLevelReq?('TL'+m.titleLevelReq):''].filter(Boolean).join(' + ')||'<span class="muted">none</span>';
+      h+=`<tr><td><b>${label}</b></td><td>${esc(m.name)}</td><td class="muted">${esc(m.damage||'')}</td>`+
+         `<td class="muted">${m.dpsProxy??''}</td><td class="muted">${m.ipWeightedReq??''}</td><td class="muted">${gates}</td>`+
+         `<td class="muted" style="font-size:12px">${esc(m.why||'')}</td><td class="muted">${m.id}</td></tr>`;
+    });
+    h+='</table>';
+  });
+  return h+'</div>';
+}
+
 function renderGear(g){
   let list=Array.isArray(g)?g:Object.entries(g).map(([k,v])=>({cat:k,items:v}));
   return list.map(c=>`<div><b>${c.cat||c.category||''}</b> <span class="muted">${(c.note||'')}</span><br>${(c.items||[]).map(i=>`<span class="badge">${i.name||i}</span>`).join('')}</div>`).join('');
@@ -540,6 +807,42 @@ function renderNanos(){
     h+='</table></div>';
   });
   return h;
+}
+
+// ROLLABLE: every nano crystal of this profession, grouped by nano line, with its requirements and what the
+// bots have seen of it at the mission terminal (offered N times / never offered in N rolls near its QL /
+// judged not rollable / collected). 'Rule' is the offline guess from <class>-nano-sources.json.
+async function renderRollable(b){
+  b.innerHTML='<p class="muted">Loading&hellip;</p>';
+  const r = escapeDeep(await j('/api/rollable?prof='+encodeURIComponent(cur.slug)));
+  if(curTab!=='rollable') return;
+  if(!r){ b.innerHTML=pending('rollable'); return; }
+  const skills=['LVL','MM','BM','PM','MC','TS','SI'];
+  const ev=n=>{
+    if(n.got) return '<span class="badge" style="color:var(--acc)">collected</span>';
+    if(n.offered>0) return `<span class="badge" style="color:var(--acc2)">offered ${n.offered}&times;</span>`;
+    if(n.notRollable) return '<span class="badge" style="color:#e06c6c">not rollable</span>';
+    if(n.rollsNear>0) return `<span class="badge" style="color:${n.rollsNear>=500?'var(--warn)':'var(--mut)'}">never in ${n.rollsNear} rolls</span>`;
+    return '<span class="muted">no rolls at its QL yet</span>';
+  };
+  const seen=r.nanos.filter(n=>n.offered>0||n.got).length, notr=r.nanos.filter(n=>n.notRollable).length;
+  let h=`<div class="card">${r.nanos.length} nanos &middot; <b style="color:var(--acc2)">${seen}</b> seen as mission rewards &middot; <b style="color:#e06c6c">${notr}</b> judged not rollable &middot; ${r.totalRolls} rolls recorded by ${r.bots.length?r.bots.join(' + '):'no bot yet'}`+
+        `<input class="search" style="margin-top:10px" placeholder="filter by name, line, evidence..." oninput="filt(this,'rrow')"></div>`;
+  const groups={}; r.nanos.forEach(n=>{ (groups[n.group||'Other']=groups[n.group||'Other']||[]).push(n); });
+  Object.keys(groups).sort().forEach(line=>{
+    const arr=groups[line];
+    h+=`<div class="grp">${line} <span class="pill">(${arr.length})</span></div>`;
+    h+='<div class="card" style="padding:0"><table><tr><th></th><th>Nano</th><th>QL</th><th>NCU</th>'+skills.map(s=>`<th>${s}</th>`).join('')+'<th>Rule</th><th>Seen by the bots</th></tr>';
+    arr.forEach(n=>{
+      const icon = n.icon?`<img src="/icons/${n.icon}.png" width="24" height="24" style="vertical-align:middle" onerror="this.style.display='none'">`:'';
+      const alts = n.crystals.length>1?`<div class="muted" style="font-size:11px">${n.crystals.map(c=>c.name).join(' &middot; ')}</div>`:'';
+      h+=`<tr class="rrow"><td>${icon}</td><td>${n.name}${alts}<div class="muted" style="font-size:11px">${n.line||''}</div></td><td>${n.ql}</td><td>${n.ncu??''}</td>`+
+         skills.map(s=>`<td>${n.req&&n.req[s]!=null?n.req[s]:''}</td>`).join('')+
+         `<td class="muted">${n.how||''}</td><td>${ev(n)}</td></tr>`;
+    });
+    h+='</table></div>';
+  });
+  b.innerHTML=h;
 }
 
 function filt(inp,cls){
@@ -685,6 +988,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._json(profile_for(slug))
         if path == "/api/status":
             return self._json(status())
+        if path == "/api/rollable":
+            slug = (q.get("prof") or [""])[0]
+            return self._json(rollable_for(slug))
+        if path.startswith("/icons/") and path.endswith(".png"):
+            name = os.path.basename(path)
+            f = os.path.join(ICONS, name)
+            if name[:-4].isdigit() and os.path.exists(f):
+                with open(f, "rb") as fh:
+                    body = fh.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "max-age=86400")
+                self.end_headers()
+                self.wfile.write(body)
+                return
         self.send_response(404)
         self.end_headers()
 
