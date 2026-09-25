@@ -520,3 +520,10 @@ while he runs (commands, or editing wants.json - re-read before every roll).
 and the want run, QL targeting (qlmap.json: level:difficulty -> mission QL; difficulty 1-11 searched toward the
 wanted band; a band no setting reaches is reported and dropped). Not yet tried live.
 
+23. **For Algorithman: ResupplyController stim target mixes stacks and stims.** 08:19 (2026-09-25): the alt had 7
+    usable stims; `NeedsResupply()` (usable <= LowStimCount 10) sent him shopping, but `Start` said "Stocked up: 7
+    stims ... Nothing to buy": `Have(Stim)` counts stims, `ResupplyStimTarget = 2` is meant as stacks ("times 25"),
+    and `Remaining = Want - Have` is then bought as that many stacks (earlier "have 1 want 2" bought 1 stack of 25).
+    So he only buys at 0-1 stims, and a stims target in stims would buy that many stacks. MissionRun now only stops
+    the run at 0 usable stims; the shop trip itself can't buy until the units agree.
+

@@ -2163,12 +2163,15 @@ namespace AOBuddy
                     if (Resupply.Active || t < 1) return false;
                     // Make sure he can use them before going back to missions (owner, 2026-09-24): the count is of
                     // stims his First Aid reaches. Still low: say so and stop rather than fight without them.
-                    if (Resupply.NeedsResupply())
+                    // Stop only with NO usable stim left (08:19, 2026-09-25: 7 usable, resupply said 'stocked up'
+                    // - its target is compared in stims, not stacks - and 'still low' stopped the run).
+                    if (UsableStims() == 0)
                     {
-                        _tell("I still have too few stims I can use after shopping; stopping the mission run. Resupply me, then 'mission run'.");
+                        _tell("I have no stims I can use after shopping; stopping the mission run. Resupply me, then 'mission run'.");
                         Stop("no usable stims");
                         return false;
                     }
+                    if (Resupply.NeedsResupply()) _tell($"Still low on stims I can use ({UsableStims()}) after shopping; carrying on.");
                     _ctx.Log("MISSIONRUN: shop: stocked with stims I can use; back to missions after this.");
                     return ShopAfterNanos(me);
 
@@ -2223,6 +2226,15 @@ namespace AOBuddy
         }
 
         private bool _shopStimsTried;
+        /// <summary>Stims he can use now (his First Aid meets them), as SupportController counts them.</summary>
+        private int UsableStims()
+        {
+            var me = DynelManager.LocalPlayer;
+            string kw = _ctx.Config.StimKeyword, nm = _ctx.Config.StimItemName;
+            return SupportController.AllInvItems().Where(it => it?.Name != null
+                    && (string.IsNullOrEmpty(nm) ? it.Name.IndexOf(kw ?? "Stim", StringComparison.OrdinalIgnoreCase) >= 0 : string.Equals(it.Name, nm, StringComparison.OrdinalIgnoreCase))
+                    && SupportController.MeetsHealReqs(it, me)).Sum(it => Math.Max(1, it.Count));
+        }
         private bool ShopAfterNanos(LocalPlayer me)
         {
             if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
