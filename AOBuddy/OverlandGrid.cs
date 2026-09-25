@@ -10,17 +10,15 @@ namespace AOBuddy
     /// the zone's wall triangles (walls.bin, tools/AONavExtractor) stamped in. A cell is blocked when
     ///   * a wall triangle passes through it at body height (0.3-1.9 m over the ground there), so a gate arch
     ///     or a roof edge overhead does not close the way under it, while the city wall beside it does
-    ///   * the ground across it changes more than MaxDrop even DESCENDING (a cliff you would tumble down)
     ///   * it is off the map
-    /// Wall cells are grown by one cell so the path keeps clear of corners. Zone lines are not in here: the
-    /// caller passes the ones it must not cross per search (every line but the one it means to take).
+    /// Zone lines are not in here: the caller passes the ones it must not cross per search (every line but
+    /// the one it means to take).
     ///
-    /// STEEP SLOPES ARE DIRECTIONAL (owner, 2026-09-25): a slope too steep to climb is still perfectly
-    /// walkable going DOWN — only the way up is impossible. So steepness is not a cell property but an EDGE
-    /// one: the search may step from cell A to cell B only when the rise A->B stays under MaxRise (uphill
-    /// limit) and the drop under MaxDrop (fall limit). A cell the old stamping blocked for its internal
-    /// rise between the two is now open, and the path finds the direct line down a hillside it used to
-    /// detour around. The smoothing's corridor test checks the same limits along its chords.
+    /// SLOPES ARE DIRECTIONAL (owner, 2026-09-25): a slope too steep to climb is still walkable going down,
+    /// and there is NO fall damage outdoors, so a drop of any height is routable — cliffs included. Steepness
+    /// is therefore not a cell property but an EDGE one: the search may step from cell A to cell B only when
+    /// the RISE A->B stays under MaxRise; descending is always allowed. (Indoors FloorGrid keeps its own,
+    /// stricter rules.) The smoothing's corridor test checks the same one-way rule along its chords.
     ///
     /// Nothing here moves the body.
     /// </summary>
@@ -46,8 +44,7 @@ namespace AOBuddy
         public bool HasWalls { get; private set; }
 
         private const float BodyLow = 0.3f, BodyHigh = 1.9f;
-        private const float MaxRise = 1.2f;          // metres of rise per metre of step: ~50 degrees — the climb limit
-        private const float MaxDrop = 2.5f;          // metres of DROP per metre of step: ~68 degrees — steeper than this is a fall even going down
+        private const float MaxRise = 1.2f;          // metres of rise per metre of step: ~50 degrees — the climb limit (downhill is unlimited: no fall damage outdoors)
         private const int MaxCells = 4_200_000;      // cell size grows on the biggest maps to stay under this: a 4 km map gets 2 m
         private const int MaxExpand = 1_500_000;
 
@@ -77,9 +74,9 @@ namespace AOBuddy
             return grid;
         }
 
-        // Only the both-ways-impossible ground blocks the CELL: off-map, and a cliff/crevasse whose drop
-        // exceeds MaxDrop even descending (falling is not walking). Steep-but-descendable ground is left
-        // open here — the search's edge check (StepOkay) keeps it one-way, uphill-closed.
+        // Steepness does NOT block a cell anymore (owner, 2026-09-25: downhill is always walkable outdoors,
+        // no fall damage — cliffs included); only off-map ground does. The climb limit lives on the edges
+        // (StepOkay), which keeps steep ground one-way: down yes, up no.
         private void StampGround()
         {
             for (int z = 0; z < _h; z++)
@@ -87,9 +84,7 @@ namespace AOBuddy
                 {
                     double x0 = x * Cell, z0 = z * Cell, x1 = x0 + Cell, z1 = z0 + Cell;
                     double a = _ground.HeightAt(x0, z0), b = _ground.HeightAt(x1, z0), c = _ground.HeightAt(x0, z1), d = _ground.HeightAt(x1, z1);
-                    if (double.IsNaN(a) || double.IsNaN(b) || double.IsNaN(c) || double.IsNaN(d)) { _blocked[z * _w + x] = true; continue; }
-                    double rise = Math.Max(Math.Max(Math.Abs(a - b), Math.Abs(c - d)), Math.Max(Math.Abs(a - c), Math.Abs(b - d)));
-                    if (rise > MaxDrop * Cell) _blocked[z * _w + x] = true;
+                    if (double.IsNaN(a) || double.IsNaN(b) || double.IsNaN(c) || double.IsNaN(d)) _blocked[z * _w + x] = true;
                 }
         }
 
@@ -305,14 +300,13 @@ namespace AOBuddy
             return false;
         }
 
-        // The one-way slope rule of the search, as an edge test: climbing to the next cell must stay under
-        // MaxRise, dropping into it under MaxDrop (a bigger drop is a fall, not a step). Steep ground is
-        // walkable downhill — that asymmetry is the whole point of this check.
+        // The one-way slope rule of the search, as an edge test: climbing into the next cell must stay
+        // under MaxRise; descending is ALWAYS allowed (no fall damage outdoors, owner 2026-09-25). Steep
+        // ground is one-way — down yes, up no — and that asymmetry is the whole point of this check.
         private bool StepOkay(int from, int to, int dx, int dz)
         {
             float d = (dx != 0 && dz != 0 ? 1.4142f : 1f) * Cell;
-            float dh = _ch[to] - _ch[from];
-            return dh <= MaxRise * d && -dh <= MaxDrop * d;
+            return _ch[to] - _ch[from] <= MaxRise * d;
         }
 
         private bool Clear(int c0, int c1, HashSet<int> extra)
@@ -323,7 +317,7 @@ namespace AOBuddy
             // Test a body's width, not a line: a third of a cell either side, across the direction of travel.
             float px = len > 0 ? -(z1 - z0) / len * 0.35f : 0, pz = len > 0 ? (x1 - x0) / len * 0.35f : 0;
             // ...and the same one-way slope rule along the chord (cell coords here, so world metres = units):
-            // a shortcut may run down a steep face, never up one, and never over a cliff.
+            // a shortcut may run down any drop, never up a slope steeper than MaxRise.
             float step = Math.Max(0.5f, Cell / 2);
             int ns = Math.Max(1, (int)Math.Ceiling(len * Cell / step));
             double prev = _ground.HeightAt(x0 * Cell, z0 * Cell);
@@ -332,7 +326,7 @@ namespace AOBuddy
                 float t = i / (float)ns;
                 double h = _ground.HeightAt((x0 + (x1 - x0) * t) * Cell, (z0 + (z1 - z0) * t) * Cell);
                 double dh = h - prev; prev = h;
-                if (double.IsNaN(h) || dh > MaxRise * step || -dh > MaxDrop * step) return false;
+                if (double.IsNaN(h) || dh > MaxRise * step) return false;
             }
             for (int i = 0; i <= n; i++)
             {
