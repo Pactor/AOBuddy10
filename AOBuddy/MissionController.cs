@@ -84,6 +84,19 @@ namespace AOBuddy
         /// 20260924-074524 s9 08:01:45.575); the bot on a team run stood at the item and failed three tries.</summary>
         public bool HoldsSelection => (_phase == Phase.Act || _phase == Phase.AwaitComplete) && !_completed;
         public bool InMission => _grid != null;
+        // For the recorder (MissionRecorder).
+        public int Instance => _instance;
+        public string BuildingName => _nav?.Name;
+        public string RecordTypeName => _record?.TypeName;
+        public bool Completed => _completed;
+        public string RoomAt(Vector3 p) => _grid?.RoomAt(p);
+        public int? FloorAt(Vector3 p) => _grid?.FloorAt(p);
+        public Newtonsoft.Json.Linq.JArray DoorsJson() => new Newtonsoft.Json.Linq.JArray(_doors.Select(kv => new Newtonsoft.Json.Linq.JObject
+        {
+            ["id"] = kv.Key.ToString(), ["pos"] = new Newtonsoft.Json.Linq.JArray(Math.Round(kv.Value.Pos.X, 2), Math.Round(kv.Value.Pos.Y, 2), Math.Round(kv.Value.Pos.Z, 2)),
+            ["locked"] = kv.Value.Locked, ["picked"] = !kv.Value.Locked && _pickedDoors.Contains(kv.Key), ["unpickable"] = _unpickable.Contains(kv.Key),
+        }));
+        private readonly HashSet<Identity> _pickedDoors = new HashSet<Identity>();
 
         public MissionController(BotContext ctx, Movement move, string pluginDir, Action<string> tell)
         {
@@ -730,7 +743,7 @@ namespace AOBuddy
             // ActionMessage raw: identity at 20 (the door), field mask at 29, action at 33, instigator at 37.
             if (b == null || b.Length < 37 || BE32(b, 20) != DoorType || BE32(b, 33) != ActionUnlocked) return;
             var id = new Identity((IdentityType)DoorType, BE32(b, 24));
-            if (_doors.TryGetValue(id, out var d)) d.Locked = false;
+            if (_doors.TryGetValue(id, out var d)) { if (d.Locked) _pickedDoors.Add(id); d.Locked = false; }
             _ctx.Log($"MISSION: door {id} unlocked (action {ActionUnlocked}).");
         }
 

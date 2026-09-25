@@ -53,6 +53,7 @@ namespace AOBuddy
 
         // The mission in hand.
         private MissionInfo _current;
+        public string CurrentLine => _current == null ? null : MissionRoll.Line(_current);
         private bool _completed;
         private int _rolls, _done, _travelTries, _doorTries;
         private bool _travelStarted;

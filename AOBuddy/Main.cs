@@ -70,6 +70,7 @@ namespace AOBuddy
         private ChewyBuffController _chewy;
         private MissionRoll _roll;
         private MissionRun _run;
+        private MissionRecorder _recorder;
         private bool _missionWasActive;
         private OverlandController _overland;
         private bool _overlandWasActive;
@@ -164,6 +165,8 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
+            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty);
+            Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             BuildCommands();
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
@@ -733,6 +736,7 @@ namespace AOBuddy
         // to the player" means follow is first in the frame, not last behind a ladder of actions.
         private void Walk(LocalPlayer me, PlayerChar owner, double dt)
         {
+            try { _recorder?.Tick(me); } catch (Exception ex) { Log("MISSIONREC: " + ex.Message); }
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }
