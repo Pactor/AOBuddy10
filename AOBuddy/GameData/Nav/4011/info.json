@@ -3,8 +3,9 @@
  "name": "Garden_of_unredeemed",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 24005,
   "trianglesWalkable": 12104,
   "chunks": 105
+ },
+ "walls": {
+  "triangles": 10119,
+  "chunks": 104,
+  "minHeight": 1
  }
 }

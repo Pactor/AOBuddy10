@@ -3,8 +3,8 @@
  "name": "ICC Holodeck Alien Training",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14860,
   "trianglesWalkable": 5200,
   "chunks": 4
+ },
+ "walls": {
+  "triangles": 2783,
+  "chunks": 3,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Generetic Offices",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 19907,
   "trianglesWalkable": 6556,
   "chunks": 34
+ },
+ "walls": {
+  "triangles": 7880,
+  "chunks": 34,
+  "minHeight": 1
  }
 }

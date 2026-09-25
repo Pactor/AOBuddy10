@@ -3,8 +3,9 @@
  "name": "Mort",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,20 @@
   "heightVerifiable": true,
   "waterPlanes": [
    17.94
+  ],
+  "waterPolygons": [
+   11.5,
+   20.5,
+   21,
+   21,
+   21,
+   15.4,
+   16.7,
+   31.4,
+   30.2,
+   29.05,
+   7.51,
+   17.94
   ]
  },
  "collision": {
@@ -31,5 +46,10 @@
   "trianglesTotal": 74860,
   "trianglesWalkable": 38266,
   "chunks": 2687
+ },
+ "walls": {
+  "triangles": 29021,
+  "chunks": 2488,
+  "minHeight": 1
  }
 }

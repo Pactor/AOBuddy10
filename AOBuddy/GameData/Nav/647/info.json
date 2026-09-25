@@ -3,8 +3,9 @@
  "name": "Greater Tir County",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,21 +25,38 @@
   "heightVerifiable": true,
   "waterPlanes": [
    6.01
+  ],
+  "waterPolygons": [
+   1,
+   11,
+   11,
+   15.4,
+   15.4,
+   14.61,
+   14.6,
+   14.61,
+   14.6,
+   14.61,
+   14.61,
+   6.8,
+   6.8,
+   6.01,
+   6,
+   6.01,
+   6,
+   6.01,
+   6.01
   ]
- },
- "verification": {
-  "walkedPoints": 24,
-  "toleranceM": 1,
-  "explainedByFloor": 24,
-  "explainedByCollision": 0,
-  "unexplained": 0,
-  "explainedPct": 100,
-  "unexplainedSamples": []
  },
  "collision": {
   "records": 5931,
   "trianglesTotal": 300292,
   "trianglesWalkable": 141753,
   "chunks": 5932
+ },
+ "walls": {
+  "triangles": 137209,
+  "chunks": 5186,
+  "minHeight": 1
  }
 }

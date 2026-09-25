@@ -3,8 +3,8 @@
  "name": "Alien Salvage (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 74105,
   "trianglesWalkable": 25784,
   "chunks": 16
+ },
+ "walls": {
+  "triangles": 21240,
+  "chunks": 14,
+  "minHeight": 1
  }
 }

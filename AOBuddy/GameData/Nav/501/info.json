@@ -3,8 +3,9 @@
  "name": "Parnassos Island of Ceremony",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    17.5
+  ],
+  "waterPolygons": [
+   17.5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 9451,
   "trianglesWalkable": 4211,
   "chunks": 41
+ },
+ "walls": {
+  "triangles": 4532,
+  "chunks": 40,
+  "minHeight": 1
  }
 }

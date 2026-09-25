@@ -3,8 +3,8 @@
  "name": "Superior Clan org hq",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 29752,
   "trianglesWalkable": 11022,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 12928,
+  "chunks": 10,
+  "minHeight": 1
  }
 }

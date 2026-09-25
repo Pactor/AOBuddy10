@@ -3,8 +3,8 @@
  "name": "Heavenly Business - Superior",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14551,
   "trianglesWalkable": 4842,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 3159,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

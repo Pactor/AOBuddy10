@@ -3,8 +3,8 @@
  "name": "Alien Mothership (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 316406,
   "trianglesWalkable": 100405,
   "chunks": 68
+ },
+ "walls": {
+  "triangles": 40156,
+  "chunks": 38,
+  "minHeight": 1
  }
 }

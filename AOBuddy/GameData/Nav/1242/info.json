@@ -3,8 +3,8 @@
  "name": "Neutral Medium Clan Apartment",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 9517,
   "trianglesWalkable": 3148,
   "chunks": 6
+ },
+ "walls": {
+  "triangles": 2858,
+  "chunks": 6,
+  "minHeight": 1
  }
 }

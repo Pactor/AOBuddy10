@@ -3,8 +3,9 @@
  "name": "Neutral Backyard",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 7369,
   "trianglesWalkable": 3263,
   "chunks": 66
+ },
+ "walls": {
+  "triangles": 3426,
+  "chunks": 70,
+  "minHeight": 1
  }
 }

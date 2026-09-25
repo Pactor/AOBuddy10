@@ -3,8 +3,8 @@
  "name": "The Smugglers Den",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 68271,
   "trianglesWalkable": 22895,
   "chunks": 23
+ },
+ "walls": {
+  "triangles": 21872,
+  "chunks": 21,
+  "minHeight": 1
  }
 }

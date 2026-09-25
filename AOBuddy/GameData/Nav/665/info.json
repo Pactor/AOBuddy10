@@ -3,8 +3,9 @@
  "name": "Broken Shores",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    5
+  ],
+  "waterPolygons": [
+   5.01,
+   5
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 236507,
   "trianglesWalkable": 106522,
   "chunks": 2833
+ },
+ "walls": {
+  "triangles": 79528,
+  "chunks": 2518,
+  "minHeight": 1
  }
 }

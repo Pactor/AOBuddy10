@@ -3,8 +3,8 @@
  "name": "Arrival Hall Gateway (dng)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 37042,
   "trianglesWalkable": 11565,
   "chunks": 6
+ },
+ "walls": {
+  "triangles": 6309,
+  "chunks": 4,
+  "minHeight": 1
  }
 }

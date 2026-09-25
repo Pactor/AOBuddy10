@@ -3,8 +3,9 @@
  "name": "Coast of Harmony",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,11 @@
   "heightVerifiable": false,
   "waterPlanes": [
    8
+  ],
+  "waterPolygons": [
+   14.62,
+   14.61,
+   8
   ]
  },
  "collision": {
@@ -31,5 +37,10 @@
   "trianglesTotal": 640303,
   "trianglesWalkable": 332241,
   "chunks": 3916
+ },
+ "walls": {
+  "triangles": 200454,
+  "chunks": 3625,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Dng: Cyborg Barracks",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 16806,
   "trianglesWalkable": 5514,
   "chunks": 11
+ },
+ "walls": {
+  "triangles": 5859,
+  "chunks": 11,
+  "minHeight": 1
  }
 }

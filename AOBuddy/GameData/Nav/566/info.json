@@ -3,8 +3,9 @@
  "name": "Newland City",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,21 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    32.1
-  ]
- },
- "verification": {
-  "walkedPoints": 150,
-  "toleranceM": 1,
-  "explainedByFloor": 149,
-  "explainedByCollision": 0,
-  "unexplained": 1,
-  "explainedPct": 99.3,
-  "unexplainedSamples": [
-   [
-    430.7,
-    26.82,
-    337.1
-   ]
+  ],
+  "waterPolygons": [
+   32.1
   ]
  },
  "collision": {
@@ -46,5 +35,10 @@
   "trianglesTotal": 19758,
   "trianglesWalkable": 8538,
   "chunks": 148
+ },
+ "walls": {
+  "triangles": 9539,
+  "chunks": 166,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Baboons Nightclub",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 23718,
   "trianglesWalkable": 8286,
   "chunks": 11
+ },
+ "walls": {
+  "triangles": 7739,
+  "chunks": 11,
+  "minHeight": 1
  }
 }

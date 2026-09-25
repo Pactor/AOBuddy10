@@ -3,8 +3,9 @@
  "name": "Pandemonium Antenora",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    29.79
+  ],
+  "waterPolygons": [
+   29.81
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 230930,
   "trianglesWalkable": 108811,
   "chunks": 612
+ },
+ "walls": {
+  "triangles": 95167,
+  "chunks": 574,
+  "minHeight": 1
  }
 }

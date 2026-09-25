@@ -3,8 +3,9 @@
  "name": "The Collector",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 29894,
   "trianglesWalkable": 12964,
   "chunks": 269
+ },
+ "walls": {
+  "triangles": 14618,
+  "chunks": 279,
+  "minHeight": 1
  }
 }

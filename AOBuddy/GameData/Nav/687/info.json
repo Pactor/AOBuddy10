@@ -3,8 +3,9 @@
  "name": "Galway Shire",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 144734,
   "trianglesWalkable": 71870,
   "chunks": 1605
+ },
+ "walls": {
+  "triangles": 59757,
+  "chunks": 1371,
+  "minHeight": 1
  }
 }

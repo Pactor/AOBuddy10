@@ -3,8 +3,9 @@
  "name": "The Elder Hall",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    1
+  ],
+  "waterPolygons": [
+   1
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 10540,
   "trianglesWalkable": 3876,
   "chunks": 21
+ },
+ "walls": {
+  "triangles": 5905,
+  "chunks": 21,
+  "minHeight": 1
  }
 }

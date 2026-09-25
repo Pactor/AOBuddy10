@@ -3,8 +3,8 @@
  "name": "Camelot",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 171977,
   "trianglesWalkable": 55458,
   "chunks": 51
+ },
+ "walls": {
+  "triangles": 47010,
+  "chunks": 46,
+  "minHeight": 1
  }
 }

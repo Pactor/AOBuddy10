@@ -3,8 +3,8 @@
  "name": "lowtech_waterwell VP dng",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 504,
   "trianglesWalkable": 168,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 206,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Coast of Peace",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,11 @@
   "heightVerifiable": false,
   "waterPlanes": [
    8
+  ],
+  "waterPolygons": [
+   14.62,
+   14.61,
+   8
   ]
  },
  "collision": {
@@ -31,5 +37,10 @@
   "trianglesTotal": 624455,
   "trianglesWalkable": 319409,
   "chunks": 4501
+ },
+ "walls": {
+  "triangles": 195025,
+  "chunks": 4187,
+  "minHeight": 1
  }
 }

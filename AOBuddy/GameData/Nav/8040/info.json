@@ -3,8 +3,9 @@
  "name": "Foundry of Nightmares",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 7402,
   "trianglesWalkable": 2959,
   "chunks": 46
+ },
+ "walls": {
+  "triangles": 3907,
+  "chunks": 59,
+  "minHeight": 1
  }
 }

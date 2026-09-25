@@ -3,8 +3,9 @@
  "name": "Area X",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 366659,
   "trianglesWalkable": 128513,
   "chunks": 664
+ },
+ "walls": {
+  "triangles": 201446,
+  "chunks": 643,
+  "minHeight": 1
  }
 }

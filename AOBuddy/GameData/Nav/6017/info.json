@@ -3,8 +3,9 @@
  "name": "Teachers' Chamber",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    0.7
+  ],
+  "waterPolygons": [
+   0.7
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 8196,
   "trianglesWalkable": 3644,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 3838,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

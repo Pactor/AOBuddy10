@@ -3,8 +3,8 @@
  "name": "Sealed Antechamber(dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 39197,
   "trianglesWalkable": 13369,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 19098,
+  "chunks": 10,
+  "minHeight": 1
  }
 }

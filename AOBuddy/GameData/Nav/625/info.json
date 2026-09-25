@@ -3,8 +3,9 @@
  "name": "Milky Way",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 267232,
   "trianglesWalkable": 117609,
   "chunks": 5177
+ },
+ "walls": {
+  "triangles": 133235,
+  "chunks": 4615,
+  "minHeight": 1
  }
 }

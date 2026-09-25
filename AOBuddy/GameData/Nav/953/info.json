@@ -3,8 +3,9 @@
  "name": "Clan Backyard",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    24.3
+  ],
+  "waterPolygons": [
+   24.3
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 8251,
   "trianglesWalkable": 4161,
   "chunks": 60
+ },
+ "walls": {
+  "triangles": 3872,
+  "chunks": 52,
+  "minHeight": 1
  }
 }

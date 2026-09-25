@@ -3,8 +3,9 @@
  "name": "Pandemonium Tower Gigantomachy",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 7538,
   "trianglesWalkable": 3370,
   "chunks": 4
+ },
+ "walls": {
+  "triangles": 3244,
+  "chunks": 4,
+  "minHeight": 1
  }
 }

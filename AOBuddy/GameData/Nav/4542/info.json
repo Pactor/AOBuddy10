@@ -3,8 +3,9 @@
  "name": "Central Elysium",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 266430,
   "trianglesWalkable": 114257,
   "chunks": 1950
+ },
+ "walls": {
+  "triangles": 138371,
+  "chunks": 2056,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "The Cup",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 2778,
   "trianglesWalkable": 861,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 918,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

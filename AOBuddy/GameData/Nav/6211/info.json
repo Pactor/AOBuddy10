@@ -3,8 +3,8 @@
  "name": "Cyborg Citadel (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 29008,
   "trianglesWalkable": 9696,
   "chunks": 24
+ },
+ "walls": {
+  "triangles": 10862,
+  "chunks": 24,
+  "minHeight": 1
  }
 }

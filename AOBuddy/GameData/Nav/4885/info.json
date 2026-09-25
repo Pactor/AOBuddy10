@@ -3,8 +3,8 @@
  "name": "Shadow Crypt",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 129623,
   "trianglesWalkable": 56466,
   "chunks": 32
+ },
+ "walls": {
+  "triangles": 36156,
+  "chunks": 22,
+  "minHeight": 1
  }
 }

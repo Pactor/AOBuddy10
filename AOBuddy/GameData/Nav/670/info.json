@@ -3,8 +3,9 @@
  "name": "Clondyke",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 474189,
   "trianglesWalkable": 210308,
   "chunks": 6186
+ },
+ "walls": {
+  "triangles": 222652,
+  "chunks": 5997,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Tower Shop (dungeon)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14683,
   "trianglesWalkable": 4953,
   "chunks": 4
+ },
+ "walls": {
+  "triangles": 3341,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

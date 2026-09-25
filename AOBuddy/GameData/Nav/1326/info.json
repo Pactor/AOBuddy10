@@ -3,8 +3,8 @@
  "name": "tir clanbuilding3",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 900,
   "trianglesWalkable": 275,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 405,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

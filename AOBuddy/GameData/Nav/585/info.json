@@ -3,8 +3,9 @@
  "name": "Aegean",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    14
+  ],
+  "waterPolygons": [
+   14
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 182151,
   "trianglesWalkable": 101101,
   "chunks": 3284
+ },
+ "walls": {
+  "triangles": 59738,
+  "chunks": 2422,
+  "minHeight": 1
  }
 }

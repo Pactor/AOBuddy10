@@ -3,8 +3,9 @@
  "name": "Garden of Redeemed Scheol2",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    1
+  ],
+  "waterPolygons": [
+   1
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 66966,
   "trianglesWalkable": 33750,
   "chunks": 222
+ },
+ "walls": {
+  "triangles": 29481,
+  "chunks": 203,
+  "minHeight": 1
  }
 }

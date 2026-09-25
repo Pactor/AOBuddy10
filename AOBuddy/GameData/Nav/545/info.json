@@ -3,8 +3,9 @@
  "name": "West Athens",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -25,6 +26,18 @@
   "waterPlanes": [
    5.4,
    2.9
+  ],
+  "waterPolygons": [
+   5.02,
+   4,
+   5.4,
+   5.4,
+   5.4,
+   5.4,
+   5.4,
+   5.4,
+   5.4,
+   5.4
   ]
  },
  "collision": {
@@ -32,5 +45,10 @@
   "trianglesTotal": 43217,
   "trianglesWalkable": 17475,
   "chunks": 329
+ },
+ "walls": {
+  "triangles": 20290,
+  "chunks": 333,
+  "minHeight": 1
  }
 }

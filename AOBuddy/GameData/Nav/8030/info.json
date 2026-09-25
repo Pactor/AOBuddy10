@@ -3,8 +3,8 @@
  "name": "The Gate",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14221,
   "trianglesWalkable": 4646,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 4257,
+  "chunks": 34,
+  "minHeight": 1
  }
 }

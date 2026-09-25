@@ -3,8 +3,8 @@
  "name": "wood_shack_01 VP dng",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 420,
   "trianglesWalkable": 135,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 151,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

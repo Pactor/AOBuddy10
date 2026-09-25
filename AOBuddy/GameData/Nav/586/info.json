@@ -3,8 +3,9 @@
  "name": "Wartorn Valley",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 69846,
   "trianglesWalkable": 34988,
   "chunks": 805
+ },
+ "walls": {
+  "triangles": 23990,
+  "chunks": 572,
+  "minHeight": 1
  }
 }

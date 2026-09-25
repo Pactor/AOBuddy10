@@ -3,8 +3,9 @@
  "name": "Arid Rift",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 215739,
   "trianglesWalkable": 73422,
   "chunks": 709
+ },
+ "walls": {
+  "triangles": 125384,
+  "chunks": 706,
+  "minHeight": 1
  }
 }

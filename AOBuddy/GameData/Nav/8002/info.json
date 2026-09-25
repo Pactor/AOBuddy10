@@ -3,8 +3,9 @@
  "name": "Race PF",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 54440,
   "trianglesWalkable": 14469,
   "chunks": 475
+ },
+ "walls": {
+  "triangles": 39785,
+  "chunks": 113,
+  "minHeight": 1
  }
 }

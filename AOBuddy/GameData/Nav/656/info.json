@@ -3,8 +3,9 @@
  "name": "Coast of Tranquility",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,11 @@
   "heightVerifiable": false,
   "waterPlanes": [
    8
+  ],
+  "waterPolygons": [
+   14.62,
+   14.61,
+   8
   ]
  },
  "collision": {
@@ -31,5 +37,10 @@
   "trianglesTotal": 623953,
   "trianglesWalkable": 319241,
   "chunks": 4450
+ },
+ "walls": {
+  "triangles": 194691,
+  "chunks": 4140,
+  "minHeight": 1
  }
 }

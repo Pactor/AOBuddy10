@@ -3,8 +3,9 @@
  "name": "Sector 10 - Team Instance",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 21532,
   "trianglesWalkable": 8073,
   "chunks": 132
+ },
+ "walls": {
+  "triangles": 13044,
+  "chunks": 158,
+  "minHeight": 1
  }
 }

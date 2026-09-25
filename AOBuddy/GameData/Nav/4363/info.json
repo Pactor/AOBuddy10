@@ -3,8 +3,8 @@
  "name": "Tir Night Club (dng)",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 9196,
   "trianglesWalkable": 3059,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 2904,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

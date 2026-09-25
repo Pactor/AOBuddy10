@@ -3,8 +3,8 @@
  "name": "Redeemed Temple (Inferno)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 88256,
   "trianglesWalkable": 30163,
   "chunks": 19
+ },
+ "walls": {
+  "triangles": 22625,
+  "chunks": 16,
+  "minHeight": 1
  }
 }

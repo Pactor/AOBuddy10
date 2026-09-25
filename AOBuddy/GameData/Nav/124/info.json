@@ -3,8 +3,8 @@
  "name": "Tir Assembly Hall",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 17964,
   "trianglesWalkable": 5156,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 7202,
+  "chunks": 8,
+  "minHeight": 1
  }
 }

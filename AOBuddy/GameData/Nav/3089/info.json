@@ -3,8 +3,9 @@
  "name": "Borealis Backyard 10",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 5923,
   "trianglesWalkable": 2616,
   "chunks": 57
+ },
+ "walls": {
+  "triangles": 2877,
+  "chunks": 62,
+  "minHeight": 1
  }
 }

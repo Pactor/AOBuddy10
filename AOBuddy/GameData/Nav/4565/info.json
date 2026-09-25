@@ -3,8 +3,8 @@
  "name": "Hardware Dimenion - Superior",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 4707,
   "trianglesWalkable": 1538,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 1115,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

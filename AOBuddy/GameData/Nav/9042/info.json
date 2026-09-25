@@ -3,8 +3,9 @@
  "name": "Xan Reliquary",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 49943,
   "trianglesWalkable": 24249,
   "chunks": 253
+ },
+ "walls": {
+  "triangles": 22049,
+  "chunks": 245,
+  "minHeight": 1
  }
 }

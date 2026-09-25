@@ -3,8 +3,8 @@
  "name": "Bio MARE",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 346088,
   "trianglesWalkable": 109096,
   "chunks": 74
+ },
+ "walls": {
+  "triangles": 127366,
+  "chunks": 599,
+  "minHeight": 1
  }
 }

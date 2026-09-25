@@ -3,8 +3,8 @@
  "name": "Basic Neutral org hq",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 22020,
   "trianglesWalkable": 7887,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 10203,
+  "chunks": 7,
+  "minHeight": 1
  }
 }

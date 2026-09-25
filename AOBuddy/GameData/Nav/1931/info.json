@@ -3,8 +3,8 @@
  "name": "Dng: Temple of Three Winds",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -14,70 +14,15 @@
   "cell": 2,
   "heightScale": 0.20000000298023224
  },
- "verification": {
-  "walkedPoints": 289,
-  "toleranceM": 1,
-  "explainedByFloor": 270,
-  "explainedByCollision": 0,
-  "unexplained": 19,
-  "explainedPct": 93.4,
-  "unexplainedSamples": [
-   [
-    173.7,
-    22.02,
-    171.6
-   ],
-   [
-    173.6,
-    23.02,
-    173.8
-   ],
-   [
-    161.7,
-    33.03,
-    264.3
-   ],
-   [
-    163.6,
-    32.23,
-    266.7
-   ],
-   [
-    170.6,
-    31.49,
-    259.9
-   ],
-   [
-    170.5,
-    31.73,
-    261.8
-   ],
-   [
-    171.2,
-    31.92,
-    263.4
-   ],
-   [
-    171.1,
-    31.99,
-    265.3
-   ],
-   [
-    172.2,
-    31.99,
-    266.4
-   ],
-   [
-    171.4,
-    31.99,
-    268.2
-   ]
-  ]
- },
  "collision": {
   "records": 30,
   "trianglesTotal": 160900,
   "trianglesWalkable": 51630,
   "chunks": 43
+ },
+ "walls": {
+  "triangles": 52792,
+  "chunks": 40,
+  "minHeight": 1
  }
 }

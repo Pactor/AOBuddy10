@@ -3,8 +3,8 @@
  "name": "Jobe Apartment Normal (dng)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 12930,
   "trianglesWalkable": 4149,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 1822,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

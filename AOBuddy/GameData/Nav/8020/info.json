@@ -3,8 +3,8 @@
  "name": "The Pyramid of Home",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 144449,
   "trianglesWalkable": 48147,
   "chunks": 67
+ },
+ "walls": {
+  "triangles": 40936,
+  "chunks": 119,
+  "minHeight": 1
  }
 }

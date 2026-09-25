@@ -3,8 +3,9 @@
  "name": "Nascense Wilds",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    2.6
+  ],
+  "waterPolygons": [
+   9.2,
+   2.6
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 257130,
   "trianglesWalkable": 138076,
   "chunks": 1843
+ },
+ "walls": {
+  "triangles": 109247,
+  "chunks": 1645,
+  "minHeight": 1
  }
 }

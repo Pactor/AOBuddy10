@@ -3,8 +3,8 @@
  "name": "clan_sup_armor_shop",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 940,
   "trianglesWalkable": 300,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 348,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

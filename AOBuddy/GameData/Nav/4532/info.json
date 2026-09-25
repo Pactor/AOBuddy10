@@ -3,8 +3,9 @@
  "name": "Jobe Market",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 43923,
   "trianglesWalkable": 18974,
   "chunks": 111
+ },
+ "walls": {
+  "triangles": 21119,
+  "chunks": 119,
+  "minHeight": 1
  }
 }

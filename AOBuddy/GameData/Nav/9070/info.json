@@ -3,8 +3,8 @@
  "name": "Condemned Subway",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 242981,
   "trianglesWalkable": 83745,
   "chunks": 80
+ },
+ "walls": {
+  "triangles": 85776,
+  "chunks": 78,
+  "minHeight": 1
  }
 }

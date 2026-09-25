@@ -3,8 +3,9 @@
  "name": "Battle Station 151-200",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 33689,
   "trianglesWalkable": 21120,
   "chunks": 235
+ },
+ "walls": {
+  "triangles": 10369,
+  "chunks": 233,
+  "minHeight": 1
  }
 }

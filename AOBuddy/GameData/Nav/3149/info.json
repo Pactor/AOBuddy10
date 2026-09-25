@@ -3,8 +3,9 @@
  "name": "West Athen Backyard 10",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    24.3
+  ],
+  "waterPolygons": [
+   24.3
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 5599,
   "trianglesWalkable": 2728,
   "chunks": 41
+ },
+ "walls": {
+  "triangles": 2660,
+  "chunks": 38,
+  "minHeight": 1
  }
 }

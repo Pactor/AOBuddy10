@@ -3,8 +3,8 @@
  "name": "Alien Wrecked (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 49024,
   "trianglesWalkable": 17467,
   "chunks": 12
+ },
+ "walls": {
+  "triangles": 12725,
+  "chunks": 11,
+  "minHeight": 1
  }
 }

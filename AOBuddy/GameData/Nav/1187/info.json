@@ -3,8 +3,8 @@
  "name": "Neutral Supermarket Advanced",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -14,19 +14,15 @@
   "cell": 2,
   "heightScale": 0.20000000298023224
  },
- "verification": {
-  "walkedPoints": 5,
-  "toleranceM": 1,
-  "explainedByFloor": 5,
-  "explainedByCollision": 0,
-  "unexplained": 0,
-  "explainedPct": 100,
-  "unexplainedSamples": []
- },
  "collision": {
   "records": 7,
   "trianglesTotal": 10516,
   "trianglesWalkable": 3570,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 2472,
+  "chunks": 7,
+  "minHeight": 1
  }
 }

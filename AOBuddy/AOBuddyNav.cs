@@ -80,6 +80,7 @@ namespace AOBuddy
             {
                 double h = Ground.HeightAt(x, z);
                 sb.AppendFormat("ground {0} tile {1} bld {2}; ", double.IsNaN(h) ? "outside" : h.ToString("0.00"), Ground.TileAt(x, z), Ground.BuildingAt(x, z));
+                sb.AppendFormat("water {0}; ", Ground.WaterInfo());
             }
             if (Dungeon != null)
             {
@@ -399,7 +400,8 @@ namespace AOBuddy
 
     }
 
-    /// <summary>ground.bin (AONG v2/v3): outdoor heightfield + tile ids + building nibbles; v3 adds the water planes.</summary>
+    /// <summary>ground.bin (AONG v2-v4): outdoor heightfield + tile ids + building nibbles; v3 adds the water
+    /// planes, v4 the client's own liquid polygons (the playfield record's water rings — see SwimY).</summary>
     public sealed class NavGround
     {
         public int SamplesX, SamplesZ, SourceBits;
@@ -407,8 +409,8 @@ namespace AOBuddy
         public ushort[] Heights;     // [z * SamplesX + x], height = value * HeightScale
         public ushort[] Tiles;       // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;
-        public float[] WaterY = new float[0];   // v3 legacy: playfield-wide plane heights from the old byte-hunt. Informational
-                                                // only — SwimY gets both region AND level from the water tiles (see SwimY)
+        public float[] WaterY = new float[0];   // v3 legacy: the playfield record's plane-table levels (the LAST liquid's
+                                                // levels — see WaterPolygons). Informational only; v4's rings are the truth
 
         public static NavGround Read(string path)
         {
@@ -416,13 +418,28 @@ namespace AOBuddy
             {
                 if (Encoding.ASCII.GetString(r.ReadBytes(4)) != "AONG") throw new InvalidDataException(path + ": not AONG");
                 int version = r.ReadInt32();
-                if (version != 2 && version != 3) throw new InvalidDataException(path + ": AONG version " + version);
+                if (version < 2 || version > 4) throw new InvalidDataException(path + ": AONG version " + version);
                 var g = new NavGround { SamplesX = r.ReadInt32(), SamplesZ = r.ReadInt32(), Cell = r.ReadSingle(), HeightScale = r.ReadSingle(), SourceBits = r.ReadInt32() };
                 if (version >= 3)
                 {
                     int wc = r.ReadInt32();
                     g.WaterY = new float[wc];
                     for (int i = 0; i < wc; i++) g.WaterY[i] = r.ReadSingle();
+                }
+                if (version >= 4)
+                {
+                    // the client's own liquid polygons (see SwimY): per liquid the ring size, the level, (x, z) pairs
+                    int qc = r.ReadInt32();
+                    var lakes = new List<Lake>(qc);
+                    for (int i = 0; i < qc; i++)
+                    {
+                        int pts = r.ReadInt32();
+                        var lk = new Lake { Level = r.ReadSingle(), X = new float[pts], Z = new float[pts] };
+                        for (int pt = 0; pt < pts; pt++) { lk.X[pt] = r.ReadSingle(); lk.Z[pt] = r.ReadSingle(); }
+                        lk.MinX = lk.X.Min(); lk.MaxX = lk.X.Max(); lk.MinZ = lk.Z.Min(); lk.MaxZ = lk.Z.Max();
+                        lakes.Add(lk);
+                    }
+                    g._lakes = lakes.ToArray();
                 }
                 int rawLen = r.ReadInt32(), zLen = r.ReadInt32();
                 byte[] raw = Inflate(r.ReadBytes(zLen), rawLen);
@@ -437,21 +454,45 @@ namespace AOBuddy
             }
         }
 
+        /// <summary>One liquid polygon from the playfield record: a flat ring of points at one level.</summary>
+        private struct Lake { public float Level; public float[] X, Z; public float MinX, MaxX, MinZ, MaxZ; }
+        private Lake[] _lakes;   // v4 ground.bin: the client's own liquid polygons — SwimY's whole truth.
+                                 // Null on v3 data, which falls back to the tile-12 band model below.
+
         /// <summary>
-        /// The water surface to swim on at (x, z): NaN = dry ground. 2026-09-24/25: the bot swam 7 m
-        /// over Newland City's dry pit because the RDB "water planes" (ground.bin v3's WaterY) were
-        /// applied playfield-wide. The actual water REGION is found from the tilemap: cells whose
-        /// tile id's low byte is 12 form the water band the designers paint over the shore, and the
-        /// water body is the flood from that band through ground sitting under the plane (the shore
-        /// ring above the plane closes the bowl — Newland's dry lowlands, also under the plane,
-        /// never connect). The LEVEL is the stored plane that sits above the band's core (32.1 for
-        /// Newland; the capture swam 32.09). Playfields with no band (Newland City) are dry, and a
-        /// band above every stored plane (ICC's 17.1 basin vs its 10.5-15.4 entries) is dry too.
-        /// From the shore, where the floor is within wadeDepth of the surface, there is nothing to
-        /// swim on.
+        /// The water surface to swim on at (x, z): NaN = dry ground. V4 DATA (2026-09-25): the client's
+        /// own water is a list of flat POLYGONS in the playfield record — the owner's call ("the game is
+        /// from 2000, they wouldn't flood-fill; water has to be a quad or a volume"), baited with a lake
+        /// he stood in (level 18.3 at (2349,1127) in Newland Desert — a level no stored plane has) and
+        /// found in the record that evening: per liquid one ring of 3-12 points at one level. SwimY is a
+        /// point-in-ring test: 565's lake quad at 18.3 spans (2267..2416, 1052..1180) — his lake exactly;
+        /// 567 Newland's 32.1 is the captured swim (32.09); Coast of Tranquility's ocean is ONE quad over
+        /// its whole map; Wailing Wastes is a whole-map water table at 5.0; ICC's canal at 15.4; the acid
+        /// river of 565 is in the same list (a liquid is a liquid). Ground poking through the surface
+        /// (an island, a shore) leaves nothing to swim on when it is within wadeDepth of the level.
+        ///
+        /// V3 DATA (2026-09-24/25, superseded — still the fallback for un-regenerated files): the RDB
+        /// "water planes" (WaterY) applied playfield-wide put the bot 7 m over Newland City's dry pit, so
+        /// the region was guessed from the tilemap instead: cells whose tile id's low byte is 12 form a
+        /// band the designers paint over the shore, the body is the flood from it through ground under
+        /// the level, and the level is the stored plane above the band's core. Gates against its two
+        /// failure modes (Newland Desert's 47% texture 'band' and its runaway 86% flood, log 2026-09-25
+        /// 19:01) are below in BuildWater.
         /// </summary>
         public double SwimY(double x, double z, double wadeDepth)
         {
+            if (_lakes != null)
+            {
+                double lakeFloor = HeightAt(x, z);
+                if (double.IsNaN(lakeFloor)) return double.NaN;
+                foreach (Lake lk in _lakes)
+                {
+                    if (x < lk.MinX || x > lk.MaxX || z < lk.MinZ || z > lk.MaxZ) continue;
+                    if (!InRing(lk, x, z)) continue;
+                    return lk.Level - lakeFloor > wadeDepth ? lk.Level : double.NaN;
+                }
+                return double.NaN;
+            }
             if (_wet == null) BuildWater();
             if (float.IsNaN(_waterLevel)) return double.NaN;
             int ix = (int)Math.Floor(x / Cell), iz = (int)Math.Floor(z / Cell);
@@ -462,10 +503,31 @@ namespace AOBuddy
             return _waterLevel - floor > wadeDepth ? _waterLevel : double.NaN;
         }
 
+        // Even-odd point-in-polygon over the ring. There are a handful of liquids per playfield and
+        // this runs once per walk step at most — no index needed.
+        private static bool InRing(Lake lk, double x, double z)
+        {
+            bool inside = false;
+            int n = lk.X.Length;
+            for (int i = 0, j = n - 1; i < n; j = i++)
+                if ((lk.Z[i] > z) != (lk.Z[j] > z) &&
+                    x < (lk.X[j] - lk.X[i]) * (z - lk.Z[i]) / (lk.Z[j] - lk.Z[i]) + lk.X[i])
+                    inside = !inside;
+            return inside;
+        }
+
         private bool[] _wet;                 // [(SamplesZ-1)*(SamplesX-1)]: the flooded water body
         private float _waterLevel = float.NaN;
 
-        /// <summary>Flood the water body from the tile-12 band at the stored plane that caps it.</summary>
+        /// <summary>
+        /// Flood the water body from the tile-12 band at the stored plane that caps it. Two gates keep a
+        /// stored plane off land it was never meant for, both learned in Newland Desert (565) on
+        /// 2026-09-25 19:01: its only stored plane is 49.2 while a mission door sits on ground at 20, its
+        /// tile-12 'band' is a desert texture over 47% of the map, and the flood from it read a phantom
+        /// lake over 86% of the playfield — every step of the walk to the door claimed the plane 29 m up,
+        /// the position jump read as a zone, and the planner replanned itself out after six tries
+        /// ("expected to stay put, landed in Newland Desert").
+        /// </summary>
         private void BuildWater()
         {
             int w = SamplesX - 1, h = SamplesZ - 1;
@@ -474,6 +536,15 @@ namespace AOBuddy
             int seeds = 0;
             for (int i = 0; i < w * h; i++) if ((Tiles[i] & 0xFF) == 12) seeds++;
             if (seeds < 8) return;
+            // A BAND, NOT THE MAP: tile ids index each playfield's own terrain set, so low byte 12 is the
+            // water-shore tile only where it happens to be (Newland 567: 3.6% of the cells; Lush Fields'
+            // river system: 16%). Newland Desert paints a desert texture there instead — 47% of the map —
+            // which is what let the flood below wet 86% of the playfield. Water itself can cover half a
+            // map (Coast of Tranquility's is 51% by its map), but no playfield like that decodes a band
+            // this big: 656's band is 0.2% of its cells and already dry by the plane check above, its sea
+            // beyond the reach of this data. Where the band IS this big (565, Penumbra 4006/4320) the
+            // tile has meant a texture every time it could be checked — so: dry, as far as this data knows.
+            if (seeds > _wet.Length / 4) return;
             // the band's core height (p10 of the cells' lowest corner — the band slopes into the depths)
             var band = new List<float>(seeds);
             for (int z = 0; z < h; z++)
@@ -485,15 +556,36 @@ namespace AOBuddy
             float level = float.NaN;
             foreach (float y in WaterY) if (y > core && (float.IsNaN(level) || y > level)) level = y;
             if (float.IsNaN(level)) return;
+            // CONTAINED: flood with no distance limit as the test of the level itself. A real lake sits in
+            // a basin that dry land closes above the plane, so the unbounded flood stays in it (Newland's
+            // lake: 11.6% of 567; Lush Fields' rivers: 22% of 695). A plane let loose on the lowlands
+            // floods most of the playfield instead (Newland Desert's 49.2: 90%) — no shoreline exists at
+            // that level, nobody swims there, and claiming one put the walk on the plane's height over dry
+            // ground (see the class note above). An open sea would flood past half legitimately (Coast of
+            // Tranquility again) — but this model cannot express a sea anyway: one plane per playfield,
+            // and the flood below reaches 150 m of shore at most. Abort at half the map; it only ever
+            // takes away runaways (565's 90%, Penumbra Forest's 82%).
+            for (int i = 0; i < w * h; i++)
+                if ((Tiles[i] & 0xFF) == 12) _wet[i] = true;
+            if (!Flood((bool[])_wet.Clone(), level, int.MaxValue, _wet.Length / 2)) return;
             // flood from the band through cells whose lowest corner is under the surface — but only so far:
             // a real shore is a few cells of shallows around the band, while an unbounded flood spills through
             // any lowland below the plane into basins that have no water at all (Wailing Wastes, 2026-09-25:
             // the wompah station, 335 m from the nearest band cell and bone dry, read as a 4 m deep pool and
             // the bot waded at the phantom surface until the server dropped it every step).
-            int maxShore = Math.Max(4, (int)(150 / Cell));
-            var queue = new Queue<(int cell, int dist)>(seeds);
-            for (int i = 0; i < w * h; i++)
-                if ((Tiles[i] & 0xFF) == 12) { _wet[i] = true; queue.Enqueue((i, 0)); }
+            Flood(_wet, level, Math.Max(4, (int)(150 / Cell)), int.MaxValue);
+            _waterLevel = level;
+        }
+
+        // Flood from the already-marked seed cells through cells whose lowest corner is under `level`, at
+        // most `maxShore` cells beyond a seed. Returns false the moment more than `abortAt` cells are wet
+        // (the containment test above); int.MaxValue disables either limit.
+        private bool Flood(bool[] wet, float level, int maxShore, int abortAt)
+        {
+            int w = SamplesX - 1, h = SamplesZ - 1;
+            var queue = new Queue<(int cell, int dist)>();
+            for (int i = 0; i < wet.Length; i++) if (wet[i]) queue.Enqueue((i, 0));
+            int count = queue.Count;
             while (queue.Count > 0)
             {
                 var (c, dist) = queue.Dequeue();
@@ -504,17 +596,30 @@ namespace AOBuddy
                     int nx = cx + (n == 0 ? -1 : n == 1 ? 1 : 0), nz = cz + (n == 2 ? -1 : n == 3 ? 1 : 0);
                     if (nx < 0 || nz < 0 || nx >= w || nz >= h) continue;
                     int nc = nz * w + nx;
-                    if (_wet[nc]) continue;
+                    if (wet[nc]) continue;
                     if (Math.Min(Math.Min(Corner(nz, nx), Corner(nz, nx + 1)), Math.Min(Corner(nz + 1, nx), Corner(nz + 1, nx + 1))) < level)
                     {
-                        _wet[nc] = true;
+                        wet[nc] = true;
+                        if (++count > abortAt) return false;
                         queue.Enqueue((nc, dist + 1));
                     }
                 }
             }
-            _waterLevel = level;
+            return true;
+        }
 
-            float Corner(int sz, int sx_) => Heights[sz * SamplesX + sx_] * HeightScale;
+        private float Corner(int sz, int sx) => Heights[sz * SamplesX + sx] * HeightScale;
+
+        /// <summary>The water verdict for 'navdata': the liquids the record names, or the v3 model's guess.</summary>
+        public string WaterInfo()
+        {
+            if (_lakes != null)
+                return _lakes.Length == 0 ? "dry (no liquids in the record)"
+                    : $"{_lakes.Length} liquid(s) at " + string.Join(", ", _lakes.Select(l => l.Level.ToString("0.0")).Distinct());
+            if (_wet == null) BuildWater();
+            int wet = 0;
+            foreach (bool b in _wet) if (b) wet++;
+            return float.IsNaN(_waterLevel) ? "dry" : $"{_waterLevel:0.0} over {100.0 * wet / _wet.Length:0}% of the map";
         }
 
         internal static byte[] Inflate(byte[] z, int rawLen)

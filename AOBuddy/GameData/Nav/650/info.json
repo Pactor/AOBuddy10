@@ -3,8 +3,9 @@
  "name": "Upper Stret East Bank",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 190277,
   "trianglesWalkable": 91319,
   "chunks": 2625
+ },
+ "walls": {
+  "triangles": 79552,
+  "chunks": 2445,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "neutralapartment",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 1727,
   "trianglesWalkable": 546,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 581,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Wailing Wastes",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    28
+  ],
+  "waterPolygons": [
+   28
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 143913,
   "trianglesWalkable": 69250,
   "chunks": 3588
+ },
+ "walls": {
+  "triangles": 64784,
+  "chunks": 3175,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Beer And Booze (dng)",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 2766,
   "trianglesWalkable": 964,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 802,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

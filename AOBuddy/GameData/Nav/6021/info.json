@@ -3,8 +3,9 @@
  "name": "Xan Tower",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 110779,
   "trianglesWalkable": 44382,
   "chunks": 713
+ },
+ "walls": {
+  "triangles": 43675,
+  "chunks": 693,
+  "minHeight": 1
  }
 }

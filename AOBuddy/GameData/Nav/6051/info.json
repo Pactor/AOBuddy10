@@ -3,8 +3,9 @@
  "name": "Serenity Island Mech Invasion",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    4.8
+  ],
+  "waterPolygons": [
+   4.8
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 20865,
   "trianglesWalkable": 10460,
   "chunks": 201
+ },
+ "walls": {
+  "triangles": 8140,
+  "chunks": 198,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "DQ Clan",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 15053,
   "trianglesWalkable": 4946,
   "chunks": 22
+ },
+ "walls": {
+  "triangles": 5226,
+  "chunks": 22,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "omni_advanced_pharmacist_shop",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 640,
   "trianglesWalkable": 212,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 241,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

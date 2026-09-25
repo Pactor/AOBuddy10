@@ -3,8 +3,8 @@
  "name": "Enjoy it While it Lasts",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 4880,
   "trianglesWalkable": 1565,
   "chunks": 4
+ },
+ "walls": {
+  "triangles": 1860,
+  "chunks": 18,
+  "minHeight": 1
  }
 }

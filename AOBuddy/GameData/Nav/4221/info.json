@@ -3,8 +3,8 @@
  "name": "Maze_Letha_scheol_unre",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 336013,
   "trianglesWalkable": 113342,
   "chunks": 66
+ },
+ "walls": {
+  "triangles": 119402,
+  "chunks": 68,
+  "minHeight": 1
  }
 }

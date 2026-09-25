@@ -3,8 +3,9 @@
  "name": "Freelancers Inc. HQ - Old Athen",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    1.5
+  ],
+  "waterPolygons": [
+   1.5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 9876,
   "trianglesWalkable": 2543,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 3892,
+  "chunks": 6,
+  "minHeight": 1
  }
 }

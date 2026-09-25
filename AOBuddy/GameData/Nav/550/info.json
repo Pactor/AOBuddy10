@@ -3,8 +3,9 @@
  "name": "Athen Shire",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 128797,
   "trianglesWalkable": 57372,
   "chunks": 2749
+ },
+ "walls": {
+  "triangles": 61803,
+  "chunks": 2543,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Mir shop clan",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -14,19 +14,15 @@
   "cell": 2,
   "heightScale": 0.20000000298023224
  },
- "verification": {
-  "walkedPoints": 4,
-  "toleranceM": 1,
-  "explainedByFloor": 4,
-  "explainedByCollision": 0,
-  "unexplained": 0,
-  "explainedPct": 100,
-  "unexplainedSamples": []
- },
  "collision": {
   "records": 1,
   "trianglesTotal": 2027,
   "trianglesWalkable": 666,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 702,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

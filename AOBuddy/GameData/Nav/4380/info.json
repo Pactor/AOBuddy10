@@ -3,8 +3,9 @@
  "name": "Battle Station 20-49",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 33809,
   "trianglesWalkable": 21184,
   "chunks": 235
+ },
+ "walls": {
+  "triangles": 10425,
+  "chunks": 233,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Belial Forest",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 516811,
   "trianglesWalkable": 255268,
   "chunks": 6182
+ },
+ "walls": {
+  "triangles": 222054,
+  "chunks": 5581,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "ACD tarm (dng)",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 34606,
   "trianglesWalkable": 12332,
   "chunks": 42
+ },
+ "walls": {
+  "triangles": 12982,
+  "chunks": 42,
+  "minHeight": 1
  }
 }

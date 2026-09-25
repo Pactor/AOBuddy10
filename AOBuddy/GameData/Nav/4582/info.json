@@ -3,8 +3,9 @@
  "name": "ICC Shuttleport",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,12 @@
   "heightVerifiable": true,
   "waterPlanes": [
    19.77
+  ],
+  "waterPolygons": [
+   17.5,
+   15.68,
+   19.4,
+   19.77
   ]
  },
  "collision": {
@@ -31,5 +38,10 @@
   "trianglesTotal": 86536,
   "trianglesWalkable": 41493,
   "chunks": 162
+ },
+ "walls": {
+  "triangles": 34432,
+  "chunks": 166,
+  "minHeight": 1
  }
 }

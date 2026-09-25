@@ -3,8 +3,8 @@
  "name": "BS Signup (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 8342,
   "trianglesWalkable": 2670,
   "chunks": 5
+ },
+ "walls": {
+  "triangles": 2086,
+  "chunks": 5,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Pegrama Medical Facility (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 11173,
   "trianglesWalkable": 3778,
   "chunks": 9
+ },
+ "walls": {
+  "triangles": 3314,
+  "chunks": 9,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Character Creation Lab Dng",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 15389,
   "trianglesWalkable": 4901,
   "chunks": 10
+ },
+ "walls": {
+  "triangles": 5780,
+  "chunks": 24,
+  "minHeight": 1
  }
 }

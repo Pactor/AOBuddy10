@@ -3,8 +3,9 @@
  "name": "Penumbra Forest",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -27,6 +28,16 @@
    66.72,
    49.29,
    24.09
+  ],
+  "waterPolygons": [
+   14.3,
+   37.9,
+   36.3,
+   32.7,
+   24.5,
+   46.99,
+   74.14,
+   66.72
   ]
  },
  "collision": {
@@ -34,5 +45,10 @@
   "trianglesTotal": 553605,
   "trianglesWalkable": 266453,
   "chunks": 3030
+ },
+ "walls": {
+  "triangles": 256341,
+  "chunks": 2982,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Dimensional Shift - Superior",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 7270,
   "trianglesWalkable": 2424,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 1643,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

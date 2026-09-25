@@ -3,8 +3,8 @@
  "name": "lowtech_building2 VP dng",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 1040,
   "trianglesWalkable": 342,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 354,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

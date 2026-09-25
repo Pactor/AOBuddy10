@@ -3,8 +3,9 @@
  "name": "Southern Artery Valley ",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 552090,
   "trianglesWalkable": 261333,
   "chunks": 6382
+ },
+ "walls": {
+  "triangles": 253754,
+  "chunks": 6198,
+  "minHeight": 1
  }
 }

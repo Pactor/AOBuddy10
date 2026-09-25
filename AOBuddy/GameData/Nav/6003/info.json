@@ -3,8 +3,9 @@
  "name": "The Dig Site",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 11542,
   "trianglesWalkable": 4561,
   "chunks": 226
+ },
+ "walls": {
+  "triangles": 6759,
+  "chunks": 216,
+  "minHeight": 1
  }
 }

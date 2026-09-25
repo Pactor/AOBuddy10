@@ -3,8 +3,9 @@
  "name": "Garden of Redeemed Main",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 56697,
   "trianglesWalkable": 29361,
   "chunks": 156
+ },
+ "walls": {
+  "triangles": 24661,
+  "chunks": 151,
+  "minHeight": 1
  }
 }
