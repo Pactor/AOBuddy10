@@ -45,6 +45,11 @@ namespace AOBuddy
         private readonly Dictionary<Identity, JObject> _mobs = new Dictionary<Identity, JObject>();
         private readonly Dictionary<Identity, Vector3> _mobFirst = new Dictionary<Identity, Vector3>();
         private float _lastPct = -1;
+        // Read while inside: the zone-out that ends a recording has already reset the controller (first index,
+        // 13:56 2026-09-25: building, type and doors came out empty).
+        private string _building, _type;
+        private bool _completed;
+        private JArray _doors = new JArray();
         private double _scanAt;
 
         public MissionRecorder(BotContext ctx, MissionController mission, string pluginDir, Func<string> missionLine, Func<int> rollDifficulty)
@@ -96,8 +101,10 @@ namespace AOBuddy
             if (!inside && _fs != null) { Close(); return; }
             if (_fs == null || me == null) return;
             if (_mission.ClearPct >= 0) _lastPct = _mission.ClearPct;
+            _building = _mission.BuildingName ?? _building; _type = _mission.RecordTypeName ?? _type; _completed |= _mission.Completed;
             if (_ctx.Clock.Seconds - _scanAt < 0.5) return;
             _scanAt = _ctx.Clock.Seconds;
+            try { _doors = _mission.DoorsJson(); } catch { }
             foreach (var n in DynelManager.Npcs)
             {
                 if (n == null) continue;
@@ -138,7 +145,7 @@ namespace AOBuddy
                     _instance = _mission.Instance;
                     _base = Path.Combine(_dir, $"rec-{_instance}-{DateTime.Now:yyyyMMdd-HHmmss}");
                     _fs = new FileStream(_base + ".pkt", FileMode.Create, FileAccess.Write, FileShare.Read);
-                    _packets = 0; _openedAt = _zoneAt; _mobs.Clear(); _mobFirst.Clear(); _lastPct = -1;
+                    _packets = 0; _openedAt = _zoneAt; _mobs.Clear(); _mobFirst.Clear(); _lastPct = -1; _building = null; _type = null; _completed = false; _doors = new JArray();
                     foreach (var e in _pre) Write(e.server, e.ms, e.p);
                     _pre.Clear();
                     _ctx.Log($"MISSIONREC: recording {_mission.BuildingName} instance {_instance} to {Path.GetFileName(_base)}.pkt ({_packets} packets since the zone-in).");
@@ -155,8 +162,8 @@ namespace AOBuddy
             var idx = new JObject
             {
                 ["instance"] = _instance,
-                ["building"] = _mission.BuildingName,
-                ["missionType"] = _mission.RecordTypeName,
+                ["building"] = _building,
+                ["missionType"] = _type,
                 ["mission"] = line,
                 ["roll"] = new JObject
                 {
@@ -164,12 +171,12 @@ namespace AOBuddy
                     ["goodBad"] = c.MissionSliderGoodBad, ["orderChaos"] = c.MissionSliderOrderChaos, ["openHidden"] = c.MissionSliderOpenHidden,
                     ["physicalMystical"] = c.MissionSliderPhysicalMystical, ["headonStealth"] = c.MissionSliderHeadonStealth, ["creditsXp"] = c.MissionSliderCreditsXp,
                 },
-                ["completed"] = _mission.Completed,
+                ["completed"] = _completed,
                 ["clearPct"] = _lastPct,
                 ["seconds"] = Math.Round((DateTime.UtcNow - _openedAt).TotalSeconds),
                 ["packets"] = _packets,
                 ["mobs"] = new JArray(_mobs.Values),
-                ["doors"] = _mission.DoorsJson(),
+                ["doors"] = _doors,
             };
             // The clear % moves in steps of 100/N: with two or more kills counted, N = the building's mobs.
             lock (_lock) CloseFile();
