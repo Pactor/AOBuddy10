@@ -257,5 +257,9 @@ namespace AOBuddy
             return sb.ToString();
         }
 
+        /// <summary>Cap a chat line at max characters (tells have a length limit; the marker says so).
+        /// The one definition — command replies and PerkBonuses.Report share it (moved from Main, R3.3).</summary>
+        internal static string Truncate(string s, int max) => s.Length <= max ? s : s.Substring(0, max) + "…";
+
     }
 }

@@ -1113,15 +1113,30 @@ namespace AOBuddy
                 double ha = g.HeightAt(a.X, a.Z), hb = g.HeightAt(b.X, b.Z);
                 bool ground = !double.IsNaN(ha) && !double.IsNaN(hb) && Math.Abs(a.Y - ha) < 3 && Math.Abs(b.Y - hb) < 3;
                 float len = Movement.Flat(a, b);
-                int n = ground ? (int)(len / 3f) : 0;
+                // NEVER BELOW THE TERRAIN (the Wailing Wastes rubberband, 2026-09-25): a leg whose ends sit
+                // on a structure (a wompah pad, a bridge) used to go unsampled in one straight line — and when
+                // the ground under it rose past that line, walking it stepped INSIDE the hill and the server
+                // rejected every step. Structure legs are sampled too now, each point clamped UP to the
+                // heightfield: above it nothing changes (bridges stay bridges), under it the point lifts onto
+                // the ground. Ground legs behave exactly as before.
+                int n = (int)(len / 3f);
                 for (int k = 1; k <= n; k++)
                 {
                     float t = k / (float)(n + 1);
                     float x = a.X + (b.X - a.X) * t, z = a.Z + (b.Z - a.Z) * t;
                     double h = g.HeightAt(x, z);
-                    outp.Add(new Vector3(x, double.IsNaN(h) ? a.Y + (b.Y - a.Y) * t : (float)h, z));
+                    float y;
+                    if (ground) y = double.IsNaN(h) ? a.Y + (b.Y - a.Y) * t : (float)h;
+                    else
+                    {
+                        y = a.Y + (b.Y - a.Y) * t;
+                        if (!double.IsNaN(h) && h > y) y = (float)h;
+                    }
+                    outp.Add(new Vector3(x, y, z));
                 }
-                outp.Add(ground ? new Vector3(b.X, (float)hb, b.Z) : b);
+                float by = ground ? (float)hb : b.Y;
+                if (!ground && !double.IsNaN(hb) && hb > by) by = (float)hb;
+                outp.Add(new Vector3(b.X, by, b.Z));
                 a = b;
             }
             return outp;

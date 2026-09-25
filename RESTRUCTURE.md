@@ -275,7 +275,19 @@ only.
 Target: Main.cs ≈400 lines. Each extraction is one commit; after each, Main still compiles and
 the smoke run is clean. Extraction order matters (R3.1 before R3.2; R3.4 anytime).
 
-### R3.1 `OwnerTracker` — [ ]
+### R3.1 `OwnerTracker` — [x] done 2026-09-25
+`OwnerTracker.cs` (new, ctor takes ctx): `Find()`/`IsOwnerSender` (identity, incl. the proven tell id
+`_tellId` and the dynel-id cache `ChatId`, mirrored into `ctx.OwnerCharId` for ResupplyController's
+trade check), `UpdateVisible(owner, dt)` (the per-frame bookkeeping: LostSeconds/LastPos/id caches,
+returns this frame's visibility while `Visible` still holds last frame's — Main reads the pair as the
+reacquire/lost edge), `OnKeyframe(cm)` + `PredictedPos` (interpolation, verbatim), `ResetOnZone()`
+(ClearNav's LostSeconds=0, nothing else — keyframes/LastPos kept exactly as the inline reset did).
+Main's CharDCMove handler keeps the identity test (`_owner.ChatId`), the DIAG counters and the MIRROR
+forward; the tell handler and every command's Find call route through the tracker. The never-assigned
+`_ownerLostDist`/`_ownerLostMoving` moved as `LostDist`/`LostMoving` properties (still dead — R3.2
+decides restore-vs-delete with the rest of the zone-episode state). FollowController's header doc
+pointer updated. Build clean; DONE-WHEN grep (KeyPos/Interp in Main.cs) empty; the corners-and-ramps
+follow smoke rides the owner's next session.
 **What moves.** Owner keyframe/velocity state and interpolation (`_ownerKeyPos, _ownerKeyTime,
 _ownerVel, _ownerKeyHeading, _ownerMovingKey`, `PredictOwnerPos`, `IsMovingMove`, the keyframe
 capture in the CharDCMove handler Main.cs:247-282); owner lookup + identity (`FindOwner`,
@@ -288,15 +300,23 @@ capture in the CharDCMove handler Main.cs:247-282); owner lookup + identity (`Fi
 **DONE WHEN.** Main.cs no longer contains the words KeyPos/Interp; follow behaviour on a run with
 corners and ramps is unchanged (trail counts in `hb` line similar, no `SETPOS IGNORED` storms).
 
-### R3.2 `ZoneEpisode` (owner-loss / crossing coordinator) — [ ]
-> **FOUND DURING PHASE 0 (2026-09-24):** `Main._ownerLostDist` and `Main._ownerLostMoving` are
-> declared, read by the auto zone-sweep gate (`crossingLikely = _ownerLostDist <= ZoneLossMeters &&
-> _ownerLostMoving`), but **never assigned** (CS0649, pre-existing on HEAD before any restructure
-> work). So `crossingLikely` is always `false` and the whole auto zone-sweep ladder in OnUpdate is
-> unreachable — only the manual `zone`/`forward` commands and nav replay cross lines today. The
-> assignments (meant for the "he just dropped out of view" branch) were evidently lost in an edit.
-> Decide while extracting ZoneEpisode: restore the assignments (re-enables auto sweeps) or delete
-> the dead ladder and the fields. Do NOT silently restore — it is a behaviour change.
+### R3.2 `ZoneEpisode` (owner-loss / crossing coordinator) — [x] done 2026-09-25, scope adjusted — ladder DELETED
+**The Phase-0 decision: delete, not restore.** Beyond the never-assigned gate fields, the ladder was
+doubly broken on HEAD: `_zoneEpisodeElapsed` was never INCREMENTED (the 75 s cap could never fire),
+and the sideways retry `offset` (0/+3m/-3m) was computed but never passed to `StartZoneSweep`. It
+was an abandoned edit, not a disabled feature — restoring it would be authoring new auto-sweep
+behaviour, which is a deliberate feature commit, not a restructure step. Deleted: the ladder, the
+gate, `_zoneAttempts/_zoneEpisodeElapsed/_zoneGaveUp/_zoneSweepTried`, the `ZoneLossMeters/
+ZoneMaxAttempts/ZoneEpisodeSeconds` consts, their resets in ClearNav and the `zone` command, and
+OwnerTracker's dead `LostDist`/`LostMoving`. Consequence: `zone`'s attempt-budget reset was a no-op
+all along (WorkTheZoneLine never read the budget), so `zone` now shares the `forward`/`run` case
+verbatim — identical replies. A marker comment at the old ladder site in OnUpdate records the
+deletion and where line-crossing lives now (manual `zone`/`forward`, travel/overland, nav replay).
+**What survived to `ZoneEpisode.cs`** (ctor takes ctx only — follow/nav were only for the deleted
+ladder): the arrived-alone watch, verbatim (`Tick(me, ownerVisible, soloTravel, dt)` with
+`_overland.Active || _run.Active` as soloTravel; `ResetOnZone()` = ClearNav's 0.001 clock-start).
+Both tell strings are byte-identical. Build clean (AOBuddy warnings 37 → 35: the dead code carried
+them); `zone`/`forward` reply regression + the arrived-alone tell ride the owner's next session.
 **What moves.** `_zoneAttempts, _zoneEpisodeElapsed, _zoneGaveUp, _zoneSweepTried, _arrivedAlone`
 (+ `ArrivedAloneSeconds`, `ZoneLossMeters`, `ZoneMaxAttempts`, `ZoneEpisodeSeconds`) and the two
 OnUpdate blocks that use them: the auto zone-sweep/give-up ladder (≈755-801) and the
@@ -307,7 +327,17 @@ issuing the same sweeps/tells; `ResetOnReacquire()`, `ResetOnZone()` (called fro
 **DONE WHEN.** Losing the owner at a zone line still sweeps at most 3× / 75 s, gives up with the
 same tell, and `zone` re-arms — the exact strings are the regression test.
 
-### R3.3 `PerkBonuses` service — [ ]
+### R3.3 `PerkBonuses` service — [x] done 2026-09-25
+`PerkBonuses.cs` (new): ctor `(pluginDir, config, log)`, `Init()` (was InitPermanentBonuses, same
+spot in Main.Init — after LoadConfig/_logFile, before ItemValues.Load), `Tick(me)` (the
+RefreshPerksFromWire + ApplyPermanentBonuses pair, same OnUpdate spot), `Report(reply)` (the
+`perks`/`perk` command). All six methods and six fields moved verbatim — the wire id-signature
+recompute guard, the `ReferenceEquals(_bonusTarget)` once-per-LocalPlayer-instance re-apply, the
+CWD-fallback path probes (read-only fallback with a logged failure; kept on purpose), and every
+diagnostic string byte-identical. `Truncate` (used by Report + four Main command replies) moved to
+`HelpPages.Truncate` — one definition, no Main back-reference. `_pets` was taken, so the field is
+`_perkBonuses`. Build clean (35 warnings, unchanged); Main.cs 1804 → 1660. The `perks`-command and
+login auto-detect log-line regression rides the owner's next session.
 **What moves.** `InitPermanentBonuses`, `RefreshPerksFromWire`, `RecomputePerkBonuses`,
 `MergeResearch`, `ApplyPermanentBonuses`, `ReportPerks`, and the fields `_perkData,
 _permanentBonuses, _bonusTarget, _perkDiag, _perkOverride, _lastPerkSig` (Main.cs:1834-1969).
@@ -316,7 +346,27 @@ apply), `.Report(reply)`. Main calls Init once and Tick per frame; the `perks` c
 Report.
 **DONE WHEN.** The `perks` command output is byte-identical; login auto-detect log lines unchanged.
 
-### R3.4 Command routing out of the switch — [ ]
+### R3.4 Command routing out of the switch — [x] done 2026-09-25
+`HandleCommand` is now parse + dictionary lookup; the switch body is gone. `BuildCommands()` (called
+at the end of Init) fills `Dictionary<string, Action<Action<string>, string[]>>`; a local `Arg()`
+reproduces the old switch's lowercased `parts[1]`. What moved where, all bodies and replies verbatim:
+**PetController.Command** (+ ctor gains OwnerTracker) — the 20 pet commands plus their three helpers
+(FindCharByName/ResolveHealSubject/HealWhoHint), which were pet-heal-specific all along;
+**KnowledgeReports** (new, ctor ctx/support/owner) — class/whoami, nanos, active, learnable (+ the
+learnable cache, was a Main field), stat, supplies/SupplyLine/FormatTime, autobuff/keepup's
+ReportBuffPlans; **PathStore** (new, ctor pathsDir/log) — Save/Load/List for recorded paths (Load
+still throws to the command's "Load failed" reply); **ResupplyController.Command/Survey** — the
+resupply sub-switch and vendordebug. Staying in Main as closures over Main-owned state (per the
+item's Careful note): modes, follow/stay/come, forward/run/zone, stand/sit, specials, missiondbg,
+nanodump, catalog, buff/heal, record/savepath/path/paths, nav, status/pos/navdata, mission,
+travelto, buffs (the bare-vs-Chewy bridge), shop/whompa stubs, help. `stat`/`Truncate` had already
+found homes (KnowledgeReports/HelpPages in R3.3). HelpPages stays the usage catalog — no per-entry
+usage strings in the table, one source of truth. **Verified:** build 0 errors, warning SET identical
+before/after (stash-diffed, 66=66); command-coverage diff against HEAD's case list — all 75
+top-level commands present (55 grep-visible keys + the 20-word pet loop), the only old words absent
+are the 15 non-top-level ones (10 heal-subject + 5 sub-switch, now inside their owners). Main.cs
+1660 → 1300. Reply spot-checks (`pets`, `pethealtarget`, `mission run status`, `navdata`,
+`resupply machines`, `buffs plan`) ride the owner's next session.
 **What.** `HandleCommand` is a ~425-line switch (Main.cs:1097-1522) while three systems already
 own their commands (`_hunt.Command`, `_roll.Command`, `_overland.Command`).
 **Move.** Give each controller a `Command(string[] args, Action<string> reply)` (pet commands →
@@ -331,7 +381,13 @@ the win is locality, not purity.
 **DONE WHEN.** Every command from `help` still parses and replies identically (spot-check:
 `pets`, `pethealtarget`, `mission run status`, `navdata`, `resupply machines`, `buffs plan`).
 
-### R3.5 Wire-capture/diagnostics observer — [ ]
+### R3.5 Wire-capture/diagnostics observer — [x] done 2026-09-25
+`WireCapture.cs` (new, ctor config/pluginDir/log): the missiondbg-gated diagnostics moved verbatim —
+the PlayfieldAnarchyF MISSIONDBG line + missions/*.bin zone-in captures and the 0x5C436609 raw probe.
+Reads MissionDebug per message so the toggle command takes effect live. `_lastZoneInPacket` STAYS in
+Main (OnZoneIn handler): the plan's "MissionController needs it" was off — its only reader is the
+`navdata` command's mission-layout fallback, and it must capture whether or not missiondbg is on.
+Subscribed via SafeSubscribe (R3.6) with tag WIRECAPTURE.
 **What moves.** The MissionDebug block inside Main's second MessageReceived handler
 (PlayfieldAnarchyF logging + missions/*.bin saving, the 0x5C436609 raw probe, Main.cs:284-317),
 plus `_lastZoneInPacket` custody can stay in Main (MissionController needs it) or move to the
@@ -339,7 +395,20 @@ observer with an accessor.
 **Move.** `WireCapture(config, pluginDir).OnMessage(Message)` subscribed via the R3.6 helper.
 **DONE WHEN.** `missiondbg on` produces the same MISSIONDBG lines and .bin files.
 
-### R3.6 `SafeSubscribe` — handler isolation without the boilerplate — [ ]
+### R3.6 `SafeSubscribe` — handler isolation without the boilerplate — [x] done 2026-09-25
+`ClientEvents.cs` (new): `SafeSubscribe(handler, tag, log)` wraps each subscription in its own
+try/catch and logs `tag: message`. Main's Init message wiring is now a flat list of NINE
+subscriptions in the old run order (vitals, resupply, roll, run, mission, servermove, DCMOVE,
+ZONEIN, WIRECAPTURE). The six old tags are the old log-line prefixes verbatim ("VITALS feed error",
+"RESUPPLY feed error", "MISSIONROLL", "MISSIONRUN", "MISSION feed error", "SERVER MOVE error"), so
+log greps keep matching. **Behaviour note (the intended isolation):** the old second handler's one
+outer `catch { }` SILENTLY swallowed a throw and skipped the rest of that handler's feeds for the
+message; DCMOVE/ZONEIN/WIRECAPTURE now log with their tags instead of being silent — a diagnostic
+addition in the R1.9 sense. The second handler split into `Main.OnCharDCMove` (diag counters +
+tracker keyframes + the MIRROR forward) and `Main.OnZoneIn` (R3.5's custody decision). Trade/chat/
+team/dynel/death/pet/feedback subscriptions are untouched (not MessageReceived feeds). Build clean;
+warning set identical before/after (stash-diffed, 66=66). The thrown-test-exception DONE-WHEN is
+true by construction (per-subscription try/catch) and rides the owner's next session otherwise.
 **What.** Main.Init's five try/catch-wrapped forwards (≈224-236) and two big inline handlers.
 **Move.** Extension `ClientEvents.SafeSubscribe(Action<Message> handler, string tag,
 Action<string> log)` wrapping try/catch + tagged log; Init becomes a list of subscriptions. Keep

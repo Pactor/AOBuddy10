@@ -124,6 +124,39 @@ namespace AOBuddy
 
         // ---- Commands -----------------------------------------------------------
 
+        // The 'resupply' command (R3.4: moved verbatim from Main's switch). parts is the raw command
+        // split; the sub-words and replies are byte-identical to the old case body.
+        public void Command(string[] parts, Action<string> reply)
+        {
+            string arg = parts.Length > 1 ? parts[1].ToLowerInvariant() : "";
+            LocalPlayer rp = DynelManager.LocalPlayer;
+            if (rp == null) { reply("No character loaded."); return; }
+            switch (arg)
+            {
+                case "stop": if (Active) { Stop(rp, "owner"); reply("Resupply stopped."); } else reply("Not resupplying."); break;
+                case "status": reply("Resupply: " + Describe()); break;
+                case "forget": Forget(); reply("Forgot which terminals sell what; the next resupply checks them all again."); break;
+                case "machines":
+                {
+                    List<string> ml = DescribeMachines(rp);
+                    if (ml.Count == 0) { reply($"No terminals within {_ctx.Config.ResupplySearchRadius:0}m."); break; }
+                    foreach (string l in ml.Take(15)) reply(HelpPages.Truncate(l, 440));
+                    if (ml.Count > 15) reply($"…(+{ml.Count - 15} more, all in the log)");
+                    break;
+                }
+                default: Start(rp, reply); break;
+            }
+        }
+
+        // TEMPORARY: the 'vendordebug' command — open every matching terminal in the zone and log it
+        // (StartSurvey). Moved verbatim from Main's switch (R3.4).
+        public void Survey(string[] parts, Action<string> reply)
+        {
+            LocalPlayer vp = DynelManager.LocalPlayer;
+            if (vp == null) { reply("No character loaded."); return; }
+            StartSurvey(vp, parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "", reply);
+        }
+
         public void Start(LocalPlayer me, Action<string> reply)
         {
             if (Active) { reply("Already resupplying — " + Describe()); return; }

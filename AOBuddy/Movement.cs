@@ -157,15 +157,23 @@ namespace AOBuddy
 
         private void SendMove(LocalPlayer me, MovementAction moveType, int deltaMs)
         {
-            Client.Send(new CharDCMoveMessage
+            var m = new CharDCMoveMessage
             {
                 Identity = me.Identity,
                 MoveType = moveType,
                 Heading = me.MovementComponent.Heading,
                 Position = me.MovementComponent.Position,
                 DeltaTime = Math.Max(1, deltaMs),
-            });
+            };
+            Client.Send(m);
+            // MOVEDBG-OUT (2026-09-25): the wire truth of our own movement stream — the echo's decoded
+            // DeltaTime proved unreliable (reads 0 while the serializer demonstrably sends the real value).
+            // Read by Main when MissionDebug is on.
+            Sent?.Invoke(m);
         }
+
+        /// <summary>Diagnostic tap for our own outbound movement packets (see MOVEDBG in Main).</summary>
+        public event Action<CharDCMoveMessage> Sent;
 
         // ---- MIRROR: replay the owner's own movement packets as ours ----------------
         // Once the bot stands on his spot with his facing, the cheapest perfect follow is to say exactly
