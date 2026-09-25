@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AOSharp.Clientless;
+using AOSharp.Clientless.Logging;
 using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
 
@@ -429,11 +430,14 @@ namespace AOBuddy
                     var e = _leg.Exit;
                     if (e.Kind == ExitKind.Scotty)
                     {
-                        // "scty ahanus" -> /tell scty ahanus
+                        // "scty ahanus" -> /tell scty ahanus. The chat client logs the BARE wire text ("tarden")
+                        // to the console; suppress that and say where the warp is going instead — label from
+                        // ScottyWarps.json plus the destination playfield's name.
                         string tell = e.Tell ?? "";
                         int sp = tell.IndexOf(' ');
                         string to = sp > 0 ? tell.Substring(0, sp) : "scty", text = sp > 0 ? tell.Substring(sp + 1) : tell;
-                        try { Client.Chat.SendPrivateMessage(to, text); } catch (Exception ex) { _ctx.Log("OVERLAND: tell failed: " + ex.Message); }
+                        try { Client.Chat.SendPrivateMessage(to, text, false); } catch (Exception ex) { _ctx.Log("OVERLAND: tell failed: " + ex.Message); }
+                        Logger.Information($"Initiate Scottywarp - {Zoning.Name(e.ToPf)} {e.Label}");
                         _ctx.Log($"OVERLAND: /tell {to} {text} (try {_tries}).");
                     }
                     else
