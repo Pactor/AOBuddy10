@@ -674,6 +674,7 @@ namespace AOBuddy
                     if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil)
                     {
                         _fightIgnoreUntil = _clock + 60;
+                        if (_pullId.HasValue) { _combat.SetAside(me, _pullId.Value, 120); _pullId = null; }
                         _ctx.Log("MISSIONRUN: 30 s of 'fighting' and nothing hurts me; carrying on.");
                     }
                     else
@@ -690,7 +691,13 @@ namespace AOBuddy
                             // nothing too strong for him within 30 m of the foe, or he stays where he is.
                             bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
                                             && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
-                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing)) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing))
+                            {
+                                // Inside, along the building's path: straight at a mob round a corner the server pulled
+                                // him back at the wall and the mob's HP never moved (11:24, 2026-09-25, first clear run).
+                                var step = _mission.InMission ? _mission.StepToward(me.Transform.Position, foe.Transform.Position) : null;
+                                _phaseTime = 0; _follow.SetManualTarget(step ?? foe.Transform.Position); return true;
+                            }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
                         if (_ctx.Status.InCombat) { _follow.ClearManual(); _phaseTime = 0; return false; }
@@ -3143,6 +3150,11 @@ namespace AOBuddy
             }
             if (_clock - _pullCheckedAt < 1) return null;
             _pullCheckedAt = _clock;
+            // One at a time, and only fit to fight: nothing on us (Attacker comes here only then), not in the minute
+            // after a fight that went nowhere, HP 70%+, not resting. The first clear run (11:25, 2026-09-25) pulled
+            // while walking on after such a fight, dragged five mobs and fled at 29%.
+            int hpNow = _ctx.Status.SelfHpPct;
+            if (_clock < _fightIgnoreUntil || Fleeing || (hpNow >= 0 && hpNow < 70) || _ctx.Status.Resting || _ctx.Status.NeedsRecovery) return null;
             var pos = me.Transform.Position;
             foreach (var n in DynelManager.Npcs.Where(n => Pullable(me, n, pets) && me.DistanceFrom(n) <= 15f && Math.Abs(n.Transform.Position.Y - pos.Y) < 3f)
                                                .OrderBy(n => me.DistanceFrom(n)).Take(3))

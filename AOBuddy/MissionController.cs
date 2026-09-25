@@ -148,6 +148,9 @@ namespace AOBuddy
                         ClearPct = pct;
                         _ctx.Log($"MISSION: cleared {pct:0.#}% of this mission's mobs.");
                     }
+                    // Clear mode, first runs: every server line inside the building, to check the % message.
+                    else if (ClearMode && _grid != null && IsMe(ff.Identity))
+                        _ctx.Log($"MISSION: server line '{(ff.FormattedMessage ?? "").Replace("\u001b", "\\e")}'");
                     break;
 
                 case FeedbackMessage fb:
@@ -703,6 +706,16 @@ namespace AOBuddy
             long v = 0;
             for (int i = 0; i < 5; i++) { int c = s[p + i] - 33; if (c < 0 || c > 84) return -1; v = v * 85 + c; }
             return v;
+        }
+
+        /// <summary>The next point to walk to on the building's path from a to b (not through a wall), or null.</summary>
+        public Vector3? StepToward(Vector3 a, Vector3 b)
+        {
+            if (_grid == null) return null;
+            var p = _grid.FindPath(a, b, _blocked, out _);
+            if (p == null || p.Count == 0) return null;
+            foreach (var q in p) if (Movement.Flat(a, q) > 1.5f) return q;
+            return b;
         }
 
         /// <summary>A path length through the building, or null (no building, no path).</summary>
