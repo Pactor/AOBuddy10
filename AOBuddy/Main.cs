@@ -158,12 +158,12 @@ namespace AOBuddy
             _ctx.NavGrid = new NavGridCache();
             // MOVEDBG-OUT (2026-09-25, the Wailing Wastes rubberband): every movement packet we SEND while
             // an overland walk owns the body — movetype, exact coordinates, and the elapsed-ms field as they
-            // go on the wire (the echo's decoded ms proved unreliable; this is the send-side truth). Diffing
-            // this against a captured real client on the same slope is how the difference gets found.
+            // go on the wire (the echo's decoded ms proved unreliable; this is the send-side truth). Gated
+            // behind MissionDebug ('missiondbg on') so it costs nothing in normal play.
             _move = new Movement();
             _move.Sent += m =>
             {
-                if (_overland != null && _overland.Active)
+                if (_config.MissionDebug && _overland != null && _overland.Active)
                     Log($"MOVEDBG-OUT: mt={(byte)m.MoveType} ({m.Position.X:0.00},{m.Position.Y:0.00},{m.Position.Z:0.00}) +{m.DeltaTime}ms");
             };
             _follow = new FollowController(_ctx, _move);
