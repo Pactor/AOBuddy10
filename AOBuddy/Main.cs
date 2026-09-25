@@ -56,6 +56,7 @@ namespace AOBuddy
         // The isolated systems + their shared low-level movement and blackboard.
         private BotContext _ctx;
         private OwnerTracker _owner;         // who the owner is, where he is, where he's going (R3.1)
+        private ZoneEpisode _episode;        // did the owner follow me through that zone? (R3.2)
         private Movement _move;
         private FollowController _follow;
         private CombatController _combat;
@@ -95,29 +96,6 @@ namespace AOBuddy
         private Identity? _lastUsedObj;      // the object the owner most recently USED (button/lift/terminal)
         private Vector3? _lastUsedObjPos;
         private double _lastUsedObjAge = 999; // seconds since that use (a warp needs a teleport right after)
-        private bool _zoneSweepTried;        // one auto zone-sweep attempt per owner-loss episode (reset on reacquire)
-        // ---- Zone crossing, per owner-loss episode ------------------------------
-        // The owner leaving our sight is one of three quite different things, and the bot used to treat
-        // them all the same and get one 16-second sweep to sort it out:
-        //   * he rode a lift/terminal      -> TRAVEL rides it too (armed from the object he used)
-        //   * he walked a zone line        -> we have to cross it ourselves, which is what this is for
-        //   * he simply outran us on open ground -> nothing to cross; keep walking his queued waypoints
-        // We can tell the third from the second because a zone line is something he walked THROUGH from
-        // close by while moving, not something he vanished from at forty metres. Sweeping on open ground
-        // is what made the bot pace back and forth in a field. (The vanished-close-and-moving facts
-        // themselves — LostDist/LostMoving — are OwnerTracker's; see the R3.2 note there.)
-        private int _zoneAttempts;           // sweeps made this episode
-        private double _zoneEpisodeElapsed;  // time since he vanished, for the overall give-up
-        private bool _zoneGaveUp;            // told him we lost him; stop retrying until he is back
-        private const float ZoneLossMeters = 30f;     // vanishing further off than this is range, not a line
-        private const int ZoneMaxAttempts = 3;        // sweeps before we admit we cannot cross
-        private const double ZoneEpisodeSeconds = 75; // ...and the wall-clock cap on trying
-
-        // Counts up after a zone/teleport until the owner is seen. Crossing a line SEPARATELY from him is
-        // normal for a second or two while he loads, but if he never appears we have crossed into somewhere
-        // he is not — say so rather than standing in an empty zone waiting.
-        private double _arrivedAlone;
-        private const double ArrivedAloneSeconds = 12.0;
         private bool _navReplaying;          // we handed FOLLOW a recorded nav route (stop it on reacquire)
 
         // Permanent stat bonuses (PERK + RESEARCH) computed once at init and folded into GetStat.
@@ -144,6 +122,7 @@ namespace AOBuddy
 
             _ctx = new BotContext(_config, Log, new Clock());
             _owner = new OwnerTracker(_ctx);
+            _episode = new ZoneEpisode(_ctx);
             _ctx.Vitals = new VitalsTracker(_ctx);
             _ctx.NavGrid = new NavGridCache();
             // MOVEDBG-OUT (2026-09-25, the Wailing Wastes rubberband): every movement packet we SEND while
@@ -635,8 +614,6 @@ namespace AOBuddy
                     bool navClean = _mode == Mode.Assist && _config.Follow && !_combat.InCombat
                                     && !_support.Resting && !_follow.ZoneSweeping && !_travel.Active;
                     _nav.RecordOwner(owner.Transform.Position, navClean);
-
-                    _zoneSweepTried = false;   // he's back in view — allow a fresh zone attempt next time he's lost
                 }
                 else if (wasVisible)
                 {
@@ -644,32 +621,19 @@ namespace AOBuddy
                     _travel.OnOwnerLost(_owner.LastPos);
                 }
 
-                if (ownerVisible || _overland.Active || _run.Active) _arrivedAlone = 0;   // zoning alone is the point of overland travel
-                else if (_arrivedAlone > 0)
-                {
-                    _arrivedAlone += dt;
-                    if (_arrivedAlone > ArrivedAloneSeconds)
-                    {
-                        _arrivedAlone = 0;   // once per arrival
-                        Vector3 ap = me.MovementComponent.Position;
-                        Log($"ZONE: arrived in {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) and you are not here after {ArrivedAloneSeconds:0}s.");
-                        _ctx.TellOwner($"I zoned into {Playfield.Name} at ({ap.X:0},{ap.Y:0},{ap.Z:0}) but you're not here. Holding.");
-                    }
-                }
+                // ZONE-ARRIVAL watch (R3.2): after a teleport/zone, if the owner never turns up next to us,
+                // say so instead of standing silent in an empty zone. Overland travel / a mission run cross
+                // zones on purpose — an empty arrival there is not a loss.
+                _episode.Tick(me, ownerVisible, _overland.Active || _run.Active, dt);
 
-                // AUTO ZONE (follow-based): when he vanishes while we're following him on foot (not fighting,
-                // not riding an object), he walked a zone line. We do NOT sweep the instant he vanishes — if
-                // he outran us we're still back on his trail. Instead we let the breadcrumb trail walk us all
-                // the way to where he vanished (the line), and only once the trail is exhausted (HasWork == false,
-                // i.e. we're AT the line) do we sweep across it. Tight back-and-forth nudges along his travel
-                // axis until the server heartbeat catches us in the wall band and zones us — no per-zone coords,
-                // works entering or exiting. One attempt per loss episode (reset when he's back in view).
                 // CATCH-UP when the owner is out of view and the live breadcrumbs are used up. On ground we
                 // have ALREADY recorded, walk the clean recorded route (it carries the real up/down ramp Y)
-                // toward his last-seen spot — no guessing, and NO zone-sweep ramming the ramp crest (that
-                // sweep IS the ramp rubberband). Only when we're NOT on a recorded route do we fall back to
-                // the proven one-shot zone-sweep (unknown ground, or a genuine zone line). Nav only supplies
-                // the route; FOLLOW's replay walker moves the body, so this can't break follow/zone/combat.
+                // toward his last-seen spot — no guessing. Nav only supplies the route; FOLLOW's replay walker
+                // moves the body, so this can't break follow/zone/combat.
+                // (The AUTO zone-sweep ladder that used to live below — sweep a vanished owner's crossing
+                // spot, give up after 3 tries / 75 s — was unreachable dead code: its gate read two fields
+                // that were never assigned. Deleted in R3.2, not silently re-enabled; crossing a line is the
+                // manual 'zone'/'forward' commands' job, or travel/overland on purpose. See RESTRUCTURE R3.2.)
                 if (_navReplaying && !_follow.HasWork) _navReplaying = false;   // recorded route finished — re-evaluate
 
                 // NAV CATCH-UP: when we're well behind the owner on ground we've ALREADY recorded, replay the
@@ -717,53 +681,11 @@ namespace AOBuddy
                 }
 
                 // RECOVERY BEFORE WANDERING. If the bot needs HP/nano and isn't fighting, healing wins — it
-                // does NOT wander after a lost owner (zone-sweep / catch-up). Cancel any sweep already running
-                // so he sits and recovers instead of pacing back and forth. Owner-independent by design.
+                // does NOT wander after a lost owner (a manual zone-sweep / catch-up). Cancel any sweep
+                // already running so he sits and recovers instead of pacing back and forth. Owner-independent
+                // by design.
                 bool needRecovery = !_combat.InCombat && _support.NeedsRecovery(me);
                 if (needRecovery && _follow.ZoneSweeping) _follow.CancelZoneSweep();
-
-                // ZONE-SWEEP: only OFF recorded ground and only once the live trail is exhausted (unknown
-                // ground / a genuine zone line). Unchanged, now subordinate to nav on recorded ground — and
-                // never while he needs to recover (don't wander off instead of healing).
-                // He vanished CLOSE and MOVING, we have walked his whole recorded route and then on to the
-                // spot he disappeared from, and he is still gone: he crossed something. Work the line.
-                bool crossingLikely = _owner.LostDist <= ZoneLossMeters && _owner.LostMoving;
-                if (!ownerVisible && !needRecovery && crossingLikely && !_zoneGaveUp && !_mission.Active && !_overland.Active && !_run.Active
-                    && !_follow.ZoneSweeping && !_navReplaying
-                    && !_travel.Active && !_combat.InCombat && _config.Follow && _mode == Mode.Assist
-                    && _owner.LastPos.HasValue && !_follow.HasWork)
-                {
-                    if (_zoneAttempts >= ZoneMaxAttempts || _zoneEpisodeElapsed > ZoneEpisodeSeconds)
-                    {
-                        // Out of attempts. Say where we lost him rather than standing there silently — he
-                        // can walk back, or send 'zone' to make us work the same spot again.
-                        _zoneGaveUp = true;
-                        Vector3 lp = _owner.LastPos.Value;
-                        Log($"ZONE: gave up after {_zoneAttempts} attempt(s) / {_zoneEpisodeElapsed:0}s at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name}.");
-                        _ctx.TellOwner($"I lost you at ({lp.X:0},{lp.Y:0},{lp.Z:0}) in {Playfield.Name} and can't get across. Holding here — walk back or send 'zone'.");
-                    }
-                    else
-                    {
-                        // Sweep his crossing spot. If we have crossed out of this playfield before and the
-                        // recorded transition is near where he vanished, sweep THAT instead: it is a spot
-                        // that provably works, rather than our best guess at where the line runs.
-                        Vector3 centre = me.MovementComponent.Position;
-                        Vector3? known = _config.NavUse ? _nav.NearestTransition(_owner.LastPos.Value) : null;
-                        string why = "owner vanished ahead while following (not combat)";
-                        if (known.HasValue && Vector3.Distance(known.Value, _owner.LastPos.Value) <= _config.NavSnapMeters)
-                        {
-                            centre = known.Value;
-                            why = "a crossing we have made here before";
-                        }
-
-                        // Each retry steps sideways along the line: 0, then +3m, then -3m.
-                        float offset = _zoneAttempts == 0 ? 0f : (_zoneAttempts == 1 ? 3f : -3f);
-                        if (_follow.StartZoneSweep(centre))
-                            _zoneAttempts++;
-                        else
-                            _zoneGaveUp = true;   // no usable direction from his path; stop trying this episode
-                    }
-                }
 
                 _support.UpdateVitals(me, dt, _combat.InCombat);
                 _ctx.Vitals.Poll(me, owner);
@@ -965,9 +887,8 @@ namespace AOBuddy
             _ctx.Vitals.Clear();    // readings from the old playfield say nothing about anyone here
             _move.Reset();
             _owner.ResetOnZone();
+            _episode.ResetOnZone();  // start the "did he follow me here?" clock
             _navReplaying = false;
-            _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
-            _arrivedAlone = 0.001;   // start the "did he follow me here?" clock
             Logger.Information("Zone/teleport detected — navigation reset.");
         }
 
@@ -1085,22 +1006,15 @@ namespace AOBuddy
                     else reply("Can't see you (out of range?).");
                     break;
                 }
+                // 'zone' used to reset the auto-sweep attempt budget before sharing this body; that ladder
+                // was unreachable dead code (R3.2) and WorkTheZoneLine never read the budget — all three
+                // are the same ask now.
                 case "forward":
                 case "run":
-                {
-                    LocalPlayer p = DynelManager.LocalPlayer;
-                    if (p == null) break;
-                    WorkTheZoneLine(p, reply);
-                    break;
-                }
                 case "zone":
                 {
                     LocalPlayer p = DynelManager.LocalPlayer;
                     if (p == null) break;
-                    // He is asking again by hand, so the automatic attempts start over: a fresh budget and
-                    // no "gave up" latch, otherwise this command would do nothing after the bot had already
-                    // given up on the same spot.
-                    _zoneAttempts = 0; _zoneEpisodeElapsed = 0; _zoneGaveUp = false;
                     WorkTheZoneLine(p, reply);
                     break;
                 }

@@ -40,13 +40,6 @@ namespace AOBuddy
         public Vector3? LastPos { get; private set; }     // his last in-view position (kept after he's lost)
         public double LostSeconds { get; private set; }   // how long he has been continuously out of view
 
-        // How far off he was / whether he was actually travelling at the moment he vanished — the
-        // "he walked a zone line, not outran us" gate. FOUND DEAD during Phase 0 (see RESTRUCTURE R3.2's
-        // note): never assigned anywhere, so the auto zone-sweep ladder that reads them is unreachable.
-        // They live here so R3.2 can wire (or delete) them with the rest of the zone-episode state.
-        public float LostDist { get; set; }
-        public bool LostMoving { get; set; }
-
         // Cached owner dynel id (0 until first seen in view). Mirrored into ctx.OwnerCharId, the shared
         // slot other controllers read (ResupplyController's trade check). The tell id below is a
         // DIFFERENT id: proven by a name-matched tell, kept for when the chat name map is empty.

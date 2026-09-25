@@ -300,15 +300,23 @@ capture in the CharDCMove handler Main.cs:247-282); owner lookup + identity (`Fi
 **DONE WHEN.** Main.cs no longer contains the words KeyPos/Interp; follow behaviour on a run with
 corners and ramps is unchanged (trail counts in `hb` line similar, no `SETPOS IGNORED` storms).
 
-### R3.2 `ZoneEpisode` (owner-loss / crossing coordinator) — [ ]
-> **FOUND DURING PHASE 0 (2026-09-24):** `Main._ownerLostDist` and `Main._ownerLostMoving` are
-> declared, read by the auto zone-sweep gate (`crossingLikely = _ownerLostDist <= ZoneLossMeters &&
-> _ownerLostMoving`), but **never assigned** (CS0649, pre-existing on HEAD before any restructure
-> work). So `crossingLikely` is always `false` and the whole auto zone-sweep ladder in OnUpdate is
-> unreachable — only the manual `zone`/`forward` commands and nav replay cross lines today. The
-> assignments (meant for the "he just dropped out of view" branch) were evidently lost in an edit.
-> Decide while extracting ZoneEpisode: restore the assignments (re-enables auto sweeps) or delete
-> the dead ladder and the fields. Do NOT silently restore — it is a behaviour change.
+### R3.2 `ZoneEpisode` (owner-loss / crossing coordinator) — [x] done 2026-09-25, scope adjusted — ladder DELETED
+**The Phase-0 decision: delete, not restore.** Beyond the never-assigned gate fields, the ladder was
+doubly broken on HEAD: `_zoneEpisodeElapsed` was never INCREMENTED (the 75 s cap could never fire),
+and the sideways retry `offset` (0/+3m/-3m) was computed but never passed to `StartZoneSweep`. It
+was an abandoned edit, not a disabled feature — restoring it would be authoring new auto-sweep
+behaviour, which is a deliberate feature commit, not a restructure step. Deleted: the ladder, the
+gate, `_zoneAttempts/_zoneEpisodeElapsed/_zoneGaveUp/_zoneSweepTried`, the `ZoneLossMeters/
+ZoneMaxAttempts/ZoneEpisodeSeconds` consts, their resets in ClearNav and the `zone` command, and
+OwnerTracker's dead `LostDist`/`LostMoving`. Consequence: `zone`'s attempt-budget reset was a no-op
+all along (WorkTheZoneLine never read the budget), so `zone` now shares the `forward`/`run` case
+verbatim — identical replies. A marker comment at the old ladder site in OnUpdate records the
+deletion and where line-crossing lives now (manual `zone`/`forward`, travel/overland, nav replay).
+**What survived to `ZoneEpisode.cs`** (ctor takes ctx only — follow/nav were only for the deleted
+ladder): the arrived-alone watch, verbatim (`Tick(me, ownerVisible, soloTravel, dt)` with
+`_overland.Active || _run.Active` as soloTravel; `ResetOnZone()` = ClearNav's 0.001 clock-start).
+Both tell strings are byte-identical. Build clean (AOBuddy warnings 37 → 35: the dead code carried
+them); `zone`/`forward` reply regression + the arrived-alone tell ride the owner's next session.
 **What moves.** `_zoneAttempts, _zoneEpisodeElapsed, _zoneGaveUp, _zoneSweepTried, _arrivedAlone`
 (+ `ArrivedAloneSeconds`, `ZoneLossMeters`, `ZoneMaxAttempts`, `ZoneEpisodeSeconds`) and the two
 OnUpdate blocks that use them: the auto zone-sweep/give-up ladder (≈755-801) and the
