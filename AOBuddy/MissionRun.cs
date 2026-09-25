@@ -734,6 +734,10 @@ namespace AOBuddy
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
                             if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
                             else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }
+                            // Done and already outside (12:37-12:38, 2026-09-25: held at the exit door after a clear, the
+                            // hold ended out in Borealis): through the Blitz phase's outside step, which counts the
+                            // mission, clears it and stashes the reward. Straight to the terminal skipped all three.
+                            else if (_completed && _current != null) Enter(Phase.Blitz, "out; finishing the mission");
                             else Enter(Phase.ToTerminal, "fight over");
                             break;
                         case Phase.Leaving: _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "back to leaving"); break;
