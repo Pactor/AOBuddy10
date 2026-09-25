@@ -219,6 +219,8 @@ namespace AOBuddy
         // Zones the mission run never rolls missions in or routes through (playfield ids): the other side's towns,
         // whose guards kill on sight. A death from full HP within seconds adds the zone ('mission run avoid').
         public List<int> MissionAvoidZones = new List<int>();
+        // Want runs: a wanted nano never offered in this many rolls near its QL is dropped as no mission reward.
+        public int WantUnseenRolls = 500;
         public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
         public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
         public int MissionCashReserve = 20000;

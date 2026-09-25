@@ -1663,7 +1663,7 @@ namespace AOBuddy
         // A wanted nano never offered in UnseenCap rolls whose mission QL was within NanoWindow of its crystal's QL
         // is taken as not a mission reward and dropped from the want list; 'want drop <name>' does it by hand.
         // Kept in offered.json (per bot), so the evidence builds up across runs and restarts.
-        private const int UnseenCap = 500;
+        private int UnseenCap => Math.Max(50, _ctx.Config.WantUnseenRolls);   // config WantUnseenRolls (default 500)
         private Dictionary<int, int> _offered, _rollsAtQl;
         private HashSet<int> _notRollable;   // nano program ids
         private string OfferedPath => Path.Combine(_pluginDir, "offered.json");
