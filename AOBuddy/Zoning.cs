@@ -95,9 +95,14 @@ namespace AOBuddy
         // Costs are in metres of walking.
         public double ZoneLineCost = 20;
         public double TeleportCost = 30;
-        public double ScottyCost = 400;
+        public double ScottyCost = 1000;
         public double UnknownWalk = 250; // walking from a point we don't know
         public bool UseScotty = true;
+
+        // The Grid (152) looks cheap to the planner — its inside is counted as flat straight-line walking —
+        // but the real trip crosses decks and rides lift beams, so it is far slower than it plans (owner,
+        // 2026-09-25: a 3-wompah-hop lost to a grid route). Every hop touching the Grid pays this on top.
+        public double GridCost = 250;
 
         // Playfields stacked in levels where walking never changes level (the Grid: decks joined only by lift
         // beams, which are exits). There a walk between points more than LevelGap apart in height is impossible.
@@ -327,7 +332,8 @@ namespace AOBuddy
                         else
                         {
                             if (OtherLevel(pf, p, e.A)) continue;
-                            Relax(u, v, d + Walk(p, e.A) + opt.TeleportCost, e.Arrival, e.A, null);
+                            double hop = opt.TeleportCost + (e.FromPf == 152 || e.ToPf == 152 ? opt.GridCost : 0);
+                            Relax(u, v, d + Walk(p, e.A) + hop, e.Arrival, e.A, null);
                         }
                     }
 

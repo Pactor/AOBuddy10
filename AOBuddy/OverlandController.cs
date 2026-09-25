@@ -276,6 +276,12 @@ namespace AOBuddy
                 goal = _leg.Exit.A;   // with its height: in the Grid the level matters
                 what = IsPad(_leg.Exit) ? (_leg.Exit.ToPf == _leg.Pf ? "the lift beam" : "the exit pad") + (_tries > 0 ? $", try {_tries + 1}" : "")
                                         : "the " + _leg.Exit.Kind.ToString().ToLower();
+                // A WHOMPA BOOTH (ExitKind.Line, 51016) takes when you stand ON it — and exactly on it: the route's
+                // own reach can end a cell or two short, which in the ICC tower's ring of side-by-side booths lands
+                // you in the neighbour's alcove or the gap between them, and nothing triggers (2026-09-25 13:17:
+                // stood 1.6 m off the centre for 8 s, no zone; the hike's stand 2.3 m the right way took in 0.7 s).
+                // Append the centre itself so the walk finishes standing on it.
+                if (_leg.Exit.Kind == ExitKind.Line) across = _leg.Exit.A;
                 // ENTER HEAD-ON (owner, 2026-09-25): running into a wompa booth or a doorway from the side
                 // doesn't take. The zone's walls data knows which side of the object is open ground — its
                 // front — so route to a spot 3.5 m out on that side and then walk straight through the
@@ -507,7 +513,9 @@ namespace AOBuddy
                     }
                     // Scotty casts the warp: the zone came 26 s after the tell (log 2026-09-24 01:35:46 -> 01:36:12), so a
                     // 20 s wait sent a second tell into a warp already on its way. Wait long, and ask him twice at most.
-                    double wait = e.Kind == ExitKind.Scotty ? ScottyWait : e.Kind == ExitKind.ZoneLine ? 6 : 8;
+                    double wait = e.Kind == ExitKind.Scotty ? ScottyWait
+                        : e.Kind == ExitKind.Line ? 10        // a whompa booth: standing right on it takes a moment
+                        : e.Kind == ExitKind.ZoneLine ? 6 : 8;
                     if (_phaseTime < wait) return true;
                     if (_tries >= (e.Kind == ExitKind.Scotty ? ScottyTells : MaxTries)) { FailExit(me, $"no zone after {_tries} tries"); return true; }
                     if (e.Kind == ExitKind.Scotty) Enter(Phase.Use, "no warp yet, asking again");
@@ -584,7 +592,12 @@ namespace AOBuddy
         {
             _move.Hold(me, _ctx.Config.SendIntervalMs);
             if (_leg.Exit == null) { Done(me); return; }
-            if (_leg.Exit.Kind == ExitKind.ZoneLine) { _tries++; Enter(Phase.AwaitZone, "over the line, waiting for the zone"); return; }
+            if (_leg.Exit.Kind == ExitKind.ZoneLine)
+            {
+                _tries++;
+                Enter(Phase.AwaitZone, "over the line, waiting for the zone");
+                return;
+            }
             if (IsPad(_leg.Exit))
             {
                 _tries++;
