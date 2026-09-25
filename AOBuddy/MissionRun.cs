@@ -1904,6 +1904,40 @@ namespace AOBuddy
         // On the hike's walk grid to the reachable ground nearest the goal, with the ground's height every 3 m, then
         // straight. Same zone only; a far goal only when the grid has a way. The first version only set a target
         // and returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
+        // A walk inside one zone never aims within 8 m of its zone lines (00:51, 2026-09-25: into Holes in the Wall
+        // at (1084,1949) by the Stret West Bank line, the walk to the door's first point sat on that line, and 15 s
+        // later he was back in Stret West Bank). The last point, the goal, is kept.
+        private static List<Vector3> OffZoneLines(IEnumerable<Vector3> pts, int pf, Vector3? from = null)
+        {
+            var list = pts.ToList();
+            var lines = Zoning.ExitsFrom(pf).Where(e => e.Kind == ExitKind.ZoneLine).ToList();
+            if (lines.Count == 0 || list.Count < 2) return list;
+            float Dist(Vector3 p, Vector3 a, Vector3 b)
+            {
+                float dx = b.X - a.X, dz = b.Z - a.Z, l2 = dx * dx + dz * dz;
+                float t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((p.X - a.X) * dx + (p.Z - a.Z) * dz) / l2));
+                float ex = a.X + t * dx - p.X, ez = a.Z + t * dz - p.Z;
+                return (float)Math.Sqrt(ex * ex + ez * ez);
+            }
+            var kept = list.Take(list.Count - 1).Where(p => lines.All(e => Dist(p, e.A, e.B) >= 8f)).ToList();
+            kept.Add(list[list.Count - 1]);
+            // Standing on a line (landed 1.8 m in): first step 10 m straight away from its nearest point.
+            if (from.HasValue)
+            {
+                Vector3 f = from.Value;
+                var near = lines.OrderBy(e => Dist(f, e.A, e.B)).First();
+                float d = Dist(f, near.A, near.B);
+                if (d < 8f)
+                {
+                    float dx = near.B.X - near.A.X, dz = near.B.Z - near.A.Z, l2 = dx * dx + dz * dz;
+                    float t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((f.X - near.A.X) * dx + (f.Z - near.A.Z) * dz) / l2));
+                    float nx = f.X - (near.A.X + t * dx), nz = f.Z - (near.A.Z + t * dz), n = (float)Math.Sqrt(nx * nx + nz * nz);
+                    if (n > 0.1f) kept.Insert(0, new Vector3(f.X + nx / n * 10f, f.Y, f.Z + nz / n * 10f));
+                }
+            }
+            return kept;
+        }
+
         private bool TryWalkMyself(LocalPlayer me, int pf, Vector3 goal, string what, string why)
         {
             if ((int)Playfield.ModelId != pf || _straightTries >= T("walktries")) return false;
@@ -1914,7 +1948,7 @@ namespace AOBuddy
             if (path == null && far >= T("walkto")) return false;   // far and no grid way: no straight walk
             _straightTries++;
             _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
-            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
+            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(OffZoneLines(path.Skip(1), pf, me.Transform.Position), me.Transform.Position), false);
             _ctx.Log($"MISSIONRUN: {why} to {what} {far:0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
             return true;
         }
