@@ -999,9 +999,10 @@ namespace AOBuddy
         private int _hikeUses;
         private Vector3 _hikeDir0;
 
-        // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
-        // thread the way travel builds it.
-        private readonly NavGridCache _hikeNav = new NavGridCache();
+        // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), off the frame
+        // thread — the ONE cache shared with overland travel (both only ever ask for the playfield they
+        // stand in), so a zone builds once per visit and persists through GridCache.
+        private NavGridCache _hikeNav => _ctx.NavGrid;
         private int _hikeGridPf = -1;
         private IWalkGrid _hikeGrid;
 

@@ -32,6 +32,40 @@ namespace AOBuddy
 
         private FloorGrid(int pf, int x0, int z0, int w, int h) { Pf = pf; _x0 = x0; _z0 = z0; _w = w; _h = h; }
 
+        // ---- GridCache persistence (deterministic from the zone's files; see GridCache) ----------------------
+
+        internal void Write(System.IO.BinaryWriter bw)
+        {
+            bw.Write(_x0); bw.Write(_z0); bw.Write(_w); bw.Write(_h);
+            bw.Write(_floors.Count);
+            foreach (var kv in _floors)
+            {
+                bw.Write(kv.Key);
+                bw.Write((byte)kv.Value.Length);
+                foreach (float f in kv.Value) bw.Write(f);
+            }
+            bw.Write(_blocked.Count);
+            foreach (long b in _blocked) bw.Write(b);
+        }
+
+        internal static FloorGrid Read(System.IO.BinaryReader br, int pf)
+        {
+            int x0 = br.ReadInt32(), z0 = br.ReadInt32(), w = br.ReadInt32(), h = br.ReadInt32();
+            var g = new FloorGrid(pf, x0, z0, w, h);
+            int n = br.ReadInt32();
+            for (int i = 0; i < n; i++)
+            {
+                int key = br.ReadInt32();
+                int c = br.ReadByte();
+                var fl = new float[c];
+                for (int f = 0; f < c; f++) fl[f] = br.ReadSingle();
+                g._floors[key] = fl;
+            }
+            int m = br.ReadInt32();
+            for (int i = 0; i < m; i++) g._blocked.Add(br.ReadInt64());
+            return g;
+        }
+
         public static FloorGrid Build(string pluginDir, int pf, AOBuddyNav nav, Action<string> log)
         {
             if (nav?.Collision == null || nav.Ground != null) return null;

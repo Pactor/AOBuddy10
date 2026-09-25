@@ -100,6 +100,44 @@ namespace AOBuddy
                 }
         }
 
+        // ---- GridCache persistence (deterministic from the zone's files; see GridCache) ----------------------
+
+        internal void Write(System.IO.BinaryWriter bw)
+        {
+            bw.Write(Cell); bw.Write(_w); bw.Write(_h);
+            bw.Write(HasWalls);
+            // blocked as runs: terrain grids are mostly long stretches of open cells
+            int i = 0;
+            while (i < _blocked.Length)
+            {
+                bool v = _blocked[i];
+                int run = 1;
+                while (i + run < _blocked.Length && _blocked[i + run] == v) run++;
+                bw.Write(v);
+                bw.Write(run);
+                i += run;
+            }
+            foreach (float h in _ch) bw.Write(h);
+        }
+
+        internal static OverlandGrid Read(System.IO.BinaryReader br, NavGround g, int pf)
+        {
+            float cell = br.ReadSingle();
+            int w = br.ReadInt32(), h = br.ReadInt32();
+            var grid = new OverlandGrid(pf, cell, w, h, g);
+            grid.HasWalls = br.ReadBoolean();
+            int i = 0;
+            while (i < grid._blocked.Length)
+            {
+                bool v = br.ReadBoolean();
+                int run = br.ReadInt32();
+                for (int k = 0; k < run && i < grid._blocked.Length; k++, i++) grid._blocked[i] = v;
+                if (v) grid.BlockedCells += run;
+            }
+            for (int k = 0; k < grid._ch.Length; k++) grid._ch[k] = br.ReadSingle();
+            return grid;
+        }
+
         private void StampWalls(NavCollision walls)
         {
             var hit = new bool[_blocked.Length];

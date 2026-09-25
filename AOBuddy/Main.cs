@@ -155,6 +155,7 @@ namespace AOBuddy
 
             _ctx = new BotContext(_config, Log, new Clock());
             _ctx.Vitals = new VitalsTracker(_ctx);
+            _ctx.NavGrid = new NavGridCache();
             _move = new Movement();
             _follow = new FollowController(_ctx, _move);
             _combat = new CombatController(_ctx);

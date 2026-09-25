@@ -34,7 +34,14 @@ namespace AOBuddy
                 _task = Task.Run(() =>
                 {
                     var nav = AOBuddyNav.Load(dir, pf);
-                    IWalkGrid grid = (IWalkGrid)OverlandGrid.Build(dir, pf, nav, logger) ?? FloorGrid.Build(dir, pf, nav, logger);
+                    // The finished grid first from the disk cache (GridCache, 2026-09-25); only a miss
+                    // pays the 0.6-3.8 s stamping, and a fresh build is saved back for next time.
+                    IWalkGrid grid = GridCache.TryLoad(dir, pf, nav, logger);
+                    if (grid == null)
+                    {
+                        grid = (IWalkGrid)OverlandGrid.Build(dir, pf, nav, logger) ?? FloorGrid.Build(dir, pf, nav, logger);
+                        if (grid != null) GridCache.Save(dir, pf, grid, logger);
+                    }
                     return (nav, grid);
                 });
                 return false;

@@ -29,6 +29,12 @@ namespace AOBuddy
         // Timestamped HP/nano of the owner and teammates (see VitalsTracker). Heal decisions read it.
         public VitalsTracker Vitals;
 
+        // THE one nav-grid cache (2026-09-25): travel and the mission hike used to each build their own
+        // copy of every zone's grid (pf 655 took 3.8 s twice per trip). Both always ask for the playfield
+        // they stand in, so one shared single-entry cache serves both; built grids also persist through
+        // GridCache so later entries load instead of rebuilding.
+        public NavGridCache NavGrid;
+
         // RUN SPEED, the game client's exact formula: velocity (u/s) = 5.5 + RunSpeed / 230, capped at 15.5
         // (RunSpeed = Stat 156). The stat is not always readable: after a mission floor-button ride it read
         // -1 for the rest of the session (log 2026-09-23 22:14:43), and falling back to Config.FollowSpeed

@@ -624,10 +624,11 @@ namespace AOBuddy
             return double.IsNaN(h) ? float.NaN : (float)h;
         }
 
-        // The playfield's floor data and walkable grid, built off the update thread by the shared
+        // The playfield's floor data and walkable grid, built off the update thread by the ONE shared
         // NavGridCache (Lush Fields' grid took 6.3 s and froze the whole bot while it built; log
-        // 2026-09-24 01:36). True once it is ready.
-        private readonly NavGridCache _nav = new NavGridCache();
+        // 2026-09-24 01:36) — shared with the mission hike since both only ever ask for the playfield
+        // they stand in, so a zone builds once per visit, not once per consumer.
+        private NavGridCache _nav => _ctx.NavGrid;
 
         private bool EnsureNav()
         {
