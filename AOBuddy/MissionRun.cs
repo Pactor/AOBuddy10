@@ -1693,8 +1693,8 @@ namespace AOBuddy
         private string WantCount(WantList.Entry e)
         {
             if (e.Name != null || e.Kind != "nano") return "";
-            int n = WantList.CrystalsFor(e).Count;
-            return n == 0 ? " (no nano crystal in the item data fits that)" : $" ({n} nano crystals)";
+            int n = WantList.NanosFor(e).Count;
+            return n == 0 ? " (no nano crystal in the item data fits that)" : $" ({n} nanos)";
         }
 
         private string WantStatus()
@@ -1707,7 +1707,7 @@ namespace AOBuddy
             {
                 if (r.left == null) { parts.Add($"{r.e}: open"); continue; }
                 if (r.e.Name != null) { parts.Add($"{r.e}: {(r.left.Count == 0 ? "have it" : "wanted")}"); continue; }
-                int all = WantList.CrystalsFor(r.e).Count;
+                int all = WantList.NanosFor(r.e).Count;
                 string left = r.left.Count > 0 && r.left.Count <= 6
                     ? " (left: " + string.Join(", ", r.left.Select(c => (WantList.NameOf(c) ?? c.ToString()).Replace("Nano Crystal (", "").TrimEnd(')'))) + ")" : "";
                 parts.Add($"{r.e}: {all - r.left.Count} of {all} had{left}");

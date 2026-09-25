@@ -163,7 +163,10 @@ namespace AOBuddy
             foreach (var e in Entries)
             {
                 if (!Fits(e, low, ql)) continue;
-                if (Mode == "list" && (e.Name != null || e.Kind == "nano") && (Got.Contains(low) || held.Contains(low))) continue;
+                if (Mode == "list" && e.Name != null && (Got.Contains(low) || held.Contains(low))) continue;
+                // A nano is had whichever crystal of it he holds: Keeper 'Sidestep' is both 'Nano Crystal
+                // (Sidestep)' and 'Cracked and Miskept Shadow Crystal (Sidestep)' (item data, 2026-09-25).
+                if (Mode == "list" && e.Kind == "nano" && e.Name == null && HaveNano(WantData.NanoOf(low), held)) continue;
                 return e;
             }
             return null;
@@ -186,13 +189,21 @@ namespace AOBuddy
             return list;
         }
 
-        /// <summary>Still to collect, per entry: templates left (named item: -1 while not had); open queries: null.</summary>
+        public bool HaveNano(int nano, ISet<int> held) => nano != 0 && (Got.Any(g => WantData.NanoOf(g) == nano) || held.Any(h => WantData.NanoOf(h) == nano));
+
+        /// <summary>The nanos a nano query stands for, one crystal each (the lowest QL one) - several crystals can
+        /// carry the same nano.</summary>
+        public static List<int> NanosFor(Entry e) => CrystalsFor(e).GroupBy(WantData.NanoOf)
+            .Select(g => g.OrderBy(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).First()).ToList();
+
+        /// <summary>Still to collect, per entry: templates left (nano query: one crystal per missing nano; named
+        /// item: -1 while not had); open queries: null.</summary>
         public List<(Entry e, List<int> left)> Remaining(ISet<int> held)
         {
             var r = new List<(Entry, List<int>)>();
             foreach (var e in Entries)
             {
-                if (e.Kind == "nano" && e.Name == null) r.Add((e, CrystalsFor(e).Where(c => !Got.Contains(c) && !held.Contains(c)).ToList()));
+                if (e.Kind == "nano" && e.Name == null) r.Add((e, NanosFor(e).Where(c => !HaveNano(WantData.NanoOf(c), held)).ToList()));
                 else if (e.Name != null)
                 {
                     bool have = Got.Any(g => string.Equals(NameOf(g), e.Name, StringComparison.OrdinalIgnoreCase))
