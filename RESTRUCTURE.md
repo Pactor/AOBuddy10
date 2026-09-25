@@ -381,7 +381,13 @@ the win is locality, not purity.
 **DONE WHEN.** Every command from `help` still parses and replies identically (spot-check:
 `pets`, `pethealtarget`, `mission run status`, `navdata`, `resupply machines`, `buffs plan`).
 
-### R3.5 Wire-capture/diagnostics observer — [ ]
+### R3.5 Wire-capture/diagnostics observer — [x] done 2026-09-25
+`WireCapture.cs` (new, ctor config/pluginDir/log): the missiondbg-gated diagnostics moved verbatim —
+the PlayfieldAnarchyF MISSIONDBG line + missions/*.bin zone-in captures and the 0x5C436609 raw probe.
+Reads MissionDebug per message so the toggle command takes effect live. `_lastZoneInPacket` STAYS in
+Main (OnZoneIn handler): the plan's "MissionController needs it" was off — its only reader is the
+`navdata` command's mission-layout fallback, and it must capture whether or not missiondbg is on.
+Subscribed via SafeSubscribe (R3.6) with tag WIRECAPTURE.
 **What moves.** The MissionDebug block inside Main's second MessageReceived handler
 (PlayfieldAnarchyF logging + missions/*.bin saving, the 0x5C436609 raw probe, Main.cs:284-317),
 plus `_lastZoneInPacket` custody can stay in Main (MissionController needs it) or move to the
@@ -389,7 +395,20 @@ observer with an accessor.
 **Move.** `WireCapture(config, pluginDir).OnMessage(Message)` subscribed via the R3.6 helper.
 **DONE WHEN.** `missiondbg on` produces the same MISSIONDBG lines and .bin files.
 
-### R3.6 `SafeSubscribe` — handler isolation without the boilerplate — [ ]
+### R3.6 `SafeSubscribe` — handler isolation without the boilerplate — [x] done 2026-09-25
+`ClientEvents.cs` (new): `SafeSubscribe(handler, tag, log)` wraps each subscription in its own
+try/catch and logs `tag: message`. Main's Init message wiring is now a flat list of NINE
+subscriptions in the old run order (vitals, resupply, roll, run, mission, servermove, DCMOVE,
+ZONEIN, WIRECAPTURE). The six old tags are the old log-line prefixes verbatim ("VITALS feed error",
+"RESUPPLY feed error", "MISSIONROLL", "MISSIONRUN", "MISSION feed error", "SERVER MOVE error"), so
+log greps keep matching. **Behaviour note (the intended isolation):** the old second handler's one
+outer `catch { }` SILENTLY swallowed a throw and skipped the rest of that handler's feeds for the
+message; DCMOVE/ZONEIN/WIRECAPTURE now log with their tags instead of being silent — a diagnostic
+addition in the R1.9 sense. The second handler split into `Main.OnCharDCMove` (diag counters +
+tracker keyframes + the MIRROR forward) and `Main.OnZoneIn` (R3.5's custody decision). Trade/chat/
+team/dynel/death/pet/feedback subscriptions are untouched (not MessageReceived feeds). Build clean;
+warning set identical before/after (stash-diffed, 66=66). The thrown-test-exception DONE-WHEN is
+true by construction (per-subscription try/catch) and rides the owner's next session otherwise.
 **What.** Main.Init's five try/catch-wrapped forwards (≈224-236) and two big inline handlers.
 **Move.** Extension `ClientEvents.SafeSubscribe(Action<Message> handler, string tag,
 Action<string> log)` wrapping try/catch + tagged log; Init becomes a list of subscriptions. Keep

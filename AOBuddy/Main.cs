@@ -78,6 +78,7 @@ namespace AOBuddy
         private string _pluginDir;
         private AOBuddyNav _navData;           // test-only reader for GameData/Nav, see the 'navdata' command
         private byte[] _lastZoneInPacket;      // raw PlayfieldAnarchyF of the current zone; carries a mission's room placements
+        private WireCapture _capture;          // 'missiondbg' wire diagnostics (R3.5)
         private string _logFile;
 
         // Tick / diagnostics state that belongs to Main's coordination, not to any one system.
@@ -142,6 +143,7 @@ namespace AOBuddy
             _resupply = new ResupplyController(_ctx, _move, pluginDir);
             _know = new KnowledgeReports(_ctx, _support, _owner);
             _paths = new PathStore(_pathsDir, Log);
+            _capture = new WireCapture(_config, pluginDir, Log);
             _nav = new NavController(_ctx, pluginDir);
             _mission = new MissionController(_ctx, _move, pluginDir,
                 _ctx.TellOwner);
@@ -172,95 +174,33 @@ namespace AOBuddy
 
             Client.OnUpdate += OnUpdate;
 
-            Client.MessageReceived += (s, m) =>
-            {
-                try { _ctx.Vitals.OnMessage(m); }
-                catch (Exception ex) { Log("VITALS feed error: " + ex.Message); }
-                try { _resupply.OnMessage(m); }
-                catch (Exception ex) { Log("RESUPPLY feed error: " + ex.Message); }
-                try { _roll.OnMessage(m); } catch (Exception e) { Log("MISSIONROLL: " + e.Message); }
-                try { _run.OnMessage(m); } catch (Exception e) { Log("MISSIONRUN: " + e.Message); }
-                try { _mission.OnMessage(m); }
-                catch (Exception ex) { Log("MISSION feed error: " + ex.Message); }
-                try { OnServerMovedMe(m); }
-                catch (Exception ex) { Log("SERVER MOVE error: " + ex.Message); }
-            };
+            // ---- Message wiring (R3.6): a flat list, one line per feed, each handler isolated by
+            // SafeSubscribe — a throwing feed is caught and logged with its tag and every other
+            // feed still runs for that message (the old second handler's one outer catch silently
+            // swallowed instead). The tags are the old log-line prefixes verbatim, so log greps
+            // keep matching; DCMOVE/ZONEIN/WIRECAPTURE are new tags for feeds that used to be
+            // silent. Subscription order = run order per message.
+            ClientEvents.SafeSubscribe(m => _ctx.Vitals.OnMessage(m), "VITALS feed error", Log);
+            ClientEvents.SafeSubscribe(m => _resupply.OnMessage(m), "RESUPPLY feed error", Log);
+            ClientEvents.SafeSubscribe(m => _roll.OnMessage(m), "MISSIONROLL", Log);
+            ClientEvents.SafeSubscribe(m => _run.OnMessage(m), "MISSIONRUN", Log);
+            ClientEvents.SafeSubscribe(m => _mission.OnMessage(m), "MISSION feed error", Log);
+            ClientEvents.SafeSubscribe(m => OnServerMovedMe(m), "SERVER MOVE error", Log);
+            // DIAG: count CharDCMove messages that actually deserialize+arrive, split owner vs self, to
+            // prove whether the owner's movement reaches us per-move (smooth) or only in bursts (dropped);
+            // feeds the tracker's keyframes and the stacked-on-him MIRROR.
+            ClientEvents.SafeSubscribe(OnCharDCMove, "DCMOVE", Log);
+            // The raw zone-in packet of the current playfield (a mission's room placements), for the
+            // 'navdata' command's mission-layout fallback.
+            ClientEvents.SafeSubscribe(OnZoneIn, "ZONEIN", Log);
+            // Mission wire diagnostics ('missiondbg on'): MISSIONDBG lines + missions/*.bin captures.
+            ClientEvents.SafeSubscribe(_capture.OnMessage, "WIRECAPTURE", Log);
 
             // Player trades: the owner handing us credits when we asked for them (see ResupplyController).
             Trade.TradeStatusChanged += (who, status) =>
             {
                 try { _resupply.OnTradeStatus(who, status); }
                 catch (Exception ex) { Log("RESUPPLY trade error: " + ex.Message); }
-            };
-
-            // DIAG: count CharDCMove messages that actually deserialize+arrive, split owner vs self, to prove
-            // whether the owner's movement is reaching us per-move (smooth) or only in bursts (dropped).
-            Client.MessageReceived += (s, m) =>
-            {
-                try
-                {
-                    if (m != null && m.Body is CharDCMoveMessage cm)
-                    {
-                        if (cm.Identity.Instance == _owner.ChatId)
-                        {
-                            _diagOwnerMoves++;
-                            // Capture the owner's movement keyframe and derive his velocity for interpolation
-                            // (R3.1: the state and the math live in the tracker).
-                            _owner.OnKeyframe(cm);
-
-                            // MIRROR: stacked on him — his move is our move, sent the instant it arrives.
-                            if (_follow.MirrorLocked && Movement.IsMirrorable(cm.MoveType))
-                            {
-                                LocalPlayer lp = DynelManager.LocalPlayer;
-                                if (lp != null) _move.Mirror(lp, cm);
-                            }
-                        }
-                        else
-                        {
-                            LocalPlayer lp = DynelManager.LocalPlayer;
-                            if (lp != null && cm.Identity.Instance == lp.Identity.Instance)
-                            {
-                                _diagSelfMoves++;
-                            }
-                        }
-                    }
-
-                    // MISSION DEBUG — how much the server tells us about a mission's location/playfield.
-                    // PlayfieldAnarchyF fires on zone-in (incl. entering a mission): playfield id, our landing
-                    // coords, and the placed dynels (mobs/objects) = the mission layout the server hands us.
-                    if (m != null && m.Body is PlayfieldAnarchyFMessage && m.RawPacket != null) _lastZoneInPacket = m.RawPacket;
-                    if (_config.MissionDebug && m != null && m.Body is PlayfieldAnarchyFMessage pfm)
-                    {
-                        Log($"MISSIONDBG: PlayfieldAnarchyF pf={pfm.PlayfieldId1.Instance} land=({pfm.CharacterCoordinates.X:0},{pfm.CharacterCoordinates.Y:0},{pfm.CharacterCoordinates.Z:0}) dynels={(pfm.Dynels != null ? pfm.Dynels.Length : 0)}");
-                        // The same packet carries the instanced building's room placement list
-                        // (BuildingGeneratorData: template playfield, then room/floor/x/z/rotation per room),
-                        // which the SDK does not parse yet. Keep the raw bytes so it can be decoded offline
-                        // against the walk recorded in the mission. See NAV-CLIENTDATA.md.
-                        if (m.RawPacket != null)
-                        {
-                            try
-                            {
-                                string dir = Path.Combine(_pluginDir, "missions");
-                                Directory.CreateDirectory(dir);
-                                string file = Path.Combine(dir, $"zonein-pf{pfm.PlayfieldId1.Instance}-{DateTime.Now:yyyyMMdd-HHmmss}.bin");
-                                File.WriteAllBytes(file, m.RawPacket);
-                                Log($"MISSIONDBG: zone-in packet saved ({m.RawPacket.Length} bytes) to {file}");
-                            }
-                            catch (Exception ex) { Log("MISSIONDBG: could not save zone-in packet: " + ex.Message); }
-                        }
-                    }
-
-                    // The mission-terminal list (type 0x5C436609) is NOT SDK-typed — read it raw. Per mission
-                    // it carries the destination playfield + entrance X/Z (see aobuddy-mission-wire-data).
-                    if (_config.MissionDebug && m != null && m.RawPacket != null && m.RawPacket.Length >= 0x33)
-                    {
-                        byte[] raw = m.RawPacket;
-                        uint sig = (uint)((raw[16] << 24) | (raw[17] << 16) | (raw[18] << 8) | raw[19]);
-                        if (sig == 0x5C436609u)
-                            Log($"MISSIONDBG: mission-list raw bytes={raw.Length} missions={raw[0x32]} diff={raw[0x1E]} (playfield + entrance per mission are in here; decode via ClickSaver offsets).");
-                    }
-                }
-                catch { }
             };
 
             Client.Chat.PrivateMessageReceived += (s, msg) =>
@@ -350,6 +290,43 @@ namespace AOBuddy
                     _overland.OnServerMoved(1.0 + len / 8.0);   // speed unknown: generous, the SetPos when we stop corrects the rest
                     break;
             }
+        }
+
+        // The CharDCMove feed (R3.6: was the second inline MessageReceived handler): owner keyframes
+        // into the tracker, the stacked-on-him MIRROR, and the DIAG counters for the heartbeat.
+        private void OnCharDCMove(Message m)
+        {
+            if (m == null || !(m.Body is CharDCMoveMessage cm)) return;
+            if (cm.Identity.Instance == _owner.ChatId)
+            {
+                _diagOwnerMoves++;
+                // Capture the owner's movement keyframe and derive his velocity for interpolation
+                // (R3.1: the state and the math live in the tracker).
+                _owner.OnKeyframe(cm);
+
+                // MIRROR: stacked on him — his move is our move, sent the instant it arrives.
+                if (_follow.MirrorLocked && Movement.IsMirrorable(cm.MoveType))
+                {
+                    LocalPlayer lp = DynelManager.LocalPlayer;
+                    if (lp != null) _move.Mirror(lp, cm);
+                }
+            }
+            else
+            {
+                LocalPlayer lp = DynelManager.LocalPlayer;
+                if (lp != null && cm.Identity.Instance == lp.Identity.Instance)
+                {
+                    _diagSelfMoves++;
+                }
+            }
+        }
+
+        // Keep the raw zone-in packet of the current playfield (a mission's room placements) for the
+        // 'navdata' command's mission-layout fallback. Deliberately NOT part of WireCapture: it runs
+        // whether or not missiondbg is on, and Main's NavDataCommand is its only reader.
+        private void OnZoneIn(Message m)
+        {
+            if (m != null && m.Body is PlayfieldAnarchyFMessage && m.RawPacket != null) _lastZoneInPacket = m.RawPacket;
         }
 
         // The last thing we asked the server to do, for pairing a refusal with its cause.
