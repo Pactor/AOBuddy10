@@ -1339,6 +1339,19 @@ namespace AOBuddy
             // A door's recorded position is its centre, ~1.4 m up (Borealis Fair Trade door 68.49 over ground 67.07,
             // where the owner stood): stand on the ground. Only a whompa pad needs its top surface.
             float padY = e.Kind == ExitKind.Proxy ? pos.Y : e.A.Y + (_hikePass % 2 == 0 ? T("padtop") : 0f);
+            // NOT STAND-ON-ABLE FROM HERE (Newland City, 2026-09-25 16:15): the wompah station sits at the
+            // bowl's floor (y 27.6) under an elevated street (y 32.4) the data can't see; the bot stood on
+            // the booth's ROOF, 0.3 m from the centre in flat distance but 4.7 m above it, and this ladder
+            // burned its tries aiming at a pad it could never step onto. A door's recorded centre is ~1.4 m
+            // above the ground its stander stands on, so only a storey counts.
+            if (Math.Abs(padY - pos.Y) > 2.5f)
+            {
+                MarkBadExit(e);
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: the exit's centre is {Math.Abs(padY - pos.Y):0.0} m {(padY < pos.Y ? "below" : "above")} me — not stand-on-able from here; leaving it ({StandTune()}).");
+                Enter(_hikeReturn, "hike failed");
+                return false;
+            }
             var start = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
             // The walker stops 1.5 m short of its target: aim 1.2 m past the centre to stop ~0.3 m before it.
             var aim = new Vector3(e.A.X + dir.X * T("aimpast"), padY, e.A.Z + dir.Z * T("aimpast"));

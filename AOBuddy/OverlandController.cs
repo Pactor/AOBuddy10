@@ -84,6 +84,13 @@ namespace AOBuddy
         private double _wetYAt = -999;
         private const int MaxStuck = 4;               // re-routes around a stuck spot per leg
         private const float ClearOfLine = 4f;         // how far to step off a zone line we arrived on
+        private const float StraightMaxDrop = 2f;     // an off-grid straight walk is LEVEL: the goal may sit at most this
+                                                      // far above/below us. More and there is no ramp in the data — walking
+                                                      // it walks on air (Newland City, 2026-09-25 16:15: the wompah station
+                                                      // sits at the bowl's floor, y 27.6, under an elevated street at y 32.4
+                                                      // the heightfield can't see; the straight walk crossed the plaza at
+                                                      // street height, mounted the booth's roof, and stood 4.7 m ABOVE the
+                                                      // stand-trigger until it was stopped by hand).
 
         public bool Active => _phase != Phase.Off;
 
@@ -307,7 +314,22 @@ namespace AOBuddy
             // a structure with no surfaces in our data): the grid doesn't describe where we are, so walk straight.
             double groundHere = _ground?.Ground?.HeightAt(from.X, from.Z) ?? double.NaN;
             bool offGrid = _grid is OverlandGrid && !double.IsNaN(groundHere) && Math.Abs(from.Y - groundHere) > 2;
-            if (offGrid) _ctx.Log($"OVERLAND: I'm {from.Y - groundHere:0.0} m off the ground data here (on a structure it lacks); walking straight to {what}.");
+            if (offGrid)
+            {
+                _ctx.Log($"OVERLAND: I'm {from.Y - groundHere:0.0} m off the ground data here (on a structure it lacks); walking straight to {what}.");
+                // LEVEL OR NOT AT ALL: the straight walk exists for pads on the SAME structure we were
+                // dropped on (Harry's, ICC). When the goal sits a storey below or above us, the data has
+                // no ramp to it and the walk goes over rooftops and thin air — say so and fail the leg;
+                // the replan then takes a route that works (this morning's grid refusal of the same exit
+                // was right; 16:15's bypass walked over the wompah instead).
+                if (!float.IsNaN(goal.Y) && Math.Abs(goal.Y - from.Y) > StraightMaxDrop)
+                {
+                    string drop = $"the {what} is {Math.Abs(goal.Y - from.Y):0.0} m {(goal.Y < from.Y ? "below" : "above")} me and the ground data has no way {(goal.Y < from.Y ? "down" : "up")} to it";
+                    if (_leg.Exit == null) Fail($"no way on foot to ({goal.X:0},{goal.Z:0}): {drop}");
+                    else FailExit(me, "no way on foot to it: " + drop);
+                    return;
+                }
+            }
             if (_grid != null && !offGrid)
             {
                 var extra = new HashSet<int>(_stuckCells);
