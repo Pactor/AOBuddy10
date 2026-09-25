@@ -1762,6 +1762,15 @@ namespace AOBuddy
 
                 case ShopStep.Stims:
                     if (Resupply.Active || t < 1) return false;
+                    // Make sure he can use them before going back to missions (owner, 2026-09-24): the count is of
+                    // stims his First Aid reaches. Still low: say so and stop rather than fight without them.
+                    if (Resupply.NeedsResupply())
+                    {
+                        _tell("I still have too few stims I can use after shopping; stopping the mission run. Resupply me, then 'mission run'.");
+                        Stop("no usable stims");
+                        return false;
+                    }
+                    _ctx.Log("MISSIONRUN: shop: stocked with stims I can use; back to missions after this.");
                     return ShopAfterNanos(me);
 
                 case ShopStep.Exit:
