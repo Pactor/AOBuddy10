@@ -504,8 +504,18 @@ namespace AOBuddy
             // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
             // held him at (41,6,87) - rooted - and he stood 11 s not fighting back, 38% -> dead. Not getting away
             // (under 3 m in 3 s) and still being hit: turn and fight, and no fleeing again for a while.
-            if (Fleeing && _fleeAt.HasValue && _clock - _fleeStartedAt > 3 && _clock - _lastHurt < 3
-                && Movement.Flat(me.Transform.Position, _fleeAt.Value) < 3f)
+            // Any walk away - a flee, or walking out of a building after one (03:24, 2026-09-25, Borealis: leaving,
+            // held at (57,5,164) by pull-backs, 58% -> dead in 10 s with two mobs on him and the flee's time
+            // already up) - measured over the last 3 s.
+            bool away = Fleeing || _phase == Phase.Leaving || _phase == Phase.Backoff;
+            bool pinned = false;
+            if (!away) { _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock; }
+            else if (_clock - _pinSampleAt >= 3)
+            {
+                pinned = _clock - _lastHurt < 3 && _clock >= _noFleeUntil && Movement.Flat(me.Transform.Position, _pinSamplePos) < 3f;
+                _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock;
+            }
+            if (pinned)
             {
                 _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
                 foreach (var id in _fleeFrom) _combat.ClearAside(id);
@@ -2041,6 +2051,8 @@ namespace AOBuddy
         private double _fleeUntil = -99;
         private double _fleeStartedAt = -99, _noFleeUntil = -99;
         private Vector3? _fleeAt;
+        private Vector3 _pinSamplePos;
+        private double _pinSampleAt = -99;
         private readonly List<Identity> _fleeFrom = new List<Identity>();
         private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
         {
