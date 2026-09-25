@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>aodb-icons</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <!-- Local only: exports the icons AODB's Rollable pages show, from the AO client's resource database,
+         with OmniCell's AssetDecoder (a sibling checkout at ..\..\..\OmniCell). The PNGs are Funcom art:
+         they go to tools/aodb/icons, which git ignores. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\OmniCell\Tools\AssetDecoder\AssetDecoder\AssetDecoder.csproj" />
+  </ItemGroup>
+</Project>
