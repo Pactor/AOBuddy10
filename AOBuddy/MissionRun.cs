@@ -534,6 +534,7 @@ namespace AOBuddy
         public bool Tick(LocalPlayer me, double dt)
         {
             _clock += dt; _phaseTime += dt;
+            if (_restSaved != null && (_phase != Phase.Fight || !Active)) RestToFull(false);
             if (!Active || me == null) return false;
             RecordGood(me);
             UseTokens(me);
@@ -671,7 +672,7 @@ namespace AOBuddy
                     // HP: carry on, and don't stop for a fight again for a minute unless HP falls.
                     // Measured over the last 30 s, not the whole fight: at 00:22 (2026-09-24) one early hit to 68%
                     // kept him 'fighting' Levi McDannold, a find-person target 34 m off, for 15 minutes at 100% HP.
-                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil)
+                    if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil && _restSaved == null)
                     {
                         _fightIgnoreUntil = _clock + 60;
                         if (_pullId.HasValue) { _combat.SetAside(me, _pullId.Value, 120); _pullId = null; }
@@ -709,6 +710,15 @@ namespace AOBuddy
                         // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
                         // 06:33 2026-09-24): then get moving, stims on the way.
                         bool beingHit = _clock - _lastHurt < 5;
+                        // CLEAR MODE: back to full before the next room (owner, 2026-09-25: at 12:19 he walked on from a
+                        // fight into a room of six Probes and was at 38% in 3 s). The rest logic sits him down with a
+                        // recharger once its thresholds say so; they are raised to full for this wait. At most 150 s.
+                        if (_mission.Clearing && !beingHit && _phaseTime < 150)
+                        {
+                            int hpF = _ctx.Status.SelfHpPct, npF = NanoPct(me);
+                            if ((hpF >= 0 && hpF < 99) || (npF >= 0 && npF < 95)) { RestToFull(true); return false; }
+                        }
+                        RestToFull(false);
                         if (!beingHit && (_ctx.Status.Resting || _ctx.Status.NeedsRecovery) && _phaseTime < 60) return false;
                         if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
@@ -1796,21 +1806,24 @@ namespace AOBuddy
             if (band == null) { _roll.DifficultyOverride = null; return; }
             var (e, lo, hi, aim) = band.Value;
             int lvl = MyLevel();
+            // Never above the difficulty the owner set for this style (2026-09-25: 'drop it to difficulty 3, I
+            // realise that will change what nano QLs he can get').
+            int cap = Math.Min(DiffMax, RollDifficulty());
             var seen = new Dictionary<int, int>();
-            for (int d = DiffMin; d <= DiffMax; d++) if (QlMap.TryGetValue($"{lvl}:{d}", out int q)) seen[d] = q;
+            for (int d = DiffMin; d <= cap; d++) if (QlMap.TryGetValue($"{lvl}:{d}", out int q)) seen[d] = q;
             // A seen setting that lands in the band: use it.
             var inBand = seen.Where(kv => kv.Value >= lo && kv.Value <= hi).OrderBy(kv => Math.Abs(kv.Value - aim)).Select(kv => (int?)kv.Key).FirstOrDefault();
             if (inBand.HasValue) { SetDiff(inBand.Value, e, seen[inBand.Value]); return; }
             // None yet: step toward the band from the nearest seen setting (QL rises with difficulty), or start mid.
             int next;
-            if (seen.Count == 0) next = 6;
+            if (seen.Count == 0) next = Math.Min(6, cap);
             else
             {
                 var near = seen.OrderBy(kv => Math.Abs(kv.Value - aim)).First();
                 int dir = near.Value < lo ? 1 : -1;
                 next = near.Key + dir;
-                while (next >= DiffMin && next <= DiffMax && seen.ContainsKey(next)) next += dir;
-                if (next < DiffMin || next > DiffMax)
+                while (next >= DiffMin && next <= cap && seen.ContainsKey(next)) next += dir;
+                if (next < DiffMin || next > cap)
                 {
                     _unreachable.Add(e);
                     string range = $"{seen.Values.Min()}-{seen.Values.Max()}";
@@ -1822,6 +1835,10 @@ namespace AOBuddy
             }
             SetDiff(next, e, null);
         }
+
+        private int RollDifficulty()
+            => string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+               ? Math.Max(_ctx.Config.MissionDifficulty, _ctx.Config.MissionFightDifficulty) : _ctx.Config.MissionDifficulty;
 
         private void SetDiff(int d, WantList.Entry e, int? ql)
         {
@@ -3137,6 +3154,25 @@ namespace AOBuddy
             }
             return a;
         }
+        private int[] _restSaved;
+        private void RestToFull(bool on)
+        {
+            var c = _ctx.Config;
+            if (on && _restSaved == null)
+            {
+                _restSaved = new[] { c.RestBelowPercent, c.RestUntilPercent, c.RestNanoBelowPercent, c.RestNanoUntilPercent };
+                c.RestBelowPercent = 99; c.RestUntilPercent = 100; c.RestNanoBelowPercent = 95; c.RestNanoUntilPercent = 100;
+                _ctx.Log("MISSIONRUN: clearing: resting to full before the next room.");
+            }
+            else if (!on && _restSaved != null)
+            {
+                c.RestBelowPercent = _restSaved[0]; c.RestUntilPercent = _restSaved[1]; c.RestNanoBelowPercent = _restSaved[2]; c.RestNanoUntilPercent = _restSaved[3];
+                _restSaved = null;
+            }
+        }
+        private static int NanoPct(LocalPlayer me)
+            => me != null && me.TryGetStat(Stat.MaxNanoEnergy, out int max) && max > 0 && me.TryGetStat(Stat.CurrentNano, out int cur) ? (int)(100.0 * Math.Min(cur, max) / max) : -1;
+
         // CLEAR MODE: nothing on us, so go for the nearest mob close by on a walkable path (not through a wall),
         // same rules as a mob that attacks: alive, not a pet, not set aside, not far above his level, not the
         // person a find-person mission sent us to. Checked once a second; the one chosen is kept while it lives.
