@@ -525,6 +525,7 @@ namespace AOBuddy
             _clock += dt; _phaseTime += dt;
             if (!Active || me == null) return false;
             RecordGood(me);
+            UseTokens(me);
 
             // FIGHT FIRST. Walking on while mobs hit him is what killed him twice (21:56, 22:11): blitz marched
             // from room to room with two mobs on his back, melee weapon swinging at nothing. Anything moving him
@@ -2689,6 +2690,22 @@ namespace AOBuddy
         // Capture 20260923-201746: a bag is opened by Using it (Flag 0); the server answers with the bag's
         // contents (InventoryUpdate: 21 slots, the entries, open), which the SDK keeps as a Container; each item
         // is then ClientContainerAddItem'd into the bag and the server confirms it with ContainerAddItem.
+
+        // SIDE TOKENS: a clear reward for Omni and Clan (neutrals get none). Used at once, as the owner does: the
+        // item goes from the inventory and the count goes onto the token board. Sniff 2026-09-25 10:48: client
+        // GenericCmd Use on Inventory:72 (Omni-Tek Mission Token 96349); server echoes it (Verification 1), sends
+        // StrainOmniTokens (stat 75) 16 -> 17, 'Side tokens collected: 17.', TemplateAction 3 and DeleteItem 72.
+        private static readonly int[] SideTokens = { 96349, 96350 };   // Omni-Tek Mission Token, Clan Mission Token
+        private double _tokenUsedAt = -9999;
+        private void UseTokens(LocalPlayer me)
+        {
+            if (_clock - _tokenUsedAt < 2 || _ctx.Status.InCombat || me.IsCasting) return;
+            var t = Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && SideTokens.Contains(i.Id));
+            if (t == null) return;
+            _tokenUsedAt = _clock;
+            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = t.Slot, Count = 1, Temp4 = 0 });
+            _ctx.Log($"MISSIONRUN: using '{t.Name}' (slot {t.Slot.Instance}) - onto the token board.");
+        }
 
         private void StartStash()
         {
