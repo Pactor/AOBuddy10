@@ -35,8 +35,6 @@ namespace AOBuddy
         private readonly OverlandController _overland;
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
-        private readonly Func<bool> _dead, _recovering, _buffing, _fighting, _needsRecovery, _inCombat;
-        private readonly Func<int> _selfHp;
         private readonly CombatController _combat;
         private double _fightStart, _fightIgnoreUntil = -1;
         private int _fightHpMin = 100, _prevHp = -1;
@@ -70,11 +68,44 @@ namespace AOBuddy
         private const double ListTimeout = 6, TravelTimeout = 900, DoorTimeout = 20, BlitzTimeout = 1200;
 
         public MissionRun(BotContext ctx, MissionRoll roll, MissionController mission, OverlandController overland,
-                          FollowController follow, string pluginDir, Action<string> tell, Func<bool> dead, Func<bool> recovering, Func<bool> buffing, Func<bool> fighting, Func<bool> needsRecovery, Func<bool> inCombat, Func<int> selfHp, CombatController combat)
+                          FollowController follow, string pluginDir, Action<string> tell, CombatController combat)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _pluginDir = pluginDir; _tell = tell; _dead = dead; _recovering = recovering; _buffing = buffing; _fighting = fighting; _needsRecovery = needsRecovery; _inCombat = inCombat; _selfHp = selfHp; _combat = combat;
+            _pluginDir = pluginDir; _tell = tell; _combat = combat;
             _roll.ListArrived += OnList;
+        }
+
+        // ---- Live status, read off the shared read-model (R2.2) ------------------------------------------
+        // 'Buffing' is this system's own composition of three status facts (the 15 s window is the run's
+        // policy); the raw facts come from ctx.Status, refreshed by Main each tick before Walk.
+        private bool Buffing => _ctx.Status.HasPendingCasts || _ctx.Status.Resting || _ctx.Status.SecondsSinceCast < 15;
+
+        // FIGHT-OR-RUN POLICY (R2.2: was a ctor lambda closing over Main's privates — decision logic,
+        // not status, so it lives here as the named policy it is). Stop to fight only in an EMERGENCY
+        // (the owner's call: run to the end and heal with stims): in a fight and HP under
+        // MissionFightBelowPercent. Otherwise keep going; stims and pets carry on.
+        private bool FightOrRun()
+        {
+            var lp = DynelManager.LocalPlayer;
+            if (lp == null || !_ctx.Status.InCombat) return false;   // InCombat = combat OR hostiles engaged (us or the owner)
+            // fight style: anything that attacks - INSIDE a mission. On the way (06:51, 2026-09-24) it stopped
+            // him for a level 50 Male Watcher 39 m off in The Longest Road and he died there; outdoors the
+            // blitz rules apply whatever the style.
+            if (Fleeing) return false;   // running from a pack (in or out of a mission): no turning to fight
+            if (string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase) && _mission.InMission) return true;
+            // Earlier than 'under 40% with no stim' (23:14, 2026-09-23): four mobs chased him while blitz
+            // searched rooms and snagged on walls, 100% -> 10% in 12 s; the stim at 58% bought 3 s and the
+            // 40% trigger fired 4 s before he died. So: a pack on him, or HP falling, and he turns and fights.
+            int onMe = DynelManager.Characters.Count(c => c.FightingIdentity.HasValue && c.FightingIdentity.Value == lp.Identity
+                                                      && c.Identity != lp.Identity && !_combat.IsSetAside(c.Identity)
+                                                      && c is NpcChar && IsMob(c, _mission.InMission)
+                                                      && (!c.TryGetStat(Stat.Health, out int ch) || ch > 0));
+            if (onMe >= _ctx.Config.MissionFightAttackers) return true;
+            int hp = _ctx.Status.SelfHpPct;
+            if (hp == SupportController.Unknown) return false;
+            if (hp < _ctx.Config.MissionFightBelowPercent) return true;
+            // stims share the FirstAid lock (40 s after each use)
+            return hp < _ctx.Config.MissionFightNoStimBelowPercent && !lp.IsSpecialReady(Stat.FirstAid);
         }
 
         // ---- Commands ----------------------------------------------------------------------------------
@@ -507,7 +538,7 @@ namespace AOBuddy
                 Enter(Phase.Fight, "held");
                 return false;
             }
-            int hpTick = _selfHp();
+            int hpTick = _ctx.Status.SelfHpPct;
             if (hpTick >= 90) _hpHighAt = _clock;
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
             // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
@@ -532,7 +563,7 @@ namespace AOBuddy
                 StartFightBack(me, $"can't get away (at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP)");
                 return false;
             }
-            if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -550,7 +581,7 @@ namespace AOBuddy
             {
                 case Phase.Fight:
                 {
-                    int hpNow = _selfHp();
+                    int hpNow = _ctx.Status.SelfHpPct;
                     if (hpNow >= 0) _fightHpMin = Math.Min(_fightHpMin, hpNow);
                     // FLEE (09:33, 2026-09-24): crossing Mutant Domain to a mission door, a pack of Hammer Broodlings
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
@@ -599,7 +630,7 @@ namespace AOBuddy
                             if (foe != null && !nest && me.DistanceFrom(foe) > 4f && _clock - _lastHurt < 5) { _phaseTime = 0; _follow.SetManualTarget(foe.Transform.Position); return true; }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
-                        if (_inCombat()) { _follow.ClearManual(); _phaseTime = 0; return false; }
+                        if (_ctx.Status.InCombat) { _follow.ClearManual(); _phaseTime = 0; return false; }
                         if (_clock < _heldUntil) return false;
                         if (_phaseTime < 3) return false;          // a moment for stragglers and loot
                         // Hurt or low on nano: stay put so the rest logic sits him down with a recharger (it starts
@@ -608,7 +639,7 @@ namespace AOBuddy
                         // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
                         // 06:33 2026-09-24): then get moving, stims on the way.
                         bool beingHit = _clock - _lastHurt < 5;
-                        if (!beingHit && (_recovering() || _needsRecovery()) && _phaseTime < 60) return false;
+                        if (!beingHit && (_ctx.Status.Resting || _ctx.Status.NeedsRecovery) && _phaseTime < 60) return false;
                         if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     }
@@ -635,7 +666,7 @@ namespace AOBuddy
                 case Phase.Dead:
                     // The owner's order after a death: run back to the mission terminal and wait out the rez
                     // sickness there (and rebuff); then go back to the open mission, or roll a new one.
-                    if (_dead()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Dead) { _phaseTime = 0; return false; }
                     if (_phaseTime < 3) return false;          // let the reclaim land
                     _afterDeath = true;
                     Enter(Phase.ToTerminal, "reclaimed; to the terminal to wait out rez sickness");
@@ -643,7 +674,7 @@ namespace AOBuddy
 
                 case Phase.ToTerminal:
                     if (_shopAfterOut && !_mission.InMission) { _shopAfterOut = false; _shopTriedAt = -9999; if (StartShop("owner asked")) return false; }
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if ((int)Playfield.ModelId == _termPf && !_overland.Active)
                     {
                         // Travel stops a few metres short and the terminal's own body keeps us ~5 m from its centre
@@ -665,13 +696,13 @@ namespace AOBuddy
                     return Travel(me, _termPf, TerminalApproach(), "the terminal");
 
                 case Phase.Rolling:
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if (_afterDeath)
                     {
                         // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
                         // Buffed = nothing cast or queued for 15 s (the buff scan runs every 2 s and puts up one buff
                         // at a time, refilling nano between them) - not just a fixed pause after the sickness.
-                        if (SupportController.IsRezSick(me) || me.IsCasting || _buffing()) { _phaseTime = 0; return false; }
+                        if (SupportController.IsRezSick(me) || me.IsCasting || Buffing) { _phaseTime = 0; return false; }
                         if (_phaseTime < 3) return false;
                         _afterDeath = false;
                         _tell("Rez sickness is over and my buffs are back up; back to work.");
@@ -737,7 +768,7 @@ namespace AOBuddy
 
                 case Phase.ToDoor:
                 {
-                    if (_recovering()) { _phaseTime = 0; return false; }
+                    if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     int pf = _current.Playfield.Instance;
                     Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
                     if (!_overland.Active && (int)Playfield.ModelId == pf && Movement.Flat(me.Transform.Position, goal) <= 12f)
@@ -756,8 +787,11 @@ namespace AOBuddy
                     Vector3 pos = me.Transform.Position;
                     if (_doorDir < 0)
                     {
-                        // First side: the one we arrived from.
-                        double ang = Math.Atan2(pos.Z - d.Z, pos.X - d.X);
+                        // First side: the door's FRONT when the zone's walls data can see it (open ground at
+                        // the doorway — walking in from the side doesn't take), else the one we arrived from.
+                        Vector3? front = _overland.FrontOf(d, pos);
+                        double ang = front.HasValue ? Math.Atan2(front.Value.Z, front.Value.X)
+                                                    : Math.Atan2(pos.Z - d.Z, pos.X - d.X);
                         _doorStart = (int)Math.Round(ang / (Math.PI / 4)) & 7;
                         _doorDir = 0; _doorStep = 0; _doorStepTime = 0;
                     }
@@ -985,9 +1019,10 @@ namespace AOBuddy
         private int _hikeUses;
         private Vector3 _hikeDir0;
 
-        // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), built off the frame
-        // thread the way travel builds it.
-        private readonly NavGridCache _hikeNav = new NavGridCache();
+        // The zone's walk grid (Algorithman's OverlandGrid outdoors, FloorGrid indoors), off the frame
+        // thread — the ONE cache shared with overland travel (both only ever ask for the playfield they
+        // stand in), so a zone builds once per visit and persists through GridCache.
+        private NavGridCache _hikeNav => _ctx.NavGrid;
         private int _hikeGridPf = -1;
         private IWalkGrid _hikeGrid;
 
@@ -1439,14 +1474,14 @@ namespace AOBuddy
             if (_keepAdded == null)
             {
                 _keepAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                try { if (File.Exists(KeepPath)) foreach (var t in JArray.Parse(File.ReadAllText(KeepPath))) _keepAdded.Add((string)t); } catch { }
+                try { foreach (var t in JsonStore.Load<JArray>(KeepPath, _ctx.Log) ?? new JArray()) _keepAdded.Add((string)t); } catch { }
             }
             var k = new HashSet<string>(_ctx.Config.KeepItems ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
             k.UnionWith(_keepAdded);
             k.Add(_ctx.Config.ResupplyStimName); k.Add(_ctx.Config.ResupplyRechargerName);
             return k;
         }
-        private void SaveKeep() { try { File.WriteAllText(KeepPath, new JArray(_keepAdded.ToArray()).ToString()); } catch { } }
+        private void SaveKeep() { JsonStore.Save(KeepPath, new JArray(_keepAdded.ToArray()).ToString(), _ctx.Log); }
 
         // PERSONAL BAGS: nothing in them is ever sold. Marked by the bag's own identity ('mission run shop bags'
         // lists them numbered, 'mission run shop personal <n>' toggles), saved in personalbags.json.
@@ -1456,9 +1491,9 @@ namespace AOBuddy
         {
             if (_personalBags != null) return;
             _personalBags = new HashSet<Identity>();
-            try { if (File.Exists(PersonalPath)) foreach (var t in JArray.Parse(File.ReadAllText(PersonalPath))) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(PersonalPath, _ctx.Log) ?? new JArray()) _personalBags.Add(new Identity((IdentityType)(int)t["type"], (int)t["id"])); } catch { }
         }
-        private void SavePersonal() { try { File.WriteAllText(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString()); } catch { } }
+        private void SavePersonal() { JsonStore.Save(PersonalPath, new JArray(_personalBags.Select(b => new JObject { ["type"] = (int)b.Type, ["id"] = b.Instance })).ToString(), _ctx.Log); }
         private List<Item> Bags() => Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container).OrderBy(i => i.Slot.Instance).ToList();
         private HashSet<int> _rewardHistory;
         private string RewardsPath => Path.Combine(_pluginDir, "rewardids.json");
@@ -1468,16 +1503,16 @@ namespace AOBuddy
             if (_rewardHistory != null) return;
             _rewardHistory = new HashSet<int>();
             _rewardNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            try { if (File.Exists(RewardsPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardsPath))) _rewardHistory.Add((int)t); } catch { }
-            try { if (File.Exists(RewardNamesPath)) foreach (var t in JArray.Parse(File.ReadAllText(RewardNamesPath))) _rewardNames.Add((string)t); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(RewardsPath, _ctx.Log) ?? new JArray()) _rewardHistory.Add((int)t); } catch { }
+            try { foreach (var t in JsonStore.Load<JArray>(RewardNamesPath, _ctx.Log) ?? new JArray()) _rewardNames.Add((string)t); } catch { }
         }
         private void RememberReward(int low, int high)
         {
             LoadRewards();
             bool added = _rewardHistory.Add(low) | _rewardHistory.Add(high);
-            if (added) try { File.WriteAllText(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString()); } catch { }
+            if (added) JsonStore.Save(RewardsPath, new JArray(_rewardHistory.ToArray()).ToString(), _ctx.Log);
             if (ItemData.Find(low, out DummyItem it) && it?.Name != null && _rewardNames.Add(it.Name))
-                try { File.WriteAllText(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString()); } catch { }
+                JsonStore.Save(RewardNamesPath, new JArray(_rewardNames.ToArray()).ToString(), _ctx.Log);
         }
         public string SellPreview()
         {
@@ -1504,8 +1539,8 @@ namespace AOBuddy
             _implantMinQl = 0; _nameRules = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                if (!File.Exists(BankRulesPath)) return;
-                var o = JObject.Parse(File.ReadAllText(BankRulesPath));
+                var o = JsonStore.Load<JObject>(BankRulesPath, _ctx.Log);
+                if (o == null) return;
                 _implantMinQl = (int?)o["implantMinQl"] ?? 0;
                 if (o["names"] is JObject n) foreach (var kv in n) _nameRules[kv.Key] = (int)kv.Value;
             }
@@ -1514,7 +1549,7 @@ namespace AOBuddy
         private void SaveBankRules()
         {
             var n = new JObject(); foreach (var kv in _nameRules) n[kv.Key] = kv.Value;
-            try { File.WriteAllText(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString()); } catch { }
+            JsonStore.Save(BankRulesPath, new JObject { ["implantMinQl"] = _implantMinQl, ["names"] = n }.ToString(), _ctx.Log);
         }
         private int ImplantMinQl() { LoadBankRules(); return _implantMinQl; }
         private Dictionary<string, int> NameRules() { LoadBankRules(); return _nameRules; }
@@ -1547,15 +1582,15 @@ namespace AOBuddy
         {
             try
             {
-                if (!File.Exists(FairTradePath)) return null;
-                var o = JObject.Parse(File.ReadAllText(FairTradePath));
+                var o = JsonStore.Load<JObject>(FairTradePath, _ctx.Log);
+                if (o == null) return null;
                 return new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
             }
             catch { return null; }
         }
         private void SaveFairTradeLanding(Vector3 v)
         {
-            try { File.WriteAllText(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString()); } catch { }
+            JsonStore.Save(FairTradePath, new JObject { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z }.ToString(), _ctx.Log);
         }
 
         private bool ShopTick(LocalPlayer me)
@@ -1705,7 +1740,7 @@ namespace AOBuddy
                         // server echoed each use but never opened the bank). Auto-buff paused for the bank step; each
                         // use waits for 2 s with nothing being cast.
                         if (_bankBuffWas == null) { _bankBuffWas = _ctx.Config.AutoBuff; _ctx.Config.AutoBuff = false; }
-                        if (t < 40 && (me.IsCasting || _buffing())) { _bankQuietAt = _clock; return false; }
+                        if (t < 40 && (me.IsCasting || Buffing)) { _bankQuietAt = _clock; return false; }
                         if (_clock - _bankQuietAt < 2) return false;
                         if (_bankUses < 3 && _clock - _bankUsedAt > 3)
                         {
@@ -2004,9 +2039,8 @@ namespace AOBuddy
                 _dangerStore = new Dictionary<int, (DateTime, int)>();
                 try
                 {
-                    if (File.Exists(DangerPath))
-                        foreach (var kv in JObject.Parse(File.ReadAllText(DangerPath)))
-                            _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
+                    foreach (var kv in JsonStore.Load<JObject>(DangerPath, _ctx.Log) ?? new JObject())
+                        _dangerStore[int.Parse(kv.Key)] = kv.Value is JObject e ? ((DateTime)e["at"], (int?)e["n"] ?? 1) : ((DateTime)kv.Value, 1);
                 }
                 catch { }
                 return _dangerStore;
@@ -2017,7 +2051,8 @@ namespace AOBuddy
         {
             int n = _danger.TryGetValue(pf, out var old) ? old.n + 1 : 1;
             _danger[pf] = (DateTime.UtcNow, n);
-            try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n }; File.WriteAllText(DangerPath, o.ToString()); } catch { }
+            var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n };
+            JsonStore.Save(DangerPath, o.ToString(), _ctx.Log);
         }
         private double DangerMinutes(int n) => T("dangermins") * Math.Pow(2, Math.Min(6, Math.Max(0, n - 1)));
         private bool Dangerous(int pf) => (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false)
@@ -2102,7 +2137,7 @@ namespace AOBuddy
             _backoffNext = "flee"; _backoffTo = back[back.Count - 1];
             _follow.ClearMovement();
             _follow.LoadReplay(back, false);
-            _ctx.Log($"MISSIONRUN: fleeing at {_selfHp()}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(n => n.Name).Distinct())}): running {got:0} m back the way I came.");
+            _ctx.Log($"MISSIONRUN: fleeing at {_ctx.Status.SelfHpPct}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(n => n.Name).Distinct())}): running {got:0} m back the way I came.");
             Enter(Phase.Backoff, "fleeing");
             return true;
         }
@@ -2147,7 +2182,7 @@ namespace AOBuddy
             {
                 if (_tuneStore != null) return _tuneStore;
                 _tuneStore = new Dictionary<string, float>();
-                try { if (File.Exists(TunePath)) foreach (var kv in JObject.Parse(File.ReadAllText(TunePath))) if (TuneDefaults.ContainsKey(kv.Key)) _tuneStore[kv.Key] = (float)kv.Value; } catch { }
+                try { foreach (var kv in JsonStore.Load<JObject>(TunePath, _ctx.Log) ?? new JObject()) if (TuneDefaults.ContainsKey(kv.Key)) _tuneStore[kv.Key] = (float)kv.Value; } catch { }
                 return _tuneStore;
             }
         }
@@ -2157,16 +2192,12 @@ namespace AOBuddy
         // the plugin's config.json, key by key, leaving the rest of the file as it is.
         private void SaveConfigValue(string key, JToken value)
         {
-            try
-            {
-                string path = Path.Combine(_pluginDir, "config.json");
-                var o = File.Exists(path) ? JObject.Parse(File.ReadAllText(path)) : new JObject();
-                o[key] = value;
-                File.WriteAllText(path, o.ToString());
-            }
-            catch (Exception ex) { _ctx.Log($"MISSIONRUN: couldn't save {key} to config.json: {ex.Message}"); }
+            string path = Path.Combine(_pluginDir, "config.json");
+            var o = JsonStore.Load<JObject>(path, _ctx.Log) ?? new JObject();
+            o[key] = value;
+            JsonStore.Save(path, o.ToString(), _ctx.Log);
         }
-        private void SaveTune() { try { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; File.WriteAllText(TunePath, o.ToString()); } catch { } }
+        private void SaveTune() { var o = new JObject(); foreach (var kv in _tune) o[kv.Key] = kv.Value; JsonStore.Save(TunePath, o.ToString(), _ctx.Log); }
         private string TuneText() => string.Join(", ", TuneDefaults.Select(kv => $"{kv.Key}={T(kv.Key)}{(_tune.ContainsKey(kv.Key) ? "*" : "")}"));
         private string StandTune() => $"padtop={T("padtop")} aimpast={T("aimpast")} standwait={T("standwait")}";
         private double _straightUntil;
@@ -2463,16 +2494,15 @@ namespace AOBuddy
 
         private void SaveTerminal()
         {
-            try { File.WriteAllText(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString()); }
-            catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the terminal: " + ex.Message); }
+            JsonStore.Save(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString(), _ctx.Log);
         }
 
         private bool LoadTerminal()
         {
             try
             {
-                if (!File.Exists(TerminalPath)) return false;
-                var o = JObject.Parse(File.ReadAllText(TerminalPath));
+                var o = JsonStore.Load<JObject>(TerminalPath, _ctx.Log);
+                if (o == null) return false;
                 _termPf = (int)o["pf"]; _termId = new Identity((IdentityType)(int)o["type"], (int)o["id"]);
                 _termPos = new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
                 return true;
@@ -2592,7 +2622,7 @@ namespace AOBuddy
                     ["x"] = m.Location.X, ["y"] = m.Location.Y, ["z"] = m.Location.Z, ["credits"] = m.Credits,
                     ["rewards"] = new JArray((m.MissionItemData ?? new MissionItemReward[0]).Select(r => new JArray(r.LowId, r.HighId, r.Ql))),
                 };
-                File.WriteAllText(SavePath, o.ToString());
+                JsonStore.Save(SavePath, o.ToString(), _ctx.Log);
             }
             catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't save the mission: " + ex.Message); }
         }
@@ -2603,8 +2633,8 @@ namespace AOBuddy
         {
             try
             {
-                if (!File.Exists(SavePath)) return null;
-                var o = JObject.Parse(File.ReadAllText(SavePath));
+                var o = JsonStore.Load<JObject>(SavePath, _ctx.Log);
+                if (o == null) return null;
                 return new MissionInfo
                 {
                     MissionIdentity = new Identity(IdentityType.Mission, (int)o["id"]),
@@ -2672,7 +2702,7 @@ namespace AOBuddy
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
             // came back as feedback 110. When our blows don't lower a mob's HP, it is set aside for 5 minutes.
             bool readable = a.TryGetStat(Stat.Health, out int ahp);
-            int mine = _selfHp();
+            int mine = _ctx.Status.SelfHpPct;
             if (_defId != a.Identity) { _defId = a.Identity; _defSince = _clock; _defHp = ahp; _defMyMin = mine < 0 ? 100 : mine; }
             else
             {

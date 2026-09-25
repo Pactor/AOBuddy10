@@ -202,55 +202,71 @@ pre-change run (same `hb` fields, same `STATE` transitions, no new `SETPOS APPLI
 
 ## Phase 2 — one clock, a status read-model, one persistence helper
 
-### R2.1 `IClock` on BotContext — [ ]
-**What.** Four incompatible time bases: `Stopwatch` (Main, FollowController, VitalsTracker),
-`Environment.TickCount64` (MissionController.Now≈116, OverlandController.Now≈87), `DateTime.UtcNow`
-(CombatController set-asides≈48), and accumulated `dt` quanta (SupportController.AdvanceClocks≈180,
-advanced in TickMs steps so it drifts from wall time).
-**Move.** One `Clock` class (a Stopwatch wrapper exposing `double Seconds` and `double Milliseconds`),
-created in Main.Init, hung on BotContext (`ctx.Clock`). Migrate each site. For
-`SupportController.AdvanceClocks`: keep the method name if other code calls it, but back it with
-the clock; its `_sessionSeconds` semantic (tick quanta) must stay — make it read the clock
-*relative to a session epoch set at login* rather than accumulating quanta, which is the same
-value without the drift.
-**Careful.** CombatController's DateTime-based set-aside expiry times and Mission/Overland's
-TickCount epochs convert to clock seconds — do the conversion at the field, not at each comparison.
-**DONE WHEN.** `grep -rn "Stopwatch\|TickCount\|DateTime.UtcNow" AOBuddy/*.cs` hits only the Clock
-class; one live session shows heartbeat timestamps and timeout behaviour unchanged (e.g. stim
-interval, rest max, zone-episode give-up still fire at the same wall-clock offsets).
+### R2.1 `IClock` on BotContext — [x] done 2026-09-25
+`Clock.cs`: `IClock` + `Clock` (Stopwatch wrapper, `Seconds`/`Milliseconds`), created in Main.Init,
+`ctx.Clock`. Migrated: Main (owner keyframes, PredictOwnerPos, navdata load-duration log),
+FollowController, VitalsTracker, MissionController/OverlandController `Now` (instance now — was a
+static TickCount64 property), CombatController set-asides (double clock-seconds at the field),
+BotApi's reply-collection windows (takes the clock; the 0.6/1.2/2.5 s windows are unchanged).
+**SCOPE ADJUSTED — SupportController is NOT epoch-based.** The plan's "read the clock relative to a
+session epoch set at login" assumed AdvanceClocks runs every tick; it does not — Decide returns
+early while resupplying, casting, solo or idle, so `_sessionSeconds` is ACT-TICK time, paused in
+those modes, and every stamp on it (`_auraLastCast`, `_ownerLastMovedAt`, `_lockUntil`, ...) is
+compared as a *difference* on the same paused clock. Wall-since-login would un-pause those modes
+and change decisions (e.g. auras would recast on returning from idle). So AdvanceClocks now
+advances by the REAL elapsed between calls (the drift fix the item wanted) but still only when
+called — same cadence, same pauses, no nominal-quanta undercount on frame stalls.
+**KEPT off the clock on purpose** (grep will hit these three, each with a reason): MissionRun's
+`_danger` stays `DateTime.UtcNow` — it round-trips danger.json across restarts and a process-local
+epoch would expire every mark on relaunch (same domain argument as R1.1's double Flat);
+FloorGrid/OverlandGrid keep scope-local `Stopwatch`es — off-thread static builders timing their
+own load for one log line, where the shared clock's identity is irrelevant. `DateTime.Now` filename
+stamps are wall-calendar names, not a time base. Build clean; live smoke run (heartbeat offsets,
+stim interval, rest max, zone give-up) rides the owner's next session.
 
-### R2.2 `BotStatus` read-model on BotContext — [ ]
-**What.** MissionRun's constructor takes 7 lambdas (`tell, dead, recovering, buffing, fighting,
-needsRecovery, inCombat, selfHp`, MissionRun.cs:72-78) that close over Main's private fields — an
-implicit back-reference to Main. HuntController fabricates `Func<bool> inMission` for itself.
-**Move.** Add to BotContext a small read-model refreshed by Main once per tick, before `Walk`:
-```
-Dead, Resting (sitting), HasPendingCasts, SecondsSinceCast, InCombat (combat OR hostiles engaged,
-  exactly today's `_combat.InCombat || _combat.HostilesEngaged(me, owner)`),
-NeedsRecovery, SelfHpPct, Casting (me.IsCasting), OwnerVisible, OwnerDistance
-```
-MissionRun reads `ctx.Status.X` instead of the lambdas; its constructor loses all seven.
-HuntController's `inMission` becomes `() => ctx.Status.InMission` (add that field; Main sets it
-from `_mission.InMission`). ChewyBuffController and the `Decide` ladder can migrate opportunistically.
-**Careful.** The `fighting` lambda (Main.cs:182-204) is the mission fight-or-run policy — that is
-*decision logic*, not status. Keep it a delegate but move the delegate into MissionRun's own file
-(or a named `MissionFightPolicy` method on Main) so the policy reads as policy; only the raw
-condition lambdas become status reads.
-**DONE WHEN.** MissionRun's ctor parameter list is ctx/roll/mission/overland/follow/combat/tell/
-pluginDir only; a blitz run and a fight-style run behave as before (log the same fight turns).
+### R2.2 `BotStatus` read-model on BotContext — [x] done 2026-09-25
+`BotStatus.cs`: plain-fields read-model on `ctx.Status` (Dead, Resting, HasPendingCasts,
+SecondsSinceCast, InCombat, NeedsRecovery, SelfHpPct, Casting, InMission, OwnerVisible,
+OwnerDistance). `Main.RefreshStatus` fills it once per tick JUST BEFORE Walk — after Chewy has
+queued this frame's casts, so HasPendingCasts/SecondsSinceCast are current for systems that yield
+to casting. MissionRun's seven ctor lambdas are gone: raw conditions read `ctx.Status.X`, its
+`Buffing` composition (the <15 s window is the run's policy) and the fight-or-run POLICY are named
+members of MissionRun.cs now (`FightOrRun`, comments moved verbatim — reads as policy, lives in its
+own file, no delegate needed: Status.InCombat IS the old lambda's `InCombat ||
+HostilesEngaged(lp, FindOwner())` by construction). Ctor is ctx/roll/mission/overland/follow/
+pluginDir/tell/combat. HuntController's `inMission` reads `ctx.Status.InMission`.
+**Timing notes verified:** Status.Dead holds false through the reclaim wait (OnUpdate returns at
+the death handler before RefreshStatus) — identical to what the old lazy lambda could ever return,
+since MissionRun only ticks on frames Main isn't dead; command threads read the last snapshot,
+which is the freshness the lambdas gave a few statements later anyway. ChewyBuffController and the
+Decide ladder keep their direct reads (the opportunistic migration was optional; nothing needs it
+yet — they'll flip when R6.2's session seam or R3's extractions touch them). R5.2's residual is now
+only the `Resupply` ctor param. Build clean; blitz + fight-style smoke rides the owner's next
+session (same fight turns in the log is the regression test).
 
-### R2.3 `JsonStore` — one persistence helper — [ ]
-**What.** Scattered file IO with silent catches: Main (paths/*.json, config, aobuddy.log,
-missions/*.bin), MissionRun (six private JSONs: missionrun/missionterminal/keepitems/personalbags/
-rewardids/rewardnames), ResupplyController (resupply.json), NavController (nav/<pf>.json with its
-own snapshot-copy autosave).
-**Move.** One `JsonStore` static: `Load<T>(path)`, `SaveAtomic(path, Action<T> write or object
-graph)` — temp file + `File.Replace`/rename, log-once failure policy via ctx.Log, no silent
-swallows. Migrate the sites; NavController's dirty-autosave keeps its cadence but writes through
-the store.
-**DONE WHEN.** `grep -rn "File.WriteAllText" AOBuddy/*.cs` hits only JsonStore (and the .bin debug
-capture, which stays raw); corrupting resupply.json by hand produces one logged line and a clean
-recreate instead of silence.
+### R2.3 `JsonStore` — one persistence helper — [x] done 2026-09-25
+`JsonStore.cs`: `Load<T>(path, log)` (null when absent OR corrupt, ONE logged line per path+direction
+so a hand-corrupted file is visible and the caller starts clean) and `Save(path, text, log)`
+(serialize at the call site so each site keeps its own formatting; write `.tmp` then
+`File.Replace`/rename so a crash mid-write can never truncate state; returns bool, never throws).
+Migrated EVERY state write: Main's paths (SavePath returns bool; `savepath` reply now says when it
+failed), NavController's snapshot autosave (dirty stays set when the store reports failure, so it
+retries), ResupplyController (the corrupt-resupply.json test case), MissionRun's eleven (keepitems,
+personalbags, rewardids, rewardnames, bankrules, fairtrade, danger, tune, config.json key-save,
+missionterminal, missionrun state), NanoCatalog's export (gained the log param), and
+SupportController's noland file — not JSON, but the same job: an atomic state write with visible
+failure. Matching loads went through `Load<JObject/JArray/T>` with each site's interpretation
+try/catch KEPT (the store surfaces IO/parse failures; junk-token handling is the site's, as before).
+**Kept raw on purpose:** the .bin wire captures and aobuddy.log (append; not state files), the
+read-only GameData inputs (Zoning.json, FactionAreas, AOBuddyNav, PerkData, ChewyBuffs' read —
+inputs with their own fallbacks), Main.LoadConfig (already logged + needs the R0.3
+ObjectCreationHandling.Replace settings), and Main.LoadPath (an absent/corrupt path file throws to
+the `path` command, which replies "Load failed: ..." — its error surface). Per-site failure
+messages ("RESUPPLY: couldn't save...") are now the one JSONSTORE line per path. **Verified with a
+scratch harness** (R0.3's pattern): corrupt→null + exactly one logged line, second failure silent,
+absent file null+silent, atomic replace over a corrupt target, read-only target → false + one line
++ no throw, JArray round-trip — 10/10 pass. DONE-WHEN grep: `File.WriteAllText` hits JsonStore.cs
+only.
 
 ---
 

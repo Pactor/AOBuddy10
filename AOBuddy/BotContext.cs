@@ -13,6 +13,12 @@ namespace AOBuddy
         public BuddyConfig Config;
         public Action<string> Log;
 
+        // THE bot clock (R2.1): the one monotonic time base every controller reads. Created in Main.Init.
+        public readonly IClock Clock;
+
+        // Cross-system status read-model (R2.2), refreshed by Main once per tick just before Walk.
+        public readonly BotStatus Status = new BotStatus();
+
         // What the movement arbiter decided this frame (shown in the heartbeat). Written by
         // whichever mover ran; read only by the heartbeat log.
         public string WalkState = "";
@@ -22,6 +28,12 @@ namespace AOBuddy
 
         // Timestamped HP/nano of the owner and teammates (see VitalsTracker). Heal decisions read it.
         public VitalsTracker Vitals;
+
+        // THE one nav-grid cache (2026-09-25): travel and the mission hike used to each build their own
+        // copy of every zone's grid (pf 655 took 3.8 s twice per trip). Both always ask for the playfield
+        // they stand in, so one shared single-entry cache serves both; built grids also persist through
+        // GridCache so later entries load instead of rebuilding.
+        public NavGridCache NavGrid;
 
         // RUN SPEED, the game client's exact formula: velocity (u/s) = 5.5 + RunSpeed / 230, capped at 15.5
         // (RunSpeed = Stat 156). The stat is not always readable: after a mission floor-button ride it read
@@ -54,10 +66,11 @@ namespace AOBuddy
             if (b != _behavior) { Log($"STATE {_behavior} -> {b}"); _behavior = b; }
         }
 
-        public BotContext(BuddyConfig config, Action<string> log)
+        public BotContext(BuddyConfig config, Action<string> log, IClock clock)
         {
             Config = config;
             Log = log;
+            Clock = clock;
         }
 
         /// <summary>

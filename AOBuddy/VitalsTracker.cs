@@ -45,8 +45,7 @@ namespace AOBuddy
 
         private readonly BotContext _ctx;
         private readonly Dictionary<int, Entry> _entries = new Dictionary<int, Entry>();   // by Identity.Instance
-        private readonly Stopwatch _clock = Stopwatch.StartNew();
-        private double Now => _clock.Elapsed.TotalSeconds;
+        private double Now => _ctx.Clock.Seconds;
 
         // Protocol check: InfoRequest replies are what makes solo tracking work. Say so once if they never come.
         private int _requestsSent, _infoReplies;

@@ -172,6 +172,7 @@ namespace AOBuddy
             _ctx = ctx;
             _move = move;
             _pluginDir = pluginDir;
+            _lastClockSec = ctx.Clock.Seconds;
         }
 
         private readonly string _pluginDir;
@@ -181,11 +182,20 @@ namespace AOBuddy
         /// <summary>Seconds since a cast was last queued or fired (buffs, heals, pet summons).</summary>
         public double SecondsSinceCast => _sessionSeconds - _lastCastAt;
 
-        // Per decision-tick clocks.
+        // Per decision-tick clocks, backed by ctx.Clock (R2.1). They used to accumulate nominal TickMs
+        // quanta, which drifts from real time whenever a frame stalls; now they advance by the REAL time
+        // between calls. But they still advance ONLY here: this is ACT-tick time, not wall time — Decide
+        // returns early while resupplying, casting, solo or idle, and every stamp below (_auraLastCast,
+        // _ownerLastMovedAt, _lockUntil...) lives on the same paused clock, so their DIFFERENCES are what
+        // drive decisions. Reading wall-since-login instead would un-pause those modes and change them.
+        private double _lastClockSec;
         public void AdvanceClocks()
         {
-            _healCd += _ctx.Config.TickMs / 1000.0;
-            _sessionSeconds += _ctx.Config.TickMs / 1000.0;
+            double now = _ctx.Clock.Seconds;
+            double dt = Math.Max(0, now - _lastClockSec);
+            _lastClockSec = now;
+            _healCd += dt;
+            _sessionSeconds += dt;
         }
 
         // Measure the owner's movement against the broadcasts we actually get, not against our tick. A position
@@ -559,7 +569,8 @@ namespace AOBuddy
 
         private void SaveNoLand()
         {
-            try { File.WriteAllText(OwnerNoLandFile, string.Join(",", _ownerNoLand)); } catch { }
+            // Not JSON, but the same job: an atomic state write whose failure is visible (R2.3).
+            JsonStore.Save(OwnerNoLandFile, string.Join(",", _ownerNoLand), _ctx.Log);
         }
 
         // A short while after we cast a buff on the owner, confirm it actually landed in his buff list. If

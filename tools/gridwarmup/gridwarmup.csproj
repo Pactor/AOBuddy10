@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>gridwarmup</AssemblyName>
+    <RootNamespace>GridWarmup</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <!-- Warms GridCache for the bot's plugin folder; run before the bot's first start (or after new
+         nav data is extracted) so no zone border ever pays the grid build. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AOBuddy\AOBuddy.csproj" />
+  </ItemGroup>
+</Project>

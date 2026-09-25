@@ -112,7 +112,7 @@ namespace AOBuddy
             { TypeFindItem, "find item" }, { TypeKillPerson, "kill person" },
         };
 
-        private static double Now => Environment.TickCount64 / 1000.0;
+        private double Now => _ctx.Clock.Seconds;
 
         // =====================================================================================================
         // Wire feed

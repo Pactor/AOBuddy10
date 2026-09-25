@@ -48,7 +48,7 @@ namespace AOBuddy
         }
 
         /// <summary>Export the whole catalog + a per-profession file for each. Returns (nanoCount, dir) or (−1, reason).</summary>
-        public static Tuple<int, string> ExportAll(string dir)
+        public static Tuple<int, string> ExportAll(string dir, Action<string> log = null)
         {
             var all = new List<Entry>();
 
@@ -77,15 +77,18 @@ namespace AOBuddy
 
             all = all.OrderBy(e => e.Line).ThenByDescending(e => e.StackingOrder).ThenBy(e => e.Name).ToList();
             Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, "nano_catalog_all.json"), JsonConvert.SerializeObject(all, Formatting.Indented));
+            string allFile = Path.Combine(dir, "nano_catalog_all.json");
+            if (!JsonStore.Save(allFile, JsonConvert.SerializeObject(all, Formatting.Indented), log))
+                return Tuple.Create(-1, $"couldn't write {allFile} (see log)");
 
             // Per-profession files: nanos that profession can learn (its own + all "All" nanos).
             foreach (var kv in NameByProf)
             {
                 string profName = kv.Value;
                 var forProf = all.Where(e => e.Professions.Contains("All") || e.Professions.Contains(profName)).ToList();
-                File.WriteAllText(Path.Combine(dir, $"nano_catalog_{profName.ToLowerInvariant()}.json"),
-                    JsonConvert.SerializeObject(forProf, Formatting.Indented));
+                string file = Path.Combine(dir, $"nano_catalog_{profName.ToLowerInvariant()}.json");
+                if (!JsonStore.Save(file, JsonConvert.SerializeObject(forProf, Formatting.Indented), log))
+                    return Tuple.Create(-1, $"couldn't write {file} (see log)");
             }
             return Tuple.Create(all.Count, dir);
         }
