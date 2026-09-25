@@ -1,0 +1,1867 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "slug": "engineer",
+  "summary": "The Engineer (profession 3) is a pet class built around ONE thing: a combat ROBOT. Unlike the Meta-Physicist's three simultaneous manifestations (attack / heal / mezz), every Engineer pet in the local client data is an attack robot - 90 robot summons plus one deployable (Jamming Tower). There is no Engineer heal pet and no Engineer mezz pet; the Engineer repairs the bot himself with a seven-step pet-heal nano line (Quick Fix 116793 ... A Maker's Touch 116791, all Hit[27] on stat 27 = Health, cast on the bot via Breed == 7). Bots are summoned with SpawnItem (FunctionType 53064), args [<4-char template code>, <bot level>, 0], rather than the MP's SummonPet (53167); OmniCell's server source documents the two functions as identical in call shape and effect. Every summon needs Matter Creation (130) + Time & Space (131) at the same value plus Profession(60) == 3 - no Engineer bot uses the VisualProfession(368) path - and 79 of the 90 also DEDUCT CREDITS: Hit[61,-N,-N,0] on stat 61 = Cash, matching a 'Cash > N-1' cast requirement, from 132 credits for a Feeble Android up to 3,694 for the Ravening M-60. The 11 Automaton summons are free. The ladder runs Automaton -> Android -> Gladiatorbot -> Guardbot -> Warbot -> Warmachine -> Wardroid -> Slayerdroid (bot level 200, the froob ceiling), then with Shadowlands: Slayerdroid Annihilator, the Predator M-30 line, the Devastator Drone line, Marauder M-45, Desolator Assault Drone and the Widowmaker Battle Drone (bot 220), with the nano-focus-gated Ravening M-60 as the final unlock. The Engineer's defining constraint is over-equipping: an OE pet does not merely hit softer, it STOPS OBEYING and drops to behind, so MC and TS must stay at or above 80% of the summon requirement for as long as you want the bot. Coverage: all 90 robot summons plus the tower are enumerated below - 91 of 91, no sampling - and every id/name is verified against itemnames.sql.",
+  "coverage": {
+    "petSummonNanosInData": 91,
+    "petSummonNanosCovered": 91,
+    "robotSummonsInData": 90,
+    "robotSummonsCovered": 90,
+    "towerSummons": 1,
+    "petHealNanosInData": 10,
+    "petHealNanosCovered": 10,
+    "petBuffNanosInData": 36,
+    "petBuffEntriesListed": 49,
+    "shadowlandsGatedRobots": 14,
+    "nanoFocusGatedRobots": 1,
+    "idsVerifiedAgainstItemnamesSql": "137 of 137 (Pets - Robot 90, Pets - Towers / Deployables 1, Pet Heals / Repair 10, Pet Buffs / Pet Utility 36)",
+    "note": "petTypes below are the 90 robots grouped into 15 template-code families plus the Jamming Tower = 91 of 91."
+  },
+  "petTypes": [
+    {
+      "role": "Attack robot - Automaton family",
+      "nanoLine": "SpawnItem ENAU/EGAU",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "The Engineer's first robot and the whole bot-level 1-15 band. Eleven nanos: six ENAU (Feeble / Patchwork / Lesser / Inferior / Flawed / Common Automaton, bot 1-6) then five EGAU (Automaton / Upgraded / Advanced / Perfected / Semi-Sentient Automaton, bot 7-15). Uniquely in the whole ladder, NONE of the eleven Automaton summons carries a Hit[61] credit drain or a Cash cast requirement - Automatons are free to build.",
+      "mechanics": "Feeble Automaton (43325) needs only MC/TS 5, so it is castable from character creation. Recast the next one up the moment MC/TS allows.",
+      "count": 11,
+      "progression": [
+        {
+          "nano": "Feeble Automaton",
+          "id": 43325,
+          "minLevel": 0,
+          "note": "bot lvl 1 (template ENAU); MC/TS 5/5; free (no credit cost)"
+        },
+        {
+          "nano": "Patchwork Automaton",
+          "id": 45692,
+          "minLevel": 0,
+          "note": "bot lvl 2 (template ENAU); MC/TS 12/12; free (no credit cost)"
+        },
+        {
+          "nano": "Lesser Automaton",
+          "id": 45710,
+          "minLevel": 0,
+          "note": "bot lvl 3 (template ENAU); MC/TS 19/19; free (no credit cost)"
+        },
+        {
+          "nano": "Inferior Automaton",
+          "id": 45704,
+          "minLevel": 0,
+          "note": "bot lvl 4 (template ENAU); MC/TS 26/26; free (no credit cost)"
+        },
+        {
+          "nano": "Flawed Automaton",
+          "id": 45718,
+          "minLevel": 0,
+          "note": "bot lvl 5 (template ENAU); MC/TS 33/33; free (no credit cost)"
+        },
+        {
+          "nano": "Common Automaton",
+          "id": 45724,
+          "minLevel": 0,
+          "note": "bot lvl 6 (template ENAU); MC/TS 40/40; free (no credit cost)"
+        },
+        {
+          "nano": "Automaton",
+          "id": 45737,
+          "minLevel": 0,
+          "note": "bot lvl 7 (template EGAU); MC/TS 47/47; free (no credit cost)"
+        },
+        {
+          "nano": "Upgraded Automaton",
+          "id": 45676,
+          "minLevel": 0,
+          "note": "bot lvl 9 (template EGAU); MC/TS 58/58; free (no credit cost)"
+        },
+        {
+          "nano": "Advanced Automaton",
+          "id": 45731,
+          "minLevel": 0,
+          "note": "bot lvl 11 (template EGAU); MC/TS 69/69; free (no credit cost)"
+        },
+        {
+          "nano": "Perfected Automaton",
+          "id": 45698,
+          "minLevel": 0,
+          "note": "bot lvl 13 (template EGAU); MC/TS 79/79; free (no credit cost)"
+        },
+        {
+          "nano": "Semi-Sentient Automaton",
+          "id": 45681,
+          "minLevel": 0,
+          "note": "bot lvl 15 (template EGAU); MC/TS 89/89; free (no credit cost)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Android family",
+      "nanoLine": "SpawnItem ENAN/EGAN",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 17-43. Six ENAN (Feeble -> Common Android) then five EGAN (Android -> Semi-Sentient Android). This is the first family that charges credits: 132 up to 340.",
+      "mechanics": "The credit drain starts here - every cast deducts the Hit[61] amount from Cash, so a low-level Engineer who keeps re-summoning is spending real money.",
+      "count": 11,
+      "progression": [
+        {
+          "nano": "Feeble Android",
+          "id": 45712,
+          "minLevel": 0,
+          "note": "bot lvl 17 (template ENAN); MC/TS 99/99; costs 132 credits"
+        },
+        {
+          "nano": "Patchwork Android",
+          "id": 45691,
+          "minLevel": 0,
+          "note": "bot lvl 19 (template ENAN); MC/TS 109/109; costs 148 credits"
+        },
+        {
+          "nano": "Lesser Android",
+          "id": 45709,
+          "minLevel": 0,
+          "note": "bot lvl 21 (template ENAN); MC/TS 119/119; costs 164 credits"
+        },
+        {
+          "nano": "Inferior Android",
+          "id": 45703,
+          "minLevel": 0,
+          "note": "bot lvl 23 (template ENAN); MC/TS 129/129; costs 180 credits"
+        },
+        {
+          "nano": "Flawed Android",
+          "id": 45717,
+          "minLevel": 0,
+          "note": "bot lvl 25 (template ENAN); MC/TS 139/139; costs 196 credits"
+        },
+        {
+          "nano": "Common Android",
+          "id": 45723,
+          "minLevel": 0,
+          "note": "bot lvl 28 (template ENAN); MC/TS 154/154; costs 220 credits"
+        },
+        {
+          "nano": "Android",
+          "id": 45736,
+          "minLevel": 0,
+          "note": "bot lvl 31 (template EGAN); MC/TS 167/167; costs 244 credits"
+        },
+        {
+          "nano": "Upgraded Android",
+          "id": 45675,
+          "minLevel": 0,
+          "note": "bot lvl 34 (template EGAN); MC/TS 179/179; costs 268 credits"
+        },
+        {
+          "nano": "Advanced Android",
+          "id": 45730,
+          "minLevel": 0,
+          "note": "bot lvl 37 (template EGAN); MC/TS 191/191; costs 292 credits"
+        },
+        {
+          "nano": "Perfected Android",
+          "id": 45697,
+          "minLevel": 0,
+          "note": "bot lvl 40 (template EGAN); MC/TS 203/203; costs 316 credits"
+        },
+        {
+          "nano": "Semi-Sentient Android",
+          "id": 45680,
+          "minLevel": 0,
+          "note": "bot lvl 43 (template EGAN); MC/TS 215/215; costs 340 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Gladiatorbot family",
+      "nanoLine": "SpawnItem ENGA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 46-76, eleven nanos (Feeble / Patchwork / Lesser / Inferior / Flawed / Common / base / Upgraded / Advanced / Perfected / Semi-Sentient Gladiatorbot). MC/TS 230 -> 404; 364 -> 604 credits.",
+      "mechanics": "From Gladiatorbot on, every RK family reuses the same eleven- or twelve-step prefix ladder, so a bot AI can pick purely by skill requirement.",
+      "count": 11,
+      "progression": [
+        {
+          "nano": "Feeble Gladiatorbot",
+          "id": 45713,
+          "minLevel": 0,
+          "note": "bot lvl 46 (template ENGA); MC/TS 230/230; costs 364 credits"
+        },
+        {
+          "nano": "Patchwork Gladiatorbot",
+          "id": 45693,
+          "minLevel": 0,
+          "note": "bot lvl 49 (template ENGA); MC/TS 246/246; costs 388 credits"
+        },
+        {
+          "nano": "Lesser Gladiatorbot",
+          "id": 45711,
+          "minLevel": 0,
+          "note": "bot lvl 52 (template ENGA); MC/TS 262/262; costs 412 credits"
+        },
+        {
+          "nano": "Inferior Gladiatorbot",
+          "id": 45705,
+          "minLevel": 0,
+          "note": "bot lvl 55 (template ENGA); MC/TS 278/278; costs 436 credits"
+        },
+        {
+          "nano": "Flawed Gladiatorbot",
+          "id": 45719,
+          "minLevel": 0,
+          "note": "bot lvl 58 (template ENGA); MC/TS 296/296; costs 460 credits"
+        },
+        {
+          "nano": "Common Gladiatorbot",
+          "id": 45725,
+          "minLevel": 0,
+          "note": "bot lvl 61 (template ENGA); MC/TS 314/314; costs 484 credits"
+        },
+        {
+          "nano": "Gladiatorbot",
+          "id": 45701,
+          "minLevel": 0,
+          "note": "bot lvl 64 (template ENGA); MC/TS 332/332; costs 508 credits"
+        },
+        {
+          "nano": "Upgraded Gladiatorbot",
+          "id": 45664,
+          "minLevel": 0,
+          "note": "bot lvl 67 (template ENGA); MC/TS 350/350; costs 532 credits"
+        },
+        {
+          "nano": "Advanced Gladiatorbot",
+          "id": 45732,
+          "minLevel": 0,
+          "note": "bot lvl 70 (template ENGA); MC/TS 368/368; costs 556 credits"
+        },
+        {
+          "nano": "Perfected Gladiatorbot",
+          "id": 45699,
+          "minLevel": 0,
+          "note": "bot lvl 73 (template ENGA); MC/TS 386/386; costs 580 credits"
+        },
+        {
+          "nano": "Semi-Sentient Gladiatorbot",
+          "id": 45682,
+          "minLevel": 0,
+          "note": "bot lvl 76 (template ENGA); MC/TS 404/404; costs 604 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Guardbot family",
+      "nanoLine": "SpawnItem ENGU",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 79-109, eleven nanos on the same prefix ladder. MC/TS 419 -> 569; 628 -> 868 credits.",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 11,
+      "progression": [
+        {
+          "nano": "Feeble Guardbot",
+          "id": 45714,
+          "minLevel": 0,
+          "note": "bot lvl 79 (template ENGU); MC/TS 419/419; costs 628 credits"
+        },
+        {
+          "nano": "Patchwork Guardbot",
+          "id": 45694,
+          "minLevel": 0,
+          "note": "bot lvl 82 (template ENGU); MC/TS 434/434; costs 652 credits"
+        },
+        {
+          "nano": "Lesser Guardbot",
+          "id": 45686,
+          "minLevel": 0,
+          "note": "bot lvl 85 (template ENGU); MC/TS 449/449; costs 676 credits"
+        },
+        {
+          "nano": "Inferior Guardbot",
+          "id": 45706,
+          "minLevel": 0,
+          "note": "bot lvl 88 (template ENGU); MC/TS 464/464; costs 700 credits"
+        },
+        {
+          "nano": "Flawed Guardbot",
+          "id": 45720,
+          "minLevel": 0,
+          "note": "bot lvl 91 (template ENGU); MC/TS 479/479; costs 724 credits"
+        },
+        {
+          "nano": "Common Guardbot",
+          "id": 45726,
+          "minLevel": 0,
+          "note": "bot lvl 94 (template ENGU); MC/TS 494/494; costs 748 credits"
+        },
+        {
+          "nano": "Guardbot",
+          "id": 45702,
+          "minLevel": 0,
+          "note": "bot lvl 97 (template ENGU); MC/TS 509/509; costs 772 credits"
+        },
+        {
+          "nano": "Upgraded Guardbot",
+          "id": 45665,
+          "minLevel": 0,
+          "note": "bot lvl 100 (template ENGU); MC/TS 524/524; costs 796 credits"
+        },
+        {
+          "nano": "Advanced Guardbot",
+          "id": 45733,
+          "minLevel": 0,
+          "note": "bot lvl 103 (template ENGU); MC/TS 539/539; costs 820 credits"
+        },
+        {
+          "nano": "Perfected Guardbot",
+          "id": 45700,
+          "minLevel": 0,
+          "note": "bot lvl 106 (template ENGU); MC/TS 554/554; costs 844 credits"
+        },
+        {
+          "nano": "Semi-Sentient Guardbot",
+          "id": 45683,
+          "minLevel": 0,
+          "note": "bot lvl 109 (template ENGU); MC/TS 569/569; costs 868 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Warbot family",
+      "nanoLine": "SpawnItem ENWA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 112-145, twelve nanos - the prefix ladder plus a 'Military-Grade Warbot' top step. MC/TS 584 -> 711; 892 -> 1,156 credits.",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 12,
+      "progression": [
+        {
+          "nano": "Feeble Warbot",
+          "id": 45715,
+          "minLevel": 0,
+          "note": "bot lvl 112 (template ENWA); MC/TS 584/584; costs 892 credits"
+        },
+        {
+          "nano": "Patchwork Warbot",
+          "id": 45695,
+          "minLevel": 0,
+          "note": "bot lvl 115 (template ENWA); MC/TS 596/596; costs 916 credits"
+        },
+        {
+          "nano": "Lesser Warbot",
+          "id": 45687,
+          "minLevel": 0,
+          "note": "bot lvl 118 (template ENWA); MC/TS 608/608; costs 940 credits"
+        },
+        {
+          "nano": "Inferior Warbot",
+          "id": 45707,
+          "minLevel": 0,
+          "note": "bot lvl 121 (template ENWA); MC/TS 620/620; costs 964 credits"
+        },
+        {
+          "nano": "Flawed Warbot",
+          "id": 45721,
+          "minLevel": 0,
+          "note": "bot lvl 124 (template ENWA); MC/TS 632/632; costs 988 credits"
+        },
+        {
+          "nano": "Common Warbot",
+          "id": 45727,
+          "minLevel": 0,
+          "note": "bot lvl 127 (template ENWA); MC/TS 644/644; costs 1,012 credits"
+        },
+        {
+          "nano": "Warbot",
+          "id": 45668,
+          "minLevel": 0,
+          "note": "bot lvl 130 (template ENWA); MC/TS 656/656; costs 1,036 credits"
+        },
+        {
+          "nano": "Upgraded Warbot",
+          "id": 45666,
+          "minLevel": 0,
+          "note": "bot lvl 133 (template ENWA); MC/TS 668/668; costs 1,060 credits"
+        },
+        {
+          "nano": "Advanced Warbot",
+          "id": 45734,
+          "minLevel": 0,
+          "note": "bot lvl 136 (template ENWA); MC/TS 680/680; costs 1,084 credits"
+        },
+        {
+          "nano": "Perfected Warbot",
+          "id": 45677,
+          "minLevel": 0,
+          "note": "bot lvl 139 (template ENWA); MC/TS 692/692; costs 1,108 credits"
+        },
+        {
+          "nano": "Semi-Sentient Warbot",
+          "id": 45684,
+          "minLevel": 0,
+          "note": "bot lvl 142 (template ENWA); MC/TS 702/702; costs 1,132 credits"
+        },
+        {
+          "nano": "Military-Grade Warbot",
+          "id": 45689,
+          "minLevel": 0,
+          "note": "bot lvl 145 (template ENWA); MC/TS 711/711; costs 1,156 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Warmachine family",
+      "nanoLine": "SpawnItem EGWA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 148-181, twelve nanos ending in 'Military-Grade Warmachine'. MC/TS 720 -> 819; 1,180 -> 1,444 credits.",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 12,
+      "progression": [
+        {
+          "nano": "Feeble Warmachine",
+          "id": 45716,
+          "minLevel": 0,
+          "note": "bot lvl 148 (template EGWA); MC/TS 720/720; costs 1,180 credits"
+        },
+        {
+          "nano": "Patchwork Warmachine",
+          "id": 45696,
+          "minLevel": 0,
+          "note": "bot lvl 151 (template EGWA); MC/TS 729/729; costs 1,204 credits (Hit[61]); cast req Cash >= 1,205"
+        },
+        {
+          "nano": "Lesser Warmachine",
+          "id": 45688,
+          "minLevel": 0,
+          "note": "bot lvl 154 (template EGWA); MC/TS 738/738; costs 1,228 credits"
+        },
+        {
+          "nano": "Inferior Warmachine",
+          "id": 45708,
+          "minLevel": 0,
+          "note": "bot lvl 157 (template EGWA); MC/TS 747/747; costs 1,252 credits"
+        },
+        {
+          "nano": "Flawed Warmachine",
+          "id": 45722,
+          "minLevel": 0,
+          "note": "bot lvl 160 (template EGWA); MC/TS 756/756; costs 1,276 credits"
+        },
+        {
+          "nano": "Common Warmachine",
+          "id": 45728,
+          "minLevel": 0,
+          "note": "bot lvl 163 (template EGWA); MC/TS 765/765; costs 1,300 credits"
+        },
+        {
+          "nano": "Warmachine",
+          "id": 45669,
+          "minLevel": 0,
+          "note": "bot lvl 166 (template EGWA); MC/TS 774/774; costs 1,324 credits"
+        },
+        {
+          "nano": "Upgraded Warmachine",
+          "id": 45667,
+          "minLevel": 0,
+          "note": "bot lvl 169 (template EGWA); MC/TS 783/783; costs 1,348 credits"
+        },
+        {
+          "nano": "Advanced Warmachine",
+          "id": 45735,
+          "minLevel": 0,
+          "note": "bot lvl 172 (template EGWA); MC/TS 792/792; costs 1,372 credits"
+        },
+        {
+          "nano": "Perfected Warmachine",
+          "id": 45678,
+          "minLevel": 0,
+          "note": "bot lvl 175 (template EGWA); MC/TS 801/801; costs 1,396 credits"
+        },
+        {
+          "nano": "Semi-Sentient Warmachine",
+          "id": 45670,
+          "minLevel": 0,
+          "note": "bot lvl 178 (template EGWA); MC/TS 810/810; costs 1,420 credits"
+        },
+        {
+          "nano": "Military-Grade Warmachine",
+          "id": 45690,
+          "minLevel": 0,
+          "note": "bot lvl 181 (template EGWA); MC/TS 819/819; costs 1,444 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Wardroid family",
+      "nanoLine": "SpawnItem ENWR",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 184-190, only three nanos: Decommissioned / Reactivated / Semi-Sentient Wardroid. MC/TS 827 -> 845.",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 3,
+      "progression": [
+        {
+          "nano": "Decommissioned Wardroid",
+          "id": 45729,
+          "minLevel": 0,
+          "note": "bot lvl 184 (template ENWR); MC/TS 827/827; costs 1,468 credits"
+        },
+        {
+          "nano": "Reactivated Wardroid",
+          "id": 45679,
+          "minLevel": 0,
+          "note": "bot lvl 187 (template ENWR); MC/TS 836/836; costs 1,492 credits (Hit[61]); cast req Cash >= 1,493"
+        },
+        {
+          "nano": "Semi-Sentient Wardroid",
+          "id": 45685,
+          "minLevel": 0,
+          "note": "bot lvl 190 (template ENWR); MC/TS 845/845; costs 1,516 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Slayerdroid family",
+      "nanoLine": "SpawnItem ENSL/ENSA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot levels 193-200, four nanos: Protector and Warden (ENSL), then Sentinel and Guardian (ENSA). Slayerdroid Guardian (45671, bot level 200, MC/TS 874) is the strongest robot an Engineer can build WITHOUT Shadowlands - the froob ceiling.",
+      "mechanics": "Cross-check: the AODB Engineer Guide states the Slayerdroid Guardian 'needs 874 Matter Creation/Time and Space to cast but requires 700 MC/TS to maintain'. 874 is exactly the local data's 'MaterialCreation > 873', and 700 is 874 x 0.8 rounded up - the documented over-equip control threshold. Local data and the guide agree exactly.",
+      "count": 4,
+      "progression": [
+        {
+          "nano": "Slayerdroid Protector",
+          "id": 45672,
+          "minLevel": 0,
+          "note": "bot lvl 193 (template ENSL); MC/TS 853/853; costs 1,540 credits"
+        },
+        {
+          "nano": "Slayerdroid Warden",
+          "id": 45674,
+          "minLevel": 0,
+          "note": "bot lvl 196 (template ENSL); MC/TS 862/862; costs 1,564 credits"
+        },
+        {
+          "nano": "Slayerdroid Sentinel",
+          "id": 45673,
+          "minLevel": 0,
+          "note": "bot lvl 198 (template ENSA); MC/TS 868/868; costs 1,580 credits"
+        },
+        {
+          "nano": "Slayerdroid Guardian",
+          "id": 45671,
+          "minLevel": 0,
+          "note": "bot lvl 200 (template ENSA); MC/TS 874/874; costs 1,596 credits"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Slayerdroid Annihilator",
+      "nanoLine": "SpawnItem ENSY",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "A single Shadowlands nano that jumps straight to bot level 201 - one above the best froob bot - for MC/TS 1,096/1,095 and 3,208 credits, at character level 175.",
+      "mechanics": "Requires Shadowlands and Specialization bit 4. Nano from the Adonis Garden (AODB wiki).",
+      "count": 1,
+      "progression": [
+        {
+          "nano": "Slayerdroid Annihilator",
+          "id": 223313,
+          "minLevel": 175,
+          "note": "bot lvl 201 (template ENSY); MC/TS 1096/1095; costs 3,208 credits (Hit[61]); cast req Cash >= 3,209; Shadowlands, Specialization bit 4; char lvl 175+; nano from Adonis Garden (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Predator M-30 line",
+      "nanoLine": "SpawnItem EGPR/EIPR/ENUP/ENAV/EGSE/EIMA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Six Shadowlands nanos, bot levels 100 -> 211, each with its own template code: Prototype (EGPR, bot 100), Predator M-30 (EIPR, 150), Upgraded (ENUP, 175), Advanced (ENAV, 203), Semi-Sentient (EGSE, 207), Military-Grade (EIMA, 211). All six carry an explicit character-Level requirement equal to their own bot level (100 / 150 / 175 / 203 / 207 / 211) - as do the Devastator, Marauder, Desolator and Widowmaker nanos. The one Shadowlands bot that does NOT follow that rule is the Slayerdroid Annihilator (bot 201 at character level 175).",
+      "mechanics": "The Predator line's entry nano is the only bot summon gated at character level 100, which lines up with the AODB Engineer Guide's 'from level 100 you can also have a pet dog' and its note that commands then go to BOTH pets. Local data does not prove the Predator line IS that second pet - see _unverified.",
+      "count": 6,
+      "progression": [
+        {
+          "nano": "Prototype Predator M-30",
+          "id": 223325,
+          "minLevel": 100,
+          "note": "bot lvl 100 (template EGPR); MC/TS 688/688; costs 1,592 credits (Hit[61]); cast req Cash >= 1,593; Shadowlands, Specialization bit 2; char lvl 100+"
+        },
+        {
+          "nano": "Predator M-30",
+          "id": 301855,
+          "minLevel": 150,
+          "note": "bot lvl 150 (template EIPR); MC/TS 890/890; costs 2,592 credits; Shadowlands, Specialization bit 2; char lvl 150+; nano from Scheol Garden (AODB wiki)"
+        },
+        {
+          "nano": "Upgraded Predator M-30",
+          "id": 223327,
+          "minLevel": 175,
+          "note": "bot lvl 175 (template ENUP); MC/TS 1087/1087; costs 2,872 credits (Hit[61]); cast req Cash >= 2,873; Shadowlands, Specialization bit 4; char lvl 175+; nano from Adonis/Inferno Garden (AODB wiki)"
+        },
+        {
+          "nano": "Advanced Predator M-30",
+          "id": 223329,
+          "minLevel": 203,
+          "note": "bot lvl 203 (template ENAV); MC/TS 1285/1285; costs 3,240 credits (Hit[61]); cast req Cash >= 3,241; Shadowlands, Specialization bit 8; char lvl 203+; nano from Adonis Sanctuary (AODB wiki)"
+        },
+        {
+          "nano": "Semi-Sentient Predator M-30",
+          "id": 223331,
+          "minLevel": 207,
+          "note": "bot lvl 207 (template EGSE); MC/TS 1464/1463; costs 3,304 credits (Hit[61]); cast req Cash >= 3,305; Shadowlands, Specialization bit 8; char lvl 207+; nano from Penumbra Garden (AODB wiki)"
+        },
+        {
+          "nano": "Military-Grade Predator M-30",
+          "id": 223333,
+          "minLevel": 211,
+          "note": "bot lvl 211 (template EIMA); MC/TS 1643/1641; costs 3,368 credits (Hit[61]); cast req Cash >= 3,369; Shadowlands, Specialization bit 8; char lvl 211+; nano from Inferno Garden (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Devastator Drone line",
+      "nanoLine": "SpawnItem ENDV/EGBA/ENFE",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Three Shadowlands nanos: Devastator Drone (ENDV, bot 205), Battlefield Devastator Drone (EGBA, 209), Fieldsweeper Devastator Drone (ENFE, 213). MC/TS 1,255 -> 1,583; 3,272 - 3,400 credits.",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 3,
+      "progression": [
+        {
+          "nano": "Devastator Drone",
+          "id": 223315,
+          "minLevel": 205,
+          "note": "bot lvl 205 (template ENDV); MC/TS 1255/1250; costs 3,272 credits (Hit[61]); cast req Cash >= 3,273; Shadowlands, Specialization bit 8; char lvl 205+; nano from Penumbra Garden (AODB wiki)"
+        },
+        {
+          "nano": "Battlefield Devastator Drone",
+          "id": 223317,
+          "minLevel": 209,
+          "note": "bot lvl 209 (template EGBA); MC/TS 1404/1401; costs 3,336 credits (Hit[61]); cast req Cash >= 3,337; Shadowlands, Specialization bit 8; char lvl 209+; nano from Penumbra Sanctuary (AODB wiki)"
+        },
+        {
+          "nano": "Fieldsweeper Devastator Drone",
+          "id": 223319,
+          "minLevel": 213,
+          "note": "bot lvl 213 (template ENFE); MC/TS 1583/1579; costs 3,400 credits (Hit[61]); cast req Cash >= 3,401; Shadowlands, Specialization bit 8; char lvl 213+; nano from Inferno Garden (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Marauder M-45 line",
+      "nanoLine": "SpawnItem EGMR/MIMD",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Two Shadowlands nanos: Marauder M-45 (EGMR, bot 215) and Military-Grade Marauder M-45 (MIMD, bot 219).",
+      "mechanics": "Standard robot summon: cast the nano, pay the credits, and the new bot replaces whatever bot you had. Keep MC and TS at or above 80% of the cast requirement or the bot stops obeying and drops to behind (see Mechanics).",
+      "count": 2,
+      "progression": [
+        {
+          "nano": "Marauder M-45",
+          "id": 223335,
+          "minLevel": 215,
+          "note": "bot lvl 215 (template EGMR); MC/TS 1722/1719; costs 3,432 credits (Hit[61]); cast req Cash >= 3,433; Shadowlands, Specialization bit 8; char lvl 215+; nano from Inferno Sanctuary (AODB wiki)"
+        },
+        {
+          "nano": "Military-Grade Marauder M-45",
+          "id": 223337,
+          "minLevel": 219,
+          "note": "bot lvl 219 (template MIMD); MC/TS 1851/1847; costs 3,496 credits (Hit[61]); cast req Cash >= 3,497; Shadowlands, Specialization bit 8; char lvl 219+; nano from Pandemonium Vendors (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Desolator Assault Drone",
+      "nanoLine": "SpawnItem EGDE",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Single Shadowlands nano, bot level 217, MC 1,763 / TS 1,757, character level 217.",
+      "mechanics": "Data anomaly worth knowing: this is the ONE bot whose cast requirement (Cash >= 3,465) is higher than the credits it actually deducts (Hit[61,-3400,-3400,0]).",
+      "count": 1,
+      "progression": [
+        {
+          "nano": "Desolator Assault Drone",
+          "id": 223321,
+          "minLevel": 217,
+          "note": "bot lvl 217 (template EGDE); MC/TS 1763/1757; costs 3,400 credits (Hit[61]); cast req Cash >= 3,465; Shadowlands, Specialization bit 8; char lvl 217+; nano from Inferno Sanctuary (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Widowmaker Battle Drone",
+      "nanoLine": "SpawnItem EGDS",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Single Shadowlands nano, bot level 220, MC 1,896 / TS 1,891, 3,512 credits, character level 220. The highest bot level reachable through the Shadowlands/Specialization line.",
+      "mechanics": "Nano from Pandemonium vendors (AODB wiki).",
+      "count": 1,
+      "progression": [
+        {
+          "nano": "Widowmaker Battle Drone",
+          "id": 223323,
+          "minLevel": 220,
+          "note": "bot lvl 220 (template EGDS); MC/TS 1896/1891; costs 3,512 credits (Hit[61]); cast req Cash >= 3,513; Shadowlands, Specialization bit 8; char lvl 220+; nano from Pandemonium Vendors (AODB wiki)"
+        }
+      ]
+    },
+    {
+      "role": "Attack robot - Ravening M-60",
+      "nanoLine": "SpawnItem RAM6",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 3 (every Engineer robot summon gates via Profession 60, never VisualProfession 368)",
+      "description": "Bot level 220 and the single most expensive summon in the data: MC 1,960 / TS 1,958 and 3,694 credits. It is the ONLY robot summon gated by 'NanoFocusLevel op22 64' instead of Expansion/Specialization - a late endgame nano-focus gate rather than a Shadowlands gate.",
+      "mechanics": "Same bot level as the Widowmaker but a far higher skill requirement, so in practice it is the last bot an Engineer unlocks. Its nano source is not listed on the AODB Engineer nano page and is left unknown.",
+      "count": 1,
+      "progression": [
+        {
+          "nano": "Ravening M-60",
+          "id": 275815,
+          "minLevel": 0,
+          "note": "bot lvl 220 (template RAM6); MC/TS 1960/1958; costs 3,694 credits (Hit[61]); cast req Cash >= 3,695; NanoFocusLevel bit 64 (endgame nano-focus gate)"
+        }
+      ]
+    },
+    {
+      "role": "Deployable - Jamming Tower",
+      "nanoLine": "SpawnItem EGJA",
+      "nanoStrain": 0,
+      "summonSkills": "Matter Creation (130) + Time & Space (131) > 19; Profession(60) == 3",
+      "description": "The Engineer's only non-robot SpawnItem nano in the data: Jamming Tower (274369) spawns template EGJA at level 1 for MC/TS 20 and no credit cost. It sits in its own category because its template family and level argument (EGJA, 1) belong to no bot ladder.",
+      "mechanics": "Local data shows only the spawn - the nano carries no attack, heal or buff function - so what the tower actually jams is NOT established here. Neither the AODB Engineer nano page nor the AO-Universe Engineer guide covers it, so it is left unknown rather than guessed.",
+      "count": 1,
+      "progression": [
+        {
+          "nano": "Jamming Tower",
+          "id": 274369,
+          "minLevel": 0,
+          "note": "bot lvl 1 (template EGJA); MC/TS 20/20; free (no credit cost)"
+        }
+      ]
+    }
+  ],
+  "petBuffs": [
+    {
+      "name": "Quick Fix",
+      "id": 116793,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 120-199",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 83, SpaceTime > 83, BiologicalMetamorphosis > 69 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 83",
+        "SpaceTime > 83",
+        "BiologicalMetamorphosis > 69",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,120,199,0]"
+      ]
+    },
+    {
+      "name": "Patchy Repairs",
+      "id": 116794,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 243-412",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 170, SpaceTime > 170, BiologicalMetamorphosis > 146 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 170",
+        "SpaceTime > 170",
+        "BiologicalMetamorphosis > 146",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,243,412,0]"
+      ]
+    },
+    {
+      "name": "Recondition Parts",
+      "id": 116797,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 398-611",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 245, SpaceTime > 245, BiologicalMetamorphosis > 220 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 245",
+        "SpaceTime > 245",
+        "BiologicalMetamorphosis > 220",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,398,611,0]"
+      ]
+    },
+    {
+      "name": "Rebuild Casing",
+      "id": 116792,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 576-992",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 405, SpaceTime > 405, BiologicalMetamorphosis > 359 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 405",
+        "SpaceTime > 405",
+        "BiologicalMetamorphosis > 359",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,576,992,0]"
+      ]
+    },
+    {
+      "name": "Field Workshop",
+      "id": 116796,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 800-1411",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 571, SpaceTime > 571, BiologicalMetamorphosis > 517 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 571",
+        "SpaceTime > 571",
+        "BiologicalMetamorphosis > 517",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,800,1411,0]"
+      ]
+    },
+    {
+      "name": "Intricate Repairs",
+      "id": 116795,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 1063-1875",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 737, SpaceTime > 737, BiologicalMetamorphosis > 665 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 737",
+        "SpaceTime > 737",
+        "BiologicalMetamorphosis > 665",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,1063,1875,0]"
+      ]
+    },
+    {
+      "name": "A Maker's Touch",
+      "id": 116791,
+      "line": "Pet heal (Hit on stat 27 = Health)",
+      "effect": "Heals the bot for 1285-2267",
+      "note": "Cast ON the bot - ToUse requires Breed == 7 (HumanMonster), the encoding for a pet-targeted nano. Requires MaterialCreation > 841, SpaceTime > 841, BiologicalMetamorphosis > 760 and VisualProfession == 3. This seven-step line is what the Engineer has INSTEAD of the MP's heal pet; Biological Metamorphosis is an Engineer skill investment purely for repairing the bot.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 841",
+        "SpaceTime > 841",
+        "BiologicalMetamorphosis > 760",
+        "VisualProfession == 3",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,1285,2267,0]"
+      ]
+    },
+    {
+      "name": "Synchronized Energy Spike",
+      "id": 223305,
+      "line": "Pet heal + Snare/Root cleanse",
+      "effect": "Heals the bot 350 AND cuts Snare(145)/Root(146) strain duration",
+      "note": "Cast on the bot (Breed == 7). Character level 185+. Full ToUse: Profession == 3 , MaterialCreation > 1118 , SpaceTime > 1118 , Level > 184 , Expansion op22 2 , Specialization op22 4 , Breed == 7.",
+      "minLevel": 185,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 1118",
+        "SpaceTime > 1118",
+        "Level > 184",
+        "Expansion op22 2",
+        "Specialization op22 4",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,1103]",
+        "ReduceNanoStrainDuration[146,1103]",
+        "SystemText[Your pet moves more freely.]",
+        "Hit[27,350,350,0]"
+      ]
+    },
+    {
+      "name": "Energized Casing of the Faithful Servant",
+      "id": 203867,
+      "line": "Pet heal + Snare/Root cleanse",
+      "effect": "Heals the bot 350 AND cuts Snare(145)/Root(146) strain duration",
+      "note": "Cast on the bot (Breed == 7). Character level 195+. Full ToUse: Profession == 3 , MaterialCreation > 1037 , SpaceTime > 1037 , Level > 194 , Breed == 7.",
+      "minLevel": 195,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 1037",
+        "SpaceTime > 1037",
+        "Level > 194",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,1387]",
+        "ReduceNanoStrainDuration[146,1387]",
+        "SystemText[Your pet moves more freely.]",
+        "Hit[27,350,350,0]"
+      ]
+    },
+    {
+      "name": "Synchronized Capacitor Overload",
+      "id": 223339,
+      "line": "Pet heal + Snare/Root cleanse",
+      "effect": "Heals the bot 350 AND cuts Snare(145)/Root(146) strain duration",
+      "note": "Cast on the bot (Breed == 7). Character level 214+. Full ToUse: Profession == 3 , MaterialCreation > 1776 , SpaceTime > 1773 , Level > 213 , Expansion op22 2 , Specialization op22 8 , Breed == 7.",
+      "minLevel": 214,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 1776",
+        "SpaceTime > 1773",
+        "Level > 213",
+        "Expansion op22 2",
+        "Specialization op22 8",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,1393]",
+        "ReduceNanoStrainDuration[146,1393]",
+        "SystemText[Your pet moves more freely.]",
+        "Hit[27,350,350,0]"
+      ]
+    },
+    {
+      "name": "Lesser Energize Shell",
+      "id": 203869,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,292] | ReduceNanoStrainDuration[146,292] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 0+. ToUse: Profession == 3 , MaterialCreation > 95 , SpaceTime > 95 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 0,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 95",
+        "SpaceTime > 95",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,292]",
+        "ReduceNanoStrainDuration[146,292]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Energize Shell",
+      "id": 203871,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,414] | ReduceNanoStrainDuration[146,414] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 25+. ToUse: Profession == 3 , MaterialCreation > 238 , SpaceTime > 238 , Level > 24 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 25,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 238",
+        "SpaceTime > 238",
+        "Level > 24",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,414]",
+        "ReduceNanoStrainDuration[146,414]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Intrusive Aura Cancellation",
+      "id": 204372,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[288,900000]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 50+. ToUse: Profession == 3 , Level > 49 , SpaceTime > 364 , MaterialMetamorphosis > 364 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 50,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 49",
+        "SpaceTime > 364",
+        "MaterialMetamorphosis > 364",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[288,900000]"
+      ]
+    },
+    {
+      "name": "Greater Energize Shell",
+      "id": 203873,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,583] | ReduceNanoStrainDuration[146,583] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 75+. ToUse: Profession == 3 , MaterialCreation > 473 , SpaceTime > 473 , Level > 74 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 75,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 473",
+        "SpaceTime > 473",
+        "Level > 74",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,583]",
+        "ReduceNanoStrainDuration[146,583]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Lesser Conductive Spike",
+      "id": 203861,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,711] | ReduceNanoStrainDuration[146,711] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 100+. ToUse: Profession == 3 , MaterialCreation > 636 , SpaceTime > 636 , Level > 99 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 100,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 636",
+        "SpaceTime > 636",
+        "Level > 99",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,711]",
+        "ReduceNanoStrainDuration[146,711]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Conductive Spike",
+      "id": 203863,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,896] | ReduceNanoStrainDuration[146,896] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 125+. ToUse: Profession == 3 , MaterialCreation > 815 , SpaceTime > 815 , Level > 124 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 125,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 815",
+        "SpaceTime > 815",
+        "Level > 124",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,896]",
+        "ReduceNanoStrainDuration[146,896]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Greater Conductive Spike",
+      "id": 203865,
+      "line": "NOSTACKING(0)",
+      "effect": "ReduceNanoStrainDuration[145,1084] | ReduceNanoStrainDuration[146,1084] | SystemText[Your pet moves more freely.]",
+      "note": "no nano strain (Energize Shell / Conductive Spike snare-root freedom lines, and the strain-288 cancellation nano). Character level 145+. ToUse: Profession == 3 , MaterialCreation > 891 , SpaceTime > 891 , Level > 144 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 145,
+      "castReqs": [
+        "Profession == 3",
+        "MaterialCreation > 891",
+        "SpaceTime > 891",
+        "Level > 144",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,1084]",
+        "ReduceNanoStrainDuration[146,1084]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Formula 22",
+      "id": 275016,
+      "line": "MPPetInitiativeBuffs(217)",
+      "effect": "Modify MeleeInit +240 | Modify RangedInit +240 | Modify PhysicalInit +240 | Modify NanoCInit +240 | Modify Aggressiveness +80",
+      "note": "pet initiative and aggressiveness. Character level 0+. ToUse: MaterialCreation > 1824 , SpaceTime > 1824 , Profession == 3 , NanoFocusLevel op22 64 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 1824",
+        "SpaceTime > 1824",
+        "Profession == 3",
+        "NanoFocusLevel op22 64",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify MeleeInit +240",
+        "Modify RangedInit +240",
+        "Modify PhysicalInit +240",
+        "Modify NanoCInit +240",
+        "Modify Aggressiveness +80"
+      ]
+    },
+    {
+      "name": "Assist Combat Array",
+      "id": 205229,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +32 | Modify AddAllDef +6",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 0+. ToUse: MaterialCreation > 101 , MaterialMetamorphosis > 101 , SpaceTime > 101 , Profession == 3 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 101",
+        "MaterialMetamorphosis > 101",
+        "SpaceTime > 101",
+        "Profession == 3",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +32",
+        "Modify AddAllDef +6"
+      ]
+    },
+    {
+      "name": "Monitor Combat Array",
+      "id": 205231,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +79 | Modify AddAllDef +14",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 25+. ToUse: MaterialCreation > 223 , MaterialMetamorphosis > 223 , SpaceTime > 223 , Profession == 3 , Level > 24 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 25,
+      "castReqs": [
+        "MaterialCreation > 223",
+        "MaterialMetamorphosis > 223",
+        "SpaceTime > 223",
+        "Profession == 3",
+        "Level > 24",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +79",
+        "Modify AddAllDef +14"
+      ]
+    },
+    {
+      "name": "Enhance Combat Array",
+      "id": 205233,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +120 | Modify AddAllDef +21",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 50+. ToUse: MaterialCreation > 334 , MaterialMetamorphosis > 334 , SpaceTime > 334 , Profession == 3 , Level > 49 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 50,
+      "castReqs": [
+        "MaterialCreation > 334",
+        "MaterialMetamorphosis > 334",
+        "SpaceTime > 334",
+        "Profession == 3",
+        "Level > 49",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +120",
+        "Modify AddAllDef +21"
+      ]
+    },
+    {
+      "name": "Boost Combat Array",
+      "id": 205235,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +165 | Modify AddAllDef +28",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 75+. ToUse: MaterialCreation > 478 , MaterialMetamorphosis > 478 , SpaceTime > 478 , Profession == 3 , Level > 74 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 75,
+      "castReqs": [
+        "MaterialCreation > 478",
+        "MaterialMetamorphosis > 478",
+        "SpaceTime > 478",
+        "Profession == 3",
+        "Level > 74",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +165",
+        "Modify AddAllDef +28"
+      ]
+    },
+    {
+      "name": "Overdrive Combat Array",
+      "id": 205237,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +205 | Modify AddAllDef +36",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 75+. ToUse: MaterialCreation > 593 , MaterialMetamorphosis > 593 , SpaceTime > 593 , Profession == 3 , Level > 74 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 75,
+      "castReqs": [
+        "MaterialCreation > 593",
+        "MaterialMetamorphosis > 593",
+        "SpaceTime > 593",
+        "Profession == 3",
+        "Level > 74",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +205",
+        "Modify AddAllDef +36"
+      ]
+    },
+    {
+      "name": "Assist Aggression Subsystem",
+      "id": 205239,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +250 | Modify AddAllDef +43 | ResistNanoStrain[145,1] | ResistNanoStrain[146,1]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 100+. ToUse: MaterialCreation > 747 , MaterialMetamorphosis > 747 , SpaceTime > 747 , Profession == 3 , Level > 99 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 100,
+      "castReqs": [
+        "MaterialCreation > 747",
+        "MaterialMetamorphosis > 747",
+        "SpaceTime > 747",
+        "Profession == 3",
+        "Level > 99",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +250",
+        "Modify AddAllDef +43",
+        "ResistNanoStrain[145,1]",
+        "ResistNanoStrain[146,1]"
+      ]
+    },
+    {
+      "name": "Monitor Aggression Subsystem",
+      "id": 205241,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +291 | Modify AddAllDef +50 | ResistNanoStrain[145,2] | ResistNanoStrain[146,2]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 135+. ToUse: MaterialCreation > 840 , MaterialMetamorphosis > 840 , SpaceTime > 840 , Profession == 3 , Level > 134 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 135,
+      "castReqs": [
+        "MaterialCreation > 840",
+        "MaterialMetamorphosis > 840",
+        "SpaceTime > 840",
+        "Profession == 3",
+        "Level > 134",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +291",
+        "Modify AddAllDef +50",
+        "ResistNanoStrain[145,2]",
+        "ResistNanoStrain[146,2]"
+      ]
+    },
+    {
+      "name": "Enhance Aggression Subsystem",
+      "id": 205243,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +338 | Modify AddAllDef +58 | ResistNanoStrain[145,3] | ResistNanoStrain[146,3]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 155+. ToUse: MaterialCreation > 902 , MaterialMetamorphosis > 902 , SpaceTime > 902 , Profession == 3 , Level > 154 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 155,
+      "castReqs": [
+        "MaterialCreation > 902",
+        "MaterialMetamorphosis > 902",
+        "SpaceTime > 902",
+        "Profession == 3",
+        "Level > 154",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +338",
+        "Modify AddAllDef +58",
+        "ResistNanoStrain[145,3]",
+        "ResistNanoStrain[146,3]"
+      ]
+    },
+    {
+      "name": "Boost Aggression Subsystem",
+      "id": 205245,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +374 | Modify AddAllDef +68 | ResistNanoStrain[145,5] | ResistNanoStrain[146,5]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 165+. ToUse: MaterialCreation > 962 , MaterialMetamorphosis > 962 , SpaceTime > 962 , Profession == 3 , Level > 164 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 165,
+      "castReqs": [
+        "MaterialCreation > 962",
+        "MaterialMetamorphosis > 962",
+        "SpaceTime > 962",
+        "Profession == 3",
+        "Level > 164",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +374",
+        "Modify AddAllDef +68",
+        "ResistNanoStrain[145,5]",
+        "ResistNanoStrain[146,5]"
+      ]
+    },
+    {
+      "name": "Overdrive Aggression Subsystem",
+      "id": 205247,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +417 | Modify AddAllDef +79 | ResistNanoStrain[145,8] | ResistNanoStrain[146,8]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 185+. ToUse: MaterialCreation > 1025 , MaterialMetamorphosis > 1025 , SpaceTime > 1025 , Profession == 3 , Level > 184 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 185,
+      "castReqs": [
+        "MaterialCreation > 1025",
+        "MaterialMetamorphosis > 1025",
+        "SpaceTime > 1025",
+        "Profession == 3",
+        "Level > 184",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +417",
+        "Modify AddAllDef +79",
+        "ResistNanoStrain[145,8]",
+        "ResistNanoStrain[146,8]"
+      ]
+    },
+    {
+      "name": "Omni-Pol Pacification Logic System",
+      "id": 205249,
+      "line": "PetShortTermDamageBuffs(225)",
+      "effect": "Modify AddAllOff +446 | Modify AddAllDef +88 | ResistNanoStrain[145,11] | ResistNanoStrain[146,11]",
+      "note": "'Combat Array' / 'Aggression Subsystem' ladder - the Engineer's pet attack-rating buff. Character level 195+. ToUse: MaterialCreation > 1046 , MaterialMetamorphosis > 1046 , SpaceTime > 1046 , Profession == 3 , Level > 194 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 195,
+      "castReqs": [
+        "MaterialCreation > 1046",
+        "MaterialMetamorphosis > 1046",
+        "SpaceTime > 1046",
+        "Profession == 3",
+        "Level > 194",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +446",
+        "Modify AddAllDef +88",
+        "ResistNanoStrain[145,11]",
+        "ResistNanoStrain[146,11]"
+      ]
+    },
+    {
+      "name": "Lesser Polarized Screening",
+      "id": 204339,
+      "line": "PetSnare_RootResistanceBuff(285)",
+      "effect": "Modify NanoResist +10 | ResistNanoStrain[145,25] | ResistNanoStrain[146,25]",
+      "note": "'Polarized Screening' - the bot resists Snare(145)/Root(146). Character level 50+. ToUse: Profession == 3 , Level > 49 , MaterialCreation > 304 , SpaceTime > 304 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 50,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 49",
+        "MaterialCreation > 304",
+        "SpaceTime > 304",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Modify NanoResist +10",
+        "ResistNanoStrain[145,25]",
+        "ResistNanoStrain[146,25]"
+      ]
+    },
+    {
+      "name": "Polarized Screening",
+      "id": 204335,
+      "line": "PetSnare_RootResistanceBuff(285)",
+      "effect": "Modify NanoResist +25 | ResistNanoStrain[145,32] | ResistNanoStrain[146,32]",
+      "note": "'Polarized Screening' - the bot resists Snare(145)/Root(146). Character level 75+. ToUse: Profession == 3 , Level > 74 , MaterialCreation > 513 , SpaceTime > 513 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 75,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 74",
+        "MaterialCreation > 513",
+        "SpaceTime > 513",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Modify NanoResist +25",
+        "ResistNanoStrain[145,32]",
+        "ResistNanoStrain[146,32]"
+      ]
+    },
+    {
+      "name": "Superior Polarized Screening",
+      "id": 204337,
+      "line": "PetSnare_RootResistanceBuff(285)",
+      "effect": "Modify NanoResist +50 | ResistNanoStrain[145,41] | ResistNanoStrain[146,41]",
+      "note": "'Polarized Screening' - the bot resists Snare(145)/Root(146). Character level 100+. ToUse: Profession == 3 , Level > 99 , MaterialCreation > 754 , SpaceTime > 754 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 100,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 99",
+        "MaterialCreation > 754",
+        "SpaceTime > 754",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Modify NanoResist +50",
+        "ResistNanoStrain[145,41]",
+        "ResistNanoStrain[146,41]"
+      ]
+    },
+    {
+      "name": "Greater Polarized Screening",
+      "id": 204341,
+      "line": "PetSnare_RootResistanceBuff(285)",
+      "effect": "Modify NanoResist +100 | ResistNanoStrain[145,53] | ResistNanoStrain[146,53]",
+      "note": "'Polarized Screening' - the bot resists Snare(145)/Root(146). Character level 145+. ToUse: Profession == 3 , Level > 144 , MaterialCreation > 878 , SpaceTime > 878 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 145,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 144",
+        "MaterialCreation > 878",
+        "SpaceTime > 878",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Modify NanoResist +100",
+        "ResistNanoStrain[145,53]",
+        "ResistNanoStrain[146,53]"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of Slave",
+      "id": 275835,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[275834,15] | Modify AddAllOff +130",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 0+. ToUse: Profession == 3 , SpaceTime > 1769 , MaterialMetamorphosis > 1769 , NanoFocusLevel op22 64 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 0,
+      "castReqs": [
+        "Profession == 3",
+        "SpaceTime > 1769",
+        "MaterialMetamorphosis > 1769",
+        "NanoFocusLevel op22 64",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[275834,15]",
+        "Modify AddAllOff +130"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of Entanglement",
+      "id": 204362,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[204357,15] | AreaCastNano[204357,15] | Modify AddAllOff +15",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 50+. ToUse: Profession == 3 , Level > 49 , SpaceTime > 364 , MaterialMetamorphosis > 364 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 50,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 49",
+        "SpaceTime > 364",
+        "MaterialMetamorphosis > 364",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[204357,15]",
+        "AreaCastNano[204357,15]",
+        "Modify AddAllOff +15"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of Binding",
+      "id": 204364,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[204358,15] | AreaCastNano[204358,15] | Modify AddAllOff +30",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 75+. ToUse: Profession == 3 , Level > 74 , SpaceTime > 601 , MaterialMetamorphosis > 601 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 75,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 74",
+        "SpaceTime > 601",
+        "MaterialMetamorphosis > 601",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[204358,15]",
+        "AreaCastNano[204358,15]",
+        "Modify AddAllOff +30"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of Malaise",
+      "id": 204366,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[204359,15] | AreaCastNano[204359,15] | Modify AddAllOff +45",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 125+. ToUse: Profession == 3 , Level > 124 , SpaceTime > 829 , MaterialMetamorphosis > 829 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 125,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 124",
+        "SpaceTime > 829",
+        "MaterialMetamorphosis > 829",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[204359,15]",
+        "AreaCastNano[204359,15]",
+        "Modify AddAllOff +45"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of Sloth",
+      "id": 204368,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[204360,15] | AreaCastNano[204360,15] | Modify AddAllOff +60",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 165+. ToUse: Profession == 3 , Level > 164 , SpaceTime > 930 , MaterialMetamorphosis > 930 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 165,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 164",
+        "SpaceTime > 930",
+        "MaterialMetamorphosis > 930",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[204360,15]",
+        "AreaCastNano[204360,15]",
+        "Modify AddAllOff +60"
+      ]
+    },
+    {
+      "name": "Intrusive Aura of the Humble Servant",
+      "id": 204370,
+      "line": "EngineerPetAOESnareBuff(288)",
+      "effect": "AreaCastNano[204361,15] | AreaCastNano[204361,15] | Modify AddAllOff +100",
+      "note": "'Intrusive Aura of ...' - makes the BOT emit a 15 m AoE snare aura (AreaCastNano). Character level 195+. ToUse: Profession == 3 , Level > 194 , SpaceTime > 1043 , MaterialMetamorphosis > 1043 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 195,
+      "castReqs": [
+        "Profession == 3",
+        "Level > 194",
+        "SpaceTime > 1043",
+        "MaterialMetamorphosis > 1043",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "AreaCastNano[204361,15]",
+        "AreaCastNano[204361,15]",
+        "Modify AddAllOff +100"
+      ]
+    },
+    {
+      "name": "Lesser Software Hacking Shielding",
+      "id": 267606,
+      "line": "PetDefensiveNanos(816)",
+      "effect": "ResistNanoStrain[147,15] | ResistNanoStrain[202,15] | Modify AddAllDef +200",
+      "note": "'Software Hacking Shielding' - bot defence plus Mezz(147)/CharmOther(202) resistance. Character level 201+. ToUse: MaterialMetamorphosis > 1300 , MaterialCreation > 1300 , SpaceTime > 1300 , Profession == 3 , Level > 200 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 201,
+      "castReqs": [
+        "MaterialMetamorphosis > 1300",
+        "MaterialCreation > 1300",
+        "SpaceTime > 1300",
+        "Profession == 3",
+        "Level > 200",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[147,15]",
+        "ResistNanoStrain[202,15]",
+        "Modify AddAllDef +200"
+      ]
+    },
+    {
+      "name": "Advanced Software Hacking Shielding",
+      "id": 267608,
+      "line": "PetDefensiveNanos(816)",
+      "effect": "Modify AddAllDef +300 | ResistNanoStrain[147,25] | ResistNanoStrain[202,25] | Modify ProjectileAC +1000 | Modify MeleeAC +1000 | Modify EnergyAC +1000 | Modify ChemicalAC +1000 | Modify RadiationAC +1000 | Modify ColdAC +1000 | Modify FireAC +1000 | Modify PoisonAC +1000",
+      "note": "'Software Hacking Shielding' - bot defence plus Mezz(147)/CharmOther(202) resistance. Character level 215+. ToUse: MaterialMetamorphosis > 1700 , MaterialCreation > 1700 , SpaceTime > 1700 , Profession == 3 , Level > 214 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 215,
+      "castReqs": [
+        "MaterialMetamorphosis > 1700",
+        "MaterialCreation > 1700",
+        "SpaceTime > 1700",
+        "Profession == 3",
+        "Level > 214",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllDef +300",
+        "ResistNanoStrain[147,25]",
+        "ResistNanoStrain[202,25]",
+        "Modify ProjectileAC +1000",
+        "Modify MeleeAC +1000",
+        "Modify EnergyAC +1000",
+        "Modify ChemicalAC +1000",
+        "Modify RadiationAC +1000",
+        "Modify ColdAC +1000",
+        "Modify FireAC +1000",
+        "Modify PoisonAC +1000"
+      ]
+    },
+    {
+      "name": "Software Hacking Shielding",
+      "id": 267607,
+      "line": "PetDefensiveNanos(816)",
+      "effect": "ResistNanoStrain[147,20] | ResistNanoStrain[202,20] | Modify AddAllDef +250",
+      "note": "'Software Hacking Shielding' - bot defence plus Mezz(147)/CharmOther(202) resistance. Character level 215+. ToUse: MaterialMetamorphosis > 1500 , MaterialCreation > 1500 , SpaceTime > 1500 , Profession == 3 , Level > 214 , Breed == 7 , NPCFamily == 95. Target must be NPCFamily 95 = EngineerAttackPet (AOSharp NpcClan enum). Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 215,
+      "castReqs": [
+        "MaterialMetamorphosis > 1500",
+        "MaterialCreation > 1500",
+        "SpaceTime > 1500",
+        "Profession == 3",
+        "Level > 214",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[147,20]",
+        "ResistNanoStrain[202,20]",
+        "Modify AddAllDef +250"
+      ]
+    },
+    {
+      "name": "Pet Attention",
+      "id": 269869,
+      "line": "PetRoot / SnareandMezzRemoval(1013)",
+      "effect": "SystemText[Your pets move more freely.]",
+      "note": "pet utility, shared with Bureaucrat and Meta-Physicist. Character level 0+. ToUse: VisualProfession == 3 , VisualProfession == 8 , VisualProfession == 12 , MaterialCreation > 769 , SpaceTime > 769.",
+      "minLevel": 0,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 769",
+        "SpaceTime > 769"
+      ],
+      "rawEffects": [
+        "SystemText[Your pets move more freely.]"
+      ]
+    },
+    {
+      "name": "Pet Steal Back",
+      "id": 269907,
+      "line": "Charm_Short(1022)",
+      "effect": "RemoveNanoStrain[202] | SystemText[Your manifestation moves more freely.]",
+      "note": "reclaim a charmed bot - RemoveNanoStrain[202] = CharmOther. Character level 100+. ToUse: VisualProfession == 3 , VisualProfession == 8 , VisualProfession == 12 , MaterialCreation > 769 , SpaceTime > 769 , Level > 99 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 100,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 769",
+        "SpaceTime > 769",
+        "Level > 99",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "RemoveNanoStrain[202]",
+        "SystemText[Your manifestation moves more freely.]"
+      ]
+    },
+    {
+      "name": "Improved Pet Steal Back",
+      "id": 269908,
+      "line": "Charm_Short(1022)",
+      "effect": "RemoveNanoStrain[202] | SystemText[Your manifestation moves more freely.]",
+      "note": "reclaim a charmed bot - RemoveNanoStrain[202] = CharmOther. Character level 215+. ToUse: VisualProfession == 3 , VisualProfession == 8 , VisualProfession == 12 , MaterialCreation > 1399 , SpaceTime > 1399 , Level > 214 , Breed == 7. Cast ON the bot (Breed == 7 HumanMonster).",
+      "minLevel": 215,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 1399",
+        "SpaceTime > 1399",
+        "Level > 214",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "RemoveNanoStrain[202]",
+        "SystemText[Your manifestation moves more freely.]"
+      ]
+    },
+    {
+      "name": "Pet Cleanse",
+      "id": 269870,
+      "line": "PetDebuffCleanse(1047)",
+      "effect": "SystemText[Your pets move more freely.]",
+      "note": "pet debuff cleanse, shared with Bureaucrat and Meta-Physicist. Character level 0+. ToUse: VisualProfession == 3 , VisualProfession == 8 , VisualProfession == 12 , MaterialCreation > 1399 , SpaceTime > 1399.",
+      "minLevel": 0,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 1399",
+        "SpaceTime > 1399"
+      ],
+      "rawEffects": [
+        "SystemText[Your pets move more freely.]"
+      ]
+    },
+    {
+      "name": "Lesser Miniaturization",
+      "id": 263301,
+      "line": "EngineerMiniaturization(811)",
+      "effect": "Modify AddAllDef +30 | Modify Scale -30",
+      "note": "Yes - this IS the 'shrink the bot' utility. Modify Scale is NEGATIVE (-30 / -50) and it adds AddAllDef (+30 / +50), and the ToUse list carries NPCFamily == 95 (EngineerAttackPet) plus MonsterData == 218783 / 218928, so it is cast on the bot, not on the Engineer. Requires Shadowlands; the nano is a Scheol quest reward (AODB wiki). NOTE: engineer-nanos.json files these two under 'Self / Team Buffs' - that categorisation is misleading, they are pet-targeted.",
+      "minLevel": 0,
+      "castReqs": [
+        "Expansion op22 2",
+        "SpaceTime > 572",
+        "MaterialCreation > 572",
+        "Profession == 3",
+        "MonsterData == 218783",
+        "MonsterData == 218928",
+        "Flags op3 0",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllDef +30",
+        "Modify Scale -30"
+      ]
+    },
+    {
+      "name": "Miniaturization",
+      "id": 263303,
+      "line": "EngineerMiniaturization(811)",
+      "effect": "Modify AddAllDef +50 | Modify Scale -50",
+      "note": "Yes - this IS the 'shrink the bot' utility. Modify Scale is NEGATIVE (-30 / -50) and it adds AddAllDef (+30 / +50), and the ToUse list carries NPCFamily == 95 (EngineerAttackPet) plus MonsterData == 218783 / 218928, so it is cast on the bot, not on the Engineer. Requires Shadowlands; the nano is a Scheol quest reward (AODB wiki). NOTE: engineer-nanos.json files these two under 'Self / Team Buffs' - that categorisation is misleading, they are pet-targeted.",
+      "minLevel": 0,
+      "castReqs": [
+        "Expansion op22 2",
+        "SpaceTime > 572",
+        "MaterialCreation > 572",
+        "Profession == 3",
+        "MonsterData == 218783",
+        "MonsterData == 218928",
+        "Flags op3 0",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllDef +50",
+        "Modify Scale -50"
+      ]
+    },
+    {
+      "name": "Sedative Injectors",
+      "id": 302254,
+      "line": "SiphonBox683(683)",
+      "effect": "AddOffProc[5,302253]",
+      "note": "Pet proc: AddOffProc[5, 302253] with ToUse NPCFamily == 95, i.e. it installs an offensive proc on the Engineer bot. Character level 211+, MC/TS 1,301. engineer-nanos.json files it under 'Misc / Utility'.",
+      "minLevel": 211,
+      "castReqs": [
+        "MaterialCreation > 1300",
+        "SpaceTime > 1300",
+        "Profession == 3",
+        "Level > 210",
+        "Flags op118 0",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "AddOffProc[5,302253]"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "command": "/pet guard",
+      "what": "Follow the Engineer and attack anything that attacks him. This is the DEFAULT state right after a bot is cast, and again after zoning (AO-Universe Basic Pet Commands Guide)."
+    },
+    {
+      "command": "/pet follow",
+      "what": "Follow the owner; movement only, no engaging."
+    },
+    {
+      "command": "/pet attack",
+      "what": "Attack the current target."
+    },
+    {
+      "command": "/pet behind",
+      "what": "Stay behind the owner / retreat from combat. AO-Universe recommends issuing it immediately after zoning so the bot does not pull guards or towers. It is also the state an OVER-EQUIPPED bot is forced into."
+    },
+    {
+      "command": "/pet wait",
+      "what": "Stay exactly where it is: do not move, do not attack anything."
+    },
+    {
+      "command": "/pet heal",
+      "what": "Listed by AO-Universe as a generic pet command (heal yourself, another player, a pet, or certain NPCs). The ENGINEER has no heal pet, so this is not an Engineer tool - an Engineer repairs the bot by casting the pet-heal nanos (Quick Fix 116793 ... A Maker's Touch 116791) himself."
+    },
+    {
+      "command": "/pet report",
+      "what": "The bot reports its health and current fighting target."
+    },
+    {
+      "command": "/pet chat <message>",
+      "what": "Make the bot say a one-word message (AO-Universe)."
+    },
+    {
+      "command": "/pet rename <name>",
+      "what": "Rename the bot. The AODB Engineer Guide notes the new name must be 4 or more characters."
+    },
+    {
+      "command": "/pet terminate",
+      "what": "Terminate all current pets."
+    },
+    {
+      "command": "/pet \"PETNAME\" <command>",
+      "what": "Scope any command to ONE named pet. This matters specifically for the Engineer: the AODB Engineer Guide states that from level 100, with a second pet out, every command except /pet rename goes to BOTH pets unless it is name-scoped."
+    },
+    {
+      "command": "/pet help",
+      "what": "Open the Pet Info window (clickable command macros)."
+    },
+    {
+      "command": "/tell Helpbot oe <skill>",
+      "what": "NOT a client command - the over-equip check is a chat-bot tell. AODB notes Helpbot is down and that Aquest now carries those services (/tell Aquest help). The MP profile's '/oe <skill#>' entry is this same thing written as if it were a slash command."
+    }
+  ],
+  "mechanics": [
+    "ONE role only: every Engineer pet in the data is an ATTACK robot. 90 of the 91 pet-summon nanos are robots (category 'Pets - Robot'); the 91st is the Jamming Tower. There is no Engineer heal pet and no Engineer mezz pet - the MP's three-slot attack/heal/mezz model does NOT transfer.",
+    "Summon function: Engineer bots use SpawnItem (FunctionType 53064) with args [<4-char template code>, <bot level>, 0], where the MP uses SummonPet (53167). OmniCell's server source (Server/ZoneEngine/Core/Pets.cs) documents that all 476 SpawnItem calls take the same three arguments as SummonPet and that the hashes are pet names (it names ENAU, ENGA, ENGU, ENWA as Engineer templates), so for pet purposes SpawnItem summons a pet exactly as SummonPet does.",
+    "Summon skills are always Matter Creation (130) + Time & Space (131) at the same value (one to three points apart on a few endgame nanos), plus Profession(60) == 3. Unlike the MP, NO Engineer robot summon gates via VisualProfession(368) - all 90 use Profession 60. The pet-heal line is the exception: those seven gate via VisualProfession == 3.",
+    "Bots COST CREDITS. 79 of the 90 robot summons carry Hit[61,-N,-N,0] (stat 61 = Cash) plus a matching 'Cash > N-1' cast requirement, so casting deducts N credits. The 11 Automaton summons are the exception - free. Range: 132 credits (Feeble Android) to 3,694 (Ravening M-60). One anomaly: Desolator Assault Drone (223321) requires Cash >= 3,465 but deducts only 3,400. This is a real resource constraint an Engineer bot AI must check before casting - an MP never pays to summon.",
+    "OVER-EQUIP is the Engineer's defining pet constraint. AO-Universe's OE guide gives OE = 100 - (buffed skill / requirement) x 100, and 20 or more means over-equipped. For a PET this is not a damage penalty as it is for a weapon: 'All pets commanded with more than 20% over-equipped summon/charm stats will not respond. They will finish fighting all their attackers, before going to the pet behind state. Pets will refuse to obey commands until the skills are back up.' The refusal message is 'Illegal command. Master not recognised.' (AODB Engineer:Tips and Tricks).",
+    "So the maintenance rule is: keep MC and TS at or above 80% of the SUMMON requirement, not merely at the value you cast with. AODB: 'Amount of Skill Required to Control = Amount of skill to make or wear * 0.8 (round up)'. Worked example from that guide, cross-checked against local data: Slayerdroid Guardian (45671) needs MC/TS 874 to cast (data: 'MaterialCreation > 873') and 700 to keep controlling it. A wrangle / Mochams over-equip is therefore legitimate for CASTING a higher bot, but the buff may only fall to 80% of the requirement - it may not drop off entirely. This is the sharpest difference from the MP, whose pets stay obedient after the wrangle expires.",
+    "Bot persistence: the AODB Engineer Guide states the bot lasts until you terminate it, it dies, or you log off, and that on a lost connection it waits 2 minutes for you to reconnect before powering down.",
+    "Command range is 50 m; out of range the client answers \"Pet is too far away. It can't hear your command\" (AODB Engineer Guide).",
+    "TWO PETS from level 100 (AODB Engineer Guide): 'From level 100 you can also have a pet dog. From then on, if you issue a command, other than /pet rename, it is issued to both pets. To issue a command to one pet use /pet \"petname\" command.' Any bot AI must name-scope commands once a second pet is out. Note the direction of the difference: the MP has three pets in three distinct slots with three distinct roles; the Engineer has up to two, both attack-role.",
+    "Pet heals are cast BY the Engineer ON the bot. The seven-step line Quick Fix (116793) -> Patchy Repairs (116794) -> Recondition Parts (116797) -> Rebuild Casing (116792) -> Field Workshop (116796) -> Intricate Repairs (116795) -> A Maker's Touch (116791) are all Hit[27,min,max] (stat 27 = Health), gated on MaterialCreation + SpaceTime + BiologicalMetamorphosis and VisualProfession(368) == 3, with Breed == 7 (HumanMonster) in ToUse - the encoding for 'cast on a pet'. Heal sizes run 120-199 up to 1,285-2,267.",
+    "Three later repair nanos also cleanse: Synchronized Energy Spike (223305, L185), Energized Casing of the Faithful Servant (203867, L195) and Synchronized Capacitor Overload (223339, L214) each heal 350 AND cut Snare(145)/Root(146) strain duration.",
+    "Pet attack-rating ladder: PetShortTermDamageBuffs strain 225, eleven nanos - Assist / Monitor / Enhance / Boost / Overdrive 'Combat Array', then the same five prefixes on 'Aggression Subsystem', topped by Omni-Pol Pacification Logic System (205249, L195, +446 AddAllOff / +88 AddAllDef). Every one requires NPCFamily == 95 (EngineerAttackPet) and Breed == 7, i.e. cast on the bot. The Engineer has no separate long-term pet damage line equivalent to the MP's Instill (strain 216) - strain 216 does not appear in the Engineer-castable extract at all.",
+    "Bot mobility and defence utilities, all cast on the bot: the Energize Shell line (203869 / 203871 / 203873) and the Conductive Spike line (203861 / 203863 / 203865) shorten Snare/Root on the bot; Polarized Screening (strain 285: 204339 / 204335 / 204337 / 204341) makes the bot RESIST Snare/Root; Software Hacking Shielding (strain 816: 267606 / 267607 / 267608) adds +200..+300 AddAllDef plus resistance to Mezz(147) and CharmOther(202), and the top one adds +1000 to every AC.",
+    "The bot itself can be made an AoE SNARE emitter - an Engineer-only trick with no MP equivalent. EngineerPetAOESnareBuff strain 288: 'Intrusive Aura of Entanglement / Binding / Malaise / Sloth / the Humble Servant / Slave' (204362, 204364, 204366, 204368, 204370, 275835). Each is AreaCastNano[<child nano>, 15] cast on the bot plus a small AddAllOff. Intrusive Aura Cancellation (204372) exists solely to switch it off: its single function is ReduceNanoStrainDuration[288, 900000], i.e. it burns the remaining duration of strain 288 on the bot - useful before a mezzed pull.",
+    "Miniaturization (263303) and Lesser Miniaturization (263301), strain 811, shrink the bot: Modify Scale -50 / -30 together with Modify AddAllDef +50 / +30, ToUse NPCFamily == 95. Scheol quest reward (AODB wiki). They are filed under 'Self / Team Buffs' in engineer-nanos.json; that category is misleading - they target the bot.",
+    "Sedative Injectors (302254, L211) installs an offensive proc on the bot: AddOffProc[5, 302253] with ToUse NPCFamily == 95.",
+    "Pet recovery and cleanse are shared with Bureaucrat and Meta-Physicist - their ToUse lists carry VisualProfession == 3, 8 AND 12: Pet Attention (269869, strain 1013), Pet Cleanse (269870, strain 1047), Pet Steal Back (269907) and Improved Pet Steal Back (269908) (strain 1022, RemoveNanoStrain[202] = CharmOther) reclaim a charmed bot.",
+    "Formula 22 (275016, strain 217 MPPetInitiativeBuffs - the strain is named after the MP but the Engineer casts this one) is the Engineer's endgame pet initiative buff: +240 to all four initiatives and +80 Aggressiveness on the bot. Requires MC/TS 1,825 and the NanoFocusLevel bit-64 gate.",
+    "AURAS - which is which, stated plainly. EngineerAuras (strain 227, 15 nanos, 'Sympathetic ...') are TeamCastNano and EngineerDebuffAuras (strain 236, 14 nanos, 'Disruptive ...') are AreaCastNano; in the local data BOTH are cast by the ENGINEER (VisualProfession == 3) with no NPCFamily and no Breed == 7 requirement, so on the evidence they are the Engineer's own team and hostile auras and they belong in engineer-buffs.json, not here. The ONLY genuinely pet-emitted aura in the data is the 'Intrusive Aura of ...' line (strain 288), which does carry Breed == 7 and is therefore covered above. EngineerSpecialAttackAbsorber (strain 286, the 'Sloughing ...' line, 14 nanos) is likewise self/team - ChangeVariable on SpecialAttackShield(517) or TeamCastNano, with no pet requirement - so it is not a pet mechanic either.",
+    "TRADESKILL BOT UPGRADES are an Engineer-only system with no MP equivalent, and they are ITEMS, not nanos, so none appear in engineer-nanos.json. Permanent: Trimmer - Positive Aggressive-Defensive (sets the bot's agg/def bar, up to 100% agg at QL200 - faster attacks, worse evades), Trimmer - Negative Aggressive-Defensive (the reverse), Trimmer - Increase Aggressiveness (adds taunt to the bot's hits, about +90 at QL200; built from XU-11 Serum + Chemical Impact Injector + Trimmer Casing with Mechanical Engineering and a little Chemistry, QL 30-200). Temporary: the four 'Divert Energy to ...' trimmers - Offense / Defense / Hitpoints / Avoidance - each trading one stat for another (a QL200 Divert Energy to Offense gives +40 AAO and +40 damage while cutting ACs by 1000). Damage-type trimmers (fire / energy / cold) change the bot's damage type for 10 minutes, cut its hitpoints significantly, and lock Mechanical Engineering for 60 minutes, so once per hour. Trimmer - Improve Actuators is an emergency combined heal-and-damage boost (heals the bot up to about 6k HP and boosts damage for 600 seconds, locking Mechanical Engineering for an hour; made from Smelly Liquid, which drops from Alien Generals, plus a Trimmer Casing). Android NCU Upgrade adds NCU to the bot (about +110 at QL200) at the cost of about 400 AC.",
+    "On the wire the Engineer bot is an ordinary pet: AOSharp PetType.Attack (0xA) arrives in the pet's SimpleCharFullUpdate (SimpleNpcInfo.PetType) and again in PetToMasterMessage.AttachNotificationValue, and PetType.cs records this as confirmed across Engineer pets in the local sniffs/ and captures/ sets. The nano-side family id for an Engineer bot is NpcClan 95 = EngineerAttackPet (AOSharp CharacterFlags.cs) - that is what every pet-targeted Engineer nano checks. The MP's equivalents are 96 (heal), 97 (attack) and 98 (mezz).",
+    "Bot rule for AOBuddy: pick the strongest castable bot by filtering engineer-nanos.json category 'Pets - Robot' and taking the highest MaterialCreation/SpaceTime requirement the character's LIVE stats satisfy at 100%, and also check the live Cash stat against that summon's credit cost before casting. Do NOT hardcode a per-level table. After casting, keep watching MC/TS: if either falls below 80% of that nano's requirement the bot silently stops obeying and drops to behind, with no packet saying so beyond the refusal text."
+  ],
+  "_unverified": [
+    "Whether the Engineer bot can be GIVEN A WEAPON: NOT verified, and therefore deliberately left out of the body of this file. Neither the AODB Engineer Guide, AODB Engineer:Tips and Tricks, nor AO-Universe's Engineer Guide MKIII says a bot can be handed a weapon, and no local item or nano evidence was found.",
+    "The 'robot shell' step. The AODB Engineer Guide describes summoning as two steps - cast the nano to 'create a robot shell', then right-click the shell to spawn the robot - which is consistent with the function literally being named SpawnItem (53064). BUT OmniCell's server source (Pets.cs) states all 476 SpawnItem calls take the same three arguments as SummonPet and summon the pet directly, and the local sniff-confirmed PetType data shows Engineer bots arriving as ordinary pets. Local data cannot settle whether the current client still has an intermediate shell ITEM. Verify on the wire before building a summon routine that expects to find and Use() a shell.",
+    "Whether the level-100 'pet dog' (the documented Engineer second pet) IS the Predator M-30 line. The correlation is strong - the Predator entry nano is the only bot summon gated at character level 100 - but no cited source names the Predator line as the second/dog pet, and the AODB Engineer nano page does not characterise it that way. Not asserted.",
+    "Which nano the AODB wiki row 'Predator M-30 - Scheol Garden' refers to. Local data has two nanos in that name family: 'Prototype Predator M-30' (223325, character level 100) and 'Predator M-30' (301855, character level 150). The acquisition note is attached to the exact name match (301855); 223325's source is left unknown.",
+    "Nano SOURCES for the 75 non-Shadowlands bots (11 Automaton, 11 Android, 11 Gladiatorbot, 11 Guardbot, 12 Warbot, 12 Warmachine, 3 Wardroid, 4 Slayerdroid), for the Ravening M-60 (275815) and for the Jamming Tower (274369) are NOT recorded here - the AODB Engineer nano page lists only the Shadowlands and Unique entries, and auno / aoitems / fandom block automation.",
+    "What the Jamming Tower (274369) actually does. Its nano's only function is SpawnItem[EGJA,1,0]; there is no local record of the tower's own behaviour and no cited guide covers it.",
+    "Bot-heal availability: the AODB Engineer Guide says 'All Bot heals are mission reward only' and that the Sympathetic and Disruptive lines are not sold in shops. Not cross-checked against a second source, and not checked against nano-crystal criteria in items.ocp.",
+    "'Slayerdroid Transference' (31593) - VisualProfession == 3, MonsterData == 0, +400 Martial Arts, +50 MultiMelee / Brawl / FastAttack, +150 Projectile/Melee/Energy AC, ChangeVariable[Scale(360), 50]. Name and effects suggest something Slayerdroid-related, but it carries NO NPCFamily and NO Breed == 7 requirement, so local data does not show it as pet-targeted. Left out of petBuffs; identify it before using it.",
+    "No PetWarp (NanoLine 1019) nano exists in the Engineer-castable extract. The Engineer's warps are Beacon Warp (154914, SummonPlayer) and Team Beacon Warp (154913, SummonTeamMates) - player warps, strain 293 BeaconWarp, with an ExpansionPlayfield == 0 requirement. A reading of AODB's Engineer:Tips and Tricks as touching on 'pet warping' is NOT confirmed and no pet-warp nano is in the data.",
+    "Exact trimmer QLs, stat magnitudes and component lists beyond the figures quoted (QL200 numbers, 5- and 10-minute durations, the 60-minute Mechanical Engineering lock) come from AODB / AO-Universe guide text, not from local item data. items.ocp was not queried for trimmer templates in this pass - do that before the bot ever tries to build or use one.",
+    "Character-level breakpoints for the 75 non-Shadowlands bots: engineer-nanos.json reports minLevel 0 for all of them. The real gate is the MC/TS requirement plus the credit cost. The 'bot lvl N' figure in each progression note is the SpawnItem template-level argument from local data - that is the BOT's level, not a character-level requirement.",
+    "Whether any community guide's talk of 'the bot's aura' means the strain 227/236 Engineer auras rather than the strain 288 Intrusive Aura line. Local data is unambiguous that 227/236 have no pet requirement; the guide wording was not reconciled against that.",
+    "Relative bot strength within a family beyond the template-level ordering (damage, HP, AC of each bot template) is not in nanos.ocp - the bot's own stats live in the mob template, which was not read in this pass."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/engineer-nanos.json (client 18.8.50_EP1 extraction of nanos.ocp via OmniCell.Core NanoLoader; names from itemnames.sql) - the source of every id, name, minLevel, castReq, SpawnItem template code, bot level and credit cost in this file.",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql - all 137 ids used from the four pet categories were re-verified name-for-name against this table in this pass: 137 of 137 exact match, 0 mismatches, 0 missing.",
+    "LOCAL: AOSharp.Common/GameData/CharacterFlags.cs - NpcClan.EngineerAttackPet = 95 (vs MPHealPets 96 / MPAttackPets 97 / MPMezzPets 98).",
+    "LOCAL: AOSharp.Common/GameData/PetType.cs - PetType.Attack = 0xA, documented as confirmed against Engineer pets in the local sniffs/ and captures/ sets; the pet role arrives in SimpleCharFullUpdate (SimpleNpcInfo.PetType) and in PetToMasterMessage.AttachNotificationValue.",
+    "LOCAL: AOSharp.Common/GameData/Breed.cs (HumanMonster = 7); NanoEnums.cs (strain names: Snare 145, Root 146, Mezz 147, CharmOther 202, MPPetInitiativeBuffs 217, PetShortTermDamageBuffs 225, PetSnare_RootResistanceBuff 285, EngineerSpecialAttackAbsorber 286, EngineerPetAOESnareBuff 288, EngineerAuras 227, EngineerDebuffAuras 236, EngineerMiniaturization 811, PetDefensiveNanos 816, SnareandMezzRemoval 1013, Charm_Short 1022, PetDebuffCleanse 1047); Stat.cs (Health 27, Cash 61, Scale 360, SpecialAttackShield 517).",
+    "LOCAL: OmniCell/Server/ZoneEngine/Core/Pets.cs - documents that SummonPet (53167) and SpawnItem (53064) are called identically (4-char template hash, level, flag) and names ENAU / ENGA / ENGU / ENWA as Engineer automaton and guard templates.",
+    "AO-Universe - Basic Pet Commands Guide (https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/basic-pet-commands-guide) - the command list, /pet chat, named-pet scoping, and the 'guard after zoning, issue behind' convention.",
+    "AO-Universe - Over-Equipped (https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/over-equipped) - the OE formula, the 20% threshold, the weapon damage tiers, and the pet-specific rule that OE pets finish their current fight then drop to behind and refuse commands.",
+    "AODB Wiki - Engineer Guide (http://wiki.aodb.us/wiki/Engineer_Guide) - bot shell summoning, bot persistence and the 2-minute disconnect grace, the 50 m command range, /pet rename needing 4+ characters, the level-100 second pet and both-pets command behaviour, the 0.8 control-skill formula with the Slayerdroid Guardian 874/700 example, and 'all bot heals are mission reward only'.",
+    "AODB Wiki - Engineer:Tips and Tricks (https://wiki.aodb.us/wiki/Engineer:Tips_and_Tricks) - the 'Illegal command. Master not recognised.' over-equip refusal message; Trimmer - Divert Energy to Offense (QL200: +40 AAO, +40 damage, -1000 AC); Trimmer - Increase Aggressiveness (about +90 at QL200); Trimmer - Positive Aggressive-Defensive.",
+    "AODB Wiki - Engineer Nano Programs (http://wiki.aodb.us/wiki/Engineer_Nano_Programs) - Shadowlands bot-nano acquisition (Scheol / Adonis / Penumbra / Inferno Gardens and Sanctuaries, Pandemonium vendors) and Miniaturization / Lesser Miniaturization as Scheol quest rewards.",
+    "AODB Wiki - Trimmer - Improve Actuators (http://wiki.aodb.us/wiki/Trimmer_-_Improve_Actuators) and Trimmer - Increase Aggressiveness (http://wiki.aodb.us/wiki/Trimmer_-_Increase_Aggressiveness) - trimmer effects, durations, skill locks and components.",
+    "AO-Universe - Engineer Guide MKIII 1/3 and 2/3 (https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 and .../engineer-guide-mkiii-23) - the trimmer roster (permanent agg/def, temporary Divert Energy, damage-type, Improve Actuators), Android NCU Upgrade, the 50 m range, and OE behind-mode.",
+    "AO-Universe - Aggression Trimmer (https://www.ao-universe.com/guides/classic-ao/tradeskill-guides-6/gadgets-5/aggression-trimmer) and Damage Modifier Trimmers (https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/gadgets-2/damage-modifier-trimmers) - trimmer build components and damage-type trimmer mechanics.",
+    "AODB Wiki - Over Equipped (http://wiki.aodb.us/wiki/Over_Equipped) and Helpbot (http://wiki.aodb.us/wiki/Helpbot) - the OE check is a chat-bot tell ('/tell Helpbot oe <skill>'); Helpbot is down and Aquest now provides it. There is no client-side /oe command.",
+    "NOT USED (blocked to automation per the playbook): auno.org, aoitems.com, anarchyonline.fandom.com. No claim in this file comes from them."
+  ]
+}

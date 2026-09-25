@@ -1,0 +1,4008 @@
+{
+ "profession": "Bureaucrat",
+ "professionId": 8,
+ "slug": "bureaucrat",
+ "generatedBy": "tools/eng-gear-extractor --prof 8 --slug bureaucrat -> tools/perk-extractor/build-perks.py (items.ocp 18.8.50_EP1), joined by hand against reference/skillcaps.json, reference/breeds.json and bureaucrat-nanos.json",
+ "expansionRequirement": "NO expansion is required to play a Bureaucrat. Verified from bureaucrat-nanos.json: of the 343 Crat-castable nanos only 49 carry an Expansion(389) BitAnd 2 (Shadowlands) gate and only 2 carry BitAnd 32 (Lost Eden) - 292 of 343 have no expansion requirement at all. The froob Crat keeps its whole calm/root/charm/bot core; what Shadowlands buys is the Empowered calm tier (Empowered Divided Ego 224143, Psy Mod 2001 at level 219), the Puissant AoE roots (Puissant Void Inertia 224129, Psy Mod 1912 / Time & Space 1641), the Malaise initiative debuffs, Corporate Guardian (235386) and the Skilled/Greater Gunslinger pistol buffs (263251 / 263250).",
+ "playstyle": {
+  "role": "Pistol-carrying pet-and-crowd-control caster. The Bureaucrat summons a bot, charms a second pet, and then takes the rest of the room out of the fight with calms, roots and snares while it debuffs what is left. Its power is gated by whether the crowd control LANDS, not by a damage or healing ladder.",
+  "summary": "The Bureaucrat (profession 8) has 343 castable nanos (bureaucrat-nanos.json), and the shape of that list is the class: 65 summonable bots, 37 CharmOther charms plus 2 short charms, 25 calms/mezzes, 17 roots, 10 snares, 27 area casts, 13 Demotivational Speeches, 12 Motivational Speeches, 17 nukes and 17 debuffs. Every school it needs for crowd control is cheap - Psychological Modifications, Sensory Improvement, Biological Metamorphosis, Psychology, Computer Literacy, Nano C. Init. and Tutoring are ALL IP cost 1.0 - while both of its PET schools, Matter Creation and Time & Space, cost 1.6. Its weapon is the Pistol (1.6), buffed by its own PistolBuff line (Gunslinger 30077, then Skilled Gunslinger 263251 / Greater Gunslinger 263250, both Psy Mod 583 / Sense Imp 583 and both Shadowlands-gated). It is a froob-playable class: only 49 of its 343 nanos carry a Shadowlands gate and only 2 a Lost Eden gate.",
+  "strengths": [
+   "The deepest crowd-control toolkit in the game, and the cheap schools gate it: 114 of its 343 nanos need nothing but the three cost-1.0 schools (Psy Mod / Sense Imp / Bio Met).",
+   "25 calms on nano strain 147 (Mezz) from Distracted Gaze (30065, Psy Mod 58) all the way to Empowered Divided Ego (224143, Psy Mod 2001 / Sense Imp 1997 at level 219), 17 roots on strain 146 topping out at Void Inertia (55993, Psy Mod 859) and 10 snares on strain 145 driven by Time & Space (Shackles of Obedience 82463, Time & Space 741).",
+   "Two pets at once: a summoned bot (65 of them, the ladder is Matter Creation and Time & Space in LOCKSTEP - Basic Worker-Droid 46397 at MC 7 / T&S 7 up to Director-Grade Bodyguard 46391 at MC 787 / T&S 787, then Corporate Guardian 235386 at 1227/1227 and CEO Guardian 273300 at 1470/1470) plus a charmed mob (37 CharmOther nanos up to The Voice of God 231010, Psy Mod 1500 / Sense Imp 1500 / Bio Met 1500 at level 220).",
+   "Team buffs nobody else gives: 12 Motivational Speeches on strain 233, topping out at Motivational Speech: Improved Heroic Measures (270783, Psy Mod 1913 / Sense Imp 1913 / Time & Space 1471).",
+   "Its two biggest defensive perk blocks are shared with only three other professions each - Careful in Battle (Add All Def +300, Critical Resistance +80; MA/Fixer/Crat/Shade) and Starfall (Max Nano +400, Max Health +160, +15 to all six schools; Crat/Doc/NT/MP).",
+   "Almost no expansion dependency: 292 of 343 nanos have no Expansion(389) requirement at all."
+  ],
+  "weaknesses": [
+   "The Demotivational Speech line is 13 nanos that ALL share nano strain 238, so only ONE of them can ever be on a target - the line is a ladder, not a stack. ao-universe calls the speeches short ranged and low impact outside an organised team.",
+   "Both pet schools are its expensive ones. Matter Creation and Time & Space cost 1.6 IP each while the three CC schools cost 1.0, and 229 of its 343 nanos need one of those 1.6 schools. Pet QL is the first thing that falls behind on a tight IP budget.",
+   "Every evade costs 2.4 (Evade-ClsC, Dodge-Rng, Duck-Exp), Body Dev. costs 2.4, and the class has no heal, no reflect and no absorb. If a calm breaks the Crat is the squishiest thing in the room.",
+   "Fling Shot, Multi Ranged and Ranged Init. all cost 4.0 - the maximum in the table - even though Pistol itself is 1.6. The pistol specials are only reachable through the perk lines, not through IP.",
+   "Every melee weapon skill costs 3.2 or 4.0 and Melee Init. costs 4.0. There is no melee Bureaucrat.",
+   "Exactly ONE of its 343 nanos uses Matter Metamorphosis (Fill Inbox 266303, MM 800), so 1.6 IP buys essentially nothing there - but the common claim that a Crat needs no MM at all is not quite true either.",
+   "Crowd control is resisted. Nano Resist costs the Crat 1.6 and nothing in the class helps the landing chance of a calm except raising the school that casts it."
+  ],
+  "tips": [
+   "RAISE PSYCHOLOGICAL MODIFICATIONS FIRST AND ALWAYS. It is cost 1.0 and it is a cast requirement on 234 of the 343 Crat nanos - more than any other school - running from Psy Mod 5 (Momentary Daze 43368) to Psy Mod 2001 (Empowered Divided Ego 224143 and Means Test Pet 258222).",
+   "SENSE IMP AND PSY MOD MOVE TOGETHER. Every calm, every speech, every charm and every Malaise debuff lists them as a matched pair (Empowered Divided Ego 224143 needs Psy Mod 2001 AND Sense Imp 1997; Malaise of Zeal 275824 needs Psy Mod 1913 AND Sense Imp 1913). Letting one lag wastes the other.",
+   "THE BOT LADDER IS MC == T&S, EXACTLY. All 65 bot summons carry the same number in both schools. There is no point being ahead in one - the lower of the two is the bot you can cast.",
+   "ONE DEMOTIVATIONAL SPEECH AT A TIME (strain 238, 13 nanos). Cast the best one you can land; a second one just replaces the first. The Motivational Speeches are a separate strain (233, 12 nanos) so a team buff and an enemy debuff CAN run together.",
+   "CALMS AND ROOTS ARE DIFFERENT STRAINS (147 Mezz vs 146 Root vs 145 Snare), so a calmed mob can also be rooted. That is the Bureaucrat's actual lockdown, not any single nano.",
+   "ao-universe's practical warning: the Rubi-Ka calm (Contemplation 155577, Psy Mod 874) wipes a mob's hate list and pacifies it, which is murder to land on Shadowlands mobs; the SL calms land reliably but only sometimes pacify, so you follow up with an RK calm to clear the aggro. Area calm is useless in SL and excellent on RK and aliens.",
+   "COMMANDING PRESENCE HAS NO STATS AT ALL - all 10 ranks (ids 210931-210940) modify nothing in items.ocp. Do not read that as 'weak'; the line is pure perk ACTIONS, and ao-universe says to max it at all times for the team AR/AAD.",
+   "PSYCHOLOGY IS THE CHARM SKILL AND IT IS FREE. It costs 1.0, and Directorship (+120) plus Persuader (+200) plus Insurance Agent (+80) plus Team Building (+15) plus Executive Decisions (+65) put +480 Psychology into the class from perks alone. wiki.aodb.us tells a charm Crat to max it. NOTE: no Crat nano in bureaucrat-nanos.json lists Psychology as a CAST requirement, so its role in charm is a mechanic the item/nano criteria do not expose - see _unverified.",
+   "CHARM NANOS CARRY A 'Psychic < 551' TERM in their ToUse requirement list (The Voice of God 231010, Peer Pressure 231009, My Way 231012, The Choir Fantastic 275009). The extractor flattens requirement targets, so whether that is a check on YOU or on the TARGET is not established here - see _unverified before building a bot rule on it.",
+   "THE PISTOL SPECIALS COME FROM PERKS, NOT IP. Hostile Negotiations gives Fling Shot +90 and Pistol Mastery another +20; Fling Shot costs 4.0 IP. Pistol Mastery also gives Pistol +200 and +60 to all eight damage-type modifiers.",
+   "NCU IS A REAL LIMIT FOR THIS CLASS because you run speeches plus pet buffs plus your own buffs. Computer Literacy is cost 1.0, Human Resources rank 1 (261115) gives Max NCU +4 and Comp Lit +10, and the unlocked NCU Extensions line (211123 ...) gives Max NCU +140 and Comp Lit +110 over 9 ranks.",
+   "NANO C. INIT IS COST 1.0 AND IT MATTERS MORE HERE THAN ANYWHERE. wiki.aodb.us: max it, because 'an extra second or two shaved off that Calm' is the difference between a controlled fight and reclaim. Loophole (the AI line) adds +51 on top."
+  ]
+ },
+ "breed": {
+  "recommended": "Nanomage",
+  "reasoning": "Derived from reference/breeds.json and reference/skillcaps.json, then checked against the guides. Count what actually gates a Bureaucrat: in bureaucrat-nanos.json, Psy Mod gates 234 of 343 nanos, Time & Space 207, Sense Imp 153, Matter Creation 100 and Bio Met 83. reference/skillcaps.json gives those schools' ability dependencies as Psy Mod 80% Int / 20% Psy, Bio Met 80% Int / 20% Psy, and Sense Imp / Matter Creation / Time & Space 20% Int / 80% Psy - i.e. the whole class runs on Intelligence and Psychic and NOTHING else. Nanomage is the only breed that caps BOTH at 512 (Solitus 480/480, Opifex 464/448, Atrox 400/400), gains 4 Max Nano per Nano Pool point against everyone else's 3 or 2, and has the highest nano-cost-reduction cap at 55%. The Crat has no melee dimension to trade that away for: every melee weapon skill costs it 3.2 or 4.0 and Melee Init. 4.0. The price is Nanomage's 2 HP per Body Dev. point on a class that already pays 2.4 for Body Dev. and owns no heal - which is exactly why Market Awareness (Max Health +150), Bureaucratic Shuffle (Max Health +200), Starfall (Max Health +160) and the unlocked Enhance Health line (Max Health +1540) are on the perk list.",
+  "alternatives": [
+   {
+    "breed": "Solitus",
+    "note": "Int 480 / Psy 480 against Nanomage's 512/512 - about 32 points of headroom in each of the two abilities the class lives on - but 3 HP per Body Dev. instead of 2 and 472 Strength instead of 464. ao-universe's Bureaucrat guide calls Solitus the reliable all-rounder. The safe pick if you do not want to plan around thin HP."
+   },
+   {
+    "breed": "Opifex",
+    "note": "Agility 544 / Sense 512 is wasted on a Crat's nano schools, but Pistol is 60% Agi / 40% Sen and costs only 1.6, and all three evades are 50% Agi / 20% Sta / 30% Psy. ao-universe: normal nano skills with better evasion and weapon capability. A PvP/pistol pick, not a caster optimum - Psychic caps at 448, the lowest of the four breeds."
+   },
+   {
+    "breed": "Atrox",
+    "note": "Int 400 / Sense 400 / Psychic 400 is a hard ceiling 112 points below Nanomage on every ability the class uses, and 2 Max Nano per Nano Pool point on a chain-caster. It buys 4 HP per Body Dev. and Strength/Stamina 512. ao-universe says Atrox struggles early with nano skills and gains HP useful for PvP. A PvP-survivability build, and the worst fit for the crowd-control ladder."
+   }
+  ],
+  "_breedLock": "reference/professions.json states there are NO breed restrictions on profession choice in Anarchy Online - all four breeds can roll a Bureaucrat. Nothing in items.ocp encodes a breed lock on the profession either, because breed availability is a character-creation rule, not an item criterion.",
+  "_webCorroboration": "ao-universe's Bureaucrat guide deliberately does NOT name a single best breed: it says breed matters less than playstyle, that Nanomage gains early advantages with higher-level pets and faster charm access which diminish at higher levels, that Atrox struggles initially with nano skills but gains PvP-useful HP, that Opifex has normal nano skills with better evasion and weapons, and that Solitus is the reliable all-rounder - concluding that any breed can solo Inferno bosses and PvP with the right gear. So the Nanomage recommendation here is the IP/ability-cap argument, not a claim that the guides mandate it, and the guide's own 'early advantage on pets and charms' point is the same argument at low level.",
+  "_sources": [
+   "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12",
+   "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/breed-statistics",
+   "AOBuddy/GameData/profiles/reference/breeds.json",
+   "AOBuddy/GameData/profiles/reference/professions.json"
+  ]
+ },
+ "skillPriorities": [
+  {
+   "skill": "Psychological Modifications",
+   "target": "max - to 2001",
+   "why": "IP cost 1.0 and the single most-used school in the class: a cast requirement on 234 of the 343 Bureaucrat nanos, from Momentary Daze (43368, Psy Mod 5) to Empowered Divided Ego (224143, Psy Mod 2001) and Means Test Pet (258222, Psy Mod 2001). Every calm, every charm, every speech and every Malaise debuff is on it. wiki.aodb.us/Bureaucrat:Breed_and_Skills: 'Maximize'."
+  },
+  {
+   "skill": "Sensory Improvement",
+   "target": "max - to 2001",
+   "why": "IP cost 1.0, a requirement on 153 of 343 nanos and almost always paired one-for-one with Psy Mod (Malaise of Zeal 275824 needs Psy Mod 1913 AND Sense Imp 1913; Means Test Pet 258222 needs 2001 of both). Also both halves of the pistol buff line: Skilled Gunslinger 263251 and Greater Gunslinger 263250 each need Psy Mod 583 / Sense Imp 583."
+  },
+  {
+   "skill": "Biological Metamorphosis",
+   "target": "max - to 2001",
+   "why": "IP cost 1.0 and the CHARM school: a requirement on 83 nanos, and the top charms are gated on it - The Voice of God (231010) and The Voice of One (231008) each need Bio Met 1500, The Choir Fantastic (275009) needs Bio Met 1550, Means Test Pet (258222) needs 2001. wiki.aodb.us: 'Maximize'."
+  },
+  {
+   "skill": "Time & Space",
+   "target": "max - to 1641",
+   "why": "IP cost 1.6 - one of the two EXPENSIVE schools, and unavoidable. It is a requirement on 207 of 343 nanos, half of every bot summon (Director-Grade Bodyguard 46391 needs Matter Creation 787 AND Time & Space 787; CEO Guardian 273300 needs 1470 of both), the whole snare line (Shackles of Obedience 82463, Time & Space 741) and the speeches (Improved Heroic Measures 270783 needs Time & Space 1471). Top requirement in the class is Puissant Void Inertia (224129, Time & Space 1641)."
+  },
+  {
+   "skill": "Matter Creation",
+   "target": "max - to 1470",
+   "why": "IP cost 1.6, the other pet school, a requirement on 100 nanos, and it always equals the Time & Space number on a bot summon. It is also the nuke school (Pink Slip 273307 and Workplace Depression 273631 both need Matter Creation 1470 / Psy Mod 1634) and the taunt school (Improved Rule of One 270250, Matter Creation 799)."
+  },
+  {
+   "skill": "Nano Pool",
+   "target": "max",
+   "why": "IP cost 1.4. A Bureaucrat chain-casts calms, roots and pet buffs for a whole fight, and wiki.aodb.us/Bureaucrat:Breed_and_Skills says to keep it high for the spell buffer. On a Nanomage it is also worth 4 Max Nano per point."
+  },
+  {
+   "skill": "Nano C. Init.",
+   "target": "max",
+   "why": "IP cost 1.0. wiki.aodb.us: 'Max this out, an extra second or two shaved off that Calm can mean the difference between life and being sent to Reclaim.' The Loophole AI perk line adds +51 and cuts nano cost by 4."
+  },
+  {
+   "skill": "Computer Literacy",
+   "target": "max",
+   "why": "IP cost 1.0. Gates NCU, and a Crat runs a Motivational Speech plus pet buffs plus its own buffs at once. Human Resources rank 2 (261116) gives +10, Team Building rank 5 (261059) +25 and the unlocked NCU Extensions line +110 with Max NCU +140."
+  },
+  {
+   "skill": "Psychology",
+   "target": "max if you charm",
+   "why": "IP cost 1.0 - a Bureaucrat is the ONLY profession for which this is a 1.0 skill in reference/skillcaps.json. wiki.aodb.us/Bureaucrat:Breed_and_Skills: 'Max this out if you plan on using Charms extensively.' Note the honest caveat: not one of the 343 nanos lists Psychology as a cast requirement, so its effect on charm is not derivable from the local data - see _unverified. The perk lines pour +480 into it regardless."
+  },
+  {
+   "skill": "Tutoring",
+   "target": "to 1000",
+   "why": "IP cost 1.0. wiki.aodb.us: raise to 1000 for QL200 Tutoring Devices and no further - 'There is no bonus for having more than the required skill.'"
+  },
+  {
+   "skill": "Nano Resist",
+   "target": "high",
+   "why": "IP cost 1.6. The Bureaucrat has no heal, no reflect and no absorb; if it is being nuked or debuffed the only answer it owns is Nano Resist. The unlocked Notum Repulsor perk line is the other lever."
+  },
+  {
+   "skill": "Body Dev.",
+   "target": "moderate - not max",
+   "why": "IP cost 2.4. wiki.aodb.us/Bureaucrat:Breed_and_Skills is explicit that a Bureaucrat does not need to max it because 'a Bureaucrat won't be in the thick of things usually'. Buy HP from perks instead: Enhance Health +1540, Bureaucratic Shuffle +200, Starfall +160, Market Awareness +150."
+  },
+  {
+   "skill": "Pistol",
+   "target": "as far as your gear needs",
+   "why": "IP cost 1.6 - cheap, and the only weapon skill worth any IP at all. Buffed by the PistolBuff nano line (Gunslinger 30077 at Psy Mod 79, then Skilled Gunslinger 263251 / Greater Gunslinger 263250 at Psy Mod 583, both Shadowlands) and by Pistol Mastery (+200) and Hostile Negotiations (+145)."
+  },
+  {
+   "skill": "Evade-ClsC / Dodge-Rng / Duck-Exp",
+   "target": "from perks, not from IP",
+   "why": "All three cost 2.4. Careful in Battle gives Add All Def +300 and Critical Resistance +80, Bureaucratic Shuffle gives +40 to each of the three evades and Market Awareness another +50 Add All Def - between them that is far more evade than 2.4-cost IP will ever buy."
+  },
+  {
+   "skill": "Treatment",
+   "target": "to your implant QL, no further",
+   "why": "IP cost 2.0 (a Doctor pays 1.0). It gates implant and symbiant QL and nothing else for this class - no Bureaucrat nano requires it. ao-universe calls Treatment and First Aid secondary."
+  },
+  {
+   "skill": "First Aid",
+   "target": "low",
+   "why": "IP cost 2.0. Team Building alone gives +60 (ranks 1 and 8, ids 261055 / 261062), which covers most of what a Crat needs for kits."
+  },
+  {
+   "skill": "Perception",
+   "target": "low",
+   "why": "IP cost 1.6 - unusually cheap for this class, but nothing in bureaucrat-nanos.json or the perk tables uses it. Spend here only if a specific item requires it."
+  },
+  {
+   "skill": "Nano Programming",
+   "target": "situational",
+   "why": "IP cost 1.6 - cheap compared to most professions (a Shade pays 4.0). Worth it only if you intend to build your own clusters; it gates nothing the class casts."
+  },
+  {
+   "skill": "Matter Metamorphosis",
+   "target": "skip",
+   "why": "IP cost 1.6 and a cast requirement on EXACTLY ONE of the 343 Bureaucrat nanos: Fill Inbox (266303, MM 800). wiki.aodb.us says 'Bureaucrats simply don't require Matter Metamorphosis at all' and ao-universe says the same - both are very nearly right, and the one exception is recorded here rather than smoothed away."
+  },
+  {
+   "skill": "Fling Shot / Multi Ranged / Ranged Init.",
+   "target": "never spend IP",
+   "why": "All three cost 4.0 - the maximum in reference/skillcaps.json - even though Pistol itself costs 1.6. Take them from perks only: Hostile Negotiations gives Fling Shot +90, Multi Ranged +30 and Ranged Init +30; Executive Decisions gives Multi Ranged +50 and Fling Shot +25; Pistol Mastery gives Fling Shot +20; Market Awareness gives Ranged Init +15."
+  },
+  {
+   "skill": "every melee weapon skill",
+   "target": "skip entirely",
+   "why": "1h Blunt 3.2, 1h Edged 4.0, 2h Blunt 4.0, 2h Edged 4.0, Melee Energy 4.0, Piercing 4.0, Martial Arts 2.8, Multi Melee 4.0 and Melee Init. 4.0. There is no melee Bureaucrat build at any IP budget."
+  },
+  {
+   "skill": "Rifle / Assault Rifle / Bow / Shotgun / MG-SMG / Ranged Energy / Grenade / Heavy Weapons",
+   "target": "skip entirely",
+   "why": "Every one of them is 3.2 or 4.0. Pistol (1.6) is the only ranged skill the class can afford."
+  },
+  {
+   "skill": "Vehicle Water",
+   "target": "never",
+   "why": "IP cost 2.4 and wiki.aodb.us/Bureaucrat:Breed_and_Skills is blunt about it: 'Do not raise this. There isn't much water around for this to be very useful.'"
+  },
+  {
+   "skill": "Map Navigation",
+   "target": "care - not resettable in the old client",
+   "why": "IP cost 2.0. wiki.aodb.us flags it as a skill you have to be careful with; treat it as low priority."
+  }
+ ],
+ "_skillCostFactors": {
+  "Biological Metamorphosis": 1.0,
+  "Computer Literacy": 1.0,
+  "Nano C. Init.": 1.0,
+  "Psychological Modifications": 1.0,
+  "Psychology": 1.0,
+  "Sensory Improvement": 1.0,
+  "Tutoring": 1.0,
+  "Nano Pool": 1.4,
+  "Matter Creation": 1.6,
+  "Matter Metamorphosis": 1.6,
+  "Nano Programming": 1.6,
+  "Nano Resist": 1.6,
+  "Perception": 1.6,
+  "Pistol": 1.6,
+  "Time & Space": 1.6,
+  "Mechanical Engineering": 1.8,
+  "Adventuring": 2.0,
+  "Break & Entry": 2.0,
+  "First Aid": 2.0,
+  "Map Navigation": 2.0,
+  "Physic. Init": 2.0,
+  "Swimming": 2.0,
+  "Treatment": 2.0,
+  "Vehicle Air": 2.0,
+  "Body Dev.": 2.4,
+  "Chemistry": 2.4,
+  "Concealment": 2.4,
+  "Dodge-Rng": 2.4,
+  "Duck-Exp": 2.4,
+  "Electrical Engineering": 2.4,
+  "Evade-ClsC": 2.4,
+  "Pharma Tech": 2.4,
+  "Quantum FT": 2.4,
+  "Run Speed": 2.4,
+  "Sneak Attack": 2.4,
+  "Trap Disarming": 2.4,
+  "Vehicle Ground": 2.4,
+  "Vehicle Water": 2.4,
+  "Weapon Smithing": 2.5,
+  "Martial Arts": 2.8,
+  "Dimach": 3.0,
+  "1h Blunt": 3.2,
+  "Brawling": 3.2,
+  "Deflect": 3.2,
+  "MG/SMG": 3.2,
+  "Ranged Init.": 3.2,
+  "Riposte": 3.2,
+  "Sharp Objects": 3.2,
+  "Shotgun": 3.2,
+  "1h Edged": 4.0,
+  "2h Blunt": 4.0,
+  "2h Edged": 4.0,
+  "Aimed Shot": 4.0,
+  "Assault Rifle": 4.0,
+  "Bow": 4.0,
+  "Bow Special Attack": 4.0,
+  "Burst": 4.0,
+  "Fast Attack": 4.0,
+  "Fling Shot": 4.0,
+  "Full Auto": 4.0,
+  "Grenade": 4.0,
+  "Heavy Weapons": 4.0,
+  "Melee Energy": 4.0,
+  "Melee Init.": 4.0,
+  "Multi Melee": 4.0,
+  "Multi Ranged": 4.0,
+  "Piercing": 4.0,
+  "Ranged Energy": 4.0,
+  "Rifle": 4.0
+ },
+ "perks": [
+  {
+   "name": "Commanding Presence",
+   "type": "SL",
+   "line": "Commanding Presence (10 ranks, level 10-205)  [id 210931 = Commanding Presence]",
+   "representativeId": 210931,
+   "representativeName": "Commanding Presence",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "No stat modifiers at all in items.ocp - every rank of this line grants a perk ACTION only.",
+   "recommendedAtLevel": "rank 1 at level 10; rank 10 at level 205",
+   "priority": "high",
+   "why": "THE Bureaucrat line. It is the only perk line in the whole prof-8 extraction that carries ZERO stat modifiers on all 10 ranks - its entire value is the perk ACTIONS, which is why the items.ocp bonus table for it is empty and why a data-only reading would wrongly call it worthless. ao-universe's Bureaucrat guide says it boosts team AR/AAD from level 150 on and to 'max this at all times'.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 210931,
+     "name": "Commanding Presence",
+     "minLevel": 10,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 2,
+     "id": 210932,
+     "name": "Commanding Presence",
+     "minLevel": 50,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 3,
+     "id": 210933,
+     "name": "Commanding Presence",
+     "minLevel": 70,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 4,
+     "id": 210934,
+     "name": "Commanding Presence",
+     "minLevel": 90,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 5,
+     "id": 210935,
+     "name": "Commanding Presence",
+     "minLevel": 120,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 6,
+     "id": 210936,
+     "name": "Commanding Presence",
+     "minLevel": 150,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 7,
+     "id": 210937,
+     "name": "Commanding Presence",
+     "minLevel": 180,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 8,
+     "id": 210938,
+     "name": "Commanding Presence",
+     "minLevel": 200,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 9,
+     "id": 210939,
+     "name": "Commanding Presence",
+     "minLevel": 201,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 10,
+     "id": 210940,
+     "name": "Commanding Presence",
+     "minLevel": 205,
+     "bonusesThisRank": {}
+    }
+   ],
+   "_dataNote": "10 ranks, ids 210931-210940, levels 10/50/70/90/120/150/180/200/201/205. Not one rank modifies a stat. The team AR/AAD effect is a perk action and is not encoded in the ToWear template, so the numbers behind it are NOT recorded here.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Directorship",
+   "type": "SL",
+   "line": "Directorship (10 ranks, level 30-208)  [id 223630 = Directorship]",
+   "representativeId": 223630,
+   "representativeName": "Directorship",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Psychology +120, BiologicalMetamorphosis +36, SensoryImprovement +36, PsychologicalModification +36",
+   "recommendedAtLevel": "rank 1 at level 30; rank 10 at level 208",
+   "priority": "high",
+   "why": "Psychology +120 across the line plus +36 to each of Bio Met / Sense Imp / Psy Mod. Psychology is a cost-1.0 skill for a Bureaucrat and wiki.aodb.us tells a charm Crat to 'Max this out if you plan on using Charms extensively', so this line and Persuader are the two biggest Psychology sources in the game. ao-universe additionally credits the line with XP pulses and damage-multiplying perk specials.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 223630,
+     "name": "Directorship",
+     "minLevel": 30,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 1,
+      "SensoryImprovement": 1,
+      "PsychologicalModification": 1,
+      "Psychology": 2
+     }
+    },
+    {
+     "rank": 2,
+     "id": 223631,
+     "name": "Directorship",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 1,
+      "SensoryImprovement": 1,
+      "PsychologicalModification": 1,
+      "Psychology": 4
+     }
+    },
+    {
+     "rank": 3,
+     "id": 223632,
+     "name": "Directorship",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 2,
+      "SensoryImprovement": 2,
+      "PsychologicalModification": 2,
+      "Psychology": 6
+     }
+    },
+    {
+     "rank": 4,
+     "id": 223633,
+     "name": "Directorship",
+     "minLevel": 110,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 2,
+      "SensoryImprovement": 2,
+      "PsychologicalModification": 2,
+      "Psychology": 8
+     }
+    },
+    {
+     "rank": 5,
+     "id": 223634,
+     "name": "Directorship",
+     "minLevel": 140,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 3,
+      "SensoryImprovement": 3,
+      "PsychologicalModification": 3,
+      "Psychology": 10
+     }
+    },
+    {
+     "rank": 6,
+     "id": 223635,
+     "name": "Directorship",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 3,
+      "SensoryImprovement": 3,
+      "PsychologicalModification": 3,
+      "Psychology": 12
+     }
+    },
+    {
+     "rank": 7,
+     "id": 223636,
+     "name": "Directorship",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 4,
+      "SensoryImprovement": 4,
+      "PsychologicalModification": 4,
+      "Psychology": 14
+     }
+    },
+    {
+     "rank": 8,
+     "id": 223637,
+     "name": "Directorship",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 4,
+      "SensoryImprovement": 4,
+      "PsychologicalModification": 4,
+      "Psychology": 16
+     }
+    },
+    {
+     "rank": 9,
+     "id": 223638,
+     "name": "Directorship",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 5,
+      "SensoryImprovement": 5,
+      "PsychologicalModification": 5,
+      "Psychology": 18
+     }
+    },
+    {
+     "rank": 10,
+     "id": 223639,
+     "name": "Directorship",
+     "minLevel": 208,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 11,
+      "SensoryImprovement": 11,
+      "PsychologicalModification": 11,
+      "Psychology": 30
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12",
+    "https://wiki.aodb.us/index.php?title=Bureaucrat:Breed_and_Skills&action=raw"
+   ]
+  },
+  {
+   "name": "Persuader",
+   "type": "SL",
+   "line": "Persuader (10 ranks, level 50-219)  [id 211957 = Persuader]",
+   "representativeId": 211957,
+   "representativeName": "Persuader",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Psychology +200, PsychologicalModification +54, SensoryImprovement +54, BiologicalMetamorphosis +14",
+   "recommendedAtLevel": "rank 1 at level 50; rank 10 at level 219",
+   "priority": "high",
+   "why": "Psychology +200 - the largest single Psychology block available - plus Psy Mod +54, Sense Imp +54, Bio Met +14. Note the rank-10 level requirement is 219, the highest of any Bureaucrat perk rank in the data. NOTE: 'Persuader' is one of the four line names in the prof-8 extraction that do NOT exist in AOSharp.Common/GameData/PerkLine.cs (272 entries); the enum is missing it.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211957,
+     "name": "Persuader",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Psychology": 10,
+      "PsychologicalModification": 1,
+      "SensoryImprovement": 1,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211958,
+     "name": "Persuader",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "Psychology": 10,
+      "PsychologicalModification": 2,
+      "SensoryImprovement": 2,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211959,
+     "name": "Persuader",
+     "minLevel": 140,
+     "bonusesThisRank": {
+      "Psychology": 12,
+      "PsychologicalModification": 2,
+      "SensoryImprovement": 2,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211960,
+     "name": "Persuader",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "Psychology": 13,
+      "PsychologicalModification": 3,
+      "SensoryImprovement": 3,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211961,
+     "name": "Persuader",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Psychology": 14,
+      "PsychologicalModification": 4,
+      "SensoryImprovement": 4,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211962,
+     "name": "Persuader",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "Psychology": 16,
+      "PsychologicalModification": 5,
+      "SensoryImprovement": 5,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211963,
+     "name": "Persuader",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "Psychology": 18,
+      "PsychologicalModification": 6,
+      "SensoryImprovement": 6,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 8,
+     "id": 211964,
+     "name": "Persuader",
+     "minLevel": 207,
+     "bonusesThisRank": {
+      "Psychology": 22,
+      "PsychologicalModification": 7,
+      "SensoryImprovement": 7,
+      "BiologicalMetamorphosis": 1
+     }
+    },
+    {
+     "rank": 9,
+     "id": 211965,
+     "name": "Persuader",
+     "minLevel": 212,
+     "bonusesThisRank": {
+      "Psychology": 30,
+      "PsychologicalModification": 9,
+      "SensoryImprovement": 9,
+      "BiologicalMetamorphosis": 2
+     }
+    },
+    {
+     "rank": 10,
+     "id": 211966,
+     "name": "Persuader",
+     "minLevel": 219,
+     "bonusesThisRank": {
+      "Psychology": 55,
+      "PsychologicalModification": 15,
+      "SensoryImprovement": 15,
+      "BiologicalMetamorphosis": 4
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Bureaucratic Shuffle",
+   "type": "SL",
+   "line": "Bureaucratic Shuffle (10 ranks, level 50-206)  [id 211728 = Bureaucratic Shuffle]",
+   "representativeId": 211728,
+   "representativeName": "Bureaucratic Shuffle",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +200, DuckExp +40, DodgeRanged +40, EvadeClsC +40",
+   "recommendedAtLevel": "rank 1 at level 50; rank 10 at level 206",
+   "priority": "med",
+   "why": "The Crat's defensive line: all three evades +40 each and Max Health +200. ao-universe suggests 3-4 points while levelling and finishing it at 220. A Bureaucrat pays 2.4 IP for every evade (the same as a Doctor), so perk evades are cheaper than IP evades for this class.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211728,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1,
+      "MaxHealth": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211729,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 70,
+     "bonusesThisRank": {
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1,
+      "MaxHealth": 11
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211730,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1,
+      "MaxHealth": 12
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211731,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 140,
+     "bonusesThisRank": {
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2,
+      "MaxHealth": 13
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211732,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2,
+      "MaxHealth": 14
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211733,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 180,
+     "bonusesThisRank": {
+      "DuckExp": 3,
+      "DodgeRanged": 3,
+      "EvadeClsC": 3,
+      "MaxHealth": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211734,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "DuckExp": 4,
+      "DodgeRanged": 4,
+      "EvadeClsC": 4,
+      "MaxHealth": 16
+     }
+    },
+    {
+     "rank": 8,
+     "id": 211735,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 202,
+     "bonusesThisRank": {
+      "DuckExp": 6,
+      "DodgeRanged": 6,
+      "EvadeClsC": 6,
+      "MaxHealth": 19
+     }
+    },
+    {
+     "rank": 9,
+     "id": 211736,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "DuckExp": 8,
+      "DodgeRanged": 8,
+      "EvadeClsC": 8,
+      "MaxHealth": 30
+     }
+    },
+    {
+     "rank": 10,
+     "id": 211737,
+     "name": "Bureaucratic Shuffle",
+     "minLevel": 206,
+     "bonusesThisRank": {
+      "DuckExp": 12,
+      "DodgeRanged": 12,
+      "EvadeClsC": 12,
+      "MaxHealth": 60
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Insurance Agent",
+   "type": "SL",
+   "line": "Insurance Agent (5 ranks, level 80-209)  [id 236593 = Insurance Agent]",
+   "representativeId": 236593,
+   "representativeName": "Insurance Agent",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 5,
+   "effect": "Full line (all ranks summed, from items.ocp): Psychology +80, PsychologicalModification +18, SensoryImprovement +18, BiologicalMetamorphosis +18",
+   "recommendedAtLevel": "rank 1 at level 80; rank 5 at level 209",
+   "priority": "med",
+   "why": "Only FIVE ranks (the only sub-10-rank Bureaucrat-only line) and the shortest line in the file: Psychology +80, Psy Mod/Sense Imp/Bio Met +18 each, levels 80/140/190/203/209. ao-universe values it for its perk action rather than its stats - one point 'recovers ~300k SK' from missions.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 236593,
+     "name": "Insurance Agent",
+     "minLevel": 80,
+     "bonusesThisRank": {
+      "PsychologicalModification": 1,
+      "SensoryImprovement": 1,
+      "BiologicalMetamorphosis": 1,
+      "Psychology": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 236594,
+     "name": "Insurance Agent",
+     "minLevel": 140,
+     "bonusesThisRank": {
+      "PsychologicalModification": 2,
+      "SensoryImprovement": 2,
+      "BiologicalMetamorphosis": 2,
+      "Psychology": 7
+     }
+    },
+    {
+     "rank": 3,
+     "id": 236595,
+     "name": "Insurance Agent",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "PsychologicalModification": 3,
+      "SensoryImprovement": 3,
+      "BiologicalMetamorphosis": 3,
+      "Psychology": 13
+     }
+    },
+    {
+     "rank": 4,
+     "id": 236596,
+     "name": "Insurance Agent",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "PsychologicalModification": 4,
+      "SensoryImprovement": 4,
+      "BiologicalMetamorphosis": 4,
+      "Psychology": 20
+     }
+    },
+    {
+     "rank": 5,
+     "id": 236597,
+     "name": "Insurance Agent",
+     "minLevel": 209,
+     "bonusesThisRank": {
+      "PsychologicalModification": 8,
+      "SensoryImprovement": 8,
+      "BiologicalMetamorphosis": 8,
+      "Psychology": 35
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Loophole",
+   "type": "AI",
+   "line": "Loophole (10 ranks, level 15-210)  [id 251790 = Loophole]",
+   "representativeId": 251790,
+   "representativeName": "Loophole",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): SensoryImprovement +51, PsychologicalModification +51, NanoCInit +51, NPCostModifier -4",
+   "recommendedAtLevel": "rank 1 at level 15; rank 10 at level 210",
+   "priority": "high",
+   "why": "The Bureaucrat's alien (AI) line and the only one that reduces nano cost: Sense Imp +51, Psy Mod +51, Nano C. Init +51 and Nano Point Cost Modifier -4. Identified as an AI line from its rank ladder in items.ocp (15/15/55/55/55/105/105/145/205/210 - the doubled-level AI shape, not the 1/50/75/... LE shape). Psy Mod and Sense Imp are the two schools that gate the Crat's calms, and Nano C. Init is cost 1.0 for a Crat, so every stat on this line is on the critical path.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 251790,
+     "name": "Loophole",
+     "minLevel": 15,
+     "bonusesThisRank": {
+      "SensoryImprovement": 2,
+      "PsychologicalModification": 2,
+      "NanoCInit": 2
+     }
+    },
+    {
+     "rank": 2,
+     "id": 251791,
+     "name": "Loophole",
+     "minLevel": 15,
+     "bonusesThisRank": {
+      "SensoryImprovement": 2,
+      "PsychologicalModification": 2,
+      "NanoCInit": 2
+     }
+    },
+    {
+     "rank": 3,
+     "id": 251792,
+     "name": "Loophole",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "SensoryImprovement": 3,
+      "PsychologicalModification": 3,
+      "NanoCInit": 3
+     }
+    },
+    {
+     "rank": 4,
+     "id": 251793,
+     "name": "Loophole",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "SensoryImprovement": 3,
+      "PsychologicalModification": 3,
+      "NanoCInit": 3
+     }
+    },
+    {
+     "rank": 5,
+     "id": 251794,
+     "name": "Loophole",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "SensoryImprovement": 4,
+      "PsychologicalModification": 4,
+      "NanoCInit": 4
+     }
+    },
+    {
+     "rank": 6,
+     "id": 251795,
+     "name": "Loophole",
+     "minLevel": 105,
+     "bonusesThisRank": {
+      "SensoryImprovement": 4,
+      "PsychologicalModification": 4,
+      "NanoCInit": 4
+     }
+    },
+    {
+     "rank": 7,
+     "id": 251796,
+     "name": "Loophole",
+     "minLevel": 105,
+     "bonusesThisRank": {
+      "NPCostModifier": -1,
+      "SensoryImprovement": 5,
+      "PsychologicalModification": 5,
+      "NanoCInit": 5
+     }
+    },
+    {
+     "rank": 8,
+     "id": 251797,
+     "name": "Loophole",
+     "minLevel": 145,
+     "bonusesThisRank": {
+      "NPCostModifier": -1,
+      "SensoryImprovement": 6,
+      "PsychologicalModification": 6,
+      "NanoCInit": 6
+     }
+    },
+    {
+     "rank": 9,
+     "id": 251798,
+     "name": "Loophole",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "NPCostModifier": -1,
+      "SensoryImprovement": 8,
+      "PsychologicalModification": 8,
+      "NanoCInit": 8
+     }
+    },
+    {
+     "rank": 10,
+     "id": 251799,
+     "name": "Loophole",
+     "minLevel": 210,
+     "bonusesThisRank": {
+      "NPCostModifier": -1,
+      "SensoryImprovement": 14,
+      "PsychologicalModification": 14,
+      "NanoCInit": 14
+     }
+    }
+   ]
+  },
+  {
+   "name": "Hostile Negotiations",
+   "type": "LE research",
+   "line": "Hostile Negotiations (10 ranks, level 1-200)  [id 261105 = Hostile Negotiations]",
+   "representativeId": 261105,
+   "representativeName": "Hostile Negotiations",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Pistol +145, FlingShot +90, RangedInit +30, MultiRanged +30",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "high",
+   "why": "The pistol line: Pistol +145, Fling Shot +90, Ranged Init +30, Multi Ranged +30. This matters more than it looks - Pistol costs a Bureaucrat 1.6 IP but Fling Shot, Multi Ranged and Ranged Init. all cost 4.0 (the maximum in reference/skillcaps.json), so this single research line is the only affordable source of the Crat's pistol specials.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261105,
+     "name": "Hostile Negotiations",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Pistol": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 261106,
+     "name": "Hostile Negotiations",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "FlingShot": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261107,
+     "name": "Hostile Negotiations",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Pistol": 25
+     }
+    },
+    {
+     "rank": 4,
+     "id": 261108,
+     "name": "Hostile Negotiations",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "FlingShot": 25
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261109,
+     "name": "Hostile Negotiations",
+     "minLevel": 125,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 6,
+     "id": 261110,
+     "name": "Hostile Negotiations",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "RangedInit": 30
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261111,
+     "name": "Hostile Negotiations",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "MultiRanged": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261112,
+     "name": "Hostile Negotiations",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Pistol": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261113,
+     "name": "Hostile Negotiations",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "FlingShot": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261114,
+     "name": "Hostile Negotiations",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Pistol": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 5,
+     "proc": "Social Services"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Process Theory",
+   "type": "LE research",
+   "line": "Process Theory (10 ranks, level 1-200)  [id 261065 = Process Theory]",
+   "representativeId": 261065,
+   "representativeName": "Process Theory",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): SensoryImprovement +50, Psychic +40, PsychologicalModification +25, BiologicalMetamorphosis +25, AddAllDef +15, Sense +10, NanoDelta +10",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "high",
+   "why": "Sense Imp +50, Psychic +40, Psy Mod +25, Bio Met +25, Add All Def +15, Sense +10, Nano Delta +10 - four of the five schools that gate calms and charms. ao-universe additionally calls its 10-second stun proc 'very nice for soloing'.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261065,
+     "name": "Process Theory",
+     "minLevel": 1,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 2,
+     "id": 261066,
+     "name": "Process Theory",
+     "minLevel": 50,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 3,
+     "id": 261067,
+     "name": "Process Theory",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Sense": 10
+     }
+    },
+    {
+     "rank": 4,
+     "id": 261068,
+     "name": "Process Theory",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "PsychologicalModification": 25
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261069,
+     "name": "Process Theory",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261070,
+     "name": "Process Theory",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Psychic": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261071,
+     "name": "Process Theory",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "AddAllDef": 15
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261072,
+     "name": "Process Theory",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "NanoDelta": 10
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261073,
+     "name": "Process Theory",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "SensoryImprovement": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261074,
+     "name": "Process Theory",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Psychic": 25
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Inflation Adjustment"
+    },
+    {
+     "atResearchLevel": 2,
+     "proc": "Wait In That Queue"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Human Resources",
+   "type": "LE research",
+   "line": "Human Resources (10 ranks, level 1-200)  [id 261115 = Human Resources]",
+   "representativeId": 261115,
+   "representativeName": "Human Resources",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Intelligence +40, PsychologicalModification +25, BiologicalMetamorphosis +25, Sense +20, SensoryImprovement +15, ComputerLiteracy +10, MaxNCU +4",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "high",
+   "why": "Max NCU +4 at rank 1, then Computer Literacy +10, Sense Imp +15, Psy Mod +25, Bio Met +25, Int +40, Sense +20. Computer Literacy is a cost-1.0 skill for a Bureaucrat and NCU is what a Crat running Motivational Speeches plus pet buffs actually runs out of.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261115,
+     "name": "Human Resources",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "MaxNCU": 4
+     }
+    },
+    {
+     "rank": 2,
+     "id": 261116,
+     "name": "Human Resources",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "ComputerLiteracy": 10
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261117,
+     "name": "Human Resources",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "SensoryImprovement": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 261118,
+     "name": "Human Resources",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "PsychologicalModification": 25
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261119,
+     "name": "Human Resources",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261120,
+     "name": "Human Resources",
+     "minLevel": 150,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 7,
+     "id": 261121,
+     "name": "Human Resources",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Intelligence": 15
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261122,
+     "name": "Human Resources",
+     "minLevel": 190,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 9,
+     "id": 261123,
+     "name": "Human Resources",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Sense": 20
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261124,
+     "name": "Human Resources",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Intelligence": 25
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 6,
+     "proc": "Forms in Triplicate"
+    },
+    {
+     "atResearchLevel": 8,
+     "proc": "Wrong Window"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Professional Development",
+   "type": "LE research",
+   "line": "Professional Development (10 ranks, level 1-200)  [id 261085 = Professional Development]",
+   "representativeId": 261085,
+   "representativeName": "Professional Development",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): SpaceTime +55, PsychologicalModification +50, BiologicalMetamorphosis +50, MaterialCreation +40, XPModifier +1",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "Psy Mod +50, Bio Met +50, Time & Space +55, Matter Creation +40, and XP Modifier +1% at rank 1. The only research line that raises BOTH pet schools (MC and T&S), which are the Bureaucrat's expensive (1.6) ones.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261085,
+     "name": "Professional Development",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "XPModifier": 1
+     }
+    },
+    {
+     "rank": 2,
+     "id": 261086,
+     "name": "Professional Development",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "MaterialCreation": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261087,
+     "name": "Professional Development",
+     "minLevel": 75,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 4,
+     "id": 261088,
+     "name": "Professional Development",
+     "minLevel": 100,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 5,
+     "id": 261089,
+     "name": "Professional Development",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "SpaceTime": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261090,
+     "name": "Professional Development",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "MaterialCreation": 25
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261091,
+     "name": "Professional Development",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "SpaceTime": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261092,
+     "name": "Professional Development",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "PsychologicalModification": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261093,
+     "name": "Professional Development",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261094,
+     "name": "Professional Development",
+     "minLevel": 200,
+     "bonusesThisRank": {}
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 3,
+     "proc": "Next Window Over"
+    },
+    {
+     "atResearchLevel": 4,
+     "proc": "Lost Paperwork"
+    },
+    {
+     "atResearchLevel": 10,
+     "proc": "Tariffs"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Team Building",
+   "type": "LE research",
+   "line": "Team Building (10 ranks, level 1-200)  [id 261055 = Team Building]",
+   "representativeId": 261055,
+   "representativeName": "Team Building",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): FirstAid +60, SensoryImprovement +50, ComputerLiteracy +25, SpaceTime +15, Psychology +15, BodyDevelopment +15, Stamina +15",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "First Aid +60, Sense Imp +50, Computer Literacy +25, Time & Space +15, Psychology +15, Body Dev +15, Stamina +15. First Aid costs a Crat 2.0 and this is 60 of it for free.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261055,
+     "name": "Team Building",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "FirstAid": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 261056,
+     "name": "Team Building",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "SpaceTime": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261057,
+     "name": "Team Building",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Psychology": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 261058,
+     "name": "Team Building",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "BodyDevelopment": 15
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261059,
+     "name": "Team Building",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "ComputerLiteracy": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261060,
+     "name": "Team Building",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Stamina": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261061,
+     "name": "Team Building",
+     "minLevel": 175,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 8,
+     "id": 261062,
+     "name": "Team Building",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "FirstAid": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261063,
+     "name": "Team Building",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "SensoryImprovement": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261064,
+     "name": "Team Building",
+     "minLevel": 200,
+     "bonusesThisRank": {}
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 7,
+     "proc": "Tax Audit"
+    },
+    {
+     "atResearchLevel": 10,
+     "proc": "Please Hold"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Market Awareness",
+   "type": "LE research",
+   "line": "Market Awareness (10 ranks, level 1-200)  [id 261095 = Market Awareness]",
+   "representativeId": 261095,
+   "representativeName": "Market Awareness",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +150, MaterialCreation +60, AddAllDef +50, Stamina +25, Psychology +15, BodyDevelopment +15, DodgeRanged +15, RangedInit +15",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "Max Health +150, Matter Creation +60, Add All Def +50, Stamina +25, Body Dev +15, Dodge-Rng +15, Ranged Init +15, Psychology +15. The survivability research line; its rank-8 Add All Def +50 and rank-9 Max Health +150 are the two biggest single-rank defensive jumps in the Bureaucrat set.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261095,
+     "name": "Market Awareness",
+     "minLevel": 1,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 2,
+     "id": 261096,
+     "name": "Market Awareness",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Psychology": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261097,
+     "name": "Market Awareness",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "BodyDevelopment": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 261098,
+     "name": "Market Awareness",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Stamina": 10
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261099,
+     "name": "Market Awareness",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "DodgeRanged": 15
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261100,
+     "name": "Market Awareness",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "RangedInit": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261101,
+     "name": "Market Awareness",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Stamina": 15
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261102,
+     "name": "Market Awareness",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "AddAllDef": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261103,
+     "name": "Market Awareness",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MaxHealth": 150
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261104,
+     "name": "Market Awareness",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "MaterialCreation": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Papercut"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Executive Decisions",
+   "type": "LE research",
+   "line": "Executive Decisions (10 ranks, level 1-200)  [id 261075 = Executive Decisions]",
+   "representativeId": 261075,
+   "representativeName": "Executive Decisions",
+   "professionLock": [
+    "Bureaucrat"
+   ],
+   "professionOnlyToBureaucrat": true,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Psychology +65, SpaceTime +60, MultiRanged +50, FlingShot +25, Stamina +20, Pistol +15, Intelligence +10",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "low",
+   "why": "Psychology +65, Time & Space +60, Multi Ranged +50, Fling Shot +25, Stamina +20, Pistol +15, Int +10. A grab-bag; its Multi Ranged +50 is only useful if you actually dual-wield pistols.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 261075,
+     "name": "Executive Decisions",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Psychology": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 261076,
+     "name": "Executive Decisions",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Pistol": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 261077,
+     "name": "Executive Decisions",
+     "minLevel": 75,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 4,
+     "id": 261078,
+     "name": "Executive Decisions",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Intelligence": 10
+     }
+    },
+    {
+     "rank": 5,
+     "id": 261079,
+     "name": "Executive Decisions",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "Psychology": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 261080,
+     "name": "Executive Decisions",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "FlingShot": 25
+     }
+    },
+    {
+     "rank": 7,
+     "id": 261081,
+     "name": "Executive Decisions",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Psychology": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 261082,
+     "name": "Executive Decisions",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MultiRanged": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 261083,
+     "name": "Executive Decisions",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Stamina": 20
+     }
+    },
+    {
+     "rank": 10,
+     "id": 261084,
+     "name": "Executive Decisions",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "SpaceTime": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 3,
+     "proc": "Deflation"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ]
+  },
+  {
+   "name": "Careful in Battle",
+   "type": "SL (shared)",
+   "line": "Careful in Battle (10 ranks, level 40-219)  [id 211738 = Careful in Battle]",
+   "representativeId": 211738,
+   "representativeName": "Careful in Battle",
+   "professionLock": [
+    "MartialArtist",
+    "Fixer",
+    "Bureaucrat",
+    "Shade"
+   ],
+   "professionOnlyToBureaucrat": false,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): AddAllDef +300, CritialResistance +80",
+   "recommendedAtLevel": "rank 1 at level 40; rank 10 at level 219",
+   "priority": "high",
+   "why": "Add All Def +300 and Critical Resistance +80 for ten ranks - the single largest Add All Def block available to the class, and it is restricted to only four professions (Martial Artist, Fixer, Bureaucrat, Shade). ao-universe's Crat guide says train it to 5 for PvM defence.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211738,
+     "name": "Careful in Battle",
+     "minLevel": 40,
+     "bonusesThisRank": {
+      "CritialResistance": 2,
+      "AddAllDef": 20
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211739,
+     "name": "Careful in Battle",
+     "minLevel": 70,
+     "bonusesThisRank": {
+      "CritialResistance": 2,
+      "AddAllDef": 20
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211740,
+     "name": "Careful in Battle",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "CritialResistance": 3,
+      "AddAllDef": 22
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211741,
+     "name": "Careful in Battle",
+     "minLevel": 130,
+     "bonusesThisRank": {
+      "CritialResistance": 3,
+      "AddAllDef": 23
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211742,
+     "name": "Careful in Battle",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "CritialResistance": 4,
+      "AddAllDef": 24
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211743,
+     "name": "Careful in Battle",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "CritialResistance": 7,
+      "AddAllDef": 26
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211744,
+     "name": "Careful in Battle",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "CritialResistance": 9,
+      "AddAllDef": 28
+     }
+    },
+    {
+     "rank": 8,
+     "id": 211745,
+     "name": "Careful in Battle",
+     "minLevel": 207,
+     "bonusesThisRank": {
+      "CritialResistance": 12,
+      "AddAllDef": 32
+     }
+    },
+    {
+     "rank": 9,
+     "id": 211746,
+     "name": "Careful in Battle",
+     "minLevel": 212,
+     "bonusesThisRank": {
+      "CritialResistance": 15,
+      "AddAllDef": 40
+     }
+    },
+    {
+     "rank": 10,
+     "id": 211747,
+     "name": "Careful in Battle",
+     "minLevel": 219,
+     "bonusesThisRank": {
+      "CritialResistance": 23,
+      "AddAllDef": 65
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Pistol Mastery",
+   "type": "SL (shared)",
+   "line": "Pistol Mastery (10 ranks, level 10-205)  [id 211977 = Pistol Mastery]",
+   "representativeId": 211977,
+   "representativeName": "Pistol Mastery",
+   "professionLock": [
+    "Engineer",
+    "Adventurer",
+    "Bureaucrat",
+    "Doctor",
+    "Metaphysicist"
+   ],
+   "professionOnlyToBureaucrat": false,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Pistol +200, MeleeDamageModifier +60, PoisonDamageModifier +60, FireDamageModifier +60, ColdDamageModifier +60, ProjectileDamageModifier +60, EnergyDamageModifier +60, ChemicalDamageModifier +60, RadiationDamageModifier +60, FlingShot +20",
+   "recommendedAtLevel": "rank 1 at level 10; rank 10 at level 205",
+   "priority": "med",
+   "why": "Pistol +200 plus +60 to every one of the eight damage-type modifiers and Fling Shot +20. Restricted to Engineer / Adventurer / Bureaucrat / Doctor / Metaphysicist. ao-universe recommends it for tweaking weapon requirements and preserving end-game training.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211977,
+     "name": "Pistol Mastery",
+     "minLevel": 10,
+     "bonusesThisRank": {
+      "Pistol": 10,
+      "FlingShot": 1,
+      "MeleeDamageModifier": 2,
+      "PoisonDamageModifier": 2,
+      "FireDamageModifier": 2,
+      "ColdDamageModifier": 2,
+      "ProjectileDamageModifier": 2,
+      "EnergyDamageModifier": 2,
+      "ChemicalDamageModifier": 2,
+      "RadiationDamageModifier": 2
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211978,
+     "name": "Pistol Mastery",
+     "minLevel": 30,
+     "bonusesThisRank": {
+      "Pistol": 10,
+      "FlingShot": 1,
+      "MeleeDamageModifier": 3,
+      "PoisonDamageModifier": 3,
+      "FireDamageModifier": 3,
+      "ColdDamageModifier": 3,
+      "ProjectileDamageModifier": 3,
+      "EnergyDamageModifier": 3,
+      "ChemicalDamageModifier": 3,
+      "RadiationDamageModifier": 3
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211979,
+     "name": "Pistol Mastery",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "Pistol": 12,
+      "FlingShot": 1,
+      "MeleeDamageModifier": 3,
+      "PoisonDamageModifier": 3,
+      "FireDamageModifier": 3,
+      "ColdDamageModifier": 3,
+      "ProjectileDamageModifier": 3,
+      "EnergyDamageModifier": 3,
+      "ChemicalDamageModifier": 3,
+      "RadiationDamageModifier": 3
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211980,
+     "name": "Pistol Mastery",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "Pistol": 13,
+      "FlingShot": 1,
+      "MeleeDamageModifier": 4,
+      "PoisonDamageModifier": 4,
+      "FireDamageModifier": 4,
+      "ColdDamageModifier": 4,
+      "ProjectileDamageModifier": 4,
+      "EnergyDamageModifier": 4,
+      "ChemicalDamageModifier": 4,
+      "RadiationDamageModifier": 4
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211981,
+     "name": "Pistol Mastery",
+     "minLevel": 120,
+     "bonusesThisRank": {
+      "Pistol": 14,
+      "FlingShot": 2,
+      "MeleeDamageModifier": 4,
+      "PoisonDamageModifier": 4,
+      "FireDamageModifier": 4,
+      "ColdDamageModifier": 4,
+      "ProjectileDamageModifier": 4,
+      "EnergyDamageModifier": 4,
+      "ChemicalDamageModifier": 4,
+      "RadiationDamageModifier": 4
+     }
+    },
+    {
+     "rank": 6,
+     "id": 216630,
+     "name": "Pistol Mastery",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Pistol": 16,
+      "FlingShot": 2,
+      "MeleeDamageModifier": 5,
+      "PoisonDamageModifier": 5,
+      "FireDamageModifier": 5,
+      "ColdDamageModifier": 5,
+      "ProjectileDamageModifier": 5,
+      "EnergyDamageModifier": 5,
+      "ChemicalDamageModifier": 5,
+      "RadiationDamageModifier": 5
+     }
+    },
+    {
+     "rank": 7,
+     "id": 216631,
+     "name": "Pistol Mastery",
+     "minLevel": 180,
+     "bonusesThisRank": {
+      "Pistol": 18,
+      "FlingShot": 2,
+      "MeleeDamageModifier": 5,
+      "PoisonDamageModifier": 5,
+      "FireDamageModifier": 5,
+      "ColdDamageModifier": 5,
+      "ProjectileDamageModifier": 5,
+      "EnergyDamageModifier": 5,
+      "ChemicalDamageModifier": 5,
+      "RadiationDamageModifier": 5
+     }
+    },
+    {
+     "rank": 8,
+     "id": 216632,
+     "name": "Pistol Mastery",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "Pistol": 22,
+      "FlingShot": 3,
+      "MeleeDamageModifier": 7,
+      "PoisonDamageModifier": 7,
+      "FireDamageModifier": 7,
+      "ColdDamageModifier": 7,
+      "ProjectileDamageModifier": 7,
+      "EnergyDamageModifier": 7,
+      "ChemicalDamageModifier": 7,
+      "RadiationDamageModifier": 7
+     }
+    },
+    {
+     "rank": 9,
+     "id": 216633,
+     "name": "Pistol Mastery",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "Pistol": 30,
+      "FlingShot": 3,
+      "MeleeDamageModifier": 9,
+      "PoisonDamageModifier": 9,
+      "FireDamageModifier": 9,
+      "ColdDamageModifier": 9,
+      "ProjectileDamageModifier": 9,
+      "EnergyDamageModifier": 9,
+      "ChemicalDamageModifier": 9,
+      "RadiationDamageModifier": 9
+     }
+    },
+    {
+     "rank": 10,
+     "id": 216634,
+     "name": "Pistol Mastery",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "Pistol": 55,
+      "FlingShot": 4,
+      "MeleeDamageModifier": 18,
+      "PoisonDamageModifier": 18,
+      "FireDamageModifier": 18,
+      "ColdDamageModifier": 18,
+      "ProjectileDamageModifier": 18,
+      "EnergyDamageModifier": 18,
+      "ChemicalDamageModifier": 18,
+      "RadiationDamageModifier": 18
+     }
+    }
+   ],
+   "_sources": [
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12"
+   ]
+  },
+  {
+   "name": "Nano Doctorate",
+   "type": "SL (shared)",
+   "line": "Nano Doctorate (10 ranks, level 50-216)  [id 211931 = Nano Doctorate]",
+   "representativeId": 211931,
+   "representativeName": "Nano Doctorate",
+   "professionLock": [
+    [
+     "Agent",
+     "Trader",
+     "Bureaucrat",
+     "Doctor",
+     "NanoTechnician",
+     "Metaphysicist"
+    ],
+    [
+     "Bureaucrat",
+     "Doctor",
+     "NanoTechnician",
+     "Metaphysicist"
+    ]
+   ],
+   "professionOnlyToBureaucrat": false,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): SensoryImprovement +100, BiologicalMetamorphosis +100, MaterialMetamorphosis +100, PsychologicalModification +100, MaterialCreation +100, SpaceTime +100",
+   "recommendedAtLevel": "rank 1 at level 50; rank 10 at level 216",
+   "priority": "high",
+   "why": "+100 to ALL SIX nano schools. Restricted to the caster professions; note that items.ocp holds TWO different profession-lock sets across this line's ten ranks - the earlier ranks list Agent/Trader/Bureaucrat/Doctor/NT/MP and the later ranks drop Agent and Trader. A Bureaucrat is on both lists, so the whole line is open to it.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211931,
+     "name": "Nano Doctorate",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "SensoryImprovement": 5,
+      "BiologicalMetamorphosis": 5,
+      "MaterialMetamorphosis": 5,
+      "PsychologicalModification": 5,
+      "MaterialCreation": 5,
+      "SpaceTime": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211932,
+     "name": "Nano Doctorate",
+     "minLevel": 80,
+     "bonusesThisRank": {
+      "SensoryImprovement": 6,
+      "BiologicalMetamorphosis": 6,
+      "MaterialMetamorphosis": 6,
+      "PsychologicalModification": 6,
+      "MaterialCreation": 6,
+      "SpaceTime": 6
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211933,
+     "name": "Nano Doctorate",
+     "minLevel": 120,
+     "bonusesThisRank": {
+      "SensoryImprovement": 7,
+      "BiologicalMetamorphosis": 7,
+      "MaterialMetamorphosis": 7,
+      "PsychologicalModification": 7,
+      "MaterialCreation": 7,
+      "SpaceTime": 7
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211934,
+     "name": "Nano Doctorate",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "SensoryImprovement": 8,
+      "BiologicalMetamorphosis": 8,
+      "MaterialMetamorphosis": 8,
+      "PsychologicalModification": 8,
+      "MaterialCreation": 8,
+      "SpaceTime": 8
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211935,
+     "name": "Nano Doctorate",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "SensoryImprovement": 9,
+      "BiologicalMetamorphosis": 9,
+      "MaterialMetamorphosis": 9,
+      "PsychologicalModification": 9,
+      "MaterialCreation": 9,
+      "SpaceTime": 9
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211936,
+     "name": "Nano Doctorate",
+     "minLevel": 202,
+     "bonusesThisRank": {
+      "SensoryImprovement": 10,
+      "BiologicalMetamorphosis": 10,
+      "MaterialMetamorphosis": 10,
+      "PsychologicalModification": 10,
+      "MaterialCreation": 10,
+      "SpaceTime": 10
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211937,
+     "name": "Nano Doctorate",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "SensoryImprovement": 11,
+      "BiologicalMetamorphosis": 11,
+      "MaterialMetamorphosis": 11,
+      "PsychologicalModification": 11,
+      "MaterialCreation": 11,
+      "SpaceTime": 11
+     }
+    },
+    {
+     "rank": 8,
+     "id": 229958,
+     "name": "Nano Doctorate",
+     "minLevel": 210,
+     "bonusesThisRank": {
+      "SensoryImprovement": 12,
+      "BiologicalMetamorphosis": 12,
+      "MaterialMetamorphosis": 12,
+      "PsychologicalModification": 12,
+      "MaterialCreation": 12,
+      "SpaceTime": 12
+     }
+    },
+    {
+     "rank": 9,
+     "id": 229959,
+     "name": "Nano Doctorate",
+     "minLevel": 213,
+     "bonusesThisRank": {
+      "SensoryImprovement": 13,
+      "BiologicalMetamorphosis": 13,
+      "MaterialMetamorphosis": 13,
+      "PsychologicalModification": 13,
+      "MaterialCreation": 13,
+      "SpaceTime": 13
+     }
+    },
+    {
+     "rank": 10,
+     "id": 229960,
+     "name": "Nano Doctorate",
+     "minLevel": 216,
+     "bonusesThisRank": {
+      "SensoryImprovement": 19,
+      "BiologicalMetamorphosis": 19,
+      "MaterialMetamorphosis": 19,
+      "PsychologicalModification": 19,
+      "MaterialCreation": 19,
+      "SpaceTime": 19
+     }
+    }
+   ]
+  },
+  {
+   "name": "Starfall",
+   "type": "SL (shared)",
+   "line": "Starfall (10 ranks, level 20-214)  [id 212107 = Starfall]",
+   "representativeId": 212107,
+   "representativeName": "Starfall",
+   "professionLock": [
+    "Bureaucrat",
+    "Doctor",
+    "NanoTechnician",
+    "Metaphysicist"
+   ],
+   "professionOnlyToBureaucrat": false,
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MaxNanoEnergy +400, MaxHealth +160, SensoryImprovement +15, BiologicalMetamorphosis +15, MaterialMetamorphosis +15, PsychologicalModification +15, MaterialCreation +15, SpaceTime +15",
+   "recommendedAtLevel": "rank 1 at level 20; rank 10 at level 214",
+   "priority": "med",
+   "why": "Max Nano +400, Max Health +160 and +15 to all six nano schools. Restricted to Bureaucrat / Doctor / NanoTechnician / Metaphysicist - wiki.aodb.us/wiki/Perk_Chains lists it as 'Crat/doc/MP/NT', which matches the client lock exactly.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212107,
+     "name": "Starfall",
+     "minLevel": 20,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 10,
+      "MaxHealth": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 212108,
+     "name": "Starfall",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 15,
+      "MaxHealth": 8
+     }
+    },
+    {
+     "rank": 3,
+     "id": 212109,
+     "name": "Starfall",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 20,
+      "MaxHealth": 10
+     }
+    },
+    {
+     "rank": 4,
+     "id": 212110,
+     "name": "Starfall",
+     "minLevel": 120,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 25,
+      "MaxHealth": 13,
+      "SensoryImprovement": 1,
+      "BiologicalMetamorphosis": 1,
+      "MaterialMetamorphosis": 1,
+      "PsychologicalModification": 1,
+      "MaterialCreation": 1,
+      "SpaceTime": 1
+     }
+    },
+    {
+     "rank": 5,
+     "id": 212111,
+     "name": "Starfall",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 30,
+      "MaxHealth": 14,
+      "SensoryImprovement": 1,
+      "BiologicalMetamorphosis": 1,
+      "MaterialMetamorphosis": 1,
+      "PsychologicalModification": 1,
+      "MaterialCreation": 1,
+      "SpaceTime": 1
+     }
+    },
+    {
+     "rank": 6,
+     "id": 212112,
+     "name": "Starfall",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 35,
+      "MaxHealth": 17,
+      "SensoryImprovement": 1,
+      "BiologicalMetamorphosis": 1,
+      "MaterialMetamorphosis": 1,
+      "PsychologicalModification": 1,
+      "MaterialCreation": 1,
+      "SpaceTime": 1
+     }
+    },
+    {
+     "rank": 7,
+     "id": 212113,
+     "name": "Starfall",
+     "minLevel": 202,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 40,
+      "MaxHealth": 18,
+      "SensoryImprovement": 2,
+      "BiologicalMetamorphosis": 2,
+      "MaterialMetamorphosis": 2,
+      "PsychologicalModification": 2,
+      "MaterialCreation": 2,
+      "SpaceTime": 2
+     }
+    },
+    {
+     "rank": 8,
+     "id": 212114,
+     "name": "Starfall",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 45,
+      "MaxHealth": 20,
+      "SensoryImprovement": 2,
+      "BiologicalMetamorphosis": 2,
+      "MaterialMetamorphosis": 2,
+      "PsychologicalModification": 2,
+      "MaterialCreation": 2,
+      "SpaceTime": 2
+     }
+    },
+    {
+     "rank": 9,
+     "id": 212115,
+     "name": "Starfall",
+     "minLevel": 210,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 70,
+      "MaxHealth": 22,
+      "SensoryImprovement": 3,
+      "BiologicalMetamorphosis": 3,
+      "MaterialMetamorphosis": 3,
+      "PsychologicalModification": 3,
+      "MaterialCreation": 3,
+      "SpaceTime": 3
+     }
+    },
+    {
+     "rank": 10,
+     "id": 212116,
+     "name": "Starfall",
+     "minLevel": 214,
+     "bonusesThisRank": {
+      "MaxNanoEnergy": 110,
+      "MaxHealth": 33,
+      "SensoryImprovement": 5,
+      "BiologicalMetamorphosis": 5,
+      "MaterialMetamorphosis": 5,
+      "PsychologicalModification": 5,
+      "MaterialCreation": 5,
+      "SpaceTime": 5
+     }
+    }
+   ],
+   "_sources": [
+    "https://wiki.aodb.us/wiki/Perk_Chains"
+   ]
+  }
+ ],
+ "research": [
+  {
+   "name": "Executive Decisions",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): Psychology +65, SpaceTime +60, MultiRanged +50, FlingShot +25, Stamina +20, Pistol +15, Intelligence +10",
+   "ranks": 10,
+   "representativeId": 261075,
+   "representativeName": "Executive Decisions",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 3,
+     "proc": "Deflation"
+    }
+   ]
+  },
+  {
+   "name": "Hostile Negotiations",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): Pistol +145, FlingShot +90, RangedInit +30, MultiRanged +30",
+   "ranks": 10,
+   "representativeId": 261105,
+   "representativeName": "Hostile Negotiations",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 5,
+     "proc": "Social Services"
+    }
+   ]
+  },
+  {
+   "name": "Human Resources",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): Intelligence +40, PsychologicalModification +25, BiologicalMetamorphosis +25, Sense +20, SensoryImprovement +15, ComputerLiteracy +10, MaxNCU +4",
+   "ranks": 10,
+   "representativeId": 261115,
+   "representativeName": "Human Resources",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 6,
+     "proc": "Forms in Triplicate"
+    },
+    {
+     "atResearchLevel": 8,
+     "proc": "Wrong Window"
+    }
+   ]
+  },
+  {
+   "name": "Market Awareness",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +150, MaterialCreation +60, AddAllDef +50, Stamina +25, Psychology +15, BodyDevelopment +15, DodgeRanged +15, RangedInit +15",
+   "ranks": 10,
+   "representativeId": 261095,
+   "representativeName": "Market Awareness",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Papercut"
+    }
+   ]
+  },
+  {
+   "name": "Process Theory",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): SensoryImprovement +50, Psychic +40, PsychologicalModification +25, BiologicalMetamorphosis +25, AddAllDef +15, Sense +10, NanoDelta +10",
+   "ranks": 10,
+   "representativeId": 261065,
+   "representativeName": "Process Theory",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Inflation Adjustment"
+    },
+    {
+     "atResearchLevel": 2,
+     "proc": "Wait In That Queue"
+    }
+   ]
+  },
+  {
+   "name": "Professional Development",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): SpaceTime +55, PsychologicalModification +50, BiologicalMetamorphosis +50, MaterialCreation +40, XPModifier +1",
+   "ranks": 10,
+   "representativeId": 261085,
+   "representativeName": "Professional Development",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 3,
+     "proc": "Next Window Over"
+    },
+    {
+     "atResearchLevel": 4,
+     "proc": "Lost Paperwork"
+    },
+    {
+     "atResearchLevel": 10,
+     "proc": "Tariffs"
+    }
+   ]
+  },
+  {
+   "name": "Team Building",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): FirstAid +60, SensoryImprovement +50, ComputerLiteracy +25, SpaceTime +15, Psychology +15, BodyDevelopment +15, Stamina +15",
+   "ranks": 10,
+   "representativeId": 261055,
+   "representativeName": "Team Building",
+   "rankLevels": [
+    1,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    190,
+    190,
+    200
+   ],
+   "procsGranted": [
+    {
+     "atResearchLevel": 7,
+     "proc": "Tax Audit"
+    },
+    {
+     "atResearchLevel": 10,
+     "proc": "Please Hold"
+    }
+   ]
+  }
+ ],
+ "leProcPerks": {
+  "_what": "The Bureaucrat research-proc perks. Names and packet hashes come from the local AOSharp.Common/GameData/PerkHash.cs enum (the LEProcBureaucrat* entries). Which research LINE grants each one is NOT encoded there; that mapping comes from wiki.aodb.us/wiki/Bureaucrat:Research_Lines, whose per-rank STAT rows were first cross-checked line-for-line against items.ocp (see _verification).",
+  "count": 12,
+  "perks": [
+   {
+    "name": "Forms in Triplicate",
+    "enum": "LEProcBureaucratFormsInTriplicate",
+    "packetHash": "0x464f4954",
+    "clientItemIds": [
+     263425,
+     263427
+    ],
+    "clientNanoId": 263426
+   },
+   {
+    "name": "Wrong Window",
+    "enum": "LEProcBureaucratWrongWindow",
+    "packetHash": "0x5752574e",
+    "clientItemIds": [
+     263468,
+     263471
+    ],
+    "clientNanoId": 263469
+   },
+   {
+    "name": "Tax Audit",
+    "enum": "LEProcBureaucratTaxAudit",
+    "packetHash": "0x54584149",
+    "clientItemIds": [
+     263456,
+     263459
+    ],
+    "clientNanoId": 263457
+   },
+   {
+    "name": "Please Hold",
+    "enum": "LEProcBureaucratPleaseHold",
+    "packetHash": "0x4c545041",
+    "clientItemIds": [
+     263447,
+     263452
+    ],
+    "clientNanoId": 263453
+   },
+   {
+    "name": "Inflation Adjustment",
+    "enum": "LEProcBureaucratInflationAdjustment",
+    "packetHash": "0x49464144",
+    "clientItemIds": [
+     263436,
+     263439
+    ],
+    "clientNanoId": 263437
+   },
+   {
+    "name": "Wait In That Queue",
+    "enum": "LEProcBureaucratWaitInThatQueue",
+    "packetHash": "0x50455243",
+    "clientItemIds": [
+     263428
+    ],
+    "clientNanoId": 263429
+   },
+   {
+    "name": "Deflation",
+    "enum": "LEProcBureaucratDeflation",
+    "packetHash": "0x53565353",
+    "clientItemIds": [
+     263440,
+     263463
+    ],
+    "clientNanoId": 263441
+   },
+   {
+    "name": "Next Window Over",
+    "enum": "LEProcBureaucratNextWindowOver",
+    "packetHash": "0x4e585744",
+    "clientItemIds": [
+     263464,
+     263467
+    ],
+    "clientNanoId": 263465
+   },
+   {
+    "name": "Lost Paperwork",
+    "enum": "LEProcBureaucratLostPaperwork",
+    "packetHash": "0x5045484f",
+    "clientItemIds": [
+     263444,
+     263455
+    ],
+    "clientNanoId": 263445
+   },
+   {
+    "name": "Mobility Embargo",
+    "enum": "LEProcBureaucratMobilityEmbargo",
+    "packetHash": "0x4e55544c",
+    "clientItemIds": [
+     263432
+    ],
+    "clientNanoId": 263433
+   },
+   {
+    "name": "Papercut",
+    "enum": "LEProcBureaucratPapercut",
+    "packetHash": "0x50415755",
+    "clientItemIds": [
+     263431,
+     263448
+    ],
+    "clientNanoId": 263449
+   },
+   {
+    "name": "Social Services",
+    "enum": "LEProcBureaucratSocialServices",
+    "packetHash": "0x5a48454f",
+    "clientItemIds": [
+     263443,
+     263460
+    ],
+    "clientNanoId": 263461
+   }
+  ],
+  "researchLineMapping": {
+   "_what": "Which research LINE and which research LEVEL grants each Bureaucrat proc perk, from wiki.aodb.us/wiki/Bureaucrat:Research_Lines.",
+   "_source": [
+    "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines"
+   ],
+   "_researchLevelCaps": "A research line has 10 levels; the client itself gives the character-level requirements for a Bureaucrat LE line as 1 / 50 / 75 / 100 / 125 / 150 / 175 / 190 / 190 / 200 - read directly from the ToWear Level requirement on every rank of all seven LE lines in items.ocp, not taken from a web page.",
+   "mapping": [
+    {
+     "line": "Executive Decisions",
+     "atResearchLevel": 3,
+     "proc": "Deflation"
+    },
+    {
+     "line": "Hostile Negotiations",
+     "atResearchLevel": 5,
+     "proc": "Social Services"
+    },
+    {
+     "line": "Human Resources",
+     "atResearchLevel": 6,
+     "proc": "Forms in Triplicate"
+    },
+    {
+     "line": "Human Resources",
+     "atResearchLevel": 8,
+     "proc": "Wrong Window"
+    },
+    {
+     "line": "Market Awareness",
+     "atResearchLevel": 1,
+     "proc": "Papercut"
+    },
+    {
+     "line": "Process Theory",
+     "atResearchLevel": 1,
+     "proc": "Inflation Adjustment"
+    },
+    {
+     "line": "Process Theory",
+     "atResearchLevel": 2,
+     "proc": "Wait In That Queue"
+    },
+    {
+     "line": "Professional Development",
+     "atResearchLevel": 3,
+     "proc": "Next Window Over"
+    },
+    {
+     "line": "Professional Development",
+     "atResearchLevel": 4,
+     "proc": "Lost Paperwork"
+    },
+    {
+     "line": "Professional Development",
+     "atResearchLevel": 10,
+     "proc": "Tariffs"
+    },
+    {
+     "line": "Team Building",
+     "atResearchLevel": 7,
+     "proc": "Tax Audit"
+    },
+    {
+     "line": "Team Building",
+     "atResearchLevel": 10,
+     "proc": "Please Hold"
+    }
+   ],
+   "_nameConflict": "TARIFFS vs MOBILITY EMBARGO - unresolved, recorded rather than smoothed. itemnames.sql holds BOTH: 'Tariffs' (263435, Item) and 'Mobility Embargo' (263432 Item / 263433 Nano). AOSharp.Common/GameData/PerkHash.cs names twelve LEProcBureaucrat* perks and Mobility Embargo is one of them; Tariffs is NOT in the enum. wiki.aodb.us/Bureaucrat:Research_Lines says Professional Development level 10 grants 'Tariffs' and never mentions Mobility Embargo. The two are probably the same perk under two names (Tariffs 263435 has no paired Nano row while Mobility Embargo 263433 is a Nano with no third Item row - the other eleven procs all have a full Item/Nano/Item triple), but that is an inference and is flagged in _unverified, not asserted.",
+   "_effectsUnknown": "The numeric effect, proc chance, trigger and stacking type of all twelve Bureaucrat research procs are not published on any allowed source and are not in the local data - the proc perks are action items with no ToWear template, so the perk extractor cannot reach them. Only the names, ids and lines are recorded."
+  }
+ },
+ "generalPerkLinesAlsoAvailable": {
+  "_what": "Perk lines in items.ocp with NO profession lock at all, so a Bureaucrat can take them. Rank counts, level requirements and the summed line bonus are read from the item templates. Includes the four breed genome pairs, the five AI 'Champion of ...' lines and the vehicle upgrade lines.",
+  "count": 51,
+  "lines": [
+   {
+    "name": "Alien Technology Expertise",
+    "representativeId": 247748,
+    "representativeName": "Alien Technology Expertise",
+    "ranks": 3,
+    "minLevel": 15,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Ambidextrous",
+    "representativeId": 211135,
+    "representativeName": "Ambidextrous",
+    "ranks": 6,
+    "minLevel": 10,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {
+     "MultiMelee": 130,
+     "MultiRanged": 130,
+     "MeleeDamageModifier": 20,
+     "ProjectileDamageModifier": 20,
+     "EnergyDamageModifier": 20,
+     "FireDamageModifier": 20,
+     "ColdDamageModifier": 20,
+     "ChemicalDamageModifier": 20,
+     "PoisonDamageModifier": 20,
+     "RadiationDamageModifier": 20,
+     "AddAllDef": 8
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Anti-Personnel Turret Armor Upgrade",
+    "representativeId": 262591,
+    "representativeName": "Anti-Personnel Turret Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Anti-Personnel Turret Weapon Upgrade",
+    "representativeId": 262594,
+    "representativeName": "Anti-Personnel Turret Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Anti-Vehicular Battery Armor Upgrade",
+    "representativeId": 262598,
+    "representativeName": "Anti-Vehicular Battery Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Anti-Vehicular Battery Weapon Upgrade",
+    "representativeId": 262601,
+    "representativeName": "Anti-Vehicular Battery Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Apotheosis",
+    "representativeId": 303268,
+    "representativeName": "Apotheosis",
+    "ranks": 10,
+    "minLevel": 200,
+    "maxRankLevel": 220,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 500,
+     "MaxHealth": 500,
+     "Parry": 100,
+     "RunSpeed": 75,
+     "NanoProgramming": 50,
+     "MechanicalEngineering": 50,
+     "ElectricalEngineering": 50,
+     "QuantumFT": 50,
+     "WeaponSmithing": 50,
+     "Psychology": 50,
+     "Chemistry": 50,
+     "ComputerLiteracy": 50,
+     "Tutoring": 50,
+     "BreakingEntry": 50,
+     "Concealment": 50,
+     "NanoCInit": 50,
+     "SpaceTime": 35,
+     "MaterialMetamorphosis": 35,
+     "BiologicalMetamorphosis": 35,
+     "PsychologicalModification": 35,
+     "SensoryImprovement": 35,
+     "MaterialCreation": 35,
+     "Treatment": 30,
+     "FirstAid": 30,
+     "HeavyWeapons": 30,
+     "_1hBlunt": 30,
+     "_1hEdged": 30,
+     "MeleeEnergy": 30,
+     "Skill2hEdged": 30,
+     "Piercing": 30,
+     "_2hBlunt": 30,
+     "MartialArts": 30,
+     "Grenade": 30,
+     "Bow": 30,
+     "Pistol": 30,
+     "Rifle": 30,
+     "MGSMG": 30,
+     "Shotgun": 30,
+     "AssaultRifle": 30,
+     "SharpObject": 30,
+     "BowSpecialAttack": 30,
+     "Riposte": 30,
+     "Dimach": 30,
+     "SneakAttack": 30,
+     "FastAttack": 30,
+     "Burst": 30,
+     "FlingShot": 30,
+     "Brawl": 30,
+     "FullAuto": 30,
+     "MultiRanged": 30,
+     "MultiMelee": 30,
+     "AimedShot": 30,
+     "NanoResist": 25,
+     "AddAllDef": 20,
+     "DuckExp": 20,
+     "EvadeClsC": 20,
+     "AddAllOff": 20,
+     "DodgeRanged": 20,
+     "PoisonDamageModifier": 20,
+     "NanoDelta": 20,
+     "ProjectileDamageModifier": 20,
+     "MeleeDamageModifier": 20,
+     "EnergyDamageModifier": 20,
+     "ChemicalDamageModifier": 20,
+     "RadiationDamageModifier": 20,
+     "HealDelta": 20,
+     "FireDamageModifier": 20,
+     "NanoDamageModifier": 20,
+     "ColdDamageModifier": 20,
+     "Strength": 15,
+     "Agility": 15,
+     "Stamina": 15,
+     "Intelligence": 15,
+     "Sense": 15,
+     "Psychic": 15,
+     "NanoRange": 10,
+     "NPCostModifier": -5,
+     "HealMultiplier": 4,
+     "NanoDamageMultiplier": 4,
+     "CriticalIncrease": 2
+    },
+    "inPerkLineEnum": false
+   },
+   {
+    "name": "Atrox Primary Genome",
+    "representativeId": 252492,
+    "representativeName": "Atrox Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 54,
+     "Stamina": 54
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Atrox Secondary Genome",
+    "representativeId": 252512,
+    "representativeName": "Atrox Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Agility": 27,
+     "Sense": 27,
+     "Intelligence": 27,
+     "Psychic": 27
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Cartographer",
+    "representativeId": 211748,
+    "representativeName": "Cartographer",
+    "ranks": 5,
+    "minLevel": 20,
+    "maxRankLevel": 100,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Champion of Heavy Artillery",
+    "representativeId": 253108,
+    "representativeName": "Champion of Heavy Artillery",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "AssaultRifle": 100,
+     "Rifle": 100,
+     "RangedEnergy": 100,
+     "HeavyWeapons": 100,
+     "Grenade": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Champion of Heavy Infantry",
+    "representativeId": 253064,
+    "representativeName": "Champion of Heavy Infantry",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "_2hBlunt": 100,
+     "Skill2hEdged": 100,
+     "MeleeEnergy": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Champion of Light Artillery",
+    "representativeId": 253093,
+    "representativeName": "Champion of Light Artillery",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Pistol": 100,
+     "MGSMG": 100,
+     "Shotgun": 100,
+     "Bow": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Champion of Light Infantry",
+    "representativeId": 253079,
+    "representativeName": "Champion of Light Infantry",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Piercing": 100,
+     "_1hBlunt": 100,
+     "_1hEdged": 100,
+     "MartialArts": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Champion of Nano Combat",
+    "representativeId": 253123,
+    "representativeName": "Champion of Nano Combat",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "MaterialMetamorphosis": 100,
+     "SpaceTime": 100,
+     "MaterialCreation": 100,
+     "BiologicalMetamorphosis": 100,
+     "SensoryImprovement": 100,
+     "PsychologicalModification": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Combat Knowledge",
+    "representativeId": 253140,
+    "representativeName": "Combat Knowledge",
+    "ranks": 8,
+    "minLevel": 25,
+    "maxRankLevel": 165,
+    "fullLineBonuses": {
+     "Treatment": 64,
+     "FirstAid": 64,
+     "SkillLockModifier": -8
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Enhance DNA",
+    "representativeId": 211793,
+    "representativeName": "Enhance DNA",
+    "ranks": 10,
+    "minLevel": 10,
+    "maxRankLevel": 190,
+    "fullLineBonuses": {
+     "Strength": 45,
+     "Stamina": 45,
+     "Intelligence": 45,
+     "Psychic": 45,
+     "Sense": 45,
+     "Agility": 45,
+     "BodyDevelopment": 40
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Enhance Health",
+    "representativeId": 211057,
+    "representativeName": "Enhance Health",
+    "ranks": 8,
+    "minLevel": 10,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {
+     "MaxHealth": 1540
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Enhance Nano",
+    "representativeId": 211065,
+    "representativeName": "Enhance Nano",
+    "ranks": 8,
+    "minLevel": 10,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 2580
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Enhanced Nano Damage",
+    "representativeId": 211803,
+    "representativeName": "Enhanced Nano Damage",
+    "ranks": 6,
+    "minLevel": 160,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 2000,
+     "NanoDamageMultiplier": 18
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Explorer",
+    "representativeId": 211812,
+    "representativeName": "Explorer",
+    "ranks": 4,
+    "minLevel": 10,
+    "maxRankLevel": 140,
+    "fullLineBonuses": {
+     "RegainXPPercentage": 100,
+     "Adventuring": 60
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "First Aid",
+    "representativeId": 211819,
+    "representativeName": "First Aid",
+    "ranks": 4,
+    "minLevel": 30,
+    "maxRankLevel": 180,
+    "fullLineBonuses": {
+     "Treatment": 100,
+     "FirstAid": 100
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Freak Strength",
+    "representativeId": 211853,
+    "representativeName": "Freak Strength",
+    "ranks": 3,
+    "minLevel": 120,
+    "maxRankLevel": 208,
+    "fullLineBonuses": {
+     "BodyDevelopment": 49,
+     "Strength": 20,
+     "Stamina": 20
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Genius",
+    "representativeId": 211866,
+    "representativeName": "Genius",
+    "ranks": 3,
+    "minLevel": 60,
+    "maxRankLevel": 190,
+    "fullLineBonuses": {
+     "NanoPool": 120,
+     "Intelligence": 40,
+     "Psychic": 40
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Combat Knowledge",
+    "representativeId": 268786,
+    "representativeName": "Global Advantage - Combat Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Defensive Power",
+    "representativeId": 268780,
+    "representativeName": "Global Advantage - Defensive Power",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Health",
+    "representativeId": 268730,
+    "representativeName": "Global Advantage - Health",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Medical Knowledge",
+    "representativeId": 268783,
+    "representativeName": "Global Advantage - Medical Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Nano Technology Knowledge",
+    "representativeId": 268789,
+    "representativeName": "Global Advantage - Nano Technology Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Global Advantage - Offensive Power",
+    "representativeId": 268777,
+    "representativeName": "Global Advantage - Offensive Power",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Improved Notum Propellant",
+    "representativeId": 260020,
+    "representativeName": "Improved Notum Propellant",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": false
+   },
+   {
+    "name": "Kung-Fu Master",
+    "representativeId": 211901,
+    "representativeName": "Kung-Fu Master",
+    "ranks": 5,
+    "minLevel": 50,
+    "maxRankLevel": 203,
+    "fullLineBonuses": {
+     "MartialArts": 50
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Mechanized Assault Vehicle Armor Upgrade",
+    "representativeId": 263035,
+    "representativeName": "Mechanized Assault Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Mechanized Assault Vehicle Weapon Upgrade",
+    "representativeId": 263038,
+    "representativeName": "Mechanized Assault Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Mechanized Scout Vehicle Armor Upgrade",
+    "representativeId": 263028,
+    "representativeName": "Mechanized Scout Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Mechanized Scout Vehicle Weapon Upgrade",
+    "representativeId": 263031,
+    "representativeName": "Mechanized Scout Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Motorist",
+    "representativeId": 211070,
+    "representativeName": "Motorist",
+    "ranks": 4,
+    "minLevel": 30,
+    "maxRankLevel": 140,
+    "fullLineBonuses": {
+     "VehicleAir": 200,
+     "VehicleGround": 200,
+     "VehicleWater": 200
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "NCU Extensions",
+    "representativeId": 211123,
+    "representativeName": "NCU Extensions",
+    "ranks": 9,
+    "minLevel": 1,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "MaxNCU": 140,
+     "ComputerLiteracy": 110
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Nanobreed Primary Genome",
+    "representativeId": 252560,
+    "representativeName": "Nanobreed Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Intelligence": 54,
+     "Psychic": 54
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Nanobreed Secondary Genome",
+    "representativeId": 253018,
+    "representativeName": "Nanobreed Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 27,
+     "Stamina": 27,
+     "Sense": 27,
+     "Agility": 27
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Nanomorph",
+    "representativeId": 252387,
+    "representativeName": "Nanomorph",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 195,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 1000,
+     "MaterialMetamorphosis": 19,
+     "BiologicalMetamorphosis": 19,
+     "PsychologicalModification": 19,
+     "MaterialCreation": 19,
+     "SpaceTime": 19,
+     "SensoryImprovement": 19
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Notum Fiber Armor",
+    "representativeId": 260023,
+    "representativeName": "Notum Fiber Armor",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": false
+   },
+   {
+    "name": "Notum Repulsor",
+    "representativeId": 212133,
+    "representativeName": "Notum Repulsor",
+    "ranks": 8,
+    "minLevel": 30,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "NanoResist": 20000,
+     "SensoryImprovement": -8000,
+     "BiologicalMetamorphosis": -8000,
+     "MaterialMetamorphosis": -8000,
+     "PsychologicalModification": -8000,
+     "MaterialCreation": -8000,
+     "SpaceTime": -8000
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Opifex Primary Genome",
+    "representativeId": 252527,
+    "representativeName": "Opifex Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Sense": 54,
+     "Agility": 54
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Opifex Secondary Genome",
+    "representativeId": 252542,
+    "representativeName": "Opifex Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 27,
+     "Stamina": 27,
+     "Psychic": 27,
+     "Intelligence": 27
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Opportunist",
+    "representativeId": 252479,
+    "representativeName": "Opportunist",
+    "ranks": 6,
+    "minLevel": 15,
+    "maxRankLevel": 125,
+    "fullLineBonuses": {
+     "Parry": 110,
+     "Riposte": 110,
+     "Dimach": 110
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Personal Mechanized Vehicle Armor Upgrade",
+    "representativeId": 262431,
+    "representativeName": "Personal Mechanized Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Personal Mechanized Vehicle Weapon Upgrade",
+    "representativeId": 262434,
+    "representativeName": "Personal Mechanized Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {},
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Solitus Primary Genome",
+    "representativeId": 253034,
+    "representativeName": "Solitus Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 36,
+     "Stamina": 36,
+     "Agility": 36
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Solitus Seconday Genome",
+    "representativeId": 253049,
+    "representativeName": "Solitus Seconday Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Intelligence": 36,
+     "Sense": 36,
+     "Psychic": 36
+    },
+    "inPerkLineEnum": true
+   },
+   {
+    "name": "Training Seminar",
+    "representativeId": 211075,
+    "representativeName": "Training Seminar",
+    "ranks": 5,
+    "minLevel": 1,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {
+     "XPModifier": 23
+    },
+    "inPerkLineEnum": true
+   }
+  ]
+ },
+ "shadowbreedPerkLines": {
+  "_what": "Single-rank Shadowbreed perk templates a Bureaucrat can take. They are slot-less ToWear templates gated on Side (faction) + Level 205/210/215, and they carry the client `can` flag 0xa00005 WITHOUT the 0x10000000 perk bit, so tools/perk-extractor/build-perks.py (which filters on that bit) does not list them - they are enumerated separately here from the same raw dump. Side 0 = Neutral, 1 = Clan, 2 = Omni-Tek. Every one of them is profession-unlocked, so this block is not Bureaucrat-specific.",
+  "count": 37,
+  "lines": [
+   {
+    "name": "Adumbrated",
+    "id": 215392,
+    "minLevel": 210,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 26
+    }
+   },
+   {
+    "name": "Ambigous",
+    "id": 230908,
+    "minLevel": 215,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 33
+    }
+   },
+   {
+    "name": "Balanced",
+    "id": 230903,
+    "minLevel": 205,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 4
+    }
+   },
+   {
+    "name": "Benighted",
+    "id": 215393,
+    "minLevel": 205,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 16
+    }
+   },
+   {
+    "name": "Black",
+    "id": 215394,
+    "minLevel": 215,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 36
+    }
+   },
+   {
+    "name": "Blazing",
+    "id": 215395,
+    "minLevel": 215,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 12
+    }
+   },
+   {
+    "name": "Bright",
+    "id": 215396,
+    "minLevel": 210,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 29
+    }
+   },
+   {
+    "name": "Casual",
+    "id": 230904,
+    "minLevel": 210,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 5
+    }
+   },
+   {
+    "name": "Cloudless",
+    "id": 215397,
+    "minLevel": 205,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 19
+    }
+   },
+   {
+    "name": "Dark",
+    "id": 215398,
+    "minLevel": 210,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 35
+    }
+   },
+   {
+    "name": "Darkened",
+    "id": 215399,
+    "minLevel": 215,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 27
+    }
+   },
+   {
+    "name": "Doubtful",
+    "id": 230900,
+    "minLevel": 205,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 22
+    }
+   },
+   {
+    "name": "Dubious",
+    "id": 230901,
+    "minLevel": 210,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 23
+    }
+   },
+   {
+    "name": "Dusky",
+    "id": 215400,
+    "minLevel": 205,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 7
+    }
+   },
+   {
+    "name": "Gloomy",
+    "id": 215401,
+    "minLevel": 210,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 8
+    }
+   },
+   {
+    "name": "Indeterminated",
+    "id": 230907,
+    "minLevel": 210,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 32
+    }
+   },
+   {
+    "name": "Loustrous",
+    "id": 215402,
+    "minLevel": 210,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 20
+    }
+   },
+   {
+    "name": "Luminous",
+    "id": 215403,
+    "minLevel": 205,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 1
+    }
+   },
+   {
+    "name": "Metoric",
+    "id": 215404,
+    "minLevel": 215,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 3
+    }
+   },
+   {
+    "name": "Murky",
+    "id": 215405,
+    "minLevel": 205,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 34
+    }
+   },
+   {
+    "name": "Noctivagant",
+    "id": 215406,
+    "minLevel": 210,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 17
+    }
+   },
+   {
+    "name": "Noctivagous",
+    "id": 215407,
+    "minLevel": 215,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 18
+    }
+   },
+   {
+    "name": "Nocturnal",
+    "id": 215408,
+    "minLevel": 215,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 9
+    }
+   },
+   {
+    "name": "Radient",
+    "id": 215409,
+    "minLevel": 205,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 10
+    }
+   },
+   {
+    "name": "Scintillant",
+    "id": 215410,
+    "minLevel": 215,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 30
+    }
+   },
+   {
+    "name": "Shady",
+    "id": 215374,
+    "minLevel": 205,
+    "side": "Omni-Tek",
+    "bonuses": {
+     "ShadowBreed": 25
+    }
+   },
+   {
+    "name": "Shiny",
+    "id": 215411,
+    "minLevel": 215,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 21
+    }
+   },
+   {
+    "name": "Splendent",
+    "id": 215412,
+    "minLevel": 210,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 2
+    }
+   },
+   {
+    "name": "Splendid",
+    "id": 215413,
+    "minLevel": 210,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 11
+    }
+   },
+   {
+    "name": "Uncertain",
+    "id": 230905,
+    "minLevel": 215,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 6
+    }
+   },
+   {
+    "name": "Undecided",
+    "id": 230911,
+    "minLevel": 215,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 15
+    }
+   },
+   {
+    "name": "Undefinable",
+    "id": 230902,
+    "minLevel": 215,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 24
+    }
+   },
+   {
+    "name": "Undetermined",
+    "id": 230910,
+    "minLevel": 210,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 14
+    }
+   },
+   {
+    "name": "Unsettled",
+    "id": 230909,
+    "minLevel": 205,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 13
+    }
+   },
+   {
+    "name": "Vague",
+    "id": 230906,
+    "minLevel": 205,
+    "side": "Neutral",
+    "bonuses": {
+     "ShadowBreed": 31
+    }
+   },
+   {
+    "name": "Vivid",
+    "id": 246220,
+    "minLevel": 205,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 28
+    }
+   },
+   {
+    "name": "Vivid",
+    "id": 246221,
+    "minLevel": 205,
+    "side": "Clan",
+    "bonuses": {
+     "ShadowBreed": 28
+    }
+   }
+  ]
+ },
+ "_deviations": [
+  "PET CLASS, BUT THE PET SCHOOLS ARE THE EXPENSIVE ONES. The Doctor build file is organised around which rung of the heal ladder you can stand on, and the MP file around which pets you can keep up. For a Bureaucrat neither is the organising axis, because its two pet schools - Matter Creation and Time & Space - cost 1.6 IP while its three crowd-control schools cost 1.0. 229 of 343 Crat nanos need a 1.6 school and only 114 live entirely inside the 1.0 ones, so the Crat's real budgeting problem is pets vs control, which neither template class has.",
+  "POWER IS GATED BY WHETHER CC LANDS, NOT BY A LADDER RUNG. A Doctor's 58-step single-heal ladder means the next rung is strictly better and always applies. A Crat's calm ladder does not work that way: ao-universe's guide says the Rubi-Ka calm wipes a mob's hate list but is 'murder to land' on Shadowlands mobs, while the SL calm lands reliably and only sometimes pacifies, so the best nano you can cast is frequently the wrong one for the content. There is no equivalent of 'cast the biggest heal you can'.",
+  "PSYCHOLOGY IS A COST-1.0 SKILL HERE AND NOWHERE ELSE. In reference/skillcaps.json the Bureaucrat is the only profession that pays 1.0 for Psychology (a Doctor pays 2.0, a Shade 2.4). Its seven cost-1.0 skills are Bio Met, Computer Literacy, Nano C. Init., Psy Mod, Psychology, Sense Imp and Tutoring - against the Doctor's nine (BM, MM, Treatment, First Aid, Nano Pool, Nano C. Init, Comp Lit, Tutoring, Pharma Tech) and the Shade's nine weapon/evade skills. TREATMENT is 2.0 for a Crat against 1.0 for a Doctor, and NANO POOL is 1.4 for a Crat against 1.0 for a Doctor - so the Doctor file's 'max Treatment every level' rule does NOT carry over.",
+  "BREED IS NANOMAGE, NOT THE DOCTOR'S SOLITUS AND NOT THE SHADE'S OPIFEX, AND THE NUMBERS DIFFER IN KIND. The Doctor file argues Solitus because a Doctor's healing schools are already 1.0 so extra nano skill buys less, and because Doctor armour is Stamina-gated. A Bureaucrat has no armour-Stamina argument and its two most-used schools are its EXPENSIVE ones, so extra Int/Psychic buys more, not less: Nanomage caps Int 512 / Psy 512 against Solitus 480/480, gives 4 Max Nano per Nano Pool point against 3, and 55% nano-cost reduction against 50%. The Shade's Opifex argument (Agility 544 / Sense 512 for Piercing, Sneak Attack and evades) is irrelevant here - the Crat's evades cost 2.4 and are bought from perks.",
+  "THE WEAPON SKILL IS CHEAP BUT ITS SPECIALS ARE THE MOST EXPENSIVE IN THE TABLE. The Shade file's story is one 1.0 weapon skill with everything else at 4.0. The Crat's is stranger: Pistol costs 1.6 but Fling Shot, Multi Ranged and Ranged Init. all cost 4.0. So unlike the Shade, whose Sneak Attack and Fast Attack are 1.0 and 1.4, a Crat can never buy its own weapon specials with IP - it takes them from Hostile Negotiations (Fling Shot +90, Multi Ranged +30, Ranged Init +30), Executive Decisions (Multi Ranged +50, Fling Shot +25) and Pistol Mastery (Fling Shot +20).",
+  "ONE PERK LINE WITH ZERO STATS. Commanding Presence (10 ranks, ids 210931-210940) modifies NOT ONE STAT in items.ocp, which no line in the Shade or Doctor files does. The client-data-first method that made shade-build.json better than the MP's web-written prose block produces an EMPTY effect string here - and ao-universe calls this the line to 'max at all times'. Recorded with an explicit _dataNote so the empty table is not read as a weak perk.",
+  "THIRTEEN PROFESSION-ONLY LINES, NOT THE SHADE'S NINE. Twelve of them have 10 ranks and Insurance Agent has 5, for 125 profession-locked perk ranks. Seven are LE research (the 1/50/75/100/125/150/175/190/190/200 ladder), five are Shadowlands (Bureaucratic Shuffle, Commanding Presence, Directorship, Persuader, Insurance Agent) and exactly one - Loophole - is an Alien Invasion line, identified from its 15/15/55/55/55/105/105/145/205/210 doubled-level ladder.",
+  "THE PERKLINE ENUM IS MISSING 'PERSUADER'. AOSharp.Common/GameData/PerkLine.cs has 272 entries and does not contain Persuader, although the client has all ten of its ranks (211957-211966) as ordinary perk templates carrying the 0x10000000 perk bit and a Bureaucrat lock. The Shade pass found the same gap for Apotheosis, Improved Notum Propellant and Notum Fiber Armor; Persuader is a fourth. This is a real bug in the local enum, not a data-reading error.",
+  "SHADOWBREED LINES ARE HANDLED DIFFERENTLY HERE THAN IN shade-build.json, AND THE SHADE FILE IS THE ONE THAT IS LOOSE. shade-build.json counts 84 'general' perk lines including Adumbrated, Black, Balanced and the rest of the Shadowbreed set. Those templates carry the client `can` flag 0xa00005 WITHOUT the 0x10000000 perk bit that tools/perk-extractor/build-perks.py filters on, so the current extractor returns 68 lines for a Bureaucrat and excludes them. Rather than quietly lose 37 real perk lines, they are enumerated in their own shadowbreedPerkLines block from the same raw dump, with their Side (faction) and level gates shown.",
+  "NO HEAL, NO REFLECT, NO ABSORB, AND EVADES COST 2.4 - THE SAME PLACE THE DOCTOR ENDS UP, BY A DIFFERENT ROUTE. The Doctor file treats evades as a lost cause because a Doctor pays 2.4/2.4/3.2 and heals through the damage instead. A Bureaucrat pays 2.4/2.4/2.4 and cannot heal at all, so its answer is neither IP nor healing but PERKS: Careful in Battle (+300 Add All Def, +80 Critical Resistance), Bureaucratic Shuffle (+40 to each evade, +200 HP), Market Awareness (+50 Add All Def, +150 HP) and the unlocked Enhance Health line (+1540 HP).",
+  "'THE BUREAUCRAT NEEDS NO MATTER METAMORPHOSIS' IS ALMOST TRUE AND IS RECORDED AS ALMOST TRUE. Both wiki.aodb.us and ao-universe state flatly that a Crat has no nanos using MM. bureaucrat-nanos.json has exactly one: Fill Inbox (266303), requiring Matter Metamorphosis 800. The advice (do not spend IP) survives; the claim does not, and the exception is named.",
+  "FROOB-PLAYABLE IN A WAY NEITHER TEMPLATE CLASS IS. The Shade cannot exist on a free account at all. Of the Bureaucrat's 343 nanos, 292 carry no Expansion(389) requirement, 49 need Shadowlands and 2 need Lost Eden - so the calm/root/snare/charm/bot core is entirely free-account content and the expansion buys the Empowered and Puissant top tiers."
+ ],
+ "_unverified": [
+  "PSYCHOLOGY'S ROLE IN CHARM IS NOT PROVABLE FROM THE LOCAL DATA. Not one of the 343 nanos in bureaucrat-nanos.json lists Psychology as a cast requirement, yet wiki.aodb.us/Bureaucrat:Breed_and_Skills says to max it if you charm extensively and both Bureaucrat-only Shadowlands lines pour Psychology into the class (+200 Persuader, +120 Directorship). Whether it governs charm duration, charm success or the charmable target level is a server formula the item/nano criteria do not expose.",
+  "THE 'Psychic < 551' TERM ON THE TOP CHARMS is present in the ToUse requirement list of The Voice of God (231010), The Voice of One (231008), My Way (231012), Peer Pressure (231009) and The Choir Fantastic (275009). The nano extractor flattens each requirement's Target field away, so whether this is a check on the CASTER or on the CHARM TARGET is not established here. Do not build a bot rule on it without re-reading the raw Req records.",
+  "'Pets op66 <n>' and 'Specialization op22 <n>' / 'NanoFocusLevel op22 64' appear in castReqs with operator numbers the extractor could not name. 13 nanos carry Specialization bit 8, 12 carry bit 1, 9 carry bit 4, 6 carry bit 2 and 7 carry NanoFocusLevel bit 64. The bit meanings are not decoded in this pass.",
+  "TARIFFS vs MOBILITY EMBARGO: see leProcPerks.researchLineMapping._nameConflict. The client has both names as items (263435 and 263432/263433), PerkHash.cs names only Mobility Embargo, and wiki.aodb.us names only Tariffs. That they are the same perk is an inference, not a verified fact.",
+  "LOOPHOLE IS CALLED AN ALIEN INVASION LINE HERE BY INFERENCE, NOT BY A FLAG IN THE DATA. items.ocp carries no expansion bit on its ranks; the call is made from its rank ladder (15/15/55/55/55/105/105/145/205/210 - the doubled-level shape the known AI lines share, e.g. the Shade's Shadow line) against the LE ladder (1/50/75/100/125/150/175/190/190/200) and the varied SL ladders. The same reasoning classifies the five SL lines. No allowed web source confirms it: wiki.aodb.us/wiki/Bureaucrat:Perks is a 404.",
+  "Perk RANK COSTS (how many perk points each rank costs) are not in items.ocp and are not stated here. The Shadowlands perk budget (1 per 10 levels to 200 plus 1 per shadowlevel) and the AI budget (1 per Alien Level) are also not in the local data.",
+  "PERK ACTIONS ARE NOT IN THIS EXTRACTION. Every perk special a Bureaucrat gets - the Commanding Presence team AR/AAD, the Directorship XP pulses and damage multipliers, the Process Theory stun proc, the Insurance Agent SK recovery - is a perk ACTION, not a ToWear stat modifier, and is not encoded in the item template. The stat tables here are complete; the action tables do not exist. wiki.aodb.us/wiki/Bureaucrat:Perks is a 404 and the main wiki Bureaucrat page says its Perks subpage is empty, so no reputable source documents them either.",
+  "The 'target' column in skillPriorities is a judgement about IP allocation. The IP COST FACTORS it is derived from are data (reference/skillcaps.json, Bureaucrat = _professionOrder index 2), and nine of them were independently confirmed by wiki.aodb.us/Bureaucrat:Breed_and_Skills quoting the same numbers (Nano C. Init 1.0, Computer Literacy 1.0, Psychology 1.0, Tutoring 1.0, Bio Met 1.0, Psy Mod 1.0, Sense Imp 1.0, Nano Pool 1.4, Body Dev 2.4, Vehicle Water 2.4, Map Navigation 2.0).",
+  "The ability-dependency percentages behind the breed argument (Psy Mod 80% Int / 20% Psy etc.) come from reference/skillcaps.json, where that file itself marks most of them '(approx; unverified)'. The COST factors, which carry most of the argument, are the cross-checked part; the ability CAPS come from reference/breeds.json.",
+  "lineTotals / the 'effect' string sums every rank's modifiers. For ordinary cumulative lines that is the full-line bonus. For a TOGGLE line it is not: the unlocked Notum Repulsor line sums to Nano Resist +20000 and -8000 to each nano school, which is plainly a per-rank stance, not a cumulative total. Read the rankTable, not the sum, for that line.",
+  "Perk bonuses recorded with amount 0 are exactly what the client stores; those ranks grant an action rather than a stat. Commanding Presence stores no modifier entries at all on any rank.",
+  "generalPerkLinesAlsoAvailable means 'has no profession lock in items.ocp'. Some entries (the vehicle upgrade lines, the four breed genome pairs, Alien Technology Expertise) are gated by things other than profession - breed, AI title level, expansion - which this extraction does not resolve.",
+  "SOURCE QUALITY: wiki.aodb.us/wiki/Bureaucrat:Perks returns HTTP 404 and wiki.aodb.us/wiki/Perk_Chains documents only Starfall out of the eleven Bureaucrat-relevant lines asked of it. The load-bearing web sources for this class are the ao-universe Bureaucrat Guide v1.2 and wiki.aodb.us/Bureaucrat:Research_Lines and Bureaucrat:Breed_and_Skills.",
+  "ao-universe's guide is version 1.2 and predates some of the content in the 18.8.50 client extract (for example The Choir Fantastic 275009 and the CEO Guardian 273300 are not discussed in it). Where the guide and the client disagree on what exists, the client is recorded.",
+  "No Bureaucrat weapons, gear, implant or symbiant file was consulted for this build (only bureaucrat-nanos.json existed at the time of writing, plus bureaucrat-symbiants.json). Any weapon-QL or implant-QL number that the Doctor and Shade build files quote from their weapons files has deliberately been left out rather than estimated."
+ ],
+ "_sources": [
+  "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (client 18.8.50_EP1) via tools/eng-gear-extractor --prof 8 --slug bureaucrat: every perk line, rank, level requirement, item id and stat bonus in this file. 120,842 templates read, 56,349 wearable, 50,867 usable by profession 8.",
+  "LOCAL tools/perk-extractor/build-perks.py over that dump: the 474 perk-rank templates / 68 perk lines, isolated by the client's own perk bit (`can` flag 0x10000000) on slot-less ToWear templates.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows): every id -> name here, including the thirteen research-proc item/nano rows in the 263425-263471 block.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkLine.cs (272 entries): used to separate real perk lines from other slot-less wearables and to find the missing 'Persuader' entry.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkHash.cs: the twelve LEProcBureaucrat* research-proc perk names and packet hashes.",
+  "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json (Bureaucrat = _professionOrder index 2): every IP cost factor quoted above.",
+  "LOCAL AOBuddy/GameData/profiles/reference/breeds.json: ability caps, creation bases, HP/nano per point and nano-cost-reduction caps behind the breed pick.",
+  "LOCAL AOBuddy/GameData/profiles/reference/professions.json: the statement that no profession in AO has a breed restriction.",
+  "LOCAL AOBuddy/GameData/profiles/bureaucrat-nanos.json (343 nanos, every id verified): every cast requirement, nano strain, category count and expansion gate quoted above.",
+  "https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12",
+  "https://wiki.aodb.us/wiki/Bureaucrat",
+  "https://wiki.aodb.us/wiki/Bureaucrat:Research_Lines",
+  "https://wiki.aodb.us/index.php?title=Bureaucrat:Breed_and_Skills&action=raw",
+  "https://wiki.aodb.us/wiki/Perk_Chains",
+  "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/breed-statistics"
+ ],
+ "_coverage": {
+  "perkLinesAvailableToProfession8": 68,
+  "perkRankTemplates": 474,
+  "perkLinesEnumeratedInThisFile": "68 of 68 (13 in perks[] with full rankTable, 4 restricted-shared also in perks[] with full rankTable, 51 in generalPerkLinesAlsoAvailable with line totals)",
+  "bureaucratOnlyLines": 13,
+  "bureaucratOnlyRanks": 125,
+  "ranksWithFullRankTable": 165,
+  "shadowbreedLinesEnumeratedSeparately": 37,
+  "researchLines": "7 of 7 LE research lines, all ten ranks each, with the proc granted at each research level (12 procs mapped, 12 of 12 LEProcBureaucrat* enum entries named)",
+  "nanoRequirementsQuoted": "from all 343 castable nanos in bureaucrat-nanos.json",
+  "whatIsNotHere": "perk ACTION effects (not in the client item templates and not published), perk point costs, and proc numeric effects."
+ },
+ "_verification": {
+  "webVsClientCrossCheck": "Before using wiki.aodb.us/Bureaucrat:Research_Lines for the proc-to-line mapping, its per-rank STAT rows were checked against the items.ocp rank tables. 9 of 9 checked rows match exactly: Executive Decisions r6 Fling Shot 25 and r10 Time & Space 60; Hostile Negotiations r8 Pistol 50 and r10 Pistol 60; Human Resources r1 Max NCU 4; Market Awareness r8 Add All Def 50 and r10 Matter Creation 60; Process Theory r9 Sensory Improvement 50; Professional Development r1 XP Modifier 1.",
+  "skillCostCrossCheck": "wiki.aodb.us/Bureaucrat:Breed_and_Skills quotes its own cost 'mod' per skill. Eleven of them were compared with reference/skillcaps.json index 2 and all eleven match: Nano C. Init 1.0, Computer Literacy 1.0, Psychology 1.0, Tutoring 1.0, Biological Metamorphosis 1.0, Psychological Modification 1.0, Sensory Improvement 1.0, Nano Pool 1.4, Body Development 2.4, Vehicle Water 2.4, Map Navigation 2.0.",
+  "idNameVerification": "Run tools/verify-profile-ids.py against this file; it checks every id/name pair in it against itemnames.sql."
+ }
+}

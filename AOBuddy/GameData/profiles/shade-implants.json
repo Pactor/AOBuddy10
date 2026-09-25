@@ -1,0 +1,853 @@
+{
+ "profession": "Shade",
+ "professionId": 15,
+ "summary": "THERE IS NO SHADE IMPLANT BUILD. The Shade is the only profession in Anarchy Online that cannot equip implants at all; in all 13 implant slots it wears SPIRITS (client ItemClass 5). This file exists to say that on the page, to prove it from the client data, and to show what goes in each slot instead - the full Spirit catalogue, ladder and farm plan is in shade-symbiants.json. The practical consequences are large and mostly in the Shade's favour: (1) no surgery clinic and no Treatment ladder - a Spirit's ToWear carries NO Treatment requirement at all, only Level, Agility, Sense, Profession and an expansion bit, where a QL200 implant needs ~951 Treatment; (2) no cluster building, so Nano Programming (IP cost 4.0 for a Shade, the maximum) is worth exactly nothing to the class; (3) no laddering and no over-equipping - a Spirit's tier is a hard level/ability gate you must genuinely meet, so you cannot buff your way into a higher one; and (4) no shiny/bright/faded choices, so none of the per-slot cluster conflicts that dominate every other profession's implant file apply here. What replaces the ladder is the TIER LADDER: 34 steps from QL1/level 1/ability 3 (Bitter) to QL300/level 219/ability 1,276 (Wistful), each step gated purely on character level and on Agility and Sense.",
+ "_gradeMeaning": "Not applicable. Shiny/bright/faded is an implant concept and a Shade equips no implants. A Spirit is a single item with a single bonus set, and the choice inside a slot is by Spirit TYPE (Essence, Strength, Weakness, Knowledge, Defense, Offence, Insight, Clear Thought, True Seeing, Understanding), not by cluster grade. The shiny/bright/faded columns below are filled with \"n/a - no implant\" on purpose, and the generic cluster reference is carried per slot under _clusterReferenceForThisSlotIfItCouldUseOne only so the page stays comparable with the other classes.",
+ "_qualityNote": "For every other profession the QL question is \"how high an implant can I ladder into\". For a Shade it is \"which tier of Spirit does my level and my Agility/Sense allow\", and the answer is exact and un-twinkable: see catalog.tiers in shade-symbiants.json, which carries the level and ability requirement of all 34 steps read from items.ocp. Examples from the data: QL100 (Lonely) needs level 73 and 226 in the governing ability; QL200 (Rejected) level 146 and 451; QL250 (Tragic) level 183 and 1,063; QL300 (Wistful) level 219 and 1,276. Note the jump at QL210 - the ability requirement goes from 451 to 683 in one step, then to 1,063 at QL250.",
+ "build": [
+  {
+   "slot": "Imp_Eye",
+   "slotLabel": "Eye/Ocular",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Stealth - Alpha",
+    "id": 279194,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Discerning Weakness",
+     "Spirit of Essence",
+     "Spirit of True Seeing"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 36
+   },
+   "notes": "Spirit slot. 36 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 3 type(s): Spirit of Discerning Weakness, Spirit of Essence, Spirit of True Seeing. Endgame pick: Xan Spirit of Stealth - Alpha (id 279194).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Aimed Shot",
+     "Vehicle Air",
+     "Electrical Engineering",
+     "Map Navigation",
+     "Rifle",
+     "Tutoring"
+    ],
+    "bright": [
+     "Chemistry",
+     "Computer Literacy",
+     "Vehicle Ground",
+     "Vehicle Water",
+     "Quantum FT",
+     "Grenade",
+     "Intelligence",
+     "Ranged Energy",
+     "Mechanical Engineering",
+     "Multi Melee",
+     "Nano Programming",
+     "Nano C. Init",
+     "Perception",
+     "Pharma Tech",
+     "Psychological Modifications",
+     "Sensory Improvement",
+     "Heavy Weapons",
+     "Treatment"
+    ],
+    "faded": [
+     "Assault Rifle",
+     "Bow",
+     "Concealment",
+     "Multi Ranged",
+     "Matter Creation",
+     "Time & Space",
+     "Pistol",
+     "Psychology",
+     "Sneak Attack",
+     "Sharp Objects",
+     "Weapon Smithing"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Head",
+   "slotLabel": "Head/Brain",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Brain Spirit of Power - Alpha",
+    "id": 279190,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Brain Spirit of Computer Skill",
+     "Brain Spirit of Offence",
+     "Essence Brain Spirit",
+     "Spirit of Clear Thought"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 51
+   },
+   "notes": "Spirit slot. 51 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 4 type(s): Brain Spirit of Computer Skill, Brain Spirit of Offence, Essence Brain Spirit, Spirit of Clear Thought. Endgame pick: Xan Brain Spirit of Power - Alpha (id 279190).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Biological Metamorphosis",
+     "Bow Special Attack",
+     "Chemistry",
+     "Computer Literacy",
+     "Vehicle Ground",
+     "Vehicle Water",
+     "Quantum FT",
+     "First Aid",
+     "Intelligence",
+     "Ranged Energy",
+     "Matter Creation",
+     "Time & Space",
+     "Matter Metamorphosis",
+     "Max Nano Energy",
+     "Mechanical Engineering",
+     "Melee Energy",
+     "Nano AC",
+     "Nano Programming",
+     "Nano C. Init",
+     "Pharma Tech",
+     "Poison AC",
+     "Psychic",
+     "Psychological Modifications",
+     "Psychology",
+     "Sensory Improvement",
+     "Treatment"
+    ],
+    "bright": [
+     "Dimach",
+     "Ranged Init.",
+     "Electrical Engineering",
+     "Map Navigation",
+     "Nano Pool",
+     "Weapon Smithing"
+    ],
+    "faded": [
+     "Trap Disarming",
+     "Vehicle Air",
+     "Perception",
+     "Sense",
+     "Tutoring"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Ear",
+   "slotLabel": "Ear",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Stealth Whispered - Alpha",
+    "id": 279200,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Essence Whispered",
+     "Spirit of Knowledge Whispered",
+     "Spirit of Strength Whispered"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 53
+   },
+   "notes": "Spirit slot. 53 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 3 type(s): Spirit of Essence Whispered, Spirit of Knowledge Whispered, Spirit of Strength Whispered. Endgame pick: Xan Spirit of Stealth Whispered - Alpha (id 279200).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Perception"
+    ],
+    "bright": [
+     "Concealment",
+     "Vehicle Air",
+     "Psychology",
+     "Tutoring"
+    ],
+    "faded": [
+     "Vehicle Ground",
+     "Vehicle Water",
+     "Intelligence",
+     "Map Navigation",
+     "Psychic",
+     "Psychological Modifications"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_RightArm",
+   "slotLabel": "Right Arm",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Right Limb Spirit of Power - Alpha",
+    "id": 279217,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Right Limb Spirit of Essence",
+     "Right Limb Spirit of Strength",
+     "Right Limb Spirit of Weakness"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 49
+   },
+   "notes": "Spirit slot. 49 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 3 type(s): Right Limb Spirit of Essence, Right Limb Spirit of Strength, Right Limb Spirit of Weakness. Endgame pick: Xan Right Limb Spirit of Power - Alpha (id 279217).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "1h Blunt",
+     "1h Edged",
+     "2h Blunt",
+     "2h Edged",
+     "Assault Rifle",
+     "Bow",
+     "Break & Entry",
+     "Burst",
+     "Fling Shot",
+     "Full Auto",
+     "Grenade",
+     "Piercing",
+     "Shotgun",
+     "Strength",
+     "MG/SMG",
+     "Heavy Weapons"
+    ],
+    "bright": [
+     "Brawling",
+     "Chemical AC",
+     "Physic. Init",
+     "Swimming"
+    ],
+    "faded": [
+     "Fast Attack",
+     "Mechanical Engineering",
+     "Parry",
+     "Radiation AC",
+     "Riposte"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Body",
+   "slotLabel": "Chest/Body",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Heart Spirit of Power - Alpha",
+    "id": 279207,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Heart Spirit of Essence",
+     "Heart Spirit of Knowledge",
+     "Heart Spirit of Strength",
+     "Heart Spirit of Weakness"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 65
+   },
+   "notes": "Spirit slot. 65 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 4 type(s): Heart Spirit of Essence, Heart Spirit of Knowledge, Heart Spirit of Strength, Heart Spirit of Weakness. Endgame pick: Xan Heart Spirit of Power - Alpha (id 279207).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Body Dev.",
+     "Dimach",
+     "Energy AC",
+     "Max Health (Life)",
+     "Melee AC",
+     "Nano Pool",
+     "Sense",
+     "Stamina"
+    ],
+    "bright": [
+     "Biological Metamorphosis",
+     "Matter Metamorphosis",
+     "Projectile AC",
+     "Psychic"
+    ],
+    "faded": [
+     "2h Blunt",
+     "Break & Entry",
+     "Adventuring (Climb)",
+     "Max Nano Energy",
+     "Nano C. Init",
+     "Poison AC",
+     "Sensory Improvement",
+     "Strength",
+     "MG/SMG"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_LeftArm",
+   "slotLabel": "Left Arm",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Left Limb Spirit of Power - Alpha",
+    "id": 279209,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Left Limb Spirit of Essence",
+     "Left Limb Spirit of Strength",
+     "Left Limb Spirit of Understanding",
+     "Left Limb Spirit of Weakness"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 70
+   },
+   "notes": "Spirit slot. 70 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 4 type(s): Left Limb Spirit of Essence, Left Limb Spirit of Strength, Left Limb Spirit of Understanding, Left Limb Spirit of Weakness. Endgame pick: Xan Left Limb Spirit of Power - Alpha (id 279209).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Brawling"
+    ],
+    "bright": [
+     "2h Blunt",
+     "2h Edged",
+     "Bow",
+     "Break & Entry",
+     "Piercing",
+     "Radiation AC",
+     "Strength"
+    ],
+    "faded": [
+     "Chemical AC",
+     "Matter Metamorphosis",
+     "Physic. Init",
+     "Swimming"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_RightWrist",
+   "slotLabel": "Right Wrist",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Right Wrist  Power - Alpha",
+    "id": 279226,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Right Wrist Offence",
+     "Spirit of Right Wrist Weakness"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 34
+   },
+   "notes": "Spirit slot. 34 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 2 type(s): Spirit of Right Wrist Offence, Spirit of Right Wrist Weakness. Endgame pick: Xan Spirit of Right Wrist  Power - Alpha (id 279226).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Attack Speed",
+     "Ranged Init.",
+     "Parry",
+     "Pistol",
+     "Riposte",
+     "Sharp Objects"
+    ],
+    "bright": [
+     "1h Blunt",
+     "1h Edged",
+     "Aimed Shot",
+     "Burst",
+     "Full Auto",
+     "Multi Ranged",
+     "Nano AC",
+     "Rifle",
+     "Sneak Attack"
+    ],
+    "faded": [
+     "Bow Special Attack",
+     "Fling Shot",
+     "Melee Energy",
+     "Multi Melee"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Waist",
+   "slotLabel": "Waist",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Midriff Spirit of Power - Alpha",
+    "id": 279228,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Midriff Spirit of Essence",
+     "Midriff Spirit of Knowledge",
+     "Midriff Spirit of Strength",
+     "Midriff Spirit of Weakness"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 70
+   },
+   "notes": "Spirit slot. 70 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 4 type(s): Midriff Spirit of Essence, Midriff Spirit of Knowledge, Midriff Spirit of Strength, Midriff Spirit of Weakness. Endgame pick: Xan Midriff Spirit of Power - Alpha (id 279228).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Chemical AC",
+     "Cold AC",
+     "Fire AC",
+     "Radiation AC"
+    ],
+    "bright": [
+     "Body Dev.",
+     "Adventuring (Climb)",
+     "Duck-Exp",
+     "Max Health (Life)",
+     "Max Nano Energy",
+     "Melee AC",
+     "Sense"
+    ],
+    "faded": [
+     "2h Edged",
+     "Agility",
+     "Biological Metamorphosis",
+     "Brawling",
+     "Melee Init.",
+     "Dimach",
+     "Dodge-Rng",
+     "Energy AC",
+     "Evade-ClsC",
+     "Full Auto",
+     "Nano Pool",
+     "Piercing",
+     "Projectile AC",
+     "Shotgun",
+     "Stamina"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_LeftWrist",
+   "slotLabel": "Left Wrist",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Left Wrist  Power - Alpha",
+    "id": 279215,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Left Wrist Defense",
+     "Spirit of Left Wrist Strength"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 36
+   },
+   "notes": "Spirit slot. 36 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 2 type(s): Spirit of Left Wrist Defense, Spirit of Left Wrist Strength. Endgame pick: Xan Spirit of Left Wrist  Power - Alpha (id 279215).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Multi Ranged",
+     "Multi Melee"
+    ],
+    "bright": [
+     "Attack Speed",
+     "Melee Energy",
+     "Parry",
+     "Riposte"
+    ],
+    "faded": [
+     "Nano AC",
+     "Rifle"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_RightHand",
+   "slotLabel": "Right Hand",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Right hand Spirit of Will - Alpha",
+    "id": 279224,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Right Hand Defencive Spirit",
+     "Right Hand Strength Spirit",
+     "Spirit of Insight - Right Hand"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 50
+   },
+   "notes": "Spirit slot. 50 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 3 type(s): Right Hand Defencive Spirit, Right Hand Strength Spirit, Spirit of Insight - Right Hand. Endgame pick: Xan Right hand Spirit of Will - Alpha (id 279224).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Trap Disarming",
+     "Martial Arts",
+     "Weapon Smithing"
+    ],
+    "bright": [
+     "Assault Rifle",
+     "Bow Special Attack",
+     "Cold AC",
+     "Fast Attack",
+     "First Aid",
+     "Fling Shot",
+     "Matter Creation",
+     "Time & Space",
+     "Pistol",
+     "Shotgun",
+     "MG/SMG",
+     "Sharp Objects"
+    ],
+    "faded": [
+     "1h Blunt",
+     "1h Edged",
+     "Aimed Shot",
+     "Burst",
+     "Chemistry",
+     "Computer Literacy",
+     "Ranged Init.",
+     "Electrical Engineering",
+     "Quantum FT",
+     "Fire AC",
+     "Grenade",
+     "Nano Programming",
+     "Pharma Tech",
+     "Heavy Weapons",
+     "Treatment"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Legs",
+   "slotLabel": "Legs/Thigh",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Power - Alpha",
+    "id": 279232,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Defense",
+     "Spirit of Essence"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 36
+   },
+   "notes": "Spirit slot. 36 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 2 type(s): Spirit of Defense, Spirit of Essence. Endgame pick: Xan Spirit of Power - Alpha (id 279232).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Agility",
+     "Adventuring (Climb)",
+     "Dodge-Rng",
+     "Duck-Exp",
+     "Projectile AC",
+     "Swimming"
+    ],
+    "bright": [
+     "Melee Init.",
+     "Energy AC",
+     "Evade-ClsC",
+     "Poison AC",
+     "Stamina"
+    ],
+    "faded": [
+     "Attack Speed",
+     "Body Dev.",
+     "Max Health (Life)",
+     "Melee AC"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_LeftHand",
+   "slotLabel": "Left Hand",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Left Hand Spirit of Power - Alpha",
+    "id": 279213,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Left Hand Spirit of Defence",
+     "Left Hand Spirit of Strength"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 34
+   },
+   "notes": "Spirit slot. 34 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 2 type(s): Left Hand Spirit of Defence, Left Hand Spirit of Strength. Endgame pick: Xan Left Hand Spirit of Power - Alpha (id 279213).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Fast Attack"
+    ],
+    "bright": [
+     "Trap Disarming",
+     "Fire AC"
+    ],
+    "faded": [
+     "Cold AC",
+     "First Aid",
+     "Ranged Energy",
+     "Martial Arts"
+    ]
+   }
+  },
+  {
+   "slot": "Imp_Feet",
+   "slotLabel": "Feet",
+   "shiny": {
+    "skill": "n/a - no implant",
+    "note": "A Shade cannot equip an implant of any grade in any slot."
+   },
+   "bright": {
+    "skill": "n/a - no implant",
+    "note": "Wears a Spirit here instead"
+   },
+   "faded": {
+    "skill": "n/a - no implant",
+    "note": "See shade-symbiants.json"
+   },
+   "ql": "n/a",
+   "wearsInsteadOfAnImplant": {
+    "bestInSlotSpirit": "Xan Spirit of Feet Strength - Alpha",
+    "id": 279172,
+    "ql": 300,
+    "reqs": {
+     "level": 219,
+     "Agility": 1276,
+     "Sense": 1276
+    },
+    "spiritTypesThatExistForThisSlot": [
+     "Spirit of Feet Defense",
+     "Spirit of Feet Strength"
+    ],
+    "ordinaryTierSpiritsInThisSlot": 36
+   },
+   "notes": "Spirit slot. 36 ordinary-tier Spirit templates exist for this slot across the 34-step QL ladder, in 2 type(s): Spirit of Feet Defense, Spirit of Feet Strength. Endgame pick: Xan Spirit of Feet Strength - Alpha (id 279172).",
+   "_clusterReferenceForThisSlotIfItCouldUseOne": {
+    "_what": "What the generic cluster reference says lives in this slot - kept ONLY so the page is comparable with the other 13 professions. A Shade can use none of it.",
+    "shiny": [
+     "Melee Init.",
+     "Concealment",
+     "Evade-ClsC",
+     "Physic. Init",
+     "Sneak Attack"
+    ],
+    "bright": [
+     "Agility",
+     "Dodge-Rng",
+     "Martial Arts"
+    ],
+    "faded": [
+     "Duck-Exp"
+    ]
+   }
+  }
+ ],
+ "_coverageSummary": {
+  "implantsEquippableByAShade": "0 of 44,060 implant templates (ItemClass 3) in items.ocp",
+  "symbiantsEquippableByAShade": "14 of 1,462 wearable symbiant templates - and 12 of the 14 are the unlocked Xan Artillery-unit client-data anomaly (ids 278908-278919), the other two unlocked one-offs (245306, 245895). No Shade symbiant line exists.",
+  "spiritsEquippableByAShade": "844 of 844 ItemClass-5 templates; 842 carry an explicit ToWear Profession EqualTo 15 lock",
+  "slotsCovered": "13 of 13 implant slots take a Spirit",
+  "whereTheDetailIs": "shade-symbiants.json - full 34-tier ladder, the Xan Beta/Alpha families, per-slot acquisition and the farming runs grouped by location"
+ },
+ "ladder": "THE TREATMENT LADDER DOES NOT EXIST FOR A SHADE. reference/implants.json gives the implant equip model as Treatment = trunc(4.723717064 * QL + 6.767295257) plus a governing ability at QL*2+4 - so a QL200 implant needs ~951 Treatment and ~404 of one ability, and you ladder up to it by equipping low slots first and stacking Treatment buffs. None of that applies here. Read from items.ocp, a Spirit's ToWear is: Profession EqualTo 15, Level > (tier level - 1), Agility > (tier ability - 1), Sense > (tier ability - 1), Expansion BitAnd 2 (Shadowlands) - or BitAnd 128 (Legacy of the Xan) on the Xan Spirits. There is no Treatment term, and ao-universe states plainly that Spirits \"cannot be over equipped\" because the prefix name IS the level requirement. So the only way to wear a better Spirit is to gain levels and to raise Agility and Sense - which is exactly why the recommended breed is Opifex (highest trained caps in those two abilities: Agility 544, Sense 512). The one thing a Shade CAN do that no implant user can: because no surgery clinic is needed, you can hot-swap a nano-skill Spirit in, cast the buff, and swap back out in the field. What you actually \"ladder\" is the Spirit-farming loop: siphon mobs around the QL you want, open Soul Capsules, and move up the 34-step tier list as your level and abilities allow.",
+ "_deviations": [
+  "THE WHOLE FILE IS A DEVIATION. Every other [slug]-implants.json is a 13-slot shiny/bright/faded cluster plan with per-slot conflicts. A Shade has none of that, so this file is a proof plus a pointer to shade-symbiants.json. The renderer needs no change: renderImplants() prints build[].shiny/bright/faded, which here read \"n/a - no implant\", and the summary paragraph above it carries the explanation.",
+  "THE PROHIBITION IS NOT IN THE ITEM CRITERIA. 44,060 implant templates exist in items.ocp and not one carries a profession lock, so a criteria-only check would wrongly report every implant in the game as Shade-usable. This is a trap for any future automated \"what can profession X equip\" pass: the Shade implant ban is a client/server rule, and the only evidence inside the client data is the description text on Whispering Spirit (id 218576). Any equippable-catalogue extraction for this class MUST exclude ItemClass 3 by hand.",
+  "TREATMENT IS NOT A GATE. Treatment costs a Shade 1.5 IP, which in every other profile means \"spend, it is your implant ladder\". For a Shade it gates nothing it wears. Spend it only for stims and kits.",
+  "NANO PROGRAMMING IS WORTH ZERO. Cost factor 4.0, and a Shade never builds a cluster. It is the one skill in the table with literally no use for the class.",
+  "NO OVER-EQUIPPING. Every other implant file assumes twinking: equip above your skills with buffs, then drop the buffs. A Spirit refuses this outright, so a Shade's slot power is a pure function of level plus Agility and Sense.",
+  "THE SLOT NAMES DIFFER BETWEEN EXTRACTORS. The implant/Spirit slot bitmask lives in stat 298 and decodes as Imp_Eye 2 / Imp_Head 4 / Imp_Ear 8 / Imp_RightArm 16 / Imp_Body 32 / Imp_LeftArm 64 / Imp_RightWrist 128 / Imp_Waist 256 / Imp_LeftWrist 512 / Imp_RightHand 1024 / Imp_Legs 2048 / Imp_LeftHand 4096 / Imp_Feet 8192. tools/eng-gear-extractor reads the SAME stat as a CLOTHING mask, so in a gear dump every Spirit shows up with nonsense cloth/weapon slots (e.g. \"Bitter Spirit of Feet Defense\" as RightFinger/Deck5). Filter ItemClass 5 out of any gear pass for this class."
+ ],
+ "_unverified": [
+  "No per-slot Shade Spirit sheet from a reputable source was fetched; ao-universe gives a slot -> Spirit TYPE -> buffed-skills table but no \"wear this exact id\" list. The best-in-slot picks in shade-symbiants.json are therefore derived from the item bonuses against the Shade IP cost table, and are labelled as a stated judgement there.",
+  "The exact Treatment and ability formulas quoted for ordinary implants come from reference/implants.json and are reproduced here only as the contrast case; they are not Shade data.",
+  "Whether any Shade content ever grants a temporary implant slot or an implant-like item outside ItemClass 5 was not investigated beyond the ItemClass filter."
+ ],
+ "_sources": [
+  "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (client 18.8.50_EP1), read three ways: tools/mp-symbiant-extractor --prof 15 (14 usable symbiants of 1,462), --prof 15 --match Implant (44,060 ItemClass-3 templates, 0 with any profession lock), and --prof 15 --itemclass 5 (844 Spirits, 842 Shade-locked).",
+  "LOCAL items.ocp id 218576 \"Whispering Spirit\" description: the client's own statement that Shades cannot use implants and use captured spirits instead, and that Spirits do not accept over-equipping.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql: id -> name verification.",
+  "LOCAL AOBuddy/GameData/profiles/reference/implants.json: the cluster-per-slot reference carried under _clusterReferenceForThisSlotIfItCouldUseOne, and the implant Treatment/ability equip model used as the contrast case.",
+  "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json (Shade = index 11): Treatment 1.5, Nano Programming 4.0.",
+  "LOCAL AOBuddy/GameData/profiles/shade-symbiants.json: the Spirit catalogue, tier ladder and per-slot best-in-slot rows this file points at.",
+  "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide (Shades cannot use standard implants; no surgery clinic; Spirits cannot be over-equipped; the QL/level/ability prefix ladder).",
+  "http://wiki.aodb.us/wiki/Shade (in place of implants \"you will find trapped Spirits\"; no surgery clinic needed)."
+ ]
+}

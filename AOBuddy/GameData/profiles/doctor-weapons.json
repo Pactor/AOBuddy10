@@ -1,0 +1,2640 @@
+{
+  "profile": "Doctor weapons + allowed special attacks (for AOBuddy10 bot decision-making)",
+  "profession": {
+    "id": 10,
+    "name": "Doctor"
+  },
+  "generatedUtc": "2026-09-23T04:44:36Z",
+  "generatedBy": "tools/mp-weapon-extractor (--prof 10) + gen_doctor_weapons.py",
+  "dataSource": {
+    "itemData": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
+    "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+    "skillCosts": "AOBuddy\\GameData\\profiles\\reference\\skillcaps.json (cost array indexed by _professionOrder; Doctor = index 3)",
+    "extractor": "tools\\mp-weapon-extractor (net10), run with --prof 10",
+    "weaponsInData": 10730,
+    "note": "A weapon's wield requirements live in its ToWield action (OmniCell.Enums.ActionType.ToWield=8). Operator.GreaterThan(2) means 'stat >= value'. Special-attack stats present in ToWield are the specials that weapon allows; the requiredValue is the skill needed to use that special."
+  },
+  "howToReadSpecialsAtRuntime": "For the equipped weapon, read its ToWield criteria: any requirement whose stat is in specialAttackStats is a special that weapon allows (the value is the skill needed). Nothing else in the item data declares a weapon's specials.",
+  "specialAttackStats": {
+    "Brawl": 142,
+    "Dimach": 144,
+    "SneakAttack": 146,
+    "FastAttack": 147,
+    "Burst": 148,
+    "FlingShot": 150,
+    "AimedShot": 151,
+    "FullAuto": 167,
+    "Backstab": 489,
+    "passiveNotOnDemand": [
+      "Riposte(143)",
+      "Parry"
+    ],
+    "note": "BowSpecialAttack(121) is a support SKILL for bow Aimed Shot, not an on-demand special; a bow's on-demand special still shows as AimedShot(151)/FlingShot(150) in ToWield.",
+    "doctorSpecialSkillCosts": {
+      "Fling Shot": 2.4,
+      "Fast Attack": 2.4,
+      "Brawling": 2.8,
+      "Burst": 3.0,
+      "Aimed Shot": 3.2,
+      "Full Auto": 4.0,
+      "Sneak Attack": 3.2,
+      "Dimach": 4.0,
+      "Riposte": 3.2
+    }
+  },
+  "professionRestrictionEncoding": {
+    "stat": "Profession (stat 60 / 0x3C)",
+    "form": "A ToWield Requirement with Statnumber=60. Operator EqualTo(0) + Value=<professionId> locks the weapon to that profession. Several EqualTo entries on one item = a set of allowed professions.",
+    "usableRule": "Weapon is Doctor-equippable unless it carries Profession EqualTo locks none of which is 10. Weapons with no profession requirement are usable by everyone.",
+    "example": "id 214307 'Pistol of Vivacity' QL300: ToWield carries Profession EqualTo Doctor -> Doctor-only."
+  },
+  "weaponSkillSelectionRule": {
+    "rule": "A weapon skill is listed under usableWeaponTypes when this profession's IP cost factor for it is <= 2.4 (the cheap half of the Doctor weapon-skill table in reference/skillcaps.json) OR items.ocp contains at least one weapon template hard-locked to Profession EqualTo Doctor with that primary wield skill.",
+    "whyARuleIsNeeded": "The client data does not encode \"profession X uses weapon skill Y\" - every profession can technically equip almost anything whose skill it can raise. The rule above is stated so the list is reproducible instead of an opinion.",
+    "selected": [
+      "Pistol",
+      "MartialArts",
+      "1hBlunt",
+      "1hEdged",
+      "Piercing",
+      "Shotgun",
+      "MeleeEnergy",
+      "RangedEnergy"
+    ],
+    "doctorWeaponSkillCostFactors": {
+      "Pistol": 1.6,
+      "MartialArts": 2.0,
+      "1hBlunt": 2.4,
+      "1hEdged": 2.4,
+      "Piercing": 2.4,
+      "Shotgun": 2.4,
+      "MultiMelee": 3.2,
+      "MeleeEnergy": 3.2,
+      "2hEdged": 3.2,
+      "2hBlunt": 3.2,
+      "SharpObject": 3.2,
+      "Grenade": 3.2,
+      "MGSMG": 3.2,
+      "HeavyWeapons": 4.0,
+      "Bow": 4.0,
+      "Rifle": 4.0,
+      "AssaultRifle": 4.0,
+      "RangedEnergy": 4.0,
+      "MultiRanged": 4.0
+    }
+  },
+  "representativeSelectionRule": {
+    "dedup": "One row per MODEL (grouped by item name), taken at its HIGHEST primary wield requirement, i.e. its top version.",
+    "step1": "EVERY hand-held model hard-locked to Profession EqualTo Doctor is listed.",
+    "step2": "Then the highest-dpsProxy model in each primary-wield-requirement band 0-100 / 101-300 / 301-600 / 601-1000 / 1001-1500 / 1501-2500 that is not already listed. Banding is by REQUIREMENT, not by the QL field: items.ocp stores several real items (Skull of Anguish, Maw of the Abyss, Parasitic Hecataleech) as a single QL-1 template carrying full requirements, so QL banding misplaces them. Requirement banding also answers the question that matters - what is the best weapon I can wield at this much skill.",
+    "dpsProxy": "dpsProxy = ((MinDamage+MaxDamage)/2) / (AttackDelay + RechargeDelay, in seconds). A comparison proxy computed from the item data only - NOT in-game DPS.",
+    "sanityExclusions": "Excluded: monster/NPC-only templates (name matches \"- Monster\" / \"monster only\" / \"Monster Version\"), non-hand-slot items, templates with no name in itemnames.sql, templates whose primary wield requirement exceeds 2500 (above any reachable skill, e.g. Michizure Boomstick at Shotgun 49999), and templates with max damage >= 1000 at a primary requirement below 800 (GM/test items, e.g. the Novictum Katana of Innocence at 12940 max damage for 1 skill), and templates above QL 300 (QL 300 is the player ceiling - above it are NPC templates such as Generic Innate Weapon and Generic Monster Distance Weapon at QL 400). The damage and requirement rules are the same ones the endgame generator states.",
+    "relationToTheCatalog": "The EXHAUSTIVE catalog is doctor-weapons-endgame.json (597 endgame models with full stats, gates and cited acquisition). This table is a progression sample layered on top of it, not a replacement."
+  },
+  "dualWieldAndMultiSkills": {
+    "note": "wield lists EVERY trainable-skill requirement in the weapon's ToWield action.",
+    "multiMeleeStatId": 101,
+    "multiRangedStatId": 134,
+    "dualWieldMechanic": "Dual-wielding is gated by the CHARACTER's Multi Melee / Multi Ranged skill for the off-hand slot, not by a per-weapon ToWield criterion. Doctor's Multi Ranged cost factor is 4.0 and Multi Melee 3.2 (reference/skillcaps.json), i.e. both are expensive for a Doctor; the Doctor-only 'Doctor's Left Hand of Grace' (267618) / 'Doctor's Right Hand of Hope' (267619) pistol pair is the notable dual-wield set."
+  },
+  "usableWeaponTypes": [
+    {
+      "weaponSkill": "Pistol",
+      "wieldSkillStatId": 112,
+      "mpSkillCost": "1.6 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 1.6,
+      "role": "skill cost factor 1.6 (cheap half of the Doctor weapon-skill table); 9 weapon models in items.ocp are hard-locked to Profession EqualTo Doctor.",
+      "weaponsTotalInData": 1398,
+      "weaponsMpUsable": 1175,
+      "modelsUsableAfterSanityFilter": 574,
+      "professionLockedModels": 9,
+      "allowedSpecialsObservedForType": [
+        "AimedShot",
+        "Burst",
+        "FlingShot",
+        "FullAuto"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 227141,
+          "name": "Notum-Infused Chimera Pistol",
+          "ql": 15,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 75
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 38
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "Shadowlands",
+          "damage": {
+            "min": 5,
+            "max": 60,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 45,
+            "damageType": "Energy",
+            "attackRange": 20
+          },
+          "dpsProxy": 10.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 201263,
+          "name": "SOL K-94 Baby Monster",
+          "ql": 64,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 289
+            },
+            {
+              "skill": "MGSMG",
+              "requiredValue": 193
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 241
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 161
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 17,
+            "max": 172,
+            "attackDelaySec": 1.66,
+            "rechargeDelaySec": 1.47,
+            "critBonus": 70,
+            "damageType": "Projectile",
+            "attackRange": 22
+          },
+          "dpsProxy": 30.2,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 201265,
+          "name": "SOL K-94 Monster",
+          "ql": 124,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 559
+            },
+            {
+              "skill": "MGSMG",
+              "requiredValue": 372
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 465
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 311
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 31,
+            "max": 317,
+            "attackDelaySec": 2.3,
+            "rechargeDelaySec": 1.93,
+            "critBonus": 127,
+            "damageType": "Projectile",
+            "attackRange": 22
+          },
+          "dpsProxy": 41.1,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 288293,
+          "name": "Special Edition Kyr'Ozch Pistol",
+          "ql": 150,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 699
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 499
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 349
+            }
+          ],
+          "professionLock": [
+            "Profession EqualTo Adventurer",
+            "Profession EqualTo Bureaucrat",
+            "Profession EqualTo Doctor",
+            "Profession EqualTo Engineer",
+            "Profession EqualTo Metaphysicist",
+            "Profession EqualTo NanoTechnician"
+          ],
+          "levelReq": 150,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 170,
+            "max": 275,
+            "attackDelaySec": 1.2,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 225,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 92.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 208020,
+          "name": "Tsunami BM-301 Bloodletter",
+          "ql": 149,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 709
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 27,
+            "max": 311,
+            "attackDelaySec": 1.87,
+            "rechargeDelaySec": 2.02,
+            "critBonus": 319,
+            "damageType": "Poison",
+            "attackRange": 21
+          },
+          "dpsProxy": 43.4,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 208021,
+          "name": "Tsunami BM-302 Bloodletter",
+          "ql": 150,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 714
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 27,
+            "max": 313,
+            "attackDelaySec": 1.87,
+            "rechargeDelaySec": 2.02,
+            "critBonus": 321,
+            "damageType": "Poison",
+            "attackRange": 21
+          },
+          "dpsProxy": 43.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 164515,
+          "name": "Solar-Powered Master Engineer Pistol",
+          "ql": 200,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 999
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 6,
+          "expansionReq": null,
+          "damage": {
+            "min": 120,
+            "max": 420,
+            "attackDelaySec": 1.7,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 320,
+            "damageType": "Radiation",
+            "attackRange": 15
+          },
+          "dpsProxy": 93.1,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 303408,
+          "name": "Junior Ofab Peregrine",
+          "ql": 220,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1499
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 999
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 219,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 175,
+            "max": 275,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 175,
+            "damageType": "Projectile",
+            "attackRange": 15
+          },
+          "dpsProxy": 112.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 214311,
+          "name": "Pistol of Endurance",
+          "ql": 299,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1694
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 772,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 3.59,
+            "critBonus": 75,
+            "damageType": "Cold",
+            "attackRange": 25
+          },
+          "dpsProxy": 86.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 214306,
+          "name": "Pistol of Vitality",
+          "ql": 299,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1694
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 772,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 3.59,
+            "critBonus": 75,
+            "damageType": "Fire",
+            "attackRange": 25
+          },
+          "dpsProxy": 86.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 267618,
+          "name": "Doctor's Left Hand of Grace",
+          "ql": 300,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1700
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 850
+            }
+          ],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "LostEden",
+          "damage": {
+            "min": 260,
+            "max": 365,
+            "attackDelaySec": 1.2,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 248,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 130.2,
+          "slots": [
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 267619,
+          "name": "Doctor's Right Hand of Hope",
+          "ql": 300,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1700
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 1200
+            }
+          ],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "LostEden",
+          "damage": {
+            "min": 260,
+            "max": 365,
+            "attackDelaySec": 1.2,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 248,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 130.2,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 214312,
+          "name": "Pistol of Survival",
+          "ql": 300,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1700
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 775,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 3.6,
+            "critBonus": 75,
+            "damageType": "Cold",
+            "attackRange": 25
+          },
+          "dpsProxy": 87.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 214307,
+          "name": "Pistol of Vivacity",
+          "ql": 300,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 1700
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 775,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 3.6,
+            "critBonus": 75,
+            "damageType": "Fire",
+            "attackRange": 25
+          },
+          "dpsProxy": 87.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 254618,
+          "name": "Kyr'Ozch Pistol",
+          "ql": 300,
+          "primaryWield": "Pistol",
+          "wield": [
+            {
+              "skill": "Pistol",
+              "requiredValue": 2000
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 225,
+            "max": 325,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 225,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 137.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "MartialArts",
+      "wieldSkillStatId": 100,
+      "mpSkillCost": "2.0 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 2.0,
+      "role": "skill cost factor 2.0 (cheap half of the Doctor weapon-skill table).",
+      "weaponsTotalInData": 256,
+      "weaponsMpUsable": 224,
+      "modelsUsableAfterSanityFilter": 87,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "Brawl",
+        "Dimach",
+        "FastAttack",
+        "SneakAttack"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 301071,
+          "name": "Strong Oak Bo",
+          "ql": 1,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 15
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 14,
+            "max": 35,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 25,
+            "damageType": "Melee",
+            "attackRange": 3
+          },
+          "dpsProxy": 8.2,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 301708,
+          "name": "Illegally Modified Ofab Boar",
+          "ql": 1,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 149
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 69
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 34
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 99,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 40,
+            "damageType": "Poison",
+            "attackRange": 3
+          },
+          "dpsProxy": 20.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 160196,
+          "name": "Dented Bang-Bang Glove",
+          "ql": 120,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 550
+            },
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 367
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 367
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 122
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 14,
+            "max": 188,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 140,
+            "damageType": "Energy",
+            "attackRange": 3
+          },
+          "dpsProxy": 36.1,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 160201,
+          "name": "Brand New Bang-Bang Glove",
+          "ql": 200,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 917
+            },
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 611
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 611
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 204
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 20,
+            "max": 300,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 220,
+            "damageType": "Energy",
+            "attackRange": 3
+          },
+          "dpsProxy": 57.1,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 271047,
+          "name": "Nano-Charged Stun Glove - 870",
+          "ql": 300,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 1500
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 900
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 750
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 300
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 140,
+            "max": 440,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 240,
+            "damageType": "Melee",
+            "attackRange": 3
+          },
+          "dpsProxy": 96.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 301885,
+          "name": "X1-R4 Viral Force-Blades",
+          "ql": 300,
+          "primaryWield": "MartialArts",
+          "wield": [
+            {
+              "skill": "MartialArts",
+              "requiredValue": 2199
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 1229
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 659
+            },
+            {
+              "special": "SneakAttack",
+              "requiredValue": 999
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 307,
+            "max": 472,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 550,
+            "damageType": "Energy",
+            "attackRange": 4
+          },
+          "dpsProxy": 139.1,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "1hBlunt",
+      "wieldSkillStatId": 102,
+      "mpSkillCost": "2.4 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 2.4,
+      "role": "skill cost factor 2.4 (cheap half of the Doctor weapon-skill table).",
+      "weaponsTotalInData": 854,
+      "weaponsMpUsable": 820,
+      "modelsUsableAfterSanityFilter": 371,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "Brawl",
+        "Dimach",
+        "FastAttack",
+        "SneakAttack"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 227087,
+          "name": "Notum-Infused Petrified Bone",
+          "ql": 15,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 75
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 38
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 45
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "Shadowlands",
+          "damage": {
+            "min": 5,
+            "max": 60,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 45,
+            "damageType": "Melee",
+            "attackRange": 3
+          },
+          "dpsProxy": 10.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 301707,
+          "name": "Illegally Modified Ofab Panther",
+          "ql": 1,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 149
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 69
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 69
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 34
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 25,
+            "max": 96,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 30,
+            "damageType": "Chemical",
+            "attackRange": 3
+          },
+          "dpsProxy": 20.2,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 204752,
+          "name": "Skull of Lamentation",
+          "ql": 1,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 416
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 200
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 52,
+            "max": 140,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 10,
+            "damageType": "Fire",
+            "attackRange": 3
+          },
+          "dpsProxy": 48.0,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 275848,
+          "name": "Asp of Titaniush",
+          "ql": 215,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 999
+            },
+            {
+              "skill": "SpaceTime",
+              "requiredValue": 2208
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 300,
+            "max": 425,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 2.25,
+            "critBonus": 300,
+            "damageType": "Poison",
+            "attackRange": 3
+          },
+          "dpsProxy": 96.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 295747,
+          "name": "Thick Club",
+          "ql": 200,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 1199
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 649
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 599
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 35,
+            "max": 550,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 300,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 117.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 281503,
+          "name": "Kur'Ush Mallet",
+          "ql": 300,
+          "primaryWield": "1hBlunt",
+          "wield": [
+            {
+              "skill": "1hBlunt",
+              "requiredValue": 2250
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 1125
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 1350
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 450
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 6,
+          "expansionReq": "LegacyOfTheXan",
+          "damage": {
+            "min": 369,
+            "max": 468,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 330,
+            "damageType": "Melee",
+            "attackRange": 3
+          },
+          "dpsProxy": 149.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "1hEdged",
+      "wieldSkillStatId": 103,
+      "mpSkillCost": "2.4 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 2.4,
+      "role": "skill cost factor 2.4 (cheap half of the Doctor weapon-skill table).",
+      "weaponsTotalInData": 960,
+      "weaponsMpUsable": 887,
+      "modelsUsableAfterSanityFilter": 380,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "Brawl",
+        "Dimach",
+        "FastAttack",
+        "SneakAttack"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 123074,
+          "name": "Composite Ritual Krys Knife",
+          "ql": 199,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 0
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 0
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 0
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 2,
+          "expansionReq": null,
+          "damage": {
+            "min": 19,
+            "max": 38,
+            "attackDelaySec": 0.1,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 100,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 25.9,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 301716,
+          "name": "Illegally Modified Ofab Mongoose",
+          "ql": 1,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 149
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 69
+            },
+            {
+              "special": "SneakAttack",
+              "requiredValue": 69
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 26,
+            "max": 78,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 30,
+            "damageType": "Cold",
+            "attackRange": 3
+          },
+          "dpsProxy": 26.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 249046,
+          "name": "Survival Axe of Genevra",
+          "ql": 100,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 550
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 275
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 330
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 60,
+            "max": 217,
+            "attackDelaySec": 1.15,
+            "rechargeDelaySec": 1.18,
+            "critBonus": 80,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 59.4,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 249052,
+          "name": "Senior Survival Axe of Genevra",
+          "ql": 174,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 957
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 478
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 574
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 97,
+            "max": 367,
+            "attackDelaySec": 1.04,
+            "rechargeDelaySec": 1.08,
+            "critBonus": 132,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 109.4,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 249055,
+          "name": "Premium Survival Axe of Genevra",
+          "ql": 200,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 1100
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 550
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 660
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 110,
+            "max": 420,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.05,
+            "critBonus": 150,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 129.3,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 305520,
+          "name": "Ceremonial Blade",
+          "ql": 300,
+          "primaryWield": "1hEdged",
+          "wield": [
+            {
+              "skill": "1hEdged",
+              "requiredValue": 2149
+            }
+          ],
+          "specials": [
+            {
+              "special": "SneakAttack",
+              "requiredValue": 1049
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 1049
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 200,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 295,
+            "max": 365,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.3,
+            "critBonus": 400,
+            "damageType": "Chemical",
+            "attackRange": 3
+          },
+          "dpsProxy": 143.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "Piercing",
+      "wieldSkillStatId": 106,
+      "mpSkillCost": "2.4 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 2.4,
+      "role": "skill cost factor 2.4 (cheap half of the Doctor weapon-skill table).",
+      "weaponsTotalInData": 820,
+      "weaponsMpUsable": 712,
+      "modelsUsableAfterSanityFilter": 277,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "Brawl",
+        "Dimach",
+        "FastAttack",
+        "SneakAttack"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 227096,
+          "name": "Notum-Infused Silvertail Dagger",
+          "ql": 15,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 75
+            }
+          ],
+          "specials": [
+            {
+              "special": "SneakAttack",
+              "requiredValue": 38
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 38
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "Shadowlands",
+          "damage": {
+            "min": 5,
+            "max": 60,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 45,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 10.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 151903,
+          "name": "Fear-forged Blade",
+          "ql": 50,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 300
+            }
+          ],
+          "specials": [
+            {
+              "special": "SneakAttack",
+              "requiredValue": 150
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 100
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 45,
+            "max": 125,
+            "attackDelaySec": 1.08,
+            "rechargeDelaySec": 1.3,
+            "critBonus": 50,
+            "damageType": "Chemical",
+            "attackRange": 1
+          },
+          "dpsProxy": 35.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 208093,
+          "name": "Newland Fish Knife - Two Stars",
+          "ql": 99,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 582
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 291
+            },
+            {
+              "special": "Brawl",
+              "requiredValue": 350
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 46,
+            "max": 200,
+            "attackDelaySec": 1.49,
+            "rechargeDelaySec": 1.49,
+            "critBonus": 139,
+            "damageType": "Energy",
+            "attackRange": 3
+          },
+          "dpsProxy": 41.3,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 249076,
+          "name": "Senior Variable Density Tanto",
+          "ql": 180,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 990
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 495
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 59,
+            "max": 316,
+            "attackDelaySec": 1.01,
+            "rechargeDelaySec": 1.3,
+            "critBonus": 236,
+            "damageType": "Melee",
+            "attackRange": 1
+          },
+          "dpsProxy": 81.2,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 303418,
+          "name": "Junior Ofab Viper",
+          "ql": 220,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 1499
+            }
+          ],
+          "specials": [
+            {
+              "special": "FastAttack",
+              "requiredValue": 999
+            },
+            {
+              "special": "SneakAttack",
+              "requiredValue": 999
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 799
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 219,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 235,
+            "max": 275,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 250,
+            "damageType": "Radiation",
+            "attackRange": 3
+          },
+          "dpsProxy": 127.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 265019,
+          "name": "Ofab Viper Mk 6",
+          "ql": 300,
+          "primaryWield": "Piercing",
+          "wield": [
+            {
+              "skill": "Piercing",
+              "requiredValue": 2200
+            }
+          ],
+          "specials": [
+            {
+              "special": "SneakAttack",
+              "requiredValue": 1100
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 1100
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 440
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "LostEden",
+          "damage": {
+            "min": 308,
+            "max": 374,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 374,
+            "damageType": "Melee",
+            "attackRange": 2
+          },
+          "dpsProxy": 170.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "Shotgun",
+      "wieldSkillStatId": 115,
+      "mpSkillCost": "2.4 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 2.4,
+      "role": "skill cost factor 2.4 (cheap half of the Doctor weapon-skill table).",
+      "weaponsTotalInData": 603,
+      "weaponsMpUsable": 537,
+      "modelsUsableAfterSanityFilter": 241,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "AimedShot",
+        "Burst",
+        "FlingShot"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 227105,
+          "name": "Notum-Infused Chimera Shotgun",
+          "ql": 15,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 75
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "Shadowlands",
+          "damage": {
+            "min": 5,
+            "max": 60,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 75,
+            "damageType": "Energy",
+            "attackRange": 20
+          },
+          "dpsProxy": 10.8,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 122601,
+          "name": "Over-Tuned Blackhole Mk IX",
+          "ql": 60,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 263
+            },
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 176
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 146
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 10,
+            "max": 228,
+            "attackDelaySec": 3.5,
+            "rechargeDelaySec": 3.5,
+            "critBonus": 3,
+            "damageType": "Energy",
+            "attackRange": 28
+          },
+          "dpsProxy": 17.0,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 122039,
+          "name": "Balanced Triplejolt",
+          "ql": 140,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 594
+            },
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 396
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 330
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 5,
+            "max": 157,
+            "attackDelaySec": 1.25,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 283,
+            "damageType": "Radiation",
+            "attackRange": 10
+          },
+          "dpsProxy": 33.1,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 257109,
+          "name": "Low Recoil Diamondine Kick Pistol",
+          "ql": 300,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 900
+            },
+            {
+              "skill": "Pistol",
+              "requiredValue": 600
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 750
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 500
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 200,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 120,
+            "max": 480,
+            "attackDelaySec": 2.0,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 540,
+            "damageType": "Projectile",
+            "attackRange": 18
+          },
+          "dpsProxy": 85.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 303416,
+          "name": "Junior Ofab Silverback",
+          "ql": 220,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 1499
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 999
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 219,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 150,
+            "max": 450,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 420,
+            "damageType": "Chemical",
+            "attackRange": 15
+          },
+          "dpsProxy": 100.0,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 280725,
+          "name": "Greed of the Xan",
+          "ql": 300,
+          "primaryWield": "Shotgun",
+          "wield": [
+            {
+              "skill": "Shotgun",
+              "requiredValue": 2250
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 1125
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 6,
+          "expansionReq": "LegacyOfTheXan",
+          "damage": {
+            "min": 425,
+            "max": 569,
+            "attackDelaySec": 1.5,
+            "rechargeDelaySec": 1.5,
+            "critBonus": 675,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 165.7,
+          "slots": [
+            "RightHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "MeleeEnergy",
+      "wieldSkillStatId": 104,
+      "mpSkillCost": "3.2 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 3.2,
+      "role": ".",
+      "weaponsTotalInData": 280,
+      "weaponsMpUsable": 257,
+      "modelsUsableAfterSanityFilter": 115,
+      "professionLockedModels": 0,
+      "allowedSpecialsObservedForType": [
+        "Brawl",
+        "Dimach",
+        "FastAttack",
+        "SneakAttack"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 254307,
+          "name": "Energy Knife Right",
+          "ql": 10,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 71
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 1,
+            "max": 1,
+            "attackDelaySec": 0.01,
+            "rechargeDelaySec": 0.01,
+            "critBonus": 0,
+            "damageType": "Energy",
+            "attackRange": 1
+          },
+          "dpsProxy": 50.0,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 230890,
+          "name": "Freezing Device",
+          "ql": 50,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 199
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 50,
+            "max": 50,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 50,
+            "damageType": "Cold",
+            "attackRange": 2
+          },
+          "dpsProxy": 25.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 246243,
+          "name": "Broken Sword of Dawn",
+          "ql": 199,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 500
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 199,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 126,
+            "max": 376,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 1,
+            "damageType": "Energy",
+            "attackRange": 3
+          },
+          "dpsProxy": 125.5,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 246244,
+          "name": "Sword of Dawn",
+          "ql": 200,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 999
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 199,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 250,
+            "max": 750,
+            "attackDelaySec": 2.0,
+            "rechargeDelaySec": 2.0,
+            "critBonus": 1,
+            "damageType": "Energy",
+            "attackRange": 3
+          },
+          "dpsProxy": 125.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 271422,
+          "name": "E-Blade - 850",
+          "ql": 300,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 1500
+            }
+          ],
+          "specials": [
+            {
+              "special": "Brawl",
+              "requiredValue": 900
+            },
+            {
+              "special": "FastAttack",
+              "requiredValue": 750
+            },
+            {
+              "special": "Dimach",
+              "requiredValue": 300
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 188,
+            "max": 468,
+            "attackDelaySec": 1.75,
+            "rechargeDelaySec": 1.75,
+            "critBonus": 288,
+            "damageType": "Energy",
+            "attackRange": 4
+          },
+          "dpsProxy": 93.7,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 254702,
+          "name": "Kyr'Ozch Energy Hammer",
+          "ql": 300,
+          "primaryWield": "MeleeEnergy",
+          "wield": [
+            {
+              "skill": "MeleeEnergy",
+              "requiredValue": 2000
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 325,
+            "max": 400,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 325,
+            "damageType": "Radiation",
+            "attackRange": 2
+          },
+          "dpsProxy": 181.2,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    },
+    {
+      "weaponSkill": "RangedEnergy",
+      "wieldSkillStatId": 133,
+      "mpSkillCost": "4.0 IP cost factor (1.0 = cheapest, 5.0 = dearest)",
+      "skillCostFactor": 4.0,
+      "role": "3 weapon models in items.ocp are hard-locked to Profession EqualTo Doctor.",
+      "weaponsTotalInData": 451,
+      "weaponsMpUsable": 442,
+      "modelsUsableAfterSanityFilter": 193,
+      "professionLockedModels": 3,
+      "allowedSpecialsObservedForType": [
+        "AimedShot",
+        "Burst",
+        "FlingShot",
+        "FullAuto"
+      ],
+      "representativeWeapons": [
+        {
+          "id": 160153,
+          "name": "Flawed Sleek Cannon",
+          "ql": 20,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 81
+            },
+            {
+              "skill": "HeavyWeapons",
+              "requiredValue": 54
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 68
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 45
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 1,
+            "max": 74,
+            "attackDelaySec": 2.7,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 56,
+            "damageType": "Energy",
+            "attackRange": 17
+          },
+          "dpsProxy": 9.1,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 208063,
+          "name": "SOL XI-P Medical Laser",
+          "ql": 49,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 194
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 1,
+            "max": 98,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 147,
+            "damageType": "Energy",
+            "attackRange": 28
+          },
+          "dpsProxy": 17.7,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 208064,
+          "name": "SOL XII-P Medical Laser",
+          "ql": 50,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 198
+            }
+          ],
+          "specials": [],
+          "professionLock": [
+            "Profession EqualTo Doctor"
+          ],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 1,
+            "max": 100,
+            "attackDelaySec": 1.4,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 150,
+            "damageType": "Energy",
+            "attackRange": 28
+          },
+          "dpsProxy": 18.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 248611,
+          "name": "Cast-Off Xnemth Plasmaprojector",
+          "ql": 40,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 224
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 112
+            },
+            {
+              "special": "FullAuto",
+              "requiredValue": 201
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 22,
+            "max": 87,
+            "attackDelaySec": 1.3,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 81,
+            "damageType": "Energy",
+            "attackRange": 25
+          },
+          "dpsProxy": 23.7,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 248617,
+          "name": "Xnemth Plasmaprojector",
+          "ql": 100,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 552
+            }
+          ],
+          "specials": [
+            {
+              "special": "FlingShot",
+              "requiredValue": 276
+            },
+            {
+              "special": "FullAuto",
+              "requiredValue": 497
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 47,
+            "max": 197,
+            "attackDelaySec": 1.3,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 182,
+            "damageType": "Energy",
+            "attackRange": 25
+          },
+          "dpsProxy": 53.0,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 288297,
+          "name": "Special Edition Kyr'Ozch Energy Pistol",
+          "ql": 150,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 699
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 499
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 349
+            }
+          ],
+          "professionLock": [
+            "Profession EqualTo Agent",
+            "Profession EqualTo Doctor",
+            "Profession EqualTo Engineer",
+            "Profession EqualTo Fixer",
+            "Profession EqualTo Soldier",
+            "Profession EqualTo Trader"
+          ],
+          "levelReq": 150,
+          "titleLevelReq": 0,
+          "expansionReq": "AlienInvasion",
+          "damage": {
+            "min": 175,
+            "max": 256,
+            "attackDelaySec": 1.2,
+            "rechargeDelaySec": 1.2,
+            "critBonus": 175,
+            "damageType": "Projectile",
+            "attackRange": 25
+          },
+          "dpsProxy": 89.8,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 257126,
+          "name": "Amplified Sleek Cannon",
+          "ql": 300,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 810
+            },
+            {
+              "skill": "HeavyWeapons",
+              "requiredValue": 540
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 675
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 450
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 200,
+          "titleLevelReq": 0,
+          "expansionReq": null,
+          "damage": {
+            "min": 221,
+            "max": 564,
+            "attackDelaySec": 1.8,
+            "rechargeDelaySec": 1.4,
+            "critBonus": 500,
+            "damageType": "Radiation",
+            "attackRange": 17
+          },
+          "dpsProxy": 122.7,
+          "slots": [
+            "RightHand"
+          ]
+        },
+        {
+          "id": 211229,
+          "name": "Serious Destruction",
+          "ql": 300,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 1400
+            }
+          ],
+          "specials": [],
+          "professionLock": [],
+          "levelReq": 0,
+          "titleLevelReq": 0,
+          "expansionReq": "Shadowlands",
+          "damage": {
+            "min": 100,
+            "max": 425,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 250,
+            "damageType": "Radiation",
+            "attackRange": 30
+          },
+          "dpsProxy": 131.2,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        },
+        {
+          "id": 267128,
+          "name": "Dreadloch Rapier",
+          "ql": 300,
+          "primaryWield": "RangedEnergy",
+          "wield": [
+            {
+              "skill": "RangedEnergy",
+              "requiredValue": 2000
+            }
+          ],
+          "specials": [
+            {
+              "special": "Burst",
+              "requiredValue": 1000
+            },
+            {
+              "special": "FlingShot",
+              "requiredValue": 1000
+            }
+          ],
+          "professionLock": [],
+          "levelReq": 209,
+          "titleLevelReq": 0,
+          "expansionReq": "LostEden",
+          "damage": {
+            "min": 230,
+            "max": 350,
+            "attackDelaySec": 1.0,
+            "rechargeDelaySec": 1.0,
+            "critBonus": 250,
+            "damageType": "Energy",
+            "attackRange": 30
+          },
+          "dpsProxy": 145.0,
+          "slots": [
+            "RightHand",
+            "LeftHand"
+          ]
+        }
+      ]
+    }
+  ],
+  "professionOnlyWeapons": {
+    "label": "Doctor-only",
+    "count": 23,
+    "byWeaponSkill": [
+      {
+        "weaponSkill": "Pistol",
+        "count": 17
+      },
+      {
+        "weaponSkill": "RangedEnergy",
+        "count": 4
+      },
+      {
+        "weaponSkill": "MartialArts",
+        "count": 1
+      },
+      {
+        "weaponSkill": "MeleeEnergy",
+        "count": 1
+      }
+    ],
+    "note": "These carry a Profession EqualTo Doctor(10) lock in ToWield. Some of them (the Special Edition Kyr'Ozch pistols) list several professions, so the lock is a set that includes Doctor rather than Doctor alone - the professionLock field on each row shows which.",
+    "models": [
+      "Doctor's Left Hand of Grace",
+      "Doctor's Right Hand of Hope",
+      "Pistol of Endurance",
+      "Pistol of Survival",
+      "Pistol of Vitality",
+      "Pistol of Vivacity",
+      "SOL XI-P Medical Laser",
+      "SOL XII-P Medical Laser",
+      "Small Ebony Figurine",
+      "Special Edition Kyr'Ozch Energy Pistol",
+      "Special Edition Kyr'Ozch Pistol",
+      "Tsunami BM-301 Bloodletter",
+      "Tsunami BM-302 Bloodletter"
+    ]
+  },
+  "technicallyEquippableButAtypical": {
+    "note": "Any weapon whose only gate is a wield skill can be equipped by a Doctor IF that skill is raised (implants/buffs/twinking), but these skills fail the selection rule above - they are expensive for a Doctor and no Doctor-locked template uses them.",
+    "types": [
+      {
+        "skill": "MultiMelee",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 0
+      },
+      {
+        "skill": "2hEdged",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 605
+      },
+      {
+        "skill": "2hBlunt",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 446
+      },
+      {
+        "skill": "SharpObject",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 0
+      },
+      {
+        "skill": "Grenade",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 319
+      },
+      {
+        "skill": "MGSMG",
+        "skillCostFactor": 3.2,
+        "mpUsableInData": 499
+      },
+      {
+        "skill": "HeavyWeapons",
+        "skillCostFactor": 4.0,
+        "mpUsableInData": 84
+      },
+      {
+        "skill": "Bow",
+        "skillCostFactor": 4.0,
+        "mpUsableInData": 352
+      },
+      {
+        "skill": "Rifle",
+        "skillCostFactor": 4.0,
+        "mpUsableInData": 852
+      },
+      {
+        "skill": "AssaultRifle",
+        "skillCostFactor": 4.0,
+        "mpUsableInData": 1467
+      },
+      {
+        "skill": "MultiRanged",
+        "skillCostFactor": 4.0,
+        "mpUsableInData": 0
+      }
+    ]
+  },
+  "seeAlso": "doctor-weapons-endgame.json - the exhaustive endgame/Xan catalog (597 models), the data-driven \"best by weapon skill\" picks with their stated criteria, and the step-by-step Xan weapon acquisition walkthrough.",
+  "_sources": [
+    "local:items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - every id, name, QL, wield requirement, special, damage, delay, slot and profession lock",
+    "local:itemnames.sql - name verification for every id",
+    "local:AOBuddy/GameData/profiles/reference/skillcaps.json - per-profession IP cost factors",
+    "local:AOSharp.Common/GameData/Stat.cs - stat ids"
+  ],
+  "_unverified": [
+    "dpsProxy is a comparison number computed from the item data (damage / (attack+recharge delay)). It ignores initiative caps, crit rate, add-damage, damage modifiers, nano buffs and special attacks, so it is NOT in-game DPS and must not be quoted as such.",
+    "The weapon-skill selection rule (cost factor <= 2.4 OR a Doctor-locked template exists) is a STATED THRESHOLD chosen for this file, not a fact read from the client data. The full cost table is included so it can be re-tuned.",
+    "items.ocp contains a handful of QL300 weapon templates (ids 305991, 305998, 306174) whose ids are NOT in itemnames.sql, so the extractor reports their name as '(no name)'. They are excluded from this file's representative tables because an unnamed row is useless as guidance; they still appear in the exhaustive doctor-weapons-endgame.json catalog with that placeholder name. Their real names could not be established from local data.",
+    "Acquisition (vendor/mob/mission) for most non-endgame representative weapons is NOT established - see doctor-weapon-sources.json. Local OmniCell drop/vendor tables do not cover them and the public item DBs that would (auno.org, aoitems.com) block automation, so those rows say how=\"unknown\" rather than carrying a guess."
+  ]
+}

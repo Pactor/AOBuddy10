@@ -1,0 +1,205 @@
+{
+  "profession": "Doctor",
+  "professionId": 10,
+  "summary": "Level 1-220 (+ AI title levels and LE research) path for the Doctor. The Doctor's leveling identity is the exact opposite of a pet class's: it does not level by killing faster, it levels by being the one team slot that is never turned away. From level 8 in the Subway to a 12-man Xan raid at 220, a Doctor gets into a team instantly, which is why the fastest Doctor path is 'always be in a team' rather than 'find a good solo spot'. Solo it is slow but extremely safe: stack one DoT from each of the three strains (DOT_LineA, DOT_LineB, DOTStrainC all run at once), land the best initiative debuff you can cast so the mob barely swings, auto-attack with a pistol and out-heal the fight. The skill thresholds that actually change how you play are all readable from the nano data: Iron Circle at BM 401, the team HP buff ladder from BM 18 upward, Complete Healing at BM 794 / MM 722, Alpha and Omega (team complete heal) at BM 873 / MM 786, and UBT at BM 861 / PM 861. Level bands below are taken from the AODB Hunting Grounds table; the per-band Doctor advice is written against the local nano/gear data.",
+  "brackets": [
+    {
+      "levelRange": "1-10",
+      "where": ["Arete Landing", "The Old Backyards", "ICC starter area"],
+      "fight": "Rookie leets, rollerrats and yard grinder mobs. Do every free newbie quest for the NCU belt, backpack and starter tokens.",
+      "classNotes": "You start with the Doctor startup crystals (itemnames.sql: 'Doctor: Startup Crystal - Improved Healing' 28778, 'Doctor: Startup Crystal - Prototype Biotoxin' 43384). That is the whole class in two items: one heal, one DoT. Buy the Basic Doctor Crystals pack (43577) from the profession vendor. At this level your DoT out-damages your weapon, so pull with a DoT and let it tick.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "5-15",
+      "where": ["Newland City area", "RK newbie/team missions from mission terminals"],
+      "fight": "Low Newland mobs and terminal missions pulled to your level.",
+      "classNotes": "Start the team-heal ladder: Weak Team Heal (42408) needs only BM 29, Minor Team Healing (42403) BM 51. Enhance Team Health (42397, the first team HP buff) needs BM 18 / MM 16 / SpaceTime 16 - cast it on the team before every pull, because it heals the health it adds. Tired Limbs (99578, BM/PM 29) is your first initiative debuff and it already scales to -2500 on all four initiatives.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "8-20",
+      "where": ["Condemned Subway (entered from ICC HQ in Andromeda; instanced - team BEFORE entering)"],
+      "fight": "Subway trash and, in a team, the boss Abmouth Supremus for the Ring of the Nucleus Basalis (202717/202718), Belt of Justice and Juggler's Treat.",
+      "classNotes": "The Subway is where a Doctor first discovers it never has to look for a team. Loot the Ring of the Nucleus Basalis - at QL200 (202718) it is +50 Max NCU for Treatment 1050, and NCU is the Doctor's binding constraint for the next 200 levels. Cast Enlarge (28658, BM 190) on the team for +10 Strength/Stamina until Iron Circle comes online.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "15-25",
+      "where": ["Oasis", "Borealis backyards", "RK team missions", "Newland shops for QL30-ish implants and NCU"],
+      "fight": "Mission mobs and backyard mobs; finish the Subway and farm the Abmouth ring.",
+      "classNotes": "Buy Advanced Doctor Crystals (46340) as soon as you can use them. Start building Treatment implants - Treatment is cost factor 1.0 for a Doctor, so it should already be your highest skill, and it is what lets you wear the next implant QL (Treatment = trunc(4.7237*QL + 6.7673)).",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "20-30",
+      "where": ["The Pipes", "RK team missions"],
+      "fight": "Pipes mobs; keep pulling terminal missions at your QL.",
+      "classNotes": "Muscle Atrophy (99582, BM/PM 93) replaces Tired Limbs as your debuff. Keep the team HP buff climbing - Health Graft (95717) at BM 98, Enhance Constitution (95716) at BM 137, Metabolism Booster (95718) at BM 174.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "20-60",
+      "where": ["Temple of Three Winds (Greater Tir County; unlock via Windcaller Karrec at ICC HQ - Bronto Burger + Maddy Cardile credit card, then the portal)"],
+      "fight": "TOTW trash and bosses: Guardian of Tomorrow, the Curator (Notum Rings of Three), Windcaller Yatila, Lien the Memorystalker (NCU memory), then Uklesh the Frozen, Khalum and Aztur the Immortal in a team.",
+      "classNotes": "TOTW is the single best thing that happens to a leveling Doctor - the corridors are exactly the fight your kit is built for and every team in the dungeon wants you. Iron Circle (42400) comes online at BM 401 / MM 354 somewhere in this band and immediately makes you the team's Str/Sta buffer too. HARD GATE: you cannot ENTER TOTW past level 60, so do all the boss loot before then.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "25-40",
+      "where": ["Rhinoman Cockpit", "Steps of Madness (nano-buffing items)", "RK team missions"],
+      "fight": "Rhinoman mobs and mission mobs.",
+      "classNotes": "Research the composite nanos at level 25. Specialist Treatment (28674, SI 142 / PM 166) gives +35 Treatment and +20 First Aid on yourself and everyone else - start your career as your org's walking implant ladder here.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "30-45",
+      "where": ["Nascence (SL): Crippler Cave (22-35), Core Malahs (30-45), Two Mountains Croakers (30-43)", "RK alternative: Virus Builders (40-60)"],
+      "fight": "SL trash if you own Shadowlands; Virus Builders and RK missions if you do not.",
+      "classNotes": "Do the Aban Garden Key quest in Nascence (collect Insignias of Aban from Barking Chimeras and Unredeemed mobs) as soon as you arrive - garden hub travel and a safe rez point matter more to a class that will be the mob's first target for the rest of its life.",
+      "xpType": "XP / SK"
+    },
+    {
+      "levelRange": "40-70",
+      "where": ["Nascence heckler runs: Core Hecklers, Two Mountains Hecklers, Steppe of Despair Heckler Run", "RK froob path: Biomare (50-100), Bot Hackers (50-90)"],
+      "fight": "Heckler teams for heavy SK; Biomare and bot camps on the froob path.",
+      "classNotes": "Heckler teams are where a Doctor stops being a passenger and becomes the reason the run works. The team-heal ladder is now at Greater Team Healing (42398, BM 370) and the team HP buff at Exaggerated Health (28660, BM 385). Biomare is also where wiki.aodb.us says the Combat Medic's Light Tank Armor drops from the Neutralizers - the only classic-RK set it names for a Doctor.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "60-100",
+      "where": ["Elysium (SL): Chapel of Chants (60-75), Whispervale Spiders (67-100), Coldrock Spiders (74-100)", "RK froob path: Biomare, Foreman's Office, Mort Borgs (70-130)"],
+      "fight": "Elysium camps or RK borg camps; keep teaming.",
+      "classNotes": "The First Tier Doctor Suit chain becomes wearable in this band (First Tier QL100 pieces 217698-217707 need Stamina 364 / Psychic 299 and Shadowlands). Free profession armor with no drop RNG - run the chain. Install QL125+ implants and your first Support-unit symbiants.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "85-105",
+      "where": ["Elysium: Callous Mortiigs (85-105), Port 7 Devs (90-105)"],
+      "fight": "Tiig and Dev camps.",
+      "classNotes": "Complete Specialization 1. Superior First Aid (28675, SI 517 / PM 571) is the milestone to chase here: +80 Treatment and +80 First Aid on anyone, which turns you into the org's twinking service and lifts your own implant ceiling by roughly 17 QL.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "105-150",
+      "where": ["Elysium heckler runs: South Beach, Port 7, North Heckler Run", "Scheol (SL, enterable at 80)", "RK: PW Base Borgs (130+), cyborg missions"],
+      "fight": "Elysium heckler teams for heavy SK; complete the Elysium key quest.",
+      "classNotes": "THE BREAKPOINT BAND. Complete Healing (28650) needs BM 794 / MM 722 and Alpha and Omega (42409, the team complete heal) needs BM 873 / MM 786 - a Doctor that reaches those numbers stops being a healer and starts being THE healer. Chase them with implants, symbiants, a Trader wrangle and an MP's Composite Mochams. Complete Specialization 2 around 150.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "135-160",
+      "where": ["Adonis: Whirling Rocks (135-160)", "RK/LE: Battlestation, alien dailies"],
+      "fight": "Whirling Rocks camps; start banking Victory Points on Battlestation for the Ofab Doctor set.",
+      "classNotes": "Start Battlestation early - the Ofab Doctor set (264646-264681 plus the back 267933 and shoulder 301697) is the best profession armor a Doctor will ever wear and it is bought with VP, not looted, so the grind can run in parallel with everything else. Target QL170-200 Support symbiants.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "160-200",
+      "where": ["Adonis heckler runs (Clan side and Omni side, 160-190)", "Dark Ruins - Solo (160-180) and Team (170-200)", "Alappa and Penumbra Hecklers (180-220)"],
+      "fight": "Adonis heckler teams and Dark Ruins instances; Penumbra progression (Ravine fragments and Insignia of Vanya for the Cama Garden key).",
+      "classNotes": "UBT lands in this band: Uncontrollable Body Tremors (99577) needs BM 861 / PM 861 and is unbreakable - it is the point where raids start asking for you by name rather than just asking for 'a doc'. The Second Tier and then Chosen/Faithful Doctor Suit tiers come online (Second Tier QL220 pieces need Stamina 804 / Psychic 659). Loren's Azure Reveries (304609-304614) needs Stamina 649 and Level 199 and is the best froob-reachable set.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "180-220",
+      "where": ["Penumbra hecklers", "Inferno missions", "Alappa", "Battlestation for VP", "Ice Golem molar runs"],
+      "fight": "Penumbra and Inferno grinding; collect the 9 QL220-255 pocket-boss patterns for the Galahad Garden key.",
+      "classNotes": "FROOB CEILING: a free account stops at level 200 with no SL, AI or LE - so a froob Doctor never casts Improved Instinctive Control (222856), Team-Enhanced Deathless Blessing (269455) or any of the level-gated 2232xx heals, all of which carry Expansion BitAnd 2. What a froob Doctor DOES keep is Complete Healing, Alpha and Omega, 36 of 38 team heals, all 16 team HP buffs, all 14 short HP buffs, the HoT ladder, Iron Circle, Instinctive Control, Superior First Aid, Epsilon Purge and UBT - still the best healing kit in the game.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "200-215",
+      "where": ["Inferno missions and mobs", "Alliance / org raids", "Penumbra missions for Shadowbreed", "Battlestation"],
+      "fight": "Inferno content and raids; equip the Ofab Doctor set; push AI levels and LE research.",
+      "classNotes": "The SL level-gated single heals start unlocking: Assauge Pain (223285) at 201, Touch of Kindness (223287) at 205, Restorative Influx (223289) at 209 - each needs Specialization BitAnd 8 and Shadowlands on top of its BM/MM. Several of the best Doctor items in the game open at Level 200 with no profession lock at all: Ancient Resorative Fungus (302925, +5 Heal Multiplier), Ancient Medical Bracer (267752), the Dust Brigade bracer lines (274541-274551, 292564-292566) and Research Attunement Device - Medical Level Three (269409, +100 Treatment / +100 First Aid / +100 BM at Level 199).",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "215-220",
+      "where": ["Tuin (215-220)", "Inferno missions", "Arid Rift and Neretva Canyon", "Dust Brigade chain", "Battlestation", "APF"],
+      "fight": "Endgame quests and raids; finish the Dust Brigade chain; accumulate tokens and VP.",
+      "classNotes": "The last two heal tiers are hard level gates: Cellular Rebirth (223297) at Level 218 and Bodily Invigoration (223299) at Level 220 - the biggest single-target heals in the game at 6001-7639 and 7215-8385. Sheffy's Micro Coil (267563) requires Level 219 and is the Doctor endgame ring. Sacred Chalice (305523) needs BM 1799 and Level 209. Target QL240+ Support symbiants and the Xan Support Alphas.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "AI title levels 1-30 (AXP, parallel track)",
+      "where": ["Daily alien missions (any level)", "Mothership missions", "City raids / city defense", "Alien sectors 7 / 10 / 13 / 28 / 35", "Arid Rift"],
+      "fight": "Alien mobs during city raids and sector runs. AXP is a separate bar from XP/SK. Requires Alien Invasion.",
+      "classNotes": "City defense is free AXP for a Doctor - stand behind the line and heal, and you are never the one dying. The alien perk lines are where the biggest Doctor payoff sits: Champion of Nano Combat (10 tiers) gives +100 to all six nano skills and Embrace (10 tiers) gives +50 Matter Metamorphosis, +1000 Max Nano and -4% nano cost. +100 BM/MM alone is close to a whole rung of the heal ladder.",
+      "xpType": "AXP"
+    }
+  ],
+  "keyQuests": [
+    { "name": "Newbie yard free-gear quests", "where": "ICC / Arete / Old Backyards", "reward": "NCU belt, backpack, starter NCU and tokens", "level": "1-10" },
+    { "name": "Condemned Subway / Abmouth Supremus", "where": "ICC HQ, Andromeda (instanced)", "reward": "Ring of the Nucleus Basalis (202717/202718 - upgradeable NCU ring, the Doctor's first NCU fix), Belt of Justice, Juggler's Treat", "level": "8-25" },
+    { "name": "TOTW access quest (Windcaller Karrec)", "where": "ICC HQ, Andromeda - Bronto Burger from the Annoying Dude plus a credit card from Maddy Cardile", "reward": "Portal access to the Temple of Three Winds", "level": "20-30" },
+    { "name": "TOTW boss runs (Uklesh, Khalum, Aztur, Guardian, Curator, Lien)", "where": "Temple of Three Winds, Greater Tir County - MUST be done by level 60, you cannot enter past it", "reward": "Notum Rings of Three, robe tiers, Guardian Tank Armor, NCU memory, Stygian Desolator, Purifying Rod", "level": "20-60" },
+    { "name": "Doctor Suit chain: First Tier -> Second Tier -> Chosen (Sanctuary) or Faithful (Redeemed)", "where": "Shadowlands profession-suit quest chain", "reward": "Free 8-9 slot profession armor that upgrades in place. First Tier 217698-217707 (QL100-160), Second Tier 214755-214768 (QL160-220), Chosen 214841-214858 / Faithful 217710-217725 (QL220-300)", "level": "60-205" },
+    { "name": "Aban Garden Key quest", "where": "Nascence (SL) - collect Insignias of Aban from Barking Chimeras and Unredeemed mobs", "reward": "Free travel between Nascence transit statues; garden hub travel and a safe rez point", "level": "10-60" },
+    { "name": "Elysium key quest", "where": "Elysium (SL)", "reward": "Elysium garden / Sanctuary access and travel", "level": "105-130" },
+    { "name": "Specialization quests (Spec 1/2/3/4)", "where": "Spec 1 around 80-110, Spec 2 around 150, Spec 3 in Adonis (group), Spec 4 at endgame", "reward": "Nano/action specialization tiers. SPECIFICALLY FOR A DOCTOR: every one of the level-gated SL single heals (223281-223299) carries a 'Specialization BitAnd 8' requirement, so the spec chain is a hard prerequisite for the top of the heal ladder - not optional flavour.", "level": "80-220" },
+    { "name": "Cama Garden Key quest", "where": "Penumbra (SL) - collect 6 Insignia of Vanya plus Ravine fragments", "reward": "Penumbra garden hub travel and progression", "level": "180-200" },
+    { "name": "Galahad Garden Key quest", "where": "Inferno (SL) - 9 complete QL220-255 pocket-boss patterns", "reward": "Inferno garden access - a safe staging point with no DoT", "level": "190-220" },
+    { "name": "Dust Brigade chain (DB1 Outpost / DB2 Inside the Machine / DB3 The Facility)", "where": "Endgame instances (register first)", "reward": "Enhanced Dust Brigade Armor and the DB bracer lines, which are among the best Doctor wrist items in the game (Perfected Infused Dust Brigade Bracer 274551: +4 Heal Multiplier, +1200 HP, +1200 nano)", "level": "200-220" },
+    { "name": "Arid Rift and Neretva Canyon", "where": "Endgame RK/alien content", "reward": "Endgame XP, AXP and quest rewards", "level": "210-220" }
+  ],
+  "keys": [
+    { "name": "Subway access", "forWhat": "Enter the Condemned Subway", "how": "Instanced dungeon entered from ICC HQ in Andromeda. Team BEFORE entering so you share one instance." },
+    { "name": "TOTW portal", "forWhat": "Enter the Temple of Three Winds", "how": "Complete Windcaller Karrec's quest at ICC HQ (Bronto Burger + Maddy Cardile credit card), then use the portal. Clan alternative via Windcaller Karrac in Newland Desert." },
+    { "name": "Insignia of Aban", "forWhat": "Aban Garden Key (Nascence hub travel)", "how": "Drops from Barking Chimeras at the Nascence entrance and from Unredeemed mobs deeper in; collect several and complete the quest." },
+    { "name": "Insignia of Vanya (x6)", "forWhat": "Cama Garden Key (Penumbra hub travel)", "how": "Collect 6 in Penumbra alongside the Ravine fragments and complete the quest." },
+    { "name": "Ravine fragments", "forWhat": "Penumbra progression", "how": "Collected during Penumbra progression at 180-200." },
+    { "name": "Pocket-boss patterns (9 complete, QL220-255)", "forWhat": "Galahad Garden Key (Inferno)", "how": "Farm Inferno pocket bosses for the nine specific complete patterns." },
+    { "name": "Garden / Sanctuary keys (per SL zone)", "forWhat": "Safe rez points and inter-garden travel in each Shadowlands zone", "how": "Each SL zone (Nascence / Elysium / Scheol / Adonis / Penumbra / Inferno) has its own garden key chain. Do each one on arrival - a safe rez point is worth more to a Doctor than to most classes, because it is the class raids cannot continue without." },
+    { "name": "Pandemonium access ring (+10 or better)", "forWhat": "Reaching the inner Pandemonium islands, and therefore the QL300 Intelligent Support symbiants", "how": "Research/quest the access ring at endgame. Gates the Alpha symbiant grind - see doctor-endgame.json." }
+  ],
+  "froobVsPaid": "FROOB (free play = Classic Rubi-Ka plus free Notum Wars): hard level cap 200, no Shadowlands, no Alien Invasion, no Lost Eden. Verified against the local nano data, a froob Doctor LOSES: Improved Instinctive Control (222856), Team-Enhanced Deathless Blessing (269455), every level-gated SL single heal (223281-223299), Misdiagnosis (266306, Lost Eden) and everything gated on NanoFocusLevel BitAnd 64 (Improved Complete Healing 270747, Improved/Superior Team Health Plan 273315/273312, Team Improved Life Channeler 275011, Malpractice 275701). It also loses all research procs and all alien perks - including Champion of Nano Combat's +100 to all six nano skills. What it KEEPS is the entire core kit: Complete Healing (28650), Alpha and Omega (42409), 36 of the 38 team heals, all 16 team HP buffs, all 14 short HP buffs, the full HoT ladder, all four heal-delta buffs, Iron Circle (42400), Instinctive Control (28669), Nano Repulsor (28671), Superior First Aid (28675), Epsilon Purge (28659) and UBT (99577). That is a far smaller loss than most professions take - the Doctor is one of the strongest froob classes because its defining nanos are all pre-Shadowlands, and Loren's Azure Reveries (304609-304614) gives it a full no-expansion caster set. PAID unlocks the heckler/garden SK highway, levels 201-220, the profession suit chain, the Ofab Doctor set (Lost Eden), Combined Paramedic's (Alien Invasion), the alien perk lines and the seven LE research lines.",
+  "tips": [
+    "ALWAYS BE IN A TEAM. This is the whole strategy. A Doctor is the one profession that gets an instant invite at every level from 8 to 220, and team SK on a heckler run dwarfs anything a Doctor can do alone. Solo is the fallback, not the plan.",
+    "The solo loop, when you must: land the best initiative debuff you can cast, stack ONE DoT from each of the three strains (they are separate nanolines - DOT_LineA, DOT_LineB, DOTStrainC - so all three tick at once), auto-attack with a pistol, and heal through it. You will out-live anything your level; you just kill slowly.",
+    "Cast the team HP buff BEFORE the pull, every pull. It heals the health it adds, it lasts up to an hour, and the Funcom teaming guide's advice to teammates is literally to ask for it and Iron Circle before the team is in range.",
+    "Max Treatment every single level. Cost factor 1.0 for a Doctor, gates every implant and symbiant QL you will ever wear, and you can buff your own with Superior First Aid (28675, +80).",
+    "Chase two numbers on the way up: BM 794 / MM 722 for Complete Healing, and BM 861 / PM 861 for UBT. Those are the two moments a Doctor changes category.",
+    "Do not skip Time & Space. The 16-rung TEAM HP buff line is the only Doctor line that requires it (Superior Omni-Med Enhancement 95709 = SpaceTime 769). Skipping TS quietly caps a big part of your team value.",
+    "Do not skip Matter Creation either. The short HP buffs (Life Channeler 96247 = MC 781), the heal-delta buffs (Continuous Reconstruction 222824 = MC 619) and the whole DoT kit all need it. AOWiki: 'Even a Doctor that wants only healing and buffs cannot forego Matter Creation'.",
+    "Budget your NCU. You will be running the team HP buff, Iron Circle, Instinctive Control, Nano Repulsor, a vaccine and a heal-delta buff before anyone offers you anything. Loot the Abmouth ring at level 10, buy Accelerated NCU Memory chips (164603-164608), and take the Internship research line - it raises NCU directly.",
+    "Do the TOTW boss loot before level 60. The dungeon hard-locks entry past 60 and there is no way back in.",
+    "Make friends with a Trader and a Meta-Physicist. A wrangle plus Composite Mochams (+140 to all six nano skills) is often exactly one rung up the heal ladder and one QL up on a symbiant.",
+    "Start Battlestation VP early - around 135-160 is not too soon. The Ofab Doctor set is bought, not looted, so the grind runs in parallel with your leveling instead of competing with it.",
+    "Twink Cure for Baldness (246274) if you are rerolling. It is Doctor-locked, gated only on Pharma Tech 499 (cost factor 1.0 for you) with NO level requirement, and gives +2 Heal Multiplier, +20 Treatment, +20 First Aid, +50 Nano Pool, +50 Body Dev and 1000 AC - which is why there is a named guide about wearing it at level 1.",
+    "Let yourself keep the aggro when you get it. The Funcom teaming guide is blunt about this: 'If the doctor takes aggro, let her keep it. She is the healer and it's easier for her to heal herself then to heal anyone else.' Do not run the mob into the team trying to hand it off.",
+    "Do each SL zone's garden key quest on arrival. Safe rez points matter more to the class that the mob switches to the moment healing starts."
+  ],
+  "_deviations": [
+    "There is no petNotes field. The MP leveling file's per-bracket field is petNotes and its entire tactical model is 'send the pet, stay back'. The Doctor's equivalent field is doctorNotes and the model is 'get into a team; solo by debuffing and out-lasting'. This is the largest structural difference between the two files.",
+    "The per-bracket content is keyed to NANO SKILL THRESHOLDS read from doctor-nanos.json castReqs (Iron Circle BM 401, team HP buff BM 18-852, Complete Healing BM 794 / MM 722, Alpha and Omega BM 873 / MM 786, UBT BM/PM 861, Superior First Aid SI 517 / PM 571) rather than to pet nano tiers. Those numbers are verified local data, not guidance.",
+    "The froobVsPaid section is far more specific than the MP file's, and reaches the opposite conclusion about severity. Every nano a froob Doctor loses was enumerated by filtering doctor-nanos.json on 'Expansion BitAnd 2', 'Expansion BitAnd 32' and 'NanoFocusLevel BitAnd 64' - the losses are real but small, because the Doctor's defining nanos (Complete Healing, Alpha and Omega, UBT, Iron Circle, the team HP buff line) are all pre-Shadowlands. The MP file describes SL+AI+LE as roughly doubling an MP's power; for a Doctor it is a smaller multiplier.",
+    "The Specialization quest entry carries a hard mechanical consequence that the MP file does not have: every level-gated SL single heal (223281-223299) requires 'Specialization BitAnd 8' in its cast criteria, so for a Doctor the spec chain is a prerequisite for the top of its own heal ladder.",
+    "Level bands are taken verbatim from the AODB Hunting Grounds table rather than blended from several guides. The MP file's _unverified notes that its ranges 'blend the athenpaladins progress guide, aodb Hunting Grounds, and the Funcom MP guide'; this file uses one table so the bands are traceable, and the Doctor commentary is layered on separately."
+  ],
+  "_unverified": [
+    "Nothing in this file establishes drop rates or exact loot for the Subway, TOTW or Biomare beyond what wiki.aodb.us states; the Abmouth ring drop rate quoted in the MP leveling file is not repeated here because it was not re-verified.",
+    "The Doctor Suit quest chain's step-by-step quest givers and locations were NOT fetched in this pass. What IS verified is the armor itself: the First Tier, Second Tier, Chosen and Faithful piece ids, their QLs, their Profession EqualTo Doctor locks, their Stamina/Psychic requirements and their per-piece bonuses, all read from items.ocp.",
+    "Specialization quest locations and givers (Spec 1/2/3/4) are not sourced here. The mechanical fact that the SL heals require Specialization BitAnd 8 IS verified from the local nano data; where you get each spec is not.",
+    "The froob level cap of 200 and the 'no SL/AI/LE on a free account' rule are well-established AO facts and are consistent with the expansion gates in the local data, but the number 200 itself was not re-confirmed against a wiki page in this pass.",
+    "'Combat Medic's Light Tank Armor drops from Biomare Neutralizers' is wiki.aodb.us Doctor:Armor's statement; the item was not found in the local extraction (see doctor-gear.json _unverified).",
+    "TOTW access NPC state (Windcaller Karrec, and the removal of Windcaller Cerrak after 18.7) is carried over from the metaphysicist-leveling.json research and was not independently re-fetched. The level-60 entry lock is stated by both AO-Universe and AODB.",
+    "The garden-key and Penumbra/Inferno progression item counts (6 Insignia of Vanya, 9 pocket-boss patterns) are carried over from metaphysicist-leveling.json, which cites the AO-Universe quest guides for them. They were not re-fetched here.",
+    "Battlestation VP costs for the Ofab Doctor tiers are not sourced.",
+    "The claim that a Doctor gets 'an instant invite at every level' is a characterisation of community behaviour supported by wiki.aodb.us ('Doctors really shine in group settings', 'this profession is not for the faint-hearted') and the Funcom teaming guide - it is not a game mechanic."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/doctor-nanos.json (nanos.ocp, client 18.8.50_EP1) - every nano id, cast requirement and expansion/specialization gate quoted per bracket and in froobVsPaid.",
+    "LOCAL: items.ocp via tools/eng-gear-extractor --prof 10 - every armor and item id, QL, requirement and bonus quoted (Doctor Suit chain, Ofab Doctor, Loren's Azure Reveries, Ring of the Nucleus Basalis, Accelerated NCU Memory, Cure for Baldness, Ancient Resorative Fungus, Research Attunement Device, Dust Brigade bracers, Sheffy's Micro Coil, Sacred Chalice).",
+    "LOCAL: the extracted client data/itemnames.sql - the Doctor startup crystals (28778, 43384), the crystal packs 'Basic Doctor Crystals' 43577, 'Advanced Doctor Crystals' 46340, 'Superior Doctor Crystals' 46336 and 'Jobe Superior Doctor Crystals' 223499 and every item name/id pairing in this file.",
+    "LOCAL: AOBuddy/GameData/profiles/reference/skillcaps.json - the Doctor cost factors cited (Treatment 1.0, Pharma Tech 1.0, BM/MM 1.0).",
+    "http://wiki.aodb.us/wiki/Hunting_Grounds - the level bands and location names used for every bracket: Arete Landing / Old Backyards 1-10, Newland City 5-15, Condemned Subway 8-20, Oasis 15-25, The Pipes 20-30, Temple of Three Winds 20-60, Rhinoman Cockpit 25-40, Virus Builders 40-60, Biomare 50-100, Bot Hackers 50-90, Mort Borgs 70-130, PW Base Borgs 130+; Nascence 10-70, Elysium 60-150, Whirling Rocks 135-160, Adonis hecklers 160-190, Dark Ruins 160-200, Alappa/Penumbra/Inferno 180-220, Tuin 215-220.",
+    "http://wiki.aodb.us/wiki/Doctor - the Doctor's team role and the statement that Doctors 'really shine' in group settings.",
+    "http://wiki.aodb.us/wiki/Doctor:Breed_and_Skills - the 'always max' skill guidance reflected in the tips.",
+    "http://wiki.aodb.us/wiki/Doctor_Nano_Programs - 'Even a Doctor that wants only healing and buffs cannot forego Matter Creation'; the three simultaneous DoT lines; complete-heal behaviour.",
+    "http://wiki.aodb.us/wiki/Doctor:Armor - Combat Medic's Light Tank Armor from Biomare Neutralizers; the SL Doctor Suit tiers; Ofab Doctor in Lost Eden.",
+    "https://forums.funcom.com/t/doctor-woefallens-guide-to-teaming-with-a-doc/4351 - the pre-pull buff etiquette and the aggro rule quoted in tips.",
+    "CARRIED OVER (not re-fetched in this pass) from AOBuddy/GameData/profiles/metaphysicist-leveling.json, which cites them: the TOTW access quest details and level-60 lock (ao-universe.com Temple of the Three Winds), the Subway/Abmouth entry (ao-universe.com Condemned Subway), the Aban Garden Key quest (ao-universe.com Nascence), the Cama Garden Key quest (ao-universe.com Penumbra) and the Galahad Garden Key pattern count (ao-universe.com Inferno). See _unverified."
+  ]
+}

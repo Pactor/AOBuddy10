@@ -1,0 +1,1663 @@
+{
+  "profile": "Shade castable nanos (for AOBuddy10 bot decision-making)",
+  "profession": {
+    "id": 15,
+    "name": "Shade"
+  },
+  "generatedUtc": "2026-09-23T04:34:55Z",
+  "dataSource": {
+    "nanoData": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp (OMNICELL-CONTENT v3 pack, client 18.8.50_EP1 extraction) loaded via OmniCell.Core NanoLoader.CacheAllNanos",
+    "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+    "stat/nanoLineEnums": "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs, NanoEnums.cs",
+    "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-nano-extractor (net10)",
+    "nanosInData": 10965
+  },
+  "castabilityCriterion": "A nano is Shade-castable when one of its cast Actions (OmniCell.Enums.ActionType.ToUse=3) carries an Operator.EqualTo requirement on Profession(stat 60)==15 OR VisualProfession(stat 368)==15. All matches use EqualTo. VisualProfession is how most older profession nanos are locked; in this data 77 gate via Profession(60) and 2 via VisualProfession(368).",
+  "statIds": {
+    "Level": 54,
+    "Profession": 60,
+    "VisualProfession": 368,
+    "NanoStrain": 75,
+    "MaterialCreation": 130,
+    "MaterialMetamorphosis": 127,
+    "BiologicalMetamorphosis": 128,
+    "PsychologicalModification": 129,
+    "SensoryImprovement": 122,
+    "SpaceTime": 131
+  },
+  "fieldNotes": {
+    "minLevel": "Character Level requirement read from the ToUse action (stat 54). 0 = no explicit level requirement; the real gate is the nano-skill requirement in castReqs.",
+    "castReqs": "The full ToUse action requirement list, stat names from Stat.cs. '>' means the CellAO GreaterThan operator (stat >= value at runtime).",
+    "effectSummary": "Derived from the nano's Events->Functions in nanos.ocp. Modify shows 'stat +/-amount'; SummonPet shows the pet template arg; Hit shows [attackType,min,max,...]; other function types shown as Name[rawArgs].",
+    "nanoLine": "AOSharp NanoLine enum name for the nano's NanoStrain (stat 75)."
+  },
+  "totalCount": 79,
+  "categoryCounts": {
+    "Summon Weapon / Shield (Creation)": 1,
+    "Self / Team Buffs": 70,
+    "Heals / HoT": 2,
+    "Misc / Utility": 5,
+    "Root": 1
+  },
+  "categories": {
+    "Summon Weapon / Shield (Creation)": [
+      {
+        "id": 297342,
+        "name": "Spirit Siphon",
+        "nanoStrain": 1035,
+        "nanoLine": "SpiritDrain",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "PercentRemainingHealth < 21",
+          "Flags op4 0",
+          "Expansion op22 2",
+          "Profession == 15",
+          "SelectedTargetType op22 16"
+        ],
+        "effectSummary": [
+          "CastNano[301114]",
+          "SpawnItem[IERC,5,0]",
+          "SpawnItem[IERC,10,0]",
+          "SpawnItem[IERC,20,0]",
+          "SpawnItem[IERC,30,0]",
+          "SpawnItem[IERC,40,0]",
+          "SpawnItem[IERC,50,0]",
+          "SpawnItem[IERC,60,0]",
+          "SpawnItem[IERC,70,0]",
+          "SpawnItem[IERC,80,0]",
+          "SpawnItem[IERC,90,0]",
+          "SpawnItem[IERC,100,0]",
+          "SpawnItem[IERC,110,0]",
+          "SpawnItem[IERC,120,0]",
+          "SpawnItem[IERC,130,0]",
+          "SpawnItem[IERC,140,0]",
+          "SpawnItem[IERC,150,0]",
+          "SpawnItem[IERC,160,0]",
+          "SpawnItem[IERC,170,0]",
+          "SpawnItem[IERC,180,0]",
+          "SpawnItem[IERC,190,0]",
+          "SpawnItem[IERC,200,0]",
+          "SpawnItem[IERC,210,0]",
+          "SpawnItem[IERC,220,0]",
+          "SpawnItem[IERC,230,0]",
+          "SpawnItem[IERC,240,0]",
+          "SpawnItem[IERC,250,0]",
+          "SpawnItem[IERC,260,0]",
+          "SpawnItem[IERC,270,0]",
+          "SpawnItem[IERC,280,0]",
+          "SpawnItem[IERC,290,0]",
+          "SpawnItem[IERC,300,0]",
+          "Hit[27,-1,0,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Self / Team Buffs": [
+      {
+        "id": 210806,
+        "name": "Double Cover",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 258",
+          "SensoryImprovement > 234",
+          "Level > 24"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +45",
+          "Modify Parry +27"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210734,
+        "name": "Knock of the Poltergeist",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 182",
+          "SensoryImprovement > 158",
+          "Level > 24"
+        ],
+        "effectSummary": [
+          "Modify Dimach +40",
+          "Modify MartialArts +34"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211150,
+        "name": "Piercing Tooth",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 284",
+          "SensoryImprovement > 259",
+          "Level > 24"
+        ],
+        "effectSummary": [
+          "Modify Piercing +54"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210376,
+        "name": "Quintessence of Incapacitation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 251",
+          "BiologicalMetamorphosis > 251",
+          "PsychologicalModification > 278",
+          "Level > 24",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "AddOffProc[10,210373]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210357,
+        "name": "Ritualistic Grasp",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 202",
+          "BiologicalMetamorphosis > 202",
+          "PsychologicalModification > 228",
+          "Level > 24",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210343]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210746,
+        "name": "Sneak",
+        "nanoStrain": 195,
+        "nanoLine": "AgilityBuff",
+        "minLevel": 25,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 218",
+          "SensoryImprovement > 194",
+          "Level > 24"
+        ],
+        "effectSummary": [
+          "Modify EvadeClsC +30",
+          "Modify DuckExp +15",
+          "Modify DodgeRanged +15",
+          "Modify Agility +25",
+          "Modify Concealment +20"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210736,
+        "name": "Kick of the Phantom",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 50,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 447",
+          "SensoryImprovement > 396",
+          "Level > 49"
+        ],
+        "effectSummary": [
+          "Modify Dimach +75",
+          "Modify MartialArts +64"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210389,
+        "name": "Primitive Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 50,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 367",
+          "BiologicalMetamorphosis > 367",
+          "PsychologicalModification > 408",
+          "Level > 49",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,210383]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210359,
+        "name": "Ritualistic Caress",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 50,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 304",
+          "BiologicalMetamorphosis > 304",
+          "PsychologicalModification > 334",
+          "Level > 49",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210344]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210748,
+        "name": "Mugger",
+        "nanoStrain": 195,
+        "nanoLine": "AgilityBuff",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 503",
+          "SensoryImprovement > 461",
+          "Level > 74"
+        ],
+        "effectSummary": [
+          "Modify EvadeClsC +50",
+          "Modify DuckExp +25",
+          "Modify DodgeRanged +25",
+          "Modify Concealment +45",
+          "Modify Agility +45"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211148,
+        "name": "Piercing Gash",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 530",
+          "SensoryImprovement > 490",
+          "Level > 74"
+        ],
+        "effectSummary": [
+          "Modify Piercing +85"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210361,
+        "name": "Ritualistic Embrace",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 495",
+          "BiologicalMetamorphosis > 495",
+          "PsychologicalModification > 542",
+          "Level > 74",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210345]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210808,
+        "name": "Twice the Shield",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 601",
+          "SensoryImprovement > 555",
+          "Level > 74"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +80",
+          "Modify Parry +48"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210738,
+        "name": "Hand of the Shadow",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 666",
+          "SensoryImprovement > 611",
+          "Level > 99"
+        ],
+        "effectSummary": [
+          "Modify Dimach +94",
+          "Modify MartialArts +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210391,
+        "name": "Intrinsic Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 699",
+          "BiologicalMetamorphosis > 699",
+          "PsychologicalModification > 765",
+          "Level > 99",
+          "Specialization op22 2"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,210384]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211146,
+        "name": "Probe of Death",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 783",
+          "SensoryImprovement > 709",
+          "Level > 99"
+        ],
+        "effectSummary": [
+          "Modify Piercing +110",
+          "Modify MeleeDamageModifier +3",
+          "Modify ProjectileDamageModifier +3",
+          "Modify EnergyDamageModifier +3",
+          "Modify FireDamageModifier +3",
+          "Modify ColdDamageModifier +3",
+          "Modify ChemicalDamageModifier +3",
+          "Modify PoisonDamageModifier +3",
+          "Modify RadiationDamageModifier +3"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210378,
+        "name": "Quintessence of Paralyzation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 706",
+          "BiologicalMetamorphosis > 706",
+          "PsychologicalModification > 773",
+          "Level > 99",
+          "Specialization op22 2"
+        ],
+        "effectSummary": [
+          "AddOffProc[12,210375]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210363,
+        "name": "Sacrificial Touch",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 645",
+          "BiologicalMetamorphosis > 645",
+          "PsychologicalModification > 701",
+          "Level > 99",
+          "Specialization op22 2"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210346]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210365,
+        "name": "Sacrificial Blow",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 135,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 848",
+          "BiologicalMetamorphosis > 848",
+          "PsychologicalModification > 930",
+          "Level > 134",
+          "Specialization op22 2"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210347]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210750,
+        "name": "Scrounger",
+        "nanoStrain": 195,
+        "nanoLine": "AgilityBuff",
+        "minLevel": 135,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 838",
+          "SensoryImprovement > 762",
+          "Level > 134"
+        ],
+        "effectSummary": [
+          "Modify EvadeClsC +75",
+          "Modify DuckExp +35",
+          "Modify DodgeRanged +35",
+          "Modify Concealment +60",
+          "Modify Agility +65"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210740,
+        "name": "Touch of the Specter",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 135,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 861",
+          "SensoryImprovement > 786",
+          "Level > 134"
+        ],
+        "effectSummary": [
+          "Modify Dimach +110",
+          "Modify MartialArts +94"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210810,
+        "name": "Double Fence",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 145,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 875",
+          "SensoryImprovement > 801",
+          "Level > 144"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +112",
+          "Modify Parry +68"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210393,
+        "name": "Elemental Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 155,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 926",
+          "BiologicalMetamorphosis > 926",
+          "PsychologicalModification > 1006",
+          "Level > 154",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,210385]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211144,
+        "name": "Master Piercer",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 155,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 917",
+          "SensoryImprovement > 845",
+          "Level > 154"
+        ],
+        "effectSummary": [
+          "Modify Piercing +127",
+          "Modify MultiMelee +4",
+          "Modify MeleeDamageModifier +7",
+          "Modify ProjectileDamageModifier +7",
+          "Modify EnergyDamageModifier +7",
+          "Modify FireDamageModifier +7",
+          "Modify ColdDamageModifier +7",
+          "Modify ChemicalDamageModifier +7",
+          "Modify PoisonDamageModifier +7",
+          "Modify RadiationDamageModifier +7"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210367,
+        "name": "Sacrificial Grasp",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 165,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 939",
+          "BiologicalMetamorphosis > 939",
+          "PsychologicalModification > 1018",
+          "Level > 164",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210348]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210742,
+        "name": "Voice of the Banshee",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 165,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 962",
+          "SensoryImprovement > 890",
+          "Level > 164"
+        ],
+        "effectSummary": [
+          "Modify Dimach +127",
+          "Modify MartialArts +108"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210369,
+        "name": "Sacrificial Caress",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1010",
+          "BiologicalMetamorphosis > 1010",
+          "PsychologicalModification > 1095",
+          "Level > 174",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210349]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210752,
+        "name": "Prowler",
+        "nanoStrain": 195,
+        "nanoLine": "AgilityBuff",
+        "minLevel": 185,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1011",
+          "SensoryImprovement > 930",
+          "Level > 184"
+        ],
+        "effectSummary": [
+          "Modify EvadeClsC +70",
+          "Modify DuckExp +40",
+          "Modify DodgeRanged +40",
+          "Modify Agility +80",
+          "Modify Concealment +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210812,
+        "name": "Duplex Wall",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1031",
+          "SensoryImprovement > 947",
+          "Level > 194"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +130",
+          "Modify Parry +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210744,
+        "name": "Kiss of the Vampire",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1046",
+          "SensoryImprovement > 959",
+          "Level > 194"
+        ],
+        "effectSummary": [
+          "Modify Dimach +140",
+          "Modify MartialArts +120"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210395,
+        "name": "Primordial Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1043",
+          "BiologicalMetamorphosis > 1043",
+          "PsychologicalModification > 1137",
+          "Level > 194",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,210386]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211142,
+        "name": "Puncture of the Tarasque",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1039",
+          "SensoryImprovement > 953",
+          "Level > 194"
+        ],
+        "effectSummary": [
+          "Modify Piercing +140",
+          "Modify MultiMelee +10",
+          "Modify SharpObject +80",
+          "Modify MeleeDamageModifier +15",
+          "Modify ProjectileDamageModifier +15",
+          "Modify EnergyDamageModifier +15",
+          "Modify FireDamageModifier +15",
+          "Modify ColdDamageModifier +15",
+          "Modify ChemicalDamageModifier +15",
+          "Modify PoisonDamageModifier +15",
+          "Modify RadiationDamageModifier +15"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210380,
+        "name": "Quintessence of Petrification",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1046",
+          "BiologicalMetamorphosis > 1046",
+          "PsychologicalModification > 1140",
+          "Level > 194",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[13,210375]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210371,
+        "name": "Sacrificial Embrace",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1051",
+          "BiologicalMetamorphosis > 1051",
+          "PsychologicalModification > 1147",
+          "Level > 194",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210350]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224163,
+        "name": "Ceremonial Grasp",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 203,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1158",
+          "BiologicalMetamorphosis > 1159",
+          "PsychologicalModification > 1284",
+          "Level > 202",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,224114]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224169,
+        "name": "Quintessence of Transfixion",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 207,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1296",
+          "BiologicalMetamorphosis > 1299",
+          "PsychologicalModification > 1463",
+          "Level > 206",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[14,224153]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224159,
+        "name": "Primal Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 209,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1227",
+          "BiologicalMetamorphosis > 1232",
+          "PsychologicalModification > 1399",
+          "Level > 208",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,224155]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224165,
+        "name": "Ceremonial Caress",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 212,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1319",
+          "BiologicalMetamorphosis > 1324",
+          "PsychologicalModification > 1519",
+          "Level > 211",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,224112]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224161,
+        "name": "Chthonic Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 216,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1444",
+          "BiologicalMetamorphosis > 1415",
+          "PsychologicalModification > 1679",
+          "Level > 215",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,224154]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224167,
+        "name": "Ceremonial Embrace",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 218,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1499",
+          "BiologicalMetamorphosis > 1514",
+          "PsychologicalModification > 1760",
+          "Level > 217",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[26,224113]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224171,
+        "name": "Quintessence of Stupefication",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1569",
+          "BiologicalMetamorphosis > 1579",
+          "PsychologicalModification > 1840",
+          "Level > 219",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,224151]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210793,
+        "name": "Backpiercer",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 891",
+          "SensoryImprovement > 891"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +110"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210797,
+        "name": "Backstabber",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 1034",
+          "SensoryImprovement > 1034"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210791,
+        "name": "Dagger in the Back",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 681",
+          "SensoryImprovement > 681"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210407,
+        "name": "Degeneration of Celerity",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1028",
+          "BiologicalMetamorphosis > 1028",
+          "PsychologicalModification > 1118",
+          "Specialization op22 4",
+          "EquippedWeapons op107 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[100,301121]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 224177,
+        "name": "Degeneration of Haste",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1539",
+          "BiologicalMetamorphosis > 1549",
+          "PsychologicalModification > 1800",
+          "Specialization op22 8",
+          "EquippedWeapons op107 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[100,224156]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210401,
+        "name": "Degeneration of Rapidity",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 224",
+          "BiologicalMetamorphosis > 224",
+          "PsychologicalModification > 250",
+          "Specialization op22 1",
+          "EquippedWeapons op107 4"
+        ],
+        "effectSummary": [
+          "AddOffProc[100,301120]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210804,
+        "name": "Dual Defender",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 95",
+          "SensoryImprovement > 81"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +20",
+          "Modify Parry +12"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 272371,
+        "name": "Faster than your Shadow",
+        "nanoStrain": 150,
+        "nanoLine": "RunspeedBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "PsychologicalModification > 749",
+          "SensoryImprovement > 749",
+          "Profession == 15"
+        ],
+        "effectSummary": [
+          "Modify RunSpeed +250"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210323,
+        "name": "Fervor of the Devotee",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 308",
+          "SensoryImprovement > 308"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +70"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210327,
+        "name": "Fervor of the Disciple",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 789",
+          "SensoryImprovement > 789"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +110"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210329,
+        "name": "Fervor of the Fanatic",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 878",
+          "SensoryImprovement > 878"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +135"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210321,
+        "name": "Fervor of the Henchman",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 81",
+          "SensoryImprovement > 81"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +30"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210325,
+        "name": "Fervor of the Minion",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 555",
+          "SensoryImprovement > 555"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +90"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210331,
+        "name": "Fervor of the Zealot",
+        "nanoStrain": 519,
+        "nanoLine": "FastAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 2",
+          "Profession == 9",
+          "PsychologicalModification > 949",
+          "SensoryImprovement > 949"
+        ],
+        "effectSummary": [
+          "Modify FastAttack +150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210787,
+        "name": "Footpad Apprentice",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 141",
+          "SensoryImprovement > 123"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +30"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273393,
+        "name": "Improved Prowler",
+        "nanoStrain": 195,
+        "nanoLine": "AgilityBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1429",
+          "SensoryImprovement > 1243",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify EvadeClsC +140",
+          "Modify DuckExp +80",
+          "Modify DodgeRanged +80",
+          "Modify Agility +110",
+          "Modify Concealment +100",
+          "Modify RunSpeed +350"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 270804,
+        "name": "Improved Puncture of the Tarasque",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1429",
+          "SensoryImprovement > 1243",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify Piercing +200",
+          "Modify MultiMelee +30",
+          "Modify SharpObject +140",
+          "Modify MeleeDamageModifier +45",
+          "Modify ProjectileDamageModifier +45",
+          "Modify EnergyDamageModifier +45",
+          "Modify FireDamageModifier +45",
+          "Modify ColdDamageModifier +45",
+          "Modify ChemicalDamageModifier +45",
+          "Modify PoisonDamageModifier +45",
+          "Modify RadiationDamageModifier +45"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 266310,
+        "name": "Pierce Nerves",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Expansion op22 32",
+          "MaterialCreation > 799",
+          "Profession == 1",
+          "SpaceTime > 799",
+          "Profession == 15"
+        ],
+        "effectSummary": [
+          "Modify Piercing -1000"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210355,
+        "name": "Ritualistic Blow",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 105",
+          "BiologicalMetamorphosis > 105",
+          "PsychologicalModification > 123"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210342]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210353,
+        "name": "Ritualistic Touch",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 31",
+          "BiologicalMetamorphosis > 31",
+          "PsychologicalModification > 37"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,210341]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210387,
+        "name": "Rudimentary Dissipation",
+        "nanoStrain": 521,
+        "nanoLine": "ShadeProcBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 129",
+          "BiologicalMetamorphosis > 129",
+          "PsychologicalModification > 148"
+        ],
+        "effectSummary": [
+          "AddOffProc[15,210382]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273395,
+        "name": "Shadow in the Night",
+        "nanoStrain": 193,
+        "nanoLine": "ConcealmentBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "PsychologicalModification > 1429",
+          "SensoryImprovement > 1243",
+          "Profession == 15",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify Concealment +750"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211152,
+        "name": "Sharpen Dagger",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 124",
+          "SensoryImprovement > 107"
+        ],
+        "effectSummary": [
+          "Modify Piercing +29"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210795,
+        "name": "Shuffle of the Rogue",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 988",
+          "SensoryImprovement > 988"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +135"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210789,
+        "name": "Silent Dagger",
+        "nanoStrain": 208,
+        "nanoLine": "SneakAttackBuffs",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Profession == 14",
+          "Profession == 6",
+          "PsychologicalModification > 308",
+          "SensoryImprovement > 308"
+        ],
+        "effectSummary": [
+          "Modify SneakAttack +70"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 210732,
+        "name": "Slap of the Zombie",
+        "nanoStrain": 209,
+        "nanoLine": "MartialArtsBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 40",
+          "SensoryImprovement > 35"
+        ],
+        "effectSummary": [
+          "Modify Dimach +19",
+          "Modify MartialArts +16"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275843,
+        "name": "Triple Wall",
+        "nanoStrain": 245,
+        "nanoLine": "MultiwieldBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 1429",
+          "SensoryImprovement > 1243",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Modify MultiMelee +180",
+          "Modify Parry +100",
+          "Modify MartialArts +30",
+          "Modify AddAllOff +30",
+          "Modify AddAllDef +30",
+          "Modify MeleeInit +150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 211154,
+        "name": "Whetstone Effect",
+        "nanoStrain": 546,
+        "nanoLine": "ShadePiercingBuff",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "PsychologicalModification > 4",
+          "SensoryImprovement > 4"
+        ],
+        "effectSummary": [
+          "Modify Piercing +12"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 301593,
+        "name": "Winding Serpent",
+        "nanoStrain": 1002,
+        "nanoLine": "AADBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==15",
+        "castReqs": [
+          "PsychologicalModification > 337",
+          "SensoryImprovement > 337",
+          "VisualProfession == 15",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "Modify AddAllDef +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals / HoT": [
+      {
+        "id": 301895,
+        "name": "Dissolving Vitality",
+        "nanoStrain": 844,
+        "nanoLine": "HealthDrain",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "BiologicalMetamorphosis > 699",
+          "SpaceTime > 699",
+          "Profession == 15"
+        ],
+        "effectSummary": [
+          "CastNano[301894]",
+          "Hit[27,-250,-250,91]",
+          "Hit[27,-250,-250,91]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273390,
+        "name": "Sneaking Health Drain",
+        "nanoStrain": 844,
+        "nanoLine": "HealthDrain",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1554",
+          "SpaceTime > 1544",
+          "Profession == 15",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "CastNano[273391]",
+          "Hit[27,-950,-950,91]",
+          "Hit[27,-950,-950,91]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Misc / Utility": [
+      {
+        "id": 266300,
+        "name": "Shade's Caress",
+        "nanoStrain": 1000,
+        "nanoLine": "NemesisNanoPrograms",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Expansion op22 32",
+          "PsychologicalModification > 799",
+          "Profession == 15",
+          "SensoryImprovement > 799",
+          "Level > 99"
+        ],
+        "effectSummary": [
+          "CastNano[275242]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275841,
+        "name": "Basic Nanite Depravation",
+        "nanoStrain": 861,
+        "nanoLine": "WeaponEffectAdd_On2",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1334",
+          "BiologicalMetamorphosis > 1444",
+          "PsychologicalModification > 1509",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "AddOffProc[21,275842]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275839,
+        "name": "Nanite Depravation",
+        "nanoStrain": 861,
+        "nanoLine": "WeaponEffectAdd_On2",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "SpaceTime > 1544",
+          "BiologicalMetamorphosis > 1554",
+          "PsychologicalModification > 1629",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "AddOffProc[25,275840]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 301160,
+        "name": "Smoke Bomb",
+        "nanoStrain": 1049,
+        "nanoLine": "EmergencySneak",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "NumFightingOpponents == 0",
+          "Flags op123 2",
+          "Flags op4 0",
+          "Profession == 15",
+          "Concealment > 599",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "(2 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 225281,
+        "name": "Symbiosis",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==15",
+        "castReqs": [
+          "Profession == 15",
+          "Flags op4 0"
+        ],
+        "effectSummary": [
+          "CastNano[209986]",
+          "CastNano[209987]",
+          "CastNano[210019]",
+          "CastNano[210020]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Root": [
+      {
+        "id": 281239,
+        "name": "Release Me Now",
+        "nanoStrain": 283,
+        "nanoLine": "SelfRoot_SnareResistBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==15",
+        "castReqs": [
+          "VisualProfession == 9",
+          "VisualProfession == 14",
+          "VisualProfession == 15",
+          "VisualProfession == 1",
+          "SensoryImprovement > 99",
+          "PsychologicalModification > 99",
+          "Expansion op22 32"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[145]",
+          "RemoveNanoStrain[146]",
+          "ResistNanoStrain[145,100]",
+          "ResistNanoStrain[146,100]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ]
+  }
+}

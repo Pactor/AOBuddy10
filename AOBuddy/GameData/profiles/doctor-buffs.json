@@ -1,0 +1,705 @@
+{
+  "profession": "Doctor",
+  "professionId": 10,
+  "generatedUtc": "2026-09-23T00:00:00Z",
+  "purpose": "Buff reference for AOBuddy10 Doctor decision-making. The Doctor is the game's healer, so the load-bearing section of this file is givesToOthers: what a team or raid actually wants from a Doctor, every ladder enumerated with its real cast requirement so a bot can pick the right rung. selfBuffs covers what the Doctor keeps on itself, wantedFromOthers what it should ask for, and botStrategyNotes the cast order and the nanoline traps.",
+  "dataSources": {
+    "selfAndGivesIds": "AOBuddy/GameData/profiles/doctor-nanos.json (nanos.ocp extraction, client 18.8.50_EP1; 240 castable nanos). Every id below marked source=local was read from that file, with its castReqs quoted verbatim. Names re-verified against the extracted client data/itemnames.sql.",
+    "crossProfAndGeneral": "wiki.aodb.us Who_Buffs_What, wiki.aodb.us Doctor_Nano_Programs, ao-universe.com, forums.funcom.com. Cross-profession buff ids are NOT in the local Doctor data (they are other professions' nanos) so those ids are null and marked source=web.",
+    "teamHpBuffVsTeamHealSplit": "DERIVED FROM THE LOCAL DATA, not from a website. doctor-nanos.json lumps 54 nanos under 'Heals - Team'. They split cleanly on their cast requirements: 16 carry a SpaceTime requirement alongside BM+MM and are the TEAM HP BUFF line (wiki.aodb.us nanoline 184, 'Enhance Team Health ... Superior Omni-Med Enhancement'); the other 38 carry only BM+MM and are the TEAM HEAL ladder. Both families cast via TeamCastNano children, which is why the extractor could not tell them apart."
+  },
+  "selfBuffs": [
+    {
+      "name": "Improved Instinctive Control",
+      "id": 222856,
+      "nanoLine": "InitiativeBuffs",
+      "effect": "Nano C. Init +350, Nano Resist +75, Max Nano Energy +300.",
+      "keepUp": true,
+      "castReqs": [
+        "PsychologicalModification > 1033",
+        "SensoryImprovement > 1033",
+        "VisualProfession == 10",
+        "Expansion BitAnd 2 (Shadowlands)"
+      ],
+      "note": "The single most valuable self-buff a Doctor runs: Nano C. Init is cast AND recharge speed on the heal ladder, which is the Doctor's throughput. Same nanoline as Instinctive Control (28669) - it REPLACES it, never stacks. Requires Shadowlands. source=local"
+    },
+    {
+      "name": "Instinctive Control",
+      "id": 28669,
+      "nanoLine": "InitiativeBuffs",
+      "effect": "Nano C. Init +200, Nano Resist +25, Max Nano Energy +150.",
+      "keepUp": true,
+      "castReqs": [
+        "PsychologicalModification > 430",
+        "SensoryImprovement > 388",
+        "VisualProfession == 10"
+      ],
+      "note": "The froob / pre-SL version. Use until Improved is castable, then never again (same nanoline). source=local"
+    },
+    {
+      "name": "Improved Nano Repulsor",
+      "id": 222823,
+      "nanoLine": "NanoResistanceBuffs",
+      "effect": "Nano Resist +200.",
+      "keepUp": true,
+      "castReqs": [
+        "BiologicalMetamorphosis > 479",
+        "SpaceTime > 438",
+        "VisualProfession == 10"
+      ],
+      "note": "Nano Resist is cost factor 1.2 for a Doctor (cheap) and this buff doubles down on it. It is what stops a Trader draining you or a mob landing a debuff mid-heal. Replaces Nano Repulsor (28671, +92) - same nanoline. source=local"
+    },
+    {
+      "name": "Nano Repulsor",
+      "id": 28671,
+      "nanoLine": "NanoResistanceBuffs",
+      "effect": "Nano Resist +92.",
+      "keepUp": false,
+      "castReqs": [
+        "BiologicalMetamorphosis > 379",
+        "SpaceTime > 338",
+        "VisualProfession == 10"
+      ],
+      "note": "Superseded by Improved Nano Repulsor (same nanoline). source=local"
+    },
+    {
+      "name": "Superior First Aid",
+      "id": 28675,
+      "nanoLine": "FirstAidAndTreatmentBuff",
+      "effect": "First Aid +80, Treatment +80.",
+      "keepUp": true,
+      "castReqs": [
+        "SensoryImprovement > 517",
+        "PsychologicalModification > 571",
+        "VisualProfession == 10"
+      ],
+      "note": "Self-cast Treatment is how a Doctor equips implants and symbiants above its raw skill, and self-cast First Aid raises the QL of the stims that cover it while a heal recharges. Best in a 3-step line: Specialist Treatment 28674 (+35 Treatment / +20 First Aid), Enhanced First Aid 28657 (+10 Treatment / +15 First Aid). Same nanoline - only the best applies. source=local"
+    },
+    {
+      "name": "Iron Circle",
+      "id": 42400,
+      "nanoLine": "StrengthBuff",
+      "effect": "Strength +20, Stamina +20.",
+      "keepUp": true,
+      "castReqs": [
+        "BiologicalMetamorphosis > 401",
+        "MaterialMetamorphosis > 354",
+        "VisualProfession == 10"
+      ],
+      "note": "Cast on yourself AND the whole team. The Stamina matters twice over for a Doctor because its own endgame armor is Stamina-gated (Ofab Doctor QL300 needs Stamina 1099). Replaces Enlarge (28658, +10/+10 plus Scale +8) - same nanoline. source=local"
+    },
+    {
+      "name": "Enlarge",
+      "id": 28658,
+      "nanoLine": "StrengthBuff",
+      "effect": "Strength +10, Stamina +10, Scale +8 (you visibly grow).",
+      "keepUp": false,
+      "castReqs": [
+        "BiologicalMetamorphosis > 190",
+        "MaterialMetamorphosis > 166",
+        "MaterialCreation > 166",
+        "VisualProfession == 10"
+      ],
+      "note": "The low-level Iron Circle. Same nanoline (156 per Who_Buffs_What) - do not try to stack them. source=local"
+    },
+    {
+      "name": "Continuous Reconstruction",
+      "id": 222824,
+      "nanoLine": "HealDeltaBuff",
+      "effect": "Heal Delta +65 (passive health regeneration).",
+      "keepUp": true,
+      "castReqs": [
+        "BiologicalMetamorphosis > 691",
+        "VisualProfession == 10",
+        "MaterialCreation > 619"
+      ],
+      "note": "Best of a 4-step heal-delta line: Hearty Constitution 222855 (+48), Cellular Restoration 28651 (+25), Natural Healing 28663 (+10). Same nanoline, only the best applies. This is the line that needs Matter Creation - which is why a pure-healing Doctor still cannot skip MC. source=local"
+    },
+    {
+      "name": "Life Channeler",
+      "id": 96247,
+      "nanoLine": "DoctorShortHPBuffs",
+      "effect": "Max Health +1344, and casts child nano 144660 (the heal for the amount raised).",
+      "keepUp": true,
+      "castReqs": [
+        "BiologicalMetamorphosis > 867",
+        "MaterialMetamorphosis > 781",
+        "MaterialCreation > 781",
+        "VisualProfession == 10"
+      ],
+      "note": "Top of the 14-step SHORT (single-target) HP buff line. AOWiki: these 'raise the max HP of the target and heal the amount of HP raised', lasting up to 8 minutes 20 seconds. Cast on yourself before a pull and on whoever is about to be hit. Whole line, ascending: Health Augmentation 96248 (+57), Survivability Booster 96249 (+118), Health Surge 96250 (+221), Bodily Amplification 96251 (+317), Life Reinforcement 96252 (+379), Strengthen Resolve 96253 (+463), Superior Health Augmentation 96254 (+581), Temporary Cellular Enhancement 96255 (+644), Enhanced Health Surge 96257 (+928), Constitution Magnification 96256 (+1017), Health Assembler 96258 (+1123), Superior Life Reinforcement 96259 (+1234), Life Channeler 96247 (+1344). source=local"
+    },
+    {
+      "name": "Vaccine of Divestiture",
+      "id": 204431,
+      "nanoLine": "Ransack_DepriveResistBuff",
+      "effect": "Resist nano strains 135 and 136 at 26%, and strain 147 at 15% (the Trader Ransack/Deprive drain family).",
+      "keepUp": true,
+      "castReqs": [
+        "Profession == 10",
+        "Level > 194",
+        "BiologicalMetamorphosis > 1037",
+        "MaterialCreation > 951"
+      ],
+      "note": "Top of a 4-step level-gated line: Vaccine of Ransacking 204425 (level 75, 14%/3%), Vaccine of Deprivation 204427 (level 100, 17%/6%), Vaccine of Plundering 204429 (level 155, 21%/10%), Vaccine of Divestiture 204431 (level 195, 26%/15%). Same nanoline - only the best applies. Anti-Trader tech; keep up in PvP and in any fight with draining mobs. source=local"
+    },
+    {
+      "name": "Pistol Mastery",
+      "id": 29246,
+      "nanoLine": "PistolBuff",
+      "effect": "Pistol +40.",
+      "keepUp": true,
+      "castReqs": [
+        "VisualProfession == 1 | 3 | 8 | 10 | 12",
+        "PsychologicalModification > 120",
+        "SensoryImprovement > 120",
+        "Flags op4 0"
+      ],
+      "note": "NOTE the cast requirement: this nano is castable by Soldier(1), Engineer(3), Bureaucrat(8), Doctor(10) AND Meta-Physicist(12) - it is a shared nano that appears in the Doctor's castable set, not a Doctor exclusive. A Doctor uses it on itself to wield a higher-QL pistol. Do NOT confuse it with the SL group perk line also called Pistol Mastery (+59 Pistol / +6 Fling Shot / +16 all damage modifiers at 5 tiers). source=local"
+    },
+    {
+      "name": "Encode DNA Sequence",
+      "id": 142735,
+      "nanoLine": "SelfGrid",
+      "effect": "Self grid/travel utility.",
+      "keepUp": false,
+      "castReqs": [
+        "BiologicalMetamorphosis > 377",
+        "MaterialMetamorphosis > 377",
+        "SpaceTime > 377",
+        "VisualProfession == 10",
+        "ExpansionPlayfield == 0",
+        "PlayfieldType op107 2"
+      ],
+      "note": "Travel. The ExpansionPlayfield == 0 requirement means Rubi-Ka only - it will not fire in Shadowlands. source=local"
+    },
+    {
+      "name": "Tjernberg Soothing Adrenaline",
+      "id": 279372,
+      "nanoLine": "NOSTACKING",
+      "effect": "ReduceNanoStrainDuration[883, 1000000] - collapses the duration of nano strain 883 on the target.",
+      "keepUp": false,
+      "castReqs": [
+        "VisualProfession == 10",
+        "SensoryImprovement > 119",
+        "SpaceTime > 119"
+      ],
+      "note": "A targeted strain-duration wipe with a very low skill requirement. Which effect strain 883 is was NOT resolved here - see _unverified. source=local"
+    }
+  ],
+  "wantedFromOthers": [
+    {
+      "buff": "Composite Mochams (all six nano skills +140) and the single Mocham's Gift: BioMet / MatMet",
+      "id": null,
+      "fromProfession": "Meta-Physicist",
+      "effect": "+140 to every nano skill in one nano (Composite, 1 NCU slot), or +140 to one school with the singles.",
+      "useCase": "cast",
+      "note": "THE buff a Doctor wants above all others. +140 BM and +140 MM is often exactly one rung up the heal ladder - it is the difference between Team Health Plan (270349, BM 873) and the tier below, or between being able to self-cast Complete Healing (28650, BM 794) and not. Also counts toward the nano-skill requirements on symbiants. Ask an MP for Composite Mochams (or the six singles) before every raid. source=web"
+    },
+    {
+      "buff": "Wrangle (Shark line: Ransack / Dominate the Weak -> single or team Wrangle)",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Adds to ALL weapon skills AND all nano skills at once, single up to roughly +132. Short duration; self-debuffs the Trader.",
+      "useCase": "twink",
+      "note": "The equip window. A Doctor uses a wrangle to put on the next symbiant or implant QL and to reach a heal tier it cannot normally cast. Stacks with the MP's Mochams (different nanolines). NOTE the irony: the Doctor's own Vaccine line (204425-204431) exists to RESIST the Trader's drains - a friendly Trader's wrangle is still wanted. source=web"
+    },
+    {
+      "buff": "Umbral Wrangler / team wrangle aura",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Sustained team version that refreshes without debuffing the Trader.",
+      "useCase": "raid",
+      "note": "Keeps the whole raid, including the Doctor's nano skills, elevated for the fight. source=web"
+    },
+    {
+      "buff": "Essence of Behemoth line (Improved Essence of Behemoth etc.)",
+      "id": null,
+      "fromProfession": "Enforcer",
+      "effect": "Strength and Stamina together (Improved roughly +54 each) plus a large Max Health boost.",
+      "useCase": "twink",
+      "note": "Specifically valuable to a Doctor because its own endgame armor is Stamina-gated: Ofab Doctor QL300 requires Stamina 1099 and Chosen/Faithful Doctor QL300 requires Stamina 1099 (read from items.ocp). Different nanoline from the Doctor's own Iron Circle (Who_Buffs_What puts Essence on line 151 and Iron Circle on 156), so the two stack. source=web"
+    },
+    {
+      "buff": "Extra NCU (Grid Armor / NCU nanos) + team run speed + heal-over-time",
+      "id": null,
+      "fromProfession": "Fixer",
+      "effect": "Raises Max NCU, gives team run speed and a HoT.",
+      "useCase": "raid",
+      "note": "NCU is the Doctor's binding constraint - it is running team HP buff, Iron Circle, Instinctive Control, Nano Repulsor and a vaccine before anyone else offers anything. More NCU is directly more uptime. The Funcom teaming guide's warning applies to everyone ELSE: 'do not give the doc any of your profession's often sought after buffs unless she asks for them... she is probably trying to keep 200 NCU free'. source=web"
+    },
+    {
+      "buff": "Feline Grace (+25 Agility) and Enhanced Senses (+15 Sense)",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Agility and Sense for equip requirements.",
+      "useCase": "twink",
+      "note": "Ability requirements on implants and Support symbiants. source=web"
+    },
+    {
+      "buff": "Chemistry and Pharmaceuticals tradeskill buffs (Composite/Enhanced)",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Roughly +50 Chemistry / Pharma Tech.",
+      "useCase": "twink",
+      "note": "Pharma Tech is cost factor 1.0 for a Doctor and is the tradeskill it is expected to be good at (AO-Universe: 'Doctors have a particular tradeskill they are good with, specifically PhamaTech'). Stacks on top for building stims and health kits. source=web"
+    },
+    {
+      "buff": "Robust Treatment / Eagle Eye (Treatment and Perception) plus run speed",
+      "id": null,
+      "fromProfession": "Adventurer",
+      "effect": "Treatment (Robust roughly +60), Perception (Eagle Eye roughly +240), strong run-speed buffs.",
+      "useCase": "twink",
+      "note": "Treatment stacks on top of the Doctor's OWN Superior First Aid (+80 Treatment) for the implant/symbiant ladder. source=web"
+    },
+    {
+      "buff": "Keeper auras (run speed, healing, Add All Offense, damage reflect)",
+      "id": null,
+      "fromProfession": "Keeper",
+      "effect": "Passive team auras including a heal aura and reflect.",
+      "useCase": "raid",
+      "note": "The reflect and the heal aura reduce the incoming damage the Doctor has to out-heal - a genuine force multiplier for a healer, not just a stat stick. source=web"
+    },
+    {
+      "buff": "Team AC and Add-All-Defense buffs; enemy nano-resist debuffs",
+      "id": null,
+      "fromProfession": "Bureaucrat",
+      "effect": "Team defensive buffs; debuffs that make hostile nanos land more easily.",
+      "useCase": "raid",
+      "note": "The nano-resist debuff side helps the Doctor land UBT on a resistant boss. Exact nano names not pinned - see _unverified. source=web(flag)"
+    },
+    {
+      "buff": "Body-boost / Max Health buffs",
+      "id": null,
+      "fromProfession": "Soldier",
+      "effect": "Max Health increase (Who_Buffs_What puts Soldier HP buffs on nanoline 151).",
+      "useCase": "raid",
+      "note": "SAME NANOLINE 151 as the Enforcer's Essence line per Who_Buffs_What - so a Soldier HP buff and an Enforcer Essence do NOT stack. Take whichever is bigger. This is a real trap for a bot. source=web(flag: nanoline equality asserted from one source)"
+    },
+    {
+      "buff": "Composite Attribute Boost",
+      "id": null,
+      "fromProfession": "Any (self-castable SL nanocrystal)",
+      "effect": "All six attributes +12 (the nano-can 'Composite Attribute Improvement' version is +20).",
+      "useCase": "twink",
+      "note": "Cheapest way to move all six abilities at once for a gear-requirement window. See generalBuffs. source=web"
+    }
+  ],
+  "generalBuffs": [
+    {
+      "name": "Composite Attribute Boost",
+      "effect": "All six attributes +12 (Composite Attribute Improvement +20).",
+      "source": "Self-castable SL nanocrystal / nano can. Used by a Doctor to meet the Stamina/Psychic requirements on its own Ofab and Chosen armor."
+    },
+    {
+      "name": "Expertise buffs",
+      "effect": "Adds to a group of skills; AO-Universe's Buffing Guide notes that buffs stack with Expertises and Attribute Boosts.",
+      "source": "ao-universe.com Buffing Guide."
+    },
+    {
+      "name": "Composite Nano / Utility / Melee / Ranged composites",
+      "effect": "Grouped SL skill boosts (nano skills, evades, Body Dev / Nano Pool, Treatment, weapon specials).",
+      "source": "SL composite nanocrystals, self-castable by all professions. Exact per-composite contents NOT pinned - flag."
+    },
+    {
+      "name": "City buffs (org city)",
+      "effect": "City-wide buffs such as nano-cost reduction and stat boosts.",
+      "source": "Player city. Exact set not pinned - flag."
+    },
+    {
+      "name": "Tower / Notum War buffs",
+      "effect": "Add All Offense / Add All Defense from controlled towers.",
+      "source": "Land control towers. Exact set not pinned - flag."
+    },
+    {
+      "name": "Stims and health/nano kits",
+      "effect": "Instant self-heal and nano refill, gated by First Aid and Treatment respectively.",
+      "source": "Consumables. For a Doctor this is the one instant heal that does not use a nano cast - which matters because everything else it does is a cast. First Aid and Treatment are both cost factor 1.0 for a Doctor (skillcaps.json), so it can use the highest-QL kits in the game."
+    }
+  ],
+  "givesToOthers": [
+    {
+      "name": "Complete Healing",
+      "id": 28650,
+      "effect": "A full heal on one target. AOWiki: complete heals 'will always heal for 10001 health, ignoring heal modifying buffs'.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 794",
+        "MaterialMetamorphosis > 722",
+        "VisualProfession == 10"
+      ],
+      "wantedBy": "The tank, always, and anyone who just took a spike. This is the nano that makes a Doctor a Doctor - no other profession has it. Hold it for the spike; it is a reset, not a rotation button.",
+      "note": "source=local"
+    },
+    {
+      "name": "Improved Complete Healing",
+      "id": 270747,
+      "effect": "The endgame single-target complete heal.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 2153",
+        "MaterialMetamorphosis > 2153",
+        "Profession == 10",
+        "NanoFocusLevel BitAnd 64"
+      ],
+      "wantedBy": "Endgame tanks. Note the NanoFocusLevel BitAnd 64 requirement - this is a Nano Focus / specialisation-gated nano, not a plain skill unlock.",
+      "note": "source=local"
+    },
+    {
+      "name": "Alpha and Omega",
+      "id": 42409,
+      "effect": "The TEAM complete heal - casts child nano 42048 on every team member.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 873",
+        "MaterialMetamorphosis > 786",
+        "VisualProfession == 10"
+      ],
+      "wantedBy": "The whole team after an AoE. AOWiki lists exactly two complete heals for a Doctor: Complete Healing (single) and Alpha and Omega (team).",
+      "note": "source=local"
+    },
+    {
+      "name": "Team heal ladder - 38 rungs  [id 273312 = Superior Team Health Plan]",
+      "id": 273312,
+      "representativeId": 273312,
+      "representativeName": "Superior Team Health Plan",
+      "altIds": [
+        273315,
+        270349,
+        43891,
+        43892,
+        43893,
+        43894,
+        43895,
+        43896,
+        43897,
+        43898,
+        43899,
+        43900,
+        43901,
+        43902,
+        43903,
+        43904,
+        43905,
+        42404,
+        43906,
+        43907,
+        43908,
+        42395,
+        42398,
+        43909,
+        43910,
+        42402,
+        43911,
+        43912,
+        43913,
+        42405,
+        43914,
+        43915,
+        43916,
+        27804,
+        43917,
+        42403,
+        42408
+      ],
+      "effect": "38 separate team heals, each casting its heal on every team member. Whole ladder by Biological Metamorphosis requirement, ascending: Weak Team Heal 42408 (BM 29), Minor Team Healing 42403 (51), Inferior Cleanse Wounds 43917 (83), Team Field Dressings 43916 (103), Blood Circle 27804 (127), Spreading Health 43915 (147), Minor Team Purification 43914 (166), Company Policy 43912 (186), Team Healing 42405 (202), Lesser Circle of Renewal 43913 (224), Easing Touch 43911 (245), Medic's Call 42402 (270), Team Cellular Rebuild 43909 (296), Team Checkup 43910 (336), Greater Team Healing 42398 (370), Fast Team Tissue Repair 43906 (393), Syndicated Healing 43908 (421), Professional Care 43907 (447), Cleanse Wounds 42395 (466), Consummate Carer 43904 (499), Team Nano Bandage 43905 (543), Radiant Heal 42404 (577), Circulate Health 43902 (608), Team Tissue Repair 43903 (668), Bestow Healing 43901 (693), Circle of Renewal 43900 (703), Accumulate Scars 43899 (718), Team Purification 43898 (731), Remedy Dissemination 43897 (746), Team Compress Wounds 43896 (759), Health Cartel 43895 (780), Deep Wound Cleanser 43894 (798), Halo of Health 43893 (820), Distributed Care 43892 (835), Conglomerate Health Plan 43891 (855), Team Health Plan 270349 (873), Improved Team Health Plan 273315 (1830), Superior Team Health Plan 273312 (2153).",
+      "wantedBy": "Every team, constantly. AOWiki singles out Distributed Care (43892) as 'the best team heal when rated at amount healed per second by a small amount' - worth knowing that the highest-requirement nano is not automatically the best heal-per-second.",
+      "note": "The top two (273315, 273312) additionally require Profession == 10 and NanoFocusLevel BitAnd 64; everything below them gates on VisualProfession == 10 only. Matter Metamorphosis tracks BM at roughly 90% on every rung. source=local"
+    },
+    {
+      "name": "Team HP buff ladder - 16 rungs  [id 95709 = Superior Omni-Med Enhancement]",
+      "id": 95709,
+      "representativeId": 95709,
+      "representativeName": "Superior Omni-Med Enhancement",
+      "altIds": [
+        28662,
+        95720,
+        95712,
+        95710,
+        95711,
+        28649,
+        95713,
+        28660,
+        95715,
+        95714,
+        95718,
+        95716,
+        95717,
+        95719,
+        42397
+      ],
+      "effect": "Raises the whole team's Max Health and heals the amount raised, with a gradual heal component. AOWiki: the long/team HP buffs last 'up to an hour'. Whole ladder by BM requirement, ascending: Enhance Team Health 42397 (BM 18), Bodily Reinforcement 95719 (57), Health Graft 95717 (98), Enhance Constitution 95716 (137), Metabolism Booster 95718 (174), Medic's Respite 95714 (232), Superior Bodily Reinforcement 95715 (277), Exaggerated Health 28660 (385), Major Health Graft 95713 (451), Colossal Health 28649 (555), Pre-Combat Conditioning 95711 (662), Basic Omni-Med Enhancement 95710 (707), Superior Metabolism Booster 95712 (733), Infuse with Life 95720 (748), Gargantuan Health 28662 (788), Superior Omni-Med Enhancement 95709 (852).",
+      "wantedBy": "Every team member, cast BEFORE the pull. The Funcom teaming guide: 'Make sure to ask for Iron Circle and the team HP buff before the rest of the team is in range.' Who_Buffs_What rates the line at +26 to +920 Max Health (nanoline 184).",
+      "note": "IMPORTANT and derived from the local data: this line is the ONLY Doctor line that carries a SpaceTime cast requirement on top of BM and MM (Superior Omni-Med Enhancement needs BM 852 / MM 769 / SpaceTime 769). That is what separates it from the 38-rung team HEAL ladder, which needs only BM and MM. A Doctor that skipped Time & Space cannot run the top of this line. source=local"
+    },
+    {
+      "name": "Single-target HP buff ladder - 14 rungs  [id 96247 = Life Channeler]",
+      "id": 96247,
+      "representativeId": 96247,
+      "representativeName": "Life Channeler",
+      "altIds": [
+        96259,
+        96258,
+        96256,
+        96257,
+        96255,
+        96254,
+        96253,
+        96252,
+        96251,
+        96250,
+        96249,
+        96248,
+        275011
+      ],
+      "effect": "Single-target Max Health buff that also heals the amount it raises. Max Health granted, ascending: Health Augmentation 96248 (+57), Survivability Booster 96249 (+118), Health Surge 96250 (+221), Bodily Amplification 96251 (+317), Life Reinforcement 96252 (+379), Strengthen Resolve 96253 (+463), Superior Health Augmentation 96254 (+581), Temporary Cellular Enhancement 96255 (+644), Enhanced Health Surge 96257 (+928), Constitution Magnification 96256 (+1017), Health Assembler 96258 (+1123), Superior Life Reinforcement 96259 (+1234), Life Channeler 96247 (+1344). Plus the team version Team Improved Life Channeler 275011 (TeamCastNano 275130).",
+      "wantedBy": "The tank first, then anyone about to take damage. AOWiki: short HP buffs last 'up to 8 minutes 20 seconds' - they are a pre-fight and mid-fight tool, not an hour-long buff like the team line.",
+      "note": "This line needs Matter Creation as well as BM and MM (Life Channeler = BM 867 / MM 781 / MC 781), which is the other reason a healing Doctor cannot skip MC. Team Improved Life Channeler 275011 needs BM 2042 / MM 1727 / MC 1727 / Profession == 10 / NanoFocusLevel BitAnd 64. source=local"
+    },
+    {
+      "name": "Heal-over-time ladder - 18 rungs  [id 43852 = Deathless Blessing]",
+      "id": 43852,
+      "representativeId": 43852,
+      "representativeName": "Deathless Blessing",
+      "altIds": [
+        43868,
+        43870,
+        43872,
+        43873,
+        43871,
+        42396,
+        43869,
+        43867,
+        43877,
+        43876,
+        43875,
+        43879,
+        42399
+      ],
+      "effect": "Heal-over-time on one target. Per-tick heal, descending: Deathless Blessing 43852 (277-323), Cycle of Reconstruction 43868 (272-307), Greater Policy Payout 43870 (258-293), Positive Life Reinforcement 43872 (243-288), Superior Health Pump 43873 (229-260), Molecular Rejuvenation 43871 (200-239), Cycle of Life 42396 (181-218), Greater Periodic Checkup 43869 (160-189), Continuous Cellular Reconditioning 43867 (139-162), Lesser Policy Payout 43877 (112-143), Greater Lasting Heal 43876 (92-124), Course of Treatment 43875 (82-104), Medical Sequencer 43879 (66-86), Health Pump 42399 (57-78).",
+      "wantedBy": "The tank, kept rolling between casts. The Funcom teaming guide lists HoTs among the things a Doctor tries to keep up on itself and the team.",
+      "note": "Deathless Blessing 43852 needs BM 864 / MM 778 / SpaceTime 778. source=local"
+    },
+    {
+      "name": "Team-Enhanced Deathless Blessing",
+      "id": 269455,
+      "effect": "The TEAM heal-over-time - casts child nano 269453 on every team member. The only team HoT in the Doctor's kit.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 913",
+        "MaterialMetamorphosis > 810",
+        "SpaceTime > 810",
+        "Expansion BitAnd 2 (Shadowlands)",
+        "Profession == 10"
+      ],
+      "wantedBy": "The whole team in AoE fights - free healing on six people between your real casts. Requires Shadowlands.",
+      "note": "source=local"
+    },
+    {
+      "name": "Single-target heal ladder - 58 rungs  [id 223299 = Bodily Invigoration]",
+      "id": 223299,
+      "representativeId": 223299,
+      "representativeName": "Bodily Invigoration",
+      "altIds": [
+        223297,
+        223295,
+        223293,
+        223291,
+        223289,
+        223287,
+        223285,
+        223281,
+        43878,
+        43881,
+        43886,
+        43887,
+        43885
+      ],
+      "effect": "The main spot-heal ladder. Top rungs with their heal range: Bodily Invigoration 223299 (7215-8385, level 220), Cellular Rebirth 223297 (6001-7639, level 218), Renewal of Being 223295 (4576-6191, level 216), Blessing of Purity 223293 (3337-4515, level 214), Revivification 223291 (2607-3527, level 212), Lifegiving Elixir 43878 (2100-2520), Restorative Influx 223289 (2097-2837, level 209), Recuperative Respite 43881 (1900-2280), Touch of Kindness 223287 (1700-2300, level 205), Emergency Medical Response 43886 (1700-2040), Assauge Pain 223285 (1133-1533, level 201), Cellular Recuperation 223281 (952-1288, level 175).",
+      "wantedBy": "Whoever is taking damage right now. This is the Doctor's bread and butter between complete heals.",
+      "note": "The 2232xx family are the SL level-gated heals - each requires a character Level, Specialization BitAnd 8 and Expansion BitAnd 2 (Shadowlands) on top of BM/MM (Bodily Invigoration = BM 2050 / MM 2050 / Level > 219). The 438xx family are the unrestricted Rubi-Ka heals and are what a froob Doctor runs. source=local"
+    },
+    {
+      "name": "Iron Circle",
+      "id": 42400,
+      "effect": "Strength +20, Stamina +20 on the target.",
+      "wantedBy": "Everyone, before the pull. Who_Buffs_What lists it as the Doctor's Str/Sta contribution (nanoline 156, 26 NCU). Melee professions want the Strength; everyone wants the Stamina for gear requirements. The Funcom teaming guide names it and the team HP buff as the two things to ask a Doctor for first.",
+      "note": "Lesser version: Enlarge 28658 (+10/+10). Same nanoline - do not cast both. source=local"
+    },
+    {
+      "name": "Improved Instinctive Control",
+      "id": 222856,
+      "effect": "Nano C. Init +350, Nano Resist +75, Max Nano Energy +300 on the target.",
+      "wantedBy": "Every casting profession in the raid. Who_Buffs_What: doctors buff 'Nano Init by 200 (Instinctive Control) or 350 (Improved), reducing casting times'. This is the Doctor's biggest cross-profession gift after the heals - it makes every other caster faster. Lesser version: Instinctive Control 28669 (+200/+25/+150); same nanoline, does not stack.",
+      "note": "source=local"
+    },
+    {
+      "name": "Improved Nano Repulsor",
+      "id": 222823,
+      "effect": "Nano Resist +200 on the target.",
+      "wantedBy": "Anyone facing a nano-casting boss or an enemy Trader/NT/Crat in PvP. Lesser version: Nano Repulsor 28671 (+92).",
+      "note": "source=local"
+    },
+    {
+      "name": "Superior First Aid",
+      "id": 28675,
+      "effect": "First Aid +80 and Treatment +80 on the target.",
+      "wantedBy": "Anyone twinking implants or symbiants (Treatment gates every QL) and anyone who wants higher-QL stims. Lesser versions: Specialist Treatment 28674 (+35 Treatment / +20 First Aid), Enhanced First Aid 28657 (+10 Treatment / +15 First Aid). Same nanoline (190 per Who_Buffs_What) - only the best applies.",
+      "note": "This is a quietly important service: a Doctor is a walking implant ladder for its whole org. source=local"
+    },
+    {
+      "name": "Continuous Reconstruction",
+      "id": 222824,
+      "effect": "Heal Delta +65 on the target (passive regeneration).",
+      "wantedBy": "Everyone out of combat and tanks in long fights. Who_Buffs_What lists the line as 'Hearty Constitution(Improved) - HP Delta +8(48)' and 'Continuous Reconstruction(Improved) - HP Delta +14(+65)' on nanoline 203. Lesser: Hearty Constitution 222855 (+48), Cellular Restoration 28651 (+25), Natural Healing 28663 (+10).",
+      "note": "source=local"
+    },
+    {
+      "name": "Epsilon Purge",
+      "id": 28659,
+      "effect": "Removes nano strains 6, 7, 8, 9 and 582 from the target.",
+      "castReqs": [
+        "SpaceTime > 696",
+        "SensoryImprovement > 696",
+        "VisualProfession == 10"
+      ],
+      "wantedBy": "Anyone carrying a DoT or a hostile strain. This is the Doctor's cure - one of only two cure nanos in the whole 240-nano kit (the other is Tjernberg Soothing Adrenaline 279372).",
+      "note": "Which effects strains 6/7/8/9/582 correspond to was not resolved from the local data - see _unverified. source=local"
+    },
+    {
+      "name": "Digitizing Sequencer",
+      "id": 142736,
+      "effect": "Team grid/travel - casts child nano 142729 on the whole team.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 656",
+        "MaterialMetamorphosis > 656",
+        "SpaceTime > 656",
+        "VisualProfession == 10",
+        "ExpansionPlayfield == 0",
+        "PlayfieldType op107 2"
+      ],
+      "wantedBy": "The team, for travel. Rubi-Ka only (ExpansionPlayfield == 0) - it will not work in Shadowlands.",
+      "note": "source=local"
+    },
+    {
+      "name": "Uncontrollable Body Tremors",
+      "id": 99577,
+      "effect": "Casts child nanos 301843 and 301844 on the target - a large initiative debuff plus a small damage debuff. AOWiki: the unbreakable variants 'last the full duration of the nano or until the target dies, regardless of damage dealt'.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 861",
+        "PsychologicalModification > 861",
+        "VisualProfession == 10"
+      ],
+      "wantedBy": "THE TANK - this is a gift to the team even though it lands on the mob. Slowing a boss's attack rate reduces the damage the Doctor has to out-heal, which is why AOWiki says to keep maxing PM 'even after you can cast UBT'. Ladder below it: Rapid Palsy 301845 (BM/PM 569, also unbreakable), Induce Muscle Spasms 99583 (389), Muscle Atrophy 99582 (93), Tired Limbs 99578 (29, scales to -2500 on Ranged/Physical/Melee/Nano initiative).",
+      "note": "The Doctor's single biggest raid contribution after healing. source=local Known in-game as UBT."
+    },
+    {
+      "name": "Wrack and Ruin",
+      "id": 28640,
+      "effect": "DoT (544 per tick) that ALSO strips 100 from every base attack skill on the target (Martial Arts, 1h Blunt, 1h Edged, Melee Energy and the rest).",
+      "wantedBy": "The team, on any mob that hits hard. AOWiki: Wrack and Ruin 'debuffs the target's base attack skills... by 100'. Stack it alongside a DoT from each of the other two strains.",
+      "note": "The Doctor has three simultaneous DoT lines in the data (DOT_LineA, DOT_LineB, DOTStrainC), so one nano from each runs at the same time. Wrack and Ruin is DOT_LineA. source=local"
+    },
+    {
+      "name": "Vaccine line (Ransack/Deprive resist)  [id 204431 = Vaccine of Divestiture]",
+      "id": 204431,
+      "representativeId": 204431,
+      "representativeName": "Vaccine of Divestiture",
+      "altIds": [
+        204429,
+        204427,
+        204425
+      ],
+      "effect": "Resist the Trader drain strains 135/136/147 at 26%/15% (Divestiture, level 195), 21%/10% (Plundering 204429, level 155), 17%/6% (Deprivation 204427, level 100), 14%/3% (Ransacking 204425, level 75).",
+      "wantedBy": "The whole team in PvP and in any fight with draining mobs. Same nanoline - only the best applies.",
+      "note": "source=local"
+    },
+    {
+      "name": "Misdiagnosis",
+      "id": 266306,
+      "effect": "Heal Multiplier -50 on the target - an ANTI-HEAL debuff.",
+      "castReqs": [
+        "Expansion BitAnd 32 (Lost Eden)",
+        "MaterialMetamorphosis > 799",
+        "BiologicalMetamorphosis > 799",
+        "Profession == 6 | 10"
+      ],
+      "wantedBy": "PvP, against an enemy healer. Note the cast requirement lists Profession EqualTo 6 (Adventurer) AND 10 (Doctor) - it is shared with Adventurers, not Doctor-exclusive. Requires Lost Eden.",
+      "note": "The mirror image of everything else in this file: the Doctor's way of beating another Doctor. source=local"
+    },
+    {
+      "name": "Malpractice",
+      "id": 275701,
+      "effect": "The Doctor's one real nuke - eight escalating hits from 1000-2000 up to 3500-5000.",
+      "castReqs": [
+        "BiologicalMetamorphosis > 2042",
+        "MaterialCreation > 1727",
+        "Profession == 10",
+        "NanoFocusLevel BitAnd 64"
+      ],
+      "wantedBy": "Nobody asks a Doctor for this, but it is the only entry in the 'Nukes' category and worth knowing exists at endgame.",
+      "note": "source=local"
+    }
+  ],
+  "botStrategyNotes": {
+    "preFightCastOrder": [
+      "1. Team HP buff - the best rung of the 16-step line you can cast (Superior Omni-Med Enhancement 95709 at the top). Lasts up to an hour, so it goes up first and stays up.",
+      "2. Iron Circle 42400 on the whole team (Strength +20 / Stamina +20).",
+      "3. Improved Instinctive Control 222856 on yourself and on every caster in the team (Nano C. Init +350).",
+      "4. Continuous Reconstruction 222824 (Heal Delta +65) on the team while out of combat.",
+      "5. Improved Nano Repulsor 222823 and the best Vaccine (204431 down to 204425) when the content or the opponent casts at you.",
+      "6. Life Channeler 96247 (or the best short HP buff you can cast) on yourself and the tank immediately before the pull - it lasts only ~8m20s, so it is a pull-timer buff, not a standing one.",
+      "7. Superior First Aid 28675 before anyone twinks gear."
+    ],
+    "inFightPriority": [
+      "1. Land the best unbreakable initiative debuff on the mob (UBT 99577, else Rapid Palsy 301845). Less incoming damage beats more outgoing heals.",
+      "2. Keep a HoT rolling on the tank (Deathless Blessing 43852, or Team-Enhanced Deathless Blessing 269455 in AoE fights).",
+      "3. Spot-heal with the single-target ladder; the top SL rungs are level-gated (Bodily Invigoration 223299 at 220, Cellular Rebirth 223297 at 218).",
+      "4. Team-heal when two or more are hurt (Superior Team Health Plan 273312 / Distributed Care 43892 - AOWiki rates Distributed Care best on heal-per-second).",
+      "5. HOLD Complete Healing 28650 / Improved 270747 for a spike, and Alpha and Omega 42409 for a team-wide spike. They are resets.",
+      "6. Only when nobody needs healing: stack one DoT from each of the three strains (DOT_LineA, DOT_LineB, DOTStrainC) - Wrack and Ruin 28640 first for its -100 attack-skill debuff."
+    ],
+    "nanolineStackingTraps": [
+      "Instinctive Control 28669 and Improved Instinctive Control 222856 share nanoline InitiativeBuffs - only the best applies. Never cast both.",
+      "Nano Repulsor 28671 and Improved Nano Repulsor 222823 share nanoline NanoResistanceBuffs - only the best applies.",
+      "Iron Circle 42400 and Enlarge 28658 share nanoline StrengthBuff - only the best applies.",
+      "Enhanced First Aid 28657, Specialist Treatment 28674 and Superior First Aid 28675 all share nanoline FirstAidAndTreatmentBuff - cast only the best.",
+      "Natural Healing 28663, Cellular Restoration 28651, Hearty Constitution 222855 and Continuous Reconstruction 222824 all share nanoline HealDeltaBuff - cast only the best.",
+      "All four Vaccines (204425/204427/204429/204431) share nanoline Ransack_DepriveResistBuff - cast only the best you are level-eligible for.",
+      "All 14 short HP buffs share nanoline DoctorShortHPBuffs - one per target at a time.",
+      "CROSS-PROFESSION TRAP: Who_Buffs_What puts both the Enforcer Essence line and the Soldier HP buffs on nanoline 151. A bot should not assume an Enforcer buff and a Soldier buff on the same target stack - take whichever is larger.",
+      "The Doctor's own Iron Circle is nanoline 156, a DIFFERENT line from Essence (151), so Iron Circle DOES stack with an Enforcer's Essence."
+    ],
+    "ncuBudget": [
+      "The Doctor runs more standing buffs than almost any class: team HP buff + Iron Circle + Improved Instinctive Control + Improved Nano Repulsor + a Vaccine + a heal-delta buff, all on itself, before anyone else offers anything.",
+      "Who_Buffs_What gives Iron Circle alone as 26 NCU. The Funcom teaming guide's rule for TEAMMATES is that they should not push their buffs onto a Doctor unbidden: 'she is probably trying to keep 200 NCU free'.",
+      "A bot playing a Doctor should therefore treat NCU as a budgeted resource and should NOT auto-accept offered buffs. Computer Literacy is cost factor 1.0 for a Doctor and the Internship research line raises NCU - both are worth spending on."
+    ],
+    "froobCeiling": [
+      "A free account has no Shadowlands, so a froob Doctor CANNOT cast: Improved Instinctive Control 222856, Team-Enhanced Deathless Blessing 269455 or any of the level-gated 2232xx single heals (all carry Expansion BitAnd 2).",
+      "No Lost Eden means no Misdiagnosis 266306 (Expansion BitAnd 32) and no research procs.",
+      "The nanos with a NanoFocusLevel BitAnd 64 requirement (Improved Complete Healing 270747, Improved/Superior Team Health Plan 273315/273312, Team Improved Life Channeler 275011, Malpractice 275701) are endgame Nano Focus content and are out of reach as well.",
+      "What a froob Doctor still has is the whole core: Complete Healing 28650, Alpha and Omega 42409, 36 of the 38 team heals, all 16 team HP buffs, all 14 short HP buffs, the full HoT ladder, Iron Circle, Instinctive Control 28669, Nano Repulsor 28671, Superior First Aid 28675, Epsilon Purge 28659 and UBT 99577. That is still the best healing kit in the game."
+    ]
+  },
+  "_unverified": [
+    "Which in-game effects nano strains 6, 7, 8, 9 and 582 (removed by Epsilon Purge 28659) and strain 883 (shortened by Tjernberg Soothing Adrenaline 279372) correspond to. The strain numbers are read from the local data; their meanings were not resolved.",
+    "The heal amounts for the 38 team heals and 16 team HP buffs are NOT in this file, because each of those nanos only carries a TeamCastNano pointer to a child nano (e.g. Superior Omni-Med Enhancement 95709 -> 95673) and the children are not in the Doctor's own castable extraction. Who_Buffs_What's ranges (+26 to +920 Max Health for the team HP line) are quoted as web values, not local ones. Resolving them properly means re-reading the child nano ids out of nanos.ocp.",
+    "'Complete heals will always heal for 10001 health, ignoring heal modifying buffs' is AOWiki's statement. The local effect summary for Complete Healing (28650) and Improved Complete Healing (270747) is Hit[27,100,0,0], which does NOT obviously encode 10001 - the argument encoding for that function was not decoded. Treat the 10001 figure as web-sourced.",
+    "Cross-profession buff ids are null throughout - they belong to other professions and are not in the local Doctor nano data. Values (Wrangle ~+132, Essence ~+54, Feline Grace +25, Enhanced Senses +15, Robust Treatment ~+60, Eagle Eye ~+240) are Who_Buffs_What / ao-universe figures.",
+    "The claim that the Enforcer Essence line and the Soldier HP-buff line share nanoline 151 (and therefore do not stack) comes from a single reading of Who_Buffs_What. Verify before a bot relies on it.",
+    "Bureaucrat and Fixer exact buff nano names and values for a Doctor were not pinned to a specific source.",
+    "Misdiagnosis (266306) and Fill Inbox (266303) both carry TWO Profession EqualTo requirements in the local data (266306: 6 and 10; 266303: 10 and 8). These were read as 'castable by either profession', which matches how the extractor treats a requirement set - but the OR/AND grouping of those criteria was not verified from the raw action tree.",
+    "Durations are quoted from AOWiki (short HP buffs 'up to 8 minutes 20 seconds', long/team HP buffs 'up to an hour'); no duration field was read from the local nano data.",
+    "The Doctor's DoT damage figures shown in doctor-nanos.json are per-tick Hit values; tick count and total damage were not derived, so no DoT DPS comparison is attempted here."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/doctor-nanos.json (nanos.ocp extraction, client 18.8.50_EP1) - every id, name, nanoLine, effect summary and castReqs list quoted in selfBuffs and givesToOthers.",
+    "LOCAL: the extracted client data/itemnames.sql - every nano name in this file re-verified against its id.",
+    "LOCAL: AOBuddy/GameData/profiles/reference/skillcaps.json - the Doctor cost factors cited (Nano Resist 1.2, First Aid 1.0, Treatment 1.0, Computer Literacy 1.0, Pharma Tech 1.0).",
+    "LOCAL: items.ocp via tools/eng-gear-extractor --prof 10 - the Stamina 1099 requirement on Ofab Doctor and Chosen/Faithful Doctor QL300 armor cited under Iron Circle and the Enforcer Essence entry.",
+    "DERIVED FROM LOCAL DATA: the 16-vs-38 split of 'Heals - Team' into the team HP buff line and the team heal ladder, from the presence or absence of a SpaceTime cast requirement.",
+    "https://wiki.aodb.us/wiki/Who_Buffs_What - Iron Circle +20 (26 NCU, nanoline 156), Enlarge +10, Hearty Constitution/Continuous Reconstruction HP Delta +48/+65 (nanoline 203), the short HP buff range +57 to +1344 (nanoline 185), the team HP buff range +26 to +920 (nanoline 184), First Aid/Treatment buffs (nanoline 190), 'Nano Init by 200 (Instinctive Control) or 350 (Improved)', and the Enforcer/Soldier nanoline 151 note.",
+    "http://wiki.aodb.us/wiki/Doctor_Nano_Programs - complete heals 'always heal for 10001 health, ignoring heal modifying buffs'; short HP buffs 'raise the max HP of the target and heal the amount of HP raised' lasting 'up to 8 minutes 20 seconds'; long HP buffs 'up to an hour' with a gradual heal; unbreakable init debuffs 'last the full duration of the nano or until the target dies, regardless of damage dealt'; Distributed Care as best heal-per-second team heal; Wrack and Ruin debuffing base attack skills by 100; three simultaneous DoT lines.",
+    "https://forums.funcom.com/t/doctor-woefallens-guide-to-teaming-with-a-doc/4351 - the pre-pull cast order ('Make sure to ask for Iron Circle and the team HP buff before the rest of the team is in range'), the aggro rule ('If the doctor takes aggro, let her keep it'), and the NCU etiquette ('she is probably trying to keep 200 NCU free').",
+    "http://wiki.aodb.us/wiki/Doctor - the Doctor's role, 'this profession is not for the faint-hearted', and healing nano cost efficiency.",
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/character-creation - the Doctor's role description and 'Doctors have a particular tradeskill they are good with, specifically PhamaTech'.",
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide - Wrangle / Essence / Agent / Adventurer / Fixer values and Expertise stacking."
+  ]
+}

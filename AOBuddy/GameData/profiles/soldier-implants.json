@@ -1,0 +1,289 @@
+{
+  "profession": "Soldier",
+  "summary": "Weapon-first Soldier implant build (Assault Rifle template). The clusters go to the weapon skill and the specials that fire it (Assault Rifle in all three grades, Full Auto bright+faded, Burst, Fling Shot, Aimed Shot), to Ranged Init. - the only initiative a Soldier gun uses - and to Body Dev. in all three grades, then to Treatment for the implant ladder itself, to Matter Creation / Matter Metamorphosis / PM / SI so the reflect, absorb and weapon-buff nanos can be self-cast, and to the three evades. No Nano Pool, no Max Nano Energy and no Nano C. Init clusters: the Soldier's nanos are long-duration pre-fight buffs and Nano C. Init is its single most expensive skill (cost factor 4.0 in reference/skillcaps.json). Every placement below is legal for that slot and grade - each one was checked against reference/implants.json, where each cluster has exactly one (slot, grade) home.",
+  "_gradeMeaning": "shiny = biggest bonus, bright = ~60%, faded = ~40% (reference/implants.json _grades). A skill placed in two implants stacks (e.g. Assault Rifle shiny in Right Arm + bright in Right Hand + faded in Eye). Because each cluster has exactly one shiny/bright/faded home, spending a slot's shiny on one skill permanently costs you every other shiny cluster in that slot - which is why the conflicts are spelled out in _deviations.",
+  "_qualityNote": "QL 200 is the usual top-tier target for regular (non-Jobe, non-refined) implants; higher QLs exist through laddering and Jobe/refined clusters. AO-Universe's Soldier guide moves brain and eye to symbiants around level 80, puts QL 200 weapon-skill implants in at level 100-110 ('right arm for full auto'), and is in a mostly-symbiant setup by 130-150 - so this cluster build is the leveling/twink layout and the endgame Soldier replaces most of it with Artillery symbiants (see soldier-symbiants.json, line = Artillery). QLs here are guidance, not sourced exact values.",
+  "build": [
+    {
+      "slot": "Imp_Head",
+      "slotLabel": "Head/Brain",
+      "shiny": {
+        "skill": "Matter Creation",
+        "note": "Head is the only shiny home of every nano school. Matter Creation is the Soldier's most-used school - a cast requirement on 102 of its 177 nanos, up to 1,527 (Augmented Mirror Shield MK V) - so it takes the slot ahead of Treatment. Swap to Time & Space for a reflect-first build (both are in this list)."
+      },
+      "bright": {
+        "skill": "Ranged Init.",
+        "note": "Head is Ranged Init.'s bright home. Cost factor 1.0 and the only initiative a Soldier gun uses (AOWiki: 'All Soldier guns rely on this initiative')."
+      },
+      "faded": {
+        "skill": "Sense",
+        "note": "Best of a thin Head-faded list for a Soldier: Sense drives Aimed Shot (100%) and helps meet implant/symbiant ability requirements."
+      },
+      "ql": "200",
+      "notes": "Core slot. Head shiny is a hard choice - Matter Creation vs Time & Space vs Treatment all live here."
+    },
+    {
+      "slot": "Imp_Eye",
+      "slotLabel": "Eye/Ocular",
+      "shiny": {
+        "skill": "Aimed Shot",
+        "note": "The only Soldier-relevant Eye-shiny cluster (the rest are Vehicle Air / Electrical Eng / Map Nav / Rifle / Tutoring). Worth it for a Rifle or PvP build; on a pure Assault Rifle build it is near-filler, as only 190 of 1,545 Assault Rifles in items.ocp carry Aimed Shot."
+      },
+      "bright": {
+        "skill": "Treatment",
+        "note": "Eye is Treatment's bright home, and with Head shiny spent on Matter Creation this is where Treatment comes from. Treatment gates every implant and symbiant you will equip."
+      },
+      "faded": {
+        "skill": "Assault Rifle",
+        "note": "Eye is Assault Rifle's faded home - the third grade of the weapon skill, completing shiny (Right Arm) + bright (Right Hand) + faded (here). Matter Creation and Time & Space faded also live here and are given up for it."
+      },
+      "ql": "200",
+      "notes": "Core slot. Both alternatives are real: Eye faded = Matter Creation / Time & Space for a caster-leaning Soldier."
+    },
+    {
+      "slot": "Imp_Ear",
+      "slotLabel": "Ear",
+      "shiny": {
+        "skill": "Perception",
+        "note": "The only Ear-shiny cluster in the game (filler for a Soldier; cost factor 2.4)."
+      },
+      "bright": {
+        "skill": "Psychology",
+        "note": "Weak Ear-bright list (Concealment / Vehicle Air / Psychology / Tutoring). Psychology is cost 1.5 for a Soldier, so it is the cheapest filler."
+      },
+      "faded": {
+        "skill": "Psychological Modifications",
+        "note": "Ear is PM's faded home. PM is tied with Matter Metamorphosis as the Soldier's cheapest nano school (cost 2.0) and is required on 68 nanos - every weapon buff, the initiative/AddAllOff buffs and the taunt lines."
+      },
+      "ql": "200",
+      "notes": "Taken for the faded PM; shiny and bright are fillers."
+    },
+    {
+      "slot": "Imp_RightArm",
+      "slotLabel": "Right Arm",
+      "shiny": {
+        "skill": "Assault Rifle",
+        "note": "Right Arm shiny is the weapon-skill slot: 1h Blunt/Edged, 2h Blunt/Edged, Assault Rifle, Bow, Burst, Fling Shot, Full Auto, Grenade, Piercing, Shotgun, MG/SMG, Heavy Weapons, Strength - one only. Assault Rifle is the Soldier's main attack skill (cost 1.0). AO-Universe's guide instead puts Full Auto here at level 100-110 ('right arm for full auto'); use that if your weapon skill is already capped by gear and buffs."
+      },
+      "bright": {
+        "skill": "Physic. Init",
+        "note": "Right Arm bright has no ranged-relevant cluster (Brawling / Chemical AC / Physic. Init / Swimming). Physic. Init is listed as the least-useless filler; Chemical AC if you would rather have a little armour."
+      },
+      "faded": {
+        "skill": "Radiation AC",
+        "note": "Right Arm faded is all melee (Fast Attack / Parry / Riposte) plus Mechanical Eng and Radiation AC - filler. Radiation AC chosen for a small armour gain; AOWiki is explicit that 'Soldiers are ranged, not melee'."
+      },
+      "ql": "200",
+      "notes": "The single most important implant on an Assault Rifle Soldier."
+    },
+    {
+      "slot": "Imp_Body",
+      "slotLabel": "Chest/Body",
+      "shiny": {
+        "skill": "Body Dev.",
+        "note": "Chest is Body Dev.'s shiny home. Cost factor 1.1 - the Soldier's cheapest defensive skill, and the HP pool the reflect/absorb layer is spread over."
+      },
+      "bright": {
+        "skill": "Matter Metamorphosis",
+        "note": "Chest is MM's bright home. MM gates the absorb shields (Heavy Assault Absorption Shield, id 75401, needs MM 760 + MC 679), Phalanx and the top team damage nanos. Projectile AC is the pure-defence alternative in this list."
+      },
+      "faded": {
+        "skill": "Sensory Improvement",
+        "note": "Chest is SI's faded home. SI is paired with PM on every weapon/special buff (Art of War, Improved Total Focus and Improved Soldier Clip Junkie each need SI 1,342). Strength is the alternative here if you are short of the weapon's wield requirement."
+      },
+      "ql": "200",
+      "notes": "Core survivability + nano-casting slot."
+    },
+    {
+      "slot": "Imp_LeftArm",
+      "slotLabel": "Left Arm",
+      "shiny": {
+        "skill": "Brawling",
+        "note": "The only Left-Arm-shiny cluster; not a Soldier skill (cost 2.0) - pure filler."
+      },
+      "bright": {
+        "skill": "Strength",
+        "note": "Left Arm bright is melee weapon skills plus Strength. Strength feeds Assault Rifle (10% of its ability dependency), carry weight and wield requirements."
+      },
+      "faded": {
+        "skill": "Matter Metamorphosis",
+        "note": "Left Arm is MM's faded home - the only way to add more Matter Metamorphosis once Head shiny went to Matter Creation. Stacks with the Chest-bright MM."
+      },
+      "ql": "200",
+      "notes": "Taken for faded MM + bright Strength; shiny is filler."
+    },
+    {
+      "slot": "Imp_RightWrist",
+      "slotLabel": "Right Wrist",
+      "shiny": {
+        "skill": "Ranged Init.",
+        "note": "Right Wrist is Ranged Init.'s shiny home - the biggest single source of the Soldier's attack-speed skill. (Attack Speed, Parry, Pistol, Riposte and Sharp Objects are the alternatives here.)"
+      },
+      "bright": {
+        "skill": "Full Auto",
+        "note": "Right Wrist is the bright home of Burst, Full Auto AND Aimed Shot - one only. Full Auto wins because its shiny home (Right Arm) is taken by the weapon skill, and AOWiki calls it 'our ultimate PvM special'. Burst is picked up at Right Hand faded instead."
+      },
+      "faded": {
+        "skill": "Fling Shot",
+        "note": "Right Wrist is Fling Shot's faded home. Fling Shot is cost 1.0 for a Soldier and sits on 313 of the Soldier-usable Assault Rifles, 671 Pistols and 316 Shotguns."
+      },
+      "ql": "200",
+      "notes": "Prime real estate for a Soldier - all three grades are used. (The MP build calls this slot 'lowest priority'.)"
+    },
+    {
+      "slot": "Imp_Waist",
+      "slotLabel": "Waist",
+      "shiny": {
+        "skill": "Cold AC",
+        "note": "Waist shiny is only the four elemental ACs (Chemical / Cold / Fire / Radiation) - pick whichever resist you need; a small pure-armour gain."
+      },
+      "bright": {
+        "skill": "Body Dev.",
+        "note": "Waist is Body Dev.'s bright home; stacks with the Chest shiny. (Duck-Exp, Max Health and Sense are the alternatives in this list.)"
+      },
+      "faded": {
+        "skill": "Full Auto",
+        "note": "Waist is Full Auto's faded home - the second Full Auto cluster, stacking with the Right-Wrist bright. Dodge-Rng, Evade-ClsC and Nano Pool faded also live here and are given up for it."
+      },
+      "ql": "200",
+      "notes": "Two of three grades go to the Soldier's core stats."
+    },
+    {
+      "slot": "Imp_LeftWrist",
+      "slotLabel": "Left Wrist",
+      "shiny": {
+        "skill": "Multi Ranged",
+        "note": "Left Wrist shiny is Multi Ranged or Multi Melee only. Multi Ranged matters solely for a dual-wield build (Pistol / SMG); on an Assault Rifle Soldier it is filler."
+      },
+      "bright": {
+        "skill": "Attack Speed",
+        "note": "Left Wrist bright is Attack Speed / Melee Energy / Parry / Riposte - nothing a ranged Soldier trains. Attack Speed taken as the least-useless filler."
+      },
+      "faded": {
+        "skill": "Rifle",
+        "note": "Left Wrist faded is Nano AC or Rifle only. Rifle is filler on an Assault Rifle build (and the whole slot becomes useful if you ever run a Rifle)."
+      },
+      "ql": "any",
+      "notes": "Lowest-priority slot for an Assault Rifle Soldier; becomes a real slot on a dual-wield Pistol/SMG build (Multi Ranged shiny)."
+    },
+    {
+      "slot": "Imp_RightHand",
+      "slotLabel": "Right Hand",
+      "shiny": {
+        "skill": "Weapon Smithing",
+        "note": "Right Hand shiny is Trap Disarming / Martial Arts / Weapon Smithing. Weapon Smithing is cost 1.5 for a Soldier and is the weapon-tradeskill line, so it is the best of a filler list."
+      },
+      "bright": {
+        "skill": "Assault Rifle",
+        "note": "Right Hand is Assault Rifle's bright home - the second grade of the weapon skill. Matter Creation and Time & Space bright also live here; the weapon skill takes precedence on a weapon profession."
+      },
+      "faded": {
+        "skill": "Burst",
+        "note": "Right Hand is Burst's faded home, and with Right-Wrist bright spent on Full Auto this is Burst's only cluster. Treatment and Ranged Init. faded live here too and are given up for it."
+      },
+      "ql": "200",
+      "notes": "Core weapon slot. If you already cap Burst from perks and buffs, swap this faded to Treatment (ladder) or Ranged Init."
+    },
+    {
+      "slot": "Imp_Legs",
+      "slotLabel": "Legs/Thigh",
+      "shiny": {
+        "skill": "Dodge-Rng",
+        "note": "Legs is Dodge-Rng's shiny home. Dodge-Rng is the Soldier's cheapest evade (cost 1.5) and the one that matters against guns. Agility shiny also lives here - take Agility instead if you are short on the ability requirements of your weapon or implants."
+      },
+      "bright": {
+        "skill": "Evade-ClsC",
+        "note": "Legs is Evade-ClsC's bright home; stacks with the Feet shiny. Stamina bright is the alternative (Stamina feeds Body Dev. 100%, Assault Rifle 40% and Ranged Init. 60%)."
+      },
+      "faded": {
+        "skill": "Body Dev.",
+        "note": "Legs is Body Dev.'s faded home - the third Body Dev. cluster, giving the Soldier all three grades of its cheapest defensive skill."
+      },
+      "ql": "200",
+      "notes": "Survivability slot; all three grades used."
+    },
+    {
+      "slot": "Imp_LeftHand",
+      "slotLabel": "Left Hand",
+      "shiny": {
+        "skill": "Fast Attack",
+        "note": "The only Left-Hand-shiny cluster; a melee special a Soldier never trains (cost 2.4) - filler."
+      },
+      "bright": {
+        "skill": "Fire AC",
+        "note": "Left Hand bright is Trap Disarming or Fire AC. Fire AC for a small armour gain."
+      },
+      "faded": {
+        "skill": "First Aid",
+        "note": "Left Hand is First Aid's faded home - with only two drain-heal nanos in the kit, stims are the Soldier's in-combat healing. Ranged Energy faded also lives here; take that instead on a Ranged Energy build."
+      },
+      "ql": "200",
+      "notes": "Picked up for faded First Aid; shiny and bright are fillers."
+    },
+    {
+      "slot": "Imp_Feet",
+      "slotLabel": "Feet",
+      "shiny": {
+        "skill": "Evade-ClsC",
+        "note": "Feet is Evade-ClsC's shiny home - the strongest close-combat evade cluster, stacking with the Legs bright."
+      },
+      "bright": {
+        "skill": "Dodge-Rng",
+        "note": "Feet is Dodge-Rng's bright home; stacks with the Legs shiny for the Soldier's cheapest and most relevant evade."
+      },
+      "faded": {
+        "skill": "Duck-Exp",
+        "note": "Duck-Exp faded is the only Feet-faded cluster in the game - and with Waist bright spent on Body Dev. it is the Soldier's only Duck-Exp cluster."
+      },
+      "ql": "200",
+      "notes": "Evade slot - gives all three evades across Legs + Feet."
+    }
+  ],
+  "_coverageSummary": {
+    "AssaultRifle (weapon skill)": "Right Arm shiny + Right Hand bright + Eye faded (all three grades)",
+    "RangedInit": "Right Wrist shiny + Head bright (faded home Right Hand spent on Burst)",
+    "FullAuto": "Right Wrist bright + Waist faded (shiny home Right Arm spent on the weapon skill)",
+    "Burst": "Right Hand faded only (shiny home taken by the weapon skill, bright home by Full Auto)",
+    "FlingShot": "Right Wrist faded",
+    "AimedShot": "Eye shiny",
+    "BodyDev": "Chest shiny + Waist bright + Legs faded (all three grades)",
+    "Treatment": "Eye bright (shiny home Head spent on Matter Creation, faded home Right Hand on Burst)",
+    "MatterCreation": "Head shiny",
+    "MatterMetamorphosis": "Chest bright + Left Arm faded",
+    "PsychologicalModifications": "Ear faded",
+    "SensoryImprovement": "Chest faded",
+    "TimeAndSpace": "NOT implanted - its only three homes (Head shiny, Right Hand bright, Eye faded) are all spent on Matter Creation and the weapon skill. See _deviations.",
+    "Strength": "Left Arm bright",
+    "Sense": "Head faded",
+    "Evades": "Evade-ClsC (Feet shiny + Legs bright), Dodge-Rng (Legs shiny + Feet bright), Duck-Exp (Feet faded only)",
+    "FirstAid": "Left Hand faded",
+    "NanoPool / MaxNanoEnergy / NanoCInit": "deliberately none - see _deviations"
+  },
+  "ladder": "Treatment is the gate on every implant: reference/implants.json gives the exact requirement as trunc(4.723717064 x QL + 6.767295257), which is 951 Treatment for a QL 200 implant (the file's approximate formula quotes ~947), plus the governing ability at QL x 2 + 4 = 404. Treatment costs a Soldier 2.0 IP-factor, so most of that number has to come from gear and buffs rather than IP. To ladder: equip the low-priority slots first, stack Treatment and ability buffs (Trader wrangles, First Aid / Bio Met stims, ability buffs), then swap the weapon slots - Right Arm, Right Hand, Right Wrist, Eye - up one QL step at a time, since those carry the wield requirement you are actually twinking for. Remember the Soldier's own buffs ladder too: the weapon-skill buffs (Art of War +200 Assault Rifle) and Improved Total Focus (+125 to ten ranged weapon skills) let you equip a higher-requirement gun once the implants are in. Use Auno Implant Designer / TinkerPlants / AOLadderer to solve the exact sequence for your character.",
+  "_deviations": [
+    "Weapon slots over nano slots - the whole point of the file. The MP build treats Right Arm, both Wrists and Right Hand as fillers ('no caster clusters available in this slot; lowest priority'). For a Soldier they are the four most important implants in the game: Right Arm shiny = Assault Rifle, Right Hand bright = Assault Rifle, Right Wrist shiny = Ranged Init. and bright = Full Auto, Right Wrist faded = Fling Shot, Right Hand faded = Burst.",
+    "No Nano Pool, no Max Nano Energy, no Nano C. Init. The MP build spends Head bright on Nano Pool and Waist bright on Max Nano Energy; this build spends them on Ranged Init. and Body Dev. Reason: the Soldier's nanos are long-duration pre-fight buffs, and Nano C. Init is its single most expensive skill (cost factor 4.0 in skillcaps.json, versus 1.0 for an MP).",
+    "Head shiny = Matter Creation, not Treatment and not Time & Space. Matter Creation is required by 102 of 177 Soldier nanos (to 1,527) and is the cheaper of the two reflect schools (2.5 vs 3.2). Treatment then has to come from Eye bright.",
+    "Time & Space gets no cluster at all. Its three homes (Head shiny, Right Hand bright, Eye faded) are exactly the homes Matter Creation and the weapon skill need. Since Augmented Mirror Shield MK IV (id 223185) wants Time & Space 1,419, a reflect-first Soldier should run the variant below rather than pretend clusters cover it: Head shiny = Time & Space, Eye faded = Matter Creation, Right Hand bright stays Assault Rifle - which costs you the Eye-faded Assault Rifle cluster and the Head-shiny Matter Creation.",
+    "Chest bright = Matter Metamorphosis (absorb shields, Phalanx, team damage) rather than the MP's Biological Metamorphosis - BM is a cast requirement on only 14 Soldier nanos versus MM's 36.",
+    "Body Dev. is implanted in all three grades (Chest shiny + Waist bright + Legs faded). An MP puts Body Dev. in two slots at most; the Soldier's Body Dev. cost factor is 1.1 versus the MP's 2.4, so it is the cheapest HP in the game for this profession.",
+    "Ear bright = Psychology purely because it is the Soldier's cheapest cluster in a useless list (cost 1.5); the MP picked it for the same reason. Ear/Left Hand/Left Wrist remain filler slots for both professions.",
+    "This layout is for the Assault Rifle template. For the other builds, change the weapon slots only: Ranged Energy build - Ranged Energy's three homes are Head shiny, Eye bright and Left Hand faded, so the weapon skill competes with Matter Creation (Head) and Treatment (Eye) rather than with the Right Arm; MG/SMG build - Right Arm shiny = MG/SMG, Right Hand bright = MG/SMG, Chest faded = MG/SMG; Shotgun build - Right Arm shiny = Shotgun, Right Hand bright = Shotgun, Waist faded = Shotgun; Pistol build - Right Wrist shiny = Pistol, Right Hand bright = Pistol, Eye faded = Pistol, and Left Wrist shiny = Multi Ranged becomes real."
+  ],
+  "_unverified": [
+    "No per-slot Soldier implant sheet from a reputable source could be fetched. AO-Universe's Soldier guides give only level milestones ('at 100-110, consider QL 200 implants for weapon skills (e.g. right arm for full auto)', brain/eye symbiants around 80, mostly symbiants by 130-150) and no shiny/bright/faded lists; auno.org and aoitems.com block automation. Every placement here is therefore derived: the SKILL priorities come from reference/skillcaps.json (Soldier cost factors) and soldier-nanos.json cast requirements, and the legality of each placement from reference/implants.json - but the layout as a whole is not a copied guide.",
+    "The QL 200 target is the usual top-tier regular-implant number, not a sourced value for a Soldier specifically.",
+    "Which slots an endgame Soldier keeps as implants rather than Artillery symbiants is only qualitatively sourced (AO-Universe mentions keeping an ear implant with a +7% exp modifier and a left-wrist implant with +10 add energy damage); those two specific items were not identified in itemnames.sql and are not asserted here.",
+    "Cluster bonus magnitudes per grade (shiny/bright/faded actual +skill values at a given QL) are not in reference/implants.json beyond the ~60%/~40% ratios, so no numeric skill gains are claimed."
+  ],
+  "_sources": [
+    "LOCAL AOBuddy/GameData/profiles/reference/implants.json (the cluster-to-slot-and-grade mapping every placement above was validated against; the Treatment and ability equip formulas; the shiny/bright/faded ratios)",
+    "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json (Soldier = index 12: Assault Rifle / Ranged Init. / Fling Shot / Pistol / Ranged Energy / Heavy Weapons 1.0, Body Dev. 1.1, Burst / Full Auto / MG-SMG / Shotgun / Dodge-Rng / Psychology / Weapon Smithing 1.5, Aimed Shot / Duck-Exp 1.8, Evade-ClsC / Treatment / PM / MM / Computer Literacy 2.0, SI / BM 2.4, Matter Creation 2.5, Time & Space 3.2, Nano C. Init 4.0)",
+    "LOCAL AOBuddy/GameData/profiles/soldier-nanos.json (cast requirements that justify the nano-school placements: Matter Creation on 102 of 177 nanos up to 1,527; Time & Space on 64 up to 1,490; PM on 68; SI on 45; MM on 36; BM on 14)",
+    "LOCAL AOBuddy/GameData/profiles/soldier-symbiants.json (the Soldier's symbiant line is Artillery - what replaces most of this build at endgame)",
+    "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp via tools/mp-weapon-extractor --prof 1 (special distribution per weapon skill: Burst on 1,136 and Full Auto on 1,041 of 1,545 Soldier-usable Assault Rifles; Aimed Shot on only 190; Fling Shot on 313)",
+    "http://wiki.aodb.us/wiki/Soldier:Breed_and_Skills (AOWiki - Assault Rifle is the main attack skill, Ranged Init. is the initiative every Soldier gun uses, Full Auto is the PvM special, 'Soldiers are ranged, not melee')",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-23 (AO-Universe - implant/symbiant level milestones, 'right arm for full auto' at 100-110, brain and eye symbiants around 80, mostly symbiants by 130-150)",
+    "http://wiki.aodb.us/wiki/Implant (AOWiki - the implant equip-requirement model cited in the ladder note)"
+  ]
+}

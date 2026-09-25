@@ -1,0 +1,1652 @@
+{
+ "profile": "Shade weapons + allowed special attacks (for AOBuddy10 bot decision-making)",
+ "profession": {
+  "id": 15,
+  "name": "Shade"
+ },
+ "generatedUtc": "2026-09-23T06:05:58Z",
+ "generatedBy": "tools/mp-weapon-extractor/gen-weapons-profile.ps1",
+ "dataSource": {
+  "itemData": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
+  "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+  "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-weapon-extractor (net10)",
+  "skillCosts": "AOBuddy/GameData/profiles/reference/skillcaps.json",
+  "nanoEvidence": "AOBuddy/GameData/profiles/shade-nanos.json",
+  "weaponsInData": 10730,
+  "note": "A weapon's wield requirements live in its ToWield action (OmniCell.Enums.ActionType.ToWield=8). Operator.GreaterThan(2) means 'stat >= value'. Special-attack stats present in those requirements = the specials that weapon allows. Requirement VALUES scale with the template's QL; values shown are for the listed QL."
+ },
+ "howToReadSpecialsAtRuntime": "For the equipped weapon, read its ToWield criteria: any requirement whose stat is in specialAttackStats is a special that weapon allows (the value is the skill needed at that QL). Wield-skill stat(s) give the weapon type. This mirrors the item data exactly.",
+ "specialAttackStats": {
+  "Brawl": 142,
+  "Dimach": 144,
+  "SneakAttack": 146,
+  "FastAttack": 147,
+  "Burst": 148,
+  "FlingShot": 150,
+  "AimedShot": 151,
+  "FullAuto": 167,
+  "Backstab": 489,
+  "passiveNotOnDemand": [
+   "Riposte(143)",
+   "Parry(145)"
+  ],
+  "note": "BowSpecialAttack(121) is a support SKILL for bow Aimed Shot, not an on-demand special."
+ },
+ "professionRestrictionEncoding": {
+  "stat": "Profession (stat 60 / 0x3C)",
+  "form": "A ToWield Requirement with Statnumber=60. Operator EqualTo(0) + Value=[professionId] locks the weapon to that profession (several such requirements OR together for a multi-profession lock).",
+  "usableRule": "Weapon is Shade-equippable unless it carries a Profession EqualTo lock and 15 is not among the locked ids. Weapons with no profession requirement are usable by any profession that meets the skill.",
+  "professionLockedCount": 92
+ },
+ "howWeaponSkillsWereChosen": {
+  "rule": "The client data does not encode 'profession X uses weapon skill Y', so the list is operator-supplied - but each entry is justified by three measured signals recorded per type: (1) skillCostFactor/skillCostRank from reference/skillcaps.json, (2) weaponsProfessionLocked, the count of templates whose ToWield locks them to this profession, and (3) professionNanoBuffLines, the profession's own nano lines that buff that skill, read from shade-nanos.json.",
+  "list": [
+   "Piercing",
+   "MartialArts",
+   "MeleeEnergy"
+  ],
+  "note": "Skills NOT on the list are still equippable if the raw skill is met - see otherWeaponSkillsInData."
+ },
+ "dualWieldAndMultiSkills": {
+  "note": "wield lists EVERY trainable-skill requirement in the ToWield action; specials lists the on-demand special-attack skills.",
+  "multiMeleeStatId": 101,
+  "multiRangedStatId": 134,
+  "finding": "In this data (client 18.8.50_EP1) MultiMelee(101)/MultiRanged(134) appear as a ToWield criterion on only 6 templates.",
+  "dualWieldMechanic": "Dual-wielding is gated by the CHARACTER's Multi Melee / Multi Ranged skill for the off-hand slot, not by a per-weapon ToWield criterion."
+ },
+ "usableWeaponTypes": [
+  {
+   "weaponSkill": "Piercing",
+   "skillCostFactor": 1,
+   "skillCostRank": 1,
+   "weaponsTotalInData": 820,
+   "weaponsUsable": 759,
+   "weaponsProfessionLocked": 89,
+   "playerWieldableModelsInData": 295,
+   "professionNanoBuffLines": "ShadePiercingBuff",
+   "role": "Shade IP cost factor 1 (rank 1 of 14 distinct cost tiers this profession has, 1 = cheapest). 759 of 820 Piercing templates in items.ocp are not profession-locked away from Shade, and 89 are locked to Shade by a ToWield Profession(60) EqualTo 15 criterion. The profession's own nano kit buffs this skill: nano line(s) ShadePiercingBuff in shade-nanos.json.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 245607,
+     "name": "Nippy John Stiletto",
+     "ql": 160,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 800
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 320
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 320
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 400
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 400
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 160
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": 3,
+     "expansion": null,
+     "damage": "175-375 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 214165,
+     "name": "Twinkling Trick Poker",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1700
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 850
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 850
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 340
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "220-475 @ 2s/2s",
+     "dpsProxy": 86.9
+    },
+    {
+     "id": 214160,
+     "name": "Susurrating Spike of Menace",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1700
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 850
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 850
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 340
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "220-475 @ 2s/2s",
+     "dpsProxy": 86.9
+    },
+    {
+     "id": 214164,
+     "name": "Trick Poker",
+     "ql": 299,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1694
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 847
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 847
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 339
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "219-474 @ 2s/2s",
+     "dpsProxy": 86.6
+    },
+    {
+     "id": 214159,
+     "name": "Spike of Menace",
+     "ql": 299,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1694
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 847
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 847
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 339
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "219-474 @ 2s/2s",
+     "dpsProxy": 86.6
+    },
+    {
+     "id": 288288,
+     "name": "Special Edition Kyr'Ozch Rapier",
+     "ql": 150,
+     "primaryWield": "Piercing",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 699
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 349
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 349
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 149
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 150,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "200-234 @ 1.3s/1.3s",
+     "dpsProxy": 83.5
+    },
+    {
+     "id": 226486,
+     "name": "Die Nadel",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1800
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 900
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 900
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "100-550 @ 2.2s/2.2s",
+     "dpsProxy": 73.9
+    },
+    {
+     "id": 247069,
+     "name": "Bloodlust",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2000
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 800
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 800
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1000
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1000
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 400
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "100-550 @ 2.2s/2.2s",
+     "dpsProxy": 73.9
+    },
+    {
+     "id": 231103,
+     "name": "Sigd X",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1800
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 720
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 720
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 900
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 360
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "125-300 @ 1.9s/1.9s",
+     "dpsProxy": 55.9
+    },
+    {
+     "id": 231102,
+     "name": "Sigd IX",
+     "ql": 299,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1794
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 718
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 718
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 897
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 359
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "125-299 @ 1.9s/1.9s",
+     "dpsProxy": 55.8
+    },
+    {
+     "id": 231100,
+     "name": "Sigd VIII",
+     "ql": 249,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1494
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 598
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 598
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 747
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 299
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "105-251 @ 1.75s/1.75s",
+     "dpsProxy": 50.9
+    },
+    {
+     "id": 231098,
+     "name": "Sigd VII",
+     "ql": 199,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1194
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 477
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 477
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 597
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 239
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "86-204 @ 1.6s/1.6s",
+     "dpsProxy": 45.3
+    },
+    {
+     "id": 231096,
+     "name": "Sigd VI",
+     "ql": 149,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 894
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 357
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 357
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 447
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 179
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "67-156 @ 1.45s/1.45s",
+     "dpsProxy": 38.4
+    },
+    {
+     "id": 231094,
+     "name": "Sigd V",
+     "ql": 99,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 594
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 237
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 237
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 297
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 119
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "48-108 @ 1.29s/1.29s",
+     "dpsProxy": 30.2
+    },
+    {
+     "id": 231092,
+     "name": "Sigd IV",
+     "ql": 59,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 354
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 141
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 141
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 177
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 71
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "32-70 @ 1.17s/1.17s",
+     "dpsProxy": 21.8
+    },
+    {
+     "id": 231090,
+     "name": "Sigd III",
+     "ql": 39,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 234
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 93
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 117
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 47
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "25-51 @ 1.11s/1.11s",
+     "dpsProxy": 17.1
+    },
+    {
+     "id": 231088,
+     "name": "Sigd II",
+     "ql": 29,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 174
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 69
+      }
+     ],
+     "specials": [
+      {
+       "special": "Dimach",
+       "requiredValue": 35
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "21-42 @ 1.08s/1.08s",
+     "dpsProxy": 14.6
+    },
+    {
+     "id": 231086,
+     "name": "Sigd I",
+     "ql": 19,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 114
+      }
+     ],
+     "specials": [
+      {
+       "special": "Dimach",
+       "requiredValue": 23
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Shade"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "17-32 @ 1.05s/1.05s",
+     "dpsProxy": 11.7
+    },
+    {
+     "id": 280719,
+     "name": "Deceit of the Xan",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-350 @ 1s/1s",
+     "dpsProxy": 162.5
+    },
+    {
+     "id": 244778,
+     "name": "Lady of Deceit",
+     "ql": 299,
+     "primaryWield": "Piercing",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2250
+      },
+      {
+       "skill": "Parry",
+       "requiredValue": 900
+      },
+      {
+       "skill": "Riposte",
+       "requiredValue": 900
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": null,
+     "damage": "300-400 @ 3s/3s",
+     "dpsProxy": 58.3
+    },
+    {
+     "id": 265019,
+     "name": "Ofab Viper Mk 6",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "308-374 @ 1s/1s",
+     "dpsProxy": 170.5
+    },
+    {
+     "id": 254716,
+     "name": "Kyr'Ozch Energy Rapier",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "280-340 @ 1s/1s",
+     "dpsProxy": 155
+    },
+    {
+     "id": 305525,
+     "name": "Uklesh's Talon",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2149
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1099
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1099
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 449
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "290-375 @ 1s/1s",
+     "dpsProxy": 166.2
+    },
+    {
+     "id": 305026,
+     "name": "Slayerdroid Notum-Imbued Claw",
+     "ql": 200,
+     "primaryWield": "Piercing",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 1999
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 999
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1199
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 499
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 204,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "321-368 @ 1s/1.1s",
+     "dpsProxy": 164
+    },
+    {
+     "id": 265005,
+     "name": "Ofab Viper Mk 4",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "294-357 @ 1s/1s",
+     "dpsProxy": 162.8
+    },
+    {
+     "id": 265012,
+     "name": "Ofab Viper Mk 5",
+     "ql": 300,
+     "primaryWield": "Piercing",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Piercing",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "294-357 @ 1s/1s",
+     "dpsProxy": 162.8
+    }
+   ]
+  },
+  {
+   "weaponSkill": "MartialArts",
+   "skillCostFactor": 1.6,
+   "skillCostRank": 5,
+   "weaponsTotalInData": 256,
+   "weaponsUsable": 223,
+   "weaponsProfessionLocked": 2,
+   "playerWieldableModelsInData": 87,
+   "professionNanoBuffLines": "MartialArtsBuff",
+   "role": "Shade IP cost factor 1.6 (rank 5 of 14 distinct cost tiers this profession has, 1 = cheapest). 223 of 256 MartialArts templates in items.ocp are not profession-locked away from Shade, and 2 are locked to Shade by a ToWield Profession(60) EqualTo 15 criterion. The profession's own nano kit buffs this skill: nano line(s) MartialArtsBuff in shade-nanos.json.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 302946,
+     "name": "Corrupted Lord of Wisdom",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 1999
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 999
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1099
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 7,
+     "expansion": null,
+     "damage": "200-550 @ 1.8s/1.8s",
+     "dpsProxy": 104.2
+    },
+    {
+     "id": 294001,
+     "name": "Lady of Wisdom",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-400 @ 2.5s/2.5s",
+     "dpsProxy": 65
+    },
+    {
+     "id": 267258,
+     "name": "Dreadloch Shen Sticks",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 1300
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 650
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "310-490 @ 1.5s/1.5s",
+     "dpsProxy": 133.3
+    },
+    {
+     "id": 303406,
+     "name": "Junior Ofab Boar",
+     "ql": 220,
+     "primaryWield": "MartialArts",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 1499
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 999
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 799
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 219,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "235-290 @ 1.5s/1.5s",
+     "dpsProxy": 87.5
+    },
+    {
+     "id": 288664,
+     "name": "Kyr'Ozch Nunchacko",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "290-340 @ 1.5s/1.5s",
+     "dpsProxy": 105
+    },
+    {
+     "id": 301885,
+     "name": "X1-R4 Viral Force-Blades",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2199
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 1229
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 659
+      },
+      {
+       "special": "SneakAttack",
+       "requiredValue": 999
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "307-472 @ 1.4s/1.4s",
+     "dpsProxy": 139.1
+    },
+    {
+     "id": 293996,
+     "name": "Kuma Tonfa - Right Hand",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "325-495 @ 1.5s/1.5s",
+     "dpsProxy": 136.7
+    },
+    {
+     "id": 293993,
+     "name": "Kuma Tonfa - Left Hand",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "325-495 @ 1.5s/1.5s",
+     "dpsProxy": 136.7
+    }
+   ]
+  },
+  {
+   "weaponSkill": "MeleeEnergy",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "weaponsTotalInData": 280,
+   "weaponsUsable": 256,
+   "weaponsProfessionLocked": 1,
+   "playerWieldableModelsInData": 115,
+   "professionNanoBuffLines": null,
+   "role": "Shade IP cost factor 4 (rank 14 of 14 distinct cost tiers this profession has, 1 = cheapest). 256 of 280 MeleeEnergy templates in items.ocp are not profession-locked away from Shade, and 1 are locked to Shade by a ToWield Profession(60) EqualTo 15 criterion. No Shade nano line in shade-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 280730,
+     "name": "Dusk of the Xan",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 1799
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-350 @ 1s/1s",
+     "dpsProxy": 162.5
+    },
+    {
+     "id": 246244,
+     "name": "Sword of Dawn",
+     "ql": 200,
+     "primaryWield": "MeleeEnergy",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 999
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-750 @ 2s/2s",
+     "dpsProxy": 125
+    },
+    {
+     "id": 254702,
+     "name": "Kyr'Ozch Energy Hammer",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "325-400 @ 1s/1s",
+     "dpsProxy": 181.2
+    },
+    {
+     "id": 246243,
+     "name": "Broken Sword of Dawn",
+     "ql": 199,
+     "primaryWield": "MeleeEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 500
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "126-376 @ 1s/1s",
+     "dpsProxy": 125.5
+    },
+    {
+     "id": 254709,
+     "name": "Kyr'Ozch Energy Hammer - Type 112",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1000
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1200
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 400
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "325-400 @ 1s/1s",
+     "dpsProxy": 181.2
+    },
+    {
+     "id": 280729,
+     "name": "Dawn of the Xan",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 1799
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-350 @ 1s/1s",
+     "dpsProxy": 162.5
+    },
+    {
+     "id": 246255,
+     "name": "Broken Sword of Dusk",
+     "ql": 199,
+     "primaryWield": "MeleeEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 500
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "126-376 @ 1s/1s",
+     "dpsProxy": 125.5
+    },
+    {
+     "id": 246256,
+     "name": "Sword of Dusk",
+     "ql": 200,
+     "primaryWield": "MeleeEnergy",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 999
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-750 @ 2s/2s",
+     "dpsProxy": 125
+    }
+   ]
+  }
+ ],
+ "professionOnlyWeapons": {
+  "count": 92,
+  "byWeaponSkill": [
+   {
+    "weaponSkill": "Piercing",
+    "count": 89
+   },
+   {
+    "weaponSkill": "MartialArts",
+    "count": 2
+   },
+   {
+    "weaponSkill": "MeleeEnergy",
+    "count": 1
+   }
+  ],
+  "distinctNames": [
+   "Bloodlust",
+   "Bronto Vet Lancet",
+   "Die Kleine Nadel",
+   "Die Nadel",
+   "Heavy Bronto Vet Lancet",
+   "Huzzum's Iron Fist",
+   "Light Bronto Vet Lancet",
+   "Nippy John Stiletto",
+   "Sigd I",
+   "Sigd II",
+   "Sigd III",
+   "Sigd IV",
+   "Sigd IX",
+   "Sigd V",
+   "Sigd VI",
+   "Sigd VII",
+   "Sigd VIII",
+   "Sigd X",
+   "Special Edition Kyr'Ozch Energy Rapier",
+   "Special Edition Kyr'Ozch Nunchacko",
+   "Special Edition Kyr'Ozch Rapier",
+   "Spike of Menace",
+   "Susurrating Spike of Menace",
+   "Thousand Stings of Boredom",
+   "Thousand Stings of Fatigue",
+   "Thousand Stings of Fear",
+   "Thousand Stings of Pain",
+   "Thousand Stings of Panic",
+   "Thousand Stings of Sorrow",
+   "Trick Poker",
+   "Twinkling Trick Poker"
+  ],
+  "note": "Templates whose ToWield carries a Profession EqualTo Shade(15) criterion. Some of these are locked to a GROUP of professions (e.g. 'Small Ebony Figurine'), not to Shade alone - the professionLock field on each representative weapon shows the full lock."
+ },
+ "otherWeaponSkillsInData": [
+  {
+   "weaponSkill": "AssaultRifle",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 1467,
+   "totalInData": 1547
+  },
+  {
+   "weaponSkill": "Pistol",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 1159,
+   "totalInData": 1398
+  },
+  {
+   "weaponSkill": "1hEdged",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 887,
+   "totalInData": 960
+  },
+  {
+   "weaponSkill": "Rifle",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 852,
+   "totalInData": 905
+  },
+  {
+   "weaponSkill": "1hBlunt",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 820,
+   "totalInData": 854
+  },
+  {
+   "weaponSkill": "2hEdged",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 605,
+   "totalInData": 764
+  },
+  {
+   "weaponSkill": "Shotgun",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 537,
+   "totalInData": 603
+  },
+  {
+   "weaponSkill": "MGSMG",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 499,
+   "totalInData": 562
+  },
+  {
+   "weaponSkill": "2hBlunt",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 446,
+   "totalInData": 503
+  },
+  {
+   "weaponSkill": "RangedEnergy",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 439,
+   "totalInData": 451
+  },
+  {
+   "weaponSkill": "Bow",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 352,
+   "totalInData": 377
+  },
+  {
+   "weaponSkill": "Grenade",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 319,
+   "totalInData": 359
+  },
+  {
+   "weaponSkill": "HeavyWeapons",
+   "skillCostFactor": 4,
+   "skillCostRank": 14,
+   "usableInData": 84,
+   "totalInData": 85
+  },
+  {
+   "weaponSkill": "MultiMelee",
+   "skillCostFactor": 1,
+   "skillCostRank": 1,
+   "usableInData": 0,
+   "totalInData": 6
+  }
+ ],
+ "unverifiedOrCaveats": [
+  "The usable weapon-skill list is an operator choice (see howWeaponSkillsWereChosen). The three measured signals recorded per type are the evidence; the choice itself is a judgement.",
+  "Requirement values scale with QL; a named weapon spans a QL range. Values shown are for the exact template QL listed.",
+  "dpsProxy = avgDamage / (attack + recharge) from the item's own stats. It is a comparison number only - it ignores initiative caps, crit, add-damage, buffs and specials.",
+  "Representative weapons are the highest-dpsProxy model of each weapon LINE present in the skill plus the next highest-dpsProxy models; that is a stated selection rule, not a community tier list.",
+  "GM/test/monster templates are filtered out with the same measured bounds as shade-weapons-endgame.json (max damage >= 1000, primary requirement > 2600, or QL >= 200 with a requirement under 100). See that file's definition.exclusions."
+ ],
+ "_sources": [
+  {
+   "kind": "local",
+   "what": "Weapon templates, ToWield criteria, specials, profession lock, expansion and title-level gates, damage/delay stats",
+   "where": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (client 18.8.50_EP1)"
+  },
+  {
+   "kind": "local",
+   "what": "Id -> Name verification",
+   "where": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql"
+  },
+  {
+   "kind": "local",
+   "what": "Profession IP cost factors per skill",
+   "where": "AOBuddy/GameData/profiles/reference/skillcaps.json"
+  },
+  {
+   "kind": "local",
+   "what": "Profession weapon-buff nano lines (evidence that the kit supports a weapon skill)",
+   "where": "AOBuddy/GameData/profiles/shade-nanos.json"
+  },
+  {
+   "kind": "local",
+   "what": "Per-weapon acquisition, endgame tiers and the Xan walkthrough",
+   "where": "AOBuddy/GameData/profiles/shade-weapons-endgame.json"
+  }
+ ]
+}

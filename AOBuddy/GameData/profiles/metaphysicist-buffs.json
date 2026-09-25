@@ -7,86 +7,508 @@
     "selfAndGivesIds": "AOBuddy/GameData/profiles/metaphysicist-nanos.json (nanos.ocp extraction, client 18.8.50_EP1). All ids below marked source=local were read from that file's 'Self / Team Buffs', 'Misc / Utility', 'Heals / HoT', 'Travel / Recall' categories.",
     "crossProfAndGeneral": "ao-universe.com Buffing Guide; wiki.aodb.us Who_Buffs_What; aoitems.com; forums.funcom.com. Cross-profession buff ids are NOT in the local MP data (they are other professions' nanos) so ids are null and marked source=web."
   },
-
   "selfBuffs": [
-    { "name": "Odin's Other Eye", "id": 273379, "nanoLine": "Psy_IntBuff(576)", "effect": "Intelligence +103, Psychic +103, and PsychologicalModification/SensoryImprovement/SpaceTime/MaterialCreation +100 each (plus Nano Resist). Top self attribute+nanoskill buff.", "keepUp": true, "note": "Same nanoline (576) as Odin's Missing Eye and Neuronal Stimulator, so it REPLACES both -- do not try to stack them. Cast this, not the lesser two. source=local", "wantsBuffFirst": ["Wrangle raises the nanoskills needed to land it"] },
-    { "name": "Odin's Missing Eye", "id": 29309, "nanoLine": "Psy_IntBuff(576)", "effect": "Int +43, Psy +43, four nanoskills +40. Lower version of Odin's Other Eye.", "keepUp": false, "note": "Use only until Odin's Other Eye is castable. source=local" },
-    { "name": "Neuronal Stimulator", "id": 220345, "nanoLine": "Psy_IntBuff(576)", "effect": "Intelligence +23, Psychic +23.", "keepUp": false, "note": "Superseded by Odin's Eye (same nanoline). source=local" },
-
-    { "name": "Mocham's Gift: BioMet", "id": 29299, "nanoLine": "BioMetBuff(163)", "effect": "BiologicalMetamorphosis +140.", "keepUp": true, "note": "Self-cast the six single-school Mocham's Gift (one per nanoline) to reach +140 in ALL nanoskills; they occupy different nanolines so all six stack. source=local" },
-    { "name": "Mocham's Gift: MatCrea", "id": 29300, "nanoLine": "MatCreaBuff(159)", "effect": "MaterialCreation +140.", "keepUp": true, "note": "source=local" },
-    { "name": "Mocham's Gift: MatMet", "id": 29302, "nanoLine": "MatMetBuff(157)", "effect": "MaterialMetamorphosis +140.", "keepUp": true, "note": "source=local" },
-    { "name": "Mocham's Gift: PsyMod", "id": 29303, "nanoLine": "PsyModBuff(167)", "effect": "PsychologicalModification +140.", "keepUp": true, "note": "source=local" },
-    { "name": "Mocham's Gift: SenseImp", "id": 29304, "nanoLine": "SenseImpBuff(165)", "effect": "SensoryImprovement +140.", "keepUp": true, "note": "SHARES nanoline 165 with Composite Mochams -- pick the SenseImp single OR the Composite, not both. source=local" },
-    { "name": "Mocham's Gift: SpaceTime", "id": 29301, "nanoLine": "MatLocBuff(161)", "effect": "SpaceTime +140.", "keepUp": true, "note": "source=local" },
-    { "name": "Composite Mochams (2h/4h/8h)", "id": 220339, "altIds": [220337, 220341, 220343], "nanoLine": "SenseImpBuff(165)", "effect": "All six nanoskills +140 in ONE nano (1 NCU slot). Level-locked: 1h=185, 2h=205, 4h=215, 8h=219.", "keepUp": true, "note": "Efficient alternative to casting six singles, BUT it lives in the SenseImp nanoline (165) -- it cannot coexist with Mocham's Gift: SenseImp. A bot should cast EITHER the six singles OR one Composite. source=local" },
-
-    { "name": "Mocham's Neural Interface-Web", "id": 95409, "nanoLine": "NPCostBuff(148)", "effect": "Reduces the MP's own nano point cost (best in line, -24 to the cost skill).", "keepUp": true, "note": "Best nano-cost-reduction self buff; lets the MP chain-cast pets/nukes. Lesser members of the same line: Neuron-Notum Interface 29307 (-19), Coherent Notum Web 95411 (-15), Notum Attunement 95408 (-12), Ease of Execution 95410 (-7). source=local" },
-    { "name": "One Mind, One Purpose", "id": 95522, "nanoLine": "InterruptModifier(183)", "effect": "Nano interrupt/cast-related modifier (best in line, +57).", "keepUp": true, "note": "Best interrupt-modifier self buff; helps land casts under fire. Lesser: Dedication of Thought 95525 (+51), Ignore External Events 95524 (+41), Engrossing Activity 95523 (+34), Internal Focus 95521 (+27). source=local" },
-    { "name": "Advanced Symbol Manipulation", "id": 29327, "nanoLine": "NanoProgrammingBuff(210)", "effect": "NanoProgramming +92.", "keepUp": true, "note": "Keep up when twinking/self-equipping items (NanoProgramming gates high-QL nano use and building). Lesser: Symbol Helper 29113 (+20). source=local" },
-    { "name": "Improved Anticipation of Retaliation", "id": 302188, "nanoLine": "MajorEvasionBuffs(144)", "effect": "DodgeRanged/EvadeClsC/DuckExp +150.", "keepUp": true, "note": "Evade self buff (solo/PvP survivability). Lesser: Anticipation of Retaliation 29272 (+60). source=local" },
-
-    { "name": "Aggressive Construct Empowerment", "id": 275020, "nanoLine": "AggressiveConstructEmpowerment(854)", "effect": "AddAllOff +300 and casts child nano 275021 (SL perk-style empowerment).", "keepUp": false, "note": "Situational offensive empowerment (level 212). source=local" },
-    { "name": "Mesmerizing Construct Empowerment", "id": 263298, "nanoLine": "MesmerizationConstructEmpowerment(810)", "effect": "PsychologicalModification +80, SensoryImprovement +80, casts 263297.", "keepUp": false, "note": "Situational mezz-support empowerment. source=local" },
-    { "name": "Construct Empowerment (Healing)", "id": 260771, "nanoLine": "HealingConstructEmpowerment(807)", "effect": "HealMultiplier +12, casts 260770.", "keepUp": false, "note": "Situational; boosts heal-pet output (level 207). source=local" },
-
-    { "name": "False Profession: Meta-Physicist", "id": 32036, "altIds": [117219, 117208], "nanoLine": "FalseProfession(218)", "effect": "Grants NanoProgramming (+150 on the full version; Assume 117219 +70; Mimic 117208 +15) at the cost of a % penalty to PsyMod/SenseImp/MatMet/MatCrea while active.", "keepUp": false, "note": "False-profession family present in the MP-castable data. Used to raise NanoProgramming for building/equipping off-profession items; the nanoskill penalty is why it is a twink tool, not a keep-up buff. INTERPRETATION UNVERIFIED -- naming ('...: Meta-Physicist') is odd for an MP to self-cast; confirm intended target/use before the bot ever casts it. source=local(flag)" },
-
-    { "name": "Quantum Wings", "id": 120499, "nanoLine": "NOSTACKING(0)", "effect": "RunSpeed +600.", "keepUp": false, "note": "Travel run-speed self buff. source=local" },
-    { "name": "Shadowland Soul Fetter", "id": 233847, "nanoLine": "ShadowlandBindandRecall(738)", "effect": "Sets a recall anchor.", "keepUp": false, "note": "Travel/utility; pair with Awaken Shadowland Soul Memory 233849 to recall. source=local" },
-    { "name": "Awaken Shadowland Soul Memory", "id": 233849, "nanoLine": "ShadowlandBindandRecall(738)", "effect": "Recalls to the set anchor.", "keepUp": false, "note": "source=local" }
+    {
+      "name": "Odin's Other Eye",
+      "id": 273379,
+      "nanoLine": "Psy_IntBuff(576)",
+      "effect": "Intelligence +103, Psychic +103, and PsychologicalModification/SensoryImprovement/SpaceTime/MaterialCreation +100 each (plus Nano Resist). Top self attribute+nanoskill buff.",
+      "keepUp": true,
+      "note": "Same nanoline (576) as Odin's Missing Eye and Neuronal Stimulator, so it REPLACES both -- do not try to stack them. Cast this, not the lesser two. source=local",
+      "wantsBuffFirst": [
+        "Wrangle raises the nanoskills needed to land it"
+      ]
+    },
+    {
+      "name": "Odin's Missing Eye",
+      "id": 29309,
+      "nanoLine": "Psy_IntBuff(576)",
+      "effect": "Int +43, Psy +43, four nanoskills +40. Lower version of Odin's Other Eye.",
+      "keepUp": false,
+      "note": "Use only until Odin's Other Eye is castable. source=local"
+    },
+    {
+      "name": "Neuronal Stimulator",
+      "id": 220345,
+      "nanoLine": "Psy_IntBuff(576)",
+      "effect": "Intelligence +23, Psychic +23.",
+      "keepUp": false,
+      "note": "Superseded by Odin's Eye (same nanoline). source=local"
+    },
+    {
+      "name": "Mocham's Gift: BioMet",
+      "id": 29299,
+      "nanoLine": "BioMetBuff(163)",
+      "effect": "BiologicalMetamorphosis +140.",
+      "keepUp": true,
+      "note": "Self-cast the six single-school Mocham's Gift (one per nanoline) to reach +140 in ALL nanoskills; they occupy different nanolines so all six stack. source=local"
+    },
+    {
+      "name": "Mocham's Gift: MatCrea",
+      "id": 29300,
+      "nanoLine": "MatCreaBuff(159)",
+      "effect": "MaterialCreation +140.",
+      "keepUp": true,
+      "note": "source=local"
+    },
+    {
+      "name": "Mocham's Gift: MatMet",
+      "id": 29302,
+      "nanoLine": "MatMetBuff(157)",
+      "effect": "MaterialMetamorphosis +140.",
+      "keepUp": true,
+      "note": "source=local"
+    },
+    {
+      "name": "Mocham's Gift: PsyMod",
+      "id": 29303,
+      "nanoLine": "PsyModBuff(167)",
+      "effect": "PsychologicalModification +140.",
+      "keepUp": true,
+      "note": "source=local"
+    },
+    {
+      "name": "Mocham's Gift: SenseImp",
+      "id": 29304,
+      "nanoLine": "SenseImpBuff(165)",
+      "effect": "SensoryImprovement +140.",
+      "keepUp": true,
+      "note": "SHARES nanoline 165 with Composite Mochams -- pick the SenseImp single OR the Composite, not both. source=local"
+    },
+    {
+      "name": "Mocham's Gift: SpaceTime",
+      "id": 29301,
+      "nanoLine": "MatLocBuff(161)",
+      "effect": "SpaceTime +140.",
+      "keepUp": true,
+      "note": "source=local"
+    },
+    {
+      "name": "Composite Mochams (2h/4h/8h)  [id 220339 = Composite Mochams (2 hours)]",
+      "id": 220339,
+      "altIds": [
+        220337,
+        220341,
+        220343
+      ],
+      "nanoLine": "SenseImpBuff(165)",
+      "effect": "All six nanoskills +140 in ONE nano (1 NCU slot). Level-locked: 1h=185, 2h=205, 4h=215, 8h=219.",
+      "keepUp": true,
+      "note": "Efficient alternative to casting six singles, BUT it lives in the SenseImp nanoline (165) -- it cannot coexist with Mocham's Gift: SenseImp. A bot should cast EITHER the six singles OR one Composite. source=local",
+      "representativeId": 220339,
+      "representativeName": "Composite Mochams (2 hours)"
+    },
+    {
+      "name": "Mocham's Neural Interface-Web",
+      "id": 95409,
+      "nanoLine": "NPCostBuff(148)",
+      "effect": "Reduces the MP's own nano point cost (best in line, -24 to the cost skill).",
+      "keepUp": true,
+      "note": "Best nano-cost-reduction self buff; lets the MP chain-cast pets/nukes. Lesser members of the same line: Neuron-Notum Interface 29307 (-19), Coherent Notum Web 95411 (-15), Notum Attunement 95408 (-12), Ease of Execution 95410 (-7). source=local"
+    },
+    {
+      "name": "One Mind, One Purpose",
+      "id": 95522,
+      "nanoLine": "InterruptModifier(183)",
+      "effect": "Nano interrupt/cast-related modifier (best in line, +57).",
+      "keepUp": true,
+      "note": "Best interrupt-modifier self buff; helps land casts under fire. Lesser: Dedication of Thought 95525 (+51), Ignore External Events 95524 (+41), Engrossing Activity 95523 (+34), Internal Focus 95521 (+27). source=local"
+    },
+    {
+      "name": "Advanced Symbol Manipulation",
+      "id": 29327,
+      "nanoLine": "NanoProgrammingBuff(210)",
+      "effect": "NanoProgramming +92.",
+      "keepUp": true,
+      "note": "Keep up when twinking/self-equipping items (NanoProgramming gates high-QL nano use and building). Lesser: Symbol Helper 29113 (+20). source=local"
+    },
+    {
+      "name": "Improved Anticipation of Retaliation",
+      "id": 302188,
+      "nanoLine": "MajorEvasionBuffs(144)",
+      "effect": "DodgeRanged/EvadeClsC/DuckExp +150.",
+      "keepUp": true,
+      "note": "Evade self buff (solo/PvP survivability). Lesser: Anticipation of Retaliation 29272 (+60). source=local"
+    },
+    {
+      "name": "Aggressive Construct Empowerment",
+      "id": 275020,
+      "nanoLine": "AggressiveConstructEmpowerment(854)",
+      "effect": "AddAllOff +300 and casts child nano 275021 (SL perk-style empowerment).",
+      "keepUp": false,
+      "note": "Situational offensive empowerment (level 212). source=local"
+    },
+    {
+      "name": "Mesmerizing Construct Empowerment",
+      "id": 263298,
+      "nanoLine": "MesmerizationConstructEmpowerment(810)",
+      "effect": "PsychologicalModification +80, SensoryImprovement +80, casts 263297.",
+      "keepUp": false,
+      "note": "Situational mezz-support empowerment. source=local"
+    },
+    {
+      "name": "Construct Empowerment (Healing)  [id 260771 = Construct Empowerment]",
+      "id": 260771,
+      "nanoLine": "HealingConstructEmpowerment(807)",
+      "effect": "HealMultiplier +12, casts 260770.",
+      "keepUp": false,
+      "note": "Situational; boosts heal-pet output (level 207). source=local",
+      "representativeId": 260771,
+      "representativeName": "Construct Empowerment"
+    },
+    {
+      "name": "False Profession: Meta-Physicist",
+      "id": 32036,
+      "altIds": [
+        117219,
+        117208
+      ],
+      "nanoLine": "FalseProfession(218)",
+      "effect": "Grants NanoProgramming (+150 on the full version; Assume 117219 +70; Mimic 117208 +15) at the cost of a % penalty to PsyMod/SenseImp/MatMet/MatCrea while active.",
+      "keepUp": false,
+      "note": "False-profession family present in the MP-castable data. Used to raise NanoProgramming for building/equipping off-profession items; the nanoskill penalty is why it is a twink tool, not a keep-up buff. INTERPRETATION UNVERIFIED -- naming ('...: Meta-Physicist') is odd for an MP to self-cast; confirm intended target/use before the bot ever casts it. source=local(flag)"
+    },
+    {
+      "name": "Quantum Wings",
+      "id": 120499,
+      "nanoLine": "NOSTACKING(0)",
+      "effect": "RunSpeed +600.",
+      "keepUp": false,
+      "note": "Travel run-speed self buff. source=local"
+    },
+    {
+      "name": "Shadowland Soul Fetter",
+      "id": 233847,
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "Sets a recall anchor.",
+      "keepUp": false,
+      "note": "Travel/utility; pair with Awaken Shadowland Soul Memory 233849 to recall. source=local"
+    },
+    {
+      "name": "Awaken Shadowland Soul Memory",
+      "id": 233849,
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "Recalls to the set anchor.",
+      "keepUp": false,
+      "note": "source=local"
+    }
   ],
-
   "wantedFromOthers": [
-    { "buff": "Wrangle (Trader Shark line, e.g. Ransack/Dominate the Weak -> 'Team Skill'/single Wrangle)", "id": null, "fromProfession": "Trader", "effect": "Adds to ALL weapon skills AND all nano skills at once; single up to ~+132, team versions similar. 3-min duration and self-debuffs the Trader.", "useCase": "twink", "note": "THE #1 twink buff for an MP: the temporary nanoskill boost lets the MP equip higher-QL symbiants/implants/nanos and cast above its normal ceiling, then the gear/nano holds after the wrangle fades (for equips) or is used to land a bigger pet during the window. source=web" },
-    { "buff": "Umbral Wrangler (SL aura) / Team Wrangle", "id": null, "fromProfession": "Trader", "effect": "Aura/team version of the wrangle that refreshes continuously without debuffing the Trader.", "useCase": "raid", "note": "Sustained nanoskill+weapon boost for the whole team in raids. source=web" },
-    { "buff": "Skill/Trade-skill Wrangles (Apprentice/Journeyman/Maestro)", "id": null, "fromProfession": "Trader", "effect": "Apprentice +40 / Journeyman +80 / Maestro +125 to a single trade skill; no level limit.", "useCase": "twink", "note": "Boosts Nano Programming / trade skills for self-building implants and using tradeskill items. source=web" },
-    { "buff": "Essence of Behemoth line (e.g. Improved Essence of Behemoth)", "id": null, "fromProfession": "Enforcer", "effect": "Strength +Stamina together (Improved ~+54 each) and large Max Health.", "useCase": "twink", "note": "Raises Str/Sta to meet ability requirements on implants/symbiants and armor. source=web" },
-    { "buff": "Iron Circle", "id": null, "fromProfession": "Doctor", "effect": "Strength +20, Stamina +20.", "useCase": "twink", "note": "Another Str/Sta source (different nanoline, may stack with Enforcer for the requirement window). source=web" },
-    { "buff": "Instinctive Control (Nano Init line)", "id": null, "fromProfession": "Doctor", "effect": "Nano Init +200 (Improved ~+350) -> faster nano casting.", "useCase": "cast", "note": "Main cross-prof Nano Init source; speeds the MP's casts. source=web(flag: exact name/value from Who_Buffs_What)" },
-    { "buff": "Max Health / HoT buffs (Hearty Constitution, Continuous Reconstruction, team heals)", "id": null, "fromProfession": "Doctor", "effect": "Large Max Health and heal-over-time / complete heals.", "useCase": "raid", "note": "Survivability for the squishy MP in raids. source=web" },
-    { "buff": "Feline Grace", "id": null, "fromProfession": "Agent", "effect": "Agility +25.", "useCase": "twink", "note": "Agility for implant/symbiant requirements. source=web" },
-    { "buff": "Enhanced Senses", "id": null, "fromProfession": "Agent", "effect": "Sense +15.", "useCase": "twink", "note": "Sense for implant/symbiant requirements. source=web" },
-    { "buff": "Chemistry & Pharmaceuticals (Composite/Enhanced tradeskill)", "id": null, "fromProfession": "Agent", "effect": "~+50 Chemistry/Pharmaceuticals.", "useCase": "twink", "note": "Tradeskill boost for building implants/stims. source=web" },
-    { "buff": "False Profession", "id": null, "fromProfession": "Agent", "effect": "Makes the target's profession appear as another for item requirements.", "useCase": "twink", "note": "Lets the MP wield off-profession weapons/items. NOTE the MP also has its own False/Assume/Mimic Profession nanos (see selfBuffs). source=web" },
-    { "buff": "Perception / Treatment buffs (Eagle Eye, Robust Treatment) and run speed", "id": null, "fromProfession": "Adventurer", "effect": "Perception (Eagle Eye +240), Treatment (Robust +60), and strong run-speed buffs; Cocoon (temporary immunity) and Team Heal on some builds.", "useCase": "twink", "note": "Treatment for implant assembly; run speed/Cocoon for travel/survival. source=web" },
-    { "buff": "NCU (Grid Armor) + Run Speed + HoT", "id": null, "fromProfession": "Fixer", "effect": "Extra NCU (to hold more buffs), team run-speed, and heal-over-time.", "useCase": "raid", "note": "More NCU lets the MP keep the whole buff stack up; run speed for travel. Exact nano names not pinned. source=web(flag)" },
-    { "buff": "Nano Init / Max Health (Enfraam's, Izgimmer's Mockery)", "id": null, "fromProfession": "Nano-Technician", "effect": "NT self-focused nano-init/nano-cost lines; some HP nanos.", "useCase": "cast", "note": "NT is largely a self-buffer; it is NOT a major cross-prof buffer for an MP. Task-listed 'Matrix/Humidity Extractor' names NOT confirmed in sources -- flagged. source=web(flag)" },
-    { "buff": "Team AC / Add-All-Defense / init & mezz support", "id": null, "fromProfession": "Bureaucrat", "effect": "Crat team AC and defensive/utility buffs (and enemy nano-resist debuffs).", "useCase": "raid", "note": "Exact nano names not pinned; Crat is a minor buffer for an MP. source=web(flag)" },
-    { "buff": "Keeper auras (run-speed, healing, damage/AAO, reflect)", "id": null, "fromProfession": "Keeper", "effect": "Team auras: run speed, heal-over-time, +Add All Offense/damage, damage reflect.", "useCase": "raid", "note": "Passive team uptime buffs in a raid/team. source=web" },
-    { "buff": "Composite Attribute Boost (also self-castable by anyone)", "id": null, "fromProfession": "Any (SL nanocrystal)", "effect": "Strength/Stamina/Agility/Intelligence/Psychic/Sense +12 each.", "useCase": "twink", "note": "All six attributes at once for implant/symbiant requirements; froob-available now. See generalBuffs. source=web(aoitems 223372)" }
+    {
+      "buff": "Wrangle (Trader Shark line, e.g. Ransack/Dominate the Weak -> 'Team Skill'/single Wrangle)",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Adds to ALL weapon skills AND all nano skills at once; single up to ~+132, team versions similar. 3-min duration and self-debuffs the Trader.",
+      "useCase": "twink",
+      "note": "THE #1 twink buff for an MP: the temporary nanoskill boost lets the MP equip higher-QL symbiants/implants/nanos and cast above its normal ceiling, then the gear/nano holds after the wrangle fades (for equips) or is used to land a bigger pet during the window. source=web"
+    },
+    {
+      "buff": "Umbral Wrangler (SL aura) / Team Wrangle",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Aura/team version of the wrangle that refreshes continuously without debuffing the Trader.",
+      "useCase": "raid",
+      "note": "Sustained nanoskill+weapon boost for the whole team in raids. source=web"
+    },
+    {
+      "buff": "Skill/Trade-skill Wrangles (Apprentice/Journeyman/Maestro)",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Apprentice +40 / Journeyman +80 / Maestro +125 to a single trade skill; no level limit.",
+      "useCase": "twink",
+      "note": "Boosts Nano Programming / trade skills for self-building implants and using tradeskill items. source=web"
+    },
+    {
+      "buff": "Essence of Behemoth line (e.g. Improved Essence of Behemoth)",
+      "id": null,
+      "fromProfession": "Enforcer",
+      "effect": "Strength +Stamina together (Improved ~+54 each) and large Max Health.",
+      "useCase": "twink",
+      "note": "Raises Str/Sta to meet ability requirements on implants/symbiants and armor. source=web"
+    },
+    {
+      "buff": "Iron Circle",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Strength +20, Stamina +20.",
+      "useCase": "twink",
+      "note": "Another Str/Sta source (different nanoline, may stack with Enforcer for the requirement window). source=web"
+    },
+    {
+      "buff": "Instinctive Control (Nano Init line)",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Nano Init +200 (Improved ~+350) -> faster nano casting.",
+      "useCase": "cast",
+      "note": "Main cross-prof Nano Init source; speeds the MP's casts. source=web(flag: exact name/value from Who_Buffs_What)"
+    },
+    {
+      "buff": "Max Health / HoT buffs (Hearty Constitution, Continuous Reconstruction, team heals)",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Large Max Health and heal-over-time / complete heals.",
+      "useCase": "raid",
+      "note": "Survivability for the squishy MP in raids. source=web"
+    },
+    {
+      "buff": "Feline Grace",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Agility +25.",
+      "useCase": "twink",
+      "note": "Agility for implant/symbiant requirements. source=web"
+    },
+    {
+      "buff": "Enhanced Senses",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Sense +15.",
+      "useCase": "twink",
+      "note": "Sense for implant/symbiant requirements. source=web"
+    },
+    {
+      "buff": "Chemistry & Pharmaceuticals (Composite/Enhanced tradeskill)",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "~+50 Chemistry/Pharmaceuticals.",
+      "useCase": "twink",
+      "note": "Tradeskill boost for building implants/stims. source=web"
+    },
+    {
+      "buff": "False Profession",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Makes the target's profession appear as another for item requirements.",
+      "useCase": "twink",
+      "note": "Lets the MP wield off-profession weapons/items. NOTE the MP also has its own False/Assume/Mimic Profession nanos (see selfBuffs). source=web"
+    },
+    {
+      "buff": "Perception / Treatment buffs (Eagle Eye, Robust Treatment) and run speed",
+      "id": null,
+      "fromProfession": "Adventurer",
+      "effect": "Perception (Eagle Eye +240), Treatment (Robust +60), and strong run-speed buffs; Cocoon (temporary immunity) and Team Heal on some builds.",
+      "useCase": "twink",
+      "note": "Treatment for implant assembly; run speed/Cocoon for travel/survival. source=web"
+    },
+    {
+      "buff": "NCU (Grid Armor) + Run Speed + HoT",
+      "id": null,
+      "fromProfession": "Fixer",
+      "effect": "Extra NCU (to hold more buffs), team run-speed, and heal-over-time.",
+      "useCase": "raid",
+      "note": "More NCU lets the MP keep the whole buff stack up; run speed for travel. Exact nano names not pinned. source=web(flag)"
+    },
+    {
+      "buff": "Nano Init / Max Health (Enfraam's, Izgimmer's Mockery)",
+      "id": null,
+      "fromProfession": "Nano-Technician",
+      "effect": "NT self-focused nano-init/nano-cost lines; some HP nanos.",
+      "useCase": "cast",
+      "note": "NT is largely a self-buffer; it is NOT a major cross-prof buffer for an MP. Task-listed 'Matrix/Humidity Extractor' names NOT confirmed in sources -- flagged. source=web(flag)"
+    },
+    {
+      "buff": "Team AC / Add-All-Defense / init & mezz support",
+      "id": null,
+      "fromProfession": "Bureaucrat",
+      "effect": "Crat team AC and defensive/utility buffs (and enemy nano-resist debuffs).",
+      "useCase": "raid",
+      "note": "Exact nano names not pinned; Crat is a minor buffer for an MP. source=web(flag)"
+    },
+    {
+      "buff": "Keeper auras (run-speed, healing, damage/AAO, reflect)",
+      "id": null,
+      "fromProfession": "Keeper",
+      "effect": "Team auras: run speed, heal-over-time, +Add All Offense/damage, damage reflect.",
+      "useCase": "raid",
+      "note": "Passive team uptime buffs in a raid/team. source=web"
+    },
+    {
+      "buff": "Composite Attribute Boost (also self-castable by anyone)",
+      "id": null,
+      "fromProfession": "Any (SL nanocrystal)",
+      "effect": "Strength/Stamina/Agility/Intelligence/Psychic/Sense +12 each.",
+      "useCase": "twink",
+      "note": "All six attributes at once for implant/symbiant requirements; froob-available now. See generalBuffs. source=web(aoitems 223372)"
+    }
   ],
-
   "generalBuffs": [
-    { "name": "Composite Attribute Boost", "effect": "All six attributes +12 (Nano Can 'Composite Attribute Improvement' +20).", "source": "Self-castable SL nanocrystal / nano can (aoitems 223372, 303383) -- used by MP to meet gear requirements when twinking." },
-    { "name": "Composite Nano (nanoskill composite)", "effect": "Adds to nano skills (all-in-one).", "source": "SL composite nanocrystal line. VALUE/ID not pinned -- flag. Overlaps the MP's own Composite line so watch nanoline stacking." },
-    { "name": "Composite Utility / Melee / Ranged / Melee-Special / Ranged-Special", "effect": "Grouped skill boosts (evades, body-dev/nano-pool, treatment, weapon specials, etc.).", "source": "SL composite nanocrystals, self-castable by all professions. Exact contents per composite not pinned -- flag." },
-    { "name": "Essence line (self items) / Behemoth", "effect": "Str/Sta and Max Health.", "source": "Primarily Enforcer-cast; some consumable equivalents. See wantedFromOthers (Enforcer)." },
-    { "name": "IntelPredators / Predator line (Intelligence/nanoskill consumables)", "effect": "Boosts Intelligence / nano-related stats for req windows.", "source": "Consumable/event item. Exact item not pinned -- flag." },
-    { "name": "Expertise buffs", "effect": "Adds to a group of skills; stacks with Mochams and attribute boosts (AO-U: 'all buffs stack with Expertises and Attribute Boosts').", "source": "ao-universe Buffing Guide." },
-    { "name": "Pep / Wen consumables (First Aid / Treatment stims)", "effect": "Temporary First Aid/Treatment boost to self-heal and build implants.", "source": "Consumables. Exact items not pinned -- flag." },
-    { "name": "City buffs (org city)", "effect": "City-wide buffs such as nano-cost reduction / stat boosts from the org's city.", "source": "Player city. Exact set not pinned -- flag." },
-    { "name": "Tower / Notum War buffs", "effect": "Add All Offense / Add All Defense and related from controlled towers (The Purpose etc.).", "source": "Land control towers. Exact set not pinned -- flag." },
-    { "name": "New-city / faction / event buffs", "effect": "Assorted temporary boosts.", "source": "Events/faction vendors. Not pinned -- flag." }
+    {
+      "name": "Composite Attribute Boost",
+      "effect": "All six attributes +12 (Nano Can 'Composite Attribute Improvement' +20).",
+      "source": "Self-castable SL nanocrystal / nano can (aoitems 223372, 303383) -- used by MP to meet gear requirements when twinking."
+    },
+    {
+      "name": "Composite Nano (nanoskill composite)",
+      "effect": "Adds to nano skills (all-in-one).",
+      "source": "SL composite nanocrystal line. VALUE/ID not pinned -- flag. Overlaps the MP's own Composite line so watch nanoline stacking."
+    },
+    {
+      "name": "Composite Utility / Melee / Ranged / Melee-Special / Ranged-Special",
+      "effect": "Grouped skill boosts (evades, body-dev/nano-pool, treatment, weapon specials, etc.).",
+      "source": "SL composite nanocrystals, self-castable by all professions. Exact contents per composite not pinned -- flag."
+    },
+    {
+      "name": "Essence line (self items) / Behemoth",
+      "effect": "Str/Sta and Max Health.",
+      "source": "Primarily Enforcer-cast; some consumable equivalents. See wantedFromOthers (Enforcer)."
+    },
+    {
+      "name": "IntelPredators / Predator line (Intelligence/nanoskill consumables)",
+      "effect": "Boosts Intelligence / nano-related stats for req windows.",
+      "source": "Consumable/event item. Exact item not pinned -- flag."
+    },
+    {
+      "name": "Expertise buffs",
+      "effect": "Adds to a group of skills; stacks with Mochams and attribute boosts (AO-U: 'all buffs stack with Expertises and Attribute Boosts').",
+      "source": "ao-universe Buffing Guide."
+    },
+    {
+      "name": "Pep / Wen consumables (First Aid / Treatment stims)",
+      "effect": "Temporary First Aid/Treatment boost to self-heal and build implants.",
+      "source": "Consumables. Exact items not pinned -- flag."
+    },
+    {
+      "name": "City buffs (org city)",
+      "effect": "City-wide buffs such as nano-cost reduction / stat boosts from the org's city.",
+      "source": "Player city. Exact set not pinned -- flag."
+    },
+    {
+      "name": "Tower / Notum War buffs",
+      "effect": "Add All Offense / Add All Defense and related from controlled towers (The Purpose etc.).",
+      "source": "Land control towers. Exact set not pinned -- flag."
+    },
+    {
+      "name": "New-city / faction / event buffs",
+      "effect": "Assorted temporary boosts.",
+      "source": "Events/faction vendors. Not pinned -- flag."
+    }
   ],
-
   "givesToOthers": [
-    { "name": "Composite Mochams (1h/2h/4h/8h)", "id": 220337, "altIds": [220339, 220341, 220343], "effect": "All six nano skills +140 in one nano (nanoline 165). Level req 185/205/215/219.", "wantedBy": "Every nano-using profession (Doctor, NT, Crat, Trader, Adv, Engi, MP, etc.) -- highest single-cast all-nanoskill buff the MP hands out; needed to cast high nanos and equip nanoskill-req symbiants/implants." },
-    { "name": "Composite Infuse With Knowledge", "id": 220335, "effect": "All six nano skills +90 (nanoline 165). Level req 100.", "wantedBy": "Mid-level nano users who cannot yet take Composite Mochams." },
-    { "name": "Composite Mastery", "id": 220333, "effect": "All six nano skills +50. Level req 50.", "wantedBy": "Lower-level nano users / twinks." },
-    { "name": "Composite Teachings", "id": 220331, "effect": "All six nano skills +25. Level req 25.", "wantedBy": "Low-level nano users / twinks." },
-    { "name": "Mocham's Gift: BioMet", "id": 29299, "effect": "BiologicalMetamorphosis +140.", "wantedBy": "Anyone stacking single-school nanoskill (Doctors love BioMet; also stacks alongside a Composite in other lines)." },
-    { "name": "Mocham's Gift: MatCrea", "id": 29300, "effect": "MaterialCreation +140.", "wantedBy": "Engineers, NTs, Traders." },
-    { "name": "Mocham's Gift: MatMet", "id": 29302, "effect": "MaterialMetamorphosis +140.", "wantedBy": "NTs, MAs, anyone with MatMet reqs." },
-    { "name": "Mocham's Gift: PsyMod", "id": 29303, "effect": "PsychologicalModification +140.", "wantedBy": "Crats, NTs, MPs." },
-    { "name": "Mocham's Gift: SenseImp", "id": 29304, "effect": "SensoryImprovement +140.", "wantedBy": "Any nano user (shares nanoline 165 with Composite -- do not give both)." },
-    { "name": "Mocham's Gift: SpaceTime", "id": 29301, "effect": "SpaceTime +140.", "wantedBy": "Fixers, NTs, MPs, Advs." },
-    { "name": "Infuse With Knowledge (single-school +90)", "id": 151757, "altIds": [151758, 151759, 151760, 151761, 151762], "effect": "+90 to one nano skill (SenseImp 151757, SpaceTime 151758, MatMet 151759, PsyMod 151760, BioMet 151761, MatCrea 151762).", "wantedBy": "Mid-level nano users below Mocham's level." },
-    { "name": "Teachings (single-school +25)", "id": 151763, "altIds": [151764, 151765, 151766, 151767, 151768], "effect": "+25 to one nano skill (PsyMod 151763, SenseImp 151764, MatCrea 151765, SpaceTime 151766, MatMet 151767, BioMet 151768).", "wantedBy": "Low-level / twinks." },
-    { "name": "Mastery (single-school +50)", "id": 29275, "altIds": [29294, 29295, 29296, 29312, 29315], "effect": "+50 to one nano skill (BioMet 29275, MatCrea 29294, SpaceTime 29295, MatMet 29296, PsyMod 29312, SenseImp 29315).", "wantedBy": "Lower-level nano users / twinks." },
-    { "name": "Channel Notum Vein (team notum/nano regen: Elysium/Scheol/Adonis)", "id": 234993, "altIds": [234995, 234997], "effect": "Team-cast nano/notum utility (TeamCastNano 234068/234069/234070).", "wantedBy": "Team members wanting nano sustain (level 75+)." }
+    {
+      "name": "Composite Mochams (1h/2h/4h/8h)  [id 220337 = Composite Mochams (1 hour)]",
+      "id": 220337,
+      "altIds": [
+        220339,
+        220341,
+        220343
+      ],
+      "effect": "All six nano skills +140 in one nano (nanoline 165). Level req 185/205/215/219.",
+      "wantedBy": "Every nano-using profession (Doctor, NT, Crat, Trader, Adv, Engi, MP, etc.) -- highest single-cast all-nanoskill buff the MP hands out; needed to cast high nanos and equip nanoskill-req symbiants/implants.",
+      "representativeId": 220337,
+      "representativeName": "Composite Mochams (1 hour)"
+    },
+    {
+      "name": "Composite Infuse With Knowledge",
+      "id": 220335,
+      "effect": "All six nano skills +90 (nanoline 165). Level req 100.",
+      "wantedBy": "Mid-level nano users who cannot yet take Composite Mochams."
+    },
+    {
+      "name": "Composite Mastery",
+      "id": 220333,
+      "effect": "All six nano skills +50. Level req 50.",
+      "wantedBy": "Lower-level nano users / twinks."
+    },
+    {
+      "name": "Composite Teachings",
+      "id": 220331,
+      "effect": "All six nano skills +25. Level req 25.",
+      "wantedBy": "Low-level nano users / twinks."
+    },
+    {
+      "name": "Mocham's Gift: BioMet",
+      "id": 29299,
+      "effect": "BiologicalMetamorphosis +140.",
+      "wantedBy": "Anyone stacking single-school nanoskill (Doctors love BioMet; also stacks alongside a Composite in other lines)."
+    },
+    {
+      "name": "Mocham's Gift: MatCrea",
+      "id": 29300,
+      "effect": "MaterialCreation +140.",
+      "wantedBy": "Engineers, NTs, Traders."
+    },
+    {
+      "name": "Mocham's Gift: MatMet",
+      "id": 29302,
+      "effect": "MaterialMetamorphosis +140.",
+      "wantedBy": "NTs, MAs, anyone with MatMet reqs."
+    },
+    {
+      "name": "Mocham's Gift: PsyMod",
+      "id": 29303,
+      "effect": "PsychologicalModification +140.",
+      "wantedBy": "Crats, NTs, MPs."
+    },
+    {
+      "name": "Mocham's Gift: SenseImp",
+      "id": 29304,
+      "effect": "SensoryImprovement +140.",
+      "wantedBy": "Any nano user (shares nanoline 165 with Composite -- do not give both)."
+    },
+    {
+      "name": "Mocham's Gift: SpaceTime",
+      "id": 29301,
+      "effect": "SpaceTime +140.",
+      "wantedBy": "Fixers, NTs, MPs, Advs."
+    },
+    {
+      "name": "Infuse With Knowledge (single-school +90)  [id 151757 = Infuse With Knowledge: Sensory Improvement]",
+      "id": 151757,
+      "altIds": [
+        151758,
+        151759,
+        151760,
+        151761,
+        151762
+      ],
+      "effect": "+90 to one nano skill (SenseImp 151757, SpaceTime 151758, MatMet 151759, PsyMod 151760, BioMet 151761, MatCrea 151762).",
+      "wantedBy": "Mid-level nano users below Mocham's level.",
+      "representativeId": 151757,
+      "representativeName": "Infuse With Knowledge: Sensory Improvement"
+    },
+    {
+      "name": "Teachings (single-school +25)  [id 151763 = Teachings of Psychological Modification]",
+      "id": 151763,
+      "altIds": [
+        151764,
+        151765,
+        151766,
+        151767,
+        151768
+      ],
+      "effect": "+25 to one nano skill (PsyMod 151763, SenseImp 151764, MatCrea 151765, SpaceTime 151766, MatMet 151767, BioMet 151768).",
+      "wantedBy": "Low-level / twinks.",
+      "representativeId": 151763,
+      "representativeName": "Teachings of Psychological Modification"
+    },
+    {
+      "name": "Mastery (single-school +50)  [id 29275 = BioMet Mastery]",
+      "id": 29275,
+      "altIds": [
+        29294,
+        29295,
+        29296,
+        29312,
+        29315
+      ],
+      "effect": "+50 to one nano skill (BioMet 29275, MatCrea 29294, SpaceTime 29295, MatMet 29296, PsyMod 29312, SenseImp 29315).",
+      "wantedBy": "Lower-level nano users / twinks.",
+      "representativeId": 29275,
+      "representativeName": "BioMet Mastery"
+    },
+    {
+      "name": "Channel Notum Vein (team notum/nano regen: Elysium/Scheol/Adonis)  [id 234993 = Channel Notum Vein: Elysium]",
+      "id": 234993,
+      "altIds": [
+        234995,
+        234997
+      ],
+      "effect": "Team-cast nano/notum utility (TeamCastNano 234068/234069/234070).",
+      "wantedBy": "Team members wanting nano sustain (level 75+).",
+      "representativeId": 234993,
+      "representativeName": "Channel Notum Vein: Elysium"
+    }
   ],
-
   "botStrategyNotes": {
     "selfKeepUpOrder": [
       "1. Odin's Other Eye 273379 (Int/Psy + 4 nanoskills; base attributes -> enables the rest).",
@@ -109,7 +531,6 @@
       "NanoProgramming for self-building/equipping: Advanced Symbol Manipulation + False Profession family + Trader trade-skill wrangle."
     ]
   },
-
   "_unverified": [
     "Doctor Nano-Init nano exact name/value ('Instinctive Control' +200/+350) taken from Who_Buffs_What summary -- confirm before use.",
     "Nano-Technician cross-prof buffs for an MP: task-listed 'Matrix' and 'Humidity Extractor' names were NOT confirmed in the sources checked; NT appears to be a self-buffer here.",
@@ -118,7 +539,6 @@
     "False/Assume/Mimic Profession: Meta-Physicist (32036/117219/117208) appear in the MP-castable extraction; the intended target/use for an MP casting its own false profession is unclear -- do not auto-cast until confirmed.",
     "Cross-profession buff ids are null throughout: they belong to other professions and are not in the local MP nano data."
   ],
-
   "_sources": [
     "AOBuddy/GameData/profiles/metaphysicist-nanos.json (local nanos.ocp extraction, client 18.8.50_EP1) -- all self/gives ids",
     "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide -- Wrangle/Essence/Iron Circle/Agent/Adventurer/Fixer/Composite values, expertise stacking",

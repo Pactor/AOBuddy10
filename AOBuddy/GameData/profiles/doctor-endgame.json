@@ -1,0 +1,214 @@
+{
+  "profession": "Doctor",
+  "professionId": 10,
+  "symbiantUnitType": "Support",
+  "levelCapContext": "AO's level cap is 220, plus up to 30 AI title levels and the Lost Eden research levels. 'Endgame' here means roughly level 200-220, AI 24-30, research L9-10.",
+  "raidRoleSummary": "A Doctor is not a flexible utility slot at endgame - it is a required role. Every raid in this file needs at least one and usually two or three, and the raid stops when they die. What a raid actually wants from a Doctor, in priority order: (1) Complete Healing (28650) / Improved Complete Healing (270747) held for the tank's spike and Alpha and Omega (42409) held for the raid's; (2) the top team HP buff (Superior Omni-Med Enhancement 95709) up before every pull and re-cast after every wipe; (3) an unbreakable initiative debuff on the boss (UBT 99577, or Rapid Palsy 301845) - AOWiki: unbreakable variants 'last the full duration of the nano or until the target dies, regardless of damage dealt', which is a raid-wide damage reduction dressed as a debuff; (4) Improved Instinctive Control (222856, +350 Nano C. Init) handed to every other caster in the raid; (5) Iron Circle (42400) and Superior First Aid (28675) as the standing team buffs; (6) the best Vaccine (204431) up in any fight with drains; (7) a rolling HoT (Team-Enhanced Deathless Blessing 269455) between real casts. Everything else - the three DoT strains, Malpractice (275701), the pistol - is what a Doctor does in the gaps.",
+  "content": [
+    {
+      "name": "The Xan (12-man) / Hall of the Elders",
+      "type": "raid",
+      "level": "Endgame, level 210+ recommended. 4-hour instance lockout. Xan Center Hub (Legacy of the Xan).",
+      "whatDropsForClass": "Xan Beta symbiants across ear / eye / chest / thigh / right arm / right hand / feet - the SUPPORT-line Betas are the first half of every Xan Support Alpha a Doctor will ever wear. Also Beta spirits (Right Limb, Right Hand, Feet, Ear, Leg), Xan Belt Tuning Devices, a Xan Weapon Upgrade Device, a Nanodeck Activation Device, and 'The Awakening' 5-hour completion buff.",
+      "classRole": "PRIMARY HEALER, and the encounter specifically punishes you for it. The AO-Universe guide states healers 'must be on their toes because he hits hard' on the Left Hand of Insanity; the Left Hand's FEAR makes the whole team flee, which is 'unavoidable unless you have a keeper/fixer'; and doctors can be MORPHED into white birds or silvertails, which stops you healing entirely. Worst of all, below 50% the Deranged Xan MIND-CONTROLS doctors ('Masters of the Flesh! You will obey!') - a controlled Doctor can be made to cast UBT on its own raid.",
+      "note": "This is THE source of Xan Support Betas. Betas here plus Intelligent QL300 Support symbiants from Pandemonium = your Support Alphas (doctor-symbiants.json best-in-slot: Xan Brain 278996, Ocular 278997, Ear 278998, Chest 278999, Left Arm 279000, Left Hand 279001, Left Wrist 279002, Right Arm 279003, Right Hand 279004, Right Wrist 279005, Waist 279006, Thigh 279007, Feet 279008). Beta ear and thigh are adaptable between unit types, which saves money."
+    },
+    {
+      "name": "Pandemonium (Adonis inner realm)",
+      "type": "raid",
+      "level": "roughly 201-220; requires a +10 or better Pande access ring to reach the inner islands",
+      "whatDropsForClass": "The Night Heart drops Intelligent (QL300) symbiants - the SECOND half of every Xan Support Alpha. Trash bosses drop the common cross-game phatz (Glyph of the Arcana, Meteorite Spikes, Koan Shuriken, Heroes Discus, Tear of Oedipus). Portal bosses gate progress and drop nothing.",
+      "classRole": "Primary healer across 18 bosses on 4 islands, with the fights strung out enough that nano management matters as much as heal size. Keep the team HP buff and a HoT up between bosses; hold complete heals for the islands' burst phases.",
+      "note": "The bottleneck for a Doctor's Alpha symbiants - few Intelligent QL300s drop per Night Heart kill. Your access ring quality decides which islands you can even reach."
+    },
+    {
+      "name": "The Beast",
+      "type": "raid",
+      "level": "Endgame. wiki.aodb.us gives the Beast itself as level 300 with a 9-hour respawn, located in Pandemonium.",
+      "whatDropsForClass": "STAR OF RECOVERY (id 244699) - the Doctor-locked Beast star, dropping at 13.46% over the wiki's 104 recorded kills. Read from items.ocp: QL250, NODROP, Profession EqualTo Doctor, requires Computer Literacy 1499 and Level 199, and gives Biological Metamorphosis +30, Treatment +30, Stamina +30 and Pharma Tech +60 - and it fits an enormous slot list (Neck/Head/Back/Shoulder/Body/Finger/HUD1/HUD2/HUD3/Utils1-3), so it slots wherever you have room. Per kill the Beast also drops 4 armor parts, both hilts, 1-2 stars, 2-4 weapons as 'Lady of' (QL299) or 'Lord of' (QL300), and a Shadowbreed.",
+      "classRole": "Primary healer. The Doctor is a required slot, not a contributed one - and Star of Recovery is one of the few pieces of endgame loot that exists solely for this class.",
+      "note": "The classic Shadowlands pinnacle kill. For a Doctor the headline drop is its own star; the Lord/Lady weapons and Shadowbreed are the raid's currency."
+    },
+    {
+      "name": "Dust Brigade - Outpost (DB1)",
+      "type": "instance",
+      "level": "roughly 200+, full team (tank plus doc)",
+      "whatDropsForClass": "Enhanced Dust Brigade Armor parts, and access to the Dust Brigade bracer lines that are among the best Doctor wrist items in the game: the RIGHT-wrist Infused line (Basic 274541 -> Tier 1-9 274542-274550 -> Perfected 274551, growing from +1 Heal Multiplier / +100 HP / +100 nano to +4 / +1200 / +1200) and the LEFT-wrist line (First Edition 292566 -> Second 292565 -> Third 292564, up to +2 Heal Multiplier / +1200 HP / +1200 nano). The two lines fit different wrists, so a Doctor can run both.",
+      "classRole": "Primary healer; the team literally lists 'tank plus doc' as its minimum.",
+      "note": "DB1 / DB2 / DB3 = Outpost / Inside the Machine / The Facility. Enhanced DB armor drops in DB1-DB2; completing DB3 finishes the questline and is a 215-220 progression milestone."
+    },
+    {
+      "name": "Dust Brigade - Inside the Machine (DB2)",
+      "type": "instance",
+      "level": "roughly 210+, full team",
+      "whatDropsForClass": "More Enhanced Dust Brigade Armor parts; continuation of the DB chain and the bracer upgrades.",
+      "classRole": "Primary healer.",
+      "note": "Second stage of the DB chain."
+    },
+    {
+      "name": "Dust Brigade - The Facility (DB3)",
+      "type": "instance",
+      "level": "roughly 215-220, full team",
+      "whatDropsForClass": "Six floors; the 1st, 3rd and 5th are filler with no loot. Final DB quest reward stage.",
+      "classRole": "Primary healer through a long multi-floor instance - a nano-endurance fight as much as a healing one. Bring nano kits and keep Improved Instinctive Control up.",
+      "note": "Finishing DB3 completes the Dust Brigade questline."
+    },
+    {
+      "name": "Alien City Raids (Kyr'Ozch cities)",
+      "type": "raid",
+      "level": "High-level org/raid content",
+      "whatDropsForClass": "Kyr'Ozch Bio-Material and viralbots - the materials that build COMBINED PARAMEDIC'S ARMOR (246631-246656), the Doctor's alien set: +200 Max Health, +50 Body Dev., +200 Max Nano, +50 Nano Pool and -3% nano cost on EVERY one of the six pieces. Also alien weapons and armor mats.",
+      "classRole": "Primary healer on a long, messy, AoE-heavy raid - the content the team HP buff and a rolling team HoT were made for.",
+      "note": "This is where a Doctor's endgame armor comes from if it wants survivability and sustain rather than nano skill. Six Paramedic's pieces is +1200 HP, +300 Body Dev., +1200 nano, +300 Nano Pool and -18% nano cost."
+    },
+    {
+      "name": "Sector 7",
+      "type": "raid",
+      "level": "High-level team content. Gates open roughly every 7 hours for about 10 minutes, via the Unicorn Outpost ship outside ICC/Andromeda.",
+      "whatDropsForClass": "Four ship bosses (the 4th spawned from a Power Core built from the first three). 16 NODROP profession-restricted Special Edition weapons - the Doctor-relevant ones are the Special Edition Kyr'Ozch Pistol (288293, Pistol 699, lock set includes Doctor) and the Special Edition Kyr'Ozch Energy Pistol. QL160-270 items that grant Victory Points.",
+      "classRole": "Team healer. Check every Special Edition drop against the Doctor lock set - 23 weapon models in items.ocp carry a Profession EqualTo Doctor lock and 17 of them are pistols.",
+      "note": "Entry-tier alien playfield and the gateway to VP farming."
+    },
+    { "name": "Sector 10", "type": "raid", "level": "Mid/high-level alien playfield (team instanced)", "whatDropsForClass": "Alien loot, Kyr'Ozch bio-material for Combined Paramedic's, VP items.", "classRole": "Team healer.", "note": "Progression playfield between Sector 7 and the higher sectors." },
+    { "name": "Sector 13", "type": "raid", "level": "High-level instanced raid", "whatDropsForClass": "Alien loot, bio-material, VP.", "classRole": "Raid healer.", "note": "One of the high-level instanced alien raids (13/28/35)." },
+    { "name": "Sector 28", "type": "raid", "level": "High-level instanced raid", "whatDropsForClass": "Alien loot, bio-material, VP.", "classRole": "Raid healer.", "note": "High-level instanced alien raid." },
+    { "name": "Sector 35", "type": "raid", "level": "High-level instanced raid (endgame)", "whatDropsForClass": "Alien loot, bio-material, VP; among the harder sector raids.", "classRole": "Raid healer.", "note": "Top-tier instanced alien raid before Sector 42." },
+    {
+      "name": "Sector 42 (Alien Playfield / APF) - the Zodiac / Artillery Commander",
+      "type": "raid",
+      "level": "Endgame raid, level 210+ (do not roll on 210+ APF items before level 210)",
+      "whatDropsForClass": "APF nano items and endgame alien loot. Sector 42 requires three bosses in separate places killed simultaneously to spawn the Artillery Commander.",
+      "classRole": "Healer on a synchronised multi-team pull - the raid splits, so multiple Doctors are mandatory, one per group, and each one is alone with its group for the duration.",
+      "note": "The APF/Zodiac endgame alien raid."
+    },
+    {
+      "name": "Battlestation (Ofab / Victory Points)",
+      "type": "daily",
+      "level": "Faction PvP battlefield; queue at endgame for VP",
+      "whatDropsForClass": "Victory Points, spent at the Ofab Shop on the OFAB DOCTOR SET - the best profession armor a Doctor can own. Three tiers (Ofab -> Improved -> Penultimate, ids 264646-264681) plus OFAB Doctor Protective Gear (267933, back: +50 Treatment, +2 Heal Multiplier, +25 Max NCU, +300 Max Health) and OFAB Doctor Shoulder Wear (301697: +20 Biological Metamorphosis, +450 Max Health, +15 Pistol). There is also a Special Edition Ofab Doctor Helmet (267352). VP additionally buys the QL300 ring, the Special Edition head and the Ofab back item at 220.",
+      "classRole": "PvP healer. A Doctor on a Battlestation is both the most valuable and the most focused target on the field - which is what Improved Nano Repulsor (222823, +200 Nano Resist), the Vaccine line (204425-204431) and Misdiagnosis (266306, Heal Multiplier -50 on an enemy healer) are for.",
+      "note": "VP is bought with time, not RNG, so this grind can run in parallel with everything else. Start it well before 200."
+    },
+    {
+      "name": "Inferno missions and pocket bosses",
+      "type": "instance",
+      "level": "Level 190+",
+      "whatDropsForClass": "QL220-255 pocket-boss patterns (9 complete patterns needed for the Galahad Garden key), Inferno items, tokens and mission nanos.",
+      "classRole": "Team healer; a Doctor can also solo a lot of Inferno slowly by DoT-and-outlast, but it is not fast.",
+      "note": "The Inferno grind feeds tokens, the Galahad Garden key and access to higher SL content."
+    },
+    {
+      "name": "Penumbra missions (Shadowbreed / Shadow gear)",
+      "type": "instance",
+      "level": "Level 150-210 team range",
+      "whatDropsForClass": "Shadowbreed gear from rolled Penumbra missions; tokens; a step toward Pande access.",
+      "classRole": "Team healer.",
+      "note": "Roll these around 205-210 for Shadow Breed gear and tokens."
+    },
+    {
+      "name": "Lost Eden and alien dailies",
+      "type": "daily",
+      "level": "Endgame (200-220)",
+      "whatDropsForClass": "Tokens and steady AI/research XP. Research XP matters disproportionately for a Doctor because the alien and research lines are where its biggest permanent gains sit: Champion of Nano Combat (+100 to all six nano skills), Embrace (+50 Matter Metamorphosis, +1000 Max Nano, -4% nano cost), Assault Force Medic (+43 BM, +43 MM, +40 Treatment, +25 First Aid, +340 Max Health), Nano Surgeon (+42 BM, +42 MM, +60 Treatment, +45 First Aid), Nano Doctorate (+100 to all six nano skills) and Specialist Healer (+21% healing).",
+      "classRole": "Healer on fast daily runs.",
+      "note": "The daily loop for tokens and AI/research XP."
+    }
+  ],
+  "progressionOrder": [
+    {
+      "step": "1. Nano skill foundation (BM and MM above everything)",
+      "what": "Get Biological Metamorphosis and Matter Metamorphosis as high as implants, symbiants, armor, perks and borrowed buffs allow. The rungs that matter: Complete Healing 28650 at BM 794 / MM 722, Alpha and Omega 42409 at BM 873 / MM 786, UBT 99577 at BM 861 / PM 861, Superior Omni-Med Enhancement 95709 at BM 852 / MM 769 / SpaceTime 769, Improved Complete Healing 270747 at BM 2153 / MM 2153.",
+      "why": "Everything else in this list exists to raise these two numbers. A Doctor with better gear and lower BM heals for less than a Doctor with worse gear and higher BM."
+    },
+    {
+      "step": "2. Treatment ladder, implants, then Support symbiants",
+      "what": "Max Treatment (cost factor 1.0), fill all 13 slots with QL200+ implants per doctor-implants.json, then start replacing them with SUPPORT-unit symbiants and work toward a stable QL240+ baseline.",
+      "why": "Support is the only unit line a Doctor can wear - verified from items.ocp, every Support symbiant's ToWear locks stat 60 to {MartialArtist, Fixer, Adventurer, Trader, Doctor, Meta-Physicist, Keeper} and Doctor appears in no other line's lock set. Support carries exactly the Doctor's stat sheet: BM, MM, Matter Creation, Treatment, First Aid, Nano Pool, Max Nano, Nano Init, Body Dev and Max Health. See doctor-symbiants.json."
+    },
+    {
+      "step": "3. Ofab Doctor armor via Battlestation VP",
+      "what": "Farm Victory Points and buy the Ofab Doctor set, upgrading each piece twice (Ofab -> Improved -> Penultimate). Pick up the back (267933) and shoulder (301697) pieces too. Run the Chosen or Faithful Doctor Suit meanwhile - it is free and has the same slot-to-stat layout at roughly 60-75% of the numbers.",
+      "why": "Ofab is the only set that gives a Doctor Treatment, First Aid, Heal Multiplier, Max NCU and all four relevant nano skills at once - and it is bought with time rather than won from a drop table."
+    },
+    {
+      "step": "4. Heal Multiplier items",
+      "what": "Layer in the scarce Heal Multiplier pieces: Ancient Resorative Fungus (302925, +5, Level 200 only, also +1000 nano and -10% nano cost), Nano Assistant (269187, +5, no profession lock), Sacred Chalice (305523, +7, Doctor-locked, BM 1799), Sheffy's Micro Coil (267563, +5 plus +20 BM / +20 MM / +100 Nano C. Init, Level 219), Doctor's Left Hand of Grace (267618, +5, needs Pistol 1700 / Fling Shot 850), Star of Recovery (244699, Beast drop), Cloak of the Reanimated Healer 5/5 (274707, +3 plus all six nano skills +18), and the Dust Brigade bracer lines.",
+      "why": "Heal Multiplier is a percentage on every heal you cast and only 66 items in the whole Doctor-wearable dump grant it. It is the one endgame stat that is genuinely contested by nobody else."
+    },
+    {
+      "step": "5. Perks and research to completion",
+      "what": "Max Assault Force Medic (10), Nano Surgeon (6), Specialist Healer (10), Nano Doctorate (10), then the alien lines Champion of Nano Combat (10) and Embrace (10). Push LE research to L9-10 across Bedside Manner, Rehabilitation, Internship, Diagnosis, Toxicology and Underground Doctor; push AI levels to 24-30.",
+      "why": "Between them these lines are worth +100 (Nano Doctorate) plus +100 (Champion of Nano Combat) plus +43 (Assault Force Medic) plus +42 (Nano Surgeon) to BM and MM, +100 Treatment, +70 First Aid, +21% healing and 5% healing efficiency from Underground Doctor - permanent, no drop RNG, and larger than most gear upgrades."
+    },
+    {
+      "step": "6. Combined Paramedic's alien armor",
+      "what": "Farm Kyr'Ozch bio-material and viralbots in the alien city raids and sectors; build the six Combined Paramedic's pieces (Headwear 246632, Jacket 246648, Sleeves 246650, Gloves 246652, Legwear 246654, Footwear 246656). Requires Stamina 999, Psychic 999, Title Level 5 and Alien Invasion at QL300.",
+      "why": "+1200 Max Health, +300 Body Dev., +1200 Max Nano, +300 Nano Pool and -18% nano cost across the set - it answers the Doctor's two real failure modes (dying to the aggro its own heals create, and running out of nano) better than any nano-skill set. Mix with Ofab per slot rather than wearing one set whole."
+    },
+    {
+      "step": "7. Pande access ring (+10 or better), then Xan Support Betas",
+      "what": "Get the access ring so you can reach the inner Pandemonium islands, and raid the Xan 12-man for Support-line Xan Beta symbiants across all your slots.",
+      "why": "Betas are strong upgrades on their own and are the first half of every Alpha. The Xan 12-man is the only source. Beta ear and thigh are adaptable between unit types."
+    },
+    {
+      "step": "8. Intelligent QL300 Support symbiants (Pandemonium / Night Heart)",
+      "what": "Farm the Night Heart for Intelligent (QL300) Support symbiants. Few drop per kill - this is the grind bottleneck.",
+      "why": "Intelligent QL300 is the second half of every Alpha, and the access ring from step 7 is what lets you get there."
+    },
+    {
+      "step": "9. Xan Support Alphas (crafted, NODROP)",
+      "what": "Combine a matching Xan Support Beta and an Intelligent QL300 of the same slot on your own character to make each Alpha: Brain 278996, Ocular 278997, Ear 278998, Chest 278999, Left Arm 279000, Left Hand 279001, Left Wrist 279002, Right Arm 279003, Right Hand 279004, Right Wrist 279005, Waist 279006, Thigh 279007, Feet 279008.",
+      "why": "Xan Support Alphas are best-in-slot. The Brain Alpha (278996) alone is +144 Biological Metamorphosis and +144 Treatment. NODROP, so they must be crafted on the Doctor that will wear them."
+    },
+    {
+      "step": "10. Dust Brigade chain, the Beast star and the rest",
+      "what": "Run DB1/DB2 for Enhanced Dust Brigade Armor and both bracer lines, complete DB3, chase Star of Recovery (244699) on Beast runs, and finish the Arid Rift / Neretva quests.",
+      "why": "The long tail. The DB bracers are genuinely top-tier for a Doctor (+4 and +2 Heal Multiplier on opposite wrists plus +2400 HP and +2400 nano between them); the Beast star at 13.46% is a pure waiting game."
+    }
+  ],
+  "notes": [
+    "A Doctor is a REQUIRED raid role, not a flexible slot. This is the single biggest difference between this file and the pet-class equivalent: an MP contributes, a Doctor gatekeeps. Raids are planned around how many Doctors are online.",
+    "Hold the complete heals. Complete Healing (28650), Improved Complete Healing (270747) and Alpha and Omega (42409) are resets, not rotation buttons - AOWiki says complete heals 'always heal for 10001 health, ignoring heal modifying buffs', which means they are worth the most on someone who is nearly dead and worth almost nothing on someone at 80%.",
+    "UBT is a raid-wide damage reduction. Uncontrollable Body Tremors (99577) is unbreakable, so landing it early on the boss reduces every point of healing the raid will need for the rest of the fight. Land it before you start healing, not after.",
+    "Hand out Improved Instinctive Control (222856). +350 Nano C. Init on every other caster in the raid is the Doctor's biggest non-healing contribution and costs you one cast each.",
+    "Nano endurance decides long fights, not heal size. Budget for it: Ofab Doctor Body is +1000 Max Nano, Combined Paramedic's is +200 per piece and -3% nano cost per piece, Sacred Chalice is +1000 and -5%, Ancient Resorative Fungus is +1000 and -10%. Carry nano kits - Treatment is cost factor 1.0 for you, so you can use the highest QL in the game.",
+    "Symbiant unit type: a Doctor wears SUPPORT symbiants and nothing else. Verified from items.ocp, not from memory - Doctor(10) appears only in the Support line's ToWear profession-lock set. Match Support on every Beta and Alpha.",
+    "NCU is a real endgame constraint for this class. You carry the team HP buff, Iron Circle, Improved Instinctive Control, Improved Nano Repulsor, a Vaccine and a heal-delta buff on yourself before anyone else offers anything. Memory of Future Events (305516, +200 NCU), Memory NCU 6/6 (278782, +192) and Spirit Infused Yuttos Modified NCU (267797, +125) exist for exactly this.",
+    "In PvP and on Battlestation you are the focus target. Improved Nano Repulsor (222823, +200 Nano Resist), the Vaccine line (204425-204431, Trader drain resistance) and Misdiagnosis (266306, -50 Heal Multiplier on an enemy healer) are the counter-play kit.",
+    "Gate items: a +10 or better Pande access ring before you can farm the Intelligent QL300 symbiants; Level 210 before you roll on 210+ APF items; Level 219 for Sheffy's Micro Coil; Level 220 for Bodily Invigoration (223299). The top SL heals also require Specialization BitAnd 8, so finish the spec chain.",
+    "The Xan 12-man singles your class out for punishment - fear, morph and mind control all land on or through the Doctor. Plan it: the guide says the fear is 'unavoidable unless you have a keeper/fixer', so bring one, and expect to be silenced by a morph at the worst moment."
+  ],
+  "_deviations": [
+    "The file has a raidRoleSummary block the MP endgame file does not. It is there because the answer to 'what does a raid want from this class' is concrete and rankable for a Doctor, whereas the MP file's honest answer was 'MP is a flexible utility/DPS slot in raids, not a required role like tank or doc' - that sentence is literally what this file inverts.",
+    "Every content row's classRole says 'healer'. That is not laziness; it is the finding. An MP's role changes per encounter (pet DPS here, CC there); a Doctor's does not. Where the role genuinely differs it is stated as a mechanic - Sector 42 splits the raid so each Doctor is alone with its group; DB3 is a nano-endurance fight; the Xan 12-man actively disables the Doctor.",
+    "The symbiant line is SUPPORT, not the MP's Control, and the file names the verified evidence rather than asserting it: Support's ToWear stat-60 lock set is {MartialArtist, Fixer, Adventurer, Trader, Doctor, Meta-Physicist, Keeper} and Doctor appears in no other line's set (see doctor-symbiants.json).",
+    "The alien set is Combined PARAMEDIC'S (246631-246656), which the client data shows is an HP/Body-Dev/nano-pool/nano-cost set with NO nano-skill bonuses - the opposite profile to the nano-skill Combined the MP file recommends. A Doctor buys survivability and sustain there.",
+    "A new progression step exists that the MP file has no equivalent of: step 4, Heal Multiplier items. It is a separate step because Heal Multiplier is granted by only 66 items in the whole Doctor-wearable dump, no other class competes for them, and stacking them is a distinct farm from armor or symbiants.",
+    "Step 1 is nano SKILL, not a nano twink for a pet ceiling. The MP file's step 1 is 'twink MC and TS high enough to cast the top pets'; the Doctor's is BM and MM high enough to reach specific named heal rungs, and those rungs are quoted from local castReqs rather than from a forum post.",
+    "The Beast entry names a specific Doctor item with a verified stat block - Star of Recovery (244699), Doctor-locked, +30 BM / +30 Treatment / +30 Stamina / +60 Pharma Tech - where the MP file could only flag 'Star of Moral' as unverified. The difference is that this pass read the item out of items.ocp instead of taking the wiki's word for it."
+  ],
+  "_unverified": [
+    "The Beast's 13.46% drop rate for Star of Recovery is wiki.aodb.us's figure over 104 recorded kills; the ITEM (id, lock, requirements, bonuses) is verified from items.ocp, the drop RATE is not.",
+    "'The Beast is level 300' is wiki.aodb.us's statement and refers to the MOB, not a player requirement - the AO player cap is 220. Player access is via the Pande access ring.",
+    "wiki.aodb.us's Beast page gives no encounter mechanics, group size, gear thresholds or tactics, so none are stated here.",
+    "Pandemonium's structure (18 bosses, 4 islands, portal versus phatz bosses, the Night Heart as the Intelligent QL300 source), the Alpha crafting rule, the Sector 7 gate timing and boss count, the Sector 42 three-simultaneous-boss mechanic, the Dust Brigade DB1/DB2/DB3 naming and floor layout, the Galahad Garden key pattern count and the ~84k VP figure for the 220 purchases are ALL carried over from metaphysicist-endgame.json, which cites wiki.aodb.us and ao-universe.com for them. They were NOT independently re-fetched in this pass. The Doctor-specific loot and role columns on each row WERE written fresh against local data.",
+    "Per-sector loot for Sectors 10/13/28/35 is not enumerated from a loot table - treat it as 'alien loot plus bio-material plus VP' pending a per-sector check. That gap is inherited from the MP file and is unresolved.",
+    "The Xan 12-man Doctor mechanics (fear, morph into white birds/silvertails, the Deranged Xan mind-controlling doctors below 50%) are quoted from the AO-Universe Xan 12-man guide, which was fetched in this pass. Note that the same fetch glossed 'UBT' as 'Uplifting Burst of Technology'; that expansion is WRONG and is not recorded here - UBT is Uncontrollable Body Tremors, id 99577, verified locally.",
+    "Battlestation VP costs per Ofab tier, and the VP prices of the QL300 ring / Special Edition head / Ofab back at 220, are not sourced in this pass.",
+    "Heal Multiplier's unit and stacking behaviour were not derived (see doctor-gear.json _unverified) - the step-4 items are ranked by their raw integer bonus, which may not be how they combine in game.",
+    "The Special Edition Kyr'Ozch Pistol (288293) is confirmed from doctor-weapons.json to carry a profession lock set that includes Doctor; that it drops specifically from Sector 7 bosses is the MP file's carried-over attribution, not a verified drop table."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/doctor-nanos.json (nanos.ocp, client 18.8.50_EP1) - every nano id and cast requirement in raidRoleSummary, progressionOrder and notes.",
+    "LOCAL: items.ocp via tools/eng-gear-extractor --prof 10 - Star of Recovery (244699), the Ofab Doctor set (264646-264681, 267933, 301697, 267352), Combined Paramedic's (246631-246656), the Dust Brigade bracer lines (274541-274551, 292564-292566), Sacred Chalice (305523), Sheffy's Micro Coil (267563), Ancient Resorative Fungus (302925), Nano Assistant (269187), Doctor's Left Hand of Grace (267618), Cloak of the Reanimated Healer (274707) and the NCU items (305516, 278782, 267797) - all ids, QLs, locks, requirements and bonuses.",
+    "LOCAL: AOBuddy/GameData/profiles/doctor-symbiants.json - the Support-line profession-lock finding and the thirteen Xan Support Alpha ids (278996-279008).",
+    "LOCAL: AOBuddy/GameData/profiles/doctor-weapons.json - the 23 Doctor-locked weapon models and the Special Edition Kyr'Ozch Pistol (288293) lock set.",
+    "LOCAL: the extracted client data/itemnames.sql - every item id in this file verified to resolve to the name given.",
+    "http://wiki.aodb.us/wiki/The_Beast - 'Star of Recovery' 13.46% for Doctors over 104 recorded kills; the Beast at level 300 in Pandemonium with a 9-hour respawn; 'On every kill the Beast drops 4 Parts of Armor, both Hilts, 1-2 Stars and 2-4 Weapons' as Lady of (QL299) or Lord of (QL300) plus a Shadowbreed.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man - the 4-hour lockout, the Beta symbiant and spirit drops, the Xan Belt Tuning / Weapon Upgrade / Nanodeck Activation devices, 'The Awakening' 5-hour completion buff, and the Doctor-specific mechanics: 'Healers must be on their toes because he hits hard', the fear being 'unavoidable unless you have a keeper/fixer', doctors being morphed into white birds or silvertails, and the Deranged Xan mind-controlling doctors below 50% ('Masters of the Flesh! You will obey!').",
+    "http://wiki.aodb.us/wiki/Doctor_Nano_Programs - complete heals 'always heal for 10001 health, ignoring heal modifying buffs'; unbreakable init debuffs 'last the full duration of the nano or until the target dies, regardless of damage dealt'.",
+    "http://wiki.aodb.us/wiki/Doctor:Perks and /Doctor:Research_Lines - the perk and research figures quoted in progression step 5 (Assault Force Medic, Nano Surgeon, Specialist Healer +21%, Nano Doctorate, Champion of Nano Combat, Embrace, Underground Doctor 5% healing efficiency).",
+    "http://wiki.aodb.us/wiki/Doctor:Armor - Ofab Doctor Armor as the Lost Eden Doctor set.",
+    "CARRIED OVER (not re-fetched in this pass) from AOBuddy/GameData/profiles/metaphysicist-endgame.json, which cites them: wiki.aodb.us/wiki/Pandemonium, wiki.aodb.us/wiki/Alien_Loot, wiki.aodb.us/wiki/Alien_Playfields, wiki.aodb.us/wiki/Dust_Brigade, ao-universe.com Sector 07 and Battle Stations guides, ao-universe.com Galahad Garden Key quest, and athenpaladins.org's Xan Alpha/Beta crafting and 205-220 progress guides. See _unverified."
+  ]
+}

@@ -1,0 +1,345 @@
+{
+  "profession": "Doctor",
+  "professionId": 10,
+  "summary": "A Doctor's gear priorities are, in order: HEAL MULTIPLIER (stat 0x217 - a straight percentage on every heal it will ever cast, and the one stat no other class competes for), Biological Metamorphosis and Matter Metamorphosis (which decide which rung of the heal ladder it can stand on), Treatment and First Aid (which gate every implant, symbiant and kit QL), Nano C. Init (cast and recharge speed = healing throughput), Max Nano / Nano Pool / nano-cost reduction (the fight timer), Max NCU (it runs more standing buffs than anyone), and Max Health / Body Dev. (because healing makes it the aggro magnet and it has no reflect, no absorb and cost-3.2 close-combat evades). Everything in this file was read out of items.ocp with tools/eng-gear-extractor --prof 10 and cross-checked against itemnames.sql - no bonus figure here is from a website. Path: cheap sided/Carbonum -> the SL Doctor Suit quest chain (First Tier -> Second Tier -> Chosen or Faithful) -> Azure Reveries or Miy's Nano on Rubi-Ka -> Ofab Doctor from Battlestation VP -> Combined Paramedic's from alien raids, with heal-multiplier utility items layered on top at every stage. Implants are in doctor-implants.json, symbiants in doctor-symbiants.json and weapons in doctor-weapons.json; they are excluded here.",
+  "_method": "tools/eng-gear-extractor (--prof 10 --wield) reads every ToWear/ToWield template in the OmniCell items.ocp pack (OMNICELL-CONTENT v3, client 18.8.50_EP1, 120,842 templates; 61,458 of them wearable by a Doctor after applying the profession-lock rule) and emits each item's slot bitmask, ToWear criteria, profession lock, NODROP/Unique flags and worn stat bonuses. Every 'keyBonuses' number below is the QL300 (or top-QL) record for that exact item id. Items whose ToWear carries a Profession EqualTo lock that excludes Doctor(10) are not in the dump at all.",
+  "armorSets": [
+    {
+      "name": "Ofab Doctor Armor (Ofab -> Improved -> Penultimate)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "_note": "Penultimate tier, QL300, read per piece from items.ocp",
+        "Helmet (Penultimate Ofab Doctor Helmet, id 264647)": "Intelligence +25, Nano C. Init +65, Matter Metamorphosis +30, Max Health +350",
+        "Body (Penultimate Ofab Doctor Body, id 264665)": "Max Nano Energy +1000, Nano C. Init +65, Stamina +20, Sensory Improvement +25, Max NCU +32",
+        "Sleeves (Penultimate Ofab Doctor Sleeves, id 264659)": "Nano C. Init +50, First Aid +45, Time & Space +20, Max Health +350",
+        "Gloves (Penultimate Ofab Doctor Gloves, id 264653)": "Pistol +40, Sense +25, Psychological Modification +20, Max Health +350",
+        "Pants (Penultimate Ofab Doctor Pants, id 264677)": "Max Health +350, Agility +16, Computer Literacy +24, Max NCU +25",
+        "Boots (Penultimate Ofab Doctor Boots, id 264671)": "Run Speed +55, Matter Creation +35, Max Health +350",
+        "Back (OFAB Doctor Protective Gear, id 267933)": "Max Health +300, Psychic +25, Treatment +50, Stamina +15, Max NCU +25, HEAL MULTIPLIER +2, Add All Offense +25",
+        "Shoulder (OFAB Doctor Shoulder Wear, id 301697)": "Max Health +450, Strength +12, Pistol +15, Biological Metamorphosis +20, Add All Defense +15"
+      },
+      "reqs": "Profession EqualTo Doctor, Stamina 1099, Psychic 854, Expansion BitAnd 32 (Lost Eden) at QL300",
+      "levelRange": "Endgame (Lost Eden); bought and upgraded with Battlestation Victory Points",
+      "source": "Ofab Shop vendors, paid for with Victory Points earned on Battlestation. Vendor item 'Ofab Doctor Vendor' id 266564 exists in itemnames.sql. Three tiers: Ofab (264650/264656/264662/264668/264674/264680), Improved (264648/264654/264660/264666/264672/264678), Penultimate (264646/264652/264658/264664/264670/264676).",
+      "note": "THE Doctor endgame baseline set and the best profession-specific armor in the game for one. It is the only set that gives a Doctor Heal Multiplier (on the Back piece), Treatment, First Aid, all four relevant nano skills, +1000 Max Nano and +82 total Max NCU across the set. There is also a Special Edition Ofab Doctor Helmet (267351/267352) which at QL300 gives Intelligence +30, Nano C. Init +75, Add All Defense +50, Max Health +500, nano cost -5%, Nano Delta +10, Max Nano Energy +500 - strictly better than the Penultimate helmet on every stat except Matter Metamorphosis, which it drops entirely.",
+      "priority": "high"
+    },
+    {
+      "name": "Combined Paramedic's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "_note": "QL300, identical on every one of the six regular pieces",
+        "MaxHealth": "+200 per piece",
+        "BodyDevelopment": "+50 per piece",
+        "MaxNanoEnergy": "+200 per piece",
+        "NanoPool": "+50 per piece",
+        "NanoCostModifier": "-3% per piece",
+        "ACs": "roughly 1200-1425 across all eight AC types per piece"
+      },
+      "reqs": "Stamina 999, Psychic 999, Expansion BitAnd 8 (Alien Invasion), Title Level 5 at QL300. NO profession lock.",
+      "levelRange": "Endgame (Alien Invasion), Title Level 5+",
+      "source": "Tradeskilled from alien armor parts farmed in Alien City raids and the alien sectors. Pieces: Headwear 246632, Jacket 246648, Sleeves 246650, Gloves 246652, Legwear 246654, Footwear 246656 (QL300 records; the QL1 records are 246631/246647/246649/246651/246653/246655).",
+      "note": "The Paramedic combination is the healer's alien set - the client data confirms it is the HP-plus-nano variant (Max Health, Body Dev., Max Nano, Nano Pool and nano-cost reduction on every piece) rather than a nano-skill set. Six pieces of it is +1200 Max Health, +300 Body Dev., +1200 Max Nano, +300 Nano Pool and -18% nano cost - which answers the Doctor's two real problems (dying to aggro, running out of nano) better than any nano-skill armor. There is also an 'Odum's Combined Paramedic's Headwear' (257377, QL300, NODROP, requires Level 209) that adds +15 to all eight damage modifiers on top of the same stat block.",
+      "priority": "high"
+    },
+    {
+      "name": "Chosen Doctor Suit / Faithful Doctor Suit (Shadowlands, end of the Doctor Suit chain)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "_note": "QL300. Chosen (Sanctuary) and Faithful (Redeemed) are stat-identical - verified piece by piece in items.ocp",
+        "Helmet (214850 Chosen / 217715 Faithful)": "Intelligence +20, Pharma Tech +50, Matter Metamorphosis +24, Max Health +200",
+        "Body (214844 / 217721)": "Max Nano Energy +750, Stamina +12, Sensory Improvement +16, Max NCU +24",
+        "Sleeves (214846 / 217719)": "Nano C. Init +24, First Aid +30, Time & Space +12, Max Health +250",
+        "Gloves (214848 / 217717)": "Pistol +25, Sense +20, Psychological Modification +16, Max Health +250",
+        "Pants (214858 / 217725)": "Max Health +300, Agility +12, Computer Literacy +20, Max NCU +16",
+        "Boots (214842 / 217723)": "Run Speed +32, Matter Creation +24, Max Health +250",
+        "Shoulderpad (214852 / 217713)": "Max NCU +15, Strength +6, Biological Metamorphosis +15, Max Health +400",
+        "Life Support / Back (214854 / 217711)": "Psychic +20, Treatment +40"
+      },
+      "reqs": "Profession EqualTo Doctor, Stamina 1099, Psychic 899, Expansion BitAnd 2 (Shadowlands) at QL300; Stamina 804 / Psychic 659 at QL220",
+      "levelRange": "QL220 and QL300 records; the end of the SL Doctor Suit quest chain",
+      "source": "Shadowlands profession-suit quest chain. Chosen = Sanctuary side, Faithful = Redeemed side.",
+      "note": "Free, self-only and a direct structural preview of the Ofab set - same slot-to-stat layout (helmet = Int/Pharma/MM, body = Max Nano/NCU/SI, sleeves = Nano Init/First Aid/TS, gloves = Pistol/Sense/PM, pants = HP/Agility/CompLit/NCU, boots = RunSpeed/MC, back = Psychic/Treatment) at roughly 60-75% of the numbers. The one thing it does NOT have that Ofab does is Heal Multiplier. Run this while you farm VP for Ofab.",
+      "priority": "high"
+    },
+    {
+      "name": "First Tier / Second Tier Doctor Suit (Shadowlands leveling chain)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Shoulder"],
+      "keyBonuses": {
+        "_note": "One stat per piece; the chain adds the second and third stats only at the Chosen/Faithful tier",
+        "First Tier (QL100 -> QL160)": "Body +150 -> +350 Max Nano Energy; Sleeves +4 -> +12 Nano C. Init; Gloves +5 -> +15 Pistol; Boots +8 -> +16 Run Speed; Pants +75 -> +150 Max Health",
+        "Second Tier (QL160 -> QL220)": "Body +350 -> +500 Max Nano Energy; Sleeves +12/+10 -> +18/+20 Nano C. Init/First Aid; Gloves +15 -> +20 Pistol; Helmet +5 -> +10 Intelligence; Shoulderpad +5 -> +10 Max NCU; Boots +16 -> +24 Run Speed; Pants +150 -> +225 Max Health"
+      },
+      "reqs": "Profession EqualTo Doctor, Expansion BitAnd 2 (Shadowlands). First Tier QL100 needs Stamina 364 / Psychic 299; Second Tier QL220 needs Stamina 804 / Psychic 659",
+      "levelRange": "roughly level 60-205, the Shadowlands leveling backbone",
+      "source": "Shadowlands profession-suit quest chain. First Tier pieces 217698-217707, Second Tier pieces 214755-214768.",
+      "note": "Free quest armor with no drop RNG, upgrading in place. Weak per-piece but it covers eight slots for nothing and the Body piece's Max Nano is exactly what a leveling Doctor runs out of.",
+      "priority": "med"
+    },
+    {
+      "name": "Loren's Azure Reveries / Azure Reveries",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "_note": "Loren's (upgraded) QL200 values; the base Azure Reveries values are in brackets",
+        "Helmet (304611 / 165307)": "Sensory Improvement +15 [+8], First Aid +20 [+16], Computer Literacy +15 [+8], Max NCU +20 [+14], Psychic +14 [+8], Max Nano Energy +300 [+250], Max Health +350 [+220]",
+        "Breastplate (304613 / 165304)": "Psychological Modification +15 [+8], Max NCU +25 [+16], Intelligence +12 [+8], nano cost -10%, Max Health +500 [+250]",
+        "Pants (304612 / 165308)": "Treatment +12 [+8], Biological Metamorphosis +12 [+8], Max NCU +15 [+12], Sense +12 [+8], Max Health +350 [+230]",
+        "Sleeves (304609 / 165303)": "Time & Space +8 [+4], Nano C. Init +25 [+16], Strength +8 [+4], Max NCU +15 [+10], Max Health +250 [+180]",
+        "Gloves (304610 / 165306)": "Pistol +15 [+8], Matter Creation +15 [+8], Nano Programming +10 [+12], Max NCU +15 [+10], Max Health +250 [+180]",
+        "Boots (304614 / 165305)": "Matter Metamorphosis +15 [+8], Run Speed +100 [+60], Agility +12 [+8], Max NCU +18 [+12], Max Health +350 [+210]"
+      },
+      "reqs": "Stamina 649 and Level 199 (Loren's) / Stamina 604 and Level 174 (base). NO profession lock, NO expansion requirement - froob-usable.",
+      "levelRange": "roughly level 174-220 on Rubi-Ka; the best froob-reachable caster set for a Doctor",
+      "source": "Rubi-Ka drop/quest armor. Base pieces 165303-165308, Loren's upgraded pieces 304609-304614.",
+      "note": "This is the standout FROOB set for a Doctor and it is not obvious from the name: the six Loren's pieces between them give Treatment, First Aid, BM, MM, MC, PM, SI, Time & Space, Nano C. Init +25, Nano Programming, Psychic, Intelligence, nano cost -10%, +108 Max NCU and +2050 Max Health. No Shadowlands, no Alien Invasion, no Lost Eden required.",
+      "priority": "high"
+    },
+    {
+      "name": "Miy's Nano Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back"],
+      "keyBonuses": {
+        "_note": "QL300 values read from items.ocp",
+        "Helmet (268834)": "Intelligence +22, Psychic +15, Biological Metamorphosis +16, Max NCU +16, Max Health +100",
+        "Body Armor (268837)": "Nano C. Init +50, Max Nano Energy +375, Max NCU +16, nano cost -5%, Stamina +22, Time & Space +16, Max Health +200",
+        "Sleeves (268841)": "Matter Metamorphosis +8, Psychic +14, Intelligence +11, Max Health +125",
+        "Gloves (268839)": "Matter Creation +16, Sense +15, Max Health +125",
+        "Legs (268843)": "Psychological Modification +16, Agility +22, Max NCU +12, Max Health +175",
+        "Boots (268845)": "Sensory Improvement +16, Strength +15, Max Health +175",
+        "Cloak (270330)": "all six abilities +10, Max Nano Energy +200, Max Health +200"
+      },
+      "reqs": "Intelligence 824 and Psychic 764 at QL300. NO profession lock, NO expansion requirement.",
+      "levelRange": "roughly QL100-300, mid-to-endgame",
+      "source": "Drops from Medusae mobs (the Reck dyna camps and similar). Pieces 268833/268834 (Helmet), 268836/268837 (Body), 268838/268839 (Gloves), 268840/268841 (Sleeves), 268842/268843 (Legs), 268844/268845 (Boots), 270329/270330 (Cloak).",
+      "note": "The generic nano-caster set. For a Doctor it is a SECOND choice behind Ofab and Combined Paramedic's: it spreads one nano skill across each piece (BM on the helmet, MM on the sleeves, MC on the gloves, PM on the legs, SI on the boots, TS on the body) rather than concentrating on BM/MM, and it gives no Treatment, no First Aid and no Heal Multiplier. The Body piece and the Cloak are the two genuinely good pieces for a Doctor and are worth mixing into any set.",
+      "priority": "med"
+    },
+    {
+      "name": "Carbonum Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": { "ACs": "solid all-round armor class for the level", "NanoBonuses": "none" },
+      "levelRange": "roughly level 20-75 on Rubi-Ka",
+      "source": "Tradeskilled on Rubi-Ka from Etched Patterns (162295-162307) and Curved Carbonum Plating (156016/156017). Pieces 162426-162436.",
+      "note": "Generic cheap leveling armor for the band before the SL Doctor Suit chain or Azure Reveries opens. Pure survivability filler - no nano, heal or Treatment bonuses at all.",
+      "priority": "budget"
+    },
+    {
+      "name": "Combat Medic's Light Tank Armor",
+      "slotsCovered": ["unknown - not enumerated from the local data"],
+      "keyBonuses": { "_unverified": "wiki.aodb.us Doctor:Armor describes it as enhancing BM, MM, Treatment and First Aid with no level requirement" },
+      "levelRange": "Rubi-Ka classic, low level",
+      "source": "wiki.aodb.us Doctor:Armor - drops from Biomare Neutralizers",
+      "note": "Listed because it is the only classic-Rubi-Ka set the wiki names specifically for a Doctor, and BM/MM/Treatment/First-Aid on one set is exactly a Doctor's stat line. The wiki itself calls it 'inferior to Exarch Robe'. Its ids and stat block were NOT located in the local data in this pass - see _unverified.",
+      "priority": "budget"
+    }
+  ],
+  "healMultiplierItems": [
+    {
+      "name": "Sluggish Notum Lens",
+      "id": 302931,
+      "slot": "Feet / Deck6",
+      "ql": 300,
+      "effect": "HEAL MULTIPLIER +10 and Nano Damage Multiplier +10, at the cost of Nano C. Init -800.",
+      "reqs": "Computer Literacy 1799, Level 200",
+      "noDrop": false,
+      "note": "The largest single Heal Multiplier bonus on any item a Doctor can wear - and the trade is brutal and explicit: -800 Nano C. Init. Bigger heals, much slower casts. Whether that is worth it depends entirely on how much other Nano C. Init you have stacked (Ofab body +65, Ofab sleeves +50, Sheffy's Micro Coil +100, Improved Instinctive Control +350)."
+    },
+    {
+      "name": "Sacred Chalice",
+      "id": 305523,
+      "slot": "LeftShoulder / RightHand",
+      "ql": 1,
+      "effect": "HEAL MULTIPLIER +7, Max Nano Energy +1000, nano cost -5%, Skill Lock Modifier -10, Nano Range +120.",
+      "reqs": "Profession EqualTo Doctor, Biological Metamorphosis 1799, Level 209",
+      "noDrop": true,
+      "note": "Doctor-locked and the best all-round heal item in the dump: the second-biggest Heal Multiplier, +1000 nano, cheaper casts, a negative skill-lock modifier (shorter lockout after a cast) and 120 extra metres of nano range so you can heal from outside the AoE. NODROP."
+    },
+    {
+      "name": "Ancient Resorative Fungus",
+      "id": 302925,
+      "slot": "Head / HUD3",
+      "ql": 100,
+      "effect": "HEAL MULTIPLIER +5, Max Nano Energy +1000, Nano C. Init +100, Nano Range +50, Nano Delta +10, Add All Defense +25, nano cost -10%.",
+      "reqs": "Level 200",
+      "noDrop": true,
+      "note": "No profession lock and no skill requirement beyond level 200 - the single best-value HUD item for a Doctor in the whole dump. Heal Multiplier, cast speed, nano pool, nano regen, nano cost AND range in one slot."
+    },
+    {
+      "name": "Sheffy's Micro Coil",
+      "id": 267563,
+      "slot": "Finger / Deck5 / HUD2",
+      "ql": 300,
+      "effect": "HEAL MULTIPLIER +5, Nano C. Init +100, Biological Metamorphosis +20, Matter Metamorphosis +20, Max Health +150, nano cost -2%, Critical Resistance +2.",
+      "reqs": "Profession EqualTo Doctor, Stamina 1099, Psychic 899, Level 219, Expansion BitAnd 32 (Lost Eden)",
+      "noDrop": false,
+      "note": "The Doctor endgame ring. It is the only item in the dump that gives Heal Multiplier AND both healing schools AND cast speed at once, and it is tradeable. Level 220 only."
+    },
+    {
+      "name": "Doctor's Left Hand of Grace",
+      "id": 267618,
+      "slot": "Hands / LeftHand",
+      "ql": 300,
+      "effect": "HEAL MULTIPLIER +5, Max Nano Energy +250.",
+      "reqs": "Profession EqualTo Doctor, Pistol 1700, Fling Shot 850, Expansion BitAnd 32 (Lost Eden)",
+      "noDrop": true,
+      "note": "This is a WEAPON, not a glove - it occupies the LeftHand weapon slot and its requirements are Pistol 1700 and Fling Shot 850. It is the one place where a Doctor's pistol skill buys it healing power, and it is the single best argument for training Pistol (cost 1.6) and Fling Shot (2.4). Paired with Doctor's Right Hand of Hope. See doctor-weapons.json."
+    },
+    {
+      "name": "Nano Assistant",
+      "id": 269187,
+      "slot": "Neck / Head / HUD1 / HUD3",
+      "ql": 300,
+      "effect": "HEAL MULTIPLIER +5, Nano Range +10.",
+      "reqs": "Computer Literacy 1199, Biological Metamorphosis 1199",
+      "noDrop": false,
+      "note": "No profession lock, no level requirement, tradeable, and both requirements are skills a Doctor maxes anyway (Computer Literacy cost 1.0, BM cost 1.0). The cheapest +5 Heal Multiplier in the game for this class."
+    },
+    {
+      "name": "Umbral Hand Wraps of Restoration",
+      "id": 301678,
+      "slot": "Hands / LeftHand",
+      "ql": 1,
+      "effect": "HEAL MULTIPLIER +4, Sensory Improvement +20, Matter Metamorphosis +20, Biological Metamorphosis +20, Martial Arts +20, Nano Resist +10, plus 150-300 across every AC.",
+      "reqs": "Agility 699, Intelligence 799, Title Level 5",
+      "noDrop": true,
+      "note": "No profession lock. Heal Multiplier plus both healing schools in a hand slot - and the +20 Martial Arts makes it the natural pick for a Martial Arts Doctor, who does not need the hands for a pistol."
+    },
+    {
+      "name": "Perfected Infused Dust Brigade Bracer",
+      "id": 274551,
+      "slot": "RightWrist / Deck2",
+      "ql": 250,
+      "effect": "HEAL MULTIPLIER +4, Max Health +1200, Max Nano Energy +1200, all six abilities +25, Add All Offense +75, Add All Defense +75, Nano Delta +4, all eight damage modifiers +75.",
+      "reqs": "Level 200, Computer Literacy 1799, Expansion BitAnd 2 (Shadowlands)",
+      "noDrop": true,
+      "note": "Top of the Infused Dust Brigade Bracer upgrade ladder (Basic 274541 -> Tier 1-9 274542-274550 -> Perfected 274551), which grows from Heal Multiplier +1 / +100 HP / +100 nano at Basic to +4 / +1200 / +1200 at Perfected. This is a long DB grind and it is worth it for a Doctor: nothing else stacks that much health, nano and Heal Multiplier in one wrist."
+    },
+    {
+      "name": "Research Attunement Device - Medical Level Three",
+      "id": 269409,
+      "slot": "Head / HUD3",
+      "ql": 100,
+      "effect": "HEAL MULTIPLIER +3, First Aid +100, Treatment +100, Biological Metamorphosis +100.",
+      "reqs": "Level 199",
+      "noDrop": true,
+      "note": "+100 Treatment, +100 First Aid and +100 BM from a single HUD item with no skill requirement at all - by far the largest Treatment source in the dump and a huge implant/symbiant laddering tool. Level Two (269408) gives Heal Multiplier +2 at lower values."
+    },
+    {
+      "name": "Ancient Medical Bracer",
+      "id": 267752,
+      "slot": "RightWrist / LeftWrist / Deck2 / Deck4",
+      "ql": 250,
+      "effect": "HEAL MULTIPLIER +2, First Aid +25, Treatment +25, Biological Metamorphosis +25.",
+      "reqs": "Level 200, Biological Metamorphosis 1400",
+      "noDrop": true,
+      "note": "Fits either wrist, so it can be run alongside a Dust Brigade Bracer. Treatment and BM on a wrist is unusual."
+    },
+    {
+      "name": "Cloak of the Reanimated Healer (5/5)",
+      "id": 274707,
+      "slot": "Back / Utils1",
+      "ql": 100,
+      "effect": "HEAL MULTIPLIER +3, all six nano skills +18, Treatment +13, First Aid +13, Nano C. Init +50, Nano Delta +20, Heal Delta +10, Body Dev. +20, Max Health +300, Max Nano Energy +300, Run Speed +100, 1000 to every AC, XP Modifier +3.",
+      "reqs": "Intelligence 729, Psychic 729, Title Level 5",
+      "noDrop": true,
+      "note": "The upgradeable healer cloak (tiers 3/5 = 274705, 4/5 = 274706, 5/5 = 274707). At 5/5 it is the most stat-dense single item in this file: Heal Multiplier, all six nano skills, Treatment, First Aid, cast speed, nano regen, heal regen, HP, nano, run speed and 1000 AC across the board. It competes directly with OFAB Doctor Protective Gear (267933) for the Back slot."
+    },
+    {
+      "name": "Cure for Baldness",
+      "id": 246274,
+      "slot": "Head / HUD3",
+      "ql": 100,
+      "effect": "HEAL MULTIPLIER +2, Treatment +20, First Aid +20, Nano Pool +50, Body Dev. +50, Psychic +10, Stamina +10, nano cost -2%, Melee AC +500, Projectile AC +500.",
+      "reqs": "Profession EqualTo Doctor, Pharma Tech 499, Expansion BitAnd 2 (Shadowlands)",
+      "noDrop": false,
+      "note": "Doctor-locked, gated ONLY on Pharma Tech (cost factor 1.0 for a Doctor) and level-free - which is why 'Twinking Cure of Baldness on Level 1 Doctor' is a named guide in the Regidoc link thread. A level-1 Doctor with enough borrowed Pharma Tech wears +2 Heal Multiplier, +20/+20 Treatment/First Aid and 1000 AC."
+    },
+    {
+      "name": "Notum-Threaded Omni-Med Suit Sleeves",
+      "id": 304620,
+      "slot": "RightArm / LeftArm / Belt / Deck1",
+      "ql": 1,
+      "effect": "HEAL MULTIPLIER +1, Treatment +14, First Aid +14, Matter Metamorphosis +12, Biological Metamorphosis +12, nano cost -1%.",
+      "reqs": "Profession EqualTo Doctor, Intelligence 499, Level 179",
+      "noDrop": false,
+      "note": "Doctor-locked sleeves with both healing schools, both aiding skills and Heal Multiplier. A good mid-level arm piece to swap over a set sleeve."
+    },
+    {
+      "name": "Notum Ring of the Three",
+      "id": 305489,
+      "slot": "Finger / Deck5 / HUD2",
+      "ql": 1,
+      "effect": "HEAL MULTIPLIER +1, Nano Damage Multiplier +1, Max NCU +15, Max Health +100, Matter Creation +15, Time & Space +15, 125 to every AC.",
+      "reqs": "Level 204",
+      "noDrop": true,
+      "note": "No profession lock and no skill requirement. A cheap second ring next to Sheffy's Micro Coil."
+    },
+    {
+      "name": "Dust Brigade Bracer - Third Edition",
+      "id": 292564,
+      "slot": "LeftWrist / Deck4",
+      "ql": 250,
+      "effect": "HEAL MULTIPLIER +2, Max Health +1200, Max Nano Energy +1200, First Aid +20, Add All Offense +10, Add All Defense +10, all eight damage modifiers +75.",
+      "reqs": "Level 200, Computer Literacy 1799, Expansion BitAnd 2 (Shadowlands)",
+      "noDrop": true,
+      "note": "The LEFT-wrist Dust Brigade bracer (First Edition 292566, Second 292565, Third 292564), so it pairs with the right-wrist Infused line rather than competing with it. Two Dust Brigade bracers is +2400 Max Health, +2400 Max Nano and +6 Heal Multiplier."
+    }
+  ],
+  "headwear": [
+    { "name": "Ancient Resorative Fungus", "effect": "Heal Multiplier +5, Max Nano +1000, Nano C. Init +100, Nano Delta +10, Nano Range +50, Add All Defense +25, nano cost -10% (QL100, level 200, NODROP)", "id": 302925 },
+    { "name": "Special Edition Ofab Doctor Helmet", "effect": "Intelligence +30, Nano C. Init +75, Add All Defense +50, Max Health +500, nano cost -5%, Nano Delta +10, Max Nano +500 (QL300, Doctor-locked)", "id": 267352 },
+    { "name": "Penultimate Ofab Doctor Helmet", "effect": "Intelligence +25, Nano C. Init +65, Matter Metamorphosis +30, Max Health +350 (QL300, Doctor-locked)", "id": 264647 },
+    { "name": "Research Attunement Device - Medical Level Three", "effect": "Heal Multiplier +3, Treatment +100, First Aid +100, BM +100 (QL100, level 199, NODROP)", "id": 269409 },
+    { "name": "Cure for Baldness", "effect": "Heal Multiplier +2, Treatment +20, First Aid +20, Nano Pool +50, Body Dev +50, 1000 AC (QL100, Doctor-locked, Pharma Tech 499 - the classic level-1 twink helmet)", "id": 246274 },
+    { "name": "Chosen Doctor Helmet", "effect": "Intelligence +20, Pharma Tech +50, Matter Metamorphosis +24, Max Health +200 (QL300, Doctor-locked; Faithful equivalent is 217715)", "id": 214850 },
+    { "name": "Loren's Helmet of Azure Reveries", "effect": "Sensory Improvement +15, First Aid +20, Computer Literacy +15, Max NCU +20, Psychic +14, Max Nano +300, Max Health +350 (QL200, froob-usable)", "id": 304611 },
+    { "name": "Miy's Nano Armor Helmet", "effect": "Intelligence +22, Psychic +15, Biological Metamorphosis +16, Max NCU +16, Max Health +100 (QL300)", "id": 268834 },
+    { "name": "Nano Assistant", "effect": "Heal Multiplier +5, Nano Range +10 (QL300; Neck/Head/HUD slots, no profession lock)", "id": 269187 }
+  ],
+  "ncuAndBelt": [
+    { "name": "Memory of Future Events", "effect": "Max NCU +200 - the largest single NCU item a Doctor can wear. Requires Computer Literacy 1849 and Level 204. NODROP.", "id": 305516 },
+    { "name": "Memory NCU (6/6)  [id 278782 = Memory NCU (6/6)]", "effect": "Max NCU +192 at the top of a six-step upgrade line: (2/6) 278762 +128, (3/6) 278767 +144, (4/6) 278772 +160, (5/6) 278777 +176, (6/6) 278782 +192. Requires Computer Literacy 1799 and Expansion BitAnd 128 (Legacy of the Xan).", "id": 278782, "representativeId": 278782, "representativeName": "Memory NCU (6/6)" },
+    { "name": "Spirit Infused Yuttos Modified NCU", "effect": "Max NCU +125, Treatment +10, Critical Resistance +1 (QL300, Computer Literacy 1500, no profession lock)", "id": 267797 },
+    { "name": "Infused Computer Deck Range Increaser", "effect": "Max NCU +120 and Nano Range +150 - the range matters for a healer standing out of an AoE (QL250, Computer Literacy 1499, Level 200, NODROP)", "id": 292190 },
+    { "name": "Accelerated NCU Memory (QL1-200 line)  [id 164608 = Accelerated NCU Memory]", "effect": "The standard deck NCU chip line: QL1 164603 (+2 NCU), QL20 164604 (+4), QL40 164605 (+8), QL50 164606 (+16), QL120 164607 (+32), QL200 164608 (+64 NCU and +6 Nano C. Init, requires Computer Literacy 749 / Intelligence 499). Six slots of these is how a leveling Doctor affords its buff stack.", "id": 164608, "representativeId": 164608, "representativeName": "Accelerated NCU Memory" },
+    { "name": "Belt Component Platform (300X / 4IX / 5000 / 6K-X / Ti-100X / Ti-200X)  [id 36777 = Belt Component Platform 300X]", "effect": "The belt deck that holds the NCU chips. 36777 (Belt Component Platform 300X, QL40) gives 3 belt slots for Computer Literacy 120; the 6K-X variants (36787, 303996-303998) are the high-slot versions. Overclocked (254372), Viral (288084/288719) and Xan's Viral (279449) are the upgraded platforms.", "id": 36777, "representativeId": 36777, "representativeName": "Belt Component Platform 300X" },
+    { "name": "Superior Ring of the Nucleus Basalis", "effect": "Max NCU +75, Computer Literacy +15, Nano Resist +30 (QL250, Treatment 999, Level 200, NODROP). The upgrade of Ring of the Nucleus Basalis 202718 (QL200, +50 NCU for Treatment 1050) and 202717 (QL1, +1 NCU for Treatment 5).", "id": 305028 }
+  ],
+  "misc": [
+    { "name": "Custom-Made Doctor Ring of Life", "slot": "Finger / Deck5", "effect": "QL200 (163681): Biological Metamorphosis +7, First Aid +14, Treatment +14, Max Health +35, Max Nano Energy +200. Doctor-locked, Level 199. The healing-stat Doctor ring.", "id": 163681 },
+    { "name": "Custom-Made Doctor Ring of Skill", "slot": "Finger / Deck5", "effect": "QL200 (163679): Nano C. Init +30, Pharma Tech +10, Psychic +4, Intelligence +4, Stamina +4, Pistol +4, Matter Creation +4. Doctor-locked, Level 199. The cast-speed Doctor ring.", "id": 163679 },
+    { "name": "Doctor NICS", "slot": "LeftFinger / HUD2", "effect": "Pistol +7, Intelligence +3, Stamina +3. Doctor-locked, requires Intelligence 849 and Shadowlands. Modest - listed because it is the Doctor profession HUD item and people look for it.", "id": 215238 },
+    { "name": "De'Valos Sleeves", "slot": "RightArm / LeftArm / Belt / Deck1", "effect": "QL200 (253185): ALL SIX nano skills +30 (BM, MM, MC, PM, SI, TS), Max NCU +15, roughly 200-230 across every AC. Requires Intelligence 699, Psychic 699, Title Level 5, Alien Invasion.", "id": 253185, "note": "CAUTION: the ToWear criteria on BOTH the QL1 (253184) and QL200 (253185) records include Breed EqualTo 3, which AOSharp Breed.cs gives as Nanomage. Whether that is a hard breed lock or one branch of an OR-group was not resolved from the raw action tree - see _unverified. If it is a hard lock, this item is Nanomage-only and does not belong in a Solitus Doctor's plan." },
+    { "name": "Notum Splice", "slot": "LeftArm / Deck1", "effect": "Max Nano Energy +195, Nano Resist +30, Matter Creation +2, and +1 each to BM, MM, PM, SI and Time & Space. Requires Treatment 379 and Psychic 162. NODROP.", "id": 204649 },
+    { "name": "Nano Targeting Helper", "slot": "Neck / Head / HUD1 / HUD3", "effect": "QL300 (269185): Nano Damage Multiplier +5, Nano Range +10. Requires Computer Literacy 1199 and Matter Creation 1199.", "id": 269185, "note": "A NUKER item, not a healer item - it boosts nano DAMAGE, not healing. Listed only so it is not mistaken for the Doctor's Heal Multiplier equivalent, which is Nano Assistant (269187) in the same slot group." }
+  ],
+  "_deviations": [
+    "The whole file is organised around a stat the MP gear file never mentions: HEAL MULTIPLIER (stat 0x217). It gets its own top-level section because it is a percentage applied to every heal a Doctor casts and because only 66 items in the entire Doctor-wearable dump grant it - it is a scarce, class-defining stat in a way that nothing in an MP's gear list is. The MP file's equivalent organising stat is nano skill, which for a Doctor is a means, not the end.",
+    "The Doctor's alien set is Combined PARAMEDIC'S (246631-246656), not the MP's Combined Officer's. The client data shows why the difference matters: Paramedic's is a Max Health / Body Dev. / Max Nano / Nano Pool / nano-cost set with no nano SKILL bonuses at all, whereas the Officer's line the MP file describes is a nano-skill and trade-skill set. A Doctor is buying survivability and sustain there, not casting ceiling.",
+    "Ofab Doctor ranks ABOVE Miy's Nano here, the reverse of the MP file's ordering. Read from items.ocp: the Ofab Doctor set carries Treatment (+50 on the back piece), First Aid (+45 on the sleeves), Heal Multiplier (+2 on the back piece), Computer Literacy (+24 on the pants) and +82 total Max NCU - none of which Miy's Nano has at any QL. Miy's spreads one nano skill per piece, which suits a class that needs six schools evenly; a Doctor needs BM and MM specifically.",
+    "Azure Reveries is promoted from the MP file's 'budget' tier to 'high'. The Loren's upgrade (304609-304614) requires no expansion at all and no profession, and between six pieces it gives Treatment, First Aid, BM, MM, MC, PM, SI, TS, +25 Nano C. Init, -10% nano cost, +108 Max NCU and +2050 Max Health. For a FROOB Doctor - which is a real and common thing, because the froob heal kit is nearly complete - it is the best set in the game.",
+    "A 'weapon' appears in the gear list. Doctor's Left Hand of Grace (267618) occupies the LeftHand weapon slot but its whole purpose is +5 Heal Multiplier, so it is catalogued here as well as in doctor-weapons.json. The MP file has no equivalent - an MP's weapon is never a healing item.",
+    "Every number in this file is read from items.ocp per item id. The MP gear file quotes several set-level figures from wiki.aodb.us and marks the exact per-QL stat lines as unverified; that gap does not exist here because the eng-gear-extractor pass was run for profession 10 specifically.",
+    "No NCU-versus-armor tradeoff discussion of Grid Armor. The MP file lists Grid Armor as a situational full-body alternative; for a Doctor it is not a consideration at all, because Grid Armor occupies the Body/Back/Arm slots that carry the Doctor's Max Nano, Treatment and Heal Multiplier pieces (Ofab Doctor Body +1000 Max Nano, OFAB Doctor Protective Gear +50 Treatment / +2 Heal Multiplier)."
+  ],
+  "_unverified": [
+    "Combat Medic's Light Tank Armor: named by wiki.aodb.us Doctor:Armor as a classic-Rubi-Ka Doctor set dropping from Biomare Neutralizers and enhancing BM/MM/Treatment/First Aid. Its item ids and stat block were NOT located in the local extraction in this pass, so no numbers are given and slotsCovered is 'unknown'. Treat as a lead.",
+    "De'Valos Sleeves (253184/253185) carry a 'Breed EqualTo 3' (Nanomage) criterion in their flattened ToWear list. The extractor flattens the criteria tree, so an OR-group would look identical to a hard AND lock. This was NOT resolved. If you are not a Nanomage, verify in game before planning around this item.",
+    "Combined Paramedic's ToWear also carries 'HairTexture BitAnd 65536' (stat 65) on every piece. What that criterion gates is unknown - it appears on the whole Combined armor family and is recorded verbatim rather than interpreted.",
+    "DROP LOCATIONS are the weakest part of this file and that is a known structural gap: items.ocp carries requirements and bonuses but not loot tables, and auno.org / aoitems.com are blocked to automation per the playbook. Where a source is given (Ofab = Battlestation VP, Combined Paramedic's = alien raid parts, Miy's = Medusae, Doctor Suit chain = SL quests) it is from the wiki or the item's own name/expansion gate, not from a verified drop table. Sluggish Notum Lens (302931), Sacred Chalice (305523), Ancient Resorative Fungus (302925), Nano Assistant (269187), Memory of Future Events (305516) and Notum Ring of the Three (305489) have NO source recorded at all.",
+    "Miy's Nano Armor: the wiki's 'drops from Medusae' attribution is carried over from the MP gear file and was not independently re-verified here. The stat block IS verified from items.ocp.",
+    "The Ofab upgrade path (Ofab -> Improved -> Penultimate, paid for with Victory Points) is stated from wiki.aodb.us Doctor:Armor plus the three parallel id blocks visible in items.ocp. The VP costs per tier were not sourced.",
+    "'Heal Multiplier' unit and stacking: the stat is read as an integer bonus from items.ocp (e.g. +5, +10) and wiki.aodb.us describes the Specialist Healer perk as '21% healing effectiveness' at 10 tiers of +2/+3. The mapping from the integer to a percentage, and whether multiple sources add linearly, was NOT derived. Do not compute an expected heal from these numbers.",
+    "Only the QL1 and QL300 (or top-QL) records exist per template in the pack; intermediate QLs interpolate in game. All figures quoted are the top-QL record unless a QL is stated.",
+    "This file curates from a 61,458-item Doctor-wearable dump; it is explicitly NOT the exhaustive per-slot catalogue that playbook section 9 requires. That catalogue would be a 'doctor-equippable.json' and does not exist yet for any class."
+  ],
+  "_sources": [
+    "LOCAL: E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1, 120,842 templates) read via tools/eng-gear-extractor --prof 10 [--wield]. EVERY bonus figure, ToWear requirement, slot list, profession lock and NODROP flag in this file comes from that pass. 61,458 templates are Doctor-wearable.",
+    "LOCAL: the extracted client data/itemnames.sql - every item id in this file verified to resolve to the name it is given here.",
+    "LOCAL: AOSharp.Common/GameData/Breed.cs - Nanomage = 3, used to interpret the De'Valos Sleeves Breed criterion.",
+    "LOCAL: AOSharp.Common/GameData/Stat.cs and tools/eng-gear-extractor stat table - HealMultiplier = 0x217 (535), MaxNCU = 0xB5, NPCostModifier = 0x13E, NanoDelta = 0x16C, HealDelta = 0x157, AddAllDef = 0x115.",
+    "LOCAL: AOBuddy/GameData/profiles/reference/skillcaps.json - the Doctor cost factors cited when explaining why a requirement is cheap for this class (Pharma Tech 1.0, Computer Literacy 1.0, Treatment 1.0, First Aid 1.0, BM 1.0, Pistol 1.6, Fling Shot 2.4).",
+    "LOCAL: AOBuddy/GameData/profiles/doctor-weapons.json - the Doctor-locked pistol family that Doctor's Left Hand of Grace belongs to.",
+    "http://wiki.aodb.us/wiki/Doctor:Armor - the set list by expansion (Combat Medic's Light Tank Armor from Biomare Neutralizers on Rubi-Ka; First/Second Tier Doctor Jobe Suit, Chosen and Faithful Doctor Suit in Shadowlands; Ofab Doctor Armor in Lost Eden) and the 'inferior to Exarch Robe' note.",
+    "https://forums.funcom.com/t/doctor-regidocs-consolidated-doctor-profession-link-thread/4353 - the existence of a 'Twinking Cure of Baldness on Level 1 Doctor' guide, which is why Cure for Baldness (246274) is called out as a level-1 twink item."
+  ]
+}

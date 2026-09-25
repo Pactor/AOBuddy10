@@ -1,0 +1,314 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "slug": "engineer",
+  "generatedUtc": "2026-09-23T11:40:00Z",
+  "symbiantUnitType": "Control",
+  "summary": "The Engineer fights through ONE robot, and every bot summon reads Matter Creation and Time & Space at the SAME value. So gear is judged on a single question: does it raise MC and TS together? After that come the things that keep the Engineer alive without a self-heal (ACs, Max Health, Nano Resist, reflect/absorb), the Max Nano / Nano Pool / nano-cost that let it re-summon and re-aura, the Max NCU to hold the buff stack, and the nine trade skills it is the game's best profession at (Mech.E, Elec.E, Quantum FT, Weapon Smithing and Tutoring are all cost factor 1.0). Pistol (1.5) and Grenade (2.0) are its own weapon skills and worth a slot or two, but the Engineer's damage is the bot. Every armour piece, requirement, bonus and profession lock below was read out of the client item pack, not from a guide. Bots are in engineer-pets.json, implants in engineer-implants.json, symbiants (Control line) in engineer-symbiants.json and weapons in engineer-weapons.json - they are deliberately NOT repeated here.",
+  "dataSources": {
+    "itemTemplates": "E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1), read with tools/eng-gear-extractor --prof 3 --wield. That run returned 68,637 wearable templates of which 61,510 are usable by profession 3 and 132 models are hard-locked to Profession EqualTo 3 (Engineer only).",
+    "whatWasRead": "For every model below: quality (QL), the ToWear/ToWield requirement list (stat, operator, value), the slot mask, the item Stats 'Flags' entry (bit 26 NoDrop, bit 27 Unique) and every Wear-event stat-modify function. Bonus numbers are the TOP-QL template of each model.",
+    "expansionGate": "ToWear stat 389 (Expansion) BitAnd: bit 2 = Shadowlands, bit 8 = Alien Invasion, bit 32 = Lost Eden, bit 128 = Legacy of the Xan.",
+    "sideAndBreedGates": "ToWear stat 33 (Side) EqualTo: 1 = Clan, 2 = Omni - what separates the Chosen (Omni) and Faithful (Clan) suits. ToWear stat 4 (Breed) EqualTo 3 = NANOMAGE ONLY - this catches De'Valos Sleeves, which is easy to miss.",
+    "idNameVerification": "E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows). Every id/name pair in this file was checked against it.",
+    "web": "wiki.aodb.us and ao-universe.com for WHERE things come from. Cited per row."
+  },
+
+  "armorSets": [
+    {
+      "name": "Ofab Engineer Armor (Ofab -> Improved -> Penultimate)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "AllEightACs": "499 (gloves) to 1575 (body) at QL300, 2000 on the back piece",
+        "MaxNanoEnergy": "+750 (body)",
+        "NanoCInit": "+60 (helmet)",
+        "RangedInit": "+60 helmet, +25 body, +25 sleeves",
+        "SpaceTime": "+16 (helmet)",
+        "MaterialMetamorphosis": "+8 (sleeves)",
+        "SensoryImprovement": "+20 (boots)",
+        "PsychologicalModification": "+13 (gloves)",
+        "MechanicalEngineering": "+25 sleeves, +70 back",
+        "ElectricalEngineering": "+25 sleeves, +40 boots",
+        "QuantumFT": "+40 (boots)",
+        "WeaponSmithing": "+50 (body)",
+        "Chemistry": "+35 (gloves)",
+        "ComputerLiteracy": "+25 (pants)",
+        "MaxNCU": "+25 body, +15 pants, +25 back, +25 shoulder",
+        "Grenade": "+50 body, Pistol +23 gloves, Fling Shot +20 pants",
+        "Intelligence": "+20 (helmet)",
+        "AddAllDef": "+50 back, +10 shoulder"
+      },
+      "levelRange": "Endgame (Lost Eden). QL300 pieces require Intelligence 1045 and Psychic 855.",
+      "source": "Victory Points at the Ofab vendor (Ofab Engineer Vendor). Upgraded Ofab -> Improved -> Penultimate with Kyr'Ozch Bio-Material clumps, not with VP (wiki.aodb.us/wiki/Ofab_Armor_Upgrades).",
+      "priority": "high",
+      "professionLock": "Profession EqualTo 3 - Engineer only, verified in items.ocp",
+      "expansion": "Lost Eden (Expansion BitAnd 32)",
+      "note": "Note how differently this reads from the Soldier's Ofab set: where the Soldier's gloves give Assault Rifle/Full Auto/MG-SMG, the Engineer's give Chemistry +35 and Pistol +23, and the boots give Elec.E +40 and Quantum FT +40. Funcom built the Engineer set around the tradeskill half of the class. The helmet is the important combat piece - Nano C. Init +60 and Space Time +16.",
+      "pieces": [
+        { "slot": "Head", "name": "Ofab Engineer Helmet", "id": 264575, "altIds": [264576], "improved": { "name": "Improved Ofab Engineer Helmet", "id": 264573, "altIds": [264574] }, "penultimate": { "name": "Penultimate Ofab Engineer Helmet", "id": 264571, "altIds": [264572] }, "bonusesAtQl300": { "allEightACs": 1418, "MaxHealth": 265, "NanoCInit": 60, "RangedInit": 60, "Intelligence": 20, "SpaceTime": 16 } },
+        { "slot": "Body", "name": "Ofab Engineer Body", "id": 264596, "altIds": [264597], "improved": { "name": "Improved Ofab Engineer Body", "id": 264594, "altIds": [264595] }, "penultimate": { "name": "Penultimate Ofab Engineer Body", "id": 264592, "altIds": [264593] }, "bonusesAtQl300": { "allEightACs": 1575, "MaxNanoEnergy": 750, "WeaponSmithing": 50, "Grenade": 50, "RangedInit": 25, "MaxNCU": 25, "Stamina": 12 } },
+        { "slot": "Arms", "name": "Ofab Engineer Sleeves", "id": 264590, "altIds": [264591], "improved": { "name": "Improved Ofab Engineer Sleeves", "id": 264585, "altIds": [264586] }, "penultimate": { "name": "Penultimate Ofab Engineer Sleeves", "id": 264583, "altIds": [264584] }, "bonusesAtQl300": { "allEightACs": 473, "MaxHealth": 265, "MechanicalEngineering": 25, "ElectricalEngineering": 25, "RangedInit": 25, "MaterialMetamorphosis": 8 } },
+        { "slot": "Hands", "name": "Ofab Engineer Gloves", "id": 264581, "altIds": [264582], "improved": { "name": "Improved Ofab Engineer Gloves", "id": 264579, "altIds": [264580] }, "penultimate": { "name": "Penultimate Ofab Engineer Gloves", "id": 264577, "altIds": [264578] }, "bonusesAtQl300": { "ACs": "499 on six types, 125 Cold/Poison", "MaxHealth": 158, "Chemistry": 35, "Pistol": 23, "Shotgun": 13, "Sense": 13, "PsychologicalModification": 13 } },
+        { "slot": "Legs", "name": "Ofab Engineer Pants", "id": 264608, "altIds": [264609], "improved": { "name": "Improved Ofab Engineer Pants", "id": 264606, "altIds": [264607] }, "penultimate": { "name": "Penultimate Ofab Engineer Pants", "id": 264604, "altIds": [264605] }, "bonusesAtQl300": { "allEightACs": 945, "MaxHealth": 265, "ComputerLiteracy": 25, "FlingShot": 20, "MaxNCU": 15, "Agility": 10 } },
+        { "slot": "Feet", "name": "Ofab Engineer Boots", "id": 264602, "altIds": [264603], "improved": { "name": "Improved Ofab Engineer Boots", "id": 264600, "altIds": [264601] }, "penultimate": { "name": "Penultimate Ofab Engineer Boots", "id": 264598, "altIds": [264599] }, "bonusesAtQl300": { "allEightACs": 630, "MaxHealth": 265, "RunSpeed": 40, "ElectricalEngineering": 40, "QuantumFT": 40, "SensoryImprovement": 20 } },
+        { "slot": "Back", "name": "OFAB Engineer Protective Gear", "id": 267936, "bonusesAtQl300": { "allEightACs": 2000, "MaxHealth": 700, "MechanicalEngineering": 70, "AddAllDef": 50, "Psychic": 25, "MaxNCU": 25, "Strength": 15 }, "note": "QL300 only. Add All Def. +50 is the biggest single defensive stat available to an Engineer on an item." },
+        { "slot": "Shoulder", "name": "OFAB Engineer Shoulder Wear", "id": 268003, "bonusesAtQl300": { "MaxHealth": 400, "allEightACs": 250, "MaxNCU": 25, "BiologicalMetamorphosis": 15, "Strength": 10, "Stamina": 10, "AddAllDef": 10 }, "note": "QL300 only." },
+        { "slot": "Head (alternative)", "name": "Special Edition Ofab Engineer Helmet", "id": 267369, "altIds": [267370], "bonusesAtQl300": { "allEightACs": 1600, "MaxHealth": 500, "RangedInit": 100, "NanoCInit": 100, "NanoResist": 25, "AddAllDef": 25, "CriticalResistance": 3 }, "note": "Beats the Penultimate helmet on ACs, Health, Nano C. Init (+100 vs +60) and adds Nano Resist +25, Add All Def. +25 and Critical Resistance +3, but it drops the Intelligence +20 and Space Time +16 that the normal helmet carries. For an Engineer chasing MC/TS that trade is NOT automatic - read both before buying." }
+      ]
+    },
+    {
+      "name": "Combined Officer's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "AllEightACs": "420 (gloves/sleeves) to 1900 (jacket) at QL300",
+        "AllSixNanoSchools": "+30 each - Matter Creation, Time & Space, Matter Metamorphosis, Bio Metamorphosis, Psychological Modification, Sensory Improvement",
+        "NineTradeSkills": "Mech.E, Elec.E, Quantum FT, Weapon Smithing, Pharma Tech, Nano Programming, Psychology, Chemistry +30 each",
+        "MaxNanoEnergy": "+200",
+        "NanoPool": "+50",
+        "MaxNCU": "+15",
+        "NanoPointCostModifier": "-3%"
+      },
+      "levelRange": "Endgame (Alien Invasion). QL300 pieces require Intelligence 1000, Psychic 1000 and Title Level 6 (level 190+).",
+      "source": "Tradeskilled from Arithmetic + Spiritual alien armour farmed in alien city raids, the sectors and mothership missions (wiki.aodb.us/wiki/Alien_Armor). The Arithmetic piece must be at least 80% of the Spiritual piece's QL and the result takes the higher QL.",
+      "priority": "high",
+      "professionLock": "none - Combined armour carries no Profession EqualTo clause. What makes this the Engineer's set is the stat spread.",
+      "expansion": "Alien Invasion (Expansion BitAnd 8)",
+      "note": "THE Engineer endgame set. Matter Creation +30 and Time & Space +30 on seven slots is +210 to both bot skills from armour alone, and the Engineer is also the profession that builds it - for itself and for everyone else. The Max Nano, Nano Pool and -3% nano cost matter because re-summoning a bot and re-casting an aura is expensive.",
+      "pieces": [
+        { "slot": "Head", "name": "Combined Officer's Headwear", "id": 246669, "altIds": [246670] },
+        { "slot": "Body", "name": "Combined Officer's Jacket", "id": 246671, "altIds": [246672] },
+        { "slot": "Arms", "name": "Combined Officer's Sleeves", "id": 246673, "altIds": [246674] },
+        { "slot": "Hands", "name": "Combined Officer's Gloves", "id": 246675, "altIds": [246676] },
+        { "slot": "Legs", "name": "Combined Officer's Legwear", "id": 246677, "altIds": [246678] },
+        { "slot": "Feet", "name": "Combined Officer's Footwear", "id": 246679, "altIds": [246680] },
+        { "slot": "Head (boss version)", "name": "Blackmane's Combined Officer's Headwear", "id": 257383, "note": "QL300 only; requires character level 210+ instead of Title Level 6. Same stat block." }
+      ]
+    },
+    {
+      "name": "Combined Scout's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "AllEightACs": "420 to 1900 at QL300",
+        "AllSixNanoSchools": "+30 each (same as Officer's)",
+        "NineTradeSkills": "+30 each (same as Officer's)",
+        "Initiatives": "Melee Init, Ranged Init, Physical Init +40 each",
+        "Evades": "Evade-ClsC, Dodge-Rng, Duck-Exp +30 each",
+        "Perception/Concealment/BreakingEntry/TrapDisarm": "+30 each",
+        "MaxNCU": "+15"
+      },
+      "levelRange": "Endgame (Alien Invasion). QL300 requires Intelligence 1000, Sense 1000 and Title Level 6.",
+      "source": "Tradeskilled from Arithmetic + Observant alien armour (wiki.aodb.us/wiki/Alien_Armor).",
+      "priority": "high",
+      "professionLock": "none",
+      "expansion": "Alien Invasion (Expansion BitAnd 8)",
+      "note": "The under-rated alternative for an Engineer: it keeps ALL of Officer's nano schools and trade skills and swaps Max Nano / Nano Pool / -3% cost for +40 to all three initiatives, +30 to all three evades, Perception, Concealment, Breaking & Entry and Trap Disarm. Evade-ClsC costs 4.0 and Dodge-Rng 2.5 for an Engineer (engineer-build.json calls close-combat evades 'effectively unaffordable'), so +30 to each from armour is worth more to this class than to most. Ability requirement is Intelligence/Sense instead of Intelligence/Psychic - check which your breed reaches."
+    },
+    {
+      "name": "Miy's Nano Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back"],
+      "keyBonuses": {
+        "ACs": "200-1900 at QL300 (Energy/Chemical/Radiation/Cold/Poison/Fire are the high side)",
+        "NanoSchools": "Bio Metamorphosis +16 (helmet), Material Creation +16 (gloves), Psychological Modification +16 (legs), Sensory Improvement +16 (boots), Space Time +16 (body), Matter Metamorphosis +8 (sleeves)",
+        "NanoCInit": "+50 (body)",
+        "NanoPointCostModifier": "-5% (body)",
+        "MaxNanoEnergy": "+375 (body)",
+        "MaxNCU": "+16 helmet, +16 body, +12 legs",
+        "Intelligence": "+22 helmet, +11 sleeves",
+        "Psychic": "+15 helmet, +14 sleeves",
+        "Stamina": "+22 (body)"
+      },
+      "levelRange": "QL1-300; requires Intelligence 825 and Psychic 765 at QL300. No level requirement, no expansion gate, no profession lock.",
+      "source": "Drops from Medusae-type mobs. wiki.aodb.us/wiki/Miy's_Nano_Armor covers the family. Exact camps not re-confirmed here - see _unverified.",
+      "priority": "high",
+      "professionLock": "none",
+      "note": "The best pre-alien caster set in the game and, unusually, it has NO level or expansion gate at all - a froob Engineer can wear QL300 Miy's Nano if it can reach Intelligence 825 / Psychic 765. It puts Space Time on the body and Material Creation on the gloves, i.e. both bot skills, plus Nano C. Init +50 and -5% nano cost. The Cloak (270329/270330) covers the back slot with +1400 to every AC and +10 to all six attributes. NOTE: the sibling metaphysicist-gear.json states Miy's is 'NOT present in the local itemnames.sql extract' - that is incorrect; all 35 Miy's models are present in items.ocp and itemnames.sql and their ids are listed below.",
+      "pieces": [
+        { "slot": "Head", "name": "Miy's Nano Armor Helmet", "id": 268833, "altIds": [268834] },
+        { "slot": "Body", "name": "Miy's Nano Body Armor", "id": 268836, "altIds": [268837] },
+        { "slot": "Arms", "name": "Miy's Nano Armor Sleeves", "id": 268840, "altIds": [268841] },
+        { "slot": "Hands", "name": "Miy's Nano Armor Gloves", "id": 268838, "altIds": [268839] },
+        { "slot": "Legs", "name": "Miy's Nano Armor Legs", "id": 268842, "altIds": [268843] },
+        { "slot": "Feet", "name": "Miy's Nano Armor Boots", "id": 268844, "altIds": [268845] },
+        { "slot": "Back", "name": "Miy's Nano Armor Cloak", "id": 270329, "altIds": [270330] }
+      ]
+    },
+    {
+      "name": "Engineer Tier armour: First Tier Engineer -> Second Tier Engineer -> Chosen Engineer (Omni) / Faithful Engineer (Clan)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "AllEightACs": "1000 (First Tier QL160 body) -> 1200-1250 (Second Tier QL220 body) -> 1200-1500 (Chosen/Faithful QL300 body)",
+        "MaxNanoEnergy": "+250 (First Tier body) -> +400 (Second Tier body) -> +600 (Chosen/Faithful body)",
+        "WeaponSmithing": "+40 (Second Tier body) -> +60 (Chosen/Faithful body and Helper)",
+        "MaterialCreation": "+25 (Chosen/Faithful body)",
+        "MaxNCU": "+24 (Chosen/Faithful body)",
+        "MechanicalEngineering": "+60 (Chosen/Faithful Helper, back slot)",
+        "MaxHealth": "+600 (Chosen/Faithful Helper)",
+        "Psychic": "+20 (Chosen/Faithful Helper)",
+        "Grenade": "+36 (Chosen/Faithful body)"
+      },
+      "levelRange": "First Tier QL100-160 (Intelligence 585 / Psychic 480), Second Tier QL160-220 (Intelligence 805 / Psychic 660), Chosen/Faithful QL220-300 (Intelligence 1100 / Psychic 900)",
+      "source": "Shadowlands Jobe tradeskill/quest armour chain - wiki.aodb.us/wiki/Tier_1_Armor, /Tier_2_Armor, /Chosen_Armor. Chosen = Omni (Side EqualTo 2), Faithful = Clan (Side EqualTo 1); the client enforces it.",
+      "priority": "med",
+      "professionLock": "Profession EqualTo 3 - Engineer only, verified in items.ocp",
+      "expansion": "Shadowlands (Expansion BitAnd 2)",
+      "noDrop": true,
+      "note": "The free profession set you build through Shadowlands. It carries Material Creation +25 on the Chosen/Faithful body - one of the two bot skills - and the Helper (back slot) is the Engineer's best Mech.E item outside Ofab. First Tier has no helmet, back or shoulder piece; Second Tier adds a helmet and a shoulderpad; only Chosen/Faithful have the back-slot Helper.",
+      "pieces": [
+        { "tier": "First Tier", "slot": "Body", "name": "First Tier Engineer Body", "id": 218254, "altIds": [218255] },
+        { "tier": "First Tier", "slot": "Arms", "name": "First Tier Engineer Sleeves", "id": 218252, "altIds": [218253] },
+        { "tier": "First Tier", "slot": "Hands", "name": "First Tier Engineer Gloves", "id": 218250, "altIds": [218251] },
+        { "tier": "First Tier", "slot": "Legs", "name": "First Tier Engineer Pants", "id": 218258, "altIds": [218259] },
+        { "tier": "First Tier", "slot": "Feet", "name": "First Tier Engineer Boots", "id": 218256, "altIds": [218257] },
+        { "tier": "Second Tier", "slot": "Head", "name": "Second Tier Engineer Helmet", "id": 218238, "altIds": [218239] },
+        { "tier": "Second Tier", "slot": "Body", "name": "Second Tier Engineer Body", "id": 218244, "altIds": [218245] },
+        { "tier": "Second Tier", "slot": "Shoulder", "name": "Second Tier Engineer Shoulderpad", "id": 218236, "altIds": [218237] },
+        { "tier": "Second Tier", "slot": "Arms", "name": "Second Tier Engineer Sleeves", "id": 218242, "altIds": [218243] },
+        { "tier": "Second Tier", "slot": "Hands", "name": "Second Tier Engineer Gloves", "id": 218240, "altIds": [218241] },
+        { "tier": "Second Tier", "slot": "Legs", "name": "Second Tier Engineer Pants", "id": 218248, "altIds": [218249] },
+        { "tier": "Second Tier", "slot": "Feet", "name": "Second Tier Engineer Boots", "id": 218246, "altIds": [218247] },
+        { "tier": "Chosen (Omni, Side EqualTo 2)", "slot": "Head", "name": "Chosen Engineer Helmet", "id": 218176, "altIds": [218177] },
+        { "tier": "Chosen (Omni)", "slot": "Body", "name": "Chosen Engineer Body", "id": 218182, "altIds": [218183] },
+        { "tier": "Chosen (Omni)", "slot": "Back", "name": "Chosen Engineer Helper", "id": 218172, "altIds": [218173] },
+        { "tier": "Chosen (Omni)", "slot": "Shoulder", "name": "Chosen Engineer Shoulderpad", "id": 218174, "altIds": [218175] },
+        { "tier": "Chosen (Omni)", "slot": "Arms", "name": "Chosen Engineer Sleeves", "id": 218180, "altIds": [218181] },
+        { "tier": "Chosen (Omni)", "slot": "Hands", "name": "Chosen Engineer Gloves", "id": 218178, "altIds": [218179] },
+        { "tier": "Chosen (Omni)", "slot": "Legs", "name": "Chosen Engineer Pants", "id": 218186, "altIds": [218187] },
+        { "tier": "Chosen (Omni)", "slot": "Feet", "name": "Chosen Engineer Boots", "id": 218184, "altIds": [218185] },
+        { "tier": "Faithful (Clan, Side EqualTo 1)", "slot": "Head", "name": "Faithful Engineer Helmet", "id": 218216, "altIds": [218217] },
+        { "tier": "Faithful (Clan)", "slot": "Body", "name": "Faithful Engineer Body", "id": 218210, "altIds": [218211] },
+        { "tier": "Faithful (Clan)", "slot": "Back", "name": "Faithful Engineer Helper", "id": 218220, "altIds": [218221] },
+        { "tier": "Faithful (Clan)", "slot": "Shoulder", "name": "Faithful Engineer Shoulderpad", "id": 218218, "altIds": [218219] },
+        { "tier": "Faithful (Clan)", "slot": "Arms", "name": "Faithful Engineer Sleeves", "id": 218212, "altIds": [218213] },
+        { "tier": "Faithful (Clan)", "slot": "Hands", "name": "Faithful Engineer Gloves", "id": 218214, "altIds": [218215] },
+        { "tier": "Faithful (Clan)", "slot": "Legs", "name": "Faithful Engineer Pants", "id": 218206, "altIds": [218207] },
+        { "tier": "Faithful (Clan)", "slot": "Feet", "name": "Faithful Engineer Boots", "id": 218208, "altIds": [218209] }
+      ]
+    },
+    {
+      "name": "Azure Reveries armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "ACs": "450-1350 at QL200",
+        "MaxNCU": "+12 to +16 per piece",
+        "NanoPointCostModifier": "-10% (breastplate)",
+        "MaxHealth": "+210 boots, +250 breastplate",
+        "RunSpeed": "+60 (boots)",
+        "MiscSkills": "each piece carries a different +8 spread (PsychologicalModification and Intelligence on the breastplate; Shotgun / Matter Metamorphosis / Burst / Fling Shot / Full Auto / Agility on the boots)"
+      },
+      "levelRange": "QL200 only; requires Stamina 605 and character level 175.",
+      "source": "Rubi-Ka. Exact source not established here - see _unverified.",
+      "priority": "budget",
+      "professionLock": "none",
+      "note": "A level-175 Rubi-Ka set with -10% nano cost on the breastplate and a lot of NCU. Most pieces are NODROP and Unique. It is a stop-gap between Tier armour and Miy's/Ofab, not a destination.",
+      "pieces": [
+        { "slot": "Head", "name": "Helmet of Azure Reveries", "id": 165307 },
+        { "slot": "Body", "name": "Breastplate of Azure Reveries", "id": 165304 },
+        { "slot": "Hands", "name": "Gloves of Azure Reveries", "id": 165306 },
+        { "slot": "Feet", "name": "Boots of Azure Reveries", "id": 165305 }
+      ]
+    },
+    {
+      "name": "Carbonum Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "MeleeAC/ChemicalAC": "300-1200 at QL200",
+        "MaxNanoEnergy": "45-160 per piece",
+        "NanoCInit": "+8 per piece",
+        "MaxNCU": "+8 per piece"
+      },
+      "levelRange": "QL1-200; QL200 requires Stamina 580 and Agility 476. No level or expansion gate.",
+      "source": "Tradeskilled Rubi-Ka armour - and the Engineer is the profession that makes it. There is an Omni-only variant (Omni Carbonum) that adds Max Health.",
+      "priority": "budget",
+      "professionLock": "none",
+      "note": "The standard cheap levelling armour. +8 Nano C. Init and +8 Max NCU per piece (so +56 NCU across a full set) is what keeps it relevant longer than its ACs justify.",
+      "pieces": [
+        { "slot": "Head", "name": "Carbonum Plate Helmet", "id": 162426, "altIds": [162437] },
+        { "slot": "Body", "name": "Carbonum Breastplate", "id": 162431, "altIds": [162432] },
+        { "slot": "Arms", "name": "Carbonum Plate Arms", "id": 162429, "altIds": [162430] },
+        { "slot": "Hands", "name": "Carbonum Plate Gloves", "id": 162427, "altIds": [162428] },
+        { "slot": "Legs", "name": "Carbonum Plate Legs", "id": 162433, "altIds": [162434] },
+        { "slot": "Feet", "name": "Carbonum Plate Boots", "id": 162435, "altIds": [162436] }
+      ]
+    }
+  ],
+
+  "headwear": [
+    { "name": "Ofab Engineer Helmet", "effect": "All eight ACs +1418, Max Health +265, NANO C. INIT +60, Ranged Init +60, Intelligence +20, SPACE TIME +16. Engineer only, Lost Eden, Intelligence 1045 / Psychic 855. The Space Time is what makes this the endgame helmet for a bot class.", "id": 264575 },
+    { "name": "Special Edition Ofab Engineer Helmet", "effect": "All eight ACs +1600, Max Health +500, Nano C. Init +100, Ranged Init +100, Nano Resist +25, Add All Def. +25, Critical Resistance +3 - but NO Intelligence and NO Space Time. Compare against the normal helmet before buying; for an Engineer this is not automatically the upgrade it is for a Soldier.", "id": 267369 },
+    { "name": "Penultimate Ofab Engineer Helmet", "effect": "The top upgrade tier of the normal Ofab helmet. NODROP.", "id": 264571 },
+    { "name": "Combined Officer's Headwear", "effect": "All eight ACs up to +1425 plus the set's +30 to all six nano schools and nine trade skills, Max Nano +200, Nano Pool +50, Max NCU +15, nano cost -3%.", "id": 246669 },
+    { "name": "Miy's Nano Armor Helmet", "effect": "ACs 800-1200 at QL300, Intelligence +22, Psychic +15, Bio Metamorphosis +16, Max NCU +16. No profession lock, no expansion gate, no level requirement - just Intelligence 825 / Psychic 765.", "id": 268833 },
+    { "name": "Spirit Tech Circlet of Yadmaron", "effect": "Max Health +750, Max Nano +250, all eight ACs +100, but RANGED INIT -60. Engineer only, QL1-300, Intelligence 900 / Psychic 900, NODROP. +750 Health on a head slot is enormous for a class with no self-heal; the -60 Ranged Init only costs you your own gun, not your bot.", "id": 235398, "altIds": [235399] },
+    { "name": "Modified A-4000 NCU-sheet", "effect": "Nano Programming +40 and MAX NCU +40 at QL200, for Computer Literacy 900. Engineer only, no expansion gate. +40 NCU on a head slot with no level requirement is the best NCU-per-slot an Engineer can get before endgame.", "id": 152270, "altIds": [152271] },
+    { "name": "Helmet of Technical Ceremonies", "effect": "ACs 650-900 at QL200, Max Nano +60, Tutoring +20, Quantum FT +10, Pharma Tech +10, Grenade +5, Matter Metamorphosis +5. Engineer only, Intelligence 516 / Psychic 466, NODROP + Unique. A tradeskill hat.", "id": 165429 },
+    { "name": "Hood of Black Waters", "effect": "All eight ACs +400 at QL150, Max Health +80, Max Nano +80, Perception +40, Duck-Exp +40. Engineer only, Shadowlands, Intelligence 450. A cheap mid-level Engineer hat with real evades on it.", "id": 245430 },
+    { "name": "Chosen Engineer Helmet", "effect": "Tier-3 profession helmet, Omni side (Side EqualTo 2). The Clan equivalent is Faithful Engineer Helmet 218216.", "id": 218176 },
+    { "name": "Carbonum Plate Helmet", "effect": "Melee/Chemical AC +900 at QL200, Max Nano +140, Nano C. Init +8, Max NCU +8. Budget levelling helmet - and you can build it yourself.", "id": 162426 }
+  ],
+
+  "ncuAndBelt": [
+    { "name": "Xan's Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +30, Max Health +150, Max Nano +150 and +35 to ALL SIX attributes. Computer Literacy 1500, level 210+, Alien Invasion. The best belt in the data.", "id": 279449 },
+    { "name": "Hadrulf's Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +30, Max Health +150, Max Nano +150, Intelligence/Psychic/Sense/Agility +35. Computer Literacy 1500, level 210+, Alien Invasion. For an Engineer this is nearly identical to Xan's - it only drops Strength and Stamina.", "id": 288720, "altIds": [257119] },
+    { "name": "Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +20, Max Health +100, Max Nano +100, all six attributes +5. Computer Literacy 1125, level 151+, Alien Invasion.", "id": 288084, "altIds": [288719] },
+    { "name": "Belt Component Platform 6K-X", "effect": "6 belt slots, no other bonus. Computer Literacy 1000, level 215+. The plain 6-slot belt.", "id": 303996, "altIds": [36787, 303997, 303998] },
+    { "name": "Overclocked Belt Component Platform", "effect": "5 belt slots, Max NCU +20, Max Health +50 for only Computer Literacy 275 (Alien Invasion). Very cheap NCU.", "id": 254372 },
+    { "name": "Belt Component Platform 5000 / 4IX / 300X (levelling ladder)  [id 303995 = Belt Component Platform 5000]", "effect": "5 / 4 / 3 belt slots at Computer Literacy 300 / 200 / 120 - the plain shop belts. Computer Literacy is cost 1.4 for an Engineer, so these come early.", "id": 303995, "representativeId": 303995, "representativeName": "Belt Component Platform 5000" },
+    { "name": "Liquid Notum NCU TC-03 Prototype", "effect": "MAX NCU +72 and Mechanical Engineering +10, Space Time +4 at QL200, in belt deck slot 4 or 5. ENGINEER ONLY, Shadowlands, Computer Literacy 1700. This is more NCU than an Accelerated NCU Memory chip (+64) and it carries a bot skill on it - an Engineer-exclusive NCU advantage most players never notice.", "id": 215232, "altIds": [215233] },
+    { "name": "Accelerated NCU Memory", "effect": "Max NCU +64 and Nano C. Init +6 at QL200 per chip, in any of the six deck slots. Computer Literacy 750, Intelligence 500.", "id": 164603, "altIds": [164604, 164605, 164606, 164607, 164608] },
+    { "name": "Pre-configured NCU - Electrical Engineering", "effect": "ENGINEER ONLY deck chip (slots 1/2/4/5), QL1-200. A tradeskill NCU chip - one of six 'Pre-configured NCU' variants in the data.", "id": 151672, "altIds": [151673, 151674, 151675, 151676, 151677] },
+    { "name": "Superior Ring of the Nucleus Basalis", "effect": "Max NCU +75, Nano Resist +30, Computer Literacy +15 at QL250. Treatment 1000, level 201+. NODROP. Finger slot, listed here because its purpose is NCU.", "id": 305028 },
+    { "name": "Ring of the Nucleus Basalis", "effect": "Max NCU +50 at QL200 for Treatment 1050 only. The Abmouth (Condemned Subway) ring - the cheapest big NCU in the game and worth farming from level ~25.", "id": 202717, "altIds": [202718] },
+    { "name": "OFAB Engineer Protective Gear", "effect": "Also a major NCU item: Max NCU +25 alongside +2000 to every AC, Max Health +700, Mechanical Engineering +70 and Add All Def. +50. Back slot, QL300, Engineer only.", "id": 267936 }
+  ],
+
+  "misc": [
+    { "name": "Stellar Engineer Nanodeck", "slot": "HUD / Utility", "effect": "MATTER CREATION +30, TIME & SPACE +30, Mechanical Engineering +60, Weapon Smithing +60, Tutoring +60, Grenade +30, Pistol +30, Shotgun +30, Ranged Energy +30, Martial Arts +30, Chemistry +30, Max Health +300, Run Speed +25, Nano Range +5, Range Increaser +5, Critical Resistance +2. Engineer only, ToWield Level > 214, NODROP + Unique. Wearing ANY Engineer Nanodeck also sets NanoFocusLevel bit 64, the cast requirement on seven Engineer nanos including the Ravening M-60. The single biggest item in the Engineer game.", "id": 280775 },
+    { "name": "Activated Engineer Nanodeck", "slot": "HUD / Utility", "effect": "Run Speed +25, Nano Range +5, Range Increaser +5, Critical Resistance +2, plus the NanoFocusLevel bit. The middle step of the deck chain.", "id": 280761 },
+    { "name": "Engineer Nanodeck", "slot": "HUD / Utility", "effect": "Run Speed +25, Nano Range +5, Range Increaser +5, Critical Resistance +2, plus the NanoFocusLevel bit. From Dust Brigade 1 - see engineer-endgame.json.", "id": 270755 },
+    { "name": "Star of Ingenuity", "slot": "HUD / Utility", "effect": "Mechanical Engineering +60, Weapon Smithing +60, Tutoring +60, Space Time +30, Grenade +30 at QL250. Engineer only, NODROP + Unique, Computer Literacy 1500 and level 200+. The Engineer's Star from the Beast (wiki.aodb.us/wiki/The_Beast lists Star of Ingenuity as the Engineer Star of the 14).", "id": 244692 },
+    { "name": "Stellar Ingenuity", "slot": "HUD / Utility", "effect": "The same +60/+60/+60/+30/+30. This is what the Star becomes in the Stellar Nanodeck chain.", "id": 281047 },
+    { "name": "Rusty's Ring of Bolts", "slot": "Finger", "effect": "Max Health +150, Add All Def. +30, Nano Resist +25, Computer Literacy +20, SPACE TIME +20, MATERIAL CREATION +20, Matter Metamorphosis +20, Critical Resistance +2 at QL300. Engineer only, Lost Eden, level 220, Intelligence 1100 / Psychic 900. +20 to BOTH bot skills on a ring - this is the endgame Engineer ring.", "id": 267566, "altIds": [267567] },
+    { "name": "Custom-Made Engineer Ring of Battle", "slot": "Finger", "effect": "Max Health +125, Max Nano +75, Ranged Init +15, Space Time +5, Material Creation +5, Grenade +5, Pistol +5 at QL200. Engineer only, level 200+, NODROP.", "id": 163670, "altIds": [163671] },
+    { "name": "Custom-Made Engineer Ring of Tinkering", "slot": "Finger", "effect": "Tutoring +36, Weapon Smithing +24, Quantum FT +24, Electrical Engineering +24, Mechanical Engineering +24, Computer Literacy +12, Nano Programming +12, Intelligence +3 at QL200. Engineer only, level 200+, NODROP. The tradeskill twin of the Ring of Battle.", "id": 163672, "altIds": [163673] },
+    { "name": "Builder's Signet of The Apocalypse", "slot": "Finger", "effect": "Nano Resist +700, Fire AC +200, Run Speed +100. Engineer only, Shadowlands, Title Level 6+. A Shadowlands protection ring in the same family as Hold Hell at Bay (231234) and the De'Valos rings.", "id": 281200 },
+    { "name": "Ring of Crawling Ants", "slot": "Finger", "effect": "Evade-ClsC +42, Multi Ranged +21, Martial Arts +14, Stamina +14 at QL200. Engineer only, level 130+, NODROP + Unique. Evade-ClsC costs 4.0 for an Engineer, so +42 from a ring is worth a great deal to this class specifically.", "id": 165477 },
+    { "name": "Phatmos' Booty", "slot": "Neck", "effect": "All eight ACs +500, Add All Def. +75, Body Dev. +75, Run Speed +75, Concealment +75, Grenade +75 at QL250. Engineer only, Shadowlands, Computer Literacy 1500, Title Level 7+. The biggest Add All Def. on any Engineer item and a huge Grenade buff.", "id": 246110 },
+    { "name": "Jobe Engineer Support System", "slot": "Back", "effect": "All eight ACs +1100 at QL220, Max Health +100, Nano Resist +24. Engineer only, Shadowlands, Agility 600 / Stamina 600 / Intelligence 600, NODROP. The back-slot option between the Tier Helper and the QL300 Ofab Protective Gear.", "id": 248381 },
+    { "name": "Engineer NICS", "slot": "HUD2", "effect": "Pistol +9, Intelligence +4 at QL100. Engineer only, Shadowlands, Intelligence 850, NODROP + Unique. A profession HUD item - small, but it is one of only two Engineer-only HUD items in the data.", "id": 215239 },
+    { "name": "Apprehensive Spirit Pitcher", "slot": "HUD", "effect": "Chemical AC +150, Chemical damage modifier +15, Chemistry +15, Chemical damage SHIELD +5 at QL250. Engineer only (VisualProfession EqualTo 3), Shadowlands, Intelligence 800. A damage shield on a HUD item is rare.", "id": 246095 },
+    { "name": "Experimental Mole Robot Sonar", "slot": "HUD", "effect": "Perception +16, Sense +4 at QL200. Engineer only; Computer Literacy 350, Electrical Engineering 600.", "id": 163383, "altIds": [163384] },
+    { "name": "Mechanical Engineering Logistics Assistant", "slot": "Utility 3", "effect": "Mechanical Engineering +4 at QL100. Engineer only, Shadowlands, Intelligence 650, NODROP + Unique. Small, but it is a free Mech.E point for the tradeskill profession.", "id": 215247 },
+    { "name": "Nano Scarabaeus of Resistance", "slot": "Wrist", "effect": "Energy AC +40, Radiation AC +40, Nano Resist +12 at QL100. Engineer only, Shadowlands, Intelligence 500, Title Level 4+, NODROP.", "id": 215241 },
+    { "name": "Mechanical Analyzer", "slot": "Wrist", "effect": "A QL40 Engineer-only wrist item. Small - listed for completeness of the Engineer-locked set.", "id": 164548 },
+    { "name": "Breastplate of Technical Ceremonies", "slot": "Body", "effect": "ACs 800-1200 at QL200, Max Health +60, Mechanical Engineering +20, Weapon Smithing +20, Electrical Engineering +20, Nano Programming +10, Chemistry +10, Computer Literacy +10. Engineer only, Intelligence 516 / Psychic 466, NODROP + Unique. A pure tradeskill body piece with no expansion gate.", "id": 165427 },
+    { "name": "De'Valos Sleeves", "slot": "Arms", "effect": "+30 to ALL SIX nano schools (including Matter Creation and Time & Space), Max NCU +15 and ACs 200-230 at QL200. WARNING: its ToWear list contains Breed EqualTo 3 - it is NANOMAGE ONLY. It also needs Alien Invasion, Intelligence 700 / Psychic 700 and Title Level 6. A non-Nanomage Engineer cannot wear it at all.", "id": 253184, "altIds": [253185] },
+    { "name": "Notum Splice", "slot": "Left Wrist", "effect": "Max Nano +195, Nano Resist +30 and +1/+2 to each nano school. No profession lock; Treatment 380, Psychic 163. A cheap all-purpose wrist item.", "id": 204649 },
+    { "name": "Hold Hell at Bay", "slot": "Finger", "effect": "Nano Resist +700, Run Speed +100. No profession lock; Shadowlands, Title Level 6, Sense 600 / Psychic 600. The Pandemonium access ring - see engineer-endgame.json.", "id": 231234 }
+  ],
+
+  "_unverified": [
+    "Azure Reveries: the item data proves QL200, Stamina 605, level 175, mostly NODROP + Unique. Its SOURCE (drop, quest or tradeskill) was not established.",
+    "Miy's Nano Armor drop camps: the family is known to drop from Medusae-type mobs, but the specific camps were not confirmed on a page for this file.",
+    "Spirit Tech Circlet of Yadmaron, Hood of Black Waters, Phatmos' Booty, Apprehensive Spirit Pitcher, Ring of Crawling Ants, Breastplate/Helmet of Technical Ceremonies and the Jobe Engineer Support System are all proven Engineer-only with exact requirements and bonuses from items.ocp, but WHERE each one comes from was not established.",
+    "Mechanical Analyzer (164548): confirmed Engineer-only and QL40 in the data; its stat block was not summarised because it is negligible.",
+    "Ofab upgrade economics ('Ofab -> Improved -> Penultimate with Kyr'Ozch Bio-Material clumps, each clump at least 80% of the item QL') is carried from soldier-endgame.json, which cites wiki.aodb.us/wiki/Ofab_Armor_Upgrades. Not independently re-read for this file.",
+    "Bonus numbers are the TOP-QL template of each model; mid-QL values scale but the exact curve is not recorded here.",
+    "The two ids listed per Ofab/Tier/Miy's piece (e.g. 264575 and 264576) are two templates of the same model in items.ocp - the low-QL and high-QL ends of the range. Which one a vendor or drop hands you was not determined.",
+    "The claim that the Special Edition Ofab Engineer Helmet is NOT an automatic upgrade is a read of the two stat blocks side by side (it gains ACs / Health / Nano C. Init / Nano Resist / Add All Def. / Crit Resist, it loses Intelligence +20 and Space Time +16). Whether the net effect is better depends on how close you are to the next bot's MC/TS requirement - that judgement is not a fact from the data.",
+    "This file does NOT claim to be the exhaustive Engineer-equippable catalogue required by CLASS-PROFILE-PLAYBOOK section 9. It is the curated best-in-slot/progression layer over 61,510 Engineer-usable wearable templates and 132 Engineer-locked models. A partial exhaustive catalogue was generated into the scratch area by an earlier pass but was never written to a profile file."
+  ],
+
+  "_sources": [
+    "LOCAL (authoritative): E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1) read with tools/eng-gear-extractor --prof 3 --wield. Every id, QL range, slot, requirement, profession lock, breed lock, side lock, NODROP/Unique flag and stat bonus in this file came from that run.",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows) - every id/name pair verified.",
+    "LOCAL: AOBuddy/GameData/profiles/engineer-nanos.json - the seven NanoFocusLevel-gated nanos that make the Nanodeck an unlock rather than an upgrade, and the bot cast requirements that make Matter Creation / Time & Space the stat to chase.",
+    "LOCAL: sibling profiles engineer-endgame.json (the Ofab / Combined / Nanodeck / Star of Ingenuity progression this file must agree with), engineer-build.json (skill cost factors: Mech.E / Elec.E / Quantum FT / Weapon Smithing / Tutoring 1.0, Pistol 1.5, Grenade 2.0, Nano Pool 1.8, Dodge-Rng 2.5, Evade-ClsC 4.0), engineer-pets.json, engineer-symbiants.json (Control line) and engineer-weapons.json.",
+    "http://wiki.aodb.us/wiki/Engineer:Armor - the Engineer armour page: Rubi-Ka oddments (Repairman's Hat, Construction Sleeves, Profiteer's Helper, Hacked Technical Library and others), Shadowlands First/Second Tier Engineer Jobe Suit and Chosen/Faithful Engineer Suit, and Lost Eden Ofab Engineer Armor. The page lists nothing for Alien Invasion.",
+    "http://wiki.aodb.us/wiki/Armorsets - the armour-set taxonomy (Tier armours per profession, Alien Combined sets, OFAB profession sets, Dynaboss armour).",
+    "http://wiki.aodb.us/wiki/Alien_Armor - the six alien armour types and the six Combined recipes (Arithmetic + Spiritual = Officer's, Arithmetic + Observant = Scout's).",
+    "http://wiki.aodb.us/wiki/The_Beast - the Beast loot table, confirming Star of Ingenuity is the Engineer's Star of the 14 profession Stars.",
+    "https://wiki.aodb.us/wiki/Miy's_Nano_Armor - the Miy's armour family.",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 (and 3/3) - the bot-control rule, pet run speed, the 50 m command range and the one-aura-at-a-time rule that shape what gear is worth carrying.",
+    "NOT USED (block automation, per CLASS-PROFILE-PLAYBOOK section 4): auno.org, aoitems.com, anarchyonline.fandom.com."
+  ]
+}

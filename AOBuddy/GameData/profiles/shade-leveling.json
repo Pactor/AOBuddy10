@@ -1,0 +1,743 @@
+{
+ "profession": "Shade",
+ "professionId": 15,
+ "slug": "shade",
+ "summary": "Level 1-220 (+ AI title levels 1-30 + LE research) leveling path, hunting spots, key quests and keys for the Shade (profession 15), written for AOBuddy10. The Shade is a SHADOWLANDS-ONLY profession: a free account cannot create one, so there is no froob Shade path and no level-200 wall - the whole 1-220 route assumes a paid account with Shadowlands. It is a dual-wield PIERCING melee class that fights from the side and the back: Sneak Attack (Backstab), Fast Attack, Dimach, huge evades and a wall of combat procs, with NO pets, NO implants and NO symbiants. In the implant slots a Shade wears Spirits (client ItemClass 5) that need no surgery clinic; for armour it wears spiritual Tattoos and Body Wraps. The leveling loop at every bracket is the same: keep Piercing (and therefore your weapon QL) at the top of your skill list, keep evades and AAD stacked so mobs miss you, keep an offensive proc running, open from behind for the Backstab, and never let two mobs on you at once. The route itself is the standard modern AO route (Arete Landing -> Condemned Subway -> Temple of Three Winds / Steps of Madness / Biomare -> Shadowlands gardens and hecklers -> Adonis/Penumbra/Inferno), with Shade-specific stops layered on: Lady Sheila Black at Arete for your first Spirit, the Illegally Modified Ofab Viper in the Subway, Fear-forged Blades at Steps of Madness, the Shade-locked Nippy John Stiletto, the QL120 Bloodlust from an Elysium quest, Sharl's Cybernetic Tattoo in Penumbra and the Syndicate Brain Spirit of Guile from the Xan Civilization chain.",
+ "dataSource": {
+  "clientItems": "E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (client 18.8.50_EP1)",
+  "itemNames": "E:/Funcom/attic/extracted-client-data/itemnames.sql",
+  "playfields": "E:/Funcom/attic/extracted-client-data/playfields.dat (18.8.50_EP1)",
+  "weaponDump": "shade_weapons_raw.json (10730 weapon templates, MpUsable = usable by profession 15)",
+  "wearableDump": "shade_all_wearable.json (56349 wearable templates, 51143 usable by profession 15)",
+  "siblingProfiles": "shade-nanos.json (79 castable nanos with minLevel)"
+ },
+ "brackets": [
+  {
+   "levelRange": "1-6",
+   "where": [
+    "Arete Landing (starter island, client playfield 6553) - the 'Identity Crisis' ID-card quest chain",
+    "Arete Landing leet / cleaning-robot spawns around the quest objectives"
+   ],
+   "fight": "Malfunctioning Cleaning Robots (Rex Larsson's quest, kill 5), junkyard robots for Flint Novak, and the free quest mobs along the ID-card chain. Every step of the chain hands you cash, XP and gear, so do NOT skip it to grind - the chain IS the leveling at this bracket. Quest names and givers are confirmed from a retail capture of Arete Landing (E:/Funcom/captures/arete-landing/quests.md): Lorelei's Lost Pet, Terminate 5 Malfunctioning Cleaning Robots, Open the Cargo Box, Return to Rex Larsson, Talk to Marcus Stone, Extinguish the Gas Fire, Talk to Flint Novak, Find a Bio Analyzing Computer, Surveillance Uplink, Plant a Bug, Kneecapping a Kneebreaker, Report to Alex, Talk to Stan Goodman, Buy a Lockpick, Deliver Antonio's Adaptation..., Talk to Sarah Greene, Buy some Nano Programs, Find the thief, Deliver DNA-Locked Armor, Speak to Vernon Godfray, Hacking Skills, Cargo Lifting, Return to Vernon Godfray, then the profession fork, then Talk to Lorelei and Talk to Vaughn Hammond.",
+   "petNotes": "NO PETS - a Shade has no pet line at all; ignore any pet advice written for other professions. You start with two Worn Daggers (item 218395) and one self-castable nano, Whetstone Effect (nano 211154, Piercing +12) - verified as the Shade's startup nano in the OmniCell login code. Train PIERCING first and hardest: it is cost factor 1.0 for a Shade and it gates every weapon you will ever hold. Multi Melee, Melee Init, Sneak Attack and Dimach are also 1.0 (cheapest tier). Do not waste IP on any weapon skill other than Piercing / Sharp Objects / Martial Arts - every other weapon skill is cost factor 4.0 for a Shade.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "6-10",
+   "where": [
+    "Arete Landing - the Shade fork of the ID-card chain: Vernon Godfray (3433.958, 12.285, 825.900) sends a SHADE to Lady Sheila Black (3411.685, 9.205, 903.868), not to Dr. Mason",
+    "Arete Landing leets and low spawns between quest steps"
+   ],
+   "fight": "Finish the ID-card chain. THE SHADE-ONLY STEP: everyone else is sent to Doctor Mason to build and install a leg implant; a Shade is sent to Lady Sheila Black instead, because 'a normal doctor just won't be able to help'. She teaches the Shade the Spirit Siphon mechanic - cast Spirit Siphon (nano 297342; crystal 297333, instruction disc 297362) on a low-health mob, loot the Soul Capsule (item 236635 / 238946) and equip the Spirit. Coordinates and the NPC fork are verified from a retail capture (Arete Landing NPC table + OmniCell DBQuest.cs, sniff 20260914-220505 s5 #24196); the mechanic is also described on the AO-Universe Arete Landing page.",
+   "petNotes": "This is where the Shade stops resembling every other class: you will never visit a surgery clinic. Implants (client ItemClass 3) are refused to a Shade - the retail implant trainer says 'You know your kind can't use implants, right?' - and Spirits (ItemClass 5) go straight into the implant page with no clinic, no Treatment requirement and no QL-vs-Treatment maths. Start the habit now of re-siphoning Spirits every time you out-level the ones you are wearing.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "10-16",
+   "where": [
+    "Arete Landing - grind leets (Faffy chart: levels 10-16)",
+    "Leave to Rubi-Ka: hand the finished ID card to Vaughn Hammond (3369.283, 18.111, 828.899) at the ICC HQ gate, or bribe him with 15,000 credits for the quick exit",
+    "Condemned Subway (dng) - Workmen (Faffy chart: levels 11-15); team BEFORE entering, the dungeon is instanced"
+   ],
+   "fight": "Leets on Arete until the ID card is done, then out to Rubi-Ka and straight into the Condemned Subway on the Workmen. Buy the +50% XP cans from Canbert in Borealis when you pass through (Faffy chart, level 17 marker).",
+   "petNotes": "Shade nano ladder note: almost the whole low-level Shade nano book has minLevel 0, so by ~10 you can already run Sharpen Dagger (211154/211152, Piercing +12/+29), Footpad Apprentice / Silent Dagger (SneakAttack +30/+70), Fervor of the Henchman / Minion (FastAttack +30/+90), Dual Defender (MultiMelee +20, Parry +12) and Ritualistic Touch/Blow (offensive procs). Keep a proc up at all times - it is free damage and it is the class's whole DPS identity.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "16-25",
+   "where": [
+    "Condemned Subway - Deep Subway + the Subway Elite daily (Faffy chart: levels 16-25)",
+    "Nascence (client spells it 'Nascense') - Crippler Cave mobs, drops a DOJA chip (Faffy chart: levels 19-33) if you have travelled to Shadowlands"
+   ],
+   "fight": "Deep Subway trash and the Subway elite daily. THE LEVEL-20 SHADE WEAPON: the Illegally Modified Ofab Viper (item 301714, Piercing 149 to wield, FastAttack 69 / SneakAttack 69 / Dimach 34) drops from the Subway strikers - verified in items.ocp. It is not profession-locked, carries all three Shade specials, and is the single biggest early upgrade; twink Piercing to 149 and take it.",
+   "petNotes": "Backstab is the Shade's payoff special and it needs BOTH a weapon that carries the Sneak Attack special AND 100+ Sneak Attack skill counted from gear/spirits/tattoos but NOT from nano buffs (AO-Universe Shade guide). Plan your first 100 Sneak Attack around here. Note the positional rule: Backstab wants you BEHIND a target that is busy fighting someone else, which is why a Shade is a natural team damage dealer and an awkward soloer.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "25-33",
+   "where": [
+    "Temple of Three Winds ('Dng: Temple of Three Winds') - grind on cultists (Faffy chart: levels 25-33); the TotW Elite daily opens at 26",
+    "Nascence - Crippler Cave (Faffy chart: 19-33)"
+   ],
+   "fight": "TotW cultists and the TotW elite daily. TotW is also where the low-level loot lives (rings, robes, NCU) - it is shared content, nothing here is Shade-locked, but the evade and AAD items matter more to a Shade than to most classes.",
+   "petNotes": "At level 25 a second rung of the Shade nano ladder unlocks: Piercing Tooth (211150, Piercing +54), Double Cover (210806, MultiMelee +45 / Parry +27), Sneak (210746, EvadeClsC +30 and friends), Knock of the Poltergeist (210734, Dimach +40 / MartialArts +34) and Ritualistic Grasp / Quintessence of Incapacitation (procs). Re-buy and re-buff the whole set each time you cross a nano level gate - the gates in shade-nanos.json are 25, 50, 75, 100, 135, 145, 155, 165, 175, 185, 195, then 203/207/209/212/216/218/220.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "33-40",
+   "where": [
+    "Steps of Madness ('Dng: Steps of Madness') - grind the first 3 rooms (Faffy chart: levels 29-40)",
+    "Nascence - Crippler Cave statics, plus Jobe backyard missions for 5x mini-XP (Faffy chart: levels 34-49)"
+   ],
+   "fight": "Steps of Madness first three rooms. THE SHADE WEAPON HERE: the Fear-forged Blade (item 151903, QL50, Piercing 300 to wield, SneakAttack 150 / FastAttack 100) drops in Steps of Madness - both the AO-Universe Shade guide and the Athen Paladins 18.7 Shade guide name it as the standard ~35-40 upgrade that carries a Shade to roughly level 100.",
+   "petNotes": "By now the evade line should be your second priority after Piercing: Evade-ClsC, Dodge-Rng and Duck-Exp, plus AAD from perks and tattoos. A Shade that does not get missed dies. Ectoplasm / Entophagous (Clan) / Sombreous (Omni) tattoos are QL1-300 with essentially no attribute requirement (Agility and Sense > 2, level > 0) - verified in items.ocp - so you can wear a QL-appropriate set from level 1 upward. See shade-gear.json for the full tattoo catalogue.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "40-50",
+   "where": [
+    "Temple of Three Winds - Elite daily, Deathless Legionnaires, boss kills (Faffy chart: levels 42-57)",
+    "Biomare (Foreman's Office) - base defenders (Faffy chart: levels 38-45)",
+    "Nascence - Crippler Cave statics + Jobe backyard missions (Faffy chart: 34-49)"
+   ],
+   "fight": "TotW Deathless Legionnaires and bosses in a team; Biomare base defenders. Start the first Specialization now: Specialization 1 comes from the Nascence Start-Up Quests (which award the chapters of The Mariner's Father, items 226252-226255) or from the Professor Dedlock Specialization 1 quest, which AO-Universe lists as available for levels 1-51 - do it before it locks out. Books are handed in to Professor Dedloch at the IPS Building in Jobe Harbour.",
+   "petNotes": "Specializations matter more to a Shade than to most melee classes, because the Shade's own nano requirements are unusually high for its nano skills - the AO-Universe Shade guide says outright that you will need buffs from a Meta-Physicist or an Agent to get the bigger self-buffs up. Get Spec 1 early and start making friends with a buffer.",
+   "xpType": "XP"
+  },
+  {
+   "levelRange": "50-60",
+   "where": [
+    "Elysium - Predators at Sabre's Cradle, drops a DOJA chip (Faffy chart: levels 50-65)",
+    "Biomare - toxic floaters/bloaters and Biomare missions (Faffy chart: levels 55-67)",
+    "Nascence - hecklers at Two Mountains (Faffy chart: levels 55-70)",
+    "Temple of Three Winds - Elite daily/bosses to 57"
+   ],
+   "fight": "Elysium predators and the first heckler camp in Nascence. Hecklers are the Shadowlands XP engine for the rest of the game; at this level you want a team. Nascence spirit camps for QL~50 Spirits: the Abandoned Crypt in the Nascence swamp and the dungeon on the south-west side of the core (AO-Universe Shade guide).",
+   "petNotes": "Nano gate 50: Kick of the Phantom (210736, Dimach +75 / MartialArts +64), Primitive Dissipation (210389) and Ritualistic Caress (210359) come online. Also note the Shade-only QL50 side tattoos verified in items.ocp - Enel Gil's Raging Spirit Tattoo (Omni/neutral) and Nar Shere's Temperamental Spirit Tattoo (Clan/neutral), both Stamina > 199.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "60-70",
+   "where": [
+    "Nascence - hecklers at Two Mountains (to 70)",
+    "Rubi-Ka misc - grind claws / shades / bothackers (Faffy chart: levels 60-69)",
+    "Elysium - lake in east Elysium (QL~70 spirit camp, AO-Universe Shade guide)",
+    "Biomare - bodyguards, Biomare missions, Biomare Elite daily (Faffy chart: 68-81; a gamma access card helps a lot)"
+   ],
+   "fight": "Nascence hecklers in a team, then push into Elysium. The Athen Paladins 18.7 Shade guide puts a QL152 Nippy John Stiletto in reach around level 70 without heavy twinking - the Nippy John Stiletto (items 245605-245607, QL140-160) is SHADE-LOCKED, carries SneakAttack / FastAttack / Dimach, and has a TitleLevel 3 gate (roughly level 50+). It drops from Nippy Slither in the Adonis Abyss (AO-Universe Shade guide), so it is a twink/buy target here, not a farm target.",
+   "petNotes": "Nano gate 75 is the next real jump: Piercing Gash (211148, +85), Twice the Shield (210808, MultiMelee +80 / Parry +48), Mugger (210748, evades + concealment) and Ritualistic Embrace. Also grab the two Shade utility nanos that save your life on a bad pull - Smoke Bomb (301160, emergency sneak) and Release Me Now (281239, strips and resists root/snare strains 145/146).",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "70-80",
+   "where": [
+    "Elysium - Mortiigs west of Spade, or spiders west of Cold Rock (Faffy chart: levels 71-89)",
+    "Perpetual Wastelands - demon grinding (Faffy chart: levels 70-80)",
+    "Elysium spirit camps - by the Redeemed town in east Elysium, scattered near Ergo's Cave, and before the Lethe dungeons (QL~80-95, AO-Universe Shade guide)",
+    "Biomare - bodyguards / Elite daily (68-81)"
+   ],
+   "fight": "Elysium Mortiigs and spiders. This is the level band where the Elysium quest hub opens up and where the Shade's own quest weapon lives - see the 'One Who Wins Over Mind' entry in keyQuests: the Visiting Barter branch (kill 5 Looting Mortiigs, then the level-100 Mortiig Chieftain at the Mortiig camp, 820x1400) pays a SHADE a QL120 Bloodlust. Bloodlust (items 247057-247069) is Shade-locked, QL1-300, with SneakAttack / FastAttack / Dimach - verified in items.ocp.",
+   "petNotes": "The QL120 Bloodlust is valued by Shade players less as a main weapon than as an Agility/Sense buffing swap piece for putting higher-QL Spirits in (Athen Paladins / AO-Universe forum). Keep it in your bag forever even after you out-damage it.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "80-90",
+   "where": [
+    "The Reck - Entvineds at the Mining Outpost (Faffy chart: levels 80-89)",
+    "Elysium - Mortiigs/spiders (to 89)",
+    "Mort - cyborgs with a team (Faffy chart: levels 85-100)",
+    "Elysium quest hub - Guard Elmo Fitz (2x mini XP), Guard Ulf Reinhart (1x DMxp), One Who Has Taken Vow of Truth 5 missions (6x mini XP, 4x DMxp) - Faffy chart: start at 85, all must be done before L150",
+    "Scheol - Necropolis/Ergo and the Mausoleum in NE Scheol (QL90-115 spirit camp, AO-Universe Shade guide)"
+   ],
+   "fight": "Reck Entvineds and Mort cyborgs in a team, plus the Elysium quest block - those quests are on a level timer (do them before 150) and they are the cheapest large XP on the board at this level. Specialization 2 comes from The Girl that Saw it All (items 226256-226259), whose chapters start dropping in Elysium and upward.",
+   "petNotes": "Tattoo upgrade window: the Eric Miller (Clan/neutral) and Min-Li Jiu (Omni/neutral) Shade tattoos are QL80-120 and need Agility > 299 and Sense > 299 - verified in items.ocp. They are the natural step between the Ectoplasm/Entophagous/Sombreous line and the Tier wraps.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "90-100",
+   "where": [
+    "Elysium - teamed hecklers around the portal to Jobe Market, or on the kite hill north of the portal (Faffy chart: levels 90-125)",
+    "The Reck - Reck dailies; speak to Sovic (Omni/neutral) or Tettle (Clan/neutral) (Faffy chart: levels 90-109)",
+    "Mort / Perpetual Wastelands - cyborgs with a team (85-115)",
+    "Elysium quest block (85-139)"
+   ],
+   "fight": "Teamed Elysium hecklers become the main XP source and stay that way for a long time. Run the Reck dailies alongside them.",
+   "petNotes": "Nano gate 100 is a big one: Probe of Death (211146, Piercing +110 and melee/projectile damage modifiers), Hand of the Shadow (210738, Dimach +94 / MartialArts +80), Intrinsic Dissipation, Quintessence of Paralyzation and Sacrificial Touch. Shade's Caress (266300, the Shade nemesis nano) also has minLevel 100 in the client data. GEAR GATE 100: First Tier Shade Body Wraps (item 222925, QL100) and First Tier Shade Arm Tattoos become wearable at Agility > 364 / Sense > 299 - verified in items.ocp.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "100-110",
+   "where": [
+    "Elysium - teamed hecklers (90-125)",
+    "Perpetual Wastelands - cyborgs with a team (Faffy chart: levels 101-115)",
+    "Mantis Den part 1 daily (Faffy chart: levels 101-124) - learn the cave system for navigating the dungeon",
+    "Scheol - Necropolis/Mausoleum and before the Lethe dungeons (QL100-115 spirit camps)"
+   ],
+   "fight": "Hecklers plus the Mantis Den daily rotation. Start feeding yourself Sigd daggers if you want a cheap, always-available weapon: the Sigd I-X ladder (items 231085-231103) is Shade-locked, runs QL1 to QL300 in fixed bands (I: 1-19, II: 20-29, III: 30-39, IV: 40-59, V: 60-99, VI: 100-149, VII: 150-199, VIII: 200-249, IX: 250-299, X: 300) and carries Dimach from Sigd I and Sneak Attack from Sigd III up - all verified in items.ocp. Funcom-forum Shade players report they are bought from the Scheol and Adonis normal gardens from about level 100, and that in practice they do not exceed about QL150 for a leveling Shade.",
+   "petNotes": "Sigds are the fallback, not the goal: they are slower and weaker than the drop weapons, and Shade damage comes from burst (Backstab + Fast Attack + procs), not from sustained swings. Use a Sigd when you have nothing better, and keep hunting the drop list.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "110-125",
+   "where": [
+    "The Reck - bog golem grinding (Faffy chart: levels 110-140) - only with strong evades/AAD or a team",
+    "Elysium - teamed hecklers (to 125)",
+    "Elysium Catacombs Elite daily (Faffy chart: levels 120-150) - needs a team; reset trash by jumping into the pillars along the walls",
+    "Mantis Den part 1 daily (to 124)",
+    "Adonis - Saccelum, north of the west brink (QL120-140 spirit camp, AO-Universe Shade guide)"
+   ],
+   "fight": "Reck bog golems are explicitly flagged in the Faffy chart as an evade/AAD check - which is exactly the Shade's strength, so this is a good bracket for the class if your evades are current. Otherwise stay on hecklers.",
+   "petNotes": "Spirit refresh: Adonis Saccelum QL120-140 spirits come online here. Keep re-siphoning - a Shade wearing 60 levels of stale Spirits is a Shade with no attack rating and no evades.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "125-140",
+   "where": [
+    "Elysium - solo hecklers (Faffy chart: levels 126-140)",
+    "Adonis - teamed hecklers (Faffy chart: levels 130-179)",
+    "Mantis Den part 2 daily (Faffy chart: levels 125-149) - learn the reset spots to avoid trash",
+    "Inner Sanctum - get help from a level 220 for a permanent IS key (Faffy chart: levels 125-139)",
+    "Darkest Sanctum weekly - same IS key, then find a team (Faffy chart: 125-144)"
+   ],
+   "fight": "Solo Elysium hecklers, then move to teamed Adonis hecklers. Get the permanent Inner Sanctum key made now - it unlocks both the IS grind and the DS weekly.",
+   "petNotes": "Nano gates 135 and 145: Sacrificial Blow (210365), Scrounger (210750, evades + concealment), Touch of the Specter (210740, Dimach +110), then Double Fence (210810, MultiMelee +112 / Parry +68) at 145.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "140-150",
+   "where": [
+    "Inner Sanctum - grind the 1st floor (Faffy chart: levels 140-150)",
+    "Elysium - heckler mass kiting (Faffy chart: levels 141-155)",
+    "The Reck - more Reck dailies (Faffy chart: levels 141-159)",
+    "Elysium - the Prophetess quest (Faffy chart: levels 140-149; must be done before L150)",
+    "Elysium Catacombs Elite daily (to 150)"
+   ],
+   "fight": "Inner Sanctum first floor and heckler kiting. CLEAR THE LEVEL-150 DEADLINE: the Elysium quest block (Elmo Fitz, Ulf Reinhart, One Who Has Taken Vow of Truth, Prophetess) all lock out at 150 per the Faffy chart - finish them now or lose them. Specialization 3 is Kanel's Story (items 226266-226269), from missions or the Adonis quests.",
+   "petNotes": "Penumbra spirit camps (QL150-170) open just above this bracket, so plan a Penumbra spirit run for ~150. GEAR GATE 160: Second Tier Shade Body Wraps (item 222901, QL160) need Agility > 584 / Sense > 479.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "150-160",
+   "where": [
+    "Adonis - Dark Ruins SOLO (Faffy chart: levels 150-170; 11 x 7 million XP)",
+    "Inner Sanctum - grind the DS room (Faffy chart: levels 151-160)",
+    "Scheol Catacombs Elite daily (Faffy chart: levels 151-179) - needs a team",
+    "Adonis - teamed hecklers (130-179)",
+    "Mantis Den part 3 daily (Faffy chart: levels 150-200)",
+    "Penumbra - north-east Penumbra and before the Lethe dungeons (QL150-170 spirit camps, AO-Universe Shade guide)"
+   ],
+   "fight": "Solo Dark Ruins is the standout here - eleven instanced missions worth roughly 7 million XP each, and a Shade with current evades and a proc up handles them. Alternate with the Scheol Catacombs elite daily and Adonis hecklers.",
+   "petNotes": "Nano gate 155: Master Piercer (211144, Piercing +127, MultiMelee +4, melee damage modifier +7) and Elemental Dissipation (210393). AI WEAPON GATE 150: the Special Edition Kyr'Ozch Rapier (item 288288, QL150, level requirement 150, Alien Invasion) is SHADE-LOCKED and drops from Sector 7 trash and bosses - verified in items.ocp, source per the AO-Universe Shade guide.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "160-170",
+   "where": [
+    "Alappaa - with a full team (Faffy chart: levels 160-200)",
+    "The Reck - the Paradise Lost daily and Isle of the Dead (Faffy chart: levels 160-170)",
+    "Adonis - Dark Ruins solo (to 170)",
+    "Adonis - teamed hecklers (to 179)",
+    "Elysium - dungeon south-east of the yutto camp in central Elysium (QL165 spirit camp, AO-Universe Shade guide)"
+   ],
+   "fight": "Alappaa with a full team, Paradise Lost daily, finish the solo Dark Ruins set. The Athen Paladins 18.7 Shade guide puts the Penumbra key/quest work at 160-170, with Sharl's Cybernetic Tattoo as the payoff - see keyQuests.",
+   "petNotes": "Sharl's Cybernetic Tattoo (item 269511, QL200, Agility > 774 / Sense > 629, Shade-locked, Shadowlands) is verified in items.ocp. The Athen guide describes it as carrying a 7% XP bonus and 50 Computer Literacy; the XP-bonus number is community-sourced and is flagged in _unverified.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "170-180",
+   "where": [
+    "Adonis - Dark Ruins TEAM, plus a DOJA chip (Faffy chart: levels 171-185)",
+    "Elysium - Catacomb bosses, 7x DMxp (Faffy chart: levels 171-199)",
+    "Scheol quests - Jobe Scientists questline (16x DMxp) and Knowledge of the Yuttos questline (10x DMxp) (Faffy chart: levels 171-220; get the Scheol garden key first)",
+    "Rubi-Ka - Criminal Hideout mob grinding (Faffy chart: levels 176-190)",
+    "Adonis - teamed hecklers (to 179)"
+   ],
+   "fight": "Team Dark Ruins, Elysium Catacomb bosses and the two big Scheol questlines. The Scheol questlines are gated on having the Scheol garden key (Ocra or Roch) - do that key first or you will walk the long way for every step.",
+   "petNotes": "Nano gates 165 and 175: Sacrificial Grasp (210367), Voice of the Banshee (210742, Dimach +127 / MartialArts +108), Sacrificial Caress (210369). Keep swapping in fresh Penumbra spirits.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "180-190",
+   "where": [
+    "Penumbra - the Xan Civilization questline, 13x DMxp (Faffy chart: levels 180-220)",
+    "Adonis Catacombs Elite daily (Faffy chart: levels 180-200) - needs a team",
+    "Alappaa with a full team (160-200)",
+    "Rubi-Ka - Criminal Hideout (to 190)",
+    "Battle Station - runs during peak periods (Faffy chart: levels 151-200)"
+   ],
+   "fight": "The Xan Civilization chain in Penumbra is the anchor of this bracket (AO-Universe lists it as levels 150-220, all classes/factions - the story of Xan, Spec 4 and new nanos). The Adonis-side Xan Civilization chain is the one that pays the profession-specific Syndicate Brain reward - for a Shade that is the Syndicate Brain Spirit of Guile (item 268357, verified in itemnames), which Shade players keep all the way to 220.",
+   "petNotes": "Nano gate 185: Prowler (210752). Everything else in the top block lands at 195. GEAR GATE 190+: Deceit of the Xan (item 280719, QL300, TitleLevel 6 gate, Legacy of the Xan) becomes theoretically wieldable, but it is a Beast/Mitaar upgrade chain, not something you level in.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "190-200",
+   "where": [
+    "Penumbra - Xan Civilization questline (to 220)",
+    "Adonis Catacombs Elite daily (to 200)",
+    "Alappaa with a full team (to 200)",
+    "Mantis Den part 3 daily (to 200)",
+    "Darkest Sanctum weekly with a team (Faffy chart: levels 145-200; the mission is only available every other week)",
+    "Inferno - yutto marshes and the spirit dungeons in the temples (QL195-205 spirit camps, AO-Universe Shade guide)"
+   ],
+   "fight": "Finish the Penumbra progression and start the Inferno spirit runs. Note: there is NO froob wall for a Shade - a Shade is a paid character by definition, so 200 is just another level and the path continues straight into Inferno.",
+   "petNotes": "Nano gate 195 is the last big block of the normal ladder: Puncture of the Tarasque (211142, Piercing +140, MultiMelee +10, SharpObject +80), Duplex Wall (210812, MultiMelee +130 / Parry +80), Kiss of the Vampire (210744, Dimach +140 / MartialArts +120), Primordial Dissipation, Quintessence of Petrification and Sacrificial Embrace. Get all of them up before you walk into Inferno.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "200-210",
+   "where": [
+    "Inferno - Alappaa SL Elite daily and a DOJA chip (Faffy chart: levels 201-214)",
+    "Inferno missions - old Inferno missions are faster with a good team; the new Inferno mission set otherwise (Faffy chart: 201-220)",
+    "Rubi-Ka - Freelancers Inc when it is up; finish the day with the daily / prisoners / DOJA / LotV / Battle Station dailies (Faffy chart: levels 201-220)",
+    "Prisoner dailies (Faffy chart: levels 201-220)"
+   ],
+   "fight": "Inferno missions plus a full daily rotation. The Escaped Prisoners questline is the Shade's cheapest endgame weapon upgrade: the Hacked Medi-Blade (274974) and Improved Hacked Medi-Blade (274978), both QL300 Piercing with SneakAttack/FastAttack/Dimach - verified in items.ocp, source per the AO-Universe Shade guide; the Athen Paladins guide calls it the cheapest major upgrade from ~205.",
+   "petNotes": "Nano gates 203/207/209: Ceremonial Grasp (224163), Quintessence of Transfixion (224169), Primal Dissipation (224159). Also pick up the two modern Shade weapon-effect procs, Nanite Depravation (275839) and Basic Nanite Depravation (275841), and the top-tier buffs with minLevel 0 that you may have skipped: Improved Puncture of the Tarasque (270804, Piercing +200), Triple Wall (275843, MultiMelee +180 / Parry +100), Improved Prowler (273393) and Shadow in the Night (273395, Concealment +750).",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "210-215",
+   "where": [
+    "Inferno - the 4 Inferno questlines (Faffy chart: levels 211-220)",
+    "Alappaa SL Elite daily (to 214)",
+    "Inferno missions, Freelancers Inc, prisoner/DOJA/LotV/BS dailies (201-220)",
+    "Milky Way - Hacked Medi-Blade hunting (Athen Paladins 18.7 Shade guide)"
+   ],
+   "fight": "The four Inferno questlines plus the endgame daily rotation. Endgame Shade weapon targets verified in items.ocp: Piercing Evil (245766-245768, QL220-260, Shadowlands, from Anitaap's Shadow in Inferno), Spear of Forbidden Ceremonies (247070-247080, QL200-300, from the Inferno Catacomb boss and the Lord of the Void), Aleksander's Blooded Punchknife (253241, QL300, Alien Invasion, from Alien City Generals and Fleet Admirals), and the Ofab Viper Mk 1-6 line (264978-265019, Lost Eden, bought as Mk 1 with Victory Points and upgraded with Biomaterial).",
+   "petNotes": "GEAR GATE 220: the final tattoo/wrap tier is side-locked - Chosen Shade Body Wraps / Arm / Shoulder Tattoos (Omni, items 222667-222668) and Faithful Shade Body Wraps / Arm / Shoulder Tattoos (Clan, 216685-216686), QL220-300, Agility > 804 / Sense > 659 at QL220 rising to Agility > 1099 / Sense > 899 at QL300. Verified in items.ocp - and there is no neutral version of the final tier, which is a real faction decision for a Shade.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "215-220",
+   "where": [
+    "Lord of the Void (LotV) elite daily (Faffy chart: levels 215-220)",
+    "Inferno questlines and missions (211-220)",
+    "Freelancers Inc, prisoner dailies, DOJA turn-ins, Battle Station (201-220)",
+    "Temple of the Three Winds Raid (level 201+) for Uklesh's Talon (item 305525) - AO-Universe Shade guide"
+   ],
+   "fight": "LotV and the Inferno endgame rotation to 220, then the gear chase: Uklesh's Talon from the TotW raid, Deceit of the Xan (280719) as the upgrade of the Beast's Lord/Lady of Deceit through the Legacy of the Xan 'Alien Thread' (Mitaar Hero) chain, and Ofab Viper Mk 5/Mk 6 from Victory Points plus Biomaterial.",
+   "petNotes": "Nano gates 212/216/218/220 finish the book: Ceremonial Caress (224165), Chthonic Dissipation (224161), Ceremonial Embrace (224167) and Quintessence of Stupefication (224171). At 220 the Shade's remaining progression is entirely sideways: alpha Spirits, the final tattoo tier, research, AI levels and raid weapons.",
+   "xpType": "XP + SK"
+  },
+  {
+   "levelRange": "AI title levels 1-30 (AXP, parallel track)",
+   "where": [
+    "Daily alien missions (any level)",
+    "Alien mothership missions",
+    "City raids / city defence - kill the alien attackers",
+    "Alien playfields: Sector 7 (low), Sector 10, Sector 13, Sector 35"
+   ],
+   "fight": "AXP is a separate bar from XP/SK and needs the Alien Invasion expansion. For a Shade specifically, Sector 7 is worth running early: the Special Edition Kyr'Ozch Rapier (288288, QL150, level 150, Shade-locked) drops from Sector 7 trash and bosses, and Aleksander's Blooded Punchknife (253241, QL300) comes off Alien City Generals and Fleet Admirals.",
+   "petNotes": "City defence is awkward for a Shade compared with a pet or ranged class - you have no pet to hold the mob, you are squishy, and Backstab needs someone else to be tanking. Go in with a raid or a team, sit on the back line of whatever the tanks are holding, and use your detaunts/debuffs. The AO-Universe Shade guide names Shadow and Counterweight as the Shade's Alien Invasion perk lines.",
+   "xpType": "AXP"
+  }
+ ],
+ "keyQuests": [
+  {
+   "name": "Arete Landing 'Identity Crisis' ID-card chain",
+   "where": "Arete Landing (client playfield 6553) - Rex Larsson -> Marcus Stone -> Flint Novak -> Alex Gibbs -> Stanley Goodman -> Marco Spida -> Sarah Greene -> Vernon Godfray -> profession NPC -> Lorelei -> Vaughn Hammond",
+   "reward": "Free starter gear, cash, XP, a profession nano crystal, and the ID card that lets you leave Arete Landing for Rubi-Ka",
+   "level": "1-10"
+  },
+  {
+   "name": "SHADE-ONLY: Lady Sheila Black (the implant fork)",
+   "where": "Arete Landing, at 3411.685, 9.205, 903.868. Vernon Godfray (3433.958, 12.285, 825.900) sends a Shade to her instead of to Doctor Mason (3430.639, 9.215, 796.820), because 'a normal doctor just won't be able to help you out'",
+   "reward": "Your first Spirit: cast Spirit Siphon (nano 297342) on a low-health mob, loot the Soul Capsule and equip the Spirit. A Shade never assembles or installs an implant and never uses a surgery clinic.",
+   "level": "~8-10"
+  },
+  {
+   "name": "Condemned Subway",
+   "where": "Condemned Subway (instanced - team BEFORE entering)",
+   "reward": "Subway loot plus the Illegally Modified Ofab Viper (item 301714, Piercing 149, FastAttack/SneakAttack/Dimach) from the strikers - the standard level-20 Shade weapon",
+   "level": "11-25"
+  },
+  {
+   "name": "Temple of Three Winds",
+   "where": "Dng: Temple of Three Winds (Greater Tir County)",
+   "reward": "Cultist grinding 25-33, then the TotW Elite daily from 26 and Deathless Legionnaires / bosses 42-57. Classic low-level rings, robes and NCU.",
+   "level": "25-57"
+  },
+  {
+   "name": "Steps of Madness",
+   "where": "Dng: Steps of Madness",
+   "reward": "Fear-forged Blade (item 151903, QL50, Piercing 300, SneakAttack 150 / FastAttack 100) - the Shade's ~35-40 weapon that carries to roughly level 100",
+   "level": "29-40"
+  },
+  {
+   "name": "Biomare / Foreman's quests",
+   "where": "Biomare",
+   "reward": "Base defenders 38-45, toxic floaters/bloaters 55-67, bodyguards 68-81, Biomare missions and the Biomare Elite daily (a gamma access card helps)",
+   "level": "38-100"
+  },
+  {
+   "name": "Nascence Start-Up Quests (Specialization 1)",
+   "where": "Nascence (client 'Nascense'), Shadowlands",
+   "reward": "The chapters of The Mariner's Father (items 226252-226255) = Specialization 1, handed to Professor Dedloch at the IPS Building, Jobe Harbour",
+   "level": "1-51"
+  },
+  {
+   "name": "Professor Dedlock Specialization 1 quest",
+   "where": "Nascence (AO-Universe lists it for levels 1-51)",
+   "reward": "The completed Specialization 1 book (alternative to collecting the chapters)",
+   "level": "1-51"
+  },
+  {
+   "name": "Specialization 2",
+   "where": "Chapters of The Girl that Saw it All (items 226256-226259) drop on sided mobs starting in Elysium and upward; hand in at Professor Dedloch, IPS Building, Jobe Harbour",
+   "reward": "Specialization 2 (Specialization Item - Second Spec, 229614)",
+   "level": "~85-150"
+  },
+  {
+   "name": "Specialization 3",
+   "where": "Kanel's Story editions 1-4 (items 226266-226269), from missions or by completing the Adonis quests",
+   "reward": "Specialization 3 (Specialization Item - Third Spec, 229612)",
+   "level": "~150-180"
+  },
+  {
+   "name": "Specialization 4",
+   "where": "Afirce's World Catalogue of Books volumes 1-4 (items 226271-226285); AO-Universe ties Spec 4 to the Penumbra Xan Civilization storyline",
+   "reward": "Specialization 4 (Specialization Item - Fourth Spec, 229613)",
+   "level": "~180-220"
+  },
+  {
+   "name": "Aban Garden Key quest (Nascence, Clan-sided)",
+   "where": "Nascence, Frontier Outskirts east of the Garden of Aban exit - start at Donna Red; then Ecclesiast Aban Fala near the Exit to Silence inside the garden and Sipius Aban Lux-Wel by the teleporter statue. Collect Insignia of Aban (item 214788) from Barking Chimeras at the Frontier Bridge entrance and Unredeemed mobs deeper in; use the Ancient Pattern Analyzer (214783) on three Dreaming Silvertails just north of Frontier Bridge.",
+   "reward": "The Key to the Garden of Aban (item 226824) - free travel between the Redeemed transit statues of Nascence without gathering insignias each time",
+   "level": "all levels (do it as soon as you reach Nascence)"
+  },
+  {
+   "name": "Thrak Garden Key quest (Nascence, Omni-sided)",
+   "where": "Nascence - the Omni-side counterpart of the Aban quest; collect Insignia of Thrak (item 214789)",
+   "reward": "The Key to the Garden of Thrak (item 226994)",
+   "level": "all levels"
+  },
+  {
+   "name": "Enel / Shere Garden Key quests (Elysium)",
+   "where": "Elysium - one per side; Insignia of Enel (214781) / Insignia of Shere (214782)",
+   "reward": "The Key to the Garden of Enel (226987) / of Shere (226993) - garden hub travel in Elysium",
+   "level": "~50-90"
+  },
+  {
+   "name": "Enel / Shere Sanctuary Garden Key quests (Elysium)",
+   "where": "Elysium, after the matching garden key",
+   "reward": "The Key to Enel's Sanctuary (229059) / Shere's Sanctuary (229062) - Sanctuary access and a safe rez point",
+   "level": "~50-90"
+  },
+  {
+   "name": "Ocra / Roch Garden Key quests (Scheol)",
+   "where": "Scheol - one per side; Insignia of Ocra (214840) / Insignia of Roch (214855); Ancient Insignia of Ocra (264070) / Ancient Insignia of Roch (264069) also exist in the client data",
+   "reward": "The Key to the Garden of Ocra (226991) / of Roch (226992). REQUIRED before the Jobe Scientists and Knowledge of the Yuttos questlines (Faffy chart).",
+   "level": "~90-170"
+  },
+  {
+   "name": "Ocra / Roch Sanctuary Garden Key quests (Scheol)",
+   "where": "Scheol, after the matching garden key",
+   "reward": "The Key to Ocra's Sanctuary (233406) / Roch's Sanctuary (233407)",
+   "level": "~90-170"
+  },
+  {
+   "name": "Dalja / Gilthar Garden Key quests (Adonis)",
+   "where": "Adonis - one per side; Insignia of Dalja (214881) / Insignia of Gilthar (214880)",
+   "reward": "The Key to the Garden of Dalja (226986) / of Gilthar (226989)",
+   "level": "~120-180"
+  },
+  {
+   "name": "Dalja / Gilthar Sanctuary Garden Key quests (Adonis)",
+   "where": "Adonis, after the matching garden key",
+   "reward": "The Key to Dalja's Sanctuary (229058) / Gilthar's Sanctuary (229061)",
+   "level": "~120-180"
+  },
+  {
+   "name": "Cama / Vanya Garden Key quests (Penumbra)",
+   "where": "Penumbra - one per side; Insignia of Cama (224052) / Insignia of Vanya (224049)",
+   "reward": "The Key to the Garden of Cama (226985) / of Vanya (226995)",
+   "level": "~150-200"
+  },
+  {
+   "name": "Cama Sanctuary / Vanya Sanctuary quests (Penumbra)",
+   "where": "Penumbra, after the matching garden key",
+   "reward": "The Key to Cama's Sanctuary (229057) / Vanya's Sanctuary (229064)",
+   "level": "~150-200"
+  },
+  {
+   "name": "Lord Galahad / Lord Mordeth Garden Key quests (Inferno)",
+   "where": "Inferno - one per side; Insignia of Lord Galahad (224051) / Insignia of Lord Mordeth (224050)",
+   "reward": "The Key to the Garden of Lord Galahad (226988) / of Lord Mordeth (226990)",
+   "level": "~190-220"
+  },
+  {
+   "name": "Lord Galahad / Lord Mordeth Sanctuary Key quests (Inferno)",
+   "where": "Inferno, after the matching garden key",
+   "reward": "The Key to Lord Galahad's Sanctuary (229060) / Lord Mordeth's Sanctuary (229063)",
+   "level": "~190-220"
+  },
+  {
+   "name": "SHADE REWARD: One Who Wins Over Mind - 'Visiting Barter' branch",
+   "where": "Elysium East, quest giver 'One Who Wins Over Mind' at 715.6 x 1552.2 (near The Melting Pot at 720 x 1565); the Mortiig camp is at 820 x 1400",
+   "reward": "Kill 5 Looting Mortiigs (30k XP, 100k credits), then the Mortiig Chieftain, level 100 (150k XP, 500k credits) - a SHADE additionally gets a QL120 Bloodlust (Shade-locked piercing weapon, items 247057-247069). Non-Shades only get the credits.",
+   "level": "60-150 (AO-Universe lists the quest giver as 60-150)"
+  },
+  {
+   "name": "Elysium quest block (level-150 deadline)",
+   "where": "Elysium - Guard Elmo Fitz (2x mini XP), Guard Ulf Reinhart (1x DMxp), One Who Has Taken Vow of Truth 5 missions (6x mini XP, 4x DMxp), then the Prophetess",
+   "reward": "Large XP / DMxp blocks. The Faffy chart says do ALL of these before level 150.",
+   "level": "85-149"
+  },
+  {
+   "name": "Jobe Scientists questline (Scheol)",
+   "where": "Scheol - needs the Scheol garden key first",
+   "reward": "16x DMxp",
+   "level": "171-220"
+  },
+  {
+   "name": "Knowledge of the Yuttos questline (Scheol)",
+   "where": "Scheol - needs the Scheol garden key first",
+   "reward": "10x DMxp",
+   "level": "171-220"
+  },
+  {
+   "name": "Dark Ruins (solo, then team)",
+   "where": "Adonis - instanced missions",
+   "reward": "Solo: 11 missions at roughly 7 million XP each (levels 150-170). Team: levels 171-185, plus a DOJA chip. DOJA-chip turn-in only from 186-200.",
+   "level": "150-200"
+  },
+  {
+   "name": "Xan Civilization Quest (Adonis)",
+   "where": "Adonis",
+   "reward": "A profession-specific Syndicate Brain reward - for a Shade the Syndicate Brain Spirit of Guile (item 268357), which Shade players keep useful through level 220",
+   "level": "~150-220"
+  },
+  {
+   "name": "Xan Civilization Quest (Penumbra)",
+   "where": "Penumbra - AO-Universe: levels 150-220, all classes, all factions; NPCs include Tapiolainen (NE of the centre, down the ramp to floor level in the grassy area) and Anticipating Six by the entrance to Alappaa (he requires you to be teamed)",
+   "reward": "13x DMxp (Faffy chart), Specialization 4 and new nanos",
+   "level": "150-220"
+  },
+  {
+   "name": "Penumbra progression / Sharl's Cybernetic Tattoo",
+   "where": "Penumbra",
+   "reward": "Sharl's Cybernetic Tattoo (item 269511, QL200, Shade-locked, Agility > 774 / Sense > 629) - the Athen Paladins 18.7 Shade guide places the Penumbra key and quest work at 160-170 and names this tattoo as the payoff",
+   "level": "160-170"
+  },
+  {
+   "name": "Alappaa",
+   "where": "Alappaa (own playfield, entered from Penumbra)",
+   "reward": "Full-team content 160-200; the Alappaa SL Elite daily and a DOJA chip from 201-214",
+   "level": "160-214"
+  },
+  {
+   "name": "Mantis Den daily chain",
+   "where": "Rubi-Ka Elite daily",
+   "reward": "Part 1 at 101-124, part 2 at 125-149, part 3 at 150-200. In part 3, if you cannot kill the Mantis Queen, kill the breeders and delete the bonus 'Kill Mantis Queen' mission.",
+   "level": "101-200"
+  },
+  {
+   "name": "Inner Sanctum key + Darkest Sanctum weekly",
+   "where": "Inner Sanctum - get a level 220 to make you a permanent IS key",
+   "reward": "IS 1st-floor grinding at 140-150, the DS room at 151-160, and the DS weekly mission (available every other week) with a team from 145-200",
+   "level": "125-200"
+  },
+  {
+   "name": "Escaped Prisoners questline",
+   "where": "Rubi-Ka (prisoner dailies are part of the 201-220 rotation)",
+   "reward": "Hacked Medi-Blade (item 274974) and Improved Hacked Medi-Blade (274978), QL300 Piercing with SneakAttack/FastAttack/Dimach - the Athen guide calls this the cheapest major Shade weapon upgrade from ~205",
+   "level": "201-220"
+  },
+  {
+   "name": "The 4 Inferno questlines",
+   "where": "Inferno",
+   "reward": "Endgame XP and Inferno progression",
+   "level": "211-220"
+  },
+  {
+   "name": "Lord of the Void (LotV)",
+   "where": "SL Elite daily",
+   "reward": "Endgame daily XP",
+   "level": "215-220"
+  },
+  {
+   "name": "Temple of the Three Winds Raid",
+   "where": "High-level TotW instance (level 201+)",
+   "reward": "Uklesh's Talon (item 305525) from Uklesh the Beguiling",
+   "level": "201+"
+  },
+  {
+   "name": "DOJA chip turn-ins",
+   "where": "Per-zone DOJA chips exist in the client data: Nascense (284954), Elysium (284955), Scheol (284956), Adonis (284957), Penumbra (284958), Inferno (284959), plus Special DOJA Chip (282144), Pandemonium (284960), Alappaa (284961) and Albtraum (284962)",
+   "reward": "DOJA chip XP turn-ins - a standing bonus alongside Crippler Cave, Sabre's Cradle, Dark Ruins and Alappaa",
+   "level": "19-214"
+  },
+  {
+   "name": "Freelancers Inc and the endgame daily rotation",
+   "where": "Rubi-Ka",
+   "reward": "Run Freelancers Inc when it is up, then finish the day with the daily / prisoners / DOJA / LotV / Battle Station dailies",
+   "level": "201-220"
+  }
+ ],
+ "keys": [
+  {
+   "name": "Arete Landing ID card",
+   "forWhat": "Leaving Arete Landing for Rubi-Ka",
+   "how": "Complete the 'Identity Crisis' chain and hand the card to Vaughn Hammond at the ICC HQ gate (he stands at 3369.283, 18.111, 828.899). Quick alternative: bribe Hammond with 15,000 credits."
+  },
+  {
+   "name": "Shadowlands travel (no key, but gated)",
+   "forWhat": "Getting from Rubi-Ka into Nascence the first time",
+   "how": "Each faction has a whom-pah to the Jobe Platform - Omni in Rome Green, Clan in Old Athen, neutral in Borealis. From the Jobe Platform take a teleporter to Jobe Harbour, and the Portal Technician there sends you to Nascence Frontier for 1,000 credits. The client itself carries the gate text 'You need the Shadowlands Expansion Pack to go to Jobe.'"
+  },
+  {
+   "name": "The Key to the Garden of Aban (226824) / of Thrak (226994)",
+   "forWhat": "Nascence garden hub travel",
+   "how": "Aban is the Clan-side quest, Thrak the Omni-side one. Collect Insignia of Aban (214788) or Insignia of Thrak (214789) and complete the garden key quest. Nascence has garden keys only - there are no Aban/Thrak Sanctuary keys in the client data."
+  },
+  {
+   "name": "The Key to the Garden of Enel (226987) / of Shere (226993)",
+   "forWhat": "Elysium garden hub travel",
+   "how": "One per side; collect Insignia of Enel (214781) or Insignia of Shere (214782) and complete the AO-Universe Enel/Shere Garden Key quest."
+  },
+  {
+   "name": "The Key to Enel's Sanctuary (229059) / Shere's Sanctuary (229062)",
+   "forWhat": "Elysium Sanctuary access and safe rez",
+   "how": "The Sanctuary quest for your side, done after the matching garden key."
+  },
+  {
+   "name": "The Key to the Garden of Ocra (226991) / of Roch (226992)",
+   "forWhat": "Scheol garden hub travel - and a prerequisite for the Jobe Scientists and Knowledge of the Yuttos questlines",
+   "how": "Collect Insignia of Ocra (214840) or Insignia of Roch (214855). Ancient Insignia of Ocra (264070) / of Roch (264069) also exist in the client data; their role is unknown."
+  },
+  {
+   "name": "The Key to Ocra's Sanctuary (233406) / Roch's Sanctuary (233407)",
+   "forWhat": "Scheol Sanctuary access",
+   "how": "The Sanctuary quest for your side, after the matching garden key."
+  },
+  {
+   "name": "The Key to the Garden of Dalja (226986) / of Gilthar (226989)",
+   "forWhat": "Adonis garden hub travel",
+   "how": "Collect Insignia of Dalja (214881) or Insignia of Gilthar (214880)."
+  },
+  {
+   "name": "The Key to Dalja's Sanctuary (229058) / Gilthar's Sanctuary (229061)",
+   "forWhat": "Adonis Sanctuary access",
+   "how": "The Sanctuary quest for your side, after the matching garden key."
+  },
+  {
+   "name": "The Key to the Garden of Cama (226985) / of Vanya (226995)",
+   "forWhat": "Penumbra garden hub travel",
+   "how": "Collect Insignia of Cama (224052) or Insignia of Vanya (224049)."
+  },
+  {
+   "name": "The Key to Cama's Sanctuary (229057) / Vanya's Sanctuary (229064)",
+   "forWhat": "Penumbra Sanctuary access",
+   "how": "The Sanctuary quest for your side, after the matching garden key."
+  },
+  {
+   "name": "The Key to the Garden of Lord Galahad (226988) / of Lord Mordeth (226990)",
+   "forWhat": "Inferno garden hub travel",
+   "how": "Collect Insignia of Lord Galahad (224051) or Insignia of Lord Mordeth (224050)."
+  },
+  {
+   "name": "The Key to Lord Galahad's Sanctuary (229060) / Lord Mordeth's Sanctuary (229063)",
+   "forWhat": "Inferno Sanctuary access",
+   "how": "The Sanctuary quest for your side, after the matching garden key."
+  },
+  {
+   "name": "The Key to the Dante's Sanctuary (295111) / the Macciavelli's Sanctuary (295112)",
+   "forWhat": "Pandemonium Sanctuary access (the client carries Pandemonium Caina/Antenora/Ptolemea/Judecca playfields)",
+   "how": "unknown - both key items are verified in itemnames.sql but no quest guide for them was found on ao-universe.com or wiki.aodb.us in this pass."
+  },
+  {
+   "name": "Garden Key Shop - Nascence (295073) / Elysium (295074) / Scheol (295075) / Adonis (295076) / Penumbra (295077) / Inferno (295078)",
+   "forWhat": "unknown - six 'Garden Key Shop' items exist per SL zone in the client data",
+   "how": "unknown. These are newer than the quest keys above; whether they are a purchasable shortcut to garden travel was not verified. Do not plan around them."
+  },
+  {
+   "name": "Permanent Inner Sanctum key",
+   "forWhat": "Inner Sanctum grinding (140-160) and the Darkest Sanctum weekly (145-200)",
+   "how": "Get help from a level 220 to make you a permanent IS key (Faffy chart, levels 125-144)."
+  },
+  {
+   "name": "Gamma access card",
+   "forWhat": "The Biomare Elite daily",
+   "how": "Helps greatly with the Biomare elite daily around level 61 (Faffy chart). Acquisition route not verified in this pass."
+  },
+  {
+   "name": "Spirits (the Shade's implant substitute)",
+   "forWhat": "Every implant slot - a Shade wears Spirits (client ItemClass 5) and cannot wear implants (ItemClass 3) at all",
+   "how": "Cast Spirit Siphon (nano 297342) on a low-health mob, loot the Soul Capsule and equip the Spirit. NO surgery clinic is needed - verified from retail capture behaviour in OmniCell's SurgeryClinic.cs ('in both Shade sessions spirits went in with no clinic used'). Spirit camps by zone are listed in shade-spirits.json; the AO-Universe Shade guide gives Nascence QL10/30/50/50-65, Elysium QL70/80/80-95/165, Scheol QL90-115/100-115, Adonis QL120-140/130, Penumbra QL150-170/150-165 and Inferno QL195-205."
+  }
+ ],
+ "froobVsPaid": "THERE IS NO FROOB SHADE. The Shade is one of the two Shadowlands professions (the other is the Keeper) and a free account cannot create one - you need a paid subscription with the Shadowlands expansion before the profession even appears at character creation. That single fact changes the whole shape of the Shade's leveling path compared with an old-world profession: there is no free-to-play version of this class, no level-200 froob wall to plan around, and no 'RK-only' fallback route you would ever be forced onto. Practical consequences: (1) SHADOWLANDS is mandatory and is where the class lives - the garden/Sanctuary key network, the heckler grind, Dark Ruins, Alappaa, the Xan questlines, every Spirit camp and every tattoo and Body Wrap tier is Shadowlands content (the tattoo and wrap templates literally carry the Expansion stat-389 Shadowlands bit). (2) You still level through Rubi-Ka content for the first ~50 levels (Arete Landing, Condemned Subway, Temple of Three Winds, Steps of Madness, Biomare) and you keep coming back to RK for dailies, the Reck, Mantis Den, Inner Sanctum, Freelancers Inc and the prisoner dailies right up to 220 - the modern route is a braid of RK and SL, not one or the other. (3) ALIEN INVASION adds the parallel AXP / AI-level / perk track and two Shade-relevant weapons - the Shade-locked Special Edition Kyr'Ozch Rapier (level 150, Sector 7) and Aleksander's Blooded Punchknife (Alien City Generals / Fleet Admirals) - plus the Shadow and Counterweight perk lines. (4) LOST EDEN adds Personal and Global Research and the Ofab Viper Mk 1-6 weapon line, bought as Mk 1 with Victory Points and upgraded with Biomaterial. (5) LEGACY OF THE XAN adds Deceit of the Xan (TitleLevel 6 gate) via the Alien Thread / Mitaar Hero upgrade of the Beast's Lord/Lady of Deceit. In short: 'froob vs paid' is not a choice a Shade owner has - the only real expansion question is how much of AI/LE/LoX you own on top of the mandatory SL.",
+ "tips": [
+  "A Shade has NO PETS. Any leveling advice you read that starts 'send the pet in' does not apply. You are the one standing in melee range, which is why evades and AAD are not optional.",
+  "A Shade CANNOT USE IMPLANTS. The retail implant trainer refuses a Shade outright ('You know your kind can't use implants, right?') and Vernon Godfray at Arete sends a Shade to Lady Sheila Black rather than Doctor Mason. You wear Spirits in the implant slots instead - and Spirits need NO surgery clinic, so you can swap them anywhere, any time.",
+  "A Shade WEARS NO SYMBIANTS either. With profession 15 only 14 symbiant templates come back usable out of the whole client set, and 12 of those are an unlocked client-data anomaly. Spirits (ItemClass 5, 844 templates, 841 of them Shade-locked) are the entire slot line. See shade-spirits.json.",
+  "PIERCING is the whole class. Shade skill cost factors (1.0 = cheapest): Piercing 1.0, Multi Melee 1.0, Melee Init 1.0, Sneak Attack 1.0, Dimach 1.0, Fast Attack 1.4, Riposte 1.4, Martial Arts 1.6, Sharp Objects 1.6 - and EVERY other weapon skill is 4.0. Never put IP into a 4.0 weapon skill.",
+  "Dual-wield is gated by your own Multi Melee, not by the weapon. Keep the Multiwield nano line current - Dual Defender (level 0) -> Double Cover (25) -> Twice the Shield (75) -> Double Fence (145) -> Duplex Wall (195), plus the level-0 Triple Wall (MultiMelee +180).",
+  "BACKSTAB needs two things at once: a weapon that carries the Sneak Attack special, AND 100+ Sneak Attack skill counted from gear, Spirits and tattoos but NOT from nano buffs. Plan the first 100 around level 20-25.",
+  "Backstab is positional and situational: you must be behind a target that is already fighting someone else. That makes a Shade excellent in a team and awkward solo - solo, you lean on Fast Attack, Dimach, procs and lifetap perks instead.",
+  "Keep an offensive proc running at ALL times. The Shade proc lines (Ritualistic -> Sacrificial -> Ceremonial, the Dissipation line, the Quintessence stuns/debuffs, Degeneration haste procs and Nanite Depravation) are most of your damage and most of your survivability.",
+  "Re-siphon your Spirits every ~20-30 levels. A Shade in stale Spirits has no attack rating, no evades and no Sneak Attack skill - and unlike implants, re-doing them costs nothing but the siphon.",
+  "Spirit Siphon is checked against the mob: the Athen Paladins 18.7 guide says it tests your Dimach against the mob's Nano Resist, so keep Dimach trained (it is cost factor 1.0 anyway) and siphon RED mobs so the Spirits you get are worth wearing.",
+  "Your nano requirements are high for your nano skills. The AO-Universe Shade guide says plainly that you will need help from a Meta-Physicist or an Agent to get the bigger self-buffs up. Line up a buffer before each nano gate (25, 50, 75, 100, 135, 145, 155, 165, 175, 185, 195, then 203/207/209/212/216/218/220).",
+  "Armour is tattoos and wraps, and the top tier is side-locked. Ectoplasm (any side) / Entophagous (Clan) / Sombreous (Omni) from level 1; Eric Miller (Clan/neutral) and Min-Li Jiu (Omni/neutral) at QL80-120 (Agility and Sense > 299); First Tier wraps at QL100-160; Second Tier at QL160-220; then Chosen (Omni) or Faithful (Clan) at QL220-300 - there is NO neutral final tier.",
+  "The AO-Universe Shade guide warns that you can end up levelling the Tier armour past the skills needed to equip it - check the Agility/Sense requirement of the next tier BEFORE you upgrade.",
+  "Since patch 18.7 a Shade can wear everything other professions can - token boards, helmets, back items. Token boards in particular are a large flat HP gain for a class that has little.",
+  "Weapon route, all verified in the client data: two Worn Daggers (start) -> Illegally Modified Ofab Viper (item 301714, Piercing 149, Subway ~20) -> Fear-forged Blade (151903, QL50, Steps of Madness ~35-40) -> Nippy John Stiletto (245605-245607, QL140-160, Shade-locked, TitleLevel 3) -> QL120 Bloodlust from the Elysium quest -> Piercing Evil (245766-245768, QL220-260) / Spear of Forbidden Ceremonies (247070-247080) -> Hacked Medi-Blade (274974/274978) -> Ofab Viper Mk 5/6, Uklesh's Talon (305525), Deceit of the Xan (280719).",
+  "Keep the QL120 Bloodlust forever even after you out-damage it - Shade players use it as an Agility/Sense buffing swap weapon when equipping higher-QL Spirits.",
+  "Do the garden key for YOUR side as soon as you land in each Shadowlands zone, then the Sanctuary key. They give hub travel and a safe rez point, and the Scheol key is a hard prerequisite for the two big Scheol questlines.",
+  "Watch the level-150 quest deadline: the Elysium block (Elmo Fitz, Ulf Reinhart, One Who Has Taken Vow of Truth, Prophetess) locks out at 150.",
+  "Run the daily/elite-daily ladder in parallel with whatever you are grinding: Subway (16-25), TotW (26), Biomare (61), Mantis Den 1/2/3 (101-200), Elysium/Scheol/Adonis Catacombs (120-200), Alappaa (201-214), LotV (215-220), plus DOJA chips and Battle Station.",
+  "Opifex is the breed the AO-Universe Shade guide names as most popular (agility and senses suit the fighting style), with Solitus as the balanced alternative. Breed is set at creation - see shade-build.json."
+ ],
+ "_unverified": [
+  "The Faffy levelling chart (E:/Funcom/FAFFY'S LEVELLING GUIDE CHART/Chart.html) is a community spreadsheet, not client data. Its level windows are explicitly described by its own author as suggestions and estimates ('Color coding for levelling efficiency are estimates; don't take them too seriously'). Every Faffy-sourced level range in this file should be treated as guidance, not a gate.",
+  "The chart is written for the general player, not for a Shade. Where a spot is flagged as needing evades/AAD (Reck bog golems) it suits a Shade well; where it assumes a pet or a tank, a Shade will need a team. No Shade-specific efficiency data was found for any of these spots.",
+  "Spirit camp QLs and locations (Nascence QL10/30/50/50-65, Elysium QL70/80/80-95/165, Scheol QL90-115/100-115, Adonis QL120-140/130, Penumbra QL150-170/150-165, Inferno QL195-205) come from the AO-Universe Comprehensive Shade Guide only. The landmark names (Abandoned Crypt, Ergo's Cave, Lethe dungeons, Saccelum, Two Mountains, Sabre's Cradle, Cold Rock, Spade, Crippler Cave, Melting Pot, Mining Outpost) are NOT in the local playfield data - only the playfields themselves are (Nascense Frontier/Wilds/Swamp/Training Ground/Portal, the five Elysium zones, Scheol, Adonis, Penumbra, Inferno, Pandemonium, Alappaa, Dark Ruins Solo, Milky Way). Verify a landmark on the AO-Universe zone guide before you travel to it.",
+  "Which garden of each pair is Clan and which is Omni is confirmed ONLY for Nascence (AO-Universe: 'the Aban Clan Key or Thrak Omni key'). For Elysium/Scheol/Adonis/Penumbra/Inferno the pairing is stated here as 'one per side' without assigning sides. Weak local hint, not treated as proof: the Shade-usable QL50 tattoos named after two of the garden lords carry opposite side locks - Enel Gil's Raging Spirit Tattoo is Side Unequal 1 (not Clan) and Nar Shere's Temperamental Spirit Tattoo is Side Unequal 2 (not Omni). Check the AO-Universe page for your own side before starting.",
+  "The Sigd I-X ladder is fully verified as items (231085-231103, Shade-locked, QL bands as listed). HOW you obtain them is not: a Funcom-forums Shade thread says they are available 'from Scheol and Adonis normal gardens around level 100+'. No vendor, NPC or quest was confirmed for any Sigd tier in local data or on ao-universe.com / wiki.aodb.us. Treat the Sigd acquisition route as unknown.",
+  "Sharl's Cybernetic Tattoo is verified as an item (269511, QL200, Shade-locked, Agility > 774 / Sense > 629). The claimed '7% XP bonus and 50 Computer Literacy' and the '160-170, Penumbra key and quest' placement come from the Athen Paladins 18.7 Shade guide only; the exact Penumbra quest that awards it was not identified.",
+  "The Syndicate Brain Spirit of Guile is verified as an item (268357). The claim that it comes from the Xan Civilization Quest (Adonis) is second-hand (an aoitems.com/aoguide.org search result plus the Athen Paladins guide's 'ADO quest series'); the AO-Universe site carries BOTH an Adonis and a Penumbra Xan Civilization guide and this pass did not confirm which one pays the Syndicate Brain.",
+  "The Shade nemesis nano Shade's Caress (nano 266300) has minLevel 100 in the client data, but where you get the crystal was not verified. One search result says nemesis nanos are bought from the VP nano vendor in Tower shops; that was not confirmed for the Shade. See shade-nano-sources.json when it exists.",
+  "TitleLevel gates: this file uses the project's own extractor note (TL5 = 150+, TL6 = 190+, TL7 = 205+, tools/mp-weapon-extractor/Program.cs). The TL1-TL4 boundaries (used only for the Nippy John Stiletto's TL3 gate, described here as 'roughly level 50+') were NOT re-verified against local data.",
+  "Drop sources for the endgame weapons (Piercing Evil from Anitaap's Shadow, Spear of Forbidden Ceremonies from the Inferno Catacomb boss and the Lord of the Void, Nippy John Stiletto from Nippy Slither in the Adonis Abyss, Aleksander's Blooded Punchknife from Alien City Generals and Fleet Admirals, Uklesh's Talon from Uklesh the Beguiling, Illegally Modified Ofab Viper from the Subway strikers, Fear-forged Blade from Steps of Madness) are all from the AO-Universe Shade guide, the Funcom forums or the Athen Paladins guide. The ITEMS are verified in items.ocp; the DROP LOCATIONS are not local data. auno.org and aoitems.com, which would settle them, block automation.",
+  "The Athen Paladins 18.7 Shade guide was read through an automated summariser. Its coarse TL-by-TL route (TL1 newbie island then Nascence chimeras ~8, TL2 subway ~20 then Nascence predators/malahs/weavers and Crippler Cave, TL3 spirit-siphon mobs 35-60 then Ely 60-90 then Tinker Tower/Reck 90-150, TL4 Adonis/Dark Ruins 100-150, TL5 Penumbra 150-160 then Inferno 160-205, TL6 Inferno hard missions 205-220) broadly agrees with the Faffy chart but disagrees in places on exact levels. Where they differ this file follows Faffy, which is the more recent and more granular source.",
+  "The AO-Universe Shade guide's 'Jobe SL Starter area' crafting route for the Notum-Infused Silvertail Dagger (item 227096, QL15, Piercing 75) is STALE: AO-Universe's own nostalgia page states 'AS OF PATCH 18.7 THIS AREA IS NO LONGER AVAILABLE. FOR THE STARTER AREA PLEASE SEE: Arete Landing.' The dagger and its components still exist in the client data but the area you crafted them in does not. Do not plan around it.",
+  "OmniCell's own hit-points-per-level table has a Shade column, but the source comment states only the Soldier, Martial Artist, Engineer and Fixer columns were verified - so no Shade HP-per-level figure is quoted in this file.",
+  "Exact XP/SK split per bracket is not modelled: 'XP + SK' simply means you are in Shadowlands content where both bars move. No local XP table was consulted for the SL brackets.",
+  "The six 'Garden Key Shop - [zone]' items (295073-295078) and the two Pandemonium Sanctuary keys (295111 Dante's, 295112 Macciavelli's) are verified item names with no known acquisition route; both are listed as unknown rather than guessed."
+ ],
+ "_sources": [
+  "LOCAL: client item templates - E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (18.8.50_EP1), read via the scratch dumps shade_weapons_raw.json (10730 weapon templates) and shade_all_wearable.json (56349 wearable templates, 51143 usable by profession 15)",
+  "LOCAL: id -> name verification for every item id in this file - E:/Funcom/attic/extracted-client-data/itemnames.sql (131384 rows)",
+  "LOCAL: playfield names - E:/Funcom/attic/extracted-client-data/playfields.dat (18.8.50_EP1); confirms Nascense Frontier/Wilds/Swamp/Training Ground/Portal, the five Elysium zones, Scheol, Adonis, Penumbra Forest/Valley/Hollows/Transit, Inferno, the Pandemonium zones, Alappaa, Dark Ruins Solo, Milky Way, Dng: Temple of Three Winds, Dng: Steps of Madness, Condemned Subway (dng), The Reck, The Smugglers Den, Jobe Platform/Harbor/Market/Plaza, the Redeemed/Unredeemed Temples and the Gardens of Redeemed/Unredeemed Nascense/Elysium/Scheol, and the gate string 'You need the Shadowlands Expansion Pack to go to Jobe.'",
+  "LOCAL (retail capture): Arete Landing quest chain, NPC names and exact NPC coordinates - E:/Funcom/captures/arete-landing/quests.md, npcs.csv, mobspawns.sql (Lady Sheila Black 3411.685/9.205/903.868, Vernon Godfray 3433.958/12.285/825.900, Dr. Mason 3430.639/9.215/796.820, Vaughn Hammond 3369.283/18.111/828.899; playfield 6553)",
+  "LOCAL (sniff-cited emulator source): the Shade implant rule and the Godfray -> Lady Sheila Black fork - E:/Funcom/OmniCell/OmniCell/Libraries/Source/OmniCell.Core/Inventory/ImplantInventoryPage.cs and .../OmniCell.Database/Entities/DBQuest.cs, both citing retail capture 20260914-220505 (implant trainer line #24538, Godfray line #24196); spirits need no surgery clinic per .../ZoneEngine/Core/SurgeryClinic.cs",
+  "LOCAL (emulator source): the Shade's startup nano Whetstone Effect - E:/Funcom/OmniCell/OmniCell/Server/LoginEngine/Packets/CharacterName.cs",
+  "LOCAL: Faffy's AO Levelling Chart - E:/Funcom/FAFFY'S LEVELLING GUIDE CHART/Chart.html (published Google Sheet; the companion guide it links is https://docs.google.com/document/d/1JcenbCuf84TYSDrLk1ibnH6fhP_dGTXrTS7vxwvp4A8/edit). Source of nearly every level window in the brackets above.",
+  "LOCAL: sibling profile - AOBuddy/GameData/profiles/shade-nanos.json (79 castable nanos with minLevel), the authoritative source for the nano gates quoted here",
+  "LOCAL: Shade skill cost factors - AOBuddy/GameData/profiles/reference/skillcaps.json (profession index 11)",
+  "AO-Universe Comprehensive Shade Guide - https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+  "AO-Universe Arete Landing - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/arete-landing",
+  "AO-Universe Shadowlands quest guide index (the full garden/Sanctuary key list) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2",
+  "AO-Universe Aban Garden Key Quest - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/aban-garden-key-quest",
+  "AO-Universe Thrak Garden Key Quest - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/thrak-garden-key-quest",
+  "AO-Universe Enel / Shere Garden and Sanctuary Key Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/enel-garden-key-quest , .../enel-sanctuary-garden-key-quest , .../shere-garden-key-quest , .../shere-sanctuary-garden-key-quest",
+  "AO-Universe Ocra / Roch Garden and Sanctuary Key Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/scheol/ocra-garden-key-quest , .../ocra-sanctuary-garden-key-quest , .../roch-garden-key-quest , .../roch-sanctuary-garden-key-quest",
+  "AO-Universe Dalja / Gilthar Garden and Sanctuary Key Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/adonis/dalja-garden-key-quest , .../dalja-sanctuary-garden-key-quest , .../gilthar-garden-key-quest , .../gilthar-sanctuary-garden-key-quest",
+  "AO-Universe Cama / Vanya Garden and Sanctuary Key Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/cama-garden-key-quest , .../cama-sanctuary-garden-key-quest , .../vanya-garden-key-quest , .../vanya-sanctuary-quest",
+  "AO-Universe Galahad / Lord Mordeth Garden and Sanctuary Key Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/galahad-garden-key-quest , .../galahad-sanctuary-key-quest , .../lord-mordeth-garden-key , .../lord-mordeth-sanctuary-key-quest",
+  "AO-Universe One Who Wins Over Mind (the QL120 Bloodlust Shade reward) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/one-who-wins-over-mind",
+  "AO-Universe Guard Elmo Fitz - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/guard---elmo-fitz",
+  "AO-Universe Guard Ulf Reinhart - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/guard---ulf-reinhart",
+  "AO-Universe One Who Has Taken Vow of Truth - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/one-who-has-taken-vow-of-truth",
+  "AO-Universe One Who Overcomes Enemies - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/one-who-overcomes-enemies",
+  "AO-Universe Jobe Scientists - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/scheol/jobe-scientists",
+  "AO-Universe Knowledge of the Yuttos - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/scheol/knowledge-of-the-yuttos",
+  "AO-Universe Dark Ruins solo / team guides - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/adonis/dark-ruins-solo-guide , .../dark-ruins-team-guide",
+  "AO-Universe Xan Civilization Quest (Penumbra) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/xan-civilization-quest",
+  "AO-Universe Xan Civilization Quest (Adonis) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/adonis/xan-civilization-quest-adonis",
+  "AO-Universe Alappaa - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/alappaa",
+  "AO-Universe Specializations - https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/specializations",
+  "AO-Universe Professor Dedlock Specialization 1 Quest - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/professor-dedlock-specialization-1-quest",
+  "AO-Universe Nascence Start-Up Quests - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/start-up-quests",
+  "AO-Universe Travelling through the Shadowlands - https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/travelling-through-the-shadowlands",
+  "AO-Universe Nascence Guide - https://www.ao-universe.com/guides/shadowlands/location-guides-4/nascence-guide",
+  "AO-Universe Nostalgic Guide - Shadowlands Starter Area Quests (confirms the Jobe starter area was removed in 18.7) - https://www.ao-universe.com/guides/nostalgia/guides/nostalgic-guide---shadowlands-starter-area-quests",
+  "AO-Universe Steps of Madness - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/steps-of-madness",
+  "AO-Universe The Reck - https://www.ao-universe.com/guides/classic-ao/location-guides-5/the-reck",
+  "AO-Universe Biomare / Foreman's quests - https://www.ao-universe.com/guides/classic-ao/quests-guides-3/biomare-quests-foremans",
+  "AO-Universe The Inner Sanctum - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/high-level-encounter-2/the-inner-sanctum",
+  "AO-Universe daily missions index + Criminal Hideout / Extraction / A Contingent Spy / Darkest Sanctum - https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/daily-missions-3 , https://www.ao-universe.com/guides/classic-ao/daily-missions-2/criminal-hideout , .../extraction , .../a-contingent-spy , .../darkest-sanctum-10",
+  "AO-Universe Shadowlands Elite Daily Missions - https://www.ao-universe.com/guides/shadowlands/location-guides-4/shadowlands-elite-daily-missions",
+  "AO-Universe DOJA chips - https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/doja-chips",
+  "AODB Wiki Shade - http://wiki.aodb.us/wiki/Shade (cannot use implants; uses trapped Spirits; armour is spiritual tattoos; proc-based melee; limited hit points)",
+  "Athen Paladins 18.7 Shade guide - http://www.athenpaladins.org/forums/viewtopic.php?f=14&t=10290",
+  "Funcom Forums [SHADE] RK2019 Weapons - https://forums.funcom.com/t/shade-rk2019-weapons/83733",
+  "Funcom Forums [SHADE] Weapon Help - https://forums.funcom.com/t/shade-weapon-help/41635",
+  "AO-Universe forum: Mid-level Shade weapons - https://www.ao-universe.com/forum/viewtopic.php?t=4652",
+  "Athen Paladins: QL120 bloodlust - http://www.athenpaladins.org/forums/viewtopic.php?f=29&t=1396",
+  "Forums-archive: Crippler Cave - https://forums-archive.anarchy-online.com/showthread.php?276135-Crippler-Cave",
+  "Forums-archive: Inferno Quests info (all 4 of them) - https://forums-archive.anarchy-online.com/showthread.php?459943-Inferno-Quests-info-(All-4-of-them)-**-SPOILERS-**",
+  "GameFAQs hahnsoo Newbie/Froob Guide (free accounts cannot create a Keeper or a Shade) - https://gamefaqs.gamespot.com/pc/913777-anarchy-online/faqs/46197"
+ ]
+}

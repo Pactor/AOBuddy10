@@ -1,0 +1,564 @@
+{
+  "profile": "Acquisition sources for Doctor representative weapons (AOBuddy10)",
+  "profession": {
+    "id": 10,
+    "name": "Doctor"
+  },
+  "generatedUtc": "2026-09-23T04:44:36Z",
+  "sources": {
+    "227141": {
+      "name": "Notum-Infused Chimera Pistol",
+      "ql": 15,
+      "how": "unknown",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "201263": {
+      "name": "SOL K-94 Baby Monster",
+      "ql": 64,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "201265": {
+      "name": "SOL K-94 Monster",
+      "ql": 124,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "288293": {
+      "name": "Special Edition Kyr'Ozch Pistol",
+      "ql": 150,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "208020": {
+      "name": "Tsunami BM-301 Bloodletter",
+      "ql": 149,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "208021": {
+      "name": "Tsunami BM-302 Bloodletter",
+      "ql": 150,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "164515": {
+      "name": "Solar-Powered Master Engineer Pistol",
+      "ql": 200,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "TL6",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "303408": {
+      "name": "Junior Ofab Peregrine",
+      "ql": 220,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "214311": {
+      "name": "Pistol of Endurance",
+      "ql": 299,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "214306": {
+      "name": "Pistol of Vitality",
+      "ql": 299,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "267618": {
+      "name": "Doctor's Left Hand of Grace",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": "LostEden",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "267619": {
+      "name": "Doctor's Right Hand of Hope",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": "LostEden",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "214312": {
+      "name": "Pistol of Survival",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "214307": {
+      "name": "Pistol of Vivacity",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "254618": {
+      "name": "Kyr'Ozch Pistol",
+      "ql": 300,
+      "how": "drop",
+      "where": "Alien city raids / Alien Mothership",
+      "expansion": "AlienInvasion",
+      "tier": "expansion",
+      "notes": "Alien city raids / Alien Mothership. Untyped Kyr'Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates. An untyped Kyr'Ozch weapon has no special attacks until it is typed with a Kyr'Ozch Bio-Material - Type <n> clump (see the '- Type' entries). NOTE: The wiki's Kyr'Ozch weapons section is empty and the Alien Loot page carries no mob/zone/rate attribution, so the exact drop source per weapon is unknown."
+    },
+    "301071": {
+      "name": "Strong Oak Bo",
+      "ql": 1,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "301708": {
+      "name": "Illegally Modified Ofab Boar",
+      "ql": 1,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "160196": {
+      "name": "Dented Bang-Bang Glove",
+      "ql": 120,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "160201": {
+      "name": "Brand New Bang-Bang Glove",
+      "ql": 200,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "271047": {
+      "name": "Nano-Charged Stun Glove - 870",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "301885": {
+      "name": "X1-R4 Viral Force-Blades",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "227087": {
+      "name": "Notum-Infused Petrified Bone",
+      "ql": 15,
+      "how": "unknown",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "301707": {
+      "name": "Illegally Modified Ofab Panther",
+      "ql": 1,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "204752": {
+      "name": "Skull of Lamentation",
+      "ql": 1,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "275848": {
+      "name": "Asp of Titaniush",
+      "ql": 215,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "295747": {
+      "name": "Thick Club",
+      "ql": 200,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "281503": {
+      "name": "Kur'Ush Mallet",
+      "ql": 300,
+      "how": "tradeskill",
+      "where": "Shop components + an existing Xan weapon",
+      "expansion": "LegacyOfTheXan",
+      "tier": "TL6",
+      "notes": "Shop components + an existing Xan weapon. Modified Xan Weapons are made from a finished 'X of the Xan' weapon plus one shop-bought component. No tradeskill skill is required; the component must be QL 150 or higher and is consumed. Gluttony of the Xan + Notum Enriched Nano Paste - 16x Layer = Bhan'Zor Hammer Abandonment of the Xan + Notum Enriched Nano Paste - 16x Layer = Kur'Ush Mallet Lust of the Xan + Nano Pylon = Peh'Wer Pistol Peh'Wer Pistol + Runtime Critical Area Analyzer = Troa'Ler Pistol Envy of the Xan + Rapid-Reload-And-Fire Gyro = Rhat'Ata Gun  (MG/SMG - not usable by every profession) Angst of the Xan + Low-Light Targeting Scope = Gan'Kar Rifle  (Rifle - not usable by every profession) NOTE: The client data corroborates the chain: the description text on Peh'Wer Pistol reads 'The Lust of the Xan has been tweaked to a higher performance.'"
+    },
+    "123074": {
+      "name": "Composite Ritual Krys Knife",
+      "ql": 199,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "301716": {
+      "name": "Illegally Modified Ofab Mongoose",
+      "ql": 1,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "249046": {
+      "name": "Survival Axe of Genevra",
+      "ql": 100,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "249052": {
+      "name": "Senior Survival Axe of Genevra",
+      "ql": 174,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "249055": {
+      "name": "Premium Survival Axe of Genevra",
+      "ql": 200,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "305520": {
+      "name": "Ceremonial Blade",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "227096": {
+      "name": "Notum-Infused Silvertail Dagger",
+      "ql": 15,
+      "how": "unknown",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "151903": {
+      "name": "Fear-forged Blade",
+      "ql": 50,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "208093": {
+      "name": "Newland Fish Knife - Two Stars",
+      "ql": 99,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "249076": {
+      "name": "Senior Variable Density Tanto",
+      "ql": 180,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "303418": {
+      "name": "Junior Ofab Viper",
+      "ql": 220,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "265019": {
+      "name": "Ofab Viper Mk 6",
+      "ql": 300,
+      "how": "shop|tradeskill",
+      "where": "Battlestation - Ofab terminals, Unicorn Defence Hub",
+      "expansion": "LostEden",
+      "tier": "expansion",
+      "notes": "Battlestation - Ofab terminals, Unicorn Defence Hub. Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the 'Ofab Shop') in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220. Upgraded Mk 1 -> Mk 6 (five upgrades, strictly sequential) by adding a Kyr'Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon's QL. Each upgrade also changes the weapon's appearance. Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun). The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps. No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol. NOTE: ao-universe lists Type 812 as covering Bow; wiki.aodb.us lists it as Crossbow. Unresolved - both recorded in _unverified."
+    },
+    "227105": {
+      "name": "Notum-Infused Chimera Shotgun",
+      "ql": 15,
+      "how": "unknown",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "122601": {
+      "name": "Over-Tuned Blackhole Mk IX",
+      "ql": 60,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "122039": {
+      "name": "Balanced Triplejolt",
+      "ql": 140,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "257109": {
+      "name": "Low Recoil Diamondine Kick Pistol",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "303416": {
+      "name": "Junior Ofab Silverback",
+      "ql": 220,
+      "how": "shop|tradeskill",
+      "where": "Battlestation - Ofab terminals, Unicorn Defence Hub",
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Battlestation - Ofab terminals, Unicorn Defence Hub. Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the 'Ofab Shop') in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220. Upgraded Mk 1 -> Mk 6 (five upgrades, strictly sequential) by adding a Kyr'Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon's QL. Each upgrade also changes the weapon's appearance. Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun). The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps. No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol. NOTE: ao-universe lists Type 812 as covering Bow; wiki.aodb.us lists it as Crossbow. Unresolved - both recorded in _unverified."
+    },
+    "280725": {
+      "name": "Greed of the Xan",
+      "ql": 300,
+      "how": "tradeskill",
+      "where": "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+      "expansion": "LegacyOfTheXan",
+      "tier": "TL6",
+      "notes": "Legacy of the Xan team instances (device) + Pandemonium (base weapon). Xan Weapon Upgrade Device + <base weapon QL 299/300> = <X> of the Xan. No tradeskill skill required. The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / 'Mitaar Hero' (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill. Base weapon for most sins is the matching Lord/Lady of <sin> from The Beast in Pandemonium. Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries). Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+    },
+    "254307": {
+      "name": "Energy Knife Right",
+      "ql": 10,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "230890": {
+      "name": "Freezing Device",
+      "ql": 50,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "246243": {
+      "name": "Broken Sword of Dawn",
+      "ql": 199,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "246244": {
+      "name": "Sword of Dawn",
+      "ql": 200,
+      "how": "tradeskill",
+      "where": "Pandemonium (Shadowlands)",
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Pandemonium (Shadowlands). Notum Seed + Sunrise Hilt = Sword of Dawn  (Clan/Redeemed side) Novictum Seed + Sunset Hilt = Sword of Dusk  (Omni/Unredeemed side) Requires 500 Weapon Smithing - the only step in the whole Xan line with a real skill requirement. Notum Seed drops from The Night Heart on the Redeemed (Clan) side of Pandemonium; Novictum Seed from The Night Heart on the Unredeemed (Omni) side. Neither is a 100% drop; both also turn up in player shops. Sunrise Hilt (Clan) and Sunset Hilt (Omni) are 100% NODROP drops from The Beast. Recorded rates over 104 kills: Sunrise 18.27%, Sunset 4.81%. Neutrals capped at 25,000 faction cannot obtain these. NOTE: Feeds Dawn of the Xan / Dusk of the Xan."
+    },
+    "271422": {
+      "name": "E-Blade - 850",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "254702": {
+      "name": "Kyr'Ozch Energy Hammer",
+      "ql": 300,
+      "how": "drop",
+      "where": "Alien city raids / Alien Mothership",
+      "expansion": "AlienInvasion",
+      "tier": "expansion",
+      "notes": "Alien city raids / Alien Mothership. Untyped Kyr'Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates. An untyped Kyr'Ozch weapon has no special attacks until it is typed with a Kyr'Ozch Bio-Material - Type <n> clump (see the '- Type' entries). NOTE: The wiki's Kyr'Ozch weapons section is empty and the Alien Loot page carries no mob/zone/rate attribution, so the exact drop source per weapon is unknown."
+    },
+    "160153": {
+      "name": "Flawed Sleek Cannon",
+      "ql": 20,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "208063": {
+      "name": "SOL XI-P Medical Laser",
+      "ql": 49,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "208064": {
+      "name": "SOL XII-P Medical Laser",
+      "ql": 50,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "248611": {
+      "name": "Cast-Off Xnemth Plasmaprojector",
+      "ql": 40,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "248617": {
+      "name": "Xnemth Plasmaprojector",
+      "ql": 100,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "288297": {
+      "name": "Special Edition Kyr'Ozch Energy Pistol",
+      "ql": 150,
+      "how": "unknown",
+      "where": null,
+      "expansion": "AlienInvasion",
+      "tier": null,
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "257126": {
+      "name": "Amplified Sleek Cannon",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": null,
+      "tier": "high-rk",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "211229": {
+      "name": "Serious Destruction",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    },
+    "267128": {
+      "name": "Dreadloch Rapier",
+      "ql": 300,
+      "how": "unknown",
+      "where": null,
+      "expansion": "LostEden",
+      "tier": "expansion",
+      "notes": "Acquisition (vendor/mob/mission) NOT established. The item exists in items.ocp with the stats shown, but no local OmniCell drop/vendor table lists it and the public item DBs that would (auno.org, aoitems.com) block automation. Left unknown rather than guessed."
+    }
+  },
+  "_sources": [
+    {
+      "coverage": {
+        "representativeIdsCovered": 60,
+        "withCitedAcquisition": 7,
+        "howUnknown": 53
+      },
+      "method": [
+        "Cited acquisitions are joined by model NAME from doctor-weapons-endgame.json, whose acquisition table is cited to ao-universe.com and wiki.aodb.us (see that file's _sources).",
+        "expansion is derived from each weapon's own ToWield Expansion(389) BitAnd requirement in items.ocp - authoritative client data.",
+        "Rows with how=\"unknown\" say so; no drop location is approximated. auno.org / aoitems.com / anarchyonline.fandom.com block automation and were NOT used."
+      ]
+    }
+  ]
+}

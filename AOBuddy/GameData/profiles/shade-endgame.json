@@ -1,0 +1,312 @@
+{
+ "profession": "Shade",
+ "professionId": 15,
+ "slug": "shade",
+ "symbiantUnitType": "NONE - a Shade wears no symbiants. Its implant slots take SPIRITS (client ItemClass 5). See shade-symbiants.json, which holds the Spirit catalogue under that filename so the Implants & Symbiants tab renders it.",
+ "levelCapContext": "Level 220 + 30 Alien Levels + the Legacy-of-the-Xan research lines + Apotheosis (100,000 SK per level, rewards at character level 200-220). SL perks: 1 per 10 levels to 200 plus 1 per shadowlevel = 40 at 220. AI perks: 1 per Alien Level, max 30. Shadowlands is MANDATORY for this profession, so there is no froob endgame and no level-200 wall.",
+ "raidRole": {
+  "summary": "Pure single-target melee damage, and specifically PERK damage. A Shade brings no team buff, no heal, no taunt, no pet and no crowd control - the only nano it can cast on another player is a Sneak Attack buff, and only Adventurers, Keepers and other Shades can use it.",
+  "howItSurvives": "Lifesteal, not healing: the Ritual/Devour perk chains, Sneaking Health Drain, the Siphon Being and Sap Life research procs, Shade's Caress, Diffuse, Exultation and Dimach. A Funcom-forums Shade: \"your survivability as a shade comes from your life-steal\", and separately, \"Deflect I found was all around a useless thing to IP\".",
+  "backstab": "The signature attack needs four things at once: Sneak Attack 100+, a weapon whose ToWield carries the Sneak Attack special, you behind the target, and the target already engaged with another combatant. In a raid that means it fires off the tank's aggro, so a Shade's damage depends on someone else holding the mob.",
+  "theShadeDance": "Since patch 17.9 only the FIRST perk of a chain needs you behind the target, and chains check the user rather than the target - so you reposition once per chain and the rest fire from the front, even onto a different mob.",
+  "pvpStanding": "High. A 220-duel tier-list thread on the Funcom forums: \"I had a hard time placing shade, it may very well belong with the top 1 contenders.\"",
+  "pvmStanding": "UNKNOWN. No allowed source says whether raid leaders want a Shade, and none ranks Shade damage against the other damage professions. Not asserted either way.",
+  "_sources": [
+   "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+   "https://forums.funcom.com/t/new-shade-coming-back/120089",
+   "https://forums.funcom.com/t/shade-endgame-soloing-and-deflect-returning-player/30753",
+   "https://forums.funcom.com/t/profession-tier-lists/186704"
+  ]
+ },
+ "content": [
+  {
+   "name": "The Alien Threat (Mitaar Hero)",
+   "type": "Legacy of the Xan team instance",
+   "level": "201-220",
+   "whatDropsForShade": "Xan Spirit BETAS for Brain, Chest, Left Hand and Left Wrist. Also Xan Combat and Defense Merit Board Bases (explicitly \"Wearable by neutrals and shades\"), Base NCUs, Memory Cells, Belt Tuning Devices, XAN WEAPON UPGRADE DEVICES and Nanodeck Activation Devices.",
+   "shadeRole": "Pure damage. Nothing Shade-specific is asked of you mechanically - the fight is about reaching the coloured platforms (green/yellow/blue/red) for protection, which suits a class built on Run Speed and positioning.",
+   "note": "Boss: Technomaster Sinuh. Entrance: the portal on the floor at the bottom of the ramp to Arid Rift, Central Hub 350x410. This is also where a Lord/Lady of Deceit is upgraded into Deceit of the Xan with a Xan Weapon Upgrade Device. NOTE: the SYMBIANT betas that drop here are useless to a Shade - you want the SPIRIT betas.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-alien-threat",
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade"
+   ]
+  },
+  {
+   "name": "Ground Chief Vortexx",
+   "type": "Legacy of the Xan team instance",
+   "level": "201-220",
+   "whatDropsForShade": "Xan Spirit BETAS for Eye, Left Arm, Right Wrist and Waist (the guide names Spirit of Essence - Beta and Spirit of Discerning Weakness - Beta explicitly). Also Merit Board Bases, a Xan Weapon Upgrade Device, Memory Cells, a Nanodeck Activation Device and Belt Tuning Devices.",
+   "shadeRole": "Damage. The fight forces platform-nano use because of the Chief's fear and blind.",
+   "note": "HARD PREREQUISITE: you need four coloured Notum Crystals from Dust Brigade mobs in Neretva Canyons for immunity - \"Once you become immune, it lasts forever\", so this is a one-off chore. Four spirits spawn at platforms before the Chief. Entrance is south-east of the Mitaar entrance. Since patch 18.3 the Neretva quests are no longer required for access.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/lox-ground-chief-vortexx"
+   ]
+  },
+  {
+   "name": "The Xan (12-man)",
+   "type": "Legacy of the Xan raid",
+   "level": "201-220",
+   "whatDropsForShade": "Xan Spirit BETAS for Right Arm, Right Hand, Feet, and (per the ao-universe footnote) also Ear and Legs. Also Merit Board Bases, Xan Belt Tuning Devices (Multi-Colored and Green) and \"The Awakening\", a 5-hour buff.",
+   "shadeRole": "Damage, and survival: the Deranged Xan phase strips evade nanos on every quake, which hits a Shade harder than most - evades ARE the Shade defence.",
+   "note": "Four-hour lockout. Entrance Central Hub 419x324. Phases: Xan Spirit of Redemption (level 250) -> Left Hand of Insanity + Right Hand of Madness (fear scatter; you morph into white birds/silvertails and are cured at red/yellow pedestals; a 3.5k DoT if you stay in the west or east rooms) -> Deranged Xan (towers wipe NCU or deal 5,000 AoE; mind-controls raiders under 50% health). The Beta SYMBIANTS here are irrelevant to a Shade.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man"
+   ]
+  },
+  {
+   "name": "Pandemonium (The Beast, The Night Heart, the Zodiacs)",
+   "type": "Shadowlands raid",
+   "level": "~200-220",
+   "whatDropsForShade": "BLUE GLYPHS (Aban / Enel / Ocra) off corrupted mobs - the upgrade material for Chosen (Omni) / Faithful (Clan) Shade armour. Glyph of the Arcana off trash. The Pisces items a Shade specifically wants: Cosmic Guide of the Pisces (head), Mystery of Pisces (evades that scale with DIMACH), Soul Mark of Pisces, Octopus Contraption of the Pisces. Cross Dimensional Gyro of Gemini (evades). The three Night Heart belts (Red = Stam/Str, Blue = Int/Psy, Yellow = Agi/Sen). From The Beast: LORD / LADY OF DECEIT, the Piercing base of Deceit of the Xan.",
+   "shadeRole": "Damage. This is the single most important raid for a Shade because it supplies both the endgame armour upgrade material AND the Piercing weapon base.",
+   "note": "14 bosses. Zodiacs: Aries, Leo, Virgo (west); Aquarius, Cancer, Gemini (east); Libra, Pisces, Taurus, Capricorn, Sagittarius, Scorpio (middle). Portal encounters: Timid Spectral Scourge, Senior Subjugator, Pandemonium Subjugator. The Pandemonium BELT is a known Shade twink project: about 1,750 Computer Literacy at level 200, which is why Comp. Lit. (dark blue, IP cost 2.4) matters for this class. UNKNOWN: whether Beast armour is Shade-wearable - no allowed source says.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2",
+    "https://wiki.aodb.us/wiki/The_Beast",
+    "https://wiki.aodb.us/wiki/Chosen_Armor",
+    "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965"
+   ]
+  },
+  {
+   "name": "Alien City raids and Motherships",
+   "type": "Alien Invasion raid",
+   "level": "~150-220",
+   "whatDropsForShade": "KYR'OZCH BIO-MATERIAL TYPE 935 - the Agent/Fixer/SHADE type, and the upgrade material for Ofab Shade armour (the clump must be 80% of the armour piece's QL). ALEKSANDER'S BLOODED PUNCHKNIFE (QL1-300, NODROP) from Generals and Fleet Admirals.",
+   "shadeRole": "Damage. Nothing Shade-specific is required.",
+   "note": "City raid bosses: Ankari, Cha, Illari, Jaxx, Rimah, Xoch. Jaxx drops Strong Lead Viralbots and melee weapon boosts; Rimah drops Observant Lead Viralbots and evasion. Bio-materials also drop from the alien ship boss and from DREADLOCH BOSSES at the Clan and Omni camps. WARNING: Aleksander's Blooded Punchknife has NO Sneak Attack, so you cannot Backstab with it - pair it with a Sneak-Attack weapon. UNKNOWN: whether a Shade can use the resulting Combined armours.",
+   "_sources": [
+    "https://wiki.aodb.us/wiki/Alien_City_Raid",
+    "http://wiki.aodb.us/wiki/Alien_Loot",
+    "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/armor/upgrading-ofab-armor",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Sector 7",
+   "type": "Alien playfield",
+   "level": "~100-200",
+   "whatDropsForShade": "The SPECIAL EDITION KYR'OZCH weapons. items.ocp shows three of the sixteen carrying a Profession EqualTo Shade ToWield criterion: Special Edition Kyr'Ozch Rapier (id 288288, Piercing), Energy Rapier (id 288287, Melee Energy) and Nunchacko (id 288291, Martial Arts), all QL150 and AI-gated at level 150.",
+   "shadeRole": "Damage.",
+   "note": "\"all the weapons are nodrop and locked to certain professions but have very low requirements\". The first three bosses drop two weapons at a time and the Kyr'Ozch Technician drops three; only weapons and Victory Point clumps are nodrop as initial drops, and boss corpses last 30 minutes.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-07-alien-playfield"
+   ]
+  },
+  {
+   "name": "Battlestations",
+   "type": "PvP / victory-point content",
+   "level": "~60-220",
+   "whatDropsForShade": "VICTORY POINTS, which buy the Shade-locked Ofab armour (Ofab -> Improved -> Penultimate) and the OFAB VIPER Mk1, the Piercing entry in the Ofab melee weapon line.",
+   "shadeRole": "Damage. A Shade is well regarded in PvP - a 220-duel tier-list thread on the Funcom forums says \"I had a hard time placing shade, it may very well belong with the top 1 contenders\".",
+   "note": "IMPORTANT FOR A SHADE: only Ofab Viper Mk 5 and Mk 6 carry the Sneak Attack special. Mk1-Mk4 cannot Backstab.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://forums.funcom.com/t/profession-tier-lists/186704"
+   ]
+  },
+  {
+   "name": "Adonis - the Xan Civilization quest",
+   "type": "Shadowlands quest chain",
+   "level": "~150+",
+   "whatDropsForShade": "The SYNDICATE BRAIN SPIRIT OF GUILE (id 268357, QL180, Head/Brain, Shade-locked) - the profession-specific reward handed out for killing Tower Keeper Tagnat. Worth +25 Computer Literacy, which is a documented part of the Pandemonium-belt twink stack.",
+   "shadeRole": "Damage.",
+   "note": "The Penumbra leg of the same chain gives SHARL'S CYBERNETIC TATTOO (id 269511, QL200, Shade-locked): a strong Computer Literacy buff that procs a 5,000-point absorb shield against all damage types.",
+   "_sources": [
+    "http://www.ao-universe.com/index.php?id=14&pid=316",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Inferno",
+   "type": "Shadowlands open playfield",
+   "level": "~190-220",
+   "whatDropsForShade": "PIERCING EVIL (QL220-260, from Anitaap's Shadow; not nodrop). SPEAR OF FORBIDDEN CEREMONIES (QL250-300, from the Catacomb Boss and the Lord of the Void; tradeable). BLOOD-SOAKED CLOAK OF DISHONOUR (id 246085, QL250, Shade-locked, from Astapalya - a unique heckler, notoriously rare). SLIPPERS OF SCREAMING (id 245890, QL250, from the Creepy Spider). The top ordinary SPIRIT camps (Yuttos marshes and the Spirit Dungeons in the Redeemed/Unredeemed temples, spirit-mob level 195-205) - this is where Tragic (QL250) and Wistful (QL300) Spirits come from.",
+   "shadeRole": "Solo and small-team farming. This is where a Shade builds the QL250/QL300 ordinary Spirits it needs as Alpha crafting bases.",
+   "note": "The Inferno \"Spirits Quests\" line is a level 190-220 ALL-CLASS questline ending in the Ring of Plausibility - do NOT confuse it with Shade Spirits.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/general-crafting/spirits"
+   ]
+  },
+  {
+   "name": "Temple of Three Winds / Inner Sanctum / the TOTW Raid",
+   "type": "Rubi-Ka dungeon and raid",
+   "level": "~25-60 and 201+",
+   "whatDropsForShade": "UKLESH'S TALON (QL300, from Uklesh the Beguiling in the RAID, level 201+ to enter; 3% stun proc). Robe of the Faithful (common drop). Guardian Tank Armor (Guardian of Tomorrow). The right-click clicky lines: Withered Flesh (500 absorb) / Corrupted Flesh (500, Inner Sanctum) / DESECRATED FLESH (3,000, raid), and Barrow Strength / Might of the Revenant / Strength of the Immortal.",
+   "shadeRole": "Damage at level, and a supply run at endgame.",
+   "note": "The Flesh and Strength items do NOT have to be worn - you right-click them from inventory, which is why they are worth carrying on a class with no self-heal.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Escaped Prisoners (daily elite)",
+   "type": "Daily instance",
+   "level": "200-220",
+   "whatDropsForShade": "HACKED MEDI-BLADE and the CRUDE UPGRADE KIT that turns it into the Improved Hacked Medi-Blade. \"This process doesn't require any skill to build.\"",
+   "shadeRole": "Damage.",
+   "note": "Taken from Warden Ystanes in Omni Trade, Newland City or West Athens; the instance is in Milky Way.",
+   "_sources": [
+    "http://wiki.aodb.us/wiki/Escaped_Prisoner",
+    "https://www.ao-universe.com/guides/classic-ao/tradeskill-guides-6/weapon-4/crude-upgrades"
+   ]
+  },
+  {
+   "name": "Pyramid of Home / \"Dark Pyramid Below\"",
+   "type": "Legacy of the Xan 6-man",
+   "level": "201-220",
+   "whatDropsForShade": "The CORRUPTED weapon line, including the Corrupted Lord of Deceit (id 302935, QL300, Piercing, title level 7) - a DIRECT DROP, not a tradeskill step above \"X of the Xan\".",
+   "shadeRole": "Damage.",
+   "note": "Bosses: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Entrance: the giant crater north of the city of Home, entered through the large door behind Number Nine inside the Temple of Home, Broken Shores. Access needs ONE of: any Profession Nanodeck worn, the quest \"Guarding the Source\" completed, or the Legacy of the Xan quests completed.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+    "http://wiki.aodb.us/wiki/Patch_18.8"
+   ]
+  },
+  {
+   "name": "Dust Brigade (DB1 Outpost / DB2 Inside the Machine / DB3 The Facility)",
+   "type": "Instance chain",
+   "level": "~180-220",
+   "whatDropsForShade": "The Util-3 modules (Dust Brigade Assistance Module level 251-255, Escape Module level 250, Grunt Module level 250) and the Enhanced Dustbrigade Combat Chestpiece (\"Better than nothing but not optimal\"). The Dustbrigade Operative Chestpiece (+35 all damage types, 5% crit) is a random reward from the ICC Arbiter \"Dust it off\" quest, not a DB drop.",
+   "shadeRole": "Damage.",
+   "note": "The four coloured NOTUM CRYSTALS needed for Ground Chief Vortexx immunity come from Dust Brigade mobs in NERETVA CANYONS, not from DB1/2/3. UNKNOWN: broader Shade-specific DB raid loot - the ao-universe Shade guide names DB1 and DB2 as content but no Shade-specific drop.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/lox-ground-chief-vortexx"
+   ]
+  },
+  {
+   "name": "Albtraum",
+   "type": "Single-team instanced zone",
+   "level": "~200+",
+   "whatDropsForShade": "unknown - no allowed source names a Shade-specific drop.",
+   "shadeRole": "Damage.",
+   "note": "A single-team instance for 2-6 people: kill 4 Shadow Eremites, 12 Soul Stealers, 15 Shadowy Wings and 20 Voracious Horrors. Introduced in patch 17.3. Listed for completeness with its Shade drops honestly marked unknown.",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/albtraum"
+   ]
+  },
+  {
+   "name": "The Collector",
+   "type": "Endgame single-team instance (Caina, Pandemonium)",
+   "level": "~215-220",
+   "whatDropsForShade": "unknown - the guide says a silver chest holds \"rare encounters: Rubi-Ka stuff, ShadowLands items, Dust Brigade, Alien stuff\" but names no Shade-specific drop.",
+   "shadeRole": "Damage.",
+   "note": "\"the endgame single-team instance in Caina (the first sector of Pandemonium)... designed to be one of the hardest challenges for a high-level team ever released\".",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/the-collector"
+   ]
+  },
+  {
+   "name": "The Gauntlet",
+   "type": "Shadowlands instance",
+   "level": "~200+",
+   "whatDropsForShade": "SSC \"Bastion\" Back Armor - Collatz, which ao-universe's Shade guide describes as \"Pain to farm, pain to equip.. Great stats!\". The Gauntlet buff is also part of the documented Computer Literacy stack for the Pandemonium belt.",
+   "shadeRole": "Damage.",
+   "note": "",
+   "_sources": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965"
+   ]
+  }
+ ],
+ "progressionOrder": [
+  {
+   "step": 1,
+   "what": "Get a Piercing weapon you can actually hold, and keep upgrading it",
+   "why": "Piercing is both the damage skill and the wield requirement on every Shade weapon, and the top model needs Piercing 2,000. The sourced ladder is: Illegally Modified Ofab Viper (Condemned Subway, levels 15-35) -> Fear-forged Blade (Steps of Madness, 40-70) -> Sigd from the Scheol/Adonis garden shops (capped ~QL150) -> Kyr'Ozch Energy Rapier Type 992 (AI) or Ofab Viper Mk5/Mk6 (victory points) -> Nippy John Stiletto (Nippy Slither, Adonis Abyss, level 130+) -> Piercing Evil (Anitaap's Shadow, Inferno) -> Deceit of the Xan. See shade-weapons-endgame.json for every model with its cited source."
+  },
+  {
+   "step": 2,
+   "what": "Run Spirit Siphon on cooldown from level 1 and keep climbing the Spirit tier ladder",
+   "why": "Spirits are your implants and there is no shortcut - no laddering, no over-equipping, no clinic. The ladder is 34 steps from QL1/level 1 to QL300/level 219, gated purely on level plus Agility and Sense. Farming a tier means siphoning mobs around that QL, so it happens while you level rather than as a separate project. See shade-symbiants.json."
+  },
+  {
+   "step": 3,
+   "what": "Get on the Shade tier armour line early",
+   "why": "Jobe Suit Vest -> First Tier (QL100-160) -> Second Tier (QL160-220, which is where headgear and shoulderpads first appear) -> Chosen (Omni) / Faithful (Clan) at QL220-300. NEUTRALS CANNOT WEAR Chosen or Faithful and stop at Second Tier. And do not over-level a tier piece past your own skills - it is a documented way to lock yourself out of your own armour."
+  },
+  {
+   "step": 4,
+   "what": "Farm Victory Points for the Ofab Shade set and the Ofab Viper",
+   "why": "Battlestations are the one source that gives a Shade both armour and a weapon. Ofab Shade upgrades need Kyr'Ozch Bio-Material Type 935 at 80% of the piece QL (combine once for Improved, again for Penultimate), which comes from alien mission bosses and the Dreadloch camp bosses."
+  },
+  {
+   "step": 5,
+   "what": "Do the Adonis Xan Civilization chain for the Syndicate Brain Spirit of Guile and Sharl's Cybernetic Tattoo",
+   "why": "Both are Shade-locked Computer Literacy items, and Comp. Lit. is dark blue (IP cost 2.4) for this class and the gate on NCU and on the Pandemonium belt. The Syndicate Brain is +25 Comp. Lit. and Sharl's procs a 5,000-point absorb shield."
+  },
+  {
+   "step": 6,
+   "what": "Raid Pandemonium",
+   "why": "It is the only place that gives you BOTH the Blue Glyphs that upgrade your armour to Chosen/Faithful AND the Lord/Lady of Deceit that becomes your endgame weapon, plus the Pisces evade items and the Night Heart belts."
+  },
+  {
+   "step": 7,
+   "what": "Clear the Legacy-of-the-Xan prerequisites once, then farm Betas",
+   "why": "Vortexx needs four coloured Notum Crystals from Dust Brigade mobs in Neretva Canyons, and that immunity is permanent - so it is a one-off chore that opens the whole Beta economy. Betas exist at QL250 only."
+  },
+  {
+   "step": 8,
+   "what": "Craft the Xan Alphas, then the Combined Alphas",
+   "why": "Alpha = high-QL ordinary Spirit + matching Beta. Bump QL250 toward 300 with 3-4 more of the same Beta, or start from a QL300 Wistful base and usually hit QL300 at once. Then combine two different Alphas of the same slot - the result takes the TARGET item's QL, so make the higher-QL one the target. Feet has no combined upgrade. All Alphas are NODROP, so build them on the Shade that wears them."
+  },
+  {
+   "step": 9,
+   "what": "Upgrade the weapon with a Xan Weapon Upgrade Device",
+   "why": "Lord/Lady of Deceit (Beast drop) + Xan Weapon Upgrade Device (minimum QL300, from Mitaar Hero, Vortexx or the 12-man) = Deceit of the Xan, the Shade's Xan Piercing weapon. The combine needs no tradeskill skill."
+  },
+  {
+   "step": 10,
+   "what": "Finish the perk lines - this is what actually raises your damage",
+   "why": "ao-universe: \"Shades are meant to do most damage through their perk specials\", and a 220 Shade on the Funcom forums puts it at \"80% perks at end game\". Perk special damage scales off buffed Piercing / 2, so step 1 and step 10 feed each other. Take two lines to 200, a third with what is left, a fourth in shadowlevels; finish Apotheosis for the +50 Comp. Lit. at 200 and the +50 Concealment / +75 Run Speed at 210."
+  }
+ ],
+ "notes": [
+  "THE SYMBIANT DROPS IN LEGACY OF THE XAN ARE NOT FOR YOU. Mitaar Hero, Vortexx and the 12-man drop both Xan symbiant Betas and Xan SPIRIT Betas. A Shade can only use the Spirits. Do not roll on the symbiants.",
+  "THE ONE PERMANENT PREREQUISITE WORTH DOING EARLY: four coloured Notum Crystals from Dust Brigade mobs in Neretva Canyons give permanent immunity for Ground Chief Vortexx. Get it once and never again.",
+  "COMPUTER LITERACY IS THE SURPRISE ENDGAME SKILL. It is dark blue for a Shade (IP cost 2.4) and the Pandemonium belt wants about 1,750 of it at level 200. The documented stack is Syndicate Brain Spirit of Guile (+25), Apotheosis 1 (+50), research ability and completion trickle, a Comp. Lit. tutoring device, a 10-Intelligence contract, the Gauntlet buff, Comp. Lit. pistols and Intelligence trickle.",
+  "CARRY THE CLICKIES. Withered / Corrupted / Desecrated Flesh (500/500/3,000 absorb) and Barrow Strength / Might of the Revenant / Strength of the Immortal do not have to be equipped - you right-click them from inventory. On a class with no heal that is free mitigation.",
+  "PICK THE PROC FOR THE FIGHT: stun proc for PvP and ordinary mobs, damage proc for team damage, and the initiative-debuff proc for solo aliens and bosses, which are IMMUNE TO STUNS - it interrupts their nukes instead.",
+  "MBS MATTERS. The Nippy John Stiletto has a Maximum Beneficial Skill of only 1,000, so Piercing above 1,000 stops helping it. That is why it is a level 130-200 weapon and not an endgame one, despite the price."
+ ],
+ "_unverified": [
+  "Shade PvM raid standing and DPS ranking against the other damage professions: unknown. No allowed source publishes it.",
+  "Shade-specific loot from Albtraum, The Collector, DB1/DB2/DB3 and Sectors 13/28/35: unknown. Those contents are listed with their drops honestly marked unknown rather than omitted.",
+  "Whether a Shade can wear Beast armour or the AI Combined armour sets: unverified. ao-universe claims patch 18.7 let Shades wear all items open to other professions, but that sentence is not in the wiki.aodb.us Patch 18.7 notes.",
+  "Which Blue Glyph type (Aban / Enel / Ocra) the Shade uses for the Chosen/Faithful upgrade: not stated on any allowed source.",
+  "Per-boss drop rates are not published for any of the content above.",
+  "The full Ofab Shade set beyond the Body Armor and Protective Gear is not documented on the web; the six-piece set (headgear, body, sleeves, gloves, pants, boots) in three grades IS in items.ocp and is catalogued in shade-gear.json."
+ ],
+ "_sources": [
+  "LOCAL AOBuddy/GameData/profiles/shade-weapons-endgame.json - every weapon id, QL, requirement and acquisition referenced above.",
+  "LOCAL AOBuddy/GameData/profiles/shade-symbiants.json - the Spirit ladder, the Beta drop mapping and the Alpha crafting rules.",
+  "LOCAL AOBuddy/GameData/profiles/shade-gear.json - the Shade-locked armour catalogue.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql - id -> name verification for every id quoted.",
+  "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+  "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-alien-threat",
+  "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/lox-ground-chief-vortexx",
+  "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man",
+  "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2",
+  "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/the-collector",
+  "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/albtraum",
+  "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-07-alien-playfield",
+  "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/general-crafting/spirits",
+  "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/armor/upgrading-ofab-armor",
+  "http://www.ao-universe.com/index.php?id=14&pid=316",
+  "https://wiki.aodb.us/wiki/The_Beast",
+  "https://wiki.aodb.us/wiki/Chosen_Armor",
+  "https://wiki.aodb.us/wiki/Alien_City_Raid",
+  "https://wiki.aodb.us/wiki/LoX_Boards",
+  "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+  "http://wiki.aodb.us/wiki/Alien_Loot",
+  "http://wiki.aodb.us/wiki/Escaped_Prisoner",
+  "https://www.ao-universe.com/guides/classic-ao/tradeskill-guides-6/weapon-4/crude-upgrades",
+  "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+  "http://wiki.aodb.us/wiki/Patch_18.8",
+  "https://forums.funcom.com/t/new-shade-coming-back/120089",
+  "https://forums.funcom.com/t/shade-endgame-soloing-and-deflect-returning-player/30753",
+  "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965",
+  "https://forums.funcom.com/t/profession-tier-lists/186704"
+ ]
+}

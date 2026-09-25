@@ -1,0 +1,1955 @@
+{
+  "profile": "Doctor nano acquisition sources (companion to doctor-nanos.json)",
+  "profession": {
+    "id": 10,
+    "name": "Doctor"
+  },
+  "generatedUtc": "2026-09-23T04:37:28Z",
+  "method": {
+    "expansionGate": "Read the Expansion(stat 389) BitAnd requirement from the nano program's ToUse action AND from its nano-crystal item (items.ocp) use/wield criteria. bit1(2)=ShadowLands, bit3(8)=AlienInvasion, bit5(32)=LostEden (AOSharp ExpansionFlags). Authoritative from client data.",
+    "crystalLink": "nano id -> crystal item id via scanning items.ocp for an UploadNano(53019) function whose argument is the nano id.",
+    "vendorData": "Shop presence = crystal item id present in OmniCell research-output vendors.csv. NOTE: local vendor data currently covers only researched playfields (Temple of Three Winds), so general nano-shop buyability is NOT separable from local data; such low/mid nanos fall to the mission-roll default below.",
+    "defaultRule": "AO default (cited, not invented): a non-shop, non-expansion profession nano crystal is mission-rollable. Applied only when no Expansion gate and no local shop entry exist.",
+    "noInvention": "No vendor, mob, garden, or tier is asserted unless it comes from local data. Unknown SL sub-sources and tiers are left null."
+  },
+  "howCounts": {
+    "mission-roll": 217,
+    "shadowlands": 23
+  },
+  "diagnostics": {
+    "totalNanos": 240,
+    "setFromExpansionFlag": 25,
+    "expansionFromCrystalOnly": 0,
+    "setFromLocalVendor": 0,
+    "nanosWithNoCrystalLocated": 0
+  },
+  "sources": {
+    "142735": {
+      "name": "Encode DNA Sequence",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,142745,222278,303863,303864,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "142736": {
+      "name": "Digitizing Sequencer",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,142741,222277,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "204425": {
+      "name": "Vaccine of Ransacking",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,204426,222520,303864,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "204427": {
+      "name": "Vaccine of Deprivation",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,204428,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "204429": {
+      "name": "Vaccine of Plundering",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,204430]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "204431": {
+      "name": "Vaccine of Divestiture",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,204432,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "222823": {
+      "name": "Improved Nano Repulsor",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,220743]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "222824": {
+      "name": "Continuous Reconstruction",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,220710]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "222855": {
+      "name": "Hearty Constitution",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,220730]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "222856": {
+      "name": "Improved Instinctive Control",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,220733]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223261": {
+      "name": "Mutagenic Venom",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223262,303864,303865]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223263": {
+      "name": "Mutagenic Contamination",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223264]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223265": {
+      "name": "Mutagenic Catalyser",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223266,303866]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223267": {
+      "name": "Viral Neurotoxin",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223268,303866]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223269": {
+      "name": "Entropic Sores",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223270,303866]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223271": {
+      "name": "Mutagenic Contagion",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223272]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223273": {
+      "name": "Corrupting Ooze",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223274]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223275": {
+      "name": "Flesh Eater",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223276]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223277": {
+      "name": "Mutagenic Pestilence",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223278]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223279": {
+      "name": "Scythe Omega Virus",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223280]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223281": {
+      "name": "Cellular Recuperation",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223282]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223285": {
+      "name": "Assauge Pain",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223286,303866]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223287": {
+      "name": "Touch of Kindness",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223288,303866]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223289": {
+      "name": "Restorative Influx",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223290]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223291": {
+      "name": "Revivification",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223292]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223293": {
+      "name": "Blessing of Purity",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223294]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223295": {
+      "name": "Renewal of Being",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223296]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223297": {
+      "name": "Cellular Rebirth",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223298]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "223299": {
+      "name": "Bodily Invigoration",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,223300]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "263281": {
+      "name": "Simple Viral Agent",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,263283,302361]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "263282": {
+      "name": "Poisoned Wounds",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,263284,302360]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "266303": {
+      "name": "Fill Inbox",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": "Lost Eden",
+      "tier": null,
+      "notes": "Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[38514,265451]; nanoProgramExpansionBits=32; combinedExpansionBits=32"
+    },
+    "266306": {
+      "name": "Misdiagnosis",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": "Lost Eden",
+      "tier": null,
+      "notes": "Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[38513,38523,265446]; nanoProgramExpansionBits=32; combinedExpansionBits=32"
+    },
+    "267620": {
+      "name": "Dr Blaze's Mutagenic Compound",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,267646]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "267621": {
+      "name": "Nanite Enhanced Mutagenic Compound",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,267647]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "267623": {
+      "name": "Nanite Enhanced Mutagenic Plague",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,267648]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "267649": {
+      "name": "Weak Mutagenic Plague",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,267650]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "269455": {
+      "name": "Team-Enhanced Deathless Blessing",
+      "how": "shadowlands",
+      "where": null,
+      "expansion": "Shadowlands",
+      "tier": null,
+      "notes": "Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[38514,269456]; nanoProgramExpansionBits=2; combinedExpansionBits=2"
+    },
+    "270349": {
+      "name": "Team Health Plan",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,270239]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "270747": {
+      "name": "Improved Complete Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,270748]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "273312": {
+      "name": "Superior Team Health Plan",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,273314]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "273315": {
+      "name": "Improved Team Health Plan",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,273317]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "273318": {
+      "name": "Bone Eater",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,273319]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "275011": {
+      "name": "Team Improved Life Channeler",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,275013]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "275701": {
+      "name": "Malpractice",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,275706,301106]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "275829": {
+      "name": "Sophisticated Viral Agent",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,275854,301191]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "27804": {
+      "name": "Blood Circle",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[27805,38514,220701,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "279372": {
+      "name": "Tjernberg Soothing Adrenaline",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,279373]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28640": {
+      "name": "Wrack and Ruin",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28794,38514,220768]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28641": {
+      "name": "Biotoxin MK I",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28754,38514,220883]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28642": {
+      "name": "Biotoxin MK II",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28755,38514,222246,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28643": {
+      "name": "Biotoxin MK III",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28756,38514,221705]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28644": {
+      "name": "Biotoxin MK IV",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28757,38514,221691,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28645": {
+      "name": "Bloom of Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28758,38514,220703,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28648": {
+      "name": "Close Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28761,38514,220707,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28649": {
+      "name": "Colossal Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28762,38514,220706,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28650": {
+      "name": "Complete Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28763,38514,220709,303864,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28651": {
+      "name": "Cellular Restoration",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28764,38514]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28654": {
+      "name": "Doctor's Grace",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28767,38514,220712,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28657": {
+      "name": "Enhanced First Aid",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28770,38514,220715,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28658": {
+      "name": "Enlarge",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28771,38514,220716]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28659": {
+      "name": "Epsilon Purge",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28772,38514]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28660": {
+      "name": "Exaggerated Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28773,38514,220723,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28662": {
+      "name": "Gargantuan Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28775,38514,220726]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28663": {
+      "name": "Natural Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28776,38514]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28665": {
+      "name": "Improved Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28778,38514,303861,303862,303863,303864,303865,303866,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28667": {
+      "name": "Inflict Harm",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28780,38514,220748,303861,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28669": {
+      "name": "Instinctive Control",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28782,38514]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28671": {
+      "name": "Nano Repulsor",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28784,38514]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28672": {
+      "name": "Premium Cover",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28785,38514,220719]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28674": {
+      "name": "Specialist Treatment",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28787,38514,220760,303862,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28675": {
+      "name": "Superior First Aid",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28788,38514,220752,303863,303864,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28676": {
+      "name": "Superior Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28789,38514,220761]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28677": {
+      "name": "Surgeon's Touch",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28790,38514,220762]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "28681": {
+      "name": "Bind Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[28753,38514,220704,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "29246": {
+      "name": "Pistol Mastery",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[29358,38522,221874,303856,303857,303858,303859,303860,303861,303862,303863,303866,303873,303874,303875,303876,303877,303878,303897,303898,303899,303900,303901,303902,303975,303976,303977,303978,303979,303980]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "301845": {
+      "name": "Rapid Palsy",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[301846,303864,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42395": {
+      "name": "Cleanse Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42410,221167]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42396": {
+      "name": "Cycle of Life",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42411,222161,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42397": {
+      "name": "Enhance Team Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42412,222069,303861,303862,303863,303864,303865,303866,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42398": {
+      "name": "Greater Team Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42413,222253]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42399": {
+      "name": "Health Pump",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42414,221848,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42400": {
+      "name": "Iron Circle",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42415,221030,303863,303864,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42401": {
+      "name": "Lasting Heal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42416,220862,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42402": {
+      "name": "Medic's Call",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42417,222085,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42403": {
+      "name": "Minor Team Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42418,221078,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42404": {
+      "name": "Radiant Heal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42419,220771,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42405": {
+      "name": "Team Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42420,221127]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42408": {
+      "name": "Weak Team Heal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42423,222243,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "42409": {
+      "name": "Alpha and Omega",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,42424,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43376": {
+      "name": "Prototype Biotoxin",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43384,303861,303862,303863,303864,303865,303866,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43808": {
+      "name": "Life Balm",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43965,222082]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43809": {
+      "name": "Advanced Cellular Rebuild",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44005,220898]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43810": {
+      "name": "Medical Response",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43947,221895]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43811": {
+      "name": "Superior Nano Bandage",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43945,221093]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43812": {
+      "name": "Cellular Rebuild",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43996,220652]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43813": {
+      "name": "Counteract Damage",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43985,221679]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43814": {
+      "name": "Experimental Panacea",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43979,220662]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43815": {
+      "name": "Greater Cellular Grafting",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43983,220848]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43816": {
+      "name": "Healer's Hands",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43972,220708,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43817": {
+      "name": "Healing Light",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43973,222247]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43818": {
+      "name": "Lesser Bloom of Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43959,222124,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43819": {
+      "name": "Nano Bandage",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43952,222144]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43820": {
+      "name": "Nano Surgery",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43953,221776,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43821": {
+      "name": "Superior Dress Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43943,222002]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43822": {
+      "name": "Superior Wound Bindings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43924,221319]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43823": {
+      "name": "Tailored Cure",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43926,221964,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43824": {
+      "name": "Thorough Examination",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43934,221109]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43825": {
+      "name": "Tissue Repair",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43935,220675]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43826": {
+      "name": "Cellular Grafting",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43995,222182]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43827": {
+      "name": "Cursory Examination",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43987,220557]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43828": {
+      "name": "Dress Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43993,221718]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43829": {
+      "name": "Emergency Stitching",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43978,220684]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43830": {
+      "name": "Field Dressings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43981,221075]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43831": {
+      "name": "Inferior Wound Bindings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43957,221282]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43832": {
+      "name": "Lesser Cellular Grafting",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43960,221802,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43833": {
+      "name": "Lesser Nano Bandage",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43962,222114,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43834": {
+      "name": "Lesser Nano Surgery",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43963,220931]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43835": {
+      "name": "Minor Balm",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43949,222097]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43836": {
+      "name": "Physician's Skill",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43955,220754]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43837": {
+      "name": "Relief from Pain",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43939,221723]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43838": {
+      "name": "Restorative Boost",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43941,221245]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43852": {
+      "name": "Deathless Blessing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43989,221754,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43867": {
+      "name": "Continuous Cellular Reconditioning",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43984,222052,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43868": {
+      "name": "Cycle of Reconstruction",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43988,222217]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43869": {
+      "name": "Greater Periodic Checkup",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43968,220832,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43870": {
+      "name": "Greater Policy Payout",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43969,221637]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43871": {
+      "name": "Molecular Rejuvenation",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43951,221820]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43872": {
+      "name": "Positive Life Reinforcement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43956,221916]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43873": {
+      "name": "Superior Health Pump",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43944,220737]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43874": {
+      "name": "Active Remedy",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44004,221644]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43875": {
+      "name": "Course of Treatment",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43986,220642,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43876": {
+      "name": "Greater Lasting Heal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43967,220909,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43877": {
+      "name": "Lesser Policy Payout",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43964,221733,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43878": {
+      "name": "Lifegiving Elixir",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43946,221815]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43879": {
+      "name": "Medical Sequencer",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43948,221669]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43880": {
+      "name": "Periodic Checkup",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43954,220947]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43881": {
+      "name": "Recuperative Respite",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43937,222122]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43882": {
+      "name": "Recurrent Remedy",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43938,222109,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43883": {
+      "name": "Bodily Purification",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43994,221656]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43884": {
+      "name": "Compress Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44000,220542,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43885": {
+      "name": "Deep Tissue Repair",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43990,220966,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43886": {
+      "name": "Emergency Medical Response",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43977,221080,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43887": {
+      "name": "Greater Bloom of Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43982,222107]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43888": {
+      "name": "Greater Field Dressings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43966,221963]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43889": {
+      "name": "Hale and Hearty",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43970,221208]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43890": {
+      "name": "Internal Renewal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43958,221578]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43891": {
+      "name": "Conglomerate Health Plan",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44001,221842,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43892": {
+      "name": "Distributed Care",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43992,220585]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43893": {
+      "name": "Halo of Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43971,221623]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43894": {
+      "name": "Deep Wound Cleanser",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43991,221936]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43895": {
+      "name": "Health Cartel",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43974,221796]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43896": {
+      "name": "Team Compress Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43929,222200]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43897": {
+      "name": "Remedy Dissemination",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43940,220939,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43898": {
+      "name": "Team Purification",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43932,222212]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43899": {
+      "name": "Accumulate Scars",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44003,220956,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43900": {
+      "name": "Circle of Renewal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43997,221835]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43901": {
+      "name": "Bestow Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44006,220989]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43902": {
+      "name": "Circulate Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43998,222261,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43903": {
+      "name": "Team Tissue Repair",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43933,222035]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43904": {
+      "name": "Consummate Carer",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44002,221289]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43905": {
+      "name": "Team Nano Bandage",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43931,221163]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43906": {
+      "name": "Fast Team Tissue Repair",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43980,222189]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43907": {
+      "name": "Professional Care",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43936,221148,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43908": {
+      "name": "Syndicated Healing",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43925,221689,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43909": {
+      "name": "Team Cellular Rebuild",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43927,222143,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43910": {
+      "name": "Team Checkup",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43928,221999]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43911": {
+      "name": "Easing Touch",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43976,221230]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43912": {
+      "name": "Company Policy",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43999,221092]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43913": {
+      "name": "Lesser Circle of Renewal",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43961,222129]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43914": {
+      "name": "Minor Team Purification",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43950,221997]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43915": {
+      "name": "Spreading Health",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43942,220813]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43916": {
+      "name": "Team Field Dressings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43930,220591]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "43917": {
+      "name": "Inferior Cleanse Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,43975,222183]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44144": {
+      "name": "Abscess Explosion",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44210,221805]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44145": {
+      "name": "Seethe with Germs",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44197,221692]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44146": {
+      "name": "Sentient Nano Gorger",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44209,221171,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44147": {
+      "name": "Repeated Cellular Trauma",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44196,222103]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44148": {
+      "name": "Scythe A Virus",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44208,221162,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44149": {
+      "name": "Scythe B Virus",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44200,220592,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44150": {
+      "name": "Rampant Decay",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44206,221773]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44151": {
+      "name": "Refined Nano Contagion",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44207,220793,303862,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44152": {
+      "name": "Primitive Viral Agent",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44205,221620,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44153": {
+      "name": "Protein Breakdown",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44195,221937,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44154": {
+      "name": "Perpetuating Nano Reaper",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44194,221053,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44155": {
+      "name": "Primitive Nano Gorger",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44204,221709]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44156": {
+      "name": "Parasitic Affliction",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44193,221224,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44157": {
+      "name": "Parasitic Horde",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44199,220633,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44158": {
+      "name": "Morgue Longings",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44191,221804]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44159": {
+      "name": "Nano Reaper",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44192,220894]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44160": {
+      "name": "Metabolic Disassembly",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44190,222150,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44161": {
+      "name": "Minor Consuming Toxin",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44203,220804]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44162": {
+      "name": "Internal Decomposition",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44202,220624]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44163": {
+      "name": "Limited Nano Reaper",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44189,220834,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44164": {
+      "name": "Incandescent Venom",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44187,222120,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44165": {
+      "name": "Infected Wounds",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44188,220860]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44166": {
+      "name": "Dark Venom",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44201,221811,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44167": {
+      "name": "Dissolve Molecular Bonding",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44186,220656]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44168": {
+      "name": "Elementary Nano Contagion",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44185,221021,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44169": {
+      "name": "Complex Nano Contagion",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44184,220792]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44170": {
+      "name": "Consuming Toxin",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44183,221821,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44171": {
+      "name": "Cancerous Burrower",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44198,222125]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44172": {
+      "name": "Cellular Dismantlement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44182,220731]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44173": {
+      "name": "Autonomous Viral Agent",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44181,221867,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44174": {
+      "name": "Advanced Nano Gorger",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44179,221566,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44175": {
+      "name": "All-Consuming Toxin",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44180,220879,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "44176": {
+      "name": "Active Viral Agent",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,44178,221299]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "45324": {
+      "name": "Acidic Lesions",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,45402,221216,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "82007": {
+      "name": "Shatter Bone",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,82011,221972,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "82008": {
+      "name": "Gouge Flesh",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,82012,221721,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "82009": {
+      "name": "First-Degree Burns",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,82010,221753,303864,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95709": {
+      "name": "Superior Omni-Med Enhancement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95741,221728,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95710": {
+      "name": "Basic Omni-Med Enhancement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95750,220479]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95711": {
+      "name": "Pre-Combat Conditioning",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95743,220913]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95712": {
+      "name": "Superior Metabolism Booster",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95740,220674,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95713": {
+      "name": "Major Health Graft",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95745,220467,303863,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95714": {
+      "name": "Medic's Respite",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95746,220501,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95715": {
+      "name": "Superior Bodily Reinforcement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95739,220532]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95716": {
+      "name": "Enhance Constitution",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95748,220772]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95717": {
+      "name": "Health Graft",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95749,221918,303861]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95718": {
+      "name": "Metabolism Booster",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95742,221026]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95719": {
+      "name": "Bodily Reinforcement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95747,220643,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "95720": {
+      "name": "Infuse with Life",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,95744,221034,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96247": {
+      "name": "Life Channeler",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97456,220928,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96248": {
+      "name": "Health Augmentation",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97459,220882,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96249": {
+      "name": "Survivability Booster",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97449,220696,303861,304508]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96250": {
+      "name": "Health Surge",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97458,221738]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96251": {
+      "name": "Bodily Amplification",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97464,221219]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96252": {
+      "name": "Life Reinforcement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97455,221985,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96253": {
+      "name": "Strengthen Resolve",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97453,221909]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96254": {
+      "name": "Superior Health Augmentation",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97452,220460,303863]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96255": {
+      "name": "Temporary Cellular Enhancement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97447,221365,303863,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96256": {
+      "name": "Constitution Magnification",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97465,221142,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96257": {
+      "name": "Enhanced Health Surge",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97462,221864,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96258": {
+      "name": "Health Assembler",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97461,220850,303865]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "96259": {
+      "name": "Superior Life Reinforcement",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,97450,222015]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "99577": {
+      "name": "Uncontrollable Body Tremors",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,99587,221900,303865,303866]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "99578": {
+      "name": "Tired Limbs",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,99589]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "99582": {
+      "name": "Muscle Atrophy",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,99594,220572,303861,303862]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    },
+    "99583": {
+      "name": "Induce Muscle Spasms",
+      "how": "mission-roll",
+      "where": null,
+      "expansion": null,
+      "tier": null,
+      "notes": "No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[38514,99593,221624,303863,303864]; nanoProgramExpansionBits=0; combinedExpansionBits=0"
+    }
+  },
+  "_sources": [
+    "local:nanos.ocp (nano program ToUse Expansion criteria)",
+    "local:items.ocp (nano-crystal UploadNano link + crystal Expansion criteria)",
+    "local:itemnames.sql (names)",
+    "local:OmniCell/research-output vendors.csv (shop presence, researched playfields only)",
+    "rule:AO default - non-shop non-expansion profession nano crystals are mission-rollable"
+  ]
+}

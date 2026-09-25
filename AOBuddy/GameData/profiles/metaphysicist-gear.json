@@ -5,7 +5,15 @@
   "armorSets": [
     {
       "name": "Miy's Nano Armor",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet"
+      ],
       "keyBonuses": {
         "Intelligence": "up to ~44 (QL300)",
         "Psychic": "up to ~43 (QL300)",
@@ -21,7 +29,15 @@
     },
     {
       "name": "Combined Officer's Armor",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet"
+      ],
       "keyBonuses": {
         "NanoPool": "~350 (QL300)",
         "MaxNano": "~1400 (QL300)",
@@ -37,7 +53,16 @@
     },
     {
       "name": "Ofab Metaphysicist Armor",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Shoulder"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet",
+        "Shoulder"
+      ],
       "keyBonuses": {
         "NanoSkills": "profession-tuned nano-skill / caster bonuses",
         "Upgradeable": "Ofab -> Improved -> Penultimate tiers via Victory Points"
@@ -49,7 +74,17 @@
     },
     {
       "name": "Metaphysicist Suit (Shadowlands, upgradeable) -> Chosen / Faithful Metaphysicist Suit",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Shoulder", "Back"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet",
+        "Shoulder",
+        "Back"
+      ],
       "keyBonuses": {
         "MaxNano": "First Tier ~150 (QL100) / ~300 (QL160); grows with tier",
         "NanoSkills": "profession nano-skill bonuses (increase per tier)"
@@ -61,7 +96,15 @@
     },
     {
       "name": "Loren's / Azure Reveries armor",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet"
+      ],
       "keyBonuses": {
         "NanoSkills": "adds nano skills",
         "MaxNano": "adds nano pool"
@@ -73,7 +116,14 @@
     },
     {
       "name": "Living Cyber Armor",
-      "slotsCovered": ["Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "slotsCovered": [
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet"
+      ],
       "keyBonuses": {
         "NanoSkills": "low-level nano-skill bonuses",
         "Abilities": "Int/Psychic-friendly"
@@ -85,7 +135,12 @@
     },
     {
       "name": "Sekutek Chilled Plasteel Armor",
-      "slotsCovered": ["Head", "Body", "Hands", "Legs"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "Hands",
+        "Legs"
+      ],
       "keyBonuses": {
         "Strength": "adds",
         "Agility": "adds",
@@ -98,7 +153,15 @@
     },
     {
       "name": "Carbonum Armor",
-      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "slotsCovered": [
+        "Head",
+        "Body",
+        "RightArm",
+        "LeftArm",
+        "Hands",
+        "Legs",
+        "Feet"
+      ],
       "keyBonuses": {
         "ACs": "solid all-round armor class for the level",
         "NCU": "minor"
@@ -110,24 +173,93 @@
     }
   ],
   "headwear": [
-    {"name": "Miy's Nano Armor Helmet", "effect": "part of Miy's Nano set; Int/Psychic + nano skills (largest Int/Psychic on head/arms)", "id": null},
-    {"name": "Ofab Metaphysicist Headgear", "effect": "profession helmet; caster/nano-skill bonuses; upgradeable to Improved/Penultimate", "id": 264359},
-    {"name": "Helmet of Azure Reveries", "effect": "budget leveling nano-skill helm", "id": 165307},
-    {"name": "Sekutek Chilled Plasteel Armor Helmet", "effect": "budget INT/ability helm for equip requirements", "id": 160395}
+    {
+      "name": "Miy's Nano Armor Helmet",
+      "effect": "part of Miy's Nano set; Int/Psychic + nano skills (largest Int/Psychic on head/arms)",
+      "id": null
+    },
+    {
+      "name": "Ofab Metaphysicist Headgear",
+      "effect": "profession helmet; caster/nano-skill bonuses; upgradeable to Improved/Penultimate",
+      "id": 264359
+    },
+    {
+      "name": "Helmet of Azure Reveries",
+      "effect": "budget leveling nano-skill helm",
+      "id": 165307
+    },
+    {
+      "name": "Sekutek Chilled Plasteel Armor Helmet",
+      "effect": "budget INT/ability helm for equip requirements",
+      "id": 160395
+    }
   ],
   "ncuAndBelt": [
-    {"name": "Belt Component Platform (300X / 4IX / Overclocked / Viral)", "effect": "belt/deck that hosts NCU memory chips and cluster components; base of the MP's NCU stack", "id": 303993},
-    {"name": "Accelerated NCU Memory", "effect": "NCU memory chips slotted into the belt to raise Max NCU (needed to hold buffs/debuffs)", "id": 164603},
-    {"name": "Grid Armor Mk I-IV", "effect": "alternative full-body: large Max NCU, run speed and evades, but occupies Body/Back/Arms slots (blocks nano-skill armor there) - situational, not typical MP BiS", "id": 155172}
+    {
+      "name": "Belt Component Platform (300X / 4IX / Overclocked / Viral)  [id 303993 = Belt Component Platform 300X]",
+      "effect": "belt/deck that hosts NCU memory chips and cluster components; base of the MP's NCU stack",
+      "id": 303993,
+      "representativeId": 303993,
+      "representativeName": "Belt Component Platform 300X"
+    },
+    {
+      "name": "Accelerated NCU Memory",
+      "effect": "NCU memory chips slotted into the belt to raise Max NCU (needed to hold buffs/debuffs)",
+      "id": 164603
+    },
+    {
+      "name": "Grid Armor Mk I-IV  [id 155172 = Grid Armor Mk I]",
+      "effect": "alternative full-body: large Max NCU, run speed and evades, but occupies Body/Back/Arms slots (blocks nano-skill armor there) - situational, not typical MP BiS",
+      "id": 155172,
+      "representativeId": 155172,
+      "representativeName": "Grid Armor Mk I"
+    }
   ],
   "misc": [
-    {"name": "Custom-Made Metaphysicist Ring of Focus", "effect": "MP profession ring - nano/casting focus", "slot": "Finger", "id": 163658},
-    {"name": "Custom-Made Metaphysicist Ring of the Occult", "effect": "MP profession ring - nano/casting focus (occult variant)", "slot": "Finger", "id": 163660},
-    {"name": "Ring of the Nucleus Basalis (and Superior)", "effect": "nano-skill ring; Superior variant is the endgame upgrade", "slot": "Finger", "id": 202717},
-    {"name": "De'Valos Sleeves", "effect": "arms piece adding up to +30 to all six nano skills (MM/BM/PM/MC/TS/SI); swappable over set sleeves for casters", "slot": "Arm", "id": null},
-    {"name": "Metaphysicist NICS", "effect": "profession HUD item (nano interface)", "slot": "HUD", "id": 215235},
-    {"name": "Nano Targeting Helper", "effect": "HUD utility - increases nuke damage ('every nuker's dream')", "slot": "HUD", "id": 269184},
-    {"name": "Notum Splice", "effect": "utility item (notum-related); commonly used caster util - verify exact stat line before relying on it", "slot": "Util/HUD", "id": 204649}
+    {
+      "name": "Custom-Made Metaphysicist Ring of Focus",
+      "effect": "MP profession ring - nano/casting focus",
+      "slot": "Finger",
+      "id": 163658
+    },
+    {
+      "name": "Custom-Made Metaphysicist Ring of the Occult",
+      "effect": "MP profession ring - nano/casting focus (occult variant)",
+      "slot": "Finger",
+      "id": 163660
+    },
+    {
+      "name": "Ring of the Nucleus Basalis (and Superior)  [id 202717 = Ring of the Nucleus Basalis]",
+      "effect": "nano-skill ring; Superior variant is the endgame upgrade",
+      "slot": "Finger",
+      "id": 202717,
+      "representativeId": 202717,
+      "representativeName": "Ring of the Nucleus Basalis"
+    },
+    {
+      "name": "De'Valos Sleeves",
+      "effect": "arms piece adding up to +30 to all six nano skills (MM/BM/PM/MC/TS/SI); swappable over set sleeves for casters",
+      "slot": "Arm",
+      "id": null
+    },
+    {
+      "name": "Metaphysicist NICS",
+      "effect": "profession HUD item (nano interface)",
+      "slot": "HUD",
+      "id": 215235
+    },
+    {
+      "name": "Nano Targeting Helper",
+      "effect": "HUD utility - increases nuke damage ('every nuker's dream')",
+      "slot": "HUD",
+      "id": 269184
+    },
+    {
+      "name": "Notum Splice",
+      "effect": "utility item (notum-related); commonly used caster util - verify exact stat line before relying on it",
+      "slot": "Util/HUD",
+      "id": 204649
+    }
   ],
   "_unverified": [
     "Ofab Metaphysicist set exact per-QL stat lines (nano-skill/init/max-nano numbers) not read from item data here - confirm on aoitems/auno before using specific values.",

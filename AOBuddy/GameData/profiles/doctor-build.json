@@ -1,0 +1,320 @@
+{
+  "profession": "Doctor",
+  "professionId": 10,
+  "playstyle": {
+    "role": "The game's primary healer. A Doctor keeps a team alive with the two Complete Heals, a 38-step team-heal ladder, a 16-step team HP-buff ladder and heal-over-times, and contributes offensively through three simultaneous DoT lines and the unbreakable initiative debuff (UBT) that halves what a boss can do to the team.",
+    "summary": "The Doctor (profession 10) is the heal class. Its whole kit is verified in the local nano extraction: 240 castable nanos, of which 138 are heals or heal support (3 Complete Healing, 58 single-target heals, 38 team heals, 16 team HP buffs, 14 single HP buffs, 18 HoTs, 1 team HoT, 4 heal-delta buffs, 3 Treatment/First-Aid buffs, 2 cures) and 58 are DoTs across three simultaneous strains. It is the only profession that can cast Complete Healing (28650) and its team version Alpha and Omega (42409), and one of only two that can shut a mob's initiative off with an unbreakable debuff (Uncontrollable Body Tremors 99577). Play is: keep the team HP buff and Iron Circle up, keep a HoT rolling, land UBT on the mob, stack the three DoT lines, and spend the rest of the fight on the heal ladder. Weapon damage is a distant afterthought - Pistol is the only cheap weapon skill (cost factor 1.6) and it exists mainly to auto-attack while the DoTs tick.",
+    "strengths": [
+      "Complete Healing (28650) and the team version Alpha and Omega (42409) - a fixed, un-modifiable full heal no other profession has. AOWiki: complete heals 'will always heal for 10001 health, ignoring heal modifying buffs'.",
+      "Depth of heal ladder: 58 single-target heals and 38 team heals in the local data, so there is a correctly-sized heal for every skill level from BM 29 (Weak Team Heal 42408) to BM 2153 (Superior Team Health Plan 273312).",
+      "Team HP buffs: a 16-step line from Enhance Team Health (42397, BM 18) to Superior Omni-Med Enhancement (95709, BM 852) that raises the whole team's max health and heals the amount raised.",
+      "Unbreakable initiative debuffs - Uncontrollable Body Tremors (99577) and Rapid Palsy (301845) 'last the full duration of the nano or until the target dies, regardless of damage dealt'. Tired Limbs (99578) scales to -2500 on all four initiatives.",
+      "Three DoT lines that stack simultaneously (DOT_LineA, DOT_LineB, DOTStrainC in the data - 58 DoTs), so a Doctor kills without ever needing a good weapon. Wrack and Ruin (28640) additionally strips 100 from every base attack skill.",
+      "Cheapest possible healing IP: Biological Metamorphosis, Matter Metamorphosis, Treatment, First Aid, Nano Pool, Nano C. Init, Computer Literacy, Tutoring and Pharma Tech are ALL cost factor 1.0 for a Doctor (skillcaps.json) - nine skills at the profession's best rate, more than any other class in the table.",
+      "Always wanted: a Doctor is the one team slot that is never optional, from Subway at level 10 to a 12-man Xan raid at 220.",
+      "Self-sufficient support kit: Iron Circle (42400, +20 Str/Sta), Instinctive Control (28669) / Improved (222856, +350 Nano C. Init), Nano Repulsor (28671) / Improved (222823, +200 Nano Resist), Superior First Aid (28675, +80 First Aid and Treatment), Epsilon Purge (28659) to strip DoT strains."
+    ],
+    "weaknesses": [
+      "No burst damage. AOWiki: the Doctor 'must gradually wear down opponent defenses rather than burst damage'. Solo kills are DoT-timed, not damage-timed.",
+      "Weak weapon options. Pistol at cost 1.6 is the only cheap weapon; every other ranged skill a Doctor might use is 2.4 (Shotgun) or 4.0 (Rifle / Assault Rifle / Ranged Energy / Bow). AOWiki: 'Limited weapon skills can lead to a bumpy ride when going solo'.",
+      "Terrible close-combat evades: Evade-ClsC is cost 3.2, the Doctor's single worst defensive skill, and there is no evade or absorb nano in the kit at all.",
+      "The aggro magnet. Healing generates threat and a Doctor has no taunt-dump, no reflect and no absorb - it survives by max health, HP buffs on itself and the mob being initiative-debuffed.",
+      "Responsibility load. AOWiki: 'this profession is not for the faint-hearted' - team survival falls on the Doctor. The Funcom-forums teaming guide puts it as 'over 95% of all team deaths are due to a failure on the doc's part' (satirical, but that is how teams behave).",
+      "NCU pressure: keeping team HP buff + Iron Circle + Instinctive Control + Nano Repulsor + vaccines running, plus everyone else's offered buffs, fills NCU fast. The teaming guide's advice is that the Doctor is 'probably trying to keep 200 NCU free' - do not force buffs on one."
+    ],
+    "tips": [
+      "Cast order in a team, before the pull: team HP buff (the 16-step line, best you can cast), Iron Circle (42400), then a HoT. The teaming guide: 'Make sure to ask for Iron Circle and the team HP buff before the rest of the team is in range.'",
+      "UBT first, damage second. Uncontrollable Body Tremors (99577, BM/PM 861) is unbreakable - land it on the mob and the whole fight becomes easier for the tank. Below that skill level use Rapid Palsy (301845, BM/PM 569), then Induce Muscle Spasms (99583, 389), Muscle Atrophy (99582, 93), Tired Limbs (99578, 29).",
+      "Complete Healing is not a big heal, it is a RESET. At BM 794 / MM 722 it becomes castable and from then on it is what saves a tank that took a spike - hold it, do not open with it.",
+      "Stack all three DoT strains. DOT_LineA, DOT_LineB and DOTStrainC are separate nanolines, so one nano from each runs at the same time. That, not the pistol, is a Doctor's damage.",
+      "Max Treatment every single level. It is cost 1.0 for a Doctor and it gates every implant and symbiant QL you will ever wear (Treatment req = trunc(4.7237*QL + 6.7673)).",
+      "Keep Matter Creation trained even on a pure healing build. It is what the short HP buffs (Life Channeler line) and the heal-delta buffs (Continuous Reconstruction 222824) require, not just the DoTs - Life Channeler (96247) needs BM 867 / MM 781 / MC 781.",
+      "Do not skip Time & Space. The 16-step TEAM HP buff line requires it (Superior Omni-Med Enhancement 95709 = BM 852 / MM 769 / SpaceTime 769). This is a local-data finding: the team HP buffs are the only Doctor line with a SpaceTime requirement.",
+      "Get an MP or a Trader on call. Composite Mochams (+140 to all six nano skills) and a Trader Wrangle are what let a Doctor cast the next heal tier and equip the next symbiant QL.",
+      "Level 218 and 220 are real power spikes: Cellular Rebirth (223297, level 218, heals 6001-7639) and Bodily Invigoration (223299, level 220, heals 7215-8385) both need Specialization 4 and Shadowlands.",
+      "Pick the weapon last. The whole weapon question for a Doctor is 'which item gives the most healing-relevant stats while holding a pistol' - see doctor-weapons.json; the Doctor-locked Pistol of Vitality / Vivacity / Endurance / Survival family and Doctor's Left Hand of Grace (267618, +5 HealMultiplier) exist for exactly that."
+    ]
+  },
+  "breed": {
+    "recommended": "Solitus",
+    "reasoning": "A Doctor's problem is not raw nano skill - its two healing schools (BM and MM) are already cost factor 1.0, the cheapest rate in the game - it is surviving the aggro that healing generates and meeting the Stamina/Psychic requirements its own gear carries. Solitus has no ability caps, the most forgiving IP spread, and enough HP/AC to stay standing; AO-Universe's Character Creation guide lists Solitus as a breed that 'tends to be a prefered breed among Adventurers, Doctors and Soldiers'. The gear side is concrete and read from the client data: Ofab Doctor QL300 needs Stamina 1099 and Psychic 854, and Chosen/Faithful Doctor QL300 needs Stamina 1099 and Psychic 899 - a Nanomage pays for that in ways Solitus does not.",
+    "alternatives": [
+      { "breed": "Nanomage", "note": "The pure-casting pick and also explicitly listed for Doctors: AO-Universe Character Creation says of Nanomage 'This breed is preferred among Metaphysicists, Nanotechnicians and Doctors', and it has the largest nano pool and best nano-cost percentages. The cost is HP and AC on a class that is already the fight's aggro magnet. Choose it for a buff-bot / raid-heal Doctor who will always be behind a tank." },
+      { "breed": "Atrox", "note": "The survivability pick ('troxdoc'). Most HP and best Body Dev, which directly answers the Doctor's real failure mode - dying to the aggro its own heals create. Pays for it with the lowest nano pool and worst Int/Psychic, so heals cost relatively more nano and the nano-skill requirements come later. Well-attested as a low-level twinking Doctor build (the Regidoc link thread catalogs 'Troxdoc with symbionts' setups)." },
+      { "breed": "Opifex", "note": "Best evades and run speed. Tempting because the Doctor's evades are its weakest defensive stat, but Evade-ClsC is cost 3.2 for a Doctor no matter the breed, so the breed cannot fix that skill - Opifex is a niche PvP/kiting choice, not a healing optimum." }
+    ]
+  },
+  "skillPriorities": [
+    { "skill": "Biological Metamorphosis", "target": "max", "why": "Cost factor 1.0. The primary requirement on EVERY heal, HoT, HP buff and complete heal. AOWiki Doctor:Breed and Skills: 'Always max'. It is what decides which rung of the 58-step single-heal and 38-step team-heal ladders you can stand on (Weak Team Heal 42408 at BM 29 -> Superior Team Health Plan 273312 at BM 2153)." },
+    { "skill": "Matter Metamorphosis", "target": "max", "why": "Cost factor 1.0. The second requirement on every heal and every HP buff, tracking BM at roughly 90% of its value. AOWiki: 'Always max'. Improved Complete Healing (270747) needs BM 2153 AND MM 2153." },
+    { "skill": "Treatment", "target": "max", "why": "Cost factor 1.0 - tied for the Doctor's cheapest skill. Gates every implant and symbiant QL (Treatment = trunc(4.7237*QL + 6.7673), so a QL200 implant needs ~947) and every heal/nano kit. AOWiki: 'Always max'." },
+    { "skill": "Psychological Modification", "target": "max", "why": "Cost factor 1.6. The other half of the initiative-debuff line - Uncontrollable Body Tremors (99577) needs BM 861 AND PM 861. AOWiki is explicit: 'Always max, even after you can cast UBT'. Also gates Superior First Aid (28675, PM 571) and Improved Instinctive Control (222856, PM 1033)." },
+    { "skill": "Nano Pool", "target": "max", "why": "Cost factor 1.0. AOWiki: 'Always Max'. A Doctor chain-casts for an entire fight; the nano bar is the fight timer." },
+    { "skill": "Body Dev.", "target": "max", "why": "Cost factor 2.0. AOWiki: 'Always Max'. The Doctor has no reflect, no absorb and bad evades - raw HP is the only mitigation it owns, and healing pulls aggro." },
+    { "skill": "Nano C. Init.", "target": "max", "why": "Cost factor 1.0. AOWiki: 'always max' Nano Initiative. Cast and recharge speed on the heal ladder IS the Doctor's throughput; a faster Complete Healing is worth more than any weapon upgrade." },
+    { "skill": "Computer Literacy", "target": "max", "why": "Cost factor 1.0. AOWiki: 'always max'. NCU is the Doctor's binding constraint - team HP buff, Iron Circle, Instinctive Control, Nano Repulsor, vaccines and everyone else's offered buffs all compete for it." },
+    { "skill": "Matter Creation", "target": "high", "why": "Cost factor 1.6. Required by the short/single HP buffs (Life Channeler 96247 = MC 781), the heal-delta buffs (Continuous Reconstruction 222824 = MC 619), Malpractice (275701 = MC 1727) and the entire DoT kit. AOWiki Doctor Nano Programs: 'Even a Doctor that wants only healing and buffs cannot forego Matter Creation'." },
+    { "skill": "Time & Space", "target": "high", "why": "Cost factor 1.6. Read from the local data: the 16 TEAM HP buffs are the only Doctor line carrying a SpaceTime requirement - Superior Omni-Med Enhancement (95709) needs SpaceTime 769, and the top team HoT Team-Enhanced Deathless Blessing (269455) needs 810. Also gates Epsilon Purge (28659, SpaceTime 696) and Nano Repulsor." },
+    { "skill": "Sensory Improvement", "target": "high", "why": "Cost factor 1.6. Gates the utility half of the kit: Epsilon Purge (28659, SI 696), Superior First Aid (28675, SI 517), Instinctive Control (28669, SI 388) and Improved (222856, SI 1033)." },
+    { "skill": "First Aid", "target": "high", "why": "Cost factor 1.0. Stims are the Doctor's instant self-heal while a cast is on cooldown, and First Aid gates their QL. Superior First Aid (28675) buffs it +80 for everyone including yourself." },
+    { "skill": "Pistol", "target": "as-needed", "why": "Cost factor 1.6 - the ONLY cheap weapon skill a Doctor has (Shotgun 2.4, MG/SMG 3.2, Rifle / Assault Rifle / Ranged Energy / Bow all 4.0). 17 of the 23 Doctor-locked weapons in items.ocp are pistols. Train it to wield the item you want, not for its damage." },
+    { "skill": "Fling Shot", "target": "as-needed", "why": "Cost factor 2.4 - the cheapest pistol special for a Doctor (Burst 3.0, Aimed Shot 3.2, Full Auto 4.0) and the one present on almost every pistol in the data. Only worth IP if you actually auto-attack." },
+    { "skill": "Nano Resist", "target": "high", "why": "Cost factor 1.2 - unusually cheap for a Doctor, and it is what stops a Trader draining you or a mob landing its debuff mid-heal. Self-buffable with Improved Nano Repulsor (222823, +200)." },
+    { "skill": "Ranged Init.", "target": "as-needed", "why": "Cost factor 3.2. Only if you actually auto-attack with a pistol. AOWiki: raise Melee or Ranged Initiative 'when you can, or until you're hitting 1/1' depending on your weapon choice - for a Doctor that is usually never, because Nano C. Init matters more." },
+    { "skill": "Physic. Init", "target": "as-needed", "why": "Cost factor 2.0 - cheaper than Ranged Init (3.2) and Melee Init (3.2). Relevant only if you run Martial Arts (cost 2.0, the Doctor's other cheap weapon option)." },
+    { "skill": "Dodge-Rng / Duck-Exp", "target": "as-needed", "why": "Cost factor 2.4 each - the Doctor's two affordable evades. Evade-ClsC is 3.2 and is the skill to give up on; nothing in the Doctor's own kit buffs evades." },
+    { "skill": "Pharma Tech", "target": "as-needed", "why": "Cost factor 1.0. AO-Universe: 'Doctors have a particular tradeskill they are good with, specifically PhamaTech.' Used for stims/health-kit building and buffed by the Alchemist perk line (+200 Chemistry and Pharma Tech at 6 tiers)." },
+    { "skill": "Psychology", "target": "as-needed", "why": "Cost factor 2.3. The reason to train it at endgame is Alien/Combined armor assembly, which is Psychology-gated; otherwise it is the least-useless Ear-bright implant cluster." },
+    { "skill": "Electrical Engineering / Quantum FT / Nano Programming", "target": "as-needed", "why": "All cost factor 1.6 - cheap for a Doctor. Nano Programming lets you build your own implant clusters; EE/QFT feed the implant and armor tradeskill chains." },
+    { "skill": "Weapon Smithing", "target": "as-needed", "why": "Cost factor 1.5 - oddly cheap for a Doctor and the only reason the Right Hand shiny implant slot is not pure filler." },
+    { "skill": "Run Speed", "target": "as-needed", "why": "Cost factor 2.4. Positioning to stay in heal range without standing in the melee. Ofab/Chosen Doctor boots carry +RunSpeed (Penultimate Ofab Doctor Boots 264671 = +55 at QL300)." },
+    { "skill": "Melee/Ranged weapon skills other than Pistol and Martial Arts", "target": "skip", "why": "Rifle, Assault Rifle, Ranged Energy, Bow, Multi Ranged, Heavy Weapons, Full Auto and Aimed Shot are all cost factor 4.0 for a Doctor - the most expensive tier in the table. Do not spend IP there." }
+  ],
+  "perks": [
+    {
+      "name": "Assault Force Medic",
+      "type": "SL profession",
+      "line": "Assault Force Medic (10 tiers; 10 perk items in itemnames.sql)",
+      "effect": "+340 Max Health, +43 Biological Metamorphosis, +43 Matter Metamorphosis, +40 Treatment, +25 First Aid at max, plus four Battlegroup Heal special actions and Viral Combination.",
+      "recommendedAtLevel": "Take early and max - it is straight BM/MM/Treatment plus the HP the Doctor lacks",
+      "priority": "high"
+    },
+    {
+      "name": "Specialist Healer",
+      "type": "SL profession",
+      "line": "Specialist Healer (10 tiers; ids 212039-212048 in itemnames.sql)",
+      "effect": "+21% healing effectiveness at max, plus several debuff-removal and vaccination special actions. The client data confirms the mechanism: the Specialist Healer items carry HealMultiplier bonuses (+2 on 212039-212047, +3 on 212048).",
+      "recommendedAtLevel": "Max as soon as the tiers unlock - a flat percentage on every heal you will ever cast",
+      "priority": "high"
+    },
+    {
+      "name": "Nano Surgeon",
+      "type": "SL profession",
+      "line": "Nano Surgeon (6 tiers; 6 perk items in itemnames.sql)",
+      "effect": "+42 Biological Metamorphosis, +42 Matter Metamorphosis, +60 Treatment, +45 First Aid at max, plus Enhanced Heal, Malicious Prohibition, Team Heal and Treatment Transfer special actions.",
+      "recommendedAtLevel": "Max alongside Assault Force Medic",
+      "priority": "high"
+    },
+    {
+      "name": "Nano Doctorate",
+      "type": "SL group",
+      "line": "Nano Doctorate (10 tiers; ids 211931-211937 + 229958-229960 in itemnames.sql)",
+      "effect": "+100 to each of the six nano skills at max, plus nano-shutdown removal special actions.",
+      "recommendedAtLevel": "High priority - +100 to BM/MM/MC/PM/SI/TS is a whole heal tier",
+      "priority": "high"
+    },
+    {
+      "name": "Champion of Nano Combat",
+      "type": "AI/Alien",
+      "line": "Champion of Nano Combat (10 tiers)",
+      "effect": "+100 Biological Metamorphosis, +100 Matter Metamorphosis, +100 Matter Creation, +100 Time & Space, +100 Psychological Modification, +100 Sensory Improvement at max.",
+      "recommendedAtLevel": "The single best alien perk line for a Doctor; needs Alien Invasion and AI levels",
+      "priority": "high"
+    },
+    {
+      "name": "Embrace",
+      "type": "AI/Alien",
+      "line": "Embrace (10 tiers)",
+      "effect": "+50 Matter Metamorphosis, +1000 Max Nano, -4% nano cost modifier at max.",
+      "recommendedAtLevel": "Take after Champion of Nano Combat - the nano pool and cost reduction are exactly what a chain-casting healer runs out of",
+      "priority": "high"
+    },
+    {
+      "name": "Starfall",
+      "type": "SL group",
+      "line": "Starfall (10 tiers)",
+      "effect": "+15 to each of the six nano skills, +400 Max Nano, +150 Max Health at max, plus a damage special-action chain.",
+      "recommendedAtLevel": "Mid priority - the nano pool and small all-nanoskill bonus",
+      "priority": "med"
+    },
+    {
+      "name": "Genius",
+      "type": "SL general",
+      "line": "Genius (3 tiers)",
+      "effect": "+40 Intelligence, +40 Psychic, +120 Max Nano at max.",
+      "recommendedAtLevel": "Cheap 3 tiers; the Psychic also helps meet the Psychic 854-899 requirement on Ofab/Chosen Doctor armor",
+      "priority": "med"
+    },
+    {
+      "name": "Alchemist",
+      "type": "SL group",
+      "line": "Alchemist (6 tiers)",
+      "effect": "+200 Chemistry and +200 Pharma Tech at max.",
+      "recommendedAtLevel": "Only for a tradeskilling Doctor (stims, health kits, implant chains)",
+      "priority": "med"
+    },
+    {
+      "name": "Pistol Mastery",
+      "type": "SL group",
+      "line": "Pistol Mastery (5 tiers)",
+      "effect": "+59 Pistol, +6 Fling Shot, +16 to all damage modifiers at max. Note the Doctor ALSO has a self-cast nano called Pistol Mastery (id 29246, +40 Pistol) - different thing, same name.",
+      "recommendedAtLevel": "Only on a pistol build",
+      "priority": "med"
+    },
+    {
+      "name": "Power Up",
+      "type": "SL group",
+      "line": "Power Up (8 tiers)",
+      "effect": "+115 Ranged Energy, +28 to all damage modifiers at max, plus four special actions.",
+      "recommendedAtLevel": "Only if you run a Ranged Energy weapon (the SOL medical lasers) - Ranged Energy is cost factor 4.0 for a Doctor, so this is an expensive path",
+      "priority": "low"
+    },
+    {
+      "name": "Kung-Fu Master",
+      "type": "SL general",
+      "line": "Kung-Fu Master (5 tiers)",
+      "effect": "+50 Martial Arts at max.",
+      "recommendedAtLevel": "Only on a Martial Arts Doctor (MA is cost factor 2.0, the Doctor's second-cheapest weapon skill)",
+      "priority": "low"
+    },
+    {
+      "name": "The Unknown Factor",
+      "type": "AI/Alien",
+      "line": "The Unknown Factor (8 tiers)",
+      "effect": "+160 to four crafting skills at max.",
+      "recommendedAtLevel": "Tradeskill/alien-armor building only",
+      "priority": "low"
+    },
+    {
+      "name": "Healing Care",
+      "type": "LE/Research proc",
+      "line": "Bedside Manner",
+      "effect": "Healing proc. LEProcDoctorHealingCare in AOSharp PerkHash.cs; 4 'Healing Care' entries in itemnames.sql.",
+      "recommendedAtLevel": "Offensive/support proc slot - the natural first pick for a healer",
+      "priority": "high"
+    },
+    {
+      "name": "Antiseptic",
+      "type": "LE/Research proc",
+      "line": "Bedside Manner",
+      "effect": "Support/cleansing proc. LEProcDoctorAntiseptic in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Second proc from the Bedside Manner line",
+      "priority": "med"
+    },
+    {
+      "name": "Blood Transfusion",
+      "type": "LE/Research proc",
+      "line": "Internship",
+      "effect": "Health-transfer proc. LEProcDoctorBloodTransfusion in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Sustain proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Massive Vitae Plan",
+      "type": "LE/Research proc",
+      "line": "Internship",
+      "effect": "Large health proc. LEProcDoctorMassiveVitaePlan in PerkHash.cs; 3 entries in itemnames.sql.",
+      "recommendedAtLevel": "Sustain proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Pathogen",
+      "type": "LE/Research proc",
+      "line": "Internship",
+      "effect": "Offensive disease proc. LEProcDoctorPathogen in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Offensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Inflammation",
+      "type": "LE/Research proc",
+      "line": "Rehabilitation",
+      "effect": "Offensive proc. LEProcDoctorInflammation in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Offensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Astringent",
+      "type": "LE/Research proc",
+      "line": "Rehabilitation",
+      "effect": "Defensive/mitigation proc. LEProcDoctorAstringent in PerkHash.cs; 5 entries in itemnames.sql.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Anesthetic",
+      "type": "LE/Research proc",
+      "line": "Diagnosis",
+      "effect": "Control/mitigation proc. LEProcDoctorAnesthetic in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "med"
+    },
+    {
+      "name": "Anatomic Blight",
+      "type": "LE/Research proc",
+      "line": "Toxicology",
+      "effect": "Offensive toxin proc. LEProcDoctorAnatomicBlight in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Offensive proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Dangerous Culture",
+      "type": "LE/Research proc",
+      "line": "Toxicology",
+      "effect": "Offensive toxin proc. LEProcDoctorDangerousCulture in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Offensive proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Restrictive Bandaging",
+      "type": "LE/Research proc",
+      "line": "Underground Doctor",
+      "effect": "Defensive/utility proc. LEProcDoctorRestrictiveBandaging in PerkHash.cs; 4 entries in itemnames.sql.",
+      "recommendedAtLevel": "Defensive proc slot",
+      "priority": "low"
+    },
+    {
+      "name": "Muscle Memory (wiki calls the Aggressive Surgery proc 'Muscular Malaise')",
+      "type": "LE/Research proc",
+      "line": "Aggressive Surgery",
+      "effect": "The 12th Doctor proc in AOSharp PerkHash.cs is LEProcDoctorMuscleMemory; itemnames.sql has BOTH 'Muscle Memory' (263491 Item, 263514 + 267034 Nano) and 'Muscular Malaise' (266812 Nano). wiki.aodb.us names the Aggressive Surgery proc 'Muscular Malaise'. The two names are almost certainly the perk and the nano it fires - which is which is NOT resolved here (see _unverified).",
+      "recommendedAtLevel": "Offensive proc slot on a ranged-combat Doctor",
+      "priority": "low"
+    }
+  ],
+  "research": [
+    { "name": "Bedside Manner", "track": "LE personal", "effect": "10 levels. Pistol-skill focused; grants the proc perks Healing Care and Antiseptic.", "note": "The healer's line - the Healing Care proc plus pistol skill for the Doctor's only cheap weapon. Take this first." },
+    { "name": "Internship", "track": "LE personal", "effect": "10 levels. Increases NCU and Pharma Tech; grants the proc perks Blood Transfusion, Pathogen and Massive Vitae Plan.", "note": "NCU is the Doctor's binding constraint (team HP buff + Iron Circle + Instinctive Control + Nano Repulsor + vaccines), so this line is worth more to a Doctor than its name suggests. Three procs from one line." },
+    { "name": "Rehabilitation", "track": "LE personal", "effect": "10 levels. Develops the metamorphosis skills (BM/MM); grants the proc perks Inflammation and Astringent.", "note": "Direct BM/MM progression = directly higher heals. High priority." },
+    { "name": "Diagnosis", "track": "LE personal", "effect": "10 levels. Boosts health and stamina; grants the proc perk Anesthetic.", "note": "HP and Stamina - the Doctor's survivability and the Stamina its own Ofab/Chosen armor requires (1099 at QL300)." },
+    { "name": "Toxicology", "track": "LE personal", "effect": "10 levels. Enhances Matter Creation and nano capacity; grants the proc perks Anatomic Blight and Dangerous Culture.", "note": "The DoT/soloing line - MC feeds the three DoT strains, the short HP buffs and the heal-delta buffs." },
+    { "name": "Underground Doctor", "track": "LE personal", "effect": "10 levels (perk items 261166-261175). Grants the proc perk Restrictive Bandaging and a 5% healing efficiency bonus.", "note": "A flat 5% on all healing at the end of the line. The client data backs the healing claim - the Underground Doctor perk item 261175 carries a HealMultiplier bonus of +5." },
+    { "name": "Aggressive Surgery", "track": "LE personal", "effect": "10 levels. Enhances ranged combat abilities; grants a proc perk (see the Muscle Memory / Muscular Malaise note in perks).", "note": "The offensive/ranged line - lowest priority for a healing Doctor unless you actually shoot things." },
+    { "name": "Global Research (all-profession)", "track": "Global", "effect": "Shared cross-profession global research lines; applies to a Doctor exactly as to any other profession.", "note": "Not Doctor-specific; standard global picks apply. Research needs Lost Eden - a froob Doctor has none of this." }
+  ],
+  "_deviations": [
+    "Breed recommendation is Solitus, not the MP file's Nanomage. The MP is recommended Nanomage because its power scales with nano SKILL, and Nanomage's Int/Psychic is what buys nano skill. A Doctor's two healing schools are already cost factor 1.0 (vs 1.0 for the MP's MC/TS too), so the marginal nano skill buys less, while the Doctor is the fight's aggro magnet and its own armor (Ofab/Chosen Doctor QL300: Stamina 1099, Psychic 854-899) is Stamina-gated. Nanomage is kept as the first alternative and is explicitly named for Doctors by AO-Universe; Atrox is a real, attested Doctor build ('troxdoc') in a way it is not for an MP.",
+    "There is no 'pet' dimension at all. The MP build file is organised around which pets you can keep up; the Doctor build is organised around which rung of the heal ladder you can stand on, which is why the skill priorities quote nano-skill NUMBERS from castReqs (BM 29 -> 2153) rather than pet tiers.",
+    "Nine skills at cost factor 1.0. The MP has five (Nano Pool, MM, BM, Nano C. Init, Matter Creation, Time & Space, Nano Programming, Tutoring, Computer Literacy - nine as well, but distributed differently); the Doctor's 1.0 set is BM, MM, Treatment, First Aid, Nano Pool, Nano C. Init, Computer Literacy, Tutoring, Pharma Tech. The practical difference is that TREATMENT and FIRST AID are 1.0 for a Doctor and 2.0 for an MP, which is why 'max Treatment every level' is a hard rule here and only a ladder note in the MP file.",
+    "Weapon skills are cheaper and matter slightly more than for an MP. Pistol is 1.6 for a Doctor (2.4 for an MP) and Martial Arts 2.0 (2.8), and 23 weapon models in items.ocp carry a Profession EqualTo Doctor lock, 17 of them pistols. The MP file says 'weapon skills are expensive and secondary'; for a Doctor Pistol is a real, cheap, supported choice - it is still not a damage plan.",
+    "The Doctor has AI/alien perk lines worth maxing (Champion of Nano Combat +100 to all six nano skills, Embrace +1000 Max Nano). The MP file's alien perk entry is 'Ancient Knowledge - bugged, avoid'. This is a genuine class difference, not a difference in how the file was written.",
+    "Research-line-to-proc mapping is FULLY sourced here (wiki.aodb.us Doctor:Research_Lines names the procs per line and every name is confirmed as an item/nano in itemnames.sql). The MP file had to mark the Sow Doubt / Sow Despair / Thoughtful Means mapping as inferred; that gap does not exist for the Doctor.",
+    "Evades are treated as a lost cause rather than a priority. The MP file lists 'Dodge Ranged / Evade Close Combat / Duck Explosives - keep high or max whenever possible' (MP evades are 1.6/1.6/2.4). A Doctor pays 2.4/2.4/3.2 and has no evade nano, so the advice here is Body Dev. and HP buffs instead."
+  ],
+  "_unverified": [
+    "Which of 'Muscle Memory' (PerkHash LEProcDoctorMuscleMemory; itemnames 263491/263514/267034) and 'Muscular Malaise' (itemnames 266812, named by wiki.aodb.us as the Aggressive Surgery proc) is the PERK and which is the nano it fires. Both names exist in the client data; the relationship was not resolved.",
+    "Per-tier values for every perk line: the numbers quoted (e.g. Assault Force Medic +340 Max Health / +43 BM / +43 MM / +40 Treatment / +25 First Aid) are the MAX-rank totals as stated by wiki.aodb.us Doctor:Perks. Per-tier breakdowns and the level at which each tier unlocks were NOT read from the client data and are not given here.",
+    "The recommendedAtLevel field is priority guidance, not a sourced unlock level - unlike the MP file, no per-perk level table was located for the Doctor. Treat every recommendedAtLevel as 'when you can', not as a gate.",
+    "The Solitus-over-Nanomage recommendation is a judgement built on (a) AO-Universe naming Solitus as preferred for Doctors, (b) AO-Universe ALSO naming Nanomage as preferred for Doctors, and (c) the Stamina/Psychic requirements read from the Doctor's own armor in items.ocp. No single source states 'Solitus is the best Doctor breed'. wiki.aodb.us Doctor:Breed_and_Skills does NOT name a recommended breed at all.",
+    "Specialist Healer's '+21% healing' is the wiki's number; what the client data independently confirms is only that the ten Specialist Healer perk items carry HealMultiplier +2/+3. The unit and stacking of HealMultiplier were not derived.",
+    "'Over 95% of all team deaths are due to a failure on the doc's part' is quoted from a deliberately satirical Funcom-forums teaming guide. It is recorded as a description of team EXPECTATIONS, not as a mechanic.",
+    "Skill cost factors are quoted exactly from reference/skillcaps.json (column index 3 = 'Doctor' in _professionOrder). That file's own _dependencyReliability caveats apply; the cost numbers themselves are used verbatim, never rounded or estimated."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/reference/skillcaps.json - every cost factor quoted in this file, read at _professionOrder index 3 (Doctor). BM 1.0, MM 1.0, Treatment 1.0, First Aid 1.0, Nano Pool 1.0, Nano C. Init 1.0, Computer Literacy 1.0, Tutoring 1.0, Pharma Tech 1.0, Nano Resist 1.2, Weapon Smithing 1.5, Pistol 1.6, MC/PM/SI/TS 1.6, Electrical Eng 1.6, Quantum FT 1.6, Nano Programming 1.6, Map Navigation 1.6, Vehicle Ground 1.6, Body Dev 2.0, Martial Arts 2.0, Physic. Init 2.0, Psychology 2.3, Fling Shot 2.4, Dodge-Rng 2.4, Duck-Exp 2.4, Shotgun 2.4, 1hB/1hE/Piercing 2.4, Burst 3.0, Evade-ClsC 3.2, Ranged Init 3.2, Melee Init 3.2, Aimed Shot 3.2, Rifle/AR/Ranged Energy/Bow/Full Auto/Multi Ranged/Heavy Weapons 4.0.",
+    "LOCAL: AOBuddy/GameData/profiles/doctor-nanos.json (nanos.ocp, client 18.8.50_EP1) - every nano id, name, cast requirement and category count quoted (240 castable nanos; the 16-vs-38 team HP buff / team heal split derived from the presence of a SpaceTime cast requirement).",
+    "LOCAL: AOBuddy/GameData/profiles/doctor-weapons.json (items.ocp) - Pistol as the cheap primary, the 23 Doctor-locked weapon models, and the observed pistol specials (Fling Shot / Burst / Aimed Shot / Full Auto).",
+    "LOCAL: the extracted client data/itemnames.sql - every perk-line name and tier count confirmed as real client items (Assault Force Medic 10, Nano Surgeon 6, Specialist Healer 10 = ids 212039-212048, Alchemist 6, Nano Doctorate 10, Genius 3, Kung-Fu Master 5, Embrace 10, The Unknown Factor 8, Champion of Nano Combat 10, and all seven research lines at 10 entries each incl. Underground Doctor 261166-261175).",
+    "LOCAL: items.ocp read via tools/eng-gear-extractor (--prof 10) - the HealMultiplier bonuses on the Specialist Healer and Underground Doctor perk items, and the Stamina 1099 / Psychic 854-899 requirements on Ofab and Chosen/Faithful Doctor armor.",
+    "LOCAL: AOSharp.Common/GameData/PerkHash.cs - the twelve LEProcDoctor* proc-perk enum names.",
+    "LOCAL: AOSharp.Common/GameData/Profession.cs - Doctor = 10.",
+    "http://wiki.aodb.us/wiki/Doctor - role ('a biotechnology specialist... healing and protecting but they also learn how to produce and administer powerful biotoxins'), strengths/weaknesses, 'this profession is not for the faint-hearted'.",
+    "http://wiki.aodb.us/wiki/Doctor:Breed_and_Skills - the 'Always max' skill statements (MM, BM, PM 'even after you can cast UBT', Treatment, Body Development, Nano Pool, Computer Literacy, Nano Initiative) and the initiative advice. Does NOT name a recommended breed.",
+    "http://wiki.aodb.us/wiki/Doctor:Perks - every perk line, max tier count and max-rank effect quoted in the perks array.",
+    "http://wiki.aodb.us/wiki/Doctor:Research_Lines - the seven personal LE research lines, their flavour text and their proc perks.",
+    "http://wiki.aodb.us/wiki/Doctor_Nano_Programs - complete heals 'will always heal for 10001 health, ignoring heal modifying buffs'; short vs long HP buff durations; unbreakable init debuffs 'last the full duration of the nano or until the target dies'; 'Even a Doctor that wants only healing and buffs cannot forego Matter Creation'; Wrack and Ruin debuffing base attack skills by 100.",
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/character-creation - Solitus 'tends to be a prefered breed among Adventurers, Doctors and Soldiers'; Nanomage 'This breed is preferred among Metaphysicists, Nanotechnicians and Doctors'; the Doctor role description and the PharmaTech note.",
+    "https://forums.funcom.com/t/doctor-woefallens-guide-to-teaming-with-a-doc/4351 - team cast order (Iron Circle + team HP buff before the pull), aggro advice, NCU etiquette ('probably trying to keep 200 NCU free').",
+    "https://forums.funcom.com/t/doctor-regidocs-consolidated-doctor-profession-link-thread/4353 - the consolidated Doctor resource index (weapon IP comparisons, breed guide, troxdoc/symbiant twink setups, SL heals overview, breakable vs unbreakable init debuffs)."
+  ]
+}

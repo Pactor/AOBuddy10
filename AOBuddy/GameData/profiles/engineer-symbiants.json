@@ -1,15 +1,13 @@
 {
-  "profession": "Meta-Physicist",
-  "summary": "A top MP fills all 13 implant slots with CONTROL-Unit symbiants - the nano/pet-caster unit (the Control line is profession-locked to Engineer, Trader, Bureaucrat and Meta-Physicist; verified stat-60 lock {3,7,8,12} in items.ocp, and both the ao-universe and Funcom guides put MP in the Control unit). Control symbiants stack the six nano schools (Matter Creation, Time & Space, Bio Met, Matter Met, Psycho Mod, Sensory Impr) plus Nano Pool, Max Nano, Nano Init, Treatment and Nano Resist - exactly the caster/pet stats an MP wants, which is why symbiants outclass cluster implants here. Best-in-slot at endgame is the Xan Control-Unit ALPHA in every slot (highest bonuses of the line: e.g. all six nano schools +144 and +574 Max Nano on the Brain/Head Alpha). Progression to reach them: wear the Xan Control Beta first (lower reqs), then swap each slot to the crafted Alpha once Treatment/Int/Psychic/level allow. WHERE TO GET THEM: the Control ladder is Shadowlands pocket-boss loot (summon the boss at an Incarnator from a crafted Novictalized Notum Crystal) up to QL280; the QL300 'Intelligent ... Control Unit Aban' for every slot comes from The Night Heart on Pandemonium Antenora; the Xan Betas come from the three Legacy-of-the-Xan Central Hub encounters (Mitaar Hero, Ground Chief Vortexx, The Xan 12-man) except Ear and Thigh which are quest rewards (Arid Rift / Neretva Canyons Area X); the Alphas are crafted, never looted. See farmingRuns for the location-by-location plan and acquisitionBySlot for the per-slot ladder.",
+  "profession": "Engineer",
+  "summary": "A top Engineer fills all 13 implant slots with CONTROL-Unit symbiants - the nano/pet-caster unit. The Control line is profession-locked to Engineer, Trader, Bureaucrat and Meta-Physicist (verified: every Control symbiant's ToWear action carries a stat-60 EqualTo lock to {3 Engineer, 7 Trader, 8 Bureaucrat, 12 Meta-Physicist} in items.ocp). IMPORTANT ENGINEER-SPECIFIC FACT, verified from the client data and NOT the same as the Meta-Physicist: Control is the ONLY unit line an Engineer can wear. Running the extractor with --prof 3 returns 300 wearable symbiant templates - 285 Control, 14 client-data anomalies with no profession lock at all (see otherUsableLines) and 1 Engineer-only quest symbiant (see outsideLineSymbiants). An MP may choose between Control, Extermination and Support; an Engineer has no choice to make. Control symbiants stack the six nano schools (Matter Creation, Time & Space, Biological Metamorphosis, Matter Metamorphosis, Psychological Modifications, Sensory Improvement) plus Nano Pool, Max Nano, Nano Init, Treatment, Nano Resist, Nano Programming and Comp. Lit. For an Engineer that is a double win: Matter Creation and Time & Space are the two skills EVERY robot summon requires at the same value (verified in nanos.ocp - every bot nano's ToUse is MaterialCreation > X and SpaceTime > X), and the Treatment / Nano Programming / Comp. Lit. bonuses feed the Engineer's tradeskill role. This is why symbiants outclass cluster implants for an Engineer from the mid-levels on. Best-in-slot at endgame is the Xan Control-Unit ALPHA in every slot (e.g. all six nano schools +144 and +574 Max Nano on the Brain/Head Alpha). Progression: wear the Xan Control Beta first (lower reqs), then swap each slot to the crafted Alpha once Treatment/Int/Psychic/level allow. WHERE TO GET THEM: the Control ladder is Shadowlands pocket-boss loot (summon the boss at an Incarnator from a crafted Novictalized Notum Crystal) up to QL280; the QL300 'Intelligent ... Control Unit Aban' for every slot comes from The Night Heart on Pandemonium Antenora; the Xan Betas come from the three Legacy-of-the-Xan Central Hub encounters (Mitaar Hero, Ground Chief Vortexx, The Xan 12-man) except Ear and Thigh which are quest rewards (Arid Rift / Neretva Canyons Area X); the Alphas are crafted, never looted. See farmingRuns for the location-by-location plan and acquisitionBySlot for the per-slot ladder.",
   "unitChoice": {
     "recommendedUnit": "Control",
-    "why": "Control is the caster/pet unit shared by MP/Crat/Engi/Trader; it carries the nano-school + nano-pool + nano-init bonuses an MP lives on. Verified: every Control symbiant's ToWear action profession-locks to stat 60 EqualTo {3 Engineer, 7 Trader, 8 Bureaucrat, 12 Meta-Physicist} (items.ocp).",
+    "why": "Control is the caster/pet unit; it carries the nano-school + nano-pool + nano-init bonuses that a robot-summoning Engineer lives on (Matter Creation and Time & Space are both required, at equal value, by every bot summon nano), plus the Treatment / Nano Programming / Comp. Lit. bonuses the Engineer wants as the game's tradeskill profession. Verified: every Control symbiant's ToWear action profession-locks to stat 60 EqualTo {3 Engineer, 7 Trader, 8 Bureaucrat, 12 Meta-Physicist} (items.ocp).",
     "alsoUsablePerAoUniverse": [
-      "Control",
-      "Extermination",
-      "Support"
+      "Control"
     ],
-    "note": "The ao-universe symbiant guide lists Control, Extermination and Support as MP-usable; Control is the nano-caster pick used here. Extermination/Support trade nano bonuses for other stats and are not best-in-slot for a caster MP."
+    "note": "There is NO unit choice for an Engineer: Control is the only one of the five unit lines whose stat-60 lock set includes profession 3. Verified by enumerating all 1462 wearable symbiant templates in items.ocp - the five lock sets are Artillery {Soldier, Fixer, Agent, Adventurer, Trader}, Control {Engineer, Trader, Bureaucrat, Meta-Physicist}, Extermination {Bureaucrat, NanoTechnician, Meta-Physicist}, Infantry {MartialArtist, Adventurer, Enforcer, Keeper} and Support {MartialArtist, Fixer, Adventurer, Trader, Doctor, Meta-Physicist, Keeper}. Engineer appears in exactly one of them. This is a genuine difference from the Meta-Physicist, which appears in three."
   },
   "bestInSlot": [
     {
@@ -38,7 +36,7 @@
         "Agility": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Brain) with an Intelligent Control-Unit Brain Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Brain) with an Intelligent Control-Unit Brain Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278957,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -142,7 +140,7 @@
         "Sense": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ocular) with an Intelligent Control-Unit Ocular Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ocular) with an Intelligent Control-Unit Ocular Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278958,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -240,7 +238,7 @@
         "Agility": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ear) with an Intelligent Control-Unit Ear Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Ear) with an Intelligent Control-Unit Ear Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278959,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -342,7 +340,7 @@
         "Stamina": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Chest) with an Intelligent Control-Unit Chest Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Chest) with an Intelligent Control-Unit Chest Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278960,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -436,7 +434,7 @@
         "Strength": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Arm) with an Intelligent Control-Unit Right Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Arm) with an Intelligent Control-Unit Right Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278964,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -534,7 +532,7 @@
         "Sense": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Arm) with an Intelligent Control-Unit Left Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Arm) with an Intelligent Control-Unit Left Arm Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278961,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -629,7 +627,7 @@
         "Strength": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Wrist) with an Intelligent Control-Unit Right Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Wrist) with an Intelligent Control-Unit Right Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278966,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -722,7 +720,7 @@
         "Sense": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Wrist) with an Intelligent Control-Unit Left Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Wrist) with an Intelligent Control-Unit Left Wrist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278963,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -820,7 +818,7 @@
         "Strength": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Hand) with an Intelligent Control-Unit Right Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Right Hand) with an Intelligent Control-Unit Right Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278965,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -915,7 +913,7 @@
         "Stamina": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Hand) with an Intelligent Control-Unit Left Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Left Hand) with an Intelligent Control-Unit Left Hand Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278962,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -1016,7 +1014,7 @@
         "Agility": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Waist) with an Intelligent Control-Unit Waist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Waist) with an Intelligent Control-Unit Waist Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278967,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -1117,7 +1115,7 @@
         "Agility": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Thigh) with an Intelligent Control-Unit Thigh Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Thigh) with an Intelligent Control-Unit Thigh Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278968,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -1216,7 +1214,7 @@
         "Sense": 1276,
         "level": 219
       },
-      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Feet) with an Intelligent Control-Unit Feet Symbiant QL300 - see alphaCrafting. NODROP, must be made on the MP.",
+      "source": "Craft your own: combine the matching Xan Control-Unit Beta (Feet) with an Intelligent Control-Unit Feet Symbiant QL300 - see alphaCrafting. NODROP, must be made on the Engineer.",
       "id": 278969,
       "_fallbacks": {
         "IntelligentQL300_SL_base": {
@@ -1316,16 +1314,17 @@
     "clickyTrick": "Xan Beta Ear and Thigh are the quest rewards and the ONLY two that are clickable: right-click cycles their unit type through all five lines. The other eleven Betas are NOT clickable - their unit is fixed on drop. Money-saver: buy the cheapest Intelligent Ear/Thigh of any unit, cycle the Beta to match, combine, then cycle the resulting Alpha back to Control. (ao-universe / Funcom guide.)",
     "upgradeOverBase": "Per slot the Alpha beats both components. Head example: Beta nano-schools +130 / Max Nano +519; Intelligent (SL QL300) +137 / +547; Alpha +144 / +574. Alpha is a straight upgrade of the QL300 SL symbiant, with the same equip reqs."
   },
-  "xanAlphaNote": "Endgame path: Shadowlands Control symbiants (top tier = 'Intelligent', QL300) are the base; the Legacy-of-the-Xan 'Xan ... Beta' symbiants are a lower-req stepping stone; the crafted 'Xan ... Alpha' (Beta + Intelligent QL300) is best-in-slot. Alpha and the Ear/Thigh Betas are NODROP - build the Alpha on the MP that will wear it.",
+  "xanAlphaNote": "Endgame path: Shadowlands Control symbiants (top tier = 'Intelligent', QL300) are the base; the Legacy-of-the-Xan 'Xan ... Beta' symbiants are a lower-req stepping stone; the crafted 'Xan ... Alpha' (Beta + Intelligent QL300) is best-in-slot. Alpha and the Ear/Thigh Betas are NODROP - build the Alpha on the Engineer that will wear it.",
   "_verification": {
     "namesAndIds": "All 39 ids (13 Intelligent + 13 Beta + 13 Alpha) verified in itemnames.sql; each row's symbiant name matched to its slot programmatically.",
     "statsAndReqs": "QL, keyBonuses and reqs extracted from items.ocp (OMNICELL-CONTENT v3) with tools/mp-symbiant-extractor; stat numbers mapped from AOSharp.Common Stat.cs; ToWear = equip reqs, funcType 53045 (target=wearer) = stat bonuses.",
-    "professionLock": "Control unit ToWear stat-60 EqualTo {3,7,8,12} => Engineer/Trader/Bureaucrat/Metaphysicist.",
+    "professionLock": "Control unit ToWear stat-60 EqualTo {3,7,8,12} => Engineer/Trader/Bureaucrat/Engineer.",
     "farmLocations": "Acquisition data is joined onto every item by AO item id from two sources: (1) the TinkerTools/TinkerPocket community drop database via its public API (https://ao.tinkeringidiot.com/tinkerpocket/), which supplies the pocket-boss / static-boss drop tables, and (2) hand-curated entries in tools/mp-symbiant-extractor/farm-sources-manual.json for the Legacy-of-the-Xan Betas, the crafted Alphas, the daily-reward/cash-shop lines and the one-off symbiants, each with its own guide URL. Regenerate with fetch-farm-sources.py then build-profile.py.",
     "noDropFlags": "NODROP/Unique are read from the client data, not from a website: items.ocp Stats entry 0 (Flags), bit 26 = NoDrop and bit 27 = Unique (OmniCell.Enums/ItemFlags.cs). This SETTLED a source conflict: aoguide.org per-item flags were reported as marking 7 of the 13 Xan Betas NODROP, but the client data says only the Ear and Thigh Betas (the two quest rewards) are NODROP - every other Beta is tradeable. All 13 Alphas are NODROP, the Syndicate Brain symbiants are NODROP+Unique, the Prototype and Fabricated lines are NODROP, and the whole Aban line is tradeable.",
     "crossCheck": "The per-slot Xan Beta -> boss mapping was produced twice, independently: from the ao-universe Legacy-of-the-Xan encounter guides and from the TinkerTools drop database. They agree on 11 of 13 slots; they differ only on Ear and Thigh (see _unverified).",
     "tierLadder": "The 34-step Aban tier ladder (Unconscious QL1 ... Intelligent QL300) in `catalog` is read straight from items.ocp - adjective, QL, level requirement and Treatment requirement per tier - and matches, step for step, the ladder an independent dump of the TinkerTools symbiant table produced. Only QL1/QL5 and QL300 exist for all 13 slots; every intermediate tier exists for a subset of slots, which is why one pocket boss only ever yields certain slots.",
-    "expansionGate": "Expansion requirements are read from ToWear stat 389 BitAnd: the Aban/Prototype/Fabricated lines require bit 2 (Shadowlands) and the whole Xan line (Beta and Alpha) requires bit 128 (LegacyOfTheXan), per AOSharp CharacterFlags.cs ExpansionFlags."
+    "expansionGate": "Expansion requirements are read from ToWear stat 389 BitAnd: the Aban/Prototype/Fabricated lines require bit 2 (Shadowlands) and the whole Xan line (Beta and Alpha) requires bit 128 (LegacyOfTheXan), per AOSharp CharacterFlags.cs ExpansionFlags.",
+    "professionParameterisation": "Regenerated for profession 3 (Engineer) with the same three-stage pipeline described in CLASS-PROFILE-PLAYBOOK.md 9a: mp-symbiant-extractor --prof 3 --slug engineer, then the shared profession-independent farm-sources.json, then build-profile.py --line Control. The --line value was PICKED FROM THE DATA (professionLockNames), not from memory: Engineer's only lock-set membership is Control. The 13 best-in-slot Alphas, the crafting recipe and the farm locations are item-level facts about the Control line, so they are identical to the Meta-Physicist's - the same item ids, verified again against itemnames.sql for this build."
   },
   "_unverified": [
     "FARM COVERAGE (generated): 228 of the 285 Control-unit symbiants have a specific, cited acquisition route; 57 are 'unknown' and are left that way rather than guessed. The unknowns are: QL1 Unconscious Brain Symbiant, Control Unit Aban; QL1 Unconscious Chest Symbiant, Control Unit Aban; QL1 Unconscious Ear Symbiant, Control Unit Aban; QL1 Unconscious Feet Symbiant, Control Unit Aban; QL1 Unconscious Left Arm Symbiant, Control Unit Aban; QL1 Unconscious Left Hand Symbiant, Control Unit Aban; QL1 Unconscious Ocular Symbiant, Control Unit Aban; QL1 Unconscious Right Arm Symbiant, Control Unit Aban; QL1 Unconscious Right Hand Symbiant, Control Unit Aban; QL1 Unconscious Right Wrist Symbiant, Control Unit Aban; QL1 Unconscious Thigh Symbiant, Control Unit Aban; QL5 Moronic Ear Symbiant, Control Unit Aban; QL5 Moronic Feet Symbiant, Control Unit Aban; QL5 Moronic Left Hand Symbiant, Control Unit Aban; QL5 Moronic Ocular Symbiant, Control Unit Aban; QL5 Moronic Right Arm Symbiant, Control Unit Aban; QL5 Moronic Right Hand Symbiant, Control Unit Aban; QL5 Moronic Right Wrist Symbiant, Control Unit Aban; QL5 Moronic Thigh Symbiant, Control Unit Aban; QL5 Moronic Waist Symbiant, Control Unit Aban; QL10 Ignorant Ear Symbiant, Control Unit Aban; QL10 Ignorant Feet Symbiant, Control Unit Aban; QL10 Ignorant Left Hand Symbiant, Control Unit Aban; QL10 Ignorant Right Hand Symbiant, Control Unit Aban; QL10 Ignorant Right Wrist Symbiant, Control Unit Aban; QL15 Inattentive Right Hand Symbiant, Control Unit Aban; QL15 Inattentive Waist Symbiant, Control Unit Aban; QL20 Lethargic Left Wrist Symbiant, Control Unit Aban; QL20 Lethargic Right Hand Symbiant, Control Unit Aban; QL20 Lethargic Right Wrist Symbiant, Control Unit Aban; QL20 Lethargic Thigh Symbiant, Control Unit Aban; QL25 Neglectful Feet Symbiant, Control Unit Aban; QL25 Neglectful Left Hand Symbiant, Control Unit Aban; QL30 Sleeping Left Hand Symbiant, Control Unit Aban; QL30 Sleeping Thigh Symbiant, Control Unit Aban; QL50 Dispirited Feet Symbiant, Control Unit Aban; QL50 Dispirited Left Hand Symbiant, Control Unit Aban; QL50 Dispirited Left Wrist Symbiant, Control Unit Aban; QL50 Dispirited Right Hand Symbiant, Control Unit Aban; QL50 Dispirited Waist Symbiant, Control Unit Aban; QL60 Lulled Ocular Symbiant, Control Unit Aban; QL70 Animated Ear Symbiant, Control Unit Aban; QL70 Animated Feet Symbiant, Control Unit Aban; QL70 Animated Ocular Symbiant, Control Unit Aban; QL70 Animated Right Wrist Symbiant, Control Unit Aban; QL70 Animated Thigh Symbiant, Control Unit Aban; QL80 Moving Brain Symbiant, Control Unit Aban; QL80 Moving Chest Symbiant, Control Unit Aban; QL80 Moving Ocular Symbiant, Control Unit Aban; QL80 Moving Thigh Symbiant, Control Unit Aban; QL80 Moving Waist Symbiant, Control Unit Aban; QL110 Operative Feet Symbiant, Control Unit Aban; QL170 Active Chest Symbiant, Control Unit Aban; QL170 Active Left Arm Symbiant, Control Unit Aban; QL170 Active Right Wrist Symbiant, Control Unit Aban; QL210 Living Right Wrist Symbiant, Control Unit Aban; QL270 Cognizant Waist Symbiant, Control Unit Aban.",
@@ -1335,12 +1334,12 @@
     "SINGLE-SOURCE - Prototype symbiants (QL1-250): only wiki.aodb.us states they come from the in-game symbiant Daily Reward, and no Funcom patch note naming them could be found. The load-bearing part (they are not farmable from any mob) is safe; the exact mechanic is not.",
     "SINGLE-SOURCE - Fabricated symbiants (QL215): only wiki.aodb.us states they come from cash-shop Explorer Packs. Which pack contains the QL215 set, and its price, are unconfirmed.",
     "SINGLE-SOURCE - Brumal Chest Symbiant of Endurance (245306): only the aoguide.org source field gives 'Loot from Brumal Slither, Adonis / Abyss'. No mob page with coordinates, level or respawn could be found.",
-    "CLIENT-DATA ANOMALY: 12 of the 13 'Xan <slot> Symbiant, Artillery Unit' templates (ids 278908-278919) carry NO profession requirement at all in items.ocp, so a naive usability test marks them MP-wearable. Every other item in that line is locked to Soldier/Fixer/Agent/Adventurer/Trader and their bonuses are pure Artillery (Rifle/Aimed Shot), so this is a Funcom omission - do NOT treat them as MP gear.",
+    "CLIENT-DATA ANOMALY: 12 of the 13 'Xan <slot> Symbiant, Artillery Unit' templates (ids 278908-278919) carry NO profession requirement at all in items.ocp, so a naive usability test marks them Engineer-wearable. Every other item in that line is locked to Soldier/Fixer/Agent/Adventurer/Trader and their bonuses are pure Artillery (Rifle/Aimed Shot), so this is a Funcom omission - do NOT treat them as Engineer gear.",
     "The Syndicate Brain symbiants carry no Expansion requirement in items.ocp even though every playfield in the Xan Civilization quest chain is Shadowlands. Another Funcom omission, not evidence of Rubi-Ka content.",
     "Exact raid headcount for The Night Heart is not stated by any source fetched; ao-universe gives a recommended composition and a 200-220 level range only. Respawn is 6 hours per wiki.aodb.us.",
-    "keyBonuses on the curated bestInSlot rows list only the MP-relevant (nano/caster/survival) subset that was already there; the `catalog` block carries the fuller extracted bonus set per item, and the raw extractor dump carries every modifier.",
+    "keyBonuses on the curated bestInSlot rows list only the Engineer-relevant (nano/caster/survival) subset that was already there; the `catalog` block carries the fuller extracted bonus set per item, and the raw extractor dump carries every modifier.",
     "'assembleRequirements.abilitiesTotal 1276' is the ao-universe crafting-guide figure; the extracted per-ability EQUIP reqs are 1276 each (Int, Psychic + variable) - crafting vs wearing reqs differ.",
-    "The ao-universe main symbiants guide did not give per-slot MP picks; the per-slot Control choice here is derived from the verified Control-unit profession lock + the Xan/Alpha guides + extracted stats."
+    "The ao-universe main symbiants guide did not give per-slot Engineer picks; the per-slot Control choice here is derived from the verified Control-unit profession lock + the Xan/Alpha guides + extracted stats."
   ],
   "_sources": [
     "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/symbiants",
@@ -7928,38 +7927,12 @@
       "professionLock": [],
       "unlockedTemplates": 12,
       "note": "12 of these 12 templates carry NO profession requirement at all in items.ocp (ids 278908, 278909, 278910, 278911, 278912, 278913, 278914, 278915, 278916, 278917, 278918, 278919). Every other item in the line is locked to another profession set, so the missing lock looks like a client-data omission rather than a real option - treat it as UNVERIFIED, not as gear for this profession."
-    },
-    {
-      "line": "Extermination",
-      "itemsUsableByProfession": 289,
-      "professionLock": [
-        "Bureaucrat",
-        "NanoTechnician",
-        "Metaphysicist"
-      ],
-      "unlockedTemplates": 0,
-      "note": "Wearable by this profession (ToWear stat-60 lock includes it) but not the recommended unit for it; listed for completeness."
-    },
-    {
-      "line": "Support",
-      "itemsUsableByProfession": 285,
-      "professionLock": [
-        "MartialArtist",
-        "Fixer",
-        "Adventurer",
-        "Trader",
-        "Doctor",
-        "Metaphysicist",
-        "Keeper"
-      ],
-      "unlockedTemplates": 0,
-      "note": "Wearable by this profession (ToWear stat-60 lock includes it) but not the recommended unit for it; listed for completeness."
     }
   ],
   "outsideLineSymbiants": [
     {
-      "id": 268288,
-      "name": "Syndicate Brain Symbiant of the Enlightened",
+      "id": 268279,
+      "name": "Syndicate Brain Symbiant of the Constructor",
       "ql": 180,
       "slot": "Imp_Head",
       "slotLabel": "Head/Brain",
@@ -7968,9 +7941,9 @@
       "minLevel": 132,
       "treatment": 901,
       "otherReqs": {
-        "Sense": 376,
-        "Intelligence": 376,
-        "Psychic": 376
+        "Psychic": 376,
+        "Agility": 376,
+        "Intelligence": 376
       },
       "expansion": [],
       "keyBonuses": {
@@ -7980,13 +7953,13 @@
         "Matter Metamorphosis": 100,
         "Psychological Modifications": 100,
         "Sensory Improvement": 100,
-        "Max Nano": 500,
         "Nano Resist": 100,
+        "Nano Programming": 100,
         "Comp. Lit.": 100,
         "Treatment": 100,
-        "Intelligence": 50,
+        "Intelligence": 25,
         "Psychic": 50,
-        "Sense": 30
+        "Sense": 50
       },
       "farm": {
         "how": "quest reward (one per character, profession-specific)",
@@ -8089,6 +8062,9 @@
       }
     }
   ],
+  "farmingMethods": {
+    "pocketBoss": "Pocket boss: farm the four pattern pieces (Aban/Abhan, Bhotaar, Chi, Dom) from the listed mobs, combine them in order into a Complete Blueprint Pattern, combine that with a Crystal Filled by the Source (Nano Programming 6x QL), novictalize it with Subdued Flow of Novictum via an Ancient Novictum Refiner (Quantum FT 4.5x QL), then right-click the crystal on an Incarnator whose QL is >= the boss QL. Incarnator QL caps: Nascense 75 | Elysium South 115 / North 130 | Scheol South 140 / North 160 | Adonis City East 170 / West 190 | Penumbra West (The Pipe) 200 / East (Fortress) 215 | Inferno South (Barracks) 225 / North (Frontier) 255 | Pandemonium 270."
+  },
   "acquisitionBySlot": [
     {
       "slot": "Imp_Head",
@@ -18434,8 +18410,5 @@
     "withVerifiedFarm": 228,
     "unknown": 57,
     "slotsWithNoVerifiedFarm": []
-  },
-  "farmingMethods": {
-    "pocketBoss": "Pocket boss: farm the four pattern pieces (Aban/Abhan, Bhotaar, Chi, Dom) from the listed mobs, combine them in order into a Complete Blueprint Pattern, combine that with a Crystal Filled by the Source (Nano Programming 6x QL), novictalize it with Subdued Flow of Novictum via an Ancient Novictum Refiner (Quantum FT 4.5x QL), then right-click the crystal on an Incarnator whose QL is >= the boss QL. Incarnator QL caps: Nascense 75 | Elysium South 115 / North 130 | Scheol South 140 / North 160 | Adonis City East 170 / West 190 | Penumbra West (The Pipe) 200 / East (Fortress) 215 | Inferno South (Barracks) 225 / North (Frontier) 255 | Pandemonium 270."
   }
 }

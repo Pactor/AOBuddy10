@@ -1,0 +1,5240 @@
+{
+  "profile": "Doctor castable nanos (for AOBuddy10 bot decision-making)",
+  "profession": {
+    "id": 10,
+    "name": "Doctor"
+  },
+  "generatedUtc": "2026-09-23T04:36:59Z",
+  "dataSource": {
+    "nanoData": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp (OMNICELL-CONTENT v3 pack, client 18.8.50_EP1 extraction) loaded via OmniCell.Core NanoLoader.CacheAllNanos",
+    "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+    "stat/nanoLineEnums": "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs, NanoEnums.cs",
+    "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-nano-extractor (net10)",
+    "nanosInData": 10965
+  },
+  "castabilityCriterion": "A nano is Doc-castable when one of its cast Actions (OmniCell.Enums.ActionType.ToUse=3) carries an Operator.EqualTo requirement on Profession(stat 60)==10 OR VisualProfession(stat 368)==10. All matches use EqualTo. VisualProfession is how most older profession nanos are locked; in this data 40 gate via Profession(60) and 200 via VisualProfession(368).",
+  "statIds": {
+    "Level": 54,
+    "Profession": 60,
+    "VisualProfession": 368,
+    "NanoStrain": 75,
+    "MaterialCreation": 130,
+    "MaterialMetamorphosis": 127,
+    "BiologicalMetamorphosis": 128,
+    "PsychologicalModification": 129,
+    "SensoryImprovement": 122,
+    "SpaceTime": 131
+  },
+  "fieldNotes": {
+    "minLevel": "Character Level requirement read from the ToUse action (stat 54). 0 = no explicit level requirement; the real gate is the nano-skill requirement in castReqs.",
+    "castReqs": "The full ToUse action requirement list, stat names from Stat.cs. '>' means the CellAO GreaterThan operator (stat >= value at runtime).",
+    "effectSummary": "Derived from the nano's Events->Functions in nanos.ocp. Modify shows 'stat +/-amount'; SummonPet shows the pet template arg; Hit shows [attackType,min,max,...]; other function types shown as Name[rawArgs].",
+    "nanoLine": "AOSharp NanoLine enum name for the nano's NanoStrain (stat 75)."
+  },
+  "totalCount": 240,
+  "_excluded": [
+    {
+      "id": 32033,
+      "name": "False Profession: Doctor",
+      "matchedVia": "VisualProfession(368)==10",
+      "hardProfessionLocks": [
+        5
+      ],
+      "reason": "ToUse hard-locks Profession(60) to 5, never 10; the VisualProfession(368)==10 requirement refers to the APPEARANCE the nano grants/needs, not the caster's profession."
+    },
+    {
+      "id": 117210,
+      "name": "Mimic Profession: Doctor",
+      "matchedVia": "VisualProfession(368)==10",
+      "hardProfessionLocks": [
+        5
+      ],
+      "reason": "ToUse hard-locks Profession(60) to 5, never 10; the VisualProfession(368)==10 requirement refers to the APPEARANCE the nano grants/needs, not the caster's profession."
+    },
+    {
+      "id": 117221,
+      "name": "Assume Profession: Doctor",
+      "matchedVia": "VisualProfession(368)==10",
+      "hardProfessionLocks": [
+        5
+      ],
+      "reason": "ToUse hard-locks Profession(60) to 5, never 10; the VisualProfession(368)==10 requirement refers to the APPEARANCE the nano grants/needs, not the caster's profession."
+    }
+  ],
+  "categoryCounts": {
+    "Complete Healing line": 3,
+    "Heals - Single Target": 58,
+    "Heals - Team": 54,
+    "Heals - HoT": 18,
+    "Heals - Team HoT": 1,
+    "Heal Delta / Regen Buffs": 4,
+    "HP Buffs (short duration)": 14,
+    "Cures / DoT & Strain Removal": 2,
+    "Treatment / First Aid Buffs": 3,
+    "DoTs": 58,
+    "Nukes / Damage": 5,
+    "Nukes": 1,
+    "Debuffs - Initiative": 5,
+    "Debuffs": 1,
+    "Self / Team Buffs": 11,
+    "Travel / Summon Utility": 2
+  },
+  "categories": {
+    "Complete Healing line": [
+      {
+        "id": 42409,
+        "name": "Alpha and Omega",
+        "nanoStrain": 282,
+        "nanoLine": "CompleteHealingLine",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 873",
+          "MaterialMetamorphosis > 786",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42048]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42048 \"Alpha and Omega\": Hit[27,100,0,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28650,
+        "name": "Complete Healing",
+        "nanoStrain": 282,
+        "nanoLine": "CompleteHealingLine",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 794",
+          "MaterialMetamorphosis > 722",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,100,0,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,100,0,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 270747,
+        "name": "Improved Complete Healing",
+        "nanoStrain": 282,
+        "nanoLine": "CompleteHealingLine",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2153",
+          "MaterialMetamorphosis > 2153",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Hit[27,100,0,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,100,0,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals - Single Target": [
+      {
+        "id": 223281,
+        "name": "Cellular Recuperation",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1086",
+          "MaterialMetamorphosis > 1086",
+          "Profession == 10",
+          "Level > 174",
+          "Specialization op22 4",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241017]",
+          "Hit[27,952,1288,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241017 \"Cellular Recuperation\": Modify MaxHealth +1200; Hit[27,1200,1200,0]",
+          "Hit[27,952,1288,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223285,
+        "name": "Assauge Pain",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 201,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1195",
+          "MaterialMetamorphosis > 1195",
+          "Profession == 10",
+          "Level > 200",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241018]",
+          "Hit[27,1133,1533,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241018 \"Assauge Pain\": Modify MaxHealth +1300; Hit[27,1300,1300,0]",
+          "Hit[27,1133,1533,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223287,
+        "name": "Touch of Kindness",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 205,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1375",
+          "MaterialMetamorphosis > 1375",
+          "Profession == 10",
+          "Level > 204",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241016]",
+          "Hit[27,1700,2300,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241016 \"Touch of Kindness\": Modify MaxHealth +1400; Hit[27,1400,1400,0]",
+          "Hit[27,1700,2300,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223289,
+        "name": "Restorative Influx",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 209,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1555",
+          "MaterialMetamorphosis > 1555",
+          "Profession == 10",
+          "Level > 208",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241019]",
+          "Hit[27,2097,2837,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241019 \"Restorative Influx\": Modify MaxHealth +1500; Hit[27,1500,1500,0]",
+          "Hit[27,2097,2837,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223291,
+        "name": "Revivification",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 212,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1690",
+          "MaterialMetamorphosis > 1690",
+          "Profession == 10",
+          "Level > 211",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241020]",
+          "Hit[27,2607,3527,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241020 \"Revivification\": Modify MaxHealth +1600; Hit[27,1600,1600,0]",
+          "Hit[27,2607,3527,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223293,
+        "name": "Blessing of Purity",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 214,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1780",
+          "MaterialMetamorphosis > 1780",
+          "Profession == 10",
+          "Level > 213",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241021]",
+          "Hit[27,3337,4515,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241021 \"Blessing of Purity\": Modify MaxHealth +1700; Hit[27,1700,1700,0]",
+          "Hit[27,3337,4515,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223295,
+        "name": "Renewal of Being",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 216,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1870",
+          "MaterialMetamorphosis > 1870",
+          "Profession == 10",
+          "Level > 215",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241022]",
+          "Hit[27,4576,6191,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241022 \"Renewal of Being\": Modify MaxHealth +1900; Hit[27,1900,1900,0]",
+          "Hit[27,4576,6191,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223297,
+        "name": "Cellular Rebirth",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 218,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1960",
+          "MaterialMetamorphosis > 1960",
+          "Profession == 10",
+          "Level > 217",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241023]",
+          "Hit[27,6001,7639,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241023 \"Cellular Rebirth\": Modify MaxHealth +2200; Hit[27,2200,2200,0]",
+          "Hit[27,6001,7639,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223299,
+        "name": "Bodily Invigoration",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 220,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2050",
+          "MaterialMetamorphosis > 2050",
+          "Profession == 10",
+          "Level > 219",
+          "Specialization op22 8",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "CastNano[241024]",
+          "Hit[27,7215,8385,0]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 241024 \"Bodily Reinvigoration\": Modify MaxHealth +3000; Hit[27,3000,3000,0]",
+          "Hit[27,7215,8385,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43809,
+        "name": "Advanced Cellular Rebuild",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 650",
+          "MaterialMetamorphosis > 583",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,559,1034,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,559,1034,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28681,
+        "name": "Bind Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 122",
+          "MaterialMetamorphosis > 103",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,117,188,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,117,188,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28645,
+        "name": "Bloom of Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 615",
+          "MaterialMetamorphosis > 553",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,536,982,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,536,982,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43883,
+        "name": "Bodily Purification",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 689",
+          "MaterialMetamorphosis > 617",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,588,1082,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,588,1082,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43826,
+        "name": "Cellular Grafting",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 228",
+          "MaterialMetamorphosis > 203",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,260,337,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,260,337,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43812,
+        "name": "Cellular Rebuild",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 413",
+          "MaterialMetamorphosis > 369",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,389,650,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,389,650,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28648,
+        "name": "Close Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 434",
+          "MaterialMetamorphosis > 393",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,415,690,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,415,690,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43884,
+        "name": "Compress Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 727",
+          "MaterialMetamorphosis > 655",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,630,1174,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,630,1174,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43813,
+        "name": "Counteract Damage",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 240",
+          "MaterialMetamorphosis > 215",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,269,368,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,269,368,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43827,
+        "name": "Cursory Examination",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 152",
+          "MaterialMetamorphosis > 129",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,151,225,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,151,225,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43885,
+        "name": "Deep Tissue Repair",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 750",
+          "MaterialMetamorphosis > 679",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,650,1225,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,650,1225,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28654,
+        "name": "Doctor's Grace",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 46",
+          "MaterialMetamorphosis > 38",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,45,73,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,45,73,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43828,
+        "name": "Dress Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 57",
+          "MaterialMetamorphosis > 47",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,54,88,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,54,88,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43886,
+        "name": "Emergency Medical Response",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 849",
+          "MaterialMetamorphosis > 849",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,1700,2040,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,1700,2040,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43829,
+        "name": "Emergency Stitching",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 24",
+          "MaterialMetamorphosis > 21",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,27,43,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,27,43,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43814,
+        "name": "Experimental Panacea",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 486",
+          "MaterialMetamorphosis > 443",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,446,794,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,446,794,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43830,
+        "name": "Field Dressings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 68",
+          "MaterialMetamorphosis > 56",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,65,102,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,65,102,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43887,
+        "name": "Greater Bloom of Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 742",
+          "MaterialMetamorphosis > 671",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,871,980,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,871,980,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43815,
+        "name": "Greater Cellular Grafting",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 518",
+          "MaterialMetamorphosis > 472",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,476,831,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,476,831,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43888,
+        "name": "Greater Field Dressings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 710",
+          "MaterialMetamorphosis > 639",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,603,1153,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,603,1153,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43889,
+        "name": "Hale and Hearty",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 699",
+          "MaterialMetamorphosis > 627",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,596,1117,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,596,1117,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43816,
+        "name": "Healer's Hands",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 583",
+          "MaterialMetamorphosis > 527",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,524,929,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,524,929,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43817,
+        "name": "Healing Light",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 560",
+          "MaterialMetamorphosis > 507",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,506,894,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,506,894,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28665,
+        "name": "Improved Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 4",
+          "MaterialMetamorphosis > 4",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,16,30,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,16,30,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43831,
+        "name": "Inferior Wound Bindings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 35",
+          "MaterialMetamorphosis > 30",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,36,59,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,36,59,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43890,
+        "name": "Internal Renewal",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 735",
+          "MaterialMetamorphosis > 663",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,636,1191,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,636,1191,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43818,
+        "name": "Lesser Bloom of Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 316",
+          "MaterialMetamorphosis > 277",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,300,497,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,300,497,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43832,
+        "name": "Lesser Cellular Grafting",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 18",
+          "MaterialMetamorphosis > 16",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,21,37,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,21,37,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43833,
+        "name": "Lesser Nano Bandage",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 88",
+          "MaterialMetamorphosis > 74",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,86,133,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,86,133,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43834,
+        "name": "Lesser Nano Surgery",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 132",
+          "MaterialMetamorphosis > 111",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,130,199,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,130,199,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43808,
+        "name": "Life Balm",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 721",
+          "MaterialMetamorphosis > 649",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,621,1165,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,621,1165,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43878,
+        "name": "Lifegiving Elixir",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1049",
+          "MaterialMetamorphosis > 1049",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,2100,2520,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,2100,2520,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43810,
+        "name": "Medical Response",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 632",
+          "MaterialMetamorphosis > 568",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,540,1018,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,540,1018,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43835,
+        "name": "Minor Balm",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 194",
+          "MaterialMetamorphosis > 170",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,207,286,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,207,286,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43819,
+        "name": "Nano Bandage",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 356",
+          "MaterialMetamorphosis > 309",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,327,551,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,327,551,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43820,
+        "name": "Nano Surgery",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 443",
+          "MaterialMetamorphosis > 402",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,426,706,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,426,706,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43836,
+        "name": "Physician's Skill",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 174",
+          "MaterialMetamorphosis > 150",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,180,255,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,180,255,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28672,
+        "name": "Premium Cover",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 182",
+          "MaterialMetamorphosis > 158",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,192,266,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,192,266,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43881,
+        "name": "Recuperative Respite",
+        "nanoStrain": 951,
+        "nanoLine": "SingleTargetHealing",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 949",
+          "MaterialMetamorphosis > 949",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,1900,2280,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,1900,2280,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43837,
+        "name": "Relief from Pain",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 108",
+          "MaterialMetamorphosis > 90",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,99,170,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,99,170,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43838,
+        "name": "Restorative Boost",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 206",
+          "MaterialMetamorphosis > 183",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,231,299,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,231,299,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43821,
+        "name": "Superior Dress Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 460",
+          "MaterialMetamorphosis > 422",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,439,747,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,439,747,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28676,
+        "name": "Superior Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 162",
+          "MaterialMetamorphosis > 138",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,161,238,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,161,238,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43811,
+        "name": "Superior Nano Bandage",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 675",
+          "MaterialMetamorphosis > 604",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,572,1055,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,572,1055,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43822,
+        "name": "Superior Wound Bindings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 381",
+          "MaterialMetamorphosis > 330",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,343,588,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,343,588,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28677,
+        "name": "Surgeon's Touch",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 257",
+          "MaterialMetamorphosis > 230",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,282,395,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,282,395,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43823,
+        "name": "Tailored Cure",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 283",
+          "MaterialMetamorphosis > 251",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,294,437,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,294,437,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43824,
+        "name": "Thorough Examination",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 397",
+          "MaterialMetamorphosis > 349",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,354,631,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,354,631,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43825,
+        "name": "Tissue Repair",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 537",
+          "MaterialMetamorphosis > 487",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,490,857,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,490,857,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals - Team": [
+      {
+        "id": 43899,
+        "name": "Accumulate Scars",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 718",
+          "MaterialMetamorphosis > 647",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43839]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43839 \"TEAMDUMMY Accumulate Scars\": Hit[27,434,820,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95710,
+        "name": "Basic Omni-Med Enhancement",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 707",
+          "MaterialMetamorphosis > 636",
+          "SpaceTime > 636",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95684]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95684 \"Basic Omni-Med Enhancement\": Modify MaxHealth +746; Hit[27,79,129,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43901,
+        "name": "Bestow Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 693",
+          "MaterialMetamorphosis > 621",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43840]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43840 \"TEAMDUMMY Bestow Healing\": Hit[27,410,789,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 27804,
+        "name": "Blood Circle",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 127",
+          "MaterialMetamorphosis > 107",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[27803]",
+          "TeamCastNano[144635]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 27803 \"Blood Circle\": Modify HealDelta +4",
+          "TeamCastNano -> 144635 \"Blood Circle\": Hit[27,67,171,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95719,
+        "name": "Bodily Reinforcement",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 57",
+          "MaterialMetamorphosis > 47",
+          "SpaceTime > 47",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95674]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95674 \"Bodily Reinforcement\": Modify MaxHealth +64; Hit[27,8,14,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43900,
+        "name": "Circle of Renewal",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 703",
+          "MaterialMetamorphosis > 631",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43841]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43841 \"TEAMDUMMY Circle of Renewal\": Hit[27,423,802,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43902,
+        "name": "Circulate Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 608",
+          "MaterialMetamorphosis > 547",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43842]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43842 \"TEAMDUMMY Circulate Health\": Hit[27,357,722,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42395,
+        "name": "Cleanse Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 466",
+          "MaterialMetamorphosis > 427",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42049]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42049 \"TEAMDUMMY Cleanse Wounds\": Hit[27,265,599,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28649,
+        "name": "Colossal Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 555",
+          "MaterialMetamorphosis > 502",
+          "SpaceTime > 502",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95682]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95682 \"Colossal Health\": Modify MaxHealth +587; Hit[27,61,108,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43912,
+        "name": "Company Policy",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 186",
+          "MaterialMetamorphosis > 162",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43853]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43853 \"TEAMDUMMY Company Policy\": Hit[27,95,255,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43891,
+        "name": "Conglomerate Health Plan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 855",
+          "MaterialMetamorphosis > 771",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43843]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43843 \"TEAMDUMMY Conglomerate Health Plan\": Hit[27,485,970,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43904,
+        "name": "Consummate Carer",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 499",
+          "MaterialMetamorphosis > 454",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43854]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43854 \"TEAMDUMMY Consumate Carer\": Hit[27,260,630,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43894,
+        "name": "Deep Wound Cleanser",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 798",
+          "MaterialMetamorphosis > 725",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43844]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43844 \"TEAMDUMMY Deep Wounds Cleanser\": Hit[27,467,916,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43892,
+        "name": "Distributed Care",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 835",
+          "MaterialMetamorphosis > 755",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43845]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43845 \"TEAMDUMMY Distributed Care\": Hit[27,481,948,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43911,
+        "name": "Easing Touch",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 245",
+          "MaterialMetamorphosis > 220",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43855]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43855 \"TEAMDUMMY Easing Touch\": Hit[27,116,365,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95716,
+        "name": "Enhance Constitution",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 137",
+          "MaterialMetamorphosis > 116",
+          "SpaceTime > 116",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95676]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95676 \"Enhance Constitution\": Modify MaxHealth +153; Hit[27,18,29,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42397,
+        "name": "Enhance Team Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 18",
+          "MaterialMetamorphosis > 16",
+          "SpaceTime > 16",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42050]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42050 \"Enhance Team Health\": Modify MaxHealth +26; Hit[27,3,5,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28660,
+        "name": "Exaggerated Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 385",
+          "MaterialMetamorphosis > 335",
+          "SpaceTime > 335",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95681]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95681 \"Exaggerated Health\": Modify MaxHealth +420; Hit[27,41,68,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43906,
+        "name": "Fast Team Tissue Repair",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 393",
+          "MaterialMetamorphosis > 344",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43856]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43856 \"TEAMDUMMY Fast Team Tissue Repair\": Hit[27,217,490,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28662,
+        "name": "Gargantuan Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 788",
+          "MaterialMetamorphosis > 716",
+          "SpaceTime > 716",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95687]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95687 \"Gargantuan Health\": Modify MaxHealth +854; Hit[27,100,151,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42398,
+        "name": "Greater Team Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 370",
+          "MaterialMetamorphosis > 320",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42051]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42051 \"TEAMDUMMY Greater Team Healing\": Hit[27,201,460,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43893,
+        "name": "Halo of Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 820",
+          "MaterialMetamorphosis > 744",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43846]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43846 \"TEAMDUMMY Halo of Health\": Hit[27,475,935,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43895,
+        "name": "Health Cartel",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 780",
+          "MaterialMetamorphosis > 708",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43847]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43847 \"TEAMDUMMY Health Cartel\": Hit[27,456,899,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95717,
+        "name": "Health Graft",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 98",
+          "MaterialMetamorphosis > 82",
+          "SpaceTime > 82",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95675]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95675 \"Health Graft\": Modify MaxHealth +108; Hit[27,12,21,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273315,
+        "name": "Improved Team Health Plan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1830",
+          "MaterialMetamorphosis > 1830",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "TeamCastNano[273316]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 273316 \"Improved Team Health Plan\": Hit[27,1854,2778,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43917,
+        "name": "Inferior Cleanse Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 83",
+          "MaterialMetamorphosis > 69",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43857]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43857 \"TEAMDUMMY Inferior Cleanse Wounds\": Hit[27,49,106,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95720,
+        "name": "Infuse with Life",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 748",
+          "MaterialMetamorphosis > 677",
+          "SpaceTime > 677",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95686]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95686 \"Infuse With Life\": Modify MaxHealth +805; Hit[27,86,142,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43913,
+        "name": "Lesser Circle of Renewal",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 224",
+          "MaterialMetamorphosis > 199",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43858]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43858 \"TEAMDUMMY Lesser Circle Of Renewal\": Hit[27,109,324,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95713,
+        "name": "Major Health Graft",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 451",
+          "MaterialMetamorphosis > 412",
+          "SpaceTime > 412",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95680]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95680 \"Major Health Graft\": Modify MaxHealth +501; Hit[27,51,85,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42402,
+        "name": "Medic's Call",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 270",
+          "MaterialMetamorphosis > 240",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42053]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42053 \"TEAMDUMMY Medic's Call\": Hit[27,129,390,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95714,
+        "name": "Medic's Respite",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 232",
+          "MaterialMetamorphosis > 207",
+          "SpaceTime > 207",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95678]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95678 \"Medic's Respite\": Modify MaxHealth +263; Hit[27,27,49,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95718,
+        "name": "Metabolism Booster",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 174",
+          "MaterialMetamorphosis > 150",
+          "SpaceTime > 150",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95677]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95677 \"Metabolism Booster\": Modify MaxHealth +196; Hit[27,20,33,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42403,
+        "name": "Minor Team Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 51",
+          "MaterialMetamorphosis > 43",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42054]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42054 \"TEAMDUMMY Minor Team Healing\": Hit[27,32,67,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43914,
+        "name": "Minor Team Purification",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 166",
+          "MaterialMetamorphosis > 142",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43859]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43859 \"TEAMDUMMY Minor Team Purification\": Hit[27,85,222,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95711,
+        "name": "Pre-Combat Conditioning",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 662",
+          "MaterialMetamorphosis > 593",
+          "SpaceTime > 593",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95683]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95683 \"Pre-Combat Conditioning\": Modify MaxHealth +683; Hit[27,78,127,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43907,
+        "name": "Professional Care",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 447",
+          "MaterialMetamorphosis > 407",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43860]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43860 \"TEAMDUMMY Professional Care\": Hit[27,253,574,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42404,
+        "name": "Radiant Heal",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 577",
+          "MaterialMetamorphosis > 522",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42055]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42055 \"TEAMDUMMY Radiant Heal\": Hit[27,340,691,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43897,
+        "name": "Remedy Dissemination",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 746",
+          "MaterialMetamorphosis > 675",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43848]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43848 \"TEAMDUMMY Remedy Dissemination\": Hit[27,445,855,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43915,
+        "name": "Spreading Health",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 147",
+          "MaterialMetamorphosis > 124",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43861]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43861 \"TEAMDUMMY_Doctor_spreading_health\": Hit[27,78,194,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95715,
+        "name": "Superior Bodily Reinforcement",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 277",
+          "MaterialMetamorphosis > 246",
+          "SpaceTime > 246",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95679]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95679 \"Superior Bodily Reinforcement\": Modify MaxHealth +310; Hit[27,32,58,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95712,
+        "name": "Superior Metabolism Booster",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 733",
+          "MaterialMetamorphosis > 661",
+          "SpaceTime > 661",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95685]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95685 \"Superior Metabolism Booster\": Modify MaxHealth +782; Hit[27,84,139,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 95709,
+        "name": "Superior Omni-Med Enhancement",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 852",
+          "MaterialMetamorphosis > 769",
+          "SpaceTime > 769",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[95673]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 95673 \"Superior Omni-Med Enhancement\": Modify MaxHealth +920; Hit[27,111,169,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273312,
+        "name": "Superior Team Health Plan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2153",
+          "MaterialMetamorphosis > 2153",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "TeamCastNano[273313]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 273313 \"Superior Team Health Plan\": Hit[27,2649,3969,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43908,
+        "name": "Syndicated Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 421",
+          "MaterialMetamorphosis > 378",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43862]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43862 \"TEAMDUMMY Syndicated Healing\": Hit[27,239,534,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43909,
+        "name": "Team Cellular Rebuild",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 296",
+          "MaterialMetamorphosis > 261",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43863]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43863 \"TEAMDUMMY Team Cellular Rebuild\": Hit[27,156,401,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43910,
+        "name": "Team Checkup",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 336",
+          "MaterialMetamorphosis > 293",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43864]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43864 \"TEAMDUMMY Team Checkup\": Hit[27,170,445,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43896,
+        "name": "Team Compress Wounds",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 759",
+          "MaterialMetamorphosis > 688",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43849]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43849 \"TEAMDUMMY Team Compress Wounds\": Hit[27,449,872,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43916,
+        "name": "Team Field Dressings",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 103",
+          "MaterialMetamorphosis > 86",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43865]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43865 \"TEAMDUMMY Team Field Dressings\": Hit[27,56,137,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42405,
+        "name": "Team Healing",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 202",
+          "MaterialMetamorphosis > 179",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42056]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42056 \"TEAMDUMMY Team Healing\": Hit[27,100,285,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 270349,
+        "name": "Team Health Plan",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 873",
+          "MaterialMetamorphosis > 786",
+          "Profession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[270348]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 270348 \"TEAMDUMMY Team Health Plan\": Hit[27,558,1115,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43905,
+        "name": "Team Nano Bandage",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 543",
+          "MaterialMetamorphosis > 492",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43866]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43866 \"TEAMDUMMY Team Nano Bandage\": Hit[27,311,664,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43898,
+        "name": "Team Purification",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 731",
+          "MaterialMetamorphosis > 660",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43850]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43850 \"TEAMDUMMY Team Purification\": Hit[27,439,835,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43903,
+        "name": "Team Tissue Repair",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 668",
+          "MaterialMetamorphosis > 598",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[43851]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 43851 \"TEAMDUMMY Team Tissue Repair\": Hit[27,402,754,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42408,
+        "name": "Weak Team Heal",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 29",
+          "MaterialMetamorphosis > 25",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[42059]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 42059 \"TEAMDUMMY Weak Team Heal\": Hit[27,21,42,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals - HoT": [
+      {
+        "id": 43874,
+        "name": "Active Remedy",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 178",
+          "MaterialMetamorphosis > 154",
+          "SpaceTime > 154",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,30,42,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,30,42,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43867,
+        "name": "Continuous Cellular Reconditioning",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 602",
+          "MaterialMetamorphosis > 542",
+          "SpaceTime > 542",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,139,162,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,139,162,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43875,
+        "name": "Course of Treatment",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 417",
+          "MaterialMetamorphosis > 374",
+          "SpaceTime > 374",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,82,104,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,82,104,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42396,
+        "name": "Cycle of Life",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 716",
+          "MaterialMetamorphosis > 645",
+          "SpaceTime > 645",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,181,218,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,181,218,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43868,
+        "name": "Cycle of Reconstruction",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 846",
+          "MaterialMetamorphosis > 765",
+          "SpaceTime > 765",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,272,307,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,272,307,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43852,
+        "name": "Deathless Blessing",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 864",
+          "MaterialMetamorphosis > 778",
+          "SpaceTime > 778",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,277,323,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,277,323,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43876,
+        "name": "Greater Lasting Heal",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 455",
+          "MaterialMetamorphosis > 417",
+          "SpaceTime > 417",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,92,124,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,92,124,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43869,
+        "name": "Greater Periodic Checkup",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 680",
+          "MaterialMetamorphosis > 609",
+          "SpaceTime > 609",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,160,189,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,160,189,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43870,
+        "name": "Greater Policy Payout",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 823",
+          "MaterialMetamorphosis > 746",
+          "SpaceTime > 746",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,258,293,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,258,293,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42399,
+        "name": "Health Pump",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 303",
+          "MaterialMetamorphosis > 266",
+          "SpaceTime > 266",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,57,78,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,57,78,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42401,
+        "name": "Lasting Heal",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 78",
+          "MaterialMetamorphosis > 65",
+          "SpaceTime > 65",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,10,21,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,10,21,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43877,
+        "name": "Lesser Policy Payout",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 531",
+          "MaterialMetamorphosis > 482",
+          "SpaceTime > 482",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,112,143,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,112,143,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43879,
+        "name": "Medical Sequencer",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 349",
+          "MaterialMetamorphosis > 304",
+          "SpaceTime > 304",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,66,86,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,66,86,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43871,
+        "name": "Molecular Rejuvenation",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 741",
+          "MaterialMetamorphosis > 669",
+          "SpaceTime > 669",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,200,239,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,200,239,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43880,
+        "name": "Periodic Checkup",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 142",
+          "MaterialMetamorphosis > 120",
+          "SpaceTime > 120",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,22,35,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,22,35,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43872,
+        "name": "Positive Life Reinforcement",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 806",
+          "MaterialMetamorphosis > 732",
+          "SpaceTime > 732",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,243,288,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,243,288,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43882,
+        "name": "Recurrent Remedy",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 210",
+          "MaterialMetamorphosis > 187",
+          "SpaceTime > 187",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,38,51,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,38,51,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43873,
+        "name": "Superior Health Pump",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 774",
+          "MaterialMetamorphosis > 702",
+          "SpaceTime > 702",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,229,260,0]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,229,260,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heals - Team HoT": [
+      {
+        "id": 269455,
+        "name": "Team-Enhanced Deathless Blessing",
+        "nanoStrain": 12,
+        "nanoLine": "HealOverTime",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 913",
+          "MaterialMetamorphosis > 810",
+          "SpaceTime > 810",
+          "Expansion op22 2",
+          "Profession == 10"
+        ],
+        "effectSummary": [
+          "TeamCastNano[269453]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 269453 \"Team-Enhanced Deathless Blessing\": Hit[27,292,347,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Heal Delta / Regen Buffs": [
+      {
+        "id": 28651,
+        "name": "Cellular Restoration",
+        "nanoStrain": 203,
+        "nanoLine": "HealDeltaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 491",
+          "VisualProfession == 10",
+          "MaterialCreation > 419"
+        ],
+        "effectSummary": [
+          "Modify HealDelta +25"
+        ],
+        "resolvedEffects": [
+          "Modify HealDelta +25"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 222824,
+        "name": "Continuous Reconstruction",
+        "nanoStrain": 203,
+        "nanoLine": "HealDeltaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 691",
+          "VisualProfession == 10",
+          "MaterialCreation > 619"
+        ],
+        "effectSummary": [
+          "Modify HealDelta +65"
+        ],
+        "resolvedEffects": [
+          "Modify HealDelta +65"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 222855,
+        "name": "Hearty Constitution",
+        "nanoStrain": 203,
+        "nanoLine": "HealDeltaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 577",
+          "MaterialCreation > 526",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify HealDelta +48"
+        ],
+        "resolvedEffects": [
+          "Modify HealDelta +48"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28663,
+        "name": "Natural Healing",
+        "nanoStrain": 203,
+        "nanoLine": "HealDeltaBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 377",
+          "MaterialCreation > 326",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify HealDelta +10"
+        ],
+        "resolvedEffects": [
+          "Modify HealDelta +10"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "HP Buffs (short duration)": [
+      {
+        "id": 96251,
+        "name": "Bodily Amplification",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 215",
+          "MaterialMetamorphosis > 191",
+          "MaterialCreation > 191",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +317",
+          "CastNano[144654]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +317",
+          "CastNano -> 144654 \"Bodily Amplification\": Hit[27,317,317,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96256,
+        "name": "Constitution Magnification",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 697",
+          "MaterialMetamorphosis > 625",
+          "MaterialCreation > 625",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +1017",
+          "CastNano[144665]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +1017",
+          "CastNano -> 144665 \"Constitution Magnification\": Hit[27,1017,1017,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96257,
+        "name": "Enhanced Health Surge",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 638",
+          "MaterialMetamorphosis > 573",
+          "MaterialCreation > 573",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +928",
+          "CastNano[144663]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +928",
+          "CastNano -> 144663 \"Enhanced Health Surge\": Hit[27,928,928,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96258,
+        "name": "Health Assembler",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 744",
+          "MaterialMetamorphosis > 673",
+          "MaterialCreation > 673",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +1123",
+          "CastNano[144664]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +1123",
+          "CastNano -> 144664 \"Health Assembler\": Hit[27,1123,1123,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96248,
+        "name": "Health Augmentation",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 35",
+          "MaterialMetamorphosis > 30",
+          "MaterialCreation > 30",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +57",
+          "CastNano[144662]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +57",
+          "CastNano -> 144662 \"Health Augmentation\": Hit[27,57,57,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96250,
+        "name": "Health Surge",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 157",
+          "MaterialMetamorphosis > 133",
+          "MaterialCreation > 133",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +221",
+          "CastNano[144661]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +221",
+          "CastNano -> 144661 \"Health Surge\": Hit[27,221,221,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96247,
+        "name": "Life Channeler",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 867",
+          "MaterialMetamorphosis > 781",
+          "MaterialCreation > 781",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +1344",
+          "CastNano[144660]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +1344",
+          "CastNano -> 144660 \"Life Channeler\": Hit[27,1344,1344,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96252,
+        "name": "Life Reinforcement",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 251",
+          "MaterialMetamorphosis > 225",
+          "MaterialCreation > 225",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +379",
+          "CastNano[144659]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +379",
+          "CastNano -> 144659 \"Life Reinforcement\": Hit[27,379,379,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96253,
+        "name": "Strengthen Resolve",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 323",
+          "MaterialMetamorphosis > 282",
+          "MaterialCreation > 282",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +463",
+          "CastNano[144658]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +463",
+          "CastNano -> 144658 \"Strengthen Resolve\": Hit[27,463,463,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96254,
+        "name": "Superior Health Augmentation",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 405",
+          "MaterialMetamorphosis > 359",
+          "MaterialCreation > 359",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +581",
+          "CastNano[144657]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +581",
+          "CastNano -> 144657 \"Superior Health Augmentation\": Hit[27,581,581,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96259,
+        "name": "Superior Life Reinforcement",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 802",
+          "MaterialMetamorphosis > 729",
+          "MaterialCreation > 729",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +1234",
+          "CastNano[144655]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +1234",
+          "CastNano -> 144655 \"Superior Life Reinforcement\": Hit[27,1234,1234,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96249,
+        "name": "Survivability Booster",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 83",
+          "MaterialMetamorphosis > 69",
+          "MaterialCreation > 69",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +118",
+          "CastNano[144656]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +118",
+          "CastNano -> 144656 \"Survivability Booster\": Hit[27,118,118,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275011,
+        "name": "Team Improved Life Channeler",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2042",
+          "MaterialMetamorphosis > 1727",
+          "MaterialCreation > 1727",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "TeamCastNano[275130]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 275130 \"Improved Life Channeler\": Modify MaxHealth +3025; CastNano[275012]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 96255,
+        "name": "Temporary Cellular Enhancement",
+        "nanoStrain": 185,
+        "nanoLine": "DoctorShortHPBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 439",
+          "MaterialMetamorphosis > 398",
+          "MaterialCreation > 398",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify MaxHealth +644",
+          "CastNano[144666]"
+        ],
+        "resolvedEffects": [
+          "Modify MaxHealth +644",
+          "CastNano -> 144666 \"Temporary Cellular Enhancement\": Hit[27,644,644,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Cures / DoT & Strain Removal": [
+      {
+        "id": 28659,
+        "name": "Epsilon Purge",
+        "nanoStrain": 825,
+        "nanoLine": "DOTRemoval",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "SpaceTime > 696",
+          "SensoryImprovement > 696",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "RemoveNanoStrain[6]",
+          "RemoveNanoStrain[7]",
+          "RemoveNanoStrain[8]",
+          "RemoveNanoStrain[9]",
+          "RemoveNanoStrain[582]"
+        ],
+        "resolvedEffects": [
+          "RemoveNanoStrain[6]",
+          "RemoveNanoStrain[7]",
+          "RemoveNanoStrain[8]",
+          "RemoveNanoStrain[9]",
+          "RemoveNanoStrain[582]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 279372,
+        "name": "Tjernberg Soothing Adrenaline",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "VisualProfession == 10",
+          "SensoryImprovement > 119",
+          "SpaceTime > 119"
+        ],
+        "effectSummary": [
+          "ReduceNanoStrainDuration[883,1000000]"
+        ],
+        "resolvedEffects": [
+          "ReduceNanoStrainDuration[883,1000000]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Treatment / First Aid Buffs": [
+      {
+        "id": 28657,
+        "name": "Enhanced First Aid",
+        "nanoStrain": 190,
+        "nanoLine": "FirstAidAndTreatmentBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "SensoryImprovement > 60",
+          "PsychologicalModification > 73",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify FirstAid +15",
+          "Modify Treatment +10"
+        ],
+        "resolvedEffects": [
+          "Modify FirstAid +15",
+          "Modify Treatment +10"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28674,
+        "name": "Specialist Treatment",
+        "nanoStrain": 190,
+        "nanoLine": "FirstAidAndTreatmentBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "SensoryImprovement > 142",
+          "PsychologicalModification > 166",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify Treatment +35",
+          "Modify FirstAid +20"
+        ],
+        "resolvedEffects": [
+          "Modify Treatment +35",
+          "Modify FirstAid +20"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28675,
+        "name": "Superior First Aid",
+        "nanoStrain": 190,
+        "nanoLine": "FirstAidAndTreatmentBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "SensoryImprovement > 517",
+          "PsychologicalModification > 571",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify FirstAid +80",
+          "Modify Treatment +80"
+        ],
+        "resolvedEffects": [
+          "Modify FirstAid +80",
+          "Modify Treatment +80"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "DoTs": [
+      {
+        "id": 223261,
+        "name": "Mutagenic Venom",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 688",
+          "MaterialCreation > 633",
+          "Profession == 10",
+          "Level > 99",
+          "Expansion op22 2",
+          "Specialization op22 1"
+        ],
+        "effectSummary": [
+          "Hit[27,-230,-230,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-230,-230,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223263,
+        "name": "Mutagenic Contamination",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 165,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1041",
+          "MaterialCreation > 961",
+          "Profession == 10",
+          "Level > 164",
+          "Expansion op22 2",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "Hit[27,-564,-564,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-564,-564,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267649,
+        "name": "Weak Mutagenic Plague",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 175,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1414",
+          "MaterialCreation > 1145",
+          "Profession == 10",
+          "Level > 174",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Hit[27,-1000,-1000,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-1000,-1000,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223265,
+        "name": "Mutagenic Catalyser",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1134",
+          "MaterialCreation > 1041",
+          "Profession == 10",
+          "Level > 194",
+          "Expansion op22 2",
+          "Specialization op22 4"
+        ],
+        "effectSummary": [
+          "Hit[27,-490,-490,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-490,-490,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223267,
+        "name": "Viral Neurotoxin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 203,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1285",
+          "MaterialCreation > 1158",
+          "Profession == 10",
+          "Level > 202",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-550,-550,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-550,-550,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267623,
+        "name": "Nanite Enhanced Mutagenic Plague",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 205,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1614",
+          "MaterialCreation > 1345",
+          "Profession == 10",
+          "Level > 204",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Hit[27,-1200,-1200,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-1200,-1200,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223269,
+        "name": "Entropic Sores",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 207,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1465",
+          "MaterialCreation > 1297",
+          "Profession == 10",
+          "Level > 206",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-591,-591,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-591,-591,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223271,
+        "name": "Mutagenic Contagion",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 211,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1645",
+          "MaterialCreation > 1436",
+          "Profession == 10",
+          "Level > 210",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-633,-633,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-633,-633,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223273,
+        "name": "Corrupting Ooze",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 213,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1735",
+          "MaterialCreation > 1506",
+          "Profession == 10",
+          "Level > 212",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-675,-675,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-675,-675,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267620,
+        "name": "Dr Blaze's Mutagenic Compound",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 217,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1915",
+          "MaterialCreation > 1645",
+          "Profession == 10",
+          "Level > 216",
+          "Flags op33 267619",
+          "Flags op4 0",
+          "Flags op33 280728",
+          "Flags op3 0",
+          "Flags op33 267618",
+          "Flags op3 0",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Hit[27,-2000,-2000,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-2000,-2000,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223275,
+        "name": "Flesh Eater",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 217,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1915",
+          "MaterialCreation > 1645",
+          "Profession == 10",
+          "Level > 216",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-714,-714,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-714,-714,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223277,
+        "name": "Mutagenic Pestilence",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 217,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1915",
+          "MaterialCreation > 1645",
+          "Profession == 10",
+          "Level > 216",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-756,-756,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-756,-756,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 267621,
+        "name": "Nanite Enhanced Mutagenic Compound",
+        "nanoStrain": 582,
+        "nanoLine": "DOTStrainC",
+        "minLevel": 219,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 1814",
+          "MaterialCreation > 1545",
+          "Profession == 10",
+          "Level > 218",
+          "NPCFamily == 0"
+        ],
+        "effectSummary": [
+          "Hit[27,-1500,-1500,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-1500,-1500,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 223279,
+        "name": "Scythe Omega Virus",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 219,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2005",
+          "MaterialCreation > 1714",
+          "Profession == 10",
+          "Level > 218",
+          "Expansion op22 2",
+          "Specialization op22 8"
+        ],
+        "effectSummary": [
+          "Hit[27,-837,-837,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-837,-837,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44144,
+        "name": "Abscess Explosion",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 389",
+          "MaterialCreation > 339",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-76,-76,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-76,-76,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 45324,
+        "name": "Acidic Lesions",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 712",
+          "MaterialCreation > 641",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-168,-168,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-168,-168,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44176,
+        "name": "Active Viral Agent",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 264",
+          "MaterialCreation > 235",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-30,-30,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-30,-30,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44174,
+        "name": "Advanced Nano Gorger",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 439",
+          "MaterialCreation > 398",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-84,-84,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-84,-84,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44175,
+        "name": "All-Consuming Toxin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 753",
+          "MaterialCreation > 682",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-315,-315,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-315,-315,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44173,
+        "name": "Autonomous Viral Agent",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 695",
+          "MaterialCreation > 623",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-170,-170,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-170,-170,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28641,
+        "name": "Biotoxin MK I",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 137",
+          "MaterialCreation > 116",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-13,-13,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-13,-13,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28642,
+        "name": "Biotoxin MK II",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 219",
+          "MaterialCreation > 195",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-32,-32,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-32,-32,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28643,
+        "name": "Biotoxin MK III",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 363",
+          "MaterialCreation > 315",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-46,-46,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-46,-46,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28644,
+        "name": "Biotoxin MK IV",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 451",
+          "MaterialCreation > 412",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-87,-87,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-87,-87,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 273318,
+        "name": "Bone Eater",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2042",
+          "MaterialCreation > 1727",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Hit[27,-892,-892,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-892,-892,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44171,
+        "name": "Cancerous Burrower",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 170",
+          "MaterialCreation > 146",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-23,-23,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-23,-23,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44172,
+        "name": "Cellular Dismantlement",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 737",
+          "MaterialCreation > 665",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-290,-290,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-290,-290,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44169,
+        "name": "Complex Nano Contagion",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 686",
+          "MaterialCreation > 614",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-143,-143,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-143,-143,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44170,
+        "name": "Consuming Toxin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 512",
+          "MaterialCreation > 466",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-94,-94,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-94,-94,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44166,
+        "name": "Dark Venom",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 236",
+          "MaterialCreation > 211",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-37,-37,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-37,-37,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44167,
+        "name": "Dissolve Molecular Bonding",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 63",
+          "MaterialCreation > 52",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44168,
+        "name": "Elementary Nano Contagion",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 78",
+          "MaterialCreation > 65",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44164,
+        "name": "Incandescent Venom",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 595",
+          "MaterialCreation > 537",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-147,-147,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-147,-147,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44165,
+        "name": "Infected Wounds",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 157",
+          "MaterialCreation > 133",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-21,-21,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-21,-21,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44162,
+        "name": "Internal Decomposition",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 826",
+          "MaterialCreation > 748",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-392,-392,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-392,-392,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44163,
+        "name": "Limited Nano Reaper",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 40",
+          "MaterialCreation > 34",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-4,-4,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44160,
+        "name": "Metabolic Disassembly",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 566",
+          "MaterialCreation > 512",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-124,-124,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-124,-124,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44161,
+        "name": "Minor Consuming Toxin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 182",
+          "MaterialCreation > 158",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-23,-23,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-23,-23,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44158,
+        "name": "Morgue Longings",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 815",
+          "MaterialCreation > 740",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-379,-379,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-379,-379,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44159,
+        "name": "Nano Reaper",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 473",
+          "MaterialCreation > 432",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-75,-75,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-75,-75,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44156,
+        "name": "Parasitic Affliction",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 198",
+          "MaterialCreation > 174",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-54,-54,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-54,-54,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44157,
+        "name": "Parasitic Horde",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 725",
+          "MaterialCreation > 653",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-181,-181,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-181,-181,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44154,
+        "name": "Perpetuating Nano Reaper",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 644",
+          "MaterialCreation > 578",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-212,-213,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-212,-213,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 263282,
+        "name": "Poisoned Wounds",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "MaxHealth op50 3",
+          "Expansion op22 2",
+          "BiologicalMetamorphosis > 1125",
+          "MaterialCreation > 1002",
+          "Profession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-375,-375,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-375,-375,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44155,
+        "name": "Primitive Nano Gorger",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 113",
+          "MaterialCreation > 95",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-10,-10,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-10,-10,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44152,
+        "name": "Primitive Viral Agent",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 24",
+          "MaterialCreation > 21",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-3,-3,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-3,-3,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44153,
+        "name": "Protein Breakdown",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 93",
+          "MaterialCreation > 78",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-8,-8,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-8,-8,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 43376,
+        "name": "Prototype Biotoxin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 4",
+          "MaterialCreation > 4",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-3,-3,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-3,-3,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44150,
+        "name": "Rampant Decay",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 782",
+          "MaterialCreation > 710",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-174,-174,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-174,-174,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44151,
+        "name": "Refined Nano Contagion",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 329",
+          "MaterialCreation > 288",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-41,-41,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-41,-41,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44147,
+        "name": "Repeated Cellular Trauma",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 677",
+          "MaterialCreation > 606",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-201,-201,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-201,-201,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44148,
+        "name": "Scythe A Virus",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 409",
+          "MaterialCreation > 364",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-40,-40,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-40,-40,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44149,
+        "name": "Scythe B Virus",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 858",
+          "MaterialCreation > 774",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-211,-211,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-211,-211,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44145,
+        "name": "Seethe with Germs",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 290",
+          "MaterialCreation > 256",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-52,-52,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-52,-52,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 44146,
+        "name": "Sentient Nano Gorger",
+        "nanoStrain": 7,
+        "nanoLine": "DOT_LineB",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 873",
+          "MaterialCreation > 786",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-431,-431,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-431,-431,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 263281,
+        "name": "Simple Viral Agent",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "MaxHealth op50 3",
+          "BiologicalMetamorphosis > 1059",
+          "MaterialCreation > 875",
+          "Profession == 10",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "Hit[27,-350,-350,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-350,-350,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 275829,
+        "name": "Sophisticated Viral Agent",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "MaxHealth op50 3",
+          "BiologicalMetamorphosis > 2105",
+          "MaterialCreation > 1814",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Hit[27,-1037,-1037,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-1037,-1037,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28640,
+        "name": "Wrack and Ruin",
+        "nanoStrain": 6,
+        "nanoLine": "DOT_LineA",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 841",
+          "MaterialCreation > 760",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-544,-544,96]",
+          "Modify MartialArts -100",
+          "Modify _1hBlunt -100",
+          "Modify _1hEdged -100",
+          "Modify MeleeEnergy -100",
+          "Modify Skill2hEdged -100",
+          "Modify Piercing -100",
+          "Modify _2hBlunt -100",
+          "Modify SharpObject -100",
+          "Modify Grenade -100",
+          "Modify HeavyWeapons -100",
+          "Modify Bow -100",
+          "Modify Pistol -100",
+          "Modify Rifle -100",
+          "Modify MGSMG -100",
+          "Modify Shotgun -100",
+          "Modify AssaultRifle -100",
+          "Modify RangedEnergy -100"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-544,-544,96]",
+          "Modify MartialArts -100",
+          "Modify _1hBlunt -100",
+          "Modify _1hEdged -100",
+          "Modify MeleeEnergy -100",
+          "Modify Skill2hEdged -100",
+          "Modify Piercing -100",
+          "Modify _2hBlunt -100",
+          "Modify SharpObject -100",
+          "Modify Grenade -100",
+          "Modify HeavyWeapons -100",
+          "Modify Bow -100",
+          "Modify Pistol -100",
+          "Modify Rifle -100",
+          "Modify MGSMG -100",
+          "Modify Shotgun -100",
+          "Modify AssaultRifle -100",
+          "Modify RangedEnergy -100"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Nukes / Damage": [
+      {
+        "id": 266303,
+        "name": "Fill Inbox",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Expansion op22 32",
+          "MaterialMetamorphosis > 799",
+          "Profession == 10",
+          "BiologicalMetamorphosis > 799",
+          "Profession == 8"
+        ],
+        "effectSummary": [
+          "Modify BiologicalMetamorphosis -500",
+          "Modify MaterialMetamorphosis -500",
+          "Modify MaterialCreation -500",
+          "Modify PsychologicalModification -500",
+          "Modify SpaceTime -500",
+          "Modify SensoryImprovement -500",
+          "Hit[214,-750,-750,0]"
+        ],
+        "resolvedEffects": [
+          "Modify BiologicalMetamorphosis -500",
+          "Modify MaterialMetamorphosis -500",
+          "Modify MaterialCreation -500",
+          "Modify PsychologicalModification -500",
+          "Modify SpaceTime -500",
+          "Modify SensoryImprovement -500",
+          "Hit[214,-750,-750,0]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 82009,
+        "name": "First-Degree Burns",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 549",
+          "MaterialCreation > 497",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-288,-560,97]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-288,-560,97]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 82008,
+        "name": "Gouge Flesh",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 343",
+          "MaterialCreation > 299",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-142,-289,91]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-142,-289,91]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28667,
+        "name": "Inflict Harm",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 51",
+          "MaterialCreation > 43",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-16,-29,91]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-16,-29,91]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 82007,
+        "name": "Shatter Bone",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 190",
+          "MaterialCreation > 166",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Hit[27,-64,-137,91]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-64,-137,91]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Nukes": [
+      {
+        "id": 275701,
+        "name": "Malpractice",
+        "nanoStrain": 1041,
+        "nanoLine": "Nuke",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 2042",
+          "MaterialCreation > 1727",
+          "Profession == 10",
+          "NanoFocusLevel op22 64"
+        ],
+        "effectSummary": [
+          "Hit[27,-1000,-2000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3500,-5000,96]"
+        ],
+        "resolvedEffects": [
+          "Hit[27,-1000,-2000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-2000,-3000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3000,-4000,96]",
+          "Hit[27,-3500,-5000,96]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Debuffs - Initiative": [
+      {
+        "id": 99583,
+        "name": "Induce Muscle Spasms",
+        "nanoStrain": 186,
+        "nanoLine": "InitiativeDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 389",
+          "PsychologicalModification > 389",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TauntNpc[908]",
+          "CastNano[301850]",
+          "CastNano[301849]"
+        ],
+        "resolvedEffects": [
+          "TauntNpc[908]",
+          "CastNano -> 301850 \"Induce Muscle Spasms\": Modify MeleeInit -908; Modify RangedInit -908; Modify PhysicalInit -908; Modify NanoCInit -908",
+          "CastNano -> 301849 \"Induce Muscle Spasms\": Modify MeleeInit -908; Modify RangedInit -908; Modify PhysicalInit -908; Modify NanoCInit -908"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99582,
+        "name": "Muscle Atrophy",
+        "nanoStrain": 186,
+        "nanoLine": "InitiativeDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 93",
+          "PsychologicalModification > 93",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TauntNpc[350]",
+          "CastNano[301851]",
+          "CastNano[301852]"
+        ],
+        "resolvedEffects": [
+          "TauntNpc[350]",
+          "CastNano -> 301851 \"Muscle Atrophy\": Modify MeleeInit -350; Modify RangedInit -350; Modify PhysicalInit -350; Modify NanoCInit -350",
+          "CastNano -> 301852 \"Muscle Atrophy\": Modify MeleeInit -350; Modify RangedInit -350; Modify PhysicalInit -350; Modify NanoCInit -350"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 301845,
+        "name": "Rapid Palsy",
+        "nanoStrain": 186,
+        "nanoLine": "InitiativeDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 569",
+          "PsychologicalModification > 569",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "TauntNpc[1113]",
+          "CastNano[301847]",
+          "CastNano[301848]"
+        ],
+        "resolvedEffects": [
+          "TauntNpc[1113]",
+          "CastNano -> 301847 \"Rapid Palsy\": Modify MeleeInit -1113; Modify RangedInit -1113; Modify PhysicalInit -1113; Modify NanoCInit -1113",
+          "CastNano -> 301848 \"Rapid Palsy\": Modify MeleeInit -1113; Modify RangedInit -1113; Modify PhysicalInit -1113; Modify NanoCInit -1113"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99578,
+        "name": "Tired Limbs",
+        "nanoStrain": 186,
+        "nanoLine": "InitiativeDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 29",
+          "PsychologicalModification > 29",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "ScalingModify RangedInit -2500",
+          "ScalingModify PhysicalInit -2500",
+          "ScalingModify MeleeInit -2500",
+          "ScalingModify NanoCInit -2500"
+        ],
+        "resolvedEffects": [
+          "ScalingModify RangedInit -2500",
+          "ScalingModify PhysicalInit -2500",
+          "ScalingModify MeleeInit -2500",
+          "ScalingModify NanoCInit -2500"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 99577,
+        "name": "Uncontrollable Body Tremors",
+        "nanoStrain": 186,
+        "nanoLine": "InitiativeDebuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 861",
+          "PsychologicalModification > 861",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "CastNano[301843]",
+          "CastNano[301844]"
+        ],
+        "resolvedEffects": [
+          "CastNano -> 301843 \"Uncontrollable Body Tremors\": Modify MeleeInit -1452; Modify RangedInit -1452; Modify PhysicalInit -1452; Modify NanoCInit -1452",
+          "CastNano -> 301844 \"Uncontrollable Body Tremors\": Modify MeleeInit -1452; Modify RangedInit -1452; Modify PhysicalInit -1452; Modify NanoCInit -1452; TauntNpc[1452]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Debuffs": [
+      {
+        "id": 266306,
+        "name": "Misdiagnosis",
+        "nanoStrain": 0,
+        "nanoLine": "NOSTACKING",
+        "minLevel": 0,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Expansion op22 32",
+          "MaterialMetamorphosis > 799",
+          "Profession == 6",
+          "BiologicalMetamorphosis > 799",
+          "Profession == 10"
+        ],
+        "effectSummary": [
+          "Modify HealMultiplier -50"
+        ],
+        "resolvedEffects": [
+          "Modify HealMultiplier -50"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Self / Team Buffs": [
+      {
+        "id": 204425,
+        "name": "Vaccine of Ransacking",
+        "nanoStrain": 287,
+        "nanoLine": "Ransack_DepriveResistBuff",
+        "minLevel": 75,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Profession == 10",
+          "Level > 74",
+          "BiologicalMetamorphosis > 478",
+          "MaterialCreation > 432"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[135,14]",
+          "ResistNanoStrain[136,14]",
+          "ResistNanoStrain[147,3]"
+        ],
+        "resolvedEffects": [
+          "ResistNanoStrain[135,14]",
+          "ResistNanoStrain[136,14]",
+          "ResistNanoStrain[147,3]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 204427,
+        "name": "Vaccine of Deprivation",
+        "nanoStrain": 287,
+        "nanoLine": "Ransack_DepriveResistBuff",
+        "minLevel": 100,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Profession == 10",
+          "Level > 99",
+          "BiologicalMetamorphosis > 761",
+          "MaterialCreation > 691"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[135,17]",
+          "ResistNanoStrain[136,17]",
+          "ResistNanoStrain[147,6]"
+        ],
+        "resolvedEffects": [
+          "ResistNanoStrain[135,17]",
+          "ResistNanoStrain[136,17]",
+          "ResistNanoStrain[147,6]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 204429,
+        "name": "Vaccine of Plundering",
+        "nanoStrain": 287,
+        "nanoLine": "Ransack_DepriveResistBuff",
+        "minLevel": 155,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Profession == 10",
+          "Level > 154",
+          "BiologicalMetamorphosis > 922",
+          "MaterialCreation > 850"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[135,21]",
+          "ResistNanoStrain[136,21]",
+          "ResistNanoStrain[147,10]"
+        ],
+        "resolvedEffects": [
+          "ResistNanoStrain[135,21]",
+          "ResistNanoStrain[136,21]",
+          "ResistNanoStrain[147,10]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 204431,
+        "name": "Vaccine of Divestiture",
+        "nanoStrain": 287,
+        "nanoLine": "Ransack_DepriveResistBuff",
+        "minLevel": 195,
+        "professionReqVia": "Profession(60)==10",
+        "castReqs": [
+          "Profession == 10",
+          "Level > 194",
+          "BiologicalMetamorphosis > 1037",
+          "MaterialCreation > 951"
+        ],
+        "effectSummary": [
+          "ResistNanoStrain[135,26]",
+          "ResistNanoStrain[136,26]",
+          "ResistNanoStrain[147,15]"
+        ],
+        "resolvedEffects": [
+          "ResistNanoStrain[135,26]",
+          "ResistNanoStrain[136,26]",
+          "ResistNanoStrain[147,15]"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28658,
+        "name": "Enlarge",
+        "nanoStrain": 156,
+        "nanoLine": "StrengthBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 190",
+          "MaterialMetamorphosis > 166",
+          "MaterialCreation > 166",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify Strength +10",
+          "Modify Stamina +10",
+          "Modify Scale +8"
+        ],
+        "resolvedEffects": [
+          "Modify Strength +10",
+          "Modify Stamina +10",
+          "Modify Scale +8"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 222856,
+        "name": "Improved Instinctive Control",
+        "nanoStrain": 152,
+        "nanoLine": "InitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "PsychologicalModification > 1033",
+          "SensoryImprovement > 1033",
+          "VisualProfession == 10",
+          "Expansion op22 2"
+        ],
+        "effectSummary": [
+          "Modify NanoCInit +350",
+          "Modify NanoResist +75",
+          "Modify MaxNanoEnergy +300"
+        ],
+        "resolvedEffects": [
+          "Modify NanoCInit +350",
+          "Modify NanoResist +75",
+          "Modify MaxNanoEnergy +300"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 222823,
+        "name": "Improved Nano Repulsor",
+        "nanoStrain": 204,
+        "nanoLine": "NanoResistanceBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 479",
+          "SpaceTime > 438",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify NanoResist +200"
+        ],
+        "resolvedEffects": [
+          "Modify NanoResist +200"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28669,
+        "name": "Instinctive Control",
+        "nanoStrain": 152,
+        "nanoLine": "InitiativeBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "PsychologicalModification > 430",
+          "SensoryImprovement > 388",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify NanoCInit +200",
+          "Modify NanoResist +25",
+          "Modify MaxNanoEnergy +150"
+        ],
+        "resolvedEffects": [
+          "Modify NanoCInit +200",
+          "Modify NanoResist +25",
+          "Modify MaxNanoEnergy +150"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 42400,
+        "name": "Iron Circle",
+        "nanoStrain": 156,
+        "nanoLine": "StrengthBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 401",
+          "MaterialMetamorphosis > 354",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify Strength +20",
+          "Modify Stamina +20"
+        ],
+        "resolvedEffects": [
+          "Modify Strength +20",
+          "Modify Stamina +20"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 28671,
+        "name": "Nano Repulsor",
+        "nanoStrain": 204,
+        "nanoLine": "NanoResistanceBuffs",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 379",
+          "SpaceTime > 338",
+          "VisualProfession == 10"
+        ],
+        "effectSummary": [
+          "Modify NanoResist +92"
+        ],
+        "resolvedEffects": [
+          "Modify NanoResist +92"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 29246,
+        "name": "Pistol Mastery",
+        "nanoStrain": 199,
+        "nanoLine": "PistolBuff",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "VisualProfession == 1",
+          "VisualProfession == 12",
+          "VisualProfession == 3",
+          "VisualProfession == 10",
+          "VisualProfession == 8",
+          "PsychologicalModification > 120",
+          "SensoryImprovement > 120",
+          "Flags op4 0"
+        ],
+        "effectSummary": [
+          "Modify Pistol +40"
+        ],
+        "resolvedEffects": [
+          "Modify Pistol +40"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ],
+    "Travel / Summon Utility": [
+      {
+        "id": 142736,
+        "name": "Digitizing Sequencer",
+        "nanoStrain": 1031,
+        "nanoLine": "TeamGrid",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 656",
+          "MaterialMetamorphosis > 656",
+          "SpaceTime > 656",
+          "VisualProfession == 10",
+          "ExpansionPlayfield == 0",
+          "PlayfieldType op107 2"
+        ],
+        "effectSummary": [
+          "TeamCastNano[142729]"
+        ],
+        "resolvedEffects": [
+          "TeamCastNano -> 142729 \"Digitizing Sequencer\": (1 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      },
+      {
+        "id": 142735,
+        "name": "Encode DNA Sequence",
+        "nanoStrain": 1030,
+        "nanoLine": "SelfGrid",
+        "minLevel": 0,
+        "professionReqVia": "VisualProfession(368)==10",
+        "castReqs": [
+          "BiologicalMetamorphosis > 377",
+          "MaterialMetamorphosis > 377",
+          "SpaceTime > 377",
+          "VisualProfession == 10",
+          "ExpansionPlayfield == 0",
+          "PlayfieldType op107 2"
+        ],
+        "effectSummary": [
+          "(1 non-effect functions only)"
+        ],
+        "resolvedEffects": [
+          "(1 non-effect functions only)"
+        ],
+        "source": "local:nanos.ocp (OmniCell.Core) + name from itemnames.sql"
+      }
+    ]
+  }
+}

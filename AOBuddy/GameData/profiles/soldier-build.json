@@ -1,0 +1,472 @@
+{
+  "profession": "Soldier",
+  "professionId": 1,
+  "playstyle": {
+    "role": "Pure weapon profession: a ranged damage dealer that tanks with reflect and absorb shields instead of with armour and taunt alone. The Soldier trains one ranged weapon line to the cap, feeds it Burst / Full Auto / Fling Shot / Aimed Shot, and keeps layered reflect shields, absorb shields and HP/init buffs running on itself and the team.",
+    "summary": "The Soldier (profession 1) is Anarchy Online's weapon specialist. Every cheap skill it owns is a gun skill: in reference/skillcaps.json the Soldier pays cost factor 1.0 for Assault Rifle, Heavy Weapons, Pistol, Ranged Energy, Ranged Init. and Fling Shot, 1.1 for Body Dev., 1.5 for Burst, Full Auto, MG/SMG and Shotgun - and 2.0 to 3.2 for every nano school. Its 177 castable nanos (soldier-nanos.json) are almost entirely self and team buffs: 43 in the ReflectShield line, 18 in the Shadowlands ShadowlandReflectBase team-reflect-aura line, 14 absorb/ArmorBuff, 9 HP buffs, plus weapon-skill, special-attack, initiative, AddAllOff, evade and damage buffs. There is no pet, no real heal (two DrainHeal nanos only) and no crowd control. You play it by capping the weapon and its specials and by keeping the shields up.",
+    "strengths": [
+      "Best reflect shields in the game - the Total Mirror Shield line (10 ranks, ids 70300-70309) and the Augmented Mirror Shield line (MK I-V, ids 223229 / 223181 / 223183 / 223185 / 273400); AO-Universe: total mirror shield gives '75% reflect for a definite amount of time'",
+      "Team reflect auras: 18 ShadowlandReflectBase nanos from Empowered Minor Deflection Shield (L0) to Pre-Nullity Sphere (id 233033, L220), each casting a self version and a team version",
+      "Damage absorb / AC layer: 14 ArmorBuff nanos up to Heavy Assault Absorption Shield (id 75401, +530 to all ACs) plus the team AC buff Phalanx (ids 29245 team-cast / 162357, +350 all ACs)",
+      "Top weapon self-buffs: Art of War (id 275027, +200 Assault Rifle), Improved Total Focus (id 270806, +125 to ten ranged weapon skills), Improved Soldier Clip Junkie (id 273402, +180 Full Auto), Riot Control (id 29251, +110 Burst), Improved Ranged Energy Weapon Mastery (id 275905, +120 Ranged Energy)",
+      "Offense buffs: Full Automatic Targeting (id 270248, +74 AddAllOff), Offensive Steamroller (id 29240, +133 to all four initiatives), Improved Precognition (id 275844, +110 to all three evades)",
+      "Team damage line: the seven SoldierDamageBase 'Fight (Team)' nanos (ids 223187-223199) and the Improved Augmentation Cloud damage-buff line, topping out at Improved Semi-Sentient Augmentation Cloud (id 222838, +40 to all eight damage types)",
+      "Huge self HP: Total Combat Survival (id 273398, +1200 Max Health, +35 Heal Delta) plus the Colossal Health perk line (+3180 Max Health per AOWiki)",
+      "The weapon pool is enormous: of 10,730 weapon templates in items.ocp, 9,757 are not profession-locked away from a Soldier, including 1,545 Assault Rifles (78 of them Soldier-only)"
+    ],
+    "weaknesses": [
+      "Much of what the Soldier does is a buff another profession can partly copy. AOWiki on froob Soldiers: 'A profession that can be replaced by a single cast of a False Profession nano is a disadvantaged profession.' The local data agrees that such nanos exist - FalseProfession ids 32038 / 117227 / 117216.",
+      "No heal and no crowd control: the entire heal kit is two DrainHeal nanos (Don't Fear the Reaper id 29241, Adrenaline Rush id 301897) and the Special Forces perk's Field Bandage",
+      "The defensive identity is gated behind the Soldier's two most expensive nano schools - Matter Creation (cost 2.5) and Time & Space (cost 3.2). Augmented Mirror Shield MK IV (id 223185) wants Time & Space 1419 and Matter Creation 1454; Augmented Mirror Shield MK V (id 273400) wants 1490 / 1527.",
+      "Tanking with taunts is clumsy: the taunt nanos in the kit are single-target (the Insult line, ids 229090-229104, and the Victim / Me lines 223201-223221); AO-Universe notes add management is weaker than an Enforcer's",
+      "Reflects are a timed burst defence, not sustained mitigation - when Total Mirror Shield drops the Soldier is a plain armour-and-HP target",
+      "Nano C. Init is the Soldier's most expensive skill (cost factor 4.0), so casting is slow unless buffed - another reason the kit is built from long-duration buffs rather than in-combat casting"
+    ],
+    "tips": [
+      "Pick ONE weapon line and cap it. The 1.0-cost lines are Assault Rifle, Heavy Weapons, Pistol and Ranged Energy; MG/SMG and Shotgun are 1.5; Rifle is 2.0. Assault Rifle is the default because it carries both big specials: of 1,545 Soldier-usable Assault Rifles in items.ocp, 1,136 have Burst and 1,041 have Full Auto.",
+      "Train each special to the CAP for the gun you actually hold, not to a round number. AO-Universe: Full Auto cap skill = [(weapon recharge seconds x 40) + (FullAutoCycle/100) - 11] x 25. For Ofab Shark Mk 6 (id 265103; items.ocp recharge 1.4s, FullAutoCycle 4500) that is 2,250 Full Auto - which matches AOWiki's independent 'approximately 2300 Full Auto' note for that gun.",
+      "Burst cap skill = [(weapon recharge seconds x 20) + (BurstCycle/100) - 9] x 25. For the Superior Rebuilt Perennium Blaster (id 260706; recharge 1.0s, BurstCycle 2500, FullAutoCycle 5000) that is 900 Burst and 1,975 Full Auto.",
+      "Ranged Init. (cost 1.0) is the initiative every Soldier gun uses - AOWiki: 'All Soldier guns rely on this initiative.' Melee Init and Physic. Init (2.4) and Nano C. Init (4.0) are not Soldier skills.",
+      "Keep the reflect stack layered: the self Total Mirror Shield / Augmented Mirror Shield over a running Shadowlands reflect aura (the Empowered ... / Resonance Field line), with an absorb shield underneath.",
+      "Self-buff before the pull: Art of War (or your weapon line's buff) + Improved Total Focus + the Full Auto / Burst buff + Offensive Steamroller + Full Automatic Targeting. These are long-duration, so the slow Nano C. Init does not matter.",
+      "Buy taunts. AO-Universe: 'Soldiers really have no excuse not to buy taunts' - the single-target Insult / Victim nano lines are how a Soldier holds aggro.",
+      "41 of the 177 castable Soldier nanos carry the Shadowlands expansion gate (stat 389 bit 2) and 2 carry the Lost Eden bit - a froob Soldier gets the RK Deflection/Reflective Field ladder and the Mk I-X Total Mirror Shields, not the Empowered aura line."
+    ]
+  },
+  "breed": {
+    "recommended": "Solitus",
+    "reasoning": "Both AO-Universe Soldier guides pick Solitus. Tepamina's guide: Solitus is 'the preferred choice of many soldiers because of nice health combined with nice intelligence, which especially makes it much easier to equip endgame symbiants compared to the Atrox'; Alezander's guide says Solitus 'can do anything an Atrox can do, just very slightly less effectively' while being easier to gear and less dependent on outside buffs. reference/breeds.json backs this: Solitus has no trained ability cap below 472 and sits at 480 on Agility, Stamina, Intelligence, Sense and Psychic - exactly the spread a Soldier needs, since Assault Rifle keys off 10% Str / 30% Agi / 40% Sta / 20% Int, Ranged Init. off 10/10/60/20, Aimed Shot off 100% Sense, and Intelligence/Sense are what gate high-QL implants and Artillery symbiants.",
+    "alternatives": [
+      {
+        "breed": "Atrox",
+        "note": "Tepamina rates Solitus and Atrox 'pretty equal'. Atrox has the cheapest Strength/Stamina and the most HP (breeds.json: Str cap 512, Sta cap 512, 4 HP per Body Dev point), and AO-Universe names the Atrox breed perk Mongo Rage as a main reason people build them for PvP. Cost: the lowest Intelligence and Psychic caps, so nano schools and symbiant/implant requirements are harder to reach."
+      },
+      {
+        "breed": "Opifex",
+        "note": "AO-Universe: 'master of evades and speed, benefiting from much higher agility and sense (which are not the usual stats for a soldier)'. breeds.json gives Agility 544 and Sense 512 but Strength 464 / Psychic 448 and less health. A viable third choice, strongest for an evade or PvP build."
+      },
+      {
+        "breed": "Nanomage",
+        "note": "AO-Universe: 'This is not the best choice for soldiers... while this breed will get to cast them at earlier levels, this is not really necessary to soldier survivability.' Best nano skills but the least health, and the Soldier's value is weapon damage, not casting."
+      }
+    ]
+  },
+  "skillPriorities": [
+    {
+      "skill": "Assault Rifle",
+      "target": "max",
+      "why": "Cost factor 1.0 - the Soldier's cheapest tier, shared with Heavy Weapons, Pistol, Ranged Energy, Ranged Init. and Fling Shot. AOWiki: 'Our main attack skill. Most of our good weapons are Assault Rifles.' items.ocp holds 1,545 Soldier-usable Assault Rifles, 78 of them Soldier-only, 1,136 carrying Burst and 1,041 Full Auto."
+    },
+    {
+      "skill": "Ranged Init.",
+      "target": "max",
+      "why": "Cost factor 1.0. AOWiki: 'All Soldier guns rely on this initiative.' It is the only initiative a gun Soldier trains - Melee Init and Physic. Init cost 2.4 and Nano C. Init 4.0."
+    },
+    {
+      "skill": "Full Auto",
+      "target": "max (to the weapon's cap)",
+      "why": "Cost factor 1.5. AOWiki: 'Our ultimate PvM special.' Train to the exact cap for the equipped gun: [(recharge seconds x 40) + (FullAutoCycle/100) - 11] x 25 (AO-Universe)."
+    },
+    {
+      "skill": "Burst",
+      "target": "max (to the weapon's cap)",
+      "why": "Cost factor 1.5. The most common Assault Rifle special in the data (1,136 of 1,545) and the one that fires most often. Cap = [(recharge seconds x 20) + (BurstCycle/100) - 9] x 25 (AO-Universe)."
+    },
+    {
+      "skill": "Body Dev.",
+      "target": "max",
+      "why": "Cost factor 1.1 - the Soldier's second-cheapest skill in the whole 69-skill table and cheaper than for any profession except the Enforcer (1.0). It is the HP pool the reflect/absorb layer is spread over; AO-Universe rates it a must-max."
+    },
+    {
+      "skill": "Fling Shot",
+      "target": "high",
+      "why": "Cost factor 1.0. Carried by 313 Soldier-usable Assault Rifles, 671 Pistols, 316 Shotguns and 226 Ranged Energy weapons. AO-Universe uses it as the aggro-pull opener. Cap = [(attack seconds x 16) - 7] x 100."
+    },
+    {
+      "skill": "Aimed Shot",
+      "target": "high for Rifle/PvP builds, otherwise as-needed",
+      "why": "Cost factor 1.8 - NOT in the Soldier's cheap tier. AOWiki calls it 'THE special to use in PvP', but the data shows it is mainly a Rifle/Bow special: 672 of 852 Rifles carry it versus only 190 of 1,545 Assault Rifles. Train it for the weapon you actually hold."
+    },
+    {
+      "skill": "Matter Creation",
+      "target": "high",
+      "why": "Cost factor 2.5, and unavoidable: Matter Creation is a cast requirement on 102 of the Soldier's 177 castable nanos, the highest being 1,527 (Augmented Mirror Shield MK V, id 273400). Every Total Mirror Shield and Augmented Mirror Shield needs it."
+    },
+    {
+      "skill": "Time & Space",
+      "target": "high",
+      "why": "Cost factor 3.2 - the Soldier's most expensive nano school - but it gates the same reflect line: 64 nanos require it, up to 1,490. Pre-Nullity Sphere (id 233033) and Augmented Mirror Shield MK IV (id 223185) both want Time & Space 1,419."
+    },
+    {
+      "skill": "Psychological Modification",
+      "target": "high",
+      "why": "Cost factor 2.0 - tied with Matter Metamorphosis as the Soldier's cheapest nano school. Required on 68 nanos (up to 1,714): the weapon buffs, the initiative and AddAllOff buffs and the taunt lines all key off PM together with Sensory Improvement."
+    },
+    {
+      "skill": "Sensory Improvement",
+      "target": "high",
+      "why": "Cost factor 2.4. Paired with PM on every weapon/special buff - Art of War, Improved Total Focus, Improved Soldier Clip Junkie and Improved Ranged Energy Weapon Mastery each need Sensory Improvement 1,342."
+    },
+    {
+      "skill": "Matter Metamorphosis",
+      "target": "medium",
+      "why": "Cost factor 2.0. Required on 36 nanos up to 1,649: the absorb shields (Heavy Assault Absorption Shield id 75401 needs Matter Metamorphosis 760 + Matter Creation 679), Phalanx (id 29245) and the top 'Fight (Team)' damage nanos."
+    },
+    {
+      "skill": "Biological Metamorphosis",
+      "target": "medium",
+      "why": "Cost factor 2.4. Only 14 nanos need it, but one is Total Combat Survival (id 273398, +1200 Max Health) at Biological Metamorphosis 1,243."
+    },
+    {
+      "skill": "Treatment",
+      "target": "high",
+      "why": "Cost factor 2.0. Gates every implant and symbiant - reference/implants.json: Treatment required = trunc(4.723717064 x QL + 6.767295257), so a QL200 implant needs about 947. AO-Universe: 'Critical for implant/symbiant equipping; keep reasonably updated but not mandatory every level.'"
+    },
+    {
+      "skill": "Dodge-Rng",
+      "target": "high",
+      "why": "Cost factor 1.5 - the Soldier's cheapest evade and the one that matters against the ranged mobs and guns a Soldier faces. AO-Universe rates all three evades highly but notes they can be deferred until the ability caps around level 160."
+    },
+    {
+      "skill": "Duck-Exp",
+      "target": "high",
+      "why": "Cost factor 1.8. Second-cheapest evade; buffed alongside the others by Improved Precognition (id 275844, +110 each) and by the Special Forces perk line (+150 Dodge Ranged, +50 Evade Close, +50 Duck Explosions)."
+    },
+    {
+      "skill": "Evade-ClsC",
+      "target": "high",
+      "why": "Cost factor 2.0 - the most expensive of the three evades for a Soldier, but still wanted for melee mobs and perk defence."
+    },
+    {
+      "skill": "Computer Literacy",
+      "target": "high",
+      "why": "Cost factor 2.0. AOWiki lists it among Soldier secondary skills 'for Grid access and armor'; it is also NCU, which is what holds the Soldier's large buff stack."
+    },
+    {
+      "skill": "Nano Pool",
+      "target": "as-needed",
+      "why": "Cost factor 2.0. The Soldier's nanos are long-duration buffs rather than spam, so Nano Pool only needs to be large enough to land the whole shield stack in one go."
+    },
+    {
+      "skill": "Run Speed",
+      "target": "as-needed",
+      "why": "Cost factor 2.0. Alezander's guide lists Run Speed among the skills worth IP (positioning, kiting, travel)."
+    },
+    {
+      "skill": "First Aid",
+      "target": "as-needed",
+      "why": "Cost factor 2.0. With only two drain-heal nanos in the whole kit, stims are the Soldier's in-combat healing."
+    },
+    {
+      "skill": "Ranged Energy / Pistol / Heavy Weapons (alternate primaries)",
+      "target": "as-needed",
+      "why": "All cost factor 1.0, the same tier as Assault Rifle. 440 Ranged Energy, 1,172 Pistol and 85 Heavy Weapons templates are Soldier-usable. Ranged Energy is the Power Up perk line's skill (+200 Ranged Energy) and has its own buff line (Improved Ranged Energy Weapon Mastery, id 275905)."
+    },
+    {
+      "skill": "MG/SMG and Shotgun (alternate primaries)",
+      "target": "as-needed",
+      "why": "Cost factor 1.5 each. 500 MG/SMG templates (407 with Burst) and 541 Shotguns (316 with Fling Shot) are usable. Alezander's guide builds Dual SMG + Shotgun as the maximum-damage endgame setup, with SMG Mastery and Shotgun Mastery perks."
+    },
+    {
+      "skill": "Rifle",
+      "target": "avoid unless deliberately built",
+      "why": "Cost factor 2.0 - double the price of Assault Rifle for a Soldier, and the Infantry perk line that supports it is called out by AOWiki as 'more of an Agent perkline'."
+    },
+    {
+      "skill": "Melee skills (1h Edged 2.0, Melee Energy 2.2, 1h Blunt / 2h Blunt / 2h Edged / Piercing 2.5)",
+      "target": "avoid",
+      "why": "AOWiki Soldier:Breed_and_Skills is explicit: 'Soldiers are ranged, not melee.' The melee specials are worse still - Sneak Attack 3.0 and Dimach 4.0."
+    },
+    {
+      "skill": "Nano C. Init",
+      "target": "avoid",
+      "why": "Cost factor 4.0 - tied with Dimach as the Soldier's most expensive skill in the 69-skill table, for a profession whose nanos are pre-fight buffs."
+    },
+    {
+      "skill": "Nano Resist / Deflect",
+      "target": "avoid",
+      "why": "Alezander's guide advises against spending IP on Deflect or Nano Resist. Nano Resist is cost 2.2 for a Soldier; Deflect is a legacy skill with no live Stat.cs entry (skillcaps.json flags it unverified)."
+    }
+  ],
+  "perks": [
+    {
+      "name": "Special Forces",
+      "type": "SL",
+      "line": "Special Forces (10 levels)",
+      "effect": "+200 Full Auto, +180 Burst, +180 Fling Shot, +150 Dodge Ranged, +50 Evade Close, +50 Duck Explosions; specials Field Bandage, Tracer, Contained Burst, Violence, Guardian. AOWiki: 'A must have. Buffing all evades, and giving a nice bonus to Full Auto and Burst, makes this one of the best perklines Soldiers have.'",
+      "recommendedAtLevel": "Max - first or second line taken",
+      "priority": "high"
+    },
+    {
+      "name": "Heavy Ranged",
+      "type": "SL",
+      "line": "Heavy Ranged (at least 7 levels)",
+      "effect": "+200 Assault Rifle, +200 Heavy Weapons; specials Laser Paint Target, Weapon Bash, Triangulate Target, Napalm Spray. AOWiki: 'The staple for Assault Rifle soldiers. The +200 Assault Rifle is a must, although the perk specials aren't the best.'",
+      "recommendedAtLevel": "Assault Rifle builds - Alezander's layout runs 8 of them",
+      "priority": "high"
+    },
+    {
+      "name": "Power Up",
+      "type": "SL",
+      "line": "Power Up (10 levels)",
+      "effect": "+200 Ranged Energy and +50 to all damage types; specials Energize, Power Blast, Power Volley, Power Shock, Power Combo. Both AO-Universe guides take it even on Assault Rifle builds, for the damage and the Energize special.",
+      "recommendedAtLevel": "Max",
+      "priority": "high"
+    },
+    {
+      "name": "Colossal Health",
+      "type": "SL",
+      "line": "Colossal Health (10 levels)",
+      "effect": "Max Health +3180; specials Blessing of Life, Lifeblood, Draw Blood. AOWiki: 'Highly useful when soloing.'",
+      "recommendedAtLevel": "Max, especially for solo/tank play",
+      "priority": "high"
+    },
+    {
+      "name": "SMG Mastery",
+      "type": "SL",
+      "line": "SMG Mastery (10 levels)",
+      "effect": "+200 MG/SMG, +20 Burst; specials Reinforce Slugs, Jarring Burst, Solid Slug, Neutronium Slug. AOWiki: optimal for machine-pistol builds; Alezander's damage build maxes it alongside Shotgun Mastery.",
+      "recommendedAtLevel": "Only for an MG/SMG build",
+      "priority": "med"
+    },
+    {
+      "name": "Shotgun Mastery",
+      "type": "SL",
+      "line": "Shotgun Mastery (6 levels)",
+      "effect": "+75 Shotgun, +21 to all damage types; special Leg Shot. AOWiki calls it situational for non-standard builds; Alezander pairs it with SMG for Leg Shot crowd control.",
+      "recommendedAtLevel": "Only for a Shotgun or SMG+Shotgun build",
+      "priority": "med"
+    },
+    {
+      "name": "Mountaineer",
+      "type": "SL",
+      "line": "Mountaineer (5 levels)",
+      "effect": "+35 Strength, +35 Stamina, +215 Max Health, +90 Adventuring; specials Encase in Stone, Detonate Stoneworks. AOWiki: rarely utilized.",
+      "recommendedAtLevel": "Filler only",
+      "priority": "low"
+    },
+    {
+      "name": "Infantry",
+      "type": "SL",
+      "line": "Infantry (7 levels)",
+      "effect": "+191 Max Health, +63 Rifle, +10 Fling Shot; specials Armor Piercing Shot, Find the Flaw. AOWiki: 'Not really useable by Soldiers. This is more of an Agent perkline.'",
+      "recommendedAtLevel": "Skip",
+      "priority": "low"
+    },
+    {
+      "name": "Power in Numbers",
+      "type": "AI/Alien",
+      "line": "Power in Numbers",
+      "effect": "Taken for the Suppressive Horde team special. AO-Universe: at least 1 perk for Suppressive Horde, 'though some keep this line maxed for its nice mods like max health and full auto'.",
+      "recommendedAtLevel": "1 point minimum; max for the mods",
+      "priority": "high"
+    },
+    {
+      "name": "Champion of Heavy Artillery",
+      "type": "AI/Alien",
+      "line": "Champion of Heavy Artillery (any profession)",
+      "effect": "AI Champion chain line; grants the Fuzz perk special (AOWiki Perk Chains). AO-Universe: 'recommended if you're using AR or RE, as it has a decent damage perk special called Fuzz and Fire Frenzy'.",
+      "recommendedAtLevel": "Assault Rifle / Ranged Energy builds",
+      "priority": "med"
+    },
+    {
+      "name": "Champion of Light Artillery",
+      "type": "AI/Alien",
+      "line": "Champion of Light Artillery (any profession)",
+      "effect": "AI Champion chain line granting the Collapser perk special (AOWiki Perk Chains). Alezander's SMG+Shotgun endgame layout takes 10 of it.",
+      "recommendedAtLevel": "Pistol / SMG / Shotgun builds",
+      "priority": "med"
+    },
+    {
+      "name": "Champion of Nano Combat",
+      "type": "AI/Alien",
+      "line": "Champion of Nano Combat (any profession)",
+      "effect": "AI Champion chain line granting the Nano Feast perk special. AO-Universe notes Nano Feast takes a damage bonus from the Champion of Heavy Artillery line's Fuzz; a standard Assault Rifle layout runs 10 of this line or of the breed line.",
+      "recommendedAtLevel": "Standard 10-point AI line",
+      "priority": "med"
+    },
+    {
+      "name": "Breed perks (e.g. Atrox Mongo Rage)",
+      "type": "AI/Alien",
+      "line": "Breed-specific genome lines",
+      "effect": "Breed genome lines give attribute boosts; AO-Universe names Mongo Rage as a main reason Soldiers are built Atrox for PvP. Exact per-breed contents not verified here.",
+      "recommendedAtLevel": "Alternative to the 10-point Champion of Nano Combat line",
+      "priority": "med"
+    },
+    {
+      "name": "Target Acquired",
+      "type": "LE/Research proc",
+      "line": "Sweep and Clear",
+      "effect": "Proc perk granted by the Sweep and Clear research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierTargetAcquired. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Sweep and Clear line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "On The Double",
+      "type": "LE/Research proc",
+      "line": "Sweep and Clear",
+      "effect": "Proc perk granted by the Sweep and Clear research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierOnTheDouble. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Sweep and Clear line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Graze Jugular Vein",
+      "type": "LE/Research proc",
+      "line": "Strategic Planning",
+      "effect": "Proc perk granted by the Strategic Planning research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierGrazeJugularVein. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Strategic Planning line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Furious Ammunition",
+      "type": "LE/Research proc",
+      "line": "Strategic Planning",
+      "effect": "Proc perk granted by the Strategic Planning research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierFuriousAmmunition. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Strategic Planning line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Shoot Artery",
+      "type": "LE/Research proc",
+      "line": "Combat Sense",
+      "effect": "Proc perk granted by the Combat Sense research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierShootArtery. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Combat Sense line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Deep Six Initiative",
+      "type": "LE/Research proc",
+      "line": "Combat Sense",
+      "effect": "Proc perk granted by the Combat Sense research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierDeepSixInitiative. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Combat Sense line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Emergency Bandages",
+      "type": "LE/Research proc",
+      "line": "Marksmanship",
+      "effect": "Proc perk granted by the Marksmanship research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierEmergencyBandages. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Marksmanship line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Concussive Shot",
+      "type": "LE/Research proc",
+      "line": "Forward Observer",
+      "effect": "Proc perk granted by the Forward Observer research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierConcussiveShot. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Forward Observer line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Gear Assault Absorption",
+      "type": "LE/Research proc",
+      "line": "Forward Observer",
+      "effect": "Proc perk granted by the Forward Observer research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierGearAssaultAbsorption. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Forward Observer line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Fuse Body Armor",
+      "type": "LE/Research proc",
+      "line": "Forward Observer",
+      "effect": "Proc perk granted by the Forward Observer research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierFuseBodyArmor. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Forward Observer line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Successful Targeting",
+      "type": "LE/Research proc",
+      "line": "Classified Ops",
+      "effect": "Proc perk granted by the Classified Ops research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierSuccessfulTargeting. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Classified Ops line is researched",
+      "priority": "med"
+    },
+    {
+      "name": "Reconditioned",
+      "type": "LE/Research proc",
+      "line": "Force Recon",
+      "effect": "Proc perk granted by the Force Recon research line (AOWiki Soldier:Research_Lines); present in the local enum as LEProcSoldierReconditioned. Trigger chance and magnitude are not stated in the fetched sources.",
+      "recommendedAtLevel": "Slot once the Force Recon line is researched",
+      "priority": "med"
+    }
+  ],
+  "research": [
+    {
+      "name": "Marksmanship",
+      "track": "LE (personal)",
+      "effect": "Scales Assault Rifle, Full Auto, Burst, MG/SMG and Ranged Init.; grants the Emergency Bandages proc. AOWiki: 'The cornerstone of any soldiers training emphasizes the importance of being accurate at all times.'",
+      "note": "AO-Universe calls it 'a very good line to research at any time of a soldier's career' - the pure weapon line."
+    },
+    {
+      "name": "Sweep and Clear",
+      "track": "LE (personal)",
+      "effect": "Scales Body Development, Max Health, Stamina and Agility; grants Target Acquired and On The Double.",
+      "note": "AO-Universe: enhances durability with health and stamina bonuses - the survivability line."
+    },
+    {
+      "name": "Strategic Planning",
+      "track": "LE (personal)",
+      "effect": "Scales Max NCU, Computer Literacy, Time & Space, Psychological Modification, Matter Creation and Add All Off; grants Graze Jugular Vein and Furious Ammunition.",
+      "note": "One of the two lines AO-Universe calls critical for casting reflects - it carries both Time & Space and Matter Creation."
+    },
+    {
+      "name": "Combat Sense",
+      "track": "LE (personal)",
+      "effect": "Scales Strength, Stamina, Time & Space, Matter Creation and Agility; grants Shoot Artery and Deep Six Initiative.",
+      "note": "The second reflect-casting line (Time & Space + Matter Creation)."
+    },
+    {
+      "name": "Forward Observer",
+      "track": "LE (personal)",
+      "effect": "Scales Intelligence, Sense, Matter Metamorphosis, Ranged Init., Full Auto and Burst; grants Concussive Shot, Gear Assault Absorption and Fuse Body Armor.",
+      "note": "The only line carrying three procs, and it scales both big specials plus Ranged Init."
+    },
+    {
+      "name": "Classified Ops",
+      "track": "LE (personal)",
+      "effect": "Scales Psychological Modification, Strength, Sense, Burst, Matter Metamorphosis and Add All Off; grants Successful Targeting.",
+      "note": "Buff-casting (PM) plus Burst and Add All Off."
+    },
+    {
+      "name": "Force Recon",
+      "track": "LE (personal)",
+      "effect": "Scales Fling Shot, Pistol, Ranged Energy, Multi Ranged and Ranged Init.; grants Reconditioned.",
+      "note": "The Pistol / Ranged Energy / dual-wield line - take it for those builds, not for Assault Rifle."
+    },
+    {
+      "name": "Global Research (all-profession)",
+      "track": "Global",
+      "effect": "Shared cross-profession global lines apply to the Soldier as to any profession.",
+      "note": "Not Soldier-specific; the seven lines above are the Soldier's own personal lines."
+    }
+  ],
+  "_unverified": [
+    "Tier counts and per-rank values for the Alien Invasion lines (Power in Numbers, Champion of Heavy/Light Artillery, Champion of Nano Combat): AOWiki's Soldier:Perks page states AI perks exist but gives no detail, and its Perk_Chains page carries an editor note that the AI chains are incomplete.",
+    "Mongo Rage as an Atrox breed perk is reported by the AO-Universe Soldier guide; its exact mechanics were not verified from a fetched page.",
+    "Whether each Soldier LE proc is offensive, defensive or sustain. The line assignment is verified (AOWiki Soldier:Research_Lines) and every enum name is verified (PerkHash.cs), but trigger chance and magnitude are not.",
+    "The NanoFocusLevel bit-64 requirement seen on 7 top nanos (Improved Total Focus, Improved Soldier Clip Junkie, Art of War, Improved Ranged Energy Weapon Mastery, Improved Precognition, Total Combat Survival, Augmented Mirror Shield MK V) is read straight from nanos.ocp; what that gate corresponds to in game is not verified.",
+    "Attack-rating, add-damage and initiative CAP figures: no fetched source states them and they are not in the local data, so no cap numbers are claimed here. Only the four AO-Universe special-attack recharge/cap formulas are used.",
+    "The special-cap figures computed here (900 Burst / 1,975 Full Auto for the Superior Rebuilt Perennium Blaster; 2,250 Full Auto for Ofab Shark Mk 6) assume items.ocp AttackDelay/RechargeDelay are hundredths of a second and that BurstRecharge/FullAutoRecharge are the 'cycle' values in those formulas. The Ofab Shark result agrees with AOWiki's independent 'approximately 2300 Full Auto' statement, which is the cross-check - but the unit interpretation is inference.",
+    "AOWiki's Soldier:Breed_and_Skills page contains no breed recommendation; the Solitus pick comes from the two AO-Universe guides plus the ability caps in reference/breeds.json.",
+    "Drop/acquisition locations for the named weapons are not covered here (that belongs in soldier-weapons.json); only ids, requirements and item stats from items.ocp are asserted."
+  ],
+  "_sources": [
+    "http://wiki.aodb.us/wiki/Soldier (AOWiki - role: absorption shields and reflects, weapon/armour buffs, the False Profession froob critique)",
+    "http://wiki.aodb.us/wiki/Soldier:Breed_and_Skills (AOWiki - Assault Rifle 'our main attack skill', Ranged Init 'all Soldier guns rely on this initiative', Full Auto 'our ultimate PvM special', Aimed Shot 'THE special to use in PvP', 'Soldiers are ranged, not melee')",
+    "http://wiki.aodb.us/wiki/Soldier:Perks (AOWiki - Heavy Ranged, Special Forces, Power Up, Colossal Health, Infantry, Mountaineer, SMG Mastery, Shotgun Mastery: tiers, bonuses, specials, verdicts)",
+    "http://wiki.aodb.us/wiki/Soldier:Research_Lines (AOWiki - all seven LE research lines, what each scales, and their proc perks)",
+    "http://wiki.aodb.us/wiki/Soldier:Weapons (AOWiki - popular weapon setups; Rebuilt Perennium Blaster; Ofab Shark 'approximately 2300 Full Auto')",
+    "http://wiki.aodb.us/wiki/Perk_Chains (AOWiki - the AI Champion chain: Champion of Heavy Artillery grants Fuzz, Champion of Light Artillery grants Collapser, Champion of Nano Combat grants Nano Feast)",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-13 (AO-Universe - breed comparison, ability/skill ratings, 'tanks, reflects, damage dealers', total mirror shield 75% reflect)",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-23 (AO-Universe - perk priorities incl. AI lines, reflect advice, weapon buffs, taunts, implant/symbiant transition levels)",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-33 (AO-Universe - Fling Shot / Burst / Full Auto / Aimed Shot recharge and cap-skill formulas; research-line commentary; 'Soldiers really have no excuse not to buy taunts')",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/alezanders-soldier-guide (AO-Universe - Solitus recommendation, AR vs SMG+Shotgun endgame builds with full perk layouts, skill list, advice against Deflect/Nano Resist)",
+    "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json (Soldier = index 12 of _professionOrder; every cost factor quoted above)",
+    "LOCAL AOBuddy/GameData/profiles/reference/breeds.json (breed creation bases, trained ability caps, HP/nano per point)",
+    "LOCAL AOBuddy/GameData/profiles/soldier-nanos.json (177 castable Soldier nanos from nanos.ocp: ids, names, lines, cast requirements, effects)",
+    "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp read with tools/mp-weapon-extractor --prof 1 (10,730 weapon templates, 9,757 Soldier-usable; per-skill counts, specials, wield reqs, attack/recharge/cycle values)",
+    "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql (every id/name above verified: 260706 Superior Rebuilt Perennium Blaster, 265103 Ofab Shark Mk 6, 29251 Riot Control, 70300 Total Mirror Shield Mk X, 233033 Pre-Nullity Sphere, 273398 Total Combat Survival, 275027 Art of War, 270806 Improved Total Focus)",
+    "LOCAL AOSharp.Common/GameData/PerkHash.cs (the 12 LEProcSoldier* enum names, plus the perk-special names of every SL line listed above)",
+    "LOCAL AOSharp.Common/GameData/Profession.cs (Soldier = 1)"
+  ]
+}

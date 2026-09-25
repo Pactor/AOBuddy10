@@ -1,0 +1,3678 @@
+{
+  "profession": "Bureaucrat",
+  "professionId": 8,
+  "slug": "bureaucrat",
+  "summary": "The Bureaucrat (profession 8) is the only profession in the game that both SUMMONS a pet and TAKES one: the AODB wiki says a Crat 'can have both a \"summoned\" droid and a \"Charmed\" monster ally', and AO-Universe's Bureaucrat Guide puts the ceiling at three - 'It is possible to have 1 long and 1 short charm, or you can have 2 short charms. You can not use your Long charm if you already have a pet on short charm.' The local client data backs that up exactly: 105 of the Crat's 343 castable nanos are pet SUMMONS, and they split into two completely separate systems funded by two completely separate skill stacks. (1) THE BOT - 65 SpawnItem nanos, paid for with Matter Creation (130) + Time & Space (131) at identical values, arranged as a near-perfect matrix of NINE families (BUWO Worker, BUHE Helper, BUAT Attendant, BUAS Assistant, BUAI Aide, BUSC Secretary, BUAD Administrator, BUMI Minion, BUBO Bodyguard) x SEVEN quality grades (Basic, Limited, Faithful, Advanced, Supervisor-Grade, Executive-Grade, Director-Grade) = 63, topped by Corporate Guardian (235386, spawn level 205, Shadowlands + Specialization bit 8) and CEO Guardian (273300, spawn level 215, NanoFocusLevel bit 64). Director-Grade Bodyguard (46391, spawn level 200) is the froob ceiling. Unlike the Engineer's robots, not one of the 65 costs credits. (2) THE CHARM - 37 CharmOther nanos (nano strain 202) paid for with Psychological Modification (129) + Sensory Improvement (122) + Biological Metamorphosis (128), again at identical values. They form two parallel lines that the data separates cleanly: 26 nanos set PetType 12 and carry 'Pets op66 7001' (AO-Universe's LONG charm, Temporary Glamor -> The Voice of God, of which 11 are 'Team Empowered' Shadowlands team variants) and 11 set PetType 11 and carry 'Pets op66 7002' (the SHORT charm, Lesser Pheromone Control -> The Choir Fantastic). AOSharp's PetType enum, confirmed against sniffs, reads 11 as the Heal slot and 12 as the Support slot - which is mechanically how a Crat holds a bot and two charms at the same time. Every charm carries a 'Psychic < N' ceiling that rises with the tier (69 at Temporary Glamor, 551 at the top) and writes the charmed pet's own keep-alive requirements into PetReq1/2/3. On top of that sit three true SummonPet pets - Carlita Desposito (293899, L160, self-scaling to template 215), Carlo Pinnetti (258580, L220) and the 20 x SummonPet 'Means Test Pet' (258222, L220) - 40 pet buffs and repairs, and a pet-buff library that is itself split by pet KIND: Gallant Hero (9 nanos, NPCFamily == 95) only works on the bot, Gallant Slave (9 nanos, HasRunningNanoLine 202 + a Level ceiling) only works on a charmed NPC. There is no Bureaucrat heal pet and no Bureaucrat pet-initiative line; the bot is repaired by three nanos the Crat casts itself. Every id, name, requirement and effect below is copied out of bureaucrat-nanos.json (client 18.8.50_EP1 nanos.ocp extraction); mechanics come from the cited sources; anything not traceable is under _unverified.",
+  "coverage": {
+    "petNanosInData": 145,
+    "petNanosCovered": 145,
+    "petSummonNanosInData": 105,
+    "petSummonNanosCovered": 105,
+    "botSummons": "65 of 65 (9 families x 7 grades = 63, plus Corporate Guardian 235386 and CEO Guardian 273300)",
+    "charmNanos": "37 of 37 (26 long-charm PetType 12, of which 11 Team Empowered; 11 short-charm PetType 11)",
+    "supportPets": "2 of 2 (Carlita Desposito 293899, Carlo Pinnetti 258580)",
+    "attackPets": "1 of 1 (Means Test Pet 258222)",
+    "petBuffsAndUtility": "37 of 37",
+    "petHealsRepair": "3 of 3",
+    "petBuffEntriesListed": 40,
+    "petNanosFoundOutsidePetCategories": 0,
+    "shadowlandsGatedPetNanos": 22,
+    "specializationGatedPetNanos": 20,
+    "nanoFocusGatedPetNanos": 2,
+    "idsVerifiedAgainstItemnamesSql": "145 of 145 (see _verification)",
+    "note": "petTypes below carry all 105 pet SUMMONS (65 bots + 37 charms + 2 Associates + 1 Means Test Pet); petBuffs carries all 37 pet buffs/utility + all 3 pet heals = 40. 145 of 145 Bureaucrat pet nanos, no sampling. A sweep of the other 15 categories in bureaucrat-nanos.json for SpawnItem / SummonPet / CharmNpc / petTargeted / Breed==7 / NPCFamily==95 found 0 further pet nanos."
+  },
+  "petTypes": [
+    {
+      "role": "Attack bot - Worker family (BUWO)",
+      "nanoLine": "SpawnItem BUWO",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "The first bot family and the whole spawn-level 2-14 band. Seven nanos, Basic -> Director-Grade, MC/TS 6 -> 69. 'Basic Worker-Droid' (46397) needs MC/TS 6, so it is castable within the first few levels.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Worker-Droid",
+          "id": 46397,
+          "minLevel": 0,
+          "spawnLevel": 2,
+          "grade": "Basic",
+          "note": "spawn level 2 (SpawnItem[BUWO,2,0] - the pet template argument, NOT a character-level requirement); MC/TS 6/6; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 6",
+            "SpaceTime > 6",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,2,0]"
+          ]
+        },
+        {
+          "nano": "Limited Worker-Droid",
+          "id": 46362,
+          "minLevel": 0,
+          "spawnLevel": 3,
+          "grade": "Limited",
+          "note": "spawn level 3 (SpawnItem[BUWO,3,0] - the pet template argument, NOT a character-level requirement); MC/TS 21/21; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 21",
+            "SpaceTime > 21",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,3,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Worker-Droid",
+          "id": 46363,
+          "minLevel": 0,
+          "spawnLevel": 6,
+          "grade": "Faithful",
+          "note": "spawn level 6 (SpawnItem[BUWO,6,0] - the pet template argument, NOT a character-level requirement); MC/TS 34/34; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 34",
+            "SpaceTime > 34",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,6,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Worker",
+          "id": 46399,
+          "minLevel": 0,
+          "spawnLevel": 8,
+          "grade": "Advanced",
+          "note": "spawn level 8 (SpawnItem[BUWO,8,0] - the pet template argument, NOT a character-level requirement); MC/TS 43/43; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 43",
+            "SpaceTime > 43",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,8,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Worker-Droid",
+          "id": 46351,
+          "minLevel": 0,
+          "spawnLevel": 10,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 10 (SpawnItem[BUWO,10,0] - the pet template argument, NOT a character-level requirement); MC/TS 52/52; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 52",
+            "SpaceTime > 52",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,10,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Worker-Droid",
+          "id": 46385,
+          "minLevel": 0,
+          "spawnLevel": 12,
+          "grade": "Executive-Grade",
+          "note": "spawn level 12 (SpawnItem[BUWO,12,0] - the pet template argument, NOT a character-level requirement); MC/TS 60/60; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 60",
+            "SpaceTime > 60",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,12,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Worker-Droid",
+          "id": 46386,
+          "minLevel": 0,
+          "spawnLevel": 14,
+          "grade": "Director-Grade",
+          "note": "spawn level 14 (SpawnItem[BUWO,14,0] - the pet template argument, NOT a character-level requirement); MC/TS 69/69; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 69",
+            "SpaceTime > 69",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUWO,14,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Helper family (BUHE)",
+      "nanoLine": "SpawnItem BUHE",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 16-28, MC/TS 78 -> 129. Note the client's own naming drift inside this family: the Limited grade is 'Limited Helper-Bot' (46359), not '-Droid', and the Advanced grade is plain 'Advanced Helper' (46411).",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Helper-Droid",
+          "id": 46405,
+          "minLevel": 0,
+          "spawnLevel": 16,
+          "grade": "Basic",
+          "note": "spawn level 16 (SpawnItem[BUHE,16,0] - the pet template argument, NOT a character-level requirement); MC/TS 78/78; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 78",
+            "SpaceTime > 78",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,16,0]"
+          ]
+        },
+        {
+          "nano": "Limited Helper-Bot",
+          "id": 46359,
+          "minLevel": 0,
+          "spawnLevel": 18,
+          "grade": "Limited",
+          "note": "spawn level 18 (SpawnItem[BUHE,18,0] - the pet template argument, NOT a character-level requirement); MC/TS 86/86; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 86",
+            "SpaceTime > 86",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,18,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Helper-Droid",
+          "id": 46374,
+          "minLevel": 0,
+          "spawnLevel": 20,
+          "grade": "Faithful",
+          "note": "spawn level 20 (SpawnItem[BUHE,20,0] - the pet template argument, NOT a character-level requirement); MC/TS 95/95; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 95",
+            "SpaceTime > 95",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,20,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Helper",
+          "id": 46411,
+          "minLevel": 0,
+          "spawnLevel": 22,
+          "grade": "Advanced",
+          "note": "spawn level 22 (SpawnItem[BUHE,22,0] - the pet template argument, NOT a character-level requirement); MC/TS 103/103; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 103",
+            "SpaceTime > 103",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,22,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Helper-Droid",
+          "id": 46357,
+          "minLevel": 0,
+          "spawnLevel": 24,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 24 (SpawnItem[BUHE,24,0] - the pet template argument, NOT a character-level requirement); MC/TS 111/111; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 111",
+            "SpaceTime > 111",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,24,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Helper-Droid",
+          "id": 46382,
+          "minLevel": 0,
+          "spawnLevel": 26,
+          "grade": "Executive-Grade",
+          "note": "spawn level 26 (SpawnItem[BUHE,26,0] - the pet template argument, NOT a character-level requirement); MC/TS 120/120; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 120",
+            "SpaceTime > 120",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,26,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Helper-Droid",
+          "id": 46392,
+          "minLevel": 0,
+          "spawnLevel": 28,
+          "grade": "Director-Grade",
+          "note": "spawn level 28 (SpawnItem[BUHE,28,0] - the pet template argument, NOT a character-level requirement); MC/TS 129/129; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 129",
+            "SpaceTime > 129",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUHE,28,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Attendant family (BUAT)",
+      "nanoLine": "SpawnItem BUAT",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 30-48, MC/TS 138 -> 211. The grade steps are a flat +3 spawn levels each, the first family where the grade ladder becomes perfectly regular.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Attendant-Droid",
+          "id": 46403,
+          "minLevel": 0,
+          "spawnLevel": 30,
+          "grade": "Basic",
+          "note": "spawn level 30 (SpawnItem[BUAT,30,0] - the pet template argument, NOT a character-level requirement); MC/TS 138/138; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 138",
+            "SpaceTime > 138",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,30,0]"
+          ]
+        },
+        {
+          "nano": "Limited Attendant-Droid",
+          "id": 46367,
+          "minLevel": 0,
+          "spawnLevel": 33,
+          "grade": "Limited",
+          "note": "spawn level 33 (SpawnItem[BUAT,33,0] - the pet template argument, NOT a character-level requirement); MC/TS 150/150; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 150",
+            "SpaceTime > 150",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,33,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Attendant-Droid",
+          "id": 46372,
+          "minLevel": 0,
+          "spawnLevel": 36,
+          "grade": "Faithful",
+          "note": "spawn level 36 (SpawnItem[BUAT,36,0] - the pet template argument, NOT a character-level requirement); MC/TS 162/162; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 162",
+            "SpaceTime > 162",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,36,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Attendant-Droid",
+          "id": 46409,
+          "minLevel": 0,
+          "spawnLevel": 39,
+          "grade": "Advanced",
+          "note": "spawn level 39 (SpawnItem[BUAT,39,0] - the pet template argument, NOT a character-level requirement); MC/TS 174/174; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 174",
+            "SpaceTime > 174",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,39,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Attendant-Droid",
+          "id": 46355,
+          "minLevel": 0,
+          "spawnLevel": 42,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 42 (SpawnItem[BUAT,42,0] - the pet template argument, NOT a character-level requirement); MC/TS 187/187; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 187",
+            "SpaceTime > 187",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,42,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Attendant-Droid",
+          "id": 46380,
+          "minLevel": 0,
+          "spawnLevel": 45,
+          "grade": "Executive-Grade",
+          "note": "spawn level 45 (SpawnItem[BUAT,45,0] - the pet template argument, NOT a character-level requirement); MC/TS 199/199; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 199",
+            "SpaceTime > 199",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,45,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Attendant-Droid",
+          "id": 46390,
+          "minLevel": 0,
+          "spawnLevel": 48,
+          "grade": "Director-Grade",
+          "note": "spawn level 48 (SpawnItem[BUAT,48,0] - the pet template argument, NOT a character-level requirement); MC/TS 211/211; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 211",
+            "SpaceTime > 211",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAT,48,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Assistant family (BUAS)",
+      "nanoLine": "SpawnItem BUAS",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 51-69, MC/TS 225 -> 320. Still +3 spawn levels per grade.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Assistant-Droid",
+          "id": 46402,
+          "minLevel": 0,
+          "spawnLevel": 51,
+          "grade": "Basic",
+          "note": "spawn level 51 (SpawnItem[BUAS,51,0] - the pet template argument, NOT a character-level requirement); MC/TS 225/225; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 225",
+            "SpaceTime > 225",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,51,0]"
+          ]
+        },
+        {
+          "nano": "Limited Assistant-Droid",
+          "id": 46366,
+          "minLevel": 0,
+          "spawnLevel": 54,
+          "grade": "Limited",
+          "note": "spawn level 54 (SpawnItem[BUAS,54,0] - the pet template argument, NOT a character-level requirement); MC/TS 240/240; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 240",
+            "SpaceTime > 240",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,54,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Assistant-Droid",
+          "id": 46371,
+          "minLevel": 0,
+          "spawnLevel": 57,
+          "grade": "Faithful",
+          "note": "spawn level 57 (SpawnItem[BUAS,57,0] - the pet template argument, NOT a character-level requirement); MC/TS 256/256; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 256",
+            "SpaceTime > 256",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,57,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Assistant-Droid",
+          "id": 46408,
+          "minLevel": 0,
+          "spawnLevel": 60,
+          "grade": "Advanced",
+          "note": "spawn level 60 (SpawnItem[BUAS,60,0] - the pet template argument, NOT a character-level requirement); MC/TS 272/272; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 272",
+            "SpaceTime > 272",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,60,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Assistant-Droid",
+          "id": 46354,
+          "minLevel": 0,
+          "spawnLevel": 63,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 63 (SpawnItem[BUAS,63,0] - the pet template argument, NOT a character-level requirement); MC/TS 288/288; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 288",
+            "SpaceTime > 288",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,63,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Assistant-Droid",
+          "id": 46379,
+          "minLevel": 0,
+          "spawnLevel": 66,
+          "grade": "Executive-Grade",
+          "note": "spawn level 66 (SpawnItem[BUAS,66,0] - the pet template argument, NOT a character-level requirement); MC/TS 304/304; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 304",
+            "SpaceTime > 304",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,66,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Assistant-Droid",
+          "id": 46389,
+          "minLevel": 0,
+          "spawnLevel": 69,
+          "grade": "Director-Grade",
+          "note": "spawn level 69 (SpawnItem[BUAS,69,0] - the pet template argument, NOT a character-level requirement); MC/TS 320/320; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 320",
+            "SpaceTime > 320",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAS,69,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Aide family (BUAI)",
+      "nanoLine": "SpawnItem BUAI",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 72-91, MC/TS 335 -> 427. +3 per grade except the last step (Executive-Grade 87 -> Director-Grade 91, +4).",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Aide-Droid",
+          "id": 46401,
+          "minLevel": 0,
+          "spawnLevel": 72,
+          "grade": "Basic",
+          "note": "spawn level 72 (SpawnItem[BUAI,72,0] - the pet template argument, NOT a character-level requirement); MC/TS 335/335; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 335",
+            "SpaceTime > 335",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,72,0]"
+          ]
+        },
+        {
+          "nano": "Limited Aide-Droid",
+          "id": 46365,
+          "minLevel": 0,
+          "spawnLevel": 75,
+          "grade": "Limited",
+          "note": "spawn level 75 (SpawnItem[BUAI,75,0] - the pet template argument, NOT a character-level requirement); MC/TS 349/349; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 349",
+            "SpaceTime > 349",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,75,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Aide-Droid",
+          "id": 46370,
+          "minLevel": 0,
+          "spawnLevel": 78,
+          "grade": "Faithful",
+          "note": "spawn level 78 (SpawnItem[BUAI,78,0] - the pet template argument, NOT a character-level requirement); MC/TS 364/364; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 364",
+            "SpaceTime > 364",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,78,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Aide-Droid",
+          "id": 46407,
+          "minLevel": 0,
+          "spawnLevel": 81,
+          "grade": "Advanced",
+          "note": "spawn level 81 (SpawnItem[BUAI,81,0] - the pet template argument, NOT a character-level requirement); MC/TS 378/378; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 378",
+            "SpaceTime > 378",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,81,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Aide-Droid",
+          "id": 46353,
+          "minLevel": 0,
+          "spawnLevel": 84,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 84 (SpawnItem[BUAI,84,0] - the pet template argument, NOT a character-level requirement); MC/TS 393/393; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 393",
+            "SpaceTime > 393",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,84,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Aide-Droid",
+          "id": 46378,
+          "minLevel": 0,
+          "spawnLevel": 87,
+          "grade": "Executive-Grade",
+          "note": "spawn level 87 (SpawnItem[BUAI,87,0] - the pet template argument, NOT a character-level requirement); MC/TS 407/407; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 407",
+            "SpaceTime > 407",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,87,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Aide-Droid",
+          "id": 46388,
+          "minLevel": 0,
+          "spawnLevel": 91,
+          "grade": "Director-Grade",
+          "note": "spawn level 91 (SpawnItem[BUAI,91,0] - the pet template argument, NOT a character-level requirement); MC/TS 427/427; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 427",
+            "SpaceTime > 427",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAI,91,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Secretary family (BUSC)",
+      "nanoLine": "SpawnItem BUSC",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 95-119, MC/TS 449 -> 573. The step widens to +4 spawn levels per grade.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Secretary-Droid",
+          "id": 46396,
+          "minLevel": 0,
+          "spawnLevel": 95,
+          "grade": "Basic",
+          "note": "spawn level 95 (SpawnItem[BUSC,95,0] - the pet template argument, NOT a character-level requirement); MC/TS 449/449; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 449",
+            "SpaceTime > 449",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,95,0]"
+          ]
+        },
+        {
+          "nano": "Limited Secretary-Droid",
+          "id": 46361,
+          "minLevel": 0,
+          "spawnLevel": 99,
+          "grade": "Limited",
+          "note": "spawn level 99 (SpawnItem[BUSC,99,0] - the pet template argument, NOT a character-level requirement); MC/TS 472/472; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 472",
+            "SpaceTime > 472",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,99,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Secretary-Droid",
+          "id": 46376,
+          "minLevel": 0,
+          "spawnLevel": 103,
+          "grade": "Faithful",
+          "note": "spawn level 103 (SpawnItem[BUSC,103,0] - the pet template argument, NOT a character-level requirement); MC/TS 492/492; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 492",
+            "SpaceTime > 492",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,103,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Secretary-Droid",
+          "id": 46398,
+          "minLevel": 0,
+          "spawnLevel": 107,
+          "grade": "Advanced",
+          "note": "spawn level 107 (SpawnItem[BUSC,107,0] - the pet template argument, NOT a character-level requirement); MC/TS 512/512; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 512",
+            "SpaceTime > 512",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,107,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Secretary-Droid",
+          "id": 46350,
+          "minLevel": 0,
+          "spawnLevel": 111,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 111 (SpawnItem[BUSC,111,0] - the pet template argument, NOT a character-level requirement); MC/TS 532/532; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 532",
+            "SpaceTime > 532",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,111,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Secretary-Droid",
+          "id": 46384,
+          "minLevel": 0,
+          "spawnLevel": 115,
+          "grade": "Executive-Grade",
+          "note": "spawn level 115 (SpawnItem[BUSC,115,0] - the pet template argument, NOT a character-level requirement); MC/TS 553/553; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 553",
+            "SpaceTime > 553",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,115,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Secretary-Droid",
+          "id": 46394,
+          "minLevel": 0,
+          "spawnLevel": 119,
+          "grade": "Director-Grade",
+          "note": "spawn level 119 (SpawnItem[BUSC,119,0] - the pet template argument, NOT a character-level requirement); MC/TS 573/573; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 573",
+            "SpaceTime > 573",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUSC,119,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Administrator family (BUAD)",
+      "nanoLine": "SpawnItem BUAD",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 123-147, MC/TS 593 -> 653. The MC/TS cost per grade collapses here - the whole family spans only 60 skill points for 24 spawn levels, so upgrading inside it is cheap.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Administrator",
+          "id": 46400,
+          "minLevel": 0,
+          "spawnLevel": 123,
+          "grade": "Basic",
+          "note": "spawn level 123 (SpawnItem[BUAD,123,0] - the pet template argument, NOT a character-level requirement); MC/TS 593/593; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 593",
+            "SpaceTime > 593",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,123,0]"
+          ]
+        },
+        {
+          "nano": "Limited Administrator-Droid",
+          "id": 46364,
+          "minLevel": 0,
+          "spawnLevel": 127,
+          "grade": "Limited",
+          "note": "spawn level 127 (SpawnItem[BUAD,127,0] - the pet template argument, NOT a character-level requirement); MC/TS 609/609; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 609",
+            "SpaceTime > 609",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,127,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Administrator-Droid",
+          "id": 46369,
+          "minLevel": 0,
+          "spawnLevel": 131,
+          "grade": "Faithful",
+          "note": "spawn level 131 (SpawnItem[BUAD,131,0] - the pet template argument, NOT a character-level requirement); MC/TS 619/619; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 619",
+            "SpaceTime > 619",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,131,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Administrator-Droid",
+          "id": 46406,
+          "minLevel": 0,
+          "spawnLevel": 135,
+          "grade": "Advanced",
+          "note": "spawn level 135 (SpawnItem[BUAD,135,0] - the pet template argument, NOT a character-level requirement); MC/TS 627/627; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 627",
+            "SpaceTime > 627",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,135,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Administrator-Droid",
+          "id": 46352,
+          "minLevel": 0,
+          "spawnLevel": 139,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 139 (SpawnItem[BUAD,139,0] - the pet template argument, NOT a character-level requirement); MC/TS 636/636; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 636",
+            "SpaceTime > 636",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,139,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Administrator-Droid",
+          "id": 46377,
+          "minLevel": 0,
+          "spawnLevel": 143,
+          "grade": "Executive-Grade",
+          "note": "spawn level 143 (SpawnItem[BUAD,143,0] - the pet template argument, NOT a character-level requirement); MC/TS 645/645; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 645",
+            "SpaceTime > 645",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,143,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Administrator-Droid",
+          "id": 46387,
+          "minLevel": 0,
+          "spawnLevel": 147,
+          "grade": "Director-Grade",
+          "note": "spawn level 147 (SpawnItem[BUAD,147,0] - the pet template argument, NOT a character-level requirement); MC/TS 653/653; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 653",
+            "SpaceTime > 653",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUAD,147,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Minion family (BUMI)",
+      "nanoLine": "SpawnItem BUMI",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "Spawn levels 151-175, MC/TS 661 -> 722. Same flat skill curve as the Administrator family.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Minion",
+          "id": 46395,
+          "minLevel": 0,
+          "spawnLevel": 151,
+          "grade": "Basic",
+          "note": "spawn level 151 (SpawnItem[BUMI,151,0] - the pet template argument, NOT a character-level requirement); MC/TS 661/661; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 661",
+            "SpaceTime > 661",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,151,0]"
+          ]
+        },
+        {
+          "nano": "Limited Minion",
+          "id": 46360,
+          "minLevel": 0,
+          "spawnLevel": 155,
+          "grade": "Limited",
+          "note": "spawn level 155 (SpawnItem[BUMI,155,0] - the pet template argument, NOT a character-level requirement); MC/TS 669/669; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 669",
+            "SpaceTime > 669",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,155,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Minion",
+          "id": 46375,
+          "minLevel": 0,
+          "spawnLevel": 159,
+          "grade": "Faithful",
+          "note": "spawn level 159 (SpawnItem[BUMI,159,0] - the pet template argument, NOT a character-level requirement); MC/TS 677/677; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 677",
+            "SpaceTime > 677",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,159,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Minion",
+          "id": 46412,
+          "minLevel": 0,
+          "spawnLevel": 163,
+          "grade": "Advanced",
+          "note": "spawn level 163 (SpawnItem[BUMI,163,0] - the pet template argument, NOT a character-level requirement); MC/TS 688/688; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 688",
+            "SpaceTime > 688",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,163,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Minion",
+          "id": 46358,
+          "minLevel": 0,
+          "spawnLevel": 167,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 167 (SpawnItem[BUMI,167,0] - the pet template argument, NOT a character-level requirement); MC/TS 699/699; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 699",
+            "SpaceTime > 699",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,167,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Minion",
+          "id": 46383,
+          "minLevel": 0,
+          "spawnLevel": 171,
+          "grade": "Executive-Grade",
+          "note": "spawn level 171 (SpawnItem[BUMI,171,0] - the pet template argument, NOT a character-level requirement); MC/TS 710/710; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 710",
+            "SpaceTime > 710",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,171,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Minion",
+          "id": 46393,
+          "minLevel": 0,
+          "spawnLevel": 175,
+          "grade": "Director-Grade",
+          "note": "spawn level 175 (SpawnItem[BUMI,175,0] - the pet template argument, NOT a character-level requirement); MC/TS 722/722; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 722",
+            "SpaceTime > 722",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUMI,175,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Bodyguard family (BUBO)",
+      "nanoLine": "SpawnItem BUBO",
+      "nanoStrain": "0 (NOSTACKING)",
+      "petTypeOnWire": "PetType.Attack (0xA) - AOSharp PetType.cs names the Bureaucrat Worker as the example of the Attack-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 7,
+      "description": "The top froob family: spawn levels 179-200, MC/TS 736 -> 786. Director-Grade Bodyguard (46391, spawn level 200, MC/TS 786) is the highest bot in the game that needs no expansion, no Specialization and no nano focus - the froob ceiling.",
+      "mechanics": "Seven quality grades in fixed order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade - an ordering taken from the SpawnItem level argument, which rises monotonically through those seven names in every one of the nine families. Cast the highest grade your MC/TS allows; the new bot replaces the one you have. Matter Creation and Time & Space are required at exactly the same value on all 65 bot summons.",
+      "progression": [
+        {
+          "nano": "Basic Bodyguard",
+          "id": 46404,
+          "minLevel": 0,
+          "spawnLevel": 179,
+          "grade": "Basic",
+          "note": "spawn level 179 (SpawnItem[BUBO,179,0] - the pet template argument, NOT a character-level requirement); MC/TS 736/736; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 736",
+            "SpaceTime > 736",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,179,0]"
+          ]
+        },
+        {
+          "nano": "Limited Bodyguard",
+          "id": 46368,
+          "minLevel": 0,
+          "spawnLevel": 183,
+          "grade": "Limited",
+          "note": "spawn level 183 (SpawnItem[BUBO,183,0] - the pet template argument, NOT a character-level requirement); MC/TS 746/746; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 746",
+            "SpaceTime > 746",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,183,0]"
+          ]
+        },
+        {
+          "nano": "Faithful Bodyguard",
+          "id": 46373,
+          "minLevel": 0,
+          "spawnLevel": 187,
+          "grade": "Faithful",
+          "note": "spawn level 187 (SpawnItem[BUBO,187,0] - the pet template argument, NOT a character-level requirement); MC/TS 755/755; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 755",
+            "SpaceTime > 755",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,187,0]"
+          ]
+        },
+        {
+          "nano": "Advanced Bodyguard",
+          "id": 46410,
+          "minLevel": 0,
+          "spawnLevel": 191,
+          "grade": "Advanced",
+          "note": "spawn level 191 (SpawnItem[BUBO,191,0] - the pet template argument, NOT a character-level requirement); MC/TS 765/765; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 765",
+            "SpaceTime > 765",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,191,0]"
+          ]
+        },
+        {
+          "nano": "Supervisor-Grade Bodyguard",
+          "id": 46356,
+          "minLevel": 0,
+          "spawnLevel": 194,
+          "grade": "Supervisor-Grade",
+          "note": "spawn level 194 (SpawnItem[BUBO,194,0] - the pet template argument, NOT a character-level requirement); MC/TS 771/771; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 771",
+            "SpaceTime > 771",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,194,0]"
+          ]
+        },
+        {
+          "nano": "Executive-Grade Bodyguard",
+          "id": 46381,
+          "minLevel": 0,
+          "spawnLevel": 197,
+          "grade": "Executive-Grade",
+          "note": "spawn level 197 (SpawnItem[BUBO,197,0] - the pet template argument, NOT a character-level requirement); MC/TS 778/778; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 778",
+            "SpaceTime > 778",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,197,0]"
+          ]
+        },
+        {
+          "nano": "Director-Grade Bodyguard",
+          "id": 46391,
+          "minLevel": 0,
+          "spawnLevel": 200,
+          "grade": "Director-Grade",
+          "note": "spawn level 200 (SpawnItem[BUBO,200,0] - the pet template argument, NOT a character-level requirement); MC/TS 786/786; no credit cost; no expansion or Specialization gate",
+          "castReqs": [
+            "MaterialCreation > 786",
+            "SpaceTime > 786",
+            "Profession == 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BUBO,200,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - Corporate Guardian (Shadowlands)",
+      "nanoLine": "SpawnItem BRBD",
+      "nanoStrain": "0 (NOSTACKING)",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 1,
+      "description": "A single Shadowlands nano that jumps the bot from spawn level 200 to 205 - and it costs a huge skill step to do it: MC/TS 1,226 against the Director-Grade Bodyguard's 786, a +440 jump for +5 spawn levels. It is also the only bot summon in the data with an explicit character-level requirement (Level > 204).",
+      "mechanics": "Requires Shadowlands (Expansion op22 2), Specialization bit 8 and character level 205. Template code changes from the BU** froob prefix to BR**.",
+      "progression": [
+        {
+          "nano": "Corporate Guardian",
+          "id": 235386,
+          "minLevel": 205,
+          "spawnLevel": 205,
+          "grade": "n/a",
+          "note": "spawn level 205 (SpawnItem[BRBD,205,0] - the pet template argument, not a level requirement); MC/TS 1226/1226; gates: Shadowlands (Expansion op22 2); Specialization bit 8; character Level > 204",
+          "castReqs": [
+            "MaterialCreation > 1226",
+            "SpaceTime > 1226",
+            "Profession == 8",
+            "Expansion op22 2",
+            "Level > 204",
+            "Specialization op22 8"
+          ],
+          "rawEffects": [
+            "SpawnItem[BRBD,205,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack bot - CEO Guardian (nano-focus gated)",
+      "nanoLine": "SpawnItem BRBY",
+      "nanoStrain": "0 (NOSTACKING)",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at exactly the same value; Profession(60) == 8. All 65 bot summons use Profession(60), never VisualProfession(368).",
+      "count": 1,
+      "description": "The best bot in the data: spawn level 215, MC/TS 1,469. Unlike the Corporate Guardian it is NOT Shadowlands/Specialization gated - it carries NanoFocusLevel op22 64 instead, the same late nano-focus gate the Engineer's Ravening M-60 uses, and no character-level requirement at all.",
+      "mechanics": "The gate is 'NanoFocusLevel op22 64' (a BitAnd on stat 355). What unlocks that bit is not derivable from the nano data - see _unverified.",
+      "progression": [
+        {
+          "nano": "CEO Guardian",
+          "id": 273300,
+          "minLevel": 0,
+          "spawnLevel": 215,
+          "grade": "n/a",
+          "note": "spawn level 215 (SpawnItem[BRBY,215,0] - the pet template argument, not a level requirement); MC/TS 1469/1469; gate: NanoFocusLevel bit 64; no character-level requirement",
+          "castReqs": [
+            "MaterialCreation > 1469",
+            "SpaceTime > 1469",
+            "Profession == 8",
+            "NanoFocusLevel op22 64"
+          ],
+          "rawEffects": [
+            "SpawnItem[BRBY,215,0]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Charmed NPC - long charm line (PetType 12)",
+      "nanoLine": "CharmOther",
+      "nanoStrain": 202,
+      "petTypeOnWire": "PetType 12 = PetType.Support (0xC) in AOSharp PetType.cs - every nano in this line carries ChangeVariable[512,12], so a long-charmed NPC is registered in the Support pet slot",
+      "summonSkills": "Psychological Modification (129) + Sensory Improvement (122) + Biological Metamorphosis (128) at exactly the same value on all 37 charms; Profession(60) == 8 on 17 of them and VisualProfession(368) == 8 on the other 20.",
+      "count": 15,
+      "description": "The Bureaucrat's headline trick and the thing no other profession has as a permanent tool: it does not SUMMON this pet, it takes an NPC that already exists and makes it fight for you. Fifteen solo nanos from Temporary Glamor (99208, PM 108) up to The Voice of God (231010, PM 1,499). AO-Universe's Bureaucrat Guide calls this line the LONG charm ('The Voice of Truth ... long duration'). Every one of the fifteen carries 'Pets op66 7001' and sets PetType 12.",
+      "mechanics": "Each charm does four things at once, all visible in the nano's own functions: CharmNpc[] takes the target; TauntNpc[N] dumps a tier-scaled taunt on it (1,223 at Temporary Glamor, 8,720 at Total Mental Domination and above, plus a flat TauntNpc[50000] on most tiers); Hit[27,-1,-1,94] pokes the target for 1 point; and a block of ChangeVariable calls writes the pet's OWN keep-alive requirement into PetReq1/2/3 = 129/122/128 (PM/SI/BM) with PetReqVal1/2/3 set to the caster's required skill value - the over-equip check for a charmed pet. The whole line is one nano strain (202), so a second charm of this line replaces the first. AO-Universe: 'You can not charm calmed mobs/bosses/uniques/guards', and the AODB wiki warns 'previously charmed enemies give no XP' and that the charm is 'a small but ticking time bomb that goes off when the Charm wears off (the former ally attacks)'.",
+      "progression": [
+        {
+          "nano": "Temporary Glamor",
+          "id": 99208,
+          "minLevel": 0,
+          "charmSkill": 108,
+          "targetPsychicCeiling": 69,
+          "petType": 12,
+          "note": "PM/SI/BM 108/108/108; target Psychic < 69; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 1223; sets the charmed pet's own keep-alive requirement to PM/SI/BM 108 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 108",
+            "SensoryImprovement > 108",
+            "BiologicalMetamorphosis > 108",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 69"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,108]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,108]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,108]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[1223]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Bend Will",
+          "id": 99206,
+          "minLevel": 0,
+          "charmSkill": 166,
+          "targetPsychicCeiling": 99,
+          "petType": 12,
+          "note": "PM/SI/BM 166/166/166; target Psychic < 99; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 1718+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 166 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 166",
+            "SensoryImprovement > 166",
+            "BiologicalMetamorphosis > 166",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 99"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,166]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,166]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,166]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[1718]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Dominate Psyche",
+          "id": 99204,
+          "minLevel": 0,
+          "charmSkill": 228,
+          "targetPsychicCeiling": 125,
+          "petType": 12,
+          "note": "PM/SI/BM 228/228/228; target Psychic < 125; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 2335+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 228 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 228",
+            "SensoryImprovement > 228",
+            "BiologicalMetamorphosis > 228",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 125"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,228]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,228]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,228]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[2335]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Solicit Support",
+          "id": 99202,
+          "minLevel": 0,
+          "charmSkill": 303,
+          "targetPsychicCeiling": 159,
+          "petType": 12,
+          "note": "PM/SI/BM 303/303/303; target Psychic < 159; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 2950; sets the charmed pet's own keep-alive requirement to PM/SI/BM 303 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 303",
+            "SensoryImprovement > 303",
+            "BiologicalMetamorphosis > 303",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 159"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,303]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,303]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,303]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[2950]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Impose Will",
+          "id": 99201,
+          "minLevel": 0,
+          "charmSkill": 401,
+          "targetPsychicCeiling": 201,
+          "petType": 12,
+          "note": "PM/SI/BM 401/401/401; target Psychic < 201; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 3800+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 401 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 401",
+            "SensoryImprovement > 401",
+            "BiologicalMetamorphosis > 401",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 201"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,401]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,401]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,401]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[3800]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Captivated Thoughts",
+          "id": 99199,
+          "minLevel": 0,
+          "charmSkill": 505,
+          "targetPsychicCeiling": 243,
+          "petType": 12,
+          "note": "PM/SI/BM 505/505/505; target Psychic < 243; PetType 12; Pets op66 7001; 1 x CharmNpc; taunt 4850+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 505 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 505",
+            "SensoryImprovement > 505",
+            "BiologicalMetamorphosis > 505",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Psychic < 243"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,505]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,505]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,505]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[4850]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Allure of Servitude",
+          "id": 99198,
+          "minLevel": 0,
+          "charmSkill": 632,
+          "targetPsychicCeiling": 287,
+          "petType": 12,
+          "note": "PM/SI/BM 632/632/632; target Psychic < 287; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 5756+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 632 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 632",
+            "SensoryImprovement > 632",
+            "BiologicalMetamorphosis > 632",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Pets op66 2001",
+            "Psychic < 287"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,632]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,632]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,632]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[5756]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Insidious Beguilement",
+          "id": 99195,
+          "minLevel": 0,
+          "charmSkill": 710,
+          "targetPsychicCeiling": 327,
+          "petType": 12,
+          "note": "PM/SI/BM 710/710/710; target Psychic < 327; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 6680+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 710 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 710",
+            "SensoryImprovement > 710",
+            "BiologicalMetamorphosis > 710",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Pets op66 2001",
+            "Psychic < 327"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,710]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,710]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,710]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[6680]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Inveigle Support",
+          "id": 99194,
+          "minLevel": 0,
+          "charmSkill": 750,
+          "targetPsychicCeiling": 375,
+          "petType": 12,
+          "note": "PM/SI/BM 750/750/750; target Psychic < 375; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 7520+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 750 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 750",
+            "SensoryImprovement > 750",
+            "BiologicalMetamorphosis > 750",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Pets op66 2001",
+            "Psychic < 375"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,750]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,750]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,750]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[7520]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Total Mental Domination",
+          "id": 99192,
+          "minLevel": 0,
+          "charmSkill": 826,
+          "targetPsychicCeiling": 455,
+          "petType": 12,
+          "note": "PM/SI/BM 826/826/826; target Psychic < 455; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 8720; sets the charmed pet's own keep-alive requirement to PM/SI/BM 826 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 826",
+            "SensoryImprovement > 826",
+            "BiologicalMetamorphosis > 826",
+            "VisualProfession == 8",
+            "Pets op66 7001",
+            "Pets op66 2001",
+            "Psychic < 455"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,826]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,826]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,826]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "The Voice of Truth",
+          "id": 231013,
+          "minLevel": 195,
+          "charmSkill": 999,
+          "targetPsychicCeiling": 501,
+          "petType": 12,
+          "note": "PM/SI/BM 999/999/999; target Psychic < 501; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; character Level > 194; gates: Specialization bit 4; sets the charmed pet's own keep-alive requirement to PM/SI/BM 999 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 999",
+            "SensoryImprovement > 999",
+            "BiologicalMetamorphosis > 999",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 194",
+            "Specialization op22 4",
+            "Pets op66 2001",
+            "Psychic < 501"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,999]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,999]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,999]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "My Way",
+          "id": 231012,
+          "minLevel": 215,
+          "charmSkill": 1199,
+          "targetPsychicCeiling": 551,
+          "petType": 12,
+          "note": "PM/SI/BM 1199/1199/1199; target Psychic < 551; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 8720; character Level > 214; gates: Specialization bit 8; sets the charmed pet's own keep-alive requirement to PM/SI/BM 1199 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 1199",
+            "SensoryImprovement > 1199",
+            "BiologicalMetamorphosis > 1199",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 214",
+            "Specialization op22 8",
+            "Pets op66 2001",
+            "Psychic < 551"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,1199]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,1199]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,1199]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Peer Pressure",
+          "id": 231009,
+          "minLevel": 215,
+          "charmSkill": 1299,
+          "targetPsychicCeiling": 551,
+          "petType": 12,
+          "note": "PM/SI/BM 1299/1299/1299; target Psychic < 551; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 8720; character Level > 214; gates: Specialization bit 8; sets the charmed pet's own keep-alive requirement to PM/SI/BM 1299 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 1299",
+            "SensoryImprovement > 1299",
+            "BiologicalMetamorphosis > 1299",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 214",
+            "Specialization op22 8",
+            "Pets op66 2001",
+            "Psychic < 551"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,1299]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,1299]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,1299]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "The Voice of One",
+          "id": 231008,
+          "minLevel": 216,
+          "charmSkill": 1499,
+          "targetPsychicCeiling": 551,
+          "petType": 12,
+          "note": "PM/SI/BM 1499/1499/1499; target Psychic < 551; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 8720; character Level > 215; gates: Specialization bit 8; sets the charmed pet's own keep-alive requirement to PM/SI/BM 1499 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 1499",
+            "SensoryImprovement > 1499",
+            "BiologicalMetamorphosis > 1499",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 215",
+            "Specialization op22 8",
+            "Pets op66 2001",
+            "Psychic < 551"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,1499]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,1499]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,1499]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "The Voice of God",
+          "id": 231010,
+          "minLevel": 220,
+          "charmSkill": 1499,
+          "targetPsychicCeiling": 551,
+          "petType": 12,
+          "note": "PM/SI/BM 1499/1499/1499; target Psychic < 551; PetType 12; Pets op66 7001, Pets op66 2001; 1 x CharmNpc; taunt 8720; character Level > 219; gates: Specialization bit 8; sets the charmed pet's own keep-alive requirement to PM/SI/BM 1499 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 1499",
+            "SensoryImprovement > 1499",
+            "BiologicalMetamorphosis > 1499",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 219",
+            "Specialization op22 8",
+            "Pets op66 2001",
+            "Psychic < 551"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,1499]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,1499]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,1499]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Charmed NPC - long charm line, Team Empowered variants (PetType 12)",
+      "nanoLine": "CharmOther",
+      "nanoStrain": 202,
+      "petTypeOnWire": "PetType 12 = PetType.Support (0xC)",
+      "summonSkills": "Psychological Modification (129) + Sensory Improvement (122) + Biological Metamorphosis (128) at exactly the same value on all 37 charms; Profession(60) == 8 on 17 of them and VisualProfession(368) == 8 on the other 20. Every Team Empowered nano additionally requires Shadowlands (Expansion op22 2), a Specialization bit and NumberOfTeamMembers > 1.",
+      "count": 11,
+      "description": "Eleven Shadowlands duplicates of the long-charm line, one per tier from Temporary Glamor up to The Voice of Truth, each requiring the SAME PM/SI/BM as the nano it mirrors but adding three gates: Shadowlands, a Specialization bit (1, 2 or 4 depending on tier) and NumberOfTeamMembers > 1. Two things change in the effect: the nano carries SIX CharmNpc[] functions instead of one, and the target's Psychic ceiling is RAISED - Bend Will stops at Psychic < 99, Team Empowered Bend Will reaches Psychic < 138; The Voice of Truth 501 -> 542. So the team version charms strictly harder targets than the solo version of the same tier.",
+      "mechanics": "Nothing in the Meta-Physicist or Engineer data resembles this: there is no 'Team Empowered' anything in either class's pet set. What the six CharmNpc[] copies actually do (one charmed NPC shared with the team vs one per team member) is not derivable from the local data - see _unverified.",
+      "progression": [
+        {
+          "nano": "Team Empowered Temporary Glamor",
+          "id": 230397,
+          "minLevel": 0,
+          "charmSkill": 108,
+          "targetPsychicCeiling": 93,
+          "petType": 12,
+          "note": "PM/SI/BM 108/108/108; target Psychic < 93; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 1223; gates: Shadowlands (Expansion op22 2); Specialization bit 1; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 108 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 108",
+            "SensoryImprovement > 108",
+            "BiologicalMetamorphosis > 108",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 1",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 93"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,108]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,108]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,108]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[1223]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Bend Will",
+          "id": 230391,
+          "minLevel": 0,
+          "charmSkill": 166,
+          "targetPsychicCeiling": 138,
+          "petType": 12,
+          "note": "PM/SI/BM 166/166/166; target Psychic < 138; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 1718+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 1; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 166 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 166",
+            "SensoryImprovement > 166",
+            "BiologicalMetamorphosis > 166",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 1",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 138"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,166]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,166]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,166]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[1718]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Dominate Psyche",
+          "id": 230392,
+          "minLevel": 0,
+          "charmSkill": 228,
+          "targetPsychicCeiling": 183,
+          "petType": 12,
+          "note": "PM/SI/BM 228/228/228; target Psychic < 183; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 2335+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 1; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 228 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 228",
+            "SensoryImprovement > 228",
+            "BiologicalMetamorphosis > 228",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 1",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 183"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,228]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,228]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,228]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[2335]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Solicit Support",
+          "id": 230396,
+          "minLevel": 0,
+          "charmSkill": 303,
+          "targetPsychicCeiling": 228,
+          "petType": 12,
+          "note": "PM/SI/BM 303/303/303; target Psychic < 228; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 2950; gates: Shadowlands (Expansion op22 2); Specialization bit 1; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 303 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 303",
+            "SensoryImprovement > 303",
+            "BiologicalMetamorphosis > 303",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 1",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 228"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,303]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,303]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,303]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[2950]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Impose Will",
+          "id": 230393,
+          "minLevel": 0,
+          "charmSkill": 401,
+          "targetPsychicCeiling": 273,
+          "petType": 12,
+          "note": "PM/SI/BM 401/401/401; target Psychic < 273; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 3800+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 1; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 401 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 401",
+            "SensoryImprovement > 401",
+            "BiologicalMetamorphosis > 401",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 1",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 273"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,401]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,401]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,401]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[3800]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Captivated Thoughts",
+          "id": 229964,
+          "minLevel": 0,
+          "charmSkill": 505,
+          "targetPsychicCeiling": 318,
+          "petType": 12,
+          "note": "PM/SI/BM 505/505/505; target Psychic < 318; PetType 12; Pets op66 7001; 6 x CharmNpc; taunt 50000; gates: Shadowlands (Expansion op22 2); Specialization bit 2; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 505 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 505",
+            "SensoryImprovement > 505",
+            "BiologicalMetamorphosis > 505",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 2",
+            "NumberOfTeamMembers > 1",
+            "Psychic < 318"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,505]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,505]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,505]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Allure of Servitude",
+          "id": 229961,
+          "minLevel": 0,
+          "charmSkill": 632,
+          "targetPsychicCeiling": 363,
+          "petType": 12,
+          "note": "PM/SI/BM 632/632/632; target Psychic < 363; PetType 12; Pets op66 7001, Pets op66 2001; 6 x CharmNpc; taunt 5756+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 2; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 632 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 632",
+            "SensoryImprovement > 632",
+            "BiologicalMetamorphosis > 632",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 2",
+            "NumberOfTeamMembers > 1",
+            "Pets op66 2001",
+            "Psychic < 363"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,632]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,632]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,632]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[5756]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Insidious Beguilement",
+          "id": 230394,
+          "minLevel": 0,
+          "charmSkill": 710,
+          "targetPsychicCeiling": 408,
+          "petType": 12,
+          "note": "PM/SI/BM 710/710/710; target Psychic < 408; PetType 12; Pets op66 7001, Pets op66 2001; 6 x CharmNpc; taunt 6680+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 2; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 710 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 710",
+            "SensoryImprovement > 710",
+            "BiologicalMetamorphosis > 710",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 2",
+            "NumberOfTeamMembers > 1",
+            "Pets op66 2001",
+            "Psychic < 408"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,710]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,710]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,710]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[6680]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Inveigle Support",
+          "id": 230395,
+          "minLevel": 0,
+          "charmSkill": 750,
+          "targetPsychicCeiling": 453,
+          "petType": 12,
+          "note": "PM/SI/BM 750/750/750; target Psychic < 453; PetType 12; Pets op66 7001, Pets op66 2001; 6 x CharmNpc; taunt 7520+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 2; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 750 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 750",
+            "SensoryImprovement > 750",
+            "BiologicalMetamorphosis > 750",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 2",
+            "NumberOfTeamMembers > 1",
+            "Pets op66 2001",
+            "Psychic < 453"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,750]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,750]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,750]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[7520]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Total Mental Domination",
+          "id": 230398,
+          "minLevel": 0,
+          "charmSkill": 826,
+          "targetPsychicCeiling": 498,
+          "petType": 12,
+          "note": "PM/SI/BM 826/826/826; target Psychic < 498; PetType 12; Pets op66 7001, Pets op66 2001; 6 x CharmNpc; taunt 8720+50000+50000; gates: Shadowlands (Expansion op22 2); Specialization bit 4; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 826 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 826",
+            "SensoryImprovement > 826",
+            "BiologicalMetamorphosis > 826",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Expansion op22 2",
+            "Specialization op22 4",
+            "NumberOfTeamMembers > 1",
+            "Pets op66 2001",
+            "Psychic < 498"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,826]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,826]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,826]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "TauntNpc[8720]",
+            "TauntNpc[50000]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Team Empowered Voice of Truth",
+          "id": 231011,
+          "minLevel": 195,
+          "charmSkill": 999,
+          "targetPsychicCeiling": 542,
+          "petType": 12,
+          "note": "PM/SI/BM 999/999/999; target Psychic < 542; PetType 12; Pets op66 7001, Pets op66 2001; 6 x CharmNpc; character Level > 194; gates: Specialization bit 4; in a team (NumberOfTeamMembers > 1); sets the charmed pet's own keep-alive requirement to PM/SI/BM 999 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 999",
+            "SensoryImprovement > 999",
+            "BiologicalMetamorphosis > 999",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 194",
+            "Specialization op22 4",
+            "NumberOfTeamMembers > 1",
+            "Pets op66 2001",
+            "Psychic < 542"
+          ],
+          "rawEffects": [
+            "ChangeVariable[485,999]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,999]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,999]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[512,12]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Charmed NPC - short charm line (PetType 11)",
+      "nanoLine": "CharmOther",
+      "nanoStrain": 202,
+      "petTypeOnWire": "PetType 11 = PetType.Heal (0xB) in AOSharp PetType.cs - every nano in this line carries ChangeVariable[512,11], so a short-charmed NPC is registered in the Heal pet slot, which is how a Crat ends up holding a charm in each slot",
+      "summonSkills": "Psychological Modification (129) + Sensory Improvement (122) + Biological Metamorphosis (128) at exactly the same value on all 37 charms; Profession(60) == 8 on 17 of them and VisualProfession(368) == 8 on the other 20.",
+      "count": 11,
+      "description": "The second, parallel charm line - eleven nanos from Lesser Pheromone Control (99207, PM 137) to The Choir Fantastic (275009, PM 1,912). AO-Universe's Bureaucrat Guide calls this the SHORT charm ('Displace Thought Patterns ... short duration') and states: 'It is possible to have 1 long and 1 short charm, or you can have 2 short charms. You can not use your Long charm if you already have a pet on short charm.' Every one of the eleven carries 'Pets op66 7002' (against 7001 on the long line) and sets PetType 11 - a perfect 37-of-37 correlation between the two markers.",
+      "mechanics": "Same four-part effect as the long line (CharmNpc + TauntNpc + Hit[27,-1,-1,94] + the PetReq/PetReqVal over-equip block), same nano strain 202, and for a given PM investment the short line reaches a LOWER target Psychic ceiling than the long line at first (Lesser Pheromone Control PM 137 -> Psychic < 83) but overtakes at the top (The Choir Fantastic PM 1,912 -> Psychic < 551, the same ceiling as The Voice of God). The Choir Fantastic is the only charm gated on NanoFocusLevel bit 64.",
+      "progression": [
+        {
+          "nano": "Lesser Pheromone Control",
+          "id": 99207,
+          "minLevel": 0,
+          "charmSkill": 137,
+          "targetPsychicCeiling": 83,
+          "petType": 11,
+          "note": "PM/SI/BM 137/137/137; target Psychic < 83; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 1150+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 137 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 137",
+            "SensoryImprovement > 137",
+            "BiologicalMetamorphosis > 137",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 83"
+          ],
+          "rawEffects": [
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,137]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[486,137]",
+            "ChangeVariable[487,137]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[1150]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Soft Siren Call",
+          "id": 99205,
+          "minLevel": 0,
+          "charmSkill": 194,
+          "targetPsychicCeiling": 111,
+          "petType": 11,
+          "note": "PM/SI/BM 194/194/194; target Psychic < 111; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 1301; sets the charmed pet's own keep-alive requirement to PM/SI/BM 194 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 194",
+            "SensoryImprovement > 194",
+            "BiologicalMetamorphosis > 194",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 111"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,194]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,194]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,194]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[1301]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Personal Magnetism",
+          "id": 99203,
+          "minLevel": 0,
+          "charmSkill": 257,
+          "targetPsychicCeiling": 143,
+          "petType": 11,
+          "note": "PM/SI/BM 257/257/257; target Psychic < 143; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 1479+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 257 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 257",
+            "SensoryImprovement > 257",
+            "BiologicalMetamorphosis > 257",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 143"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,257]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,257]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,257]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[1479]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Pheromone Control",
+          "id": 30086,
+          "minLevel": 0,
+          "charmSkill": 363,
+          "targetPsychicCeiling": 185,
+          "petType": 11,
+          "note": "PM/SI/BM 363/363/363; target Psychic < 185; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 1661+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 363 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 363",
+            "SensoryImprovement > 363",
+            "BiologicalMetamorphosis > 363",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 185"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,363]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,363]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,363]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[1661]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Lesser Charismatic Rapture",
+          "id": 99200,
+          "minLevel": 0,
+          "charmSkill": 455,
+          "targetPsychicCeiling": 223,
+          "petType": 11,
+          "note": "PM/SI/BM 455/455/455; target Psychic < 223; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 1903+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 455 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 455",
+            "SensoryImprovement > 455",
+            "BiologicalMetamorphosis > 455",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 223"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,455]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,455]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,455]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[1903]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Siren Call",
+          "id": 30092,
+          "minLevel": 0,
+          "charmSkill": 571,
+          "targetPsychicCeiling": 265,
+          "petType": 11,
+          "note": "PM/SI/BM 571/571/571; target Psychic < 265; PetType 11; Pets op66 7002; 1 x CharmNpc; taunt 2116; sets the charmed pet's own keep-alive requirement to PM/SI/BM 571 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 571",
+            "SensoryImprovement > 571",
+            "BiologicalMetamorphosis > 571",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Psychic < 265"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,571]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,571]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,571]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[2116]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Enrapturing Bondage",
+          "id": 99197,
+          "minLevel": 0,
+          "charmSkill": 686,
+          "targetPsychicCeiling": 307,
+          "petType": 11,
+          "note": "PM/SI/BM 686/686/686; target Psychic < 307; PetType 11; Pets op66 7002, Pets op66 2001; 1 x CharmNpc; taunt 2358+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 686 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 686",
+            "SensoryImprovement > 686",
+            "BiologicalMetamorphosis > 686",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Pets op66 2001",
+            "Psychic < 307"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,686]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,686]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,686]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[2358]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Temporary Allegiance",
+          "id": 99196,
+          "minLevel": 0,
+          "charmSkill": 731,
+          "targetPsychicCeiling": 347,
+          "petType": 11,
+          "note": "PM/SI/BM 731/731/731; target Psychic < 347; PetType 11; Pets op66 7002, Pets op66 2001; 1 x CharmNpc; taunt 2600; sets the charmed pet's own keep-alive requirement to PM/SI/BM 731 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 731",
+            "SensoryImprovement > 731",
+            "BiologicalMetamorphosis > 731",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Pets op66 2001",
+            "Psychic < 347"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,731]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,731]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,731]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[2600]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Charismatic Rapture",
+          "id": 99193,
+          "minLevel": 0,
+          "charmSkill": 780,
+          "targetPsychicCeiling": 408,
+          "petType": 11,
+          "note": "PM/SI/BM 780/780/780; target Psychic < 408; PetType 11; Pets op66 7002, Pets op66 2001; 1 x CharmNpc; taunt 2840+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 780 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 780",
+            "SensoryImprovement > 780",
+            "BiologicalMetamorphosis > 780",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Pets op66 2001",
+            "Psychic < 408"
+          ],
+          "rawEffects": [
+            "ChangeVariable[487,780]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,780]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,780]",
+            "ChangeVariable[467,129]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[2840]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "Displace Thought Patterns",
+          "id": 99209,
+          "minLevel": 0,
+          "charmSkill": 870,
+          "targetPsychicCeiling": 455,
+          "petType": 11,
+          "note": "PM/SI/BM 870/870/870; target Psychic < 455; PetType 11; Pets op66 7002, Pets op66 2001; 1 x CharmNpc; taunt 3173+50000; sets the charmed pet's own keep-alive requirement to PM/SI/BM 870 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 870",
+            "SensoryImprovement > 870",
+            "BiologicalMetamorphosis > 870",
+            "VisualProfession == 8",
+            "Pets op66 7002",
+            "Pets op66 2001",
+            "Psychic < 455"
+          ],
+          "rawEffects": [
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,870]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,870]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,870]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[3173]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        },
+        {
+          "nano": "The Choir Fantastic",
+          "id": 275009,
+          "minLevel": 0,
+          "charmSkill": 1912,
+          "targetPsychicCeiling": 551,
+          "petType": 11,
+          "note": "PM/SI/BM 1912/1912/1549; target Psychic < 551; PetType 11; Pets op66 7002, Pets op66 2001; 1 x CharmNpc; taunt 3173+50000; gates: NanoFocusLevel bit 64; sets the charmed pet's own keep-alive requirement to PM/SI/BM 1912 via ChangeVariable on PetReq1/2/3 (467/468/469) + PetReqVal1/2/3 (485/486/487)",
+          "castReqs": [
+            "PsychologicalModification > 1912",
+            "SensoryImprovement > 1912",
+            "BiologicalMetamorphosis > 1549",
+            "Profession == 8",
+            "Pets op66 7002",
+            "Pets op66 2001",
+            "NanoFocusLevel op22 64",
+            "Psychic < 551"
+          ],
+          "rawEffects": [
+            "ChangeVariable[467,129]",
+            "ChangeVariable[487,1913]",
+            "ChangeVariable[469,128]",
+            "ChangeVariable[486,1550]",
+            "ChangeVariable[468,122]",
+            "ChangeVariable[485,1913]",
+            "ChangeVariable[512,11]",
+            "TauntNpc[3173]",
+            "CharmNpc[]",
+            "Hit[27,-1,-1,94]",
+            "TauntNpc[50000]",
+            "ReduceNanoStrainDuration[225,2000000]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Mezz/Support pet - the two named Associates",
+      "nanoLine": "SupportPets",
+      "nanoStrain": 1017,
+      "petTypeOnWire": "PetType.Support (0xC) - AOSharp PetType.cs names Carlo Pinnetti as an example of the Support-slot pet, confirmed against sniffs",
+      "summonSkills": "Matter Creation (130) + Time & Space (131) at the same value; Profession(60) == 8; Shadowlands; Specialization; Pets op66 7001 + Pets op66 2001 - the same Pets-slot codes the LONG charm line carries.",
+      "count": 2,
+      "description": "The Bureaucrat's only true SummonPet support pets, and the only two nanos it shares a strain (1017 SupportPets) with the Meta-Physicist's mezz pets. Carlita Desposito (293899) is self-scaling: five SummonPet functions for template levels 175/200/205/210/215, so the nano picks the best the caster's skills allow. Carlo Pinnetti (258580) is a single template level 220 and needs MC/TS 1,399 at character level 220.",
+      "mechanics": "Both carry the same 'Pets op66 7001' as the long-charm line, so they and a long charm compete for the same slot. AO-Universe's guide lists 'Carlo Pinetti' (their spelling) as a level 220 pet from Biodome raids; the client name is Carlo Pinnetti.",
+      "progression": [
+        {
+          "nano": "Carlita Desposito",
+          "id": 293899,
+          "minLevel": 160,
+          "note": "SummonPet template levels 175/200/205/210/215 (5 SummonPet functions in the nano); MC/ST 899/899; character Level > 159; gates: Shadowlands (Expansion op22 2); Specialization bit 4; Pets op66 7001, Pets op66 2001",
+          "castReqs": [
+            "MaterialCreation > 899",
+            "SpaceTime > 899",
+            "Profession == 8",
+            "Expansion op22 2",
+            "Level > 159",
+            "Specialization op22 4",
+            "Pets op66 7001",
+            "Pets op66 2001"
+          ],
+          "rawEffects": [
+            "SummonPet template=[0,175,-1]",
+            "SummonPet template=[0,200,-1]",
+            "SummonPet template=[0,205,-1]",
+            "SummonPet template=[0,210,-1]",
+            "SummonPet template=[0,215,-1]"
+          ]
+        },
+        {
+          "nano": "Carlo Pinnetti",
+          "id": 258580,
+          "minLevel": 220,
+          "note": "SummonPet template level 220 (1 SummonPet function in the nano); MC/ST 1399/1399; character Level > 219; gates: Shadowlands (Expansion op22 2); Specialization bit 8; Pets op66 7001, Pets op66 2001",
+          "castReqs": [
+            "MaterialCreation > 1399",
+            "SpaceTime > 1399",
+            "Profession == 8",
+            "Expansion op22 2",
+            "Level > 219",
+            "Specialization op22 8",
+            "Pets op66 7001",
+            "Pets op66 2001"
+          ],
+          "rawEffects": [
+            "SummonPet template=[0,220,-1]"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Attack pet - Means Test Pet",
+      "nanoLine": "NOSTACKING (SummonPet)",
+      "nanoStrain": 0,
+      "summonSkills": "Psychological Modification (129) + Sensory Improvement (122) + Biological Metamorphosis (128) > 2,000 each - the CHARM skill stack, not the bot stack; Profession(60) == 8; Level > 219; Specialization bit 4; Pets op66 7001.",
+      "count": 1,
+      "description": "A single level-220 nano and the strangest entry in the Bureaucrat pet set: it is a SummonPet nano (not SpawnItem, so not a bot) that is paid for out of the CHARM skills, and its effect block repeats SummonPet template [0,220,-1] twenty times. It is the only Bureaucrat pet nano that requires all three charm skills above 2,000.",
+      "mechanics": "Whether the twenty SummonPet functions mean twenty pets or twenty copies of one summon is not established from local data - the Meta-Physicist's heal pets list their template seven times for one pet, so repetition is not a count. See _unverified.",
+      "progression": [
+        {
+          "nano": "Means Test Pet",
+          "id": 258222,
+          "minLevel": 220,
+          "note": "SummonPet template level 220, listed 20 times; PM/SI/BM 2000/2000/2000; character Level > 219; gates: Specialization bit 4; Pets op66 7001",
+          "castReqs": [
+            "PsychologicalModification > 2000",
+            "SensoryImprovement > 2000",
+            "BiologicalMetamorphosis > 2000",
+            "Profession == 8",
+            "Pets op66 7001",
+            "Level > 219",
+            "Specialization op22 4"
+          ],
+          "rawEffects": [
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]",
+            "SummonPet template=[0,220,-1]"
+          ]
+        }
+      ]
+    }
+  ],
+  "petBuffs": [
+    {
+      "name": "Gallant Hero: The Enraged Drone",
+      "id": 205287,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +51, Aggressiveness +10 on the bot",
+      "note": "Character Level > 24. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 188 / SI 188 / SpaceTime 164.",
+      "minLevel": 25,
+      "castReqs": [
+        "PsychologicalModification > 188",
+        "SensoryImprovement > 188",
+        "SpaceTime > 164",
+        "Profession == 8",
+        "Level > 24",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +51",
+        "Modify Aggressiveness +10"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Aggravated Servant",
+      "id": 205291,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +121, Aggressiveness +14 on the bot",
+      "note": "Character Level > 49. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 447 / SI 447 / SpaceTime 396.",
+      "minLevel": 50,
+      "castReqs": [
+        "PsychologicalModification > 447",
+        "SensoryImprovement > 447",
+        "SpaceTime > 396",
+        "Profession == 8",
+        "Level > 49",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +121",
+        "Modify Aggressiveness +14"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Infuriated Minion",
+      "id": 205289,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +88, Aggressiveness +12 on the bot",
+      "note": "Character Level > 49. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 304 / SI 304 / SpaceTime 277.",
+      "minLevel": 50,
+      "castReqs": [
+        "PsychologicalModification > 304",
+        "SensoryImprovement > 304",
+        "SpaceTime > 277",
+        "Profession == 8",
+        "Level > 49",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +88",
+        "Modify Aggressiveness +12"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Indignant Flunky",
+      "id": 205293,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +156, Aggressiveness +16 on the bot",
+      "note": "Character Level > 74. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 562 / SI 562 / SpaceTime 521.",
+      "minLevel": 75,
+      "castReqs": [
+        "PsychologicalModification > 562",
+        "SensoryImprovement > 562",
+        "SpaceTime > 521",
+        "Profession == 8",
+        "Level > 74",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +156",
+        "Modify Aggressiveness +16"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Angry Servitor",
+      "id": 205295,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +187, Aggressiveness +19 on the bot",
+      "note": "Character Level > 99. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 696 / SI 696 / SpaceTime 636.",
+      "minLevel": 100,
+      "castReqs": [
+        "PsychologicalModification > 696",
+        "SensoryImprovement > 696",
+        "SpaceTime > 636",
+        "Profession == 8",
+        "Level > 99",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +187",
+        "Modify Aggressiveness +19"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Bitter Clerk",
+      "id": 205297,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +223, Aggressiveness +22 on the bot",
+      "note": "Character Level > 124. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 826 / SI 826 / SpaceTime 750.",
+      "minLevel": 125,
+      "castReqs": [
+        "PsychologicalModification > 826",
+        "SensoryImprovement > 826",
+        "SpaceTime > 750",
+        "Profession == 8",
+        "Level > 124",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +223",
+        "Modify Aggressiveness +22"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Irate Attache",
+      "id": 205299,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +260, Aggressiveness +25 on the bot",
+      "note": "Character Level > 144. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 886 / SI 886 / SpaceTime 812.",
+      "minLevel": 145,
+      "castReqs": [
+        "PsychologicalModification > 886",
+        "SensoryImprovement > 886",
+        "SpaceTime > 812",
+        "Profession == 8",
+        "Level > 144",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +260",
+        "Modify Aggressiveness +25"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Incensed Retainer",
+      "id": 205301,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +298, Aggressiveness +27 on the bot",
+      "note": "Character Level > 164. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 958 / SI 958 / SpaceTime 886.",
+      "minLevel": 165,
+      "castReqs": [
+        "PsychologicalModification > 958",
+        "SensoryImprovement > 958",
+        "SpaceTime > 886",
+        "Profession == 8",
+        "Level > 164",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +298",
+        "Modify Aggressiveness +27"
+      ]
+    },
+    {
+      "name": "Gallant Hero: The Vengeful Butler",
+      "id": 205303,
+      "line": "Gallant Hero - PetShortTermDamageBuffs (strain 225), cast ON THE BOT",
+      "effect": "Add All Off. +354, Aggressiveness +30 on the bot",
+      "note": "Character Level > 194. Requires Breed == 7 (cast on your pet) AND NPCFamily == 95, the bot clan - so this line CANNOT be put on a charmed NPC. Skills: PM 1043 / SI 1043 / SpaceTime 956.",
+      "minLevel": 195,
+      "castReqs": [
+        "PsychologicalModification > 1043",
+        "SensoryImprovement > 1043",
+        "SpaceTime > 956",
+        "Profession == 8",
+        "Level > 194",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +354",
+        "Modify Aggressiveness +30"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Enraged Slave",
+      "id": 230372,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +30, Aggressiveness +10, Max Health +200, Add All Def. +48, all five damage modifiers +12, plus an instant heal for 200",
+      "note": "Character Level > 29. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 23', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 204 / BM 204 / SpaceTime 164.",
+      "minLevel": 30,
+      "castReqs": [
+        "PsychologicalModification > 204",
+        "BiologicalMetamorphosis > 204",
+        "SpaceTime > 164",
+        "Profession == 8",
+        "Level > 29",
+        "Expansion op22 2",
+        "Level < 23",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +30",
+        "Modify Aggressiveness +10",
+        "ChangeVariable[54,29]",
+        "Modify MaxHealth +200",
+        "Modify AddAllDef +48",
+        "Hit[27,200,200,0]",
+        "Modify MeleeDamageModifier +12",
+        "Modify ProjectileDamageModifier +12",
+        "Modify EnergyDamageModifier +12",
+        "Modify ChemicalDamageModifier +12",
+        "Modify RadiationDamageModifier +12",
+        "Modify MeleeDamageModifier +12"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Infuriated Thrall",
+      "id": 230374,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +60, Aggressiveness +12, Max Health +600, Add All Def. +90, all five damage modifiers +24, plus an instant heal for 600",
+      "note": "Character Level > 54. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 43', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 389 / BM 389 / SpaceTime 304.",
+      "minLevel": 55,
+      "castReqs": [
+        "PsychologicalModification > 389",
+        "BiologicalMetamorphosis > 389",
+        "SpaceTime > 304",
+        "Profession == 8",
+        "Level > 54",
+        "Expansion op22 2",
+        "Level < 43",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +60",
+        "Modify Aggressiveness +12",
+        "ChangeVariable[54,54]",
+        "Modify MaxHealth +600",
+        "Modify AddAllDef +90",
+        "Hit[27,600,600,0]",
+        "Modify MeleeDamageModifier +24",
+        "Modify ProjectileDamageModifier +24",
+        "Modify EnergyDamageModifier +24",
+        "Modify ChemicalDamageModifier +24",
+        "Modify RadiationDamageModifier +24",
+        "Modify MeleeDamageModifier +24"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Aggravated Serf",
+      "id": 230376,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +121, Aggressiveness +14, Max Health +1200, Add All Def. +135, all five damage modifiers +30, plus an instant heal for 1200",
+      "note": "Character Level > 64. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 49', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 489 / BM 489 / SpaceTime 434.",
+      "minLevel": 65,
+      "castReqs": [
+        "PsychologicalModification > 489",
+        "BiologicalMetamorphosis > 489",
+        "SpaceTime > 434",
+        "Profession == 8",
+        "Level > 64",
+        "Expansion op22 2",
+        "Level < 49",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +121",
+        "Modify Aggressiveness +14",
+        "ChangeVariable[54,64]",
+        "Modify MaxHealth +1200",
+        "Modify AddAllDef +135",
+        "Hit[27,1200,1200,0]",
+        "Modify MeleeDamageModifier +30",
+        "Modify ProjectileDamageModifier +30",
+        "Modify EnergyDamageModifier +30",
+        "Modify ChemicalDamageModifier +30",
+        "Modify RadiationDamageModifier +30",
+        "Modify MeleeDamageModifier +30"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Indignant Peon",
+      "id": 230378,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +156, Aggressiveness +16, Max Health +1350, Add All Def. +144, all five damage modifiers +40, plus an instant heal for 1350",
+      "note": "Character Level > 79. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 63', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 619 / BM 619 / SpaceTime 569.",
+      "minLevel": 80,
+      "castReqs": [
+        "PsychologicalModification > 619",
+        "BiologicalMetamorphosis > 619",
+        "SpaceTime > 569",
+        "Profession == 8",
+        "Level > 79",
+        "Expansion op22 2",
+        "Level < 63",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +156",
+        "Modify Aggressiveness +16",
+        "ChangeVariable[54,79]",
+        "Modify MaxHealth +1350",
+        "Modify AddAllDef +144",
+        "Hit[27,1350,1350,0]",
+        "Modify MeleeDamageModifier +40",
+        "Modify ProjectileDamageModifier +40",
+        "Modify EnergyDamageModifier +40",
+        "Modify ChemicalDamageModifier +40",
+        "Modify RadiationDamageModifier +40",
+        "Modify MeleeDamageModifier +40"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Angry Drudge",
+      "id": 230380,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +187, Aggressiveness +19, Max Health +2500, Add All Def. +180, all five damage modifiers +60, plus an instant heal for 2500",
+      "note": "Character Level > 109. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 87', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 759 / BM 759 / SpaceTime 699.",
+      "minLevel": 110,
+      "castReqs": [
+        "PsychologicalModification > 759",
+        "BiologicalMetamorphosis > 759",
+        "SpaceTime > 699",
+        "Profession == 8",
+        "Level > 109",
+        "Expansion op22 2",
+        "Level < 87",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +187",
+        "Modify Aggressiveness +19",
+        "ChangeVariable[54,109]",
+        "Modify MaxHealth +2500",
+        "Modify AddAllDef +180",
+        "Hit[27,2500,2500,0]",
+        "Modify MeleeDamageModifier +60",
+        "Modify ProjectileDamageModifier +60",
+        "Modify EnergyDamageModifier +60",
+        "Modify ChemicalDamageModifier +60",
+        "Modify RadiationDamageModifier +60",
+        "Modify MeleeDamageModifier +60"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Bitter Vassal",
+      "id": 230382,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +223, Aggressiveness +22, Max Health +3200, Add All Def. +220, all five damage modifiers +80, plus an instant heal for 3200",
+      "note": "Character Level > 134. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 107', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 909 / BM 909 / SpaceTime 824.",
+      "minLevel": 135,
+      "castReqs": [
+        "PsychologicalModification > 909",
+        "BiologicalMetamorphosis > 909",
+        "SpaceTime > 824",
+        "Profession == 8",
+        "Level > 134",
+        "Expansion op22 2",
+        "Level < 107",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +223",
+        "Modify Aggressiveness +22",
+        "ChangeVariable[54,134]",
+        "Modify MaxHealth +3200",
+        "Modify AddAllDef +220",
+        "Hit[27,3200,3200,0]",
+        "Modify MeleeDamageModifier +80",
+        "Modify ProjectileDamageModifier +80",
+        "Modify EnergyDamageModifier +80",
+        "Modify ChemicalDamageModifier +80",
+        "Modify RadiationDamageModifier +80",
+        "Modify MeleeDamageModifier +80"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Irate Chattel",
+      "id": 230384,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +260, Aggressiveness +25, Max Health +3800, Add All Def. +250, all five damage modifiers +90, plus an instant heal for 3800",
+      "note": "Character Level > 159. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 127', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 974 / BM 974 / SpaceTime 889.",
+      "minLevel": 160,
+      "castReqs": [
+        "PsychologicalModification > 974",
+        "BiologicalMetamorphosis > 974",
+        "SpaceTime > 889",
+        "Profession == 8",
+        "Level > 159",
+        "Expansion op22 2",
+        "Level < 127",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +260",
+        "Modify Aggressiveness +25",
+        "ChangeVariable[54,159]",
+        "Modify MaxHealth +3800",
+        "Modify AddAllDef +250",
+        "Hit[27,3800,3800,0]",
+        "Modify MeleeDamageModifier +90",
+        "Modify ProjectileDamageModifier +90",
+        "Modify EnergyDamageModifier +90",
+        "Modify ChemicalDamageModifier +90",
+        "Modify RadiationDamageModifier +90",
+        "Modify MeleeDamageModifier +90"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Incensed Subordinate",
+      "id": 230386,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +298, Aggressiveness +27, Max Health +5000, Add All Def. +300, all five damage modifiers +100, plus an instant heal for 5000",
+      "note": "Character Level > 179. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 143', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 1049 / BM 1049 / SpaceTime 974.",
+      "minLevel": 180,
+      "castReqs": [
+        "PsychologicalModification > 1049",
+        "BiologicalMetamorphosis > 1049",
+        "SpaceTime > 974",
+        "Profession == 8",
+        "Level > 179",
+        "Expansion op22 2",
+        "Level < 143",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +298",
+        "Modify Aggressiveness +27",
+        "ChangeVariable[54,179]",
+        "Modify MaxHealth +5000",
+        "Modify AddAllDef +300",
+        "Hit[27,5000,5000,0]",
+        "Modify MeleeDamageModifier +100",
+        "Modify ProjectileDamageModifier +100",
+        "Modify EnergyDamageModifier +100",
+        "Modify ChemicalDamageModifier +100",
+        "Modify RadiationDamageModifier +100",
+        "Modify MeleeDamageModifier +100"
+      ]
+    },
+    {
+      "name": "Gallant Slave: The Vengeful Toiler",
+      "id": 230388,
+      "line": "Gallant Slave - PetShortTermDamageBuffs (strain 225), cast ON A CHARMED NPC",
+      "effect": "Add All Off. +354, Aggressiveness +30, Max Health +6200, Add All Def. +378, all five damage modifiers +110, plus an instant heal for 6200",
+      "note": "Character Level > 213. Targeting is what makes this line unique: 'Flags op92 202' is HasRunningNanoLine 202, i.e. the target must be running a CharmOther nano - a charmed NPC - plus NPCFamily > 0 (an NPC, not a player) and 'Level < 171', a CEILING on the charmed pet's level. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).' Shadowlands only. Skills: PM 1149 / BM 1149 / SpaceTime 1049.",
+      "minLevel": 214,
+      "castReqs": [
+        "PsychologicalModification > 1149",
+        "BiologicalMetamorphosis > 1149",
+        "SpaceTime > 1049",
+        "Profession == 8",
+        "Level > 213",
+        "Expansion op22 2",
+        "Level < 171",
+        "Flags op92 202",
+        "NPCFamily > 0"
+      ],
+      "rawEffects": [
+        "Modify AddAllOff +354",
+        "Modify Aggressiveness +30",
+        "ChangeVariable[54,212]",
+        "Modify MaxHealth +6200",
+        "Modify AddAllDef +378",
+        "Hit[27,6200,6200,0]",
+        "Modify MeleeDamageModifier +110",
+        "Modify ProjectileDamageModifier +110",
+        "Modify EnergyDamageModifier +110",
+        "Modify ChemicalDamageModifier +110",
+        "Modify RadiationDamageModifier +110",
+        "Modify MeleeDamageModifier +110"
+      ]
+    },
+    {
+      "name": "Minor Exoskeleton Pulse",
+      "id": 203850,
+      "line": "Exoskeleton Pulse - root/snare shortener (strain 0 NOSTACKING), cast ON THE PET",
+      "effect": "Cuts nano-strain 145 and 146 (root / snare) duration on the pet by 308; system text 'Your pet moves more freely.'",
+      "note": "Character Level > 24. Breed == 7 (cast on your pet) but NO NPCFamily requirement, so unlike Gallant Hero this one works on a charmed NPC as well as the bot. Skills: MC 194 / SpaceTime 194.",
+      "minLevel": 25,
+      "castReqs": [
+        "Profession == 8",
+        "MaterialCreation > 194",
+        "SpaceTime > 194",
+        "Level > 24",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,308]",
+        "ReduceNanoStrainDuration[146,308]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Lesser Exoskeleton Pulse",
+      "id": 203852,
+      "line": "Exoskeleton Pulse - root/snare shortener (strain 0 NOSTACKING), cast ON THE PET",
+      "effect": "Cuts nano-strain 145 and 146 (root / snare) duration on the pet by 437; system text 'Your pet moves more freely.'",
+      "note": "Character Level > 49. Breed == 7 (cast on your pet) but NO NPCFamily requirement, so unlike Gallant Hero this one works on a charmed NPC as well as the bot. Skills: MC 396 / SpaceTime 396.",
+      "minLevel": 50,
+      "castReqs": [
+        "Profession == 8",
+        "MaterialCreation > 396",
+        "SpaceTime > 396",
+        "Level > 49",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,437]",
+        "ReduceNanoStrainDuration[146,437]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Exoskeleton Pulse",
+      "id": 203855,
+      "line": "Exoskeleton Pulse - root/snare shortener (strain 0 NOSTACKING), cast ON THE PET",
+      "effect": "Cuts nano-strain 145 and 146 (root / snare) duration on the pet by 583; system text 'Your pet moves more freely.'",
+      "note": "Character Level > 99. Breed == 7 (cast on your pet) but NO NPCFamily requirement, so unlike Gallant Hero this one works on a charmed NPC as well as the bot. Skills: MC 617 / SpaceTime 617.",
+      "minLevel": 100,
+      "castReqs": [
+        "Profession == 8",
+        "MaterialCreation > 617",
+        "SpaceTime > 617",
+        "Level > 99",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,583]",
+        "ReduceNanoStrainDuration[146,583]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Superior Exoskeleton Pulse",
+      "id": 203857,
+      "line": "Exoskeleton Pulse - root/snare shortener (strain 0 NOSTACKING), cast ON THE PET",
+      "effect": "Cuts nano-strain 145 and 146 (root / snare) duration on the pet by 825; system text 'Your pet moves more freely.'",
+      "note": "Character Level > 144. Breed == 7 (cast on your pet) but NO NPCFamily requirement, so unlike Gallant Hero this one works on a charmed NPC as well as the bot. Skills: MC 807 / SpaceTime 807.",
+      "minLevel": 145,
+      "castReqs": [
+        "Profession == 8",
+        "MaterialCreation > 807",
+        "SpaceTime > 807",
+        "Level > 144",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,825]",
+        "ReduceNanoStrainDuration[146,825]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Greater Exoskeleton Pulse",
+      "id": 203859,
+      "line": "Exoskeleton Pulse - root/snare shortener (strain 0 NOSTACKING), cast ON THE PET",
+      "effect": "Cuts nano-strain 145 and 146 (root / snare) duration on the pet by 1074; system text 'Your pet moves more freely.'",
+      "note": "Character Level > 184. Breed == 7 (cast on your pet) but NO NPCFamily requirement, so unlike Gallant Hero this one works on a charmed NPC as well as the bot. Skills: MC 939 / SpaceTime 939.",
+      "minLevel": 185,
+      "castReqs": [
+        "Profession == 8",
+        "MaterialCreation > 939",
+        "SpaceTime > 939",
+        "Level > 184",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "ReduceNanoStrainDuration[145,1074]",
+        "ReduceNanoStrainDuration[146,1074]",
+        "SystemText[Your pet moves more freely.]"
+      ]
+    },
+    {
+      "name": "Lesser Corporate Insurance Policy",
+      "id": 267603,
+      "line": "Corporate Insurance Policy - PetDefensiveNanos (strain 816), cast ON THE BOT",
+      "effect": "Add All Def. +250, resists nano-strains 147 and 202",
+      "note": "Character Level > 200. Breed == 7 + NPCFamily == 95, so bot only. Resisting strain 202 (CharmOther) means this buff protects your own bot from being CHARMED AWAY. Skills: PM 1300 / SI 1300 / SpaceTime 900.",
+      "minLevel": 201,
+      "castReqs": [
+        "PsychologicalModification > 1300",
+        "SensoryImprovement > 1300",
+        "SpaceTime > 900",
+        "Profession == 8",
+        "Level > 200",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[147,20]",
+        "ResistNanoStrain[202,20]",
+        "Modify AddAllDef +250"
+      ]
+    },
+    {
+      "name": "Corporate Insurance Policy",
+      "id": 267604,
+      "line": "Corporate Insurance Policy - PetDefensiveNanos (strain 816), cast ON THE BOT",
+      "effect": "Add All Def. +300, resists nano-strains 147 and 202",
+      "note": "Character Level > 214. Breed == 7 + NPCFamily == 95, so bot only. Resisting strain 202 (CharmOther) means this buff protects your own bot from being CHARMED AWAY. Skills: PM 1500 / SI 1500 / SpaceTime 1200.",
+      "minLevel": 215,
+      "castReqs": [
+        "PsychologicalModification > 1500",
+        "SensoryImprovement > 1500",
+        "SpaceTime > 1200",
+        "Profession == 8",
+        "Level > 214",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[147,25]",
+        "ResistNanoStrain[202,25]",
+        "Modify AddAllDef +300"
+      ]
+    },
+    {
+      "name": "Greater Corporate Insurance Policy",
+      "id": 267605,
+      "line": "Corporate Insurance Policy - PetDefensiveNanos (strain 816), cast ON THE BOT",
+      "effect": "Add All Def. +325, resists nano-strains 147 and 202, and +2000 to all eight ACs",
+      "note": "Character Level > 218. Breed == 7 + NPCFamily == 95, so bot only. Resisting strain 202 (CharmOther) means this buff protects your own bot from being CHARMED AWAY. Skills: PM 1900 / SI 1900 / SpaceTime 1400.",
+      "minLevel": 219,
+      "castReqs": [
+        "PsychologicalModification > 1900",
+        "SensoryImprovement > 1900",
+        "SpaceTime > 1400",
+        "Profession == 8",
+        "Level > 218",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify AddAllDef +325",
+        "ResistNanoStrain[147,30]",
+        "ResistNanoStrain[202,30]",
+        "Modify ProjectileAC +2000",
+        "Modify MeleeAC +2000",
+        "Modify EnergyAC +2000",
+        "Modify ChemicalAC +2000",
+        "Modify RadiationAC +2000",
+        "Modify ColdAC +2000",
+        "Modify FireAC +2000",
+        "Modify PoisonAC +2000"
+      ]
+    },
+    {
+      "name": "Basic Nanite Robot Protection",
+      "id": 267616,
+      "line": "Nanite Robot Protection - PetDamageOverTimeResistNanos (strain 817), cast ON THE BOT",
+      "effect": "Max Health +1000, Nano Resist +100, Add All Def. +100, 10% resist against nano-strain 145 (root)",
+      "note": "Character Level > 174. Breed == 7 + NPCFamily == 95 (bot only) plus 'Flags op118 0', an operator that is not in the OmniCell Operator enum - see _unverified. Grade order is Basic (L175) < Lesser (L201) < plain (L219), which is the reverse of the usual English reading and is taken from the level requirement, not the name. Skills: PM 1000 / SI 1000 / SpaceTime 750.",
+      "minLevel": 175,
+      "castReqs": [
+        "PsychologicalModification > 1000",
+        "SensoryImprovement > 1000",
+        "SpaceTime > 750",
+        "Profession == 8",
+        "Level > 174",
+        "Breed == 7",
+        "NPCFamily == 95",
+        "Flags op118 0"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[145,10]",
+        "Modify MaxHealth +1000",
+        "Modify NanoResist +100",
+        "Modify AddAllDef +100"
+      ]
+    },
+    {
+      "name": "Lesser Nanite Robot Protection",
+      "id": 267615,
+      "line": "Nanite Robot Protection - PetDamageOverTimeResistNanos (strain 817), cast ON THE BOT",
+      "effect": "Max Health +1500, Nano Resist +250, Add All Def. +200, 20% resist against nano-strain 145 (root)",
+      "note": "Character Level > 200. Breed == 7 + NPCFamily == 95 (bot only) plus 'Flags op118 0', an operator that is not in the OmniCell Operator enum - see _unverified. Grade order is Basic (L175) < Lesser (L201) < plain (L219), which is the reverse of the usual English reading and is taken from the level requirement, not the name. Skills: PM 1400 / SI 1400 / SpaceTime 1000.",
+      "minLevel": 201,
+      "castReqs": [
+        "PsychologicalModification > 1400",
+        "SensoryImprovement > 1400",
+        "SpaceTime > 1000",
+        "Profession == 8",
+        "Level > 200",
+        "Breed == 7",
+        "NPCFamily == 95",
+        "Flags op118 0"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[145,20]",
+        "Modify MaxHealth +1500",
+        "Modify NanoResist +250",
+        "Modify AddAllDef +200"
+      ]
+    },
+    {
+      "name": "Nanite Robot Protection",
+      "id": 267612,
+      "line": "Nanite Robot Protection - PetDamageOverTimeResistNanos (strain 817), cast ON THE BOT",
+      "effect": "Max Health +3000, Nano Resist +500, Add All Def. +300, 25% resist against nano-strain 145 (root)",
+      "note": "Character Level > 218. Breed == 7 + NPCFamily == 95 (bot only) plus 'Flags op118 0', an operator that is not in the OmniCell Operator enum - see _unverified. Grade order is Basic (L175) < Lesser (L201) < plain (L219), which is the reverse of the usual English reading and is taken from the level requirement, not the name. Skills: PM 1800 / SI 1800 / SpaceTime 1400.",
+      "minLevel": 219,
+      "castReqs": [
+        "PsychologicalModification > 1800",
+        "SensoryImprovement > 1800",
+        "SpaceTime > 1400",
+        "Profession == 8",
+        "Level > 218",
+        "Breed == 7",
+        "NPCFamily == 95",
+        "Flags op118 0"
+      ],
+      "rawEffects": [
+        "ResistNanoStrain[145,25]",
+        "Modify MaxHealth +3000",
+        "Modify NanoResist +500",
+        "Modify AddAllDef +300"
+      ]
+    },
+    {
+      "name": "Mud Slinger",
+      "id": 155615,
+      "line": "PetTauntBuff (strain 232), cast ON THE BOT",
+      "effect": "Aggressiveness +31 on the bot",
+      "note": "No character-level requirement - the gate is the skill. VisualProfession == 8, Breed == 7, NPCFamily == 95 (bot only). This is the Bureaucrat's pet-aggro line; it makes the bot hold aggro so the Crat does not. Skills: PM 219 / SpaceTime 195.",
+      "minLevel": 0,
+      "castReqs": [
+        "PsychologicalModification > 219",
+        "SpaceTime > 195",
+        "VisualProfession == 8",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify Aggressiveness +31"
+      ]
+    },
+    {
+      "name": "Defamation 101",
+      "id": 155616,
+      "line": "PetTauntBuff (strain 232), cast ON THE BOT",
+      "effect": "Aggressiveness +57 on the bot",
+      "note": "No character-level requirement - the gate is the skill. VisualProfession == 8, Breed == 7, NPCFamily == 95 (bot only). This is the Bureaucrat's pet-aggro line; it makes the bot hold aggro so the Crat does not. Skills: PM 608 / SpaceTime 547.",
+      "minLevel": 0,
+      "castReqs": [
+        "PsychologicalModification > 608",
+        "SpaceTime > 547",
+        "VisualProfession == 8",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify Aggressiveness +57"
+      ]
+    },
+    {
+      "name": "Character Assassin",
+      "id": 155617,
+      "line": "PetTauntBuff (strain 232), cast ON THE BOT",
+      "effect": "Aggressiveness +80 on the bot",
+      "note": "No character-level requirement - the gate is the skill. VisualProfession == 8, Breed == 7, NPCFamily == 95 (bot only). This is the Bureaucrat's pet-aggro line; it makes the bot hold aggro so the Crat does not. Skills: PM 820 / SpaceTime 744.",
+      "minLevel": 0,
+      "castReqs": [
+        "PsychologicalModification > 820",
+        "SpaceTime > 744",
+        "VisualProfession == 8",
+        "Breed == 7",
+        "NPCFamily == 95"
+      ],
+      "rawEffects": [
+        "Modify Aggressiveness +80"
+      ]
+    },
+    {
+      "name": "Take the Bullet",
+      "id": 267917,
+      "line": "Take the Bullet (strain 0 NOSTACKING), cast ON THE BOT",
+      "effect": "Hits the pet for 40,000 (twice) and casts 'Blast Shield' (267918) on it: +500 Add All Def., 75% resist and a removal of nano-strains 145 and 146, eight ChangeVariable[8000] entries, at the price of -3,000 to all six of the pet's nano skills",
+      "note": "Character Level > 214. Breed == 7 + NPCFamily == 95 (bot only) + 'Flags op118 0'. Requires PM 1,800 and SI 1,800 and - uniquely among the pet buffs - NO SpaceTime requirement at all. The Bureaucrat's answer to the Meta-Physicist's DamageToPet(1024) line, which the Crat does not have.",
+      "minLevel": 215,
+      "castReqs": [
+        "PsychologicalModification > 1800",
+        "SensoryImprovement > 1800",
+        "Profession == 8",
+        "Level > 214",
+        "Breed == 7",
+        "NPCFamily == 95",
+        "Flags op118 0"
+      ],
+      "rawEffects": [
+        "Hit[27,-40000,-40000,96]",
+        "Hit[27,-40000,-40000,96]",
+        "CastNano[267918] => 'Blast Shield' [strain 0 NOSTACKING] {ChangeVariable[238,8000]; ChangeVariable[239,8000]; ChangeVariable[240,8000]; ChangeVariable[241,8000]; ChangeVariable[242,8000]; ChangeVariable[243,8000]; ChangeVariable[244,8000]; ChangeVariable[245,8000]; Modify SensoryImprovement -3000; Modify MaterialMetamorphosis -3000; Modify BiologicalMetamorphosis -3000; Modify PsychologicalModification -3000; Modify MaterialCreation -3000; Modify SpaceTime -3000; Modify AddAllDef +500; ResistNanoStrain[145,75]; RemoveNanoStrain[145]; ResistNanoStrain[146,75]; RemoveNanoStrain[146]}"
+      ]
+    },
+    {
+      "name": "Pet Steal Back",
+      "id": 269907,
+      "line": "Charm_Short (strain 1022) - pet recovery",
+      "effect": "RemoveNanoStrain[202]: strips a CharmOther effect, i.e. takes your pet back after it was charmed away; system text 'Your manifestation moves more freely.'",
+      "note": "Character Level > 99. Shared Engineer/Bureaucrat/Meta-Physicist utility - the ToUse lists VisualProfession == 3, == 8 and == 12. Breed == 7 (cast on your pet). Skills: MC 769 / SpaceTime 769.",
+      "minLevel": 100,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 769",
+        "SpaceTime > 769",
+        "Level > 99",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "RemoveNanoStrain[202]",
+        "SystemText[Your manifestation moves more freely.]"
+      ]
+    },
+    {
+      "name": "Improved Pet Steal Back",
+      "id": 269908,
+      "line": "Charm_Short (strain 1022) - pet recovery",
+      "effect": "RemoveNanoStrain[202]: strips a CharmOther effect, i.e. takes your pet back after it was charmed away; system text 'Your manifestation moves more freely.'",
+      "note": "Character Level > 214. Shared Engineer/Bureaucrat/Meta-Physicist utility - the ToUse lists VisualProfession == 3, == 8 and == 12. Breed == 7 (cast on your pet). Skills: MC 1399 / SpaceTime 1399.",
+      "minLevel": 215,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 1399",
+        "SpaceTime > 1399",
+        "Level > 214",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "RemoveNanoStrain[202]",
+        "SystemText[Your manifestation moves more freely.]"
+      ]
+    },
+    {
+      "name": "Pet Attention",
+      "id": 269869,
+      "line": "PetRoot (strain 1013) - shared pet utility",
+      "effect": "System text 'Your pets move more freely.' - the extracted function list carries no Modify/Remove entry beyond the text, so what it strips is not readable from this pack",
+      "note": "No level requirement. Shared Engineer/Bureaucrat/Meta-Physicist utility (VisualProfession == 3, == 8, == 12). Skills: MC 769 / SpaceTime 769. NOTE: unlike almost every other pet buff here this one has no Breed == 7, so it is cast on the CASTER and affects all pets.",
+      "minLevel": 0,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 769",
+        "SpaceTime > 769"
+      ],
+      "rawEffects": [
+        "SystemText[Your pets move more freely.]"
+      ]
+    },
+    {
+      "name": "Pet Cleanse",
+      "id": 269870,
+      "line": "PetDebuffCleanse (strain 1047) - shared pet utility",
+      "effect": "System text 'Your pets move more freely.' - the extracted function list carries no Modify/Remove entry beyond the text, so what it strips is not readable from this pack",
+      "note": "No level requirement. Shared Engineer/Bureaucrat/Meta-Physicist utility (VisualProfession == 3, == 8, == 12). Skills: MC 1399 / SpaceTime 1399. NOTE: unlike almost every other pet buff here this one has no Breed == 7, so it is cast on the CASTER and affects all pets.",
+      "minLevel": 0,
+      "castReqs": [
+        "VisualProfession == 3",
+        "VisualProfession == 8",
+        "VisualProfession == 12",
+        "MaterialCreation > 1399",
+        "SpaceTime > 1399"
+      ],
+      "rawEffects": [
+        "SystemText[Your pets move more freely.]"
+      ]
+    },
+    {
+      "name": "Droid Repair",
+      "id": 30072,
+      "line": "Droid repair (strain 0 NOSTACKING, Hit on stat 27 = Health), cast ON THE BOT",
+      "effect": "Heals the pet for 399-707",
+      "note": "Cast ON the pet - ToUse requires Breed == 7 (HumanMonster), the playbook's encoding for a pet-targeted nano. VisualProfession == 8. Skills: MC 299 / SpaceTime 299 / BioMet 343. These three nanos are the Bureaucrat's ENTIRE pet-healing capability - there is no heal pet, and the Engineer gets seven repair nanos to the Crat's three.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 299",
+        "SpaceTime > 299",
+        "BiologicalMetamorphosis > 343",
+        "VisualProfession == 8",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,399,707,0]"
+      ]
+    },
+    {
+      "name": "Droid Overhaul",
+      "id": 30071,
+      "line": "Droid repair (strain 0 NOSTACKING, Hit on stat 27 = Health), cast ON THE BOT",
+      "effect": "Heals the pet for 732-1339",
+      "note": "Cast ON the pet - ToUse requires Breed == 7 (HumanMonster), the playbook's encoding for a pet-targeted nano. VisualProfession == 8. Skills: MC 583 / SpaceTime 583 / BioMet 650. These three nanos are the Bureaucrat's ENTIRE pet-healing capability - there is no heal pet, and the Engineer gets seven repair nanos to the Crat's three.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 583",
+        "SpaceTime > 583",
+        "BiologicalMetamorphosis > 650",
+        "VisualProfession == 8",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,732,1339,0]"
+      ]
+    },
+    {
+      "name": "Thorough Overhaul",
+      "id": 116798,
+      "line": "Droid repair (strain 0 NOSTACKING, Hit on stat 27 = Health), cast ON THE BOT",
+      "effect": "Heals the pet for 873-1718",
+      "note": "Cast ON the pet - ToUse requires Breed == 7 (HumanMonster), the playbook's encoding for a pet-targeted nano. VisualProfession == 8. Skills: MC 719 / SpaceTime 719 / BioMet 791. These three nanos are the Bureaucrat's ENTIRE pet-healing capability - there is no heal pet, and the Engineer gets seven repair nanos to the Crat's three.",
+      "minLevel": 0,
+      "castReqs": [
+        "MaterialCreation > 719",
+        "SpaceTime > 719",
+        "BiologicalMetamorphosis > 791",
+        "VisualProfession == 8",
+        "Breed == 7"
+      ],
+      "rawEffects": [
+        "Hit[27,873,1718,0]"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "command": "/pet follow",
+      "wireValue": "PetCommand.Follow = 1",
+      "what": "Follow the owner; movement only. AO-Universe: 'Follow owner'. The AO-Universe Bureaucrat Guide warns against it for a Crat - '/pet behind and /pet wait, /pet follow seems to be a cause of the problem'."
+    },
+    {
+      "command": "/pet behind",
+      "wireValue": "PetCommand.Behind = 2",
+      "what": "Stay behind the owner / retreat from combat. AO-Universe: 'Stay behind owner/Retreat from combat', and it recommends issuing it immediately after zoning."
+    },
+    {
+      "command": "/pet wait",
+      "wireValue": "PetCommand.Wait = 4",
+      "what": "AO-Universe: 'Wait (Stay exactly where they are/Don't move or attack anything)'."
+    },
+    {
+      "command": "/pet guard",
+      "wireValue": "PetCommand.Guard = 6",
+      "what": "AO-Universe: 'Guard owner (Usual status right after pets are cast)'. Pets 'often default back to GUARD after a player zones in game'."
+    },
+    {
+      "command": "/pet attack",
+      "wireValue": "PetCommand.Attack = 7",
+      "what": "AO-Universe: 'Attack <target>'."
+    },
+    {
+      "command": "(social)",
+      "wireValue": "PetCommand.Social = 9",
+      "what": "Present in the wire enum (AOSharp PetCommand.cs) and matching PetType.Social (0xE, vanity pets). The slash-command spelling is not listed by the AO-Universe pet-command guide - unknown."
+    },
+    {
+      "command": "/pet terminate",
+      "wireValue": "PetCommand.Terminate = 10",
+      "what": "AO-Universe: 'Terminate all current pets'. For a Crat this is how you free the slot a charm is holding."
+    },
+    {
+      "command": "(release)",
+      "wireValue": "PetCommand.Release = 11",
+      "what": "Present in the wire enum. Distinct from Terminate, and the obvious candidate for letting a charmed NPC go, but the AO-Universe pet-command guide does not list a '/pet release' and no local capture confirms it - the slash spelling and the exact behaviour are unknown."
+    },
+    {
+      "command": "/pet heal",
+      "wireValue": "PetCommand.Heal = 12",
+      "what": "AO-Universe: 'Heal (Target yourself, another player, another pet, or certain NPCs)'. The Bureaucrat has NO heal pet, so this is not a Crat tool; a Crat repairs its bot by casting Droid Repair (30072) / Droid Overhaul (30071) / Thorough Overhaul (116798) itself."
+    },
+    {
+      "command": "/pet report",
+      "wireValue": "PetCommand.Report = 14",
+      "what": "AO-Universe: 'Report health and fighting target'."
+    },
+    {
+      "command": "/pet chat <message>",
+      "wireValue": "PetCommand.Chat = 16",
+      "what": "AO-Universe: 'Talk (one word msg)'."
+    },
+    {
+      "command": "/pet rename <name>",
+      "wireValue": "not in PetCommand (client-side)",
+      "what": "AO-Universe: 'Rename pet'. Renaming is how you scope later commands to one of the Crat's two or three pets."
+    },
+    {
+      "command": "/pet PETNAME <command>",
+      "wireValue": "n/a",
+      "what": "AO-Universe: 'Terminate Specific Pet' - any command can be scoped to one named pet this way. This matters more for a Bureaucrat than for an Engineer or MP because a Crat routinely runs a bot AND one or two charmed NPCs at once."
+    },
+    {
+      "command": "/macro Term /pet \"%t\" terminate",
+      "wireValue": "n/a",
+      "what": "AO-Universe gives this verbatim as the macro for 'Terminate Specific Pet (Macro) (Target the pet to Terminate)'."
+    },
+    {
+      "command": "/pet help",
+      "wireValue": "n/a",
+      "what": "AO-Universe: 'Help on pet commands'."
+    },
+    {
+      "command": "/open pet",
+      "wireValue": "n/a",
+      "what": "AO-Universe: 'Open Pet Info window (if not open)'."
+    }
+  ],
+  "mechanics": [
+    "TWO SKILL STACKS, NOT ONE. All 65 bot summons need Matter Creation == Time & Space (verified: MC and SpaceTime carry the identical value on every one of the 65). All 37 charms need Psychological Modification == Sensory Improvement == Biological Metamorphosis (identical on all 37). A Crat that wants both a good bot and a good charm is funding five nano skills. AO-Universe's guide describes exactly this fork: 'For the first ~60 levels the bot will be more useful since charms have a very short duration. Around level 60, you should start focusing more on charms as they last longer, and you can charm monsters that have more HP than your bot.'",
+    "THREE PETS MAXIMUM, in three slots. Bot = PetType.Attack (0xA). Short charm = PetType 11 = PetType.Heal (0xB). Long charm, Carlita, Carlo and Means Test Pet = PetType 12 = PetType.Support (0xC), all of which carry 'Pets op66 7001'. AO-Universe: 'It is possible to have 1 long and 1 short charm, or you can have 2 short charms. You can not use your Long charm if you already have a pet on short charm.'",
+    "THE BOT LADDER IS A 9 x 7 MATRIX. Nine family template codes x seven quality grades = 63 nanos, plus Corporate Guardian and CEO Guardian = 65. Order the ladder by the SpawnItem LEVEL ARGUMENT (2 -> 215), which is the pet's level and NOT a character-level requirement: only Corporate Guardian carries a character Level requirement at all (Level > 204). Within every family the grade order Basic < Limited < Faithful < Advanced < Supervisor-Grade < Executive-Grade < Director-Grade holds without exception.",
+    "NO CREDIT COST. Not one of the 65 Bureaucrat bot summons carries the Hit[61] Cash drain or the 'Cash > N' cast requirement that 79 of the Engineer's 90 robots carry. The Crat bot is free to build.",
+    "THE CHARM IS A FOUR-PART NANO. Every one of the 37 fires: CharmNpc[] (take the target), TauntNpc[N] with a tier-scaled value plus a flat TauntNpc[50000] on most tiers, Hit[27,-1,-1,94] (a 1-point poke at the target), and a ChangeVariable block writing PetReq1/2/3 = 129/122/128 and PetReqVal1/2/3 = the caster's skill requirement - i.e. the charm stamps its own over-equip requirement onto the pet at cast time.",
+    "THE TARGET HAS A CEILING: 'Psychic < N'. Every charm carries one, rising from Psychic < 69 (Temporary Glamor) to Psychic < 551 (My Way, Peer Pressure, The Voice of One, The Voice of God, The Choir Fantastic). Reading it as a cap on the TARGET rather than on the caster is what the local data supports: the Bureaucrat's Fear nanos carry 'Psychic < N' in the same requirement list as 'NPCFamily != 0 / != 94 / != 95 / != 96 / != 97 / != 98', which can only be target requirements. See _unverified.",
+    "TEAM EMPOWERED CHARMS CHARM HARDER. The 11 'Team Empowered' variants need the same PM/SI/BM as the nano they mirror but add Shadowlands + a Specialization bit + NumberOfTeamMembers > 1, and every one has a HIGHER Psychic ceiling than its solo twin: Bend Will 99 -> 138, Dominate Psyche 125 -> 183, Allure of Servitude 287 -> 363, Total Mental Domination 455 -> 498, The Voice of Truth 501 -> 542. They also carry six CharmNpc[] functions instead of one.",
+    "PET BUFFS ARE SPLIT BY PET KIND, and the data says so explicitly. Gallant Hero (9 nanos) requires Breed == 7 AND NPCFamily == 95 - the bot clan - so it can never be put on a charmed NPC. Gallant Slave (9 nanos) instead requires 'Flags op92 202' (HasRunningNanoLine 202 = the target is running a CharmOther effect), NPCFamily > 0 and 'Level < N' - so it only works on a charmed NPC, and only on one well below your own level. The two lines share nano strain 225 and give the same Add All Off. at each tier (+30/+60/+121/+156/+187/+223/+260/+298/+354 for Slave, +51/+88/+121/+156/+187/+223/+260/+298/+354 for Hero), but Gallant Slave also adds Max Health, Add All Def., all five damage modifiers and an instant heal.",
+    "THE GALLANT SLAVE LEVEL CEILING IS ABOUT 80%. The pairs run (nano level 30, target Level < 23), (55, <43), (65, <49), (80, <63), (110, <87), (135, <107), (160, <127), (180, <143), (214, <171) - consistently ~0.78-0.80 of the nano's own level requirement. AO-Universe: 'Buffs our charmed pet but only if the charm is alot lower then you (below a certain level).'",
+    "BOT-ONLY DEFENCE, PET-WIDE UTILITY. Corporate Insurance Policy (3) and Nanite Robot Protection (3) both require NPCFamily == 95, so they are bot-only. Exoskeleton Pulse (5), Droid Repair/Overhaul/Thorough Overhaul (3) and Pet Steal Back (2) carry Breed == 7 with no NPCFamily clause, so they reach any pet. Pet Attention (269869) and Pet Cleanse (269870) carry neither, so they are cast on the caster and hit all pets.",
+    "YOUR OWN BOT CAN BE CHARMED AWAY - and there are two counters in the data. Corporate Insurance Policy (267603/267604/267605) carries ResistNanoStrain[202] at 20/25/30%, i.e. resistance to CharmOther. Pet Steal Back (269907) and Improved Pet Steal Back (269908) carry RemoveNanoStrain[202], which takes the pet back. Those two are shared with the Engineer and the Meta-Physicist (VisualProfession 3, 8 and 12 all appear in the ToUse).",
+    "THE PET-AGGRO TOOL IS A BUFF, NOT A COMMAND. Mud Slinger (155615, +31), Defamation 101 (155616, +57) and Character Assassin (155617, +80) are strain 232 PetTauntBuff nanos cast on the bot; they add Aggressiveness so the bot holds what the Crat pulls. The Crat has NO pet-initiative line at all (MPPetInitiativeBuffs strain 217: Meta-Physicist 4 nanos, Engineer 1, Bureaucrat 0).",
+    "SPECIALIZATION AND EXPANSION GATE THE TOP END. 'Expansion op22 2' = Shadowlands (AOSharp ExpansionFlags bit 1). 'Specialization op22 <bits>' appears on exactly 20 of the 145 Bureaucrat pet nanos - bit 1 on 5, bit 2 on 4, bit 4 on 5, bit 8 on 6 - covering the 11 Team Empowered charms, the 6 top solo long charms (The Voice of Truth, My Way, Peer Pressure, The Voice of One, The Voice of God and Corporate Guardian), Carlita (bit 4), Carlo (bit 8) and Means Test Pet (bit 4). 22 pet nanos carry the Shadowlands gate: the 11 Team Empowered charms, the 9 Gallant Slave buffs, Corporate Guardian and Carlita - Carlo and the top solo charms are Specialization-gated WITHOUT an Expansion clause. 'NanoFocusLevel op22 64' gates exactly two: CEO Guardian (273300) and The Choir Fantastic (275009).",
+    "'Breed == 7' MEANS THE NANO IS CAST ON YOUR PET, not that your breed matters (playbook section 3; Breed 7 = HumanMonster). 29 of the Bureaucrat's 40 pet buffs/repairs carry it, and 19 of those also carry NPCFamily == 95. The 9 Gallant Slave nanos and the 2 shared utility nanos do not - Gallant Slave identifies its target by the running charm instead.",
+    "DEFAULT STATE IS GUARD, and AO-Universe says pets 'often default back to GUARD after a player zones in game' and recommends '/pet behind' immediately after a zone. The Bureaucrat Guide goes further and tells Crats to live on '/pet behind and /pet wait', because '/pet follow seems to be a cause of the problem'.",
+    "CHARMED MOBS GIVE NO XP AND TURN ON YOU. AODB wiki: 'previously charmed enemies give no XP, so use discretion', and the charm is 'a small but ticking time bomb that goes off when the Charm wears off (the former ally attacks)'. AO-Universe: 'You can not charm calmed mobs/bosses/uniques/guards.'",
+    "BOT-SELECTION RULE FOR THE BOT (AOBuddy10): filter bureaucrat-nanos.json category 'Pets - Bots', drop anything whose gates you fail (Expansion / Specialization / NanoFocusLevel / Level), and pick the highest spawnLevel whose MaterialCreation requirement your live Matter Creation satisfies - MC and Time & Space are always equal, so one comparison is enough. Do not hardcode a per-character-level table: 63 of the 65 have no character-level requirement at all.",
+    "CHARM-SELECTION RULE (AOBuddy10): within a line (PetType 11 or 12), the nano's PM value IS the ordering key and PM == SI == BM, so one comparison picks the tier. Then check the TARGET: the mob's Psychic must be below the nano's ceiling. If the target's Psychic is not readable, the charm attempt is a gamble - prefer the highest castable tier and fall back a tier on failure."
+  ],
+  "_deviations": [
+    "CHARM IS A REAL, PERMANENT PET SOURCE. 37 of the Bureaucrat's 145 pet nanos are CharmOther (nano strain 202). The Meta-Physicist has ZERO charm nanos and the Engineer has ZERO; both only ever summon. The Crat's pet AI therefore needs a target-selection step (which NPC to take) that neither template class has.",
+    "THE BOT LADDER IS A REGULAR MATRIX, NOT AN IRREGULAR LIST. 9 families x 7 grades = 63 summons, every family complete, grade order identical in all nine. The Engineer's 90 robots fall into 15 families of 1 to 12 nanos with no shared grade vocabulary; the Meta-Physicist has no SpawnItem nanos at all (it uses SummonPet).",
+    "THE CRAT'S BOTS ARE FREE. Zero of the 65 Bureaucrat SpawnItem nanos carry the Hit[61] Cash drain or a 'Cash > N' requirement; 79 of the Engineer's 90 robots do (132 to 3,694 credits).",
+    "TWO PARALLEL CHARM LINES, distinguished in the data by PetType and by the Pets op66 code, with a perfect 37-of-37 correlation: 26 nanos -> PetType 12 + 'Pets op66 7001' (AO-Universe's LONG charm) and 11 nanos -> PetType 11 + 'Pets op66 7002' (the SHORT charm). Nothing in the MP or Engineer pet sets has two parallel lines of one strain that occupy different pet slots.",
+    "'TEAM EMPOWERED' VARIANTS EXIST AND ARE STRICTLY STRONGER AT THE SAME SKILL COST. 11 of the 37 charms; same PM/SI/BM as their solo twin, six CharmNpc[] functions instead of one, and a Psychic ceiling raised by 39 to 76 points (Bend Will 99 -> 138, The Voice of Truth 501 -> 542). The price is Shadowlands + a Specialization bit + NumberOfTeamMembers > 1. The MP and Engineer have no team-gated pet nanos whatsoever.",
+    "THE CHARM WRITES THE PET'S OWN KEEP-ALIVE REQUIREMENT. Every charm sets PetReq1/2/3 (stats 467/468/469) to 129/122/128 and PetReqVal1/2/3 (485/486/487) to the caster's required skill value, via ChangeVariable. No Meta-Physicist or Engineer summon does this - their pets' requirements are fixed by the template.",
+    "A TARGET-STAT CEILING ('Psychic < N', 69 -> 551 across the line) gates every charm, and 8 of the 9 Bureaucrat Fear nanos carry the same construct. No Meta-Physicist or Engineer pet nano carries any target-stat ceiling.",
+    "NO HEAL PET AT ALL, and the thinnest repair kit of the three pet classes. The Meta-Physicist has 10 heal-pet summons; the Engineer has none but gets 7 repair nanos; the Bureaucrat has none and gets THREE (Droid Repair 30072, Droid Overhaul 30071, Thorough Overhaul 116798). The PetType.Heal (0xB) slot on a Crat is occupied by a short CHARM, not by a healer.",
+    "THE PET-BUFF LIBRARY IS SPLIT BY WHICH PET IT TARGETS - a distinction neither template class needs. Gallant Hero (9 nanos) requires NPCFamily == 95 (bot only); Gallant Slave (9 nanos) requires HasRunningNanoLine 202 (charmed NPC only) and additionally a 'Level < N' CEILING on the pet at roughly 80% of the nano's own level requirement. No MP or Engineer pet buff has a target-level ceiling.",
+    "ONLY THREE SummonPet PETS, ALL LATE AND ALL GATED: Carlita Desposito (293899, L160, Spec bit 4), Carlo Pinnetti (258580, L220, Spec bit 8) and Means Test Pet (258222, L220, Spec bit 4). The MP has 43 SummonPet nanos across three strains with a continuous froob ladder from level 1. The Crat's froob progression is entirely SpawnItem bots.",
+    "MEANS TEST PET IS PAID FOR OUT OF THE CHARM SKILLS. It is a SummonPet nano requiring PM/SI/BM > 2,000 each - no Matter Creation, no Time & Space. No MP or Engineer summon crosses skill stacks like that.",
+    "THE CRAT HAS NO PET-INITIATIVE LINE AND NO DAMAGE-TRANSFER LINE. MPPetInitiativeBuffs (217): MP 4 nanos, Engineer 1, Bureaucrat 0. DamageToPet (1024): MP 2 (Sacrificial Bond / Sacrificial Shielding), Bureaucrat 0 - the Crat's nearest equivalent is the single 'Take the Bullet' (267917), which puts a Blast Shield on the bot at the cost of -3,000 to all six of the bot's nano skills. The Crat instead has a pet-TAUNT line the MP lacks (PetTauntBuff strain 232, 3 nanos, +31/+57/+80 Aggressiveness).",
+    "THE BOT SHARES THE ENGINEER'S PET CLAN. Every bot-only Bureaucrat buff requires NPCFamily == 95, which AOSharp's NpcClan enum names 'EngineerAttackPet'. So a Crat droid and an Engineer robot are the same clan to the requirement system - the MP's pets are 96/97/98.",
+    "THE CLIENT'S OWN BOT NAMES ARE NOT CONSISTENT, so a name-based matcher will break. 18 of the 63 matrix bots do not end in '-Droid': all seven Bodyguard grades and all seven Minion grades carry no suffix at all, as do Advanced Worker (46399), Advanced Helper (46411) and Basic Administrator (46400), while Limited Helper-Bot (46359) says '-Bot' where its six BUHE siblings say '-Droid'. Match on the SpawnItem template code, not on the name.",
+    "GRADE ORDER CANNOT BE READ OFF THE ENGLISH. 'Supervisor-Grade' outranks 'Advanced' and 'Director-Grade' outranks 'Executive-Grade'; and in the Nanite Robot Protection line 'Basic' (L175) is WEAKER than 'Lesser' (L201). Both orderings here are taken from the data (SpawnItem level argument / Level requirement), not from the words.",
+    "TWO NANO-FOCUS-GATED PET NANOS rather than one: CEO Guardian (273300) and The Choir Fantastic (275009) both carry 'NanoFocusLevel op22 64'. The Engineer has exactly one (Ravening M-60). The Meta-Physicist has none.",
+    "CORPORATE GUARDIAN COSTS +440 MC/TS FOR +5 SPAWN LEVELS (786 -> 1,226 for spawn level 200 -> 205), and CEO Guardian another +243 for +10 more. The froob part of the ladder moves in 6-to-25-point steps. The Shadowlands/endgame bots are a different economy entirely."
+  ],
+  "_unverified": [
+    "The numeric encoding of 'Pets op66 <N>' (Operator.TestNumPets = 66, on stat Pets = 251) is NOT established. What IS established from the data: all 26 long-charm nanos, both Associates and Means Test Pet carry 7001; all 11 short-charm nanos carry 7002; 19 of the 37 charms and both Associates additionally carry 2001; and no bot summon carries any Pets requirement at all. Two readings fit: (a) the code identifies the pet slot, which matches the PetType 12/11 split perfectly; (b) the last digit is a maximum count, which matches AO-Universe's 'you can have 2 short charms'. OmniCell/CellAO implements TestNumPets as a plain LessThan on stat 251, which is a server re-implementation rather than client truth, so it settles nothing.",
+    "'Flags op118 0' - operator 118 is absent from both OmniCell.Enums/Operator.cs and AOSharp UseCriteriaOperator.cs. It appears on 4 Bureaucrat pet nanos (Basic/Lesser/plain Nanite Robot Protection and Take the Bullet). Meaning unknown; recorded verbatim, not interpreted.",
+    "'Psychic < N' on the 37 charms is read here as a ceiling on the TARGET. The evidence is local and circumstantial: the same construct appears on 8 Bureaucrat Fear nanos alongside 'NPCFamily != 0 / 94 / 95 / 96 / 97 / 98', which can only be target requirements, and the OmniCell requirement evaluator resolves each requirement against a per-requirement Target that the nano extractor discards. It has NOT been confirmed against wire data or a citable source, and the per-requirement Target field was not re-read for this pass.",
+    "What the SIX CharmNpc[] functions on each Team Empowered charm actually do - one NPC shared with the team, or one per team member - is not derivable from the local data. The Meta-Physicist's heal pets list their SummonPet template seven times for a single pet, so function repetition is demonstrably NOT a count.",
+    "Whether Means Test Pet (258222) summons twenty pets or one is likewise unresolved; the nano repeats SummonPet template [0,220,-1] twenty times.",
+    "Charm DURATIONS are not in this extraction. AO-Universe distinguishes 'long duration' (The Voice of Truth) from 'short duration' (Displace Thought Patterns) but gives no numbers, and the extracted function list carries no duration field.",
+    "What unlocks 'NanoFocusLevel op22 64' (stat 355, bit 64) is not derivable from nano data. The engineer-pets.json pass called it an 'endgame nano-focus gate'; that wording is inherited here, not independently verified.",
+    "The Specialization bit -> specialization NUMBER mapping (bit 1/2/4/8 = Specialization 1/2/3/4) is the conventional reading and is consistent with the level requirements on the nanos that carry each bit, but was not verified against a citable source in this pass.",
+    "AOSharp's NpcClan enum names value 95 'EngineerAttackPet'. Every Bureaucrat bot-only buff requires NPCFamily == 95, which is why this file says Crat bots carry clan 95 - but no Bureaucrat bot was read out of a capture to confirm it directly in this pass. AOSharp PetType.cs separately states its PetType values were 'Confirmed against roughly a hundred pets in sniffs/ and captures/ ... across Meta-Physicists, Engineers and Bureaucrats', and names the 'Bureaucrat Worker' as the Attack-slot example, so the PetType half of the claim IS sniff-backed.",
+    "PetCommand.Social (9) and PetCommand.Release (11) are in the wire enum (AOSharp PetCommand.cs) but the AO-Universe pet-command guide lists neither, so their slash spellings and exact behaviour - in particular whether Release is how you let a charmed NPC go - are unknown.",
+    "A web search snippet attributed to the AODB wiki a line about a Bureaucrat 'pet dog from level 100' whose commands go to both pets. The actual http://wiki.aodb.us/wiki/Bureaucrat page does not contain it and the claim matches the AODB Engineer Guide's second-pet rule, so it is NOT recorded as Bureaucrat behaviour here.",
+    "Nano ACQUISITION (which shop, mission or drop each nano crystal comes from) is out of scope for this file and is not recorded; bureaucrat-nano-sources.json does not exist yet.",
+    "Charm success rate, resist mechanics, and whether a failed charm still lands the TauntNpc are not in the local data."
+  ],
+  "_sources": [
+    "LOCAL (source of truth for every id, name, requirement and effect string in this file): AOBuddy/GameData/profiles/bureaucrat-nanos.json - 343 Bureaucrat-castable nanos extracted from E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) via OmniCell.Core NanoLoader.CacheAllNanos, names from E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql.",
+    "LOCAL: AOSharp.Common/GameData/PetType.cs - PetType Attack=0xA, Heal=0xB, Support=0xC, Social=0xE; the file states the values arrive in SimpleNpcInfo.PetType and PetToMasterMessage.AttachNotificationValue and were 'Confirmed against roughly a hundred pets in sniffs/ and captures/ ... across Meta-Physicists, Engineers and Bureaucrats', naming the 'Bureaucrat Worker' as the Attack-slot example. This is what makes ChangeVariable[512,11] / [512,12] on the charm nanos readable as Heal-slot / Support-slot.",
+    "LOCAL: AOSharp.Common/SmokeLounge/AOtomation/Messaging/Messages/N3Messages/PetCommand.cs - the wire pet-command enum (Follow=1, Behind=2, Wait=4, Guard=6, Attack=7, Social=9, Terminate=10, Release=11, Heal=12, Report=14, Chat=16).",
+    "LOCAL: AOSharp.Common/GameData/CharacterFlags.cs - NpcClan (95 EngineerAttackPet, 96/97/98 the MP pets) and ExpansionFlags (bit 1 = ShadowLands, so 'Expansion op22 2' = Shadowlands).",
+    "LOCAL: AOSharp.Common/GameData/Stat.cs - Pets=251, PetReq1/2/3=467/468/469, PetReqVal1/2/3=485/486/487, PetType=512, NanoFocusLevel=355, NPCFamily=455, Health=27, Level=54, Profession=60, VisualProfession=368.",
+    "LOCAL: OmniCell.Enums/Operator.cs and OmniCell.Core/Requirements/RequirementLambdaCreator.cs - operator numbers used in castReqs: 22 BitAnd, 66 TestNumPets, 92 HasRunningNanoLine. The evaluator resolves each requirement against a per-requirement Target, which the nano extractor flattens away.",
+    "LOCAL (comparison baselines for _deviations): AOBuddy/GameData/profiles/metaphysicist-pets.json and engineer-pets.json.",
+    "AO-Universe, 'Bureaucrat Guide - Version 1.2' (https://www.ao-universe.com/guides/classic-ao/profession-guides/bureaucrat-guide---version-12) - long vs short charm and the pet cap ('It is possible to have 1 long and 1 short charm, or you can have 2 short charms. You can not use your Long charm if you already have a pet on short charm.'); 'You can not charm calmed mobs/bosses/uniques/guards.'; Gallant Slave 'buffs our charmed pet but only if the charm is alot lower then you (below a certain level)'; 'Gallant Hero: The Vengeful Butler buffs our Bodyguard pet with more AR/dmg/taunt per hit'; the bot-vs-charm skill fork around level 60; '/pet behind and /pet wait, /pet follow seems to be a cause of the problem'; 'Carlo Pinetti' as a level 220 pet; trimmers on the robotic pet.",
+    "AO-Universe, 'Basic Pet Commands Guide' (https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/basic-pet-commands-guide) - the verbatim command table used in the commands block, the GUARD-after-zoning default, and the /macro Term terminate-by-name macro.",
+    "AODB Wiki, 'Bureaucrat' (http://wiki.aodb.us/wiki/Bureaucrat) - a Crat 'can have both a \"summoned\" droid and a \"Charmed\" monster ally'; 'previously charmed enemies give no XP, so use discretion'; charm as 'a small but ticking time bomb that goes off when the Charm wears off (the former ally attacks)'; the shared chant/pulse ability with Engineers and Keepers.",
+    "NOT USED: auno.org, aoitems.com and anarchyonline.fandom.com block automation (playbook section 4). No secondhand claim from any of them appears in this file."
+  ]
+}

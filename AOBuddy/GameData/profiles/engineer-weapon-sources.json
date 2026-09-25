@@ -1,0 +1,1781 @@
+{
+    "profile":  "Acquisition sources for Engineer representative weapons (AOBuddy10)",
+    "profession":  "Engineer",
+    "generatedUtc":  "2026-09-23T04:50:42Z",
+    "generatedBy":  "tools/mp-weapon-extractor/gen-weapon-sources.ps1",
+    "method":  [
+                   "Representative ids are taken from engineer-weapons.json (usableWeaponTypes[].representativeWeapons).",
+                   "how/where/steps/\refs are JOINED from engineer-weapons-endgame.json, where each endgame model carries an acquisition resolved from the cited ao-universe.com / wiki.aodb.us guides listed in that file\u0027s _sources. Match is by item id, else by model name (representative ids can be a lower QL of the same model).",
+                   "expansion is read from the weapon\u0027s own ToWield Expansion(389) BitAnd criterion in items.ocp, mapped via AOSharp.Common ExpansionFlags - authoritative client data.",
+                   "Anything with no cited acquisition is written how=\u0027unknown\u0027 with no where/steps. No vendor, mob or mission is guessed."
+               ],
+    "sources":  {
+                    "152060":  {
+                                   "name":  "Tsubuyaite Miru GR-8",
+                                   "ql":  160,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "152062":  {
+                                   "name":  "Tsubuyaite Miru GR-9",
+                                   "ql":  199,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "152063":  {
+                                   "name":  "Tsubuyaite Miru GR-11",
+                                   "ql":  200,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "165370":  {
+                                   "name":  "Old Spider Poison Gland",
+                                   "ql":  74,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "165372":  {
+                                   "name":  "Mature Spider Poison Gland",
+                                   "ql":  89,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "165374":  {
+                                   "name":  "Young Spider Poison Gland",
+                                   "ql":  99,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "165375":  {
+                                   "name":  "Baby Spider Poison Gland",
+                                   "ql":  100,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204963":  {
+                                   "name":  "Flawed Eyemutant Orb Laser",
+                                   "ql":  24,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204965":  {
+                                   "name":  "Low-Quality Eyemutant Orb Laser",
+                                   "ql":  74,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204967":  {
+                                   "name":  "Eyemutant Orb Laser",
+                                   "ql":  149,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204969":  {
+                                   "name":  "Fine-Tuned Eyemutant Orb Laser",
+                                   "ql":  199,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204971":  {
+                                   "name":  "Quality Eyemutant Orb Laser",
+                                   "ql":  224,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "204972":  {
+                                   "name":  "Excellent Eyemutant Orb Laser",
+                                   "ql":  225,
+                                   "how":  "drop|tradeskill",
+                                   "where":  "Eye Mutants - camps west of Avalon, or pulled in a mission",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "Eye Mutants either carry the finished Eyemutant Orb Laser or drop an Eyemutant Eye, the key component you craft it from.",
+                                                 "Eyemutant Eyes come in all QLs; for high QLs use the camps west of Avalon or roll a mission.",
+                                                 "Engineer-only, left hand only, has Fling Shot, a low multi-wield requirement and high minimum damage - the classic low/mid-level Engineer off-hand."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/classic-ao/tradeskill-guides-6/weapon-4/eyemutant-orb-laser",
+                                                "http://wiki.aodb.us/wiki/Eyemutant_Orb_Laser",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition joined from engineer-weapons-endgame.json (model \u0027Excellent Eyemutant Orb Laser\u0027)."
+                               },
+                    "207998":  {
+                                   "name":  "OT Hurler",
+                                   "ql":  149,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "207999":  {
+                                   "name":  "OT Hurler Factotum",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "208039":  {
+                                   "name":  "Red Line Grenade Launcher",
+                                   "ql":  50,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "211228":  {
+                                   "name":  "Destruction",
+                                   "ql":  299,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  "expansion",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "211229":  {
+                                   "name":  "Serious Destruction",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  "expansion",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "214263":  {
+                                   "name":  "Ingenious Pistol",
+                                   "ql":  299,
+                                   "how":  "tradeskill",
+                                   "where":  "Shadowlands: a sided base pistol combined with a Turn Spirit",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "These are the Engineer TURN SPIRIT pistols: a sided Shadowlands base pistol combined with a Turn Spirit. No tradeskill skill is required for the combine.",
+                                                 "ao-universe\u0027s Engineer guide states: the clan version is made from Sacrosanct Pistol + Turn Spirit of Bacam-Xum, the omni version from Inamorata Pistol + Turn Spirit of Aam.",
+                                                 "The base pistols drop from sided Shadowlands mobs.",
+                                                 "Turn Spirits come from named sided Shadowlands mob drops, or from a Turnspirit Flesh Pouch (bought from Yutto vendors, and dropped by the Heck bosses in Inferno near the Incarnator); opening a Flesh Pouch needs 700 Breaking \u0026 Entry.",
+                                                 "The Turn Spirit component is about 85% of the weapon QL. Aim for the QL200-250 versions - the QL300 ones have requirements most Engineers cannot reach.",
+                                                 "The point of the combine is that it REMOVES the Shadowlands equip requirement, which is why these are popular for Rubi-Ka play. That matches these items in items.ocp, which carry no Expansion gate."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition joined from engineer-weapons-endgame.json (model \u0027Ingenious Pistol\u0027)."
+                               },
+                    "214264":  {
+                                   "name":  "Innovatory Pistol",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Shadowlands: a sided base pistol combined with a Turn Spirit",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "These are the Engineer TURN SPIRIT pistols: a sided Shadowlands base pistol combined with a Turn Spirit. No tradeskill skill is required for the combine.",
+                                                 "ao-universe\u0027s Engineer guide states: the clan version is made from Sacrosanct Pistol + Turn Spirit of Bacam-Xum, the omni version from Inamorata Pistol + Turn Spirit of Aam.",
+                                                 "The base pistols drop from sided Shadowlands mobs.",
+                                                 "Turn Spirits come from named sided Shadowlands mob drops, or from a Turnspirit Flesh Pouch (bought from Yutto vendors, and dropped by the Heck bosses in Inferno near the Incarnator); opening a Flesh Pouch needs 700 Breaking \u0026 Entry.",
+                                                 "The Turn Spirit component is about 85% of the weapon QL. Aim for the QL200-250 versions - the QL300 ones have requirements most Engineers cannot reach.",
+                                                 "The point of the combine is that it REMOVES the Shadowlands equip requirement, which is why these are popular for Rubi-Ka play. That matches these items in items.ocp, which carry no Expansion gate."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition joined from engineer-weapons-endgame.json (model \u0027Innovatory Pistol\u0027)."
+                               },
+                    "214268":  {
+                                   "name":  "Pistol of the Maker",
+                                   "ql":  299,
+                                   "how":  "tradeskill",
+                                   "where":  "Shadowlands: a sided base pistol combined with a Turn Spirit",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "These are the Engineer TURN SPIRIT pistols: a sided Shadowlands base pistol combined with a Turn Spirit. No tradeskill skill is required for the combine.",
+                                                 "ao-universe\u0027s Engineer guide states: the clan version is made from Sacrosanct Pistol + Turn Spirit of Bacam-Xum, the omni version from Inamorata Pistol + Turn Spirit of Aam.",
+                                                 "The base pistols drop from sided Shadowlands mobs.",
+                                                 "Turn Spirits come from named sided Shadowlands mob drops, or from a Turnspirit Flesh Pouch (bought from Yutto vendors, and dropped by the Heck bosses in Inferno near the Incarnator); opening a Flesh Pouch needs 700 Breaking \u0026 Entry.",
+                                                 "The Turn Spirit component is about 85% of the weapon QL. Aim for the QL200-250 versions - the QL300 ones have requirements most Engineers cannot reach.",
+                                                 "The point of the combine is that it REMOVES the Shadowlands equip requirement, which is why these are popular for Rubi-Ka play. That matches these items in items.ocp, which carry no Expansion gate."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition joined from engineer-weapons-endgame.json (model \u0027Pistol of the Maker\u0027)."
+                               },
+                    "214269":  {
+                                   "name":  "Pistol of the Creator",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Shadowlands: a sided base pistol combined with a Turn Spirit",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "These are the Engineer TURN SPIRIT pistols: a sided Shadowlands base pistol combined with a Turn Spirit. No tradeskill skill is required for the combine.",
+                                                 "ao-universe\u0027s Engineer guide states: the clan version is made from Sacrosanct Pistol + Turn Spirit of Bacam-Xum, the omni version from Inamorata Pistol + Turn Spirit of Aam.",
+                                                 "The base pistols drop from sided Shadowlands mobs.",
+                                                 "Turn Spirits come from named sided Shadowlands mob drops, or from a Turnspirit Flesh Pouch (bought from Yutto vendors, and dropped by the Heck bosses in Inferno near the Incarnator); opening a Flesh Pouch needs 700 Breaking \u0026 Entry.",
+                                                 "The Turn Spirit component is about 85% of the weapon QL. Aim for the QL200-250 versions - the QL300 ones have requirements most Engineers cannot reach.",
+                                                 "The point of the combine is that it REMOVES the Shadowlands equip requirement, which is why these are popular for Rubi-Ka play. That matches these items in items.ocp, which carry no Expansion gate."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Acquisition joined from engineer-weapons-endgame.json (model \u0027Pistol of the Creator\u0027)."
+                               },
+                    "244742":  {
+                                   "name":  "Lord of Abandonment",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lord of Abandonment\u0027)."
+                               },
+                    "244802":  {
+                                   "name":  "Lord of Anger",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lord of Anger\u0027)."
+                               },
+                    "244862":  {
+                                   "name":  "Lord of Greed",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lord of Greed\u0027)."
+                               },
+                    "244911":  {
+                                   "name":  "Lady of Sloth",
+                                   "ql":  299,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lady of Sloth\u0027)."
+                               },
+                    "244912":  {
+                                   "name":  "Lord of Sloth",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lord of Sloth\u0027)."
+                               },
+                    "244913":  {
+                                   "name":  "Lady of Lust",
+                                   "ql":  299,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lady of Lust\u0027)."
+                               },
+                    "245738":  {
+                                   "name":  "Massive Bolt Charger",
+                                   "ql":  260,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "246873":  {
+                                   "name":  "Prohibited Hand-Mortar of Bacam-Xum",
+                                   "ql":  250,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  "TL7",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253216":  {
+                                   "name":  "Ill-treated Nizno\u0027s Bomb Blaster",
+                                   "ql":  29,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253218":  {
+                                   "name":  "Cast-off Nizno\u0027s Bomb Blaster",
+                                   "ql":  59,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253220":  {
+                                   "name":  "Over-tuned Nizno\u0027s Bomb Blaster",
+                                   "ql":  89,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253222":  {
+                                   "name":  "Flawed Nizno\u0027s Bomb Blaster",
+                                   "ql":  119,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253224":  {
+                                   "name":  "Second-hand Nizno\u0027s Bomb Blaster",
+                                   "ql":  149,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253226":  {
+                                   "name":  "Quality Nizno\u0027s Bomb Blaster",
+                                   "ql":  179,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "253228":  {
+                                   "name":  "Balanced Nizno\u0027s Bomb Blaster",
+                                   "ql":  209,
+                                   "how":  "tradeskill",
+                                   "where":  "Both components drop from alien GENERALS (Alien Invasion city raids)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Explosif Device + Biomaterial Tubing = Nizno\u0027s Bomb Blaster. Both components drop from alien generals.",
+                                                 "Skill: 5.25 x the QL in Mechanical Engineering and 5.5 x the QL in Weapon Smithing.",
+                                                 "The Biomaterial Tubing sets the QL of the weapon; the Explosif Device must be the same QL or higher.",
+                                                 "The prefix is the QL band of the same crafted weapon - in this client data Balanced = QL180-209, Fine-tuned = QL210-239, Deluxe = QL240-299, Premium = QL300.",
+                                                 "ao-universe\u0027s Engineer guide calls the Premium version the best-damage grenade weapon for Shadowlands play."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/niznos-bomb-blaster",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Balanced Nizno\u0027s Bomb Blaster\u0027)."
+                               },
+                    "253230":  {
+                                   "name":  "Fine-tuned Nizno\u0027s Bomb Blaster",
+                                   "ql":  239,
+                                   "how":  "tradeskill",
+                                   "where":  "Both components drop from alien GENERALS (Alien Invasion city raids)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Explosif Device + Biomaterial Tubing = Nizno\u0027s Bomb Blaster. Both components drop from alien generals.",
+                                                 "Skill: 5.25 x the QL in Mechanical Engineering and 5.5 x the QL in Weapon Smithing.",
+                                                 "The Biomaterial Tubing sets the QL of the weapon; the Explosif Device must be the same QL or higher.",
+                                                 "The prefix is the QL band of the same crafted weapon - in this client data Balanced = QL180-209, Fine-tuned = QL210-239, Deluxe = QL240-299, Premium = QL300.",
+                                                 "ao-universe\u0027s Engineer guide calls the Premium version the best-damage grenade weapon for Shadowlands play."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/niznos-bomb-blaster",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Fine-tuned Nizno\u0027s Bomb Blaster\u0027)."
+                               },
+                    "253232":  {
+                                   "name":  "Deluxe Nizno\u0027s Bomb Blaster",
+                                   "ql":  299,
+                                   "how":  "tradeskill",
+                                   "where":  "Both components drop from alien GENERALS (Alien Invasion city raids)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Explosif Device + Biomaterial Tubing = Nizno\u0027s Bomb Blaster. Both components drop from alien generals.",
+                                                 "Skill: 5.25 x the QL in Mechanical Engineering and 5.5 x the QL in Weapon Smithing.",
+                                                 "The Biomaterial Tubing sets the QL of the weapon; the Explosif Device must be the same QL or higher.",
+                                                 "The prefix is the QL band of the same crafted weapon - in this client data Balanced = QL180-209, Fine-tuned = QL210-239, Deluxe = QL240-299, Premium = QL300.",
+                                                 "ao-universe\u0027s Engineer guide calls the Premium version the best-damage grenade weapon for Shadowlands play."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/niznos-bomb-blaster",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Deluxe Nizno\u0027s Bomb Blaster\u0027)."
+                               },
+                    "253233":  {
+                                   "name":  "Premium Nizno\u0027s Bomb Blaster",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Both components drop from alien GENERALS (Alien Invasion city raids)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Explosif Device + Biomaterial Tubing = Nizno\u0027s Bomb Blaster. Both components drop from alien generals.",
+                                                 "Skill: 5.25 x the QL in Mechanical Engineering and 5.5 x the QL in Weapon Smithing.",
+                                                 "The Biomaterial Tubing sets the QL of the weapon; the Explosif Device must be the same QL or higher.",
+                                                 "The prefix is the QL band of the same crafted weapon - in this client data Balanced = QL180-209, Fine-tuned = QL210-239, Deluxe = QL240-299, Premium = QL300.",
+                                                 "ao-universe\u0027s Engineer guide calls the Premium version the best-damage grenade weapon for Shadowlands play."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/niznos-bomb-blaster",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23",
+                                                "http://wiki.aodb.us/wiki/Engineer_Weapons"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Premium Nizno\u0027s Bomb Blaster\u0027)."
+                               },
+                    "254506":  {
+                                   "name":  "Kyr\u0027Ozch Carbine - Type 12",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Alien city raids / Alien Mothership (base weapon + clump)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e + untyped Kyr\u0027Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+                                                 "Make the typed clump first: Kyr\u0027Ozch Structural Analyzer + Solid Clump of Kyr\u0027Ozch Bio-Material = Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e.",
+                                                 "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr\u0027Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker\u0027Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit\u0027s AI Perk 3 quest.",
+                                                 "Typing needs 6x the weapon\u0027s QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon\u0027s QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+                                                 "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+                                                 "Type -\u003e specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://wiki.aodb.us/wiki/Kyr\u0027Ozch_Structural_Analyzer",
+                                                "http://wiki.aodb.us/wiki/Alien_City_Raid"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Carbine - Type 12\u0027)."
+                               },
+                    "254569":  {
+                                   "name":  "Kyr\u0027Ozch Grenade Gun",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Grenade Gun\u0027)."
+                               },
+                    "254576":  {
+                                   "name":  "Kyr\u0027Ozch Grenade Gun - Type 1",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Alien city raids / Alien Mothership (base weapon + clump)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e + untyped Kyr\u0027Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+                                                 "Make the typed clump first: Kyr\u0027Ozch Structural Analyzer + Solid Clump of Kyr\u0027Ozch Bio-Material = Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e.",
+                                                 "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr\u0027Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker\u0027Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit\u0027s AI Perk 3 quest.",
+                                                 "Typing needs 6x the weapon\u0027s QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon\u0027s QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+                                                 "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+                                                 "Type -\u003e specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://wiki.aodb.us/wiki/Kyr\u0027Ozch_Structural_Analyzer",
+                                                "http://wiki.aodb.us/wiki/Alien_City_Raid"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Grenade Gun - Type 1\u0027)."
+                               },
+                    "254583":  {
+                                   "name":  "Kyr\u0027Ozch Shotgun",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Shotgun\u0027)."
+                               },
+                    "254618":  {
+                                   "name":  "Kyr\u0027Ozch Pistol",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Pistol\u0027)."
+                               },
+                    "254625":  {
+                                   "name":  "Kyr\u0027Ozch Pistol - Type 1",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Alien city raids / Alien Mothership (base weapon + clump)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e + untyped Kyr\u0027Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+                                                 "Make the typed clump first: Kyr\u0027Ozch Structural Analyzer + Solid Clump of Kyr\u0027Ozch Bio-Material = Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e.",
+                                                 "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr\u0027Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker\u0027Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit\u0027s AI Perk 3 quest.",
+                                                 "Typing needs 6x the weapon\u0027s QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon\u0027s QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+                                                 "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+                                                 "Type -\u003e specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://wiki.aodb.us/wiki/Kyr\u0027Ozch_Structural_Analyzer",
+                                                "http://wiki.aodb.us/wiki/Alien_City_Raid"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Pistol - Type 1\u0027)."
+                               },
+                    "254632":  {
+                                   "name":  "Kyr\u0027Ozch Pistol - Type 4",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Alien city raids / Alien Mothership (base weapon + clump)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e + untyped Kyr\u0027Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+                                                 "Make the typed clump first: Kyr\u0027Ozch Structural Analyzer + Solid Clump of Kyr\u0027Ozch Bio-Material = Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e.",
+                                                 "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr\u0027Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker\u0027Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit\u0027s AI Perk 3 quest.",
+                                                 "Typing needs 6x the weapon\u0027s QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon\u0027s QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+                                                 "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+                                                 "Type -\u003e specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://wiki.aodb.us/wiki/Kyr\u0027Ozch_Structural_Analyzer",
+                                                "http://wiki.aodb.us/wiki/Alien_City_Raid"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Pistol - Type 4\u0027)."
+                               },
+                    "254639":  {
+                                   "name":  "Kyr\u0027Ozch Energy Pistol",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Energy Pistol\u0027)."
+                               },
+                    "254646":  {
+                                   "name":  "Kyr\u0027Ozch Energy Pistol - Type 5",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Alien city raids / Alien Mothership (base weapon + clump)",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e + untyped Kyr\u0027Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+                                                 "Make the typed clump first: Kyr\u0027Ozch Structural Analyzer + Solid Clump of Kyr\u0027Ozch Bio-Material = Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e.",
+                                                 "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr\u0027Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker\u0027Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit\u0027s AI Perk 3 quest.",
+                                                 "Typing needs 6x the weapon\u0027s QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon\u0027s QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+                                                 "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+                                                 "Type -\u003e specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://wiki.aodb.us/wiki/Kyr\u0027Ozch_Structural_Analyzer",
+                                                "http://wiki.aodb.us/wiki/Alien_City_Raid"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Energy Pistol - Type 5\u0027)."
+                               },
+                    "254674":  {
+                                   "name":  "Kyr\u0027Ozch Hammer",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Hammer\u0027)."
+                               },
+                    "257126":  {
+                                   "name":  "Amplified Sleek Cannon",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "260688":  {
+                                   "name":  "Personal Massive Bolt Charger",
+                                   "ql":  260,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "260731":  {
+                                   "name":  "Acid Splash Special",
+                                   "ql":  200,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "Shadowlands",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027Shadowlands\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "262529":  {
+                                   "name":  "Otek Pistol",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "262549":  {
+                                   "name":  "Otek Assault Rifle",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "264884":  {
+                                   "name":  "Ofab Silverback Mk 4",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Silverback Mk 4\u0027)."
+                               },
+                    "264891":  {
+                                   "name":  "Ofab Silverback Mk 5",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Silverback Mk 5\u0027)."
+                               },
+                    "264898":  {
+                                   "name":  "Ofab Silverback Mk 6",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Silverback Mk 6\u0027)."
+                               },
+                    "264970":  {
+                                   "name":  "Ofab Panther Mk 5",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Panther Mk 5\u0027)."
+                               },
+                    "264977":  {
+                                   "name":  "Ofab Panther Mk 6",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Panther Mk 6\u0027)."
+                               },
+                    "265054":  {
+                                   "name":  "Ofab Peregrine Mk 5",
+                                   "ql":  300,
+                                   "how":  "battlestation|tradeskill",
+                                   "where":  "Tower shop for Victory Points, then five Bio-Material upgrades",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Buy the base Ofab Peregrine Mk 1 from the tower shop with Victory Points. Victory Points come from killing aliens on the Mothership or from Battlestation PvP.",
+                                                 "Upgrade it five times with Kyr\u0027Ozch Bio-Material - Type 812 (any QL), which drops from the boss on the alien Mothership. Mk1 -\u003e Mk2 -\u003e ... -\u003e Mk6; Mk 6 is the maximum.",
+                                                 "ao-universe\u0027s Engineer guide calls the Ofab Peregrine Mk 6 the best pistol in the game for an Engineer with Lost Eden, and notes it can be dual-wielded even at QL300."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Peregrine Mk 5\u0027)."
+                               },
+                    "265061":  {
+                                   "name":  "Ofab Peregrine Mk 6",
+                                   "ql":  300,
+                                   "how":  "battlestation|tradeskill",
+                                   "where":  "Tower shop for Victory Points, then five Bio-Material upgrades",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Buy the base Ofab Peregrine Mk 1 from the tower shop with Victory Points. Victory Points come from killing aliens on the Mothership or from Battlestation PvP.",
+                                                 "Upgrade it five times with Kyr\u0027Ozch Bio-Material - Type 812 (any QL), which drops from the boss on the alien Mothership. Mk1 -\u003e Mk2 -\u003e ... -\u003e Mk6; Mk 6 is the maximum.",
+                                                 "ao-universe\u0027s Engineer guide calls the Ofab Peregrine Mk 6 the best pistol in the game for an Engineer with Lost Eden, and notes it can be dual-wielded even at QL300."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Peregrine Mk 6\u0027)."
+                               },
+                    "265096":  {
+                                   "name":  "Ofab Shark Mk 5",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Shark Mk 5\u0027)."
+                               },
+                    "265103":  {
+                                   "name":  "Ofab Shark Mk 6",
+                                   "ql":  300,
+                                   "how":  "shop|tradeskill",
+                                   "where":  "Battlestation - Ofab terminals, Unicorn Defence Hub",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the \u0027Ofab Shop\u0027) in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+                                                 "Upgraded Mk 1 -\u003e Mk 6 (five upgrades, strictly sequential) by adding a Kyr\u0027Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon\u0027s QL. Each upgrade also changes the weapon\u0027s appearance.",
+                                                 "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+                                                 "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+                                                 "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+                                             ],
+                                   "refs":  [
+                                                "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+                                                "http://wiki.aodb.us/wiki/Battle_Station",
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Ofab Shark Mk 6\u0027)."
+                               },
+                    "266989":  {
+                                   "name":  "Rocket Launcher",
+                                   "ql":  1,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "267124":  {
+                                   "name":  "Dreadlock Thrasher",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "267125":  {
+                                   "name":  "Dreadloch Thrasher",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Thrasher\u0027)."
+                               },
+                    "267127":  {
+                                   "name":  "Dreadloch Obliterator",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Obliterator\u0027)."
+                               },
+                    "267128":  {
+                                   "name":  "Dreadloch Rapier",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Rapier\u0027)."
+                               },
+                    "267158":  {
+                                   "name":  "Dreadloch Modified Shark",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Modified Shark\u0027)."
+                               },
+                    "267253":  {
+                                   "name":  "Dreadloch Enhanced Panther",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Enhanced Panther\u0027)."
+                               },
+                    "267258":  {
+                                   "name":  "Dreadloch Shen Sticks",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dreadloch camps (Lost Eden), level 210-220",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item\u0027s own Expansion(389) criterion).",
+                                                 "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+                                                 "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+                                                 "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+                                                 "The same bosses also drop high-quality Kyr\u0027Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper\u0027s Friend, Stab Guidance System, Survival Predictor).",
+                                                 "No per-weapon drop rate is published on either allowed source."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+                                                "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+                                                "http://wiki.aodb.us/wiki/Soldier:Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dreadloch Shen Sticks\u0027)."
+                               },
+                    "274557":  {
+                                   "name":  "Infused Solar-Powered Master Engineer Pistol",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Solar-Powered Master Engineer Pistol + Dust Brigade Solar Notum Infuser (DB2 \u0027Inside the Machine\u0027)",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Build the Solar-Powered Master Engineer Pistol QL200 first - it is the 7th step of the Engineer Solar-Powered Pistol chain (Solar-Powered Engineer Pistol QL199 + Nano Formula Recompiler + Nano Programming Interface + 64 NCU Memory + Lock Pick + Crystalized Medusa Queen Hippocampus).",
+                                                 "Farm a Dust Brigade Solar Notum Infuser QL250 from the Dust Brigade instance \u0027Inside the Machine\u0027 (DB2).",
+                                                 "Combine: Solar-Powered Master Engineer Pistol QL200 + Dust Brigade Solar Notum Infuser QL250. Needs Mechanical Engineering 1800, Electrical Engineering 1800, Weapon Smithing 1000.",
+                                                 "Requires the Lost Eden expansion and the Engineer profession - both corroborated by this item\u0027s own criteria in items.ocp."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/dust-brigade-engineer-pistol-upgrade",
+                                                "http://wiki.aodb.us/wiki/Solar-Powered_Pistol"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Infused Solar-Powered Master Engineer Pistol\u0027)."
+                               },
+                    "274559":  {
+                                   "name":  "Dust Brigade Engineer Pistol",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Dust Brigade instance \u0027Inside the Machine\u0027 (DB2)",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Drops in the Dust Brigade \u0027Inside the Machine\u0027 (DB2) instance, together with the Dust Brigade Notum Infuser used to upgrade it.",
+                                                 "ao-universe also records that the three parts needed to build the pistol can be found in DB2.",
+                                                 "Access to the Dust Brigade mission line runs through Peacekeeper Constad; the \u0027Home Again\u0027 mission needs level 205 or higher.",
+                                                 "Combine it with a Dust Brigade Notum Infuser for the Infused version (Weapon Smithing 1200, EE 1950, ME 1950)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Dust_Brigade_Pistol",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/dust-brigade-engineer-pistol-upgrade",
+                                                "http://wiki.aodb.us/wiki/Dust_Brigade_Missions"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Dust Brigade Engineer Pistol\u0027)."
+                               },
+                    "274560":  {
+                                   "name":  "Infused Dust Brigade Engineer Pistol",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Both components drop in the Dust Brigade instance \u0027Inside the Machine\u0027 (DB2)",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Farm the Dust Brigade Engineer Pistol (QL300) and the Dust Brigade Notum Infuser (QL250) - both drop in the Dust Brigade \u0027Inside the Machine\u0027 (DB2) encounter.",
+                                                 "Combine them. Needs Weapon Smithing 1200, Electrical Engineering 1950 and Mechanical Engineering 1950.",
+                                                 "The result is NODROP.",
+                                                 "It can be upgraded further with a Crude Upgrade Kit (drops from Escaped Prisoners) - see the Crude Upgrades guide."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/dust-brigade-engineer-pistol-upgrade",
+                                                "http://wiki.aodb.us/wiki/Dust_Brigade_Pistol"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Infused Dust Brigade Engineer Pistol\u0027)."
+                               },
+                    "274973":  {
+                                   "name":  "Augmented Master Engineer Pistol",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "End of the Engineer Solar-Powered Pistol chain; final component from Escaped Prisoners",
+                                   "expansion":  "LostEden",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Top of the Engineer\u0027s own Solar-Powered Pistol tradeskill ladder, which starts with a Solar-Powered Pistol bought on the newbie start island and is upgraded step by step.",
+                                                 "Step 8: Solar-Powered Master Engineer Pistol QL200 + Dust Brigade Solar Notum Infuser QL250 (drops in the Dust Brigade \u0027Inside the Machine\u0027 / DB2 instance) = Infused Solar-Powered Master Engineer Pistol QL300. Needs Mechanical Engineering 1800, Electrical Engineering 1800, Weapon Smithing 1000.",
+                                                 "Step 9: Infused Solar-Powered Master Engineer Pistol QL300 + Crude Upgrade Kit QL250 (drops from Escaped Prisoners) = Augmented Master Engineer Pistol QL300. Needs Mechanical Engineering 2100, Electrical Engineering 2100, Weapon Smithing 1350.",
+                                                 "Engineer profession + Lost Eden expansion are required, which matches this item\u0027s own LostEden Expansion gate read from items.ocp."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Solar-Powered_Pistol",
+                                                "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/dust-brigade-engineer-pistol-upgrade",
+                                                "https://www.ao-universe.com/guides/classic-ao/tradeskill-guides-6/weapon-4/crude-upgrades"
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027LostEden\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Augmented Master Engineer Pistol\u0027)."
+                               },
+                    "280717":  {
+                                   "name":  "Abandonment of the Xan",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Xan Weapon Upgrade Device + \u003cbase weapon QL 299/300\u003e = \u003cX\u003e of the Xan. No tradeskill skill required.",
+                                                 "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / \u0027Mitaar Hero\u0027 (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+                                                 "Base weapon for most sins is the matching Lord/Lady of \u003csin\u003e from The Beast in Pandemonium.",
+                                                 "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+                                                 "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Abandonment of the Xan\u0027)."
+                               },
+                    "280722":  {
+                                   "name":  "Anger of the Xan",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Xan Weapon Upgrade Device + \u003cbase weapon QL 299/300\u003e = \u003cX\u003e of the Xan. No tradeskill skill required.",
+                                                 "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / \u0027Mitaar Hero\u0027 (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+                                                 "Base weapon for most sins is the matching Lord/Lady of \u003csin\u003e from The Beast in Pandemonium.",
+                                                 "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+                                                 "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Anger of the Xan\u0027)."
+                               },
+                    "280725":  {
+                                   "name":  "Greed of the Xan",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Xan Weapon Upgrade Device + \u003cbase weapon QL 299/300\u003e = \u003cX\u003e of the Xan. No tradeskill skill required.",
+                                                 "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / \u0027Mitaar Hero\u0027 (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+                                                 "Base weapon for most sins is the matching Lord/Lady of \u003csin\u003e from The Beast in Pandemonium.",
+                                                 "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+                                                 "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Greed of the Xan\u0027)."
+                               },
+                    "280727":  {
+                                   "name":  "Sloth of the Xan",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Xan Weapon Upgrade Device + \u003cbase weapon QL 299/300\u003e = \u003cX\u003e of the Xan. No tradeskill skill required.",
+                                                 "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / \u0027Mitaar Hero\u0027 (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+                                                 "Base weapon for most sins is the matching Lord/Lady of \u003csin\u003e from The Beast in Pandemonium.",
+                                                 "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+                                                 "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Sloth of the Xan\u0027)."
+                               },
+                    "281503":  {
+                                   "name":  "Kur\u0027Ush Mallet",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Shop components + an existing Xan weapon",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Modified Xan Weapons are made from a finished \u0027X of the Xan\u0027 weapon plus one shop-bought component. No tradeskill skill is required; the component must be QL 150 or higher and is consumed.",
+                                                 "Gluttony of the Xan + Notum Enriched Nano Paste - 16x Layer = Bhan\u0027Zor Hammer",
+                                                 "Abandonment of the Xan + Notum Enriched Nano Paste - 16x Layer = Kur\u0027Ush Mallet",
+                                                 "Lust of the Xan + Nano Pylon = Peh\u0027Wer Pistol",
+                                                 "Peh\u0027Wer Pistol + Runtime Critical Area Analyzer = Troa\u0027Ler Pistol",
+                                                 "Envy of the Xan + Rapid-Reload-And-Fire Gyro = Rhat\u0027Ata Gun  (MG/SMG - not usable by every profession)",
+                                                 "Angst of the Xan + Low-Light Targeting Scope = Gan\u0027Kar Rifle  (Rifle - not usable by every profession)"
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Modified_Xan_Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kur\u0027Ush Mallet\u0027)."
+                               },
+                    "281505":  {
+                                   "name":  "Peh\u0027Wer Pistol",
+                                   "ql":  300,
+                                   "how":  "tradeskill",
+                                   "where":  "Shop components + an existing Xan weapon",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+                                                 "Modified Xan Weapons are made from a finished \u0027X of the Xan\u0027 weapon plus one shop-bought component. No tradeskill skill is required; the component must be QL 150 or higher and is consumed.",
+                                                 "Gluttony of the Xan + Notum Enriched Nano Paste - 16x Layer = Bhan\u0027Zor Hammer",
+                                                 "Abandonment of the Xan + Notum Enriched Nano Paste - 16x Layer = Kur\u0027Ush Mallet",
+                                                 "Lust of the Xan + Nano Pylon = Peh\u0027Wer Pistol",
+                                                 "Peh\u0027Wer Pistol + Runtime Critical Area Analyzer = Troa\u0027Ler Pistol",
+                                                 "Envy of the Xan + Rapid-Reload-And-Fire Gyro = Rhat\u0027Ata Gun  (MG/SMG - not usable by every profession)",
+                                                 "Angst of the Xan + Low-Light Targeting Scope = Gan\u0027Kar Rifle  (Rifle - not usable by every profession)"
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Modified_Xan_Weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Peh\u0027Wer Pistol\u0027)."
+                               },
+                    "288296":  {
+                                   "name":  "Special Edition Kyr\u0027Ozch Grenade Gun",
+                                   "ql":  150,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "ToWield carries a Profession EqualTo Engineer criterion in items.ocp. Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "288664":  {
+                                   "name":  "Kyr\u0027Ozch Nunchacko",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Alien city raids / Alien Mothership",
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+                                                 "Untyped Kyr\u0027Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+                                                 "An untyped Kyr\u0027Ozch weapon has no special attacks until it is typed with a Kyr\u0027Ozch Bio-Material - Type \u003cn\u003e clump (see the \u0027- Type\u0027 entries)."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/Kyr\u0027Ozch_Bio-Material",
+                                                "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Kyr\u0027Ozch Nunchacko\u0027)."
+                               },
+                    "293993":  {
+                                   "name":  "Kuma Tonfa - Left Hand",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "293996":  {
+                                   "name":  "Kuma Tonfa - Right Hand",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL6",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "294001":  {
+                                   "name":  "Lady of Wisdom",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "The Beast, Pandemonium (Shadowlands)",
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+                                                 "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). \u0027Lord of X\u0027 is QL 300 and \u0027Lady of X\u0027 QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+                                             ],
+                                   "refs":  [
+                                                "http://wiki.aodb.us/wiki/The_Beast",
+                                                "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Lady of Wisdom\u0027)."
+                               },
+                    "301885":  {
+                                   "name":  "X1-R4 Viral Force-Blades",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  "AlienInvasion",
+                                   "tier":  "expansion",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027AlienInvasion\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "301901":  {
+                                   "name":  "Perfected Diamondine Kick Pistol",
+                                   "ql":  300,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "302938":  {
+                                   "name":  "Corrupted Lord of Anger",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "A DIRECT DROP - not a tradeskill step above \u0027X of the Xan\u0027. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+                                                 "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+                                                 "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+                                                 "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest \u0027Guarding the Source\u0027 completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+                                                 "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate \u0027Chaos of the Xan\u0027 entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the \u0027X of the Xan\u0027 items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+                                                 "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+                                                 "No per-boss drop rates are published."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+                                                "http://wiki.aodb.us/wiki/Patch_18.8"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Corrupted Lord of Anger\u0027)."
+                               },
+                    "302941":  {
+                                   "name":  "Corrupted Lord of Greed",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "A DIRECT DROP - not a tradeskill step above \u0027X of the Xan\u0027. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+                                                 "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+                                                 "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+                                                 "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest \u0027Guarding the Source\u0027 completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+                                                 "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate \u0027Chaos of the Xan\u0027 entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the \u0027X of the Xan\u0027 items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+                                                 "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+                                                 "No per-boss drop rates are published."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+                                                "http://wiki.aodb.us/wiki/Patch_18.8"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Corrupted Lord of Greed\u0027)."
+                               },
+                    "302943":  {
+                                   "name":  "Corrupted Lord of Sloth",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "A DIRECT DROP - not a tradeskill step above \u0027X of the Xan\u0027. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+                                                 "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+                                                 "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+                                                 "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest \u0027Guarding the Source\u0027 completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+                                                 "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate \u0027Chaos of the Xan\u0027 entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the \u0027X of the Xan\u0027 items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+                                                 "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+                                                 "No per-boss drop rates are published."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+                                                "http://wiki.aodb.us/wiki/Patch_18.8"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Corrupted Lord of Sloth\u0027)."
+                               },
+                    "302946":  {
+                                   "name":  "Corrupted Lord of Wisdom",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+                                   "expansion":  null,
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "A DIRECT DROP - not a tradeskill step above \u0027X of the Xan\u0027. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+                                                 "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+                                                 "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+                                                 "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest \u0027Guarding the Source\u0027 completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+                                                 "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate \u0027Chaos of the Xan\u0027 entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the \u0027X of the Xan\u0027 items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+                                                 "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+                                                 "No per-boss drop rates are published."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+                                                "http://wiki.aodb.us/wiki/Patch_18.8"
+                                            ],
+                                   "notes":  "Acquisition joined from engineer-weapons-endgame.json (model \u0027Corrupted Lord of Wisdom\u0027)."
+                               },
+                    "303000":  {
+                                   "name":  "Achaean Conqueror",
+                                   "ql":  300,
+                                   "how":  "drop",
+                                   "where":  "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+                                   "expansion":  "LegacyOfTheXan",
+                                   "tier":  "TL7",
+                                   "steps":  [
+                                                 "A DIRECT DROP - not a tradeskill step above \u0027X of the Xan\u0027. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+                                                 "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+                                                 "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+                                                 "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest \u0027Guarding the Source\u0027 completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+                                                 "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate \u0027Chaos of the Xan\u0027 entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the \u0027X of the Xan\u0027 items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+                                                 "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+                                                 "No per-boss drop rates are published."
+                                             ],
+                                   "refs":  [
+                                                "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+                                                "http://wiki.aodb.us/wiki/Patch_18.8"
+                                            ],
+                                   "notes":  "Wielding requires expansion \u0027LegacyOfTheXan\u0027 (ToWield Expansion stat 389, items.ocp). Acquisition joined from engineer-weapons-endgame.json (model \u0027Achaean Conqueror\u0027)."
+                               },
+                    "303097":  {
+                                   "name":  "Overtuned Mother Nitrogena",
+                                   "ql":  250,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  "high-rk",
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "303406":  {
+                                   "name":  "Junior Ofab Boar",
+                                   "ql":  220,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               },
+                    "305035":  {
+                                   "name":  "Skull of Anguish",
+                                   "ql":  1,
+                                   "how":  "unknown",
+                                   "where":  null,
+                                   "expansion":  null,
+                                   "tier":  null,
+                                   "steps":  [
+
+                                             ],
+                                   "refs":  [
+
+                                            ],
+                                   "notes":  "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+                               }
+                },
+    "_sources":  [
+                     {
+                         "coverage":  {
+                                          "representativeIdsCovered":  97,
+                                          "withCitedAcquisition":  57,
+                                          "howUnknownButExpansionKnown":  18,
+                                          "howUnknownAndNoExpansion":  22
+                                      },
+                         "inheritedFrom":  "engineer-weapons-endgame.json (_sources there lists every ao-universe.com / wiki.aodb.us URL behind the acquisition text reproduced here)",
+                         "honestFlag":  "\u0027unknown\u0027 means no drop mob, vendor or mission could be verified on an allowed source. auno.org (anti-bot 403), aoitems.com (parked) and anarchyonline.fandom.com (402) are blocked to automation, and the playbook forbids recording fuzzy secondhand claims from them.",
+                         "toImprove":  "Extend the acquisition table in tools/mp-weapon-extractor/gen-weapons-endgame.ps1 ($acq) with further cited weapon lines; every model whose name matches gains a source here automatically."
+                     }
+                 ]
+}

@@ -1,0 +1,303 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "slug": "engineer",
+  "symbiantUnitType": "Control",
+  "generatedUtc": "2026-09-23T11:10:00Z",
+  "levelCapContext": "AO level cap is 220 (+ up to 30 AI title levels + LE research). 'Endgame' = ~level 200-220, AI 24-30, research L9-10. Engineer-specific gates read out of the client data: the Engineer Nanodeck family needs level 215 (ToWield Level > 214); the Widowmaker Battle Drone needs level 220 and Specialization bit 8; the Ravening M-60 and six other top nanos need NanoFocusLevel bit 64, which only a worn Engineer Nanodeck sets; the Star of Ingenuity needs Computer Literacy 1500 and level 200; QL300 Combined armour needs Title Level 6 (level 190+) and 1000 in two abilities.",
+
+  "whatMakesTheEngineerEndgameDifferent": [
+    "EVERYTHING scales off ONE number pair. Every Engineer bot summon requires Matter Creation and Time & Space at (near-)equal values, from the Feeble Automaton up to the Ravening M-60 (MC 1960 / TS 1958). So an Engineer's endgame shopping list is not 'what raises my damage' - it is 'what raises MC and TS', because that is literally what your damage is.",
+    "THE NANODECK IS A HARD WALL. Seven Engineer nanos carry 'NanoFocusLevel op22 64' in their cast requirements, and that bit is set only by a worn Engineer Nanodeck: Ravening M-60 (275815, the top bot, MC 1960 / TS 1958), Improved Isochronal Sloughing Combat Field (273343), Empowered Pre-Nullity Cocoon (273341), Improved Shield of the Obedient Servant (270790), Engineer Composite Specialist Tradeskills 8h (273346, +200 ME/EE/QFT), Formula 22 (275016) and Intrusive Aura of Slave (275835). Without the deck your best bot is the Widowmaker Battle Drone (223323). This is the single biggest step in the Engineer endgame.",
+    "THE STELLAR DECK IS A BOT UPGRADE. Stellar Engineer Nanodeck (280775) grants Matter Creation +30 AND Time & Space +30 on wear - it directly raises the bot you can control - plus Mechanical Engineering +60, Weapon Smithing +60, Tutoring +60, and Grenade/Pistol/Shotgun/Ranged Energy/Martial Arts/Chemistry +30. Verified in items.ocp.",
+    "SLOTH OF THE XAN IS AN ENGINEER WEAPON. Sloth of the Xan (280727) is the GRENADE Xan weapon and it gives Matter Creation +30 and Time & Space +30, Add All Off. +30 and Max Health +600. Grenade is a cost-2.0 skill for an Engineer and an Engineer-only weapon family already exists in that skill. Lust of the Xan (280728) is the PISTOL one and gives Nano C. Init +50, Ranged Init +50, Add All Off. +15. Both are made from a Lord/Lady weapon plus a Xan Weapon Upgrade Device. This is where the Engineer's weapon answer diverges hardest from the Soldier's (Anger of the Xan, Assault Rifle).",
+    "ALIEN ARMOUR: COMBINED OFFICER'S, NOT COMMANDO'S. Combined Officer's (Intelligence 1000 / Psychic 1000) gives ALL SIX nano schools +30 - including both bot skills - plus nine trade skills +30, Max Nano +200, Nano Pool +50, Max NCU +15 and Nano Point Cost -3%. Combined Scout's (Intelligence 1000 / Sense 1000) is the alternative: the same nano and trade skills plus +40 to all three initiatives, all three evades, Perception, Concealment, Breaking&Entry and Trap Disarm, but no Max Nano / Nano Pool / cost reduction. Both verified from items.ocp."
+  ],
+
+  "content": [
+    {
+      "name": "Pandemonium (Adonis inner realm)",
+      "type": "raid",
+      "level": "200-220. Needs a Hold Hell at Bay (HHAB) ring (231234, Nano Resist +700, Run Speed +100, Title Level 6, Shadowlands) to survive the fire DoT.",
+      "whatDropsForClass": "THE ENGINEER'S TOP BOTS COME FROM HERE. Per engineer-pets.json (AODB wiki sourcing), the Pandemonium vendors sell the nano crystals for Military-Grade Marauder M-45 (223337, bot level 219, MC 1851 / TS 1847) and the Widowmaker Battle Drone (223323, bot level 220, MC 1896 / TS 1891) - the best bot you can cast without a Nanodeck. The Night Heart drops Intelligent (QL300) symbiants, the second half of every Xan Alpha, plus Maar's Blue/Red/Yellow belts and weapon seeds. Trash bosses drop the common phatz used across the game.",
+      "classRole": "Bot DPS plus one aura. The Engineer is a strong Pandemonium body because the bot tanks the phatz bosses while the Engineer stands out of the AoE and keeps the repair line (Recondition Parts 116797 up to Synchronized Capacitor Overload 223339) rolling. Bring a friendly aura, not a hostile one - the raid wants the AC/reflect/damage-shield side.",
+      "note": "The access ring is the gate. Until you have it you cannot farm Intelligent QL300 Control symbiants, which is the second half of every Alpha."
+    },
+    {
+      "name": "The Beast (Beast Lair, Pandemonium)",
+      "type": "raid",
+      "level": "Endgame (players ~201-220); 9 hour respawn.",
+      "whatDropsForClass": "STAR OF INGENUITY (244692) - the Engineer's Star, one of the 14 profession Stars on the Beast loot table (verified on wiki.aodb.us/wiki/The_Beast). It gives Mechanical Engineering +60, Weapon Smithing +60, Tutoring +60, Space Time +30 and Grenade +30, requires Computer Literacy 1500 and level 200, and is NODROP + Unique. It is also the second half of the Stellar Nanodeck chain. Beyond that: the 10 armour parts, the two hilts, 12 Lord (QL300) / Lady (QL299) weapons and a random Shadowbreed. For an Engineer the interesting Lord/Lady weapons are Lord/Lady of Sloth (244912 / 244911, Grenade - Max Health +400, Max Nano +400, Matter Creation +30) and Lord/Lady of Lust (244914 / 244913, Pistol - BioMet/MatMet/SenseImp +50 each).",
+      "classRole": "Bot DPS plus aura; the Engineer is a filler DPS/utility slot on the Beast, not a required role. The value of attending is the Star and the Sloth/Lust weapons.",
+      "note": "The wiki's 'Level Requirement: 300' on the Beast page refers to the MOB, not to a player requirement - the player cap is 220."
+    },
+    {
+      "name": "Guarding the Source (Beast Star quest)",
+      "type": "quest",
+      "level": "190-220. Starts with 'One Who is Invited Last' (Yutto NPC) in the Yutto Marshes, Inferno.",
+      "whatDropsForClass": "The alternative route to the profession Star - for an Engineer, the Star of Ingenuity (244692). Doing the quest means you do not have to win the Star on a Beast roll.",
+      "classRole": "Solo/small-team questing; an Engineer clears Inferno content well behind a bot.",
+      "note": "Cited in soldier-endgame.json from the AO-Universe guide; the same quest yields each profession's own Star."
+    },
+    {
+      "name": "Dust Brigade 1 - Peacekeeper Constad questline",
+      "type": "quest",
+      "level": "205-220, all factions and classes. Full team with a tank and a doc recommended.",
+      "whatDropsForClass": "THE ENGINEER NANODECK (270755). ToWield Profession EqualTo 3, Level > 214, NODROP + Unique. On wear it gives Run Speed +25, Nano Range +5, Range Increaser +5 and Critical Resistance +2 - but its real value is that it sets NanoFocusLevel bit 64, the requirement on seven Engineer nanos including the top bot. Also: the Dust Brigade Engineer Pistol (274559) and Infused Dust Brigade Engineer Pistol (274560), both QL300 and Engineer-only.",
+      "classRole": "Bot DPS plus a friendly aura through a long escorted instance. The Engineer's bot is an extra body on a run that wants bodies.",
+      "note": "For an Engineer this is the single highest-priority piece of endgame content. Everything else is an upgrade; the deck is an unlock."
+    },
+    {
+      "name": "Dust Brigade 2 - Deus Ex Machina",
+      "type": "instance",
+      "level": "Endgame (~210+), full team. Requires DB1 completed.",
+      "whatDropsForClass": "Continuation of the Dust Brigade chain and Enhanced Dust Brigade armour parts.",
+      "classRole": "Bot DPS + aura.",
+      "note": "Second stage of the DB chain."
+    },
+    {
+      "name": "Dust Brigade 3 - Locating the Threat / The Facility",
+      "type": "instance",
+      "level": "Endgame (~215-220), full team. Requires DB1 AND DB2.",
+      "whatDropsForClass": "Completes the Dust Brigade questline - a 215-220 progression checkbox.",
+      "classRole": "Bot DPS + aura across a long multi-floor instance.",
+      "note": "Six floors; the 1st, 3rd and 5th are filler."
+    },
+    {
+      "name": "Mitaar Hero (The Alien Threat)",
+      "type": "instance",
+      "level": "201-220. Entrance in the Xan Central Hub at 350 x 410.",
+      "whatDropsForClass": "Nanodeck Activation Device (280785 / 281157) - the item that turns the Engineer Nanodeck (270755) into the Activated Engineer Nanodeck (280761). Also Xan Weapon Upgrade Devices and Beta symbiants.",
+      "classRole": "Bot DPS + aura; the platform/NCU mechanic wants people who can keep themselves alive without a healer, which suits a bot class.",
+      "note": "One of three places the activation device drops (Mitaar Hero / Ground Chief Vortexx / the Xan 12-man)."
+    },
+    {
+      "name": "Ground Chief Vortexx",
+      "type": "instance",
+      "level": "201-220. Floor portal in the Xan Central Hub at 523 x 307.",
+      "whatDropsForClass": "Nanodeck Activation Device, Xan Weapon Upgrade Device and Control-line Xan Beta symbiants.",
+      "classRole": "Bot DPS + aura.",
+      "note": "The four Notum Crystals mechanic; access changed in patch 18.3."
+    },
+    {
+      "name": "The Xan (12-man) / Hall of the Elders",
+      "type": "raid",
+      "level": "201-220 (wiki.aodb.us says 210+). 4-hour lockout. Entrance in the Xan Central Hub at 419 x 324.",
+      "whatDropsForClass": "THE ONLY SOURCE OF XAN BETA SYMBIANTS. For an Engineer that means CONTROL-line Betas across ear/eye/chest/thigh and arm/hand/feet/leg. Also Xan spirits, Xan Weapon Upgrade Devices, belt tuning devices, Nanodeck Activation Devices and Nanodeck components. Completion grants 'The Awakening' buff (5h, level 210+).",
+      "classRole": "Bot DPS plus one aura; re-summon the bot after wipes. An Engineer bot is a reliable extra damage source in a 12-man where positioning matters more than reaction speed.",
+      "note": "Betas from here + Intelligent QL300 from Pandemonium = your Control Alphas. See engineer-symbiants.json."
+    },
+    {
+      "name": "Xan Alpha symbiant crafting",
+      "type": "tradeskill",
+      "level": "Endgame. Combine a Xan Beta with an Intelligent QL300 of the SAME unit line and slot, on the character that will wear it.",
+      "whatDropsForClass": "Control-line Xan Alpha symbiants - the Engineer's best-in-slot. The Engineer's unit line is CONTROL, verified from the ToWear stat-60 lock in items.ocp: every Control symbiant locks to {Engineer 3, Trader 7, Bureaucrat 8, Meta-Physicist 12}. Engineer appears in exactly one of the five lock sets, so there is NO unit choice to make.",
+      "classRole": "Bench work.",
+      "note": "Alphas are NODROP and must be crafted on the Engineer that wears them. The ear and thigh Betas are adaptable between unit types - see engineer-symbiants.json."
+    },
+    {
+      "name": "Xan Weapon Upgrade (tradeskill)",
+      "type": "tradeskill",
+      "level": "Endgame. No tradeskill skill requirement - a 'no-skill' combine of a Lord/Lady weapon with a Xan Weapon Upgrade Device.",
+      "whatDropsForClass": "The two Engineer-relevant results from the 14-entry table on wiki.aodb.us/wiki/Xan_Weapon_Upgrade: Lord/Lady of Sloth -> SLOTH OF THE XAN (280727, Grenade) and Lord/Lady of Lust -> LUST OF THE XAN (280728, Pistol). Sloth of the Xan is the standout: Matter Creation +30, Time & Space +30, Add All Off. +30, Max Health +600, requires Grenade 2251 / Fling Shot 1126, Title Level 6 and the Legacy of the Xan expansion (Expansion bit 128). Lust of the Xan: Nano C. Init +50, Ranged Init +50, Add All Off. +15, Max Health +300, Pistol 1800 / Burst 900 / Fling Shot 900.",
+      "classRole": "Bench work - the weapons come off the Beast and the devices off Mitaar/Vortexx/12-man.",
+      "note": "There is a further tier in the data: Corrupted Lord of Sloth (302943) and Corrupted Lord of Lust (302944), both Title Level 7 and Legacy of the Xan. Corrupted Lord of Sloth carries the same Matter Creation +30 / Time & Space +30. How you obtain the Corrupted versions is NOT established here - see _unverified."
+    },
+    {
+      "name": "Alien City Raids (org city invasion)",
+      "type": "raid",
+      "level": "High-level org content. Needs the Alien Invasion expansion, an org city and a charged controller; 4 players to board the mothership.",
+      "whatDropsForClass": "Kyr'Ozch Bio-Material (the currency for every Ofab Mk 1 -> Mk 6 upgrade and every Ofab armour tier) and the viralbot components for alien armour. For an Engineer the target components are the ones that combine into Combined Officer's (Arithmetic + Spiritual) or Combined Scout's (Arithmetic + Observant). Generals and Admirals drop viral components and crystalline disks.",
+      "classRole": "Bot DPS plus a friendly aura on the city defence, then the mothership. An Engineer also builds a lot of what the org needs - it is the game's tradeskill profession.",
+      "note": "Bio-material, NOT Victory Points, is what upgrades Ofab. Budget clumps at 80%+ of the item QL."
+    },
+    {
+      "name": "Alien Mothership missions (Lost Eden)",
+      "type": "instance",
+      "level": "No level lock per the AO-Universe guide, but a team of at least 2 and realistically an endgame team.",
+      "whatDropsForClass": "Bio-material, alien armour parts and AXP. Steady AI title-level income, which matters to an Engineer because Title Level 6 gates QL300 Combined armour.",
+      "classRole": "Bot DPS + aura.",
+      "note": "Entered from the Unicorn Outpost via the ICC transport room."
+    },
+    {
+      "name": "Sector 7 (Alien Playfield)",
+      "type": "raid",
+      "level": "151-200 per the AO-Universe guide. Team required; Unicorn Outpost.",
+      "whatDropsForClass": "16 NODROP profession-restricted Special Edition weapons drop from the four ship bosses. The Engineer one in the client data is the SPECIAL EDITION KYR'OZCH GRENADE GUN (288296, QL150, Grenade 700 / Fling Shot 350, Profession EqualTo 3). Also VP items and alien loot.",
+      "classRole": "Bot DPS + aura on a team run.",
+      "note": "Entry-tier alien playfield; the gateway to VP farming."
+    },
+    { "name": "Sector 10 (Alien Playfield)", "type": "raid", "level": "unknown - listed on the AO-Universe Alien Playfields index but the level band was not confirmed.", "whatDropsForClass": "Alien loot, bio-material and VP.", "classRole": "Bot DPS + aura.", "note": "Progression playfield between Sector 7 and the higher sectors." },
+    { "name": "Sector 13 (Alien Playfield)", "type": "raid", "level": "180-220. Team required; mission from the Unicorn Security Adviser.", "whatDropsForClass": "Kyr'Ozch Data Core (one of the three needed for Sector 42), bio-material, VP.", "classRole": "Bot DPS + aura. Master Genesplicer Cha'Khaz; the Biological Transceiver protection nano is needed.", "note": "" },
+    { "name": "Sector 28 (Alien Playfield)", "type": "raid", "level": "180-220. Team required.", "whatDropsForClass": "Kyr'Ozch Data Core, bio-material, VP.", "classRole": "Bot DPS + aura; protect the Rookie Alien Hunter.", "note": "" },
+    { "name": "Sector 35 (Alien Playfield)", "type": "raid", "level": "180-220. Team required.", "whatDropsForClass": "Kyr'Ozch Data Core, bio-material, VP.", "classRole": "Bot DPS + aura on a tower-defence encounter. Kill Field Support Cha'Khaz before the Field Marshal (the Support reflects).", "note": "" },
+    { "name": "Sector 42 (Alien Playfield / APF) - the Zodiac / Artillery Commander", "type": "raid", "level": "180-220, realistically 205-220. 90-minute Recall Beacon.", "whatDropsForClass": "APF nano items and endgame alien loot. Access needs the three Data Cores from Sectors 13/28/35 traded to the Unicorn Access Supervisor.", "classRole": "Coordinated raid bot DPS + aura; three bosses in separate places must die simultaneously to spawn the Artillery Commander.", "note": "Do not roll on 210+ APF items before level 210." },
+    {
+      "name": "Battlestations (Victory Points -> Ofab)",
+      "type": "daily",
+      "level": "10-220, bracketed terminals. Teams race to 500 points by holding terminals; the centre control point is worth double.",
+      "whatDropsForClass": "Victory Points, spent at the Ofab shop. For an Engineer: the 'Ofab Engineer' armour set - Helmet (264575/264576), Body (264596/264597), Sleeves (264590/264591), Gloves (264581/264582), Pants (264608/264609), Boots (264602/264603), all verified in items.ocp as ToWear Profession EqualTo 3 (Engineer only), Lost Eden, QL300 needing Intelligence 1045 / Psychic 855. Plus the Engineer's Ofab WEAPON, the OFAB PEREGRINE (a Pistol, Mk 1 id 265020, Mk 6 id 265061; Mk 6 QL300 wants Pistol 2200 / Burst 1650 / Fling Shot 1100). VP also buys the QL300 ring, the Special Edition Ofab Engineer Helmet (267369) and the Ofab back item at 220.",
+      "classRole": "Bot DPS and terminal pressure. An Engineer holds a terminal well: the bot tanks, the Engineer runs a hostile aura on the contested point.",
+      "note": "Ofab PEREGRINE is the Engineer's Ofab weapon, not Ofab Shark (Assault Rifle, Soldier) or Ofab Cobra (Rifle) - verified from the attack-skill field in items.ocp. Ofab Mk upgrades are bought with Kyr'Ozch Bio-Material clumps, not VP."
+    },
+    {
+      "name": "Alien weapon upgrading (Kyr'Ozch Pistol / Grenade Gun lines)",
+      "type": "tradeskill",
+      "level": "Endgame.",
+      "whatDropsForClass": "Kyr'Ozch Pistol (254618) and its Type variants (254625 Type 1 with Fling Shot, 254632 Type 4 with Burst), and Kyr'Ozch Grenade Gun (254569) / Type 1 (254576). QL300 versions want Pistol 2000 or Grenade 2000. The Engineer is the game's tradeskill profession, so it builds these itself.",
+      "classRole": "Bench work - and the Engineer is the one everyone else asks to do it.",
+      "note": "Requires bio-material from the alien raids."
+    },
+    {
+      "name": "Alien armour (Combined sets)",
+      "type": "tradeskill",
+      "level": "Endgame; QL300 Combined pieces need Title Level 6 (level 190+) and 1000 in the two governing abilities.",
+      "whatDropsForClass": "'Combined Officer's' is the Engineer's set - verified in items.ocp: the QL300 Jacket (246672) needs Intelligence 1000 + Psychic 1000 and gives ALL SIX nano schools +30 (including Matter Creation and Time & Space, the two bot skills), nine trade skills +30 (Mech.E, Elec.E, Quantum FT, Weapon Smithing, Pharma Tech, Nano Programming, Psychology, Chemistry), Max Nano +200, Nano Pool +50, Max NCU +15 and Nano Point Cost -3%. 'Combined Scout's' (246684, Intelligence 1000 + Sense 1000) is the alternative: identical nano and trade skills, plus +40 to all three initiatives, +30 to all three evades, Perception, Concealment, Breaking & Entry and Trap Disarm - but it trades away the Max Nano / Nano Pool / cost reduction. Recipes per wiki.aodb.us/wiki/Alien_Armor: Arithmetic + Spiritual = Officer's, Arithmetic + Observant = Scout's.",
+      "classRole": "Bench work; the raw armour comes from alien city raids and the sectors.",
+      "note": "Do NOT copy the Soldier's answer. A Soldier wants Strong+Supple (Commando's) for weapon skills; an Engineer wants the nano-school sets, because its damage IS its nano skills."
+    },
+    {
+      "name": "Nanodeck upgrade chain (Engineer)",
+      "type": "tradeskill",
+      "level": "Level 215+ (all three decks are ToWield Level > 214).",
+      "whatDropsForClass": "Engineer Nanodeck (270755, from DB1) + Nanodeck Activation Device (280785 / 281157, from Mitaar Hero, Vortexx or the Xan 12-man) = Activated Engineer Nanodeck (280761). Activated deck + Star of Ingenuity (244692, from the Beast or Guarding the Source) = Stellar Engineer Nanodeck (280775) plus Stellar Ingenuity (281047). Verified in items.ocp: the Stellar Engineer Nanodeck's ToWield requirement list references item ids 244692 (Star of Ingenuity) and 281047 (Stellar Ingenuity), exactly mirroring the Soldier deck's reference to 244690/281045. On wear the Stellar deck gives Mechanical Engineering +60, Weapon Smithing +60, Tutoring +60, MATTER CREATION +30, TIME & SPACE +30, Grenade +30, Pistol +30, Shotgun +30, Ranged Energy +30, Martial Arts +30, Chemistry +30, Max Health +300, Run Speed +25, Nano Range +5, Range Increaser +5 and Critical Resistance +2.",
+      "classRole": "Bench work, but the payoff is the largest single Engineer item upgrade in the game - it unlocks seven nanos AND raises the bot.",
+      "note": "There is also a 'Sealed Profession Nanodeck' (302080, ToUse Level > 214) in the client data which presumably opens into the correct profession deck - its source is not confirmed, see _unverified."
+    },
+    {
+      "name": "Pyramid of Home (Dark Pyramid Below)",
+      "type": "raid",
+      "level": "201-220, team of 6. In the crater north of the city of Home, Broken Shores.",
+      "whatDropsForClass": "Endgame loot. A WORN PROFESSION NANODECK is one of the three entry tickets, so the Engineer Nanodeck pays for itself twice.",
+      "classRole": "Bot DPS + aura in a 6-man.",
+      "note": "Entry requirement carried from soldier-endgame.json, which cites the AO-Universe Pyramid of Home guide."
+    },
+    { "name": "Arid Rift questline", "type": "quest", "level": "201-220. Entered from the Central Gateway / Central Hub.", "whatDropsForClass": "Quest rewards and a Xan Beta Ear handed over after the Kyr'Ozch Envoy stage - for an Engineer, adapt it to Control.", "classRole": "Solo/small-team questing behind a bot.", "note": "" },
+    { "name": "Neretva Canyons (Areas A-F, then Area X)", "type": "quest", "level": "201-220. Shuttle in the Central Gateway at 728 x 561.", "whatDropsForClass": "Xan Beta Thigh from Lance Corporal DeGeus, plus quest XP and rewards.", "classRole": "Solo/small-team questing behind a bot.", "note": "" },
+    { "name": "Albtraum", "type": "instance", "level": "Instanced Inferno playfield for a single team (2-6 people), patch 17.3.", "whatDropsForClass": "Phobia-line loot and Inferno-level items.", "classRole": "Bot DPS + aura; an Engineer duo/trio clears it comfortably because the bot is a third body.", "note": "" },
+    { "name": "Alappaa", "type": "instance", "level": "160-220, team instanced playfield in Penumbra (patch 17.5).", "whatDropsForClass": "Frozen Crystal-line loot; the SL Elite Daily runs here at 201-214.", "classRole": "Bot DPS + aura.", "note": "" },
+    { "name": "The Collector (Caina, Pandemonium)", "type": "instance", "level": "200-220, single team, all factions. No lockout - repeatable.", "whatDropsForClass": "Five encounters and six bronze boxes of loot.", "classRole": "Bot DPS + aura; repeatable, so it is a steady source rather than a lockout raid.", "note": "" },
+    {
+      "name": "Inferno missions, Xan Reliquary and pocket bosses",
+      "type": "instance",
+      "level": "Inferno 190+; the Xan Reliquary missions need level 170 minimum.",
+      "whatDropsForClass": "Pocket-boss patterns (9 complete QL220-255 patterns for the Galahad Garden Key), Inferno boots, tokens, and the INFERNO GARDEN / INFERNO SANCTUARY bot crystals: per engineer-pets.json the Military-Grade Predator M-30 (223333, bot level 211), the Fieldsweeper Devastator Drone (223319, bot level 213) and the Desolator Assault Drone (223321, bot level 217) all come from Inferno vendors.",
+      "classRole": "An Engineer solos a great deal of Inferno - the bot tanks, the Engineer repairs it with the pet-heal line and never needs a healer. This is the most solo-friendly endgame content for the class.",
+      "note": "Bot crystal sources are from engineer-pets.json (AODB wiki sourcing), not re-verified here."
+    },
+    { "name": "Penumbra missions (Shadowbreed / Shadow gear)", "type": "instance", "level": "Level 150-210 team range; roll them at ~205-210.", "whatDropsForClass": "Shadowbreed gear and tokens.", "classRole": "Bot DPS + aura; easy for a pet class.", "note": "" },
+    { "name": "Adonis / Penumbra / Inferno open-world hunting", "type": "grind", "level": "Adonis ~160-190, Penumbra ~180-205, Inferno 190-220.", "whatDropsForClass": "SK, tokens, dyna loot.", "classRole": "Solo bot-tanking or heckler teams.", "note": "" },
+    { "name": "Ergo / Inferno access and the Great Ice Golem", "type": "quest", "level": "Inferno-level progression.", "whatDropsForClass": "The Great Ice Golem drops 6 molars; one molar traded to Ergo yields the +7 Inferno protection ring (the De'Valos ring family, ids 257116/257117/281264/281267/301132/301133 in items.ocp).", "classRole": "Team the Golem; bot DPS + aura.", "note": "" },
+    { "name": "Hold Hell at Bay ring quest (Pandemonium access)", "type": "quest", "level": "200-220, all factions and classes.", "whatDropsForClass": "Hold Hell at Bay (231234): Nano Resist +700, Run Speed +100, Title Level 6, Shadowlands, Sense 600 / Psychic 600. The gate on Pandemonium, and therefore on Intelligent QL300 Control symbiants.", "classRole": "Quest chain (Xark, Razor, Helli stages).", "note": "" },
+    { "name": "Inferno Boots quest", "type": "quest", "level": "Inferno-level (190+).", "whatDropsForClass": "Inferno boots.", "classRole": "Solo/small team.", "note": "" },
+    { "name": "Galahad Garden Key and Lord Mordeth Garden Key (Inferno)", "type": "quest", "level": "Inferno-level (190+).", "whatDropsForClass": "Inferno garden access - a safe staging point with a fast return, which matters when you are farming Inferno bot crystals and patterns.", "classRole": "Collect 9 complete QL220-255 pocket-boss patterns.", "note": "" },
+    { "name": "Tarasque (Camelot Castle basement)", "type": "raid", "level": "150+ minimum; a single 210+ team with Shadowlands can do it. 9h respawn, 25% PvP zone.", "whatDropsForClass": "Living Dragonflesh components and utility items.", "classRole": "Bot DPS + aura.", "note": "" },
+    { "name": "Temple of the Three Winds (201+ raid instance)", "type": "raid", "level": "201+ instanced version of the classic dungeon.", "whatDropsForClass": "Aztur the Immortal / Nematet / The Loremaster loot at endgame QL.", "classRole": "Bot DPS + aura.", "note": "" },
+    { "name": "Rubi-Ka dynabosses / dyna camps", "type": "grind", "level": "Scales with the dyna's level; endgame dynas are the 200+ ones.", "whatDropsForClass": "Dynaboss armour sets and one-off items.", "classRole": "An Engineer can pull and kill many dynas solo behind a bot.", "note": "" },
+    { "name": "Lost Eden and Elysium team dailies", "type": "daily", "level": "Endgame (200-220).", "whatDropsForClass": "Tokens, VP-adjacent rewards, AXP and research XP.", "classRole": "Quick daily clears behind a bot.", "note": "" }
+  ],
+
+  "progressionOrder": [
+    {
+      "step": "1. Matter Creation and Time & Space, in lockstep, above everything",
+      "what": "Every point of gear, every buff and every symbiant choice is judged on one question: does it raise MC and TS TOGETHER? A bot checks both at the same number, so one point of MC above TS is wasted. Target the cast requirement of the next bot in the ladder (engineer-pets.json): Widowmaker Battle Drone 223323 wants MC 1896 / TS 1891; Ravening M-60 275815 wants MC 1960 / TS 1958.",
+      "why": "The Engineer's damage, tanking and aggro are all the bot. There is no separate weapon track worth optimising first - Pistol is only cost 1.5 and Grenade cost 2.0, and the Engineer's own gun is a supplement."
+    },
+    {
+      "step": "2. Base implants -> Control symbiants",
+      "what": "Fill every slot with QL200+ implants, then replace them with Control-line symbiants. Aim for a stable QL240+ baseline before you start chasing Betas.",
+      "why": "Control is the ONLY unit line an Engineer can wear (verified: the stat-60 lock set on every Control symbiant is {Engineer, Trader, Bureaucrat, Meta-Physicist}, and Engineer appears in no other line). Control carries the nano-school, nano-pool and nano-init bonuses the bot skills need, plus the Treatment / Nano Programming / Comp. Lit. an Engineer wants as the tradeskill profession."
+    },
+    {
+      "step": "3. Ofab Engineer armour via Battlestation Victory Points",
+      "what": "Grind VP on Battlestations and alien missions; buy the six-piece Ofab Engineer set (Helmet 264575, Body 264596, Sleeves 264590, Gloves 264581, Pants 264608, Boots 264602 - Engineer only, Lost Eden, QL300 needs Intelligence 1045 / Psychic 855) and upgrade each piece twice with Kyr'Ozch Bio-Material clumps. Buy the Ofab Peregrine Mk 1 (265020) at the same time and upgrade it the same way.",
+      "why": "Ofab is the cheap, reliable baseline: 499-1575 AC per piece, Max Nano +750 on the body, Nano C. Init +60 and Ranged Init +60 on the helmet, Space Time +16 on the helmet, and the trade skills the class lives on (Weapon Smithing +50 body, Elec.E +40 and Quantum FT +40 boots, Mech.E +25 and Elec.E +25 sleeves, Chemistry +35 gloves, Comp. Lit. +25 pants). It is bought with a currency you earn rather than won on a raid roll."
+    },
+    {
+      "step": "4. Research, AI levels and perks",
+      "what": "Push Personal and Global research toward L9-10 and AI title levels to 24-30; finish the Engineer perk lines. Title Level 6 is a hard gate on QL300 Combined armour.",
+      "why": "Permanent power with no drop RNG, and the Champion of Nano Combat AI line gives +100 to all six nano schools - which for an Engineer means +100 MC and +100 TS, i.e. a bigger bot. soldier-build.json's sibling engineer-build.json calls it the strongest AI perk line for the class."
+    },
+    {
+      "step": "5. Dust Brigade 1 - get the Engineer Nanodeck",
+      "what": "Register and run the Peacekeeper Constad questline (level 205+, full team with tank and doc) for the Engineer Nanodeck (270755).",
+      "why": "This is an UNLOCK, not an upgrade. Wearing any Engineer Nanodeck sets NanoFocusLevel bit 64, which is the cast requirement on seven nanos including the Ravening M-60 (275815), the best bot in the game, and Engineer Composite Specialist Tradeskills (273346, +200 to Mech.E / Elec.E / Quantum FT). No amount of nano skill substitutes for the deck. A worn deck is also one of the three entry tickets to the Pyramid of Home."
+    },
+    {
+      "step": "6. Alien armour - Combined Officer's (or Scout's)",
+      "what": "Farm bio-material and the Arithmetic + Spiritual viralbot armour from alien city raids, the sectors and mothership missions, then combine into Combined Officer's (Jacket 246672 at QL300 needs Intelligence 1000 + Psychic 1000). Combined Scout's (246684, Arithmetic + Observant) is the alternative if you want initiatives and evades instead of Max Nano and cost reduction.",
+      "why": "Combined Officer's gives all six nano schools +30 - including both bot skills - plus nine trade skills +30, Max Nano +200, Nano Pool +50, Max NCU +15 and Nano Point Cost -3%. For a class whose damage is its nano skills and whose second job is tradeskilling, this is the single best-fitting armour in the game."
+    },
+    {
+      "step": "7. Pandemonium access, then the top bot crystals",
+      "what": "Do the Hold Hell at Bay ring quest (231234), then farm Pandemonium. Buy the Military-Grade Marauder M-45 (223337) and Widowmaker Battle Drone (223323) crystals from the Pandemonium vendors, and pick up the Inferno Garden / Sanctuary crystals (Military-Grade Predator M-30 223333, Fieldsweeper Devastator Drone 223319, Desolator Assault Drone 223321) on the way.",
+      "why": "The Widowmaker Battle Drone is bot level 220 and is the best bot castable WITHOUT a Nanodeck. The HHAB ring is also the gate on Intelligent QL300 symbiants."
+    },
+    {
+      "step": "8. The Beast - Star of Ingenuity, then the Stellar Nanodeck",
+      "what": "Raid the Beast (or run Guarding the Source) for the Star of Ingenuity (244692). Run Mitaar Hero, Vortexx or the Xan 12-man for a Nanodeck Activation Device (280785 / 281157) to make the Activated Engineer Nanodeck (280761), then combine with the Star for the Stellar Engineer Nanodeck (280775) and Stellar Ingenuity (281047).",
+      "why": "The Stellar deck keeps the NanoFocusLevel unlock and ADDS Matter Creation +30 and Time & Space +30 - a direct bot upgrade - plus Mech.E +60, Weapon Smithing +60, Tutoring +60 and six weapon skills at +30. It is the biggest single item in the Engineer's endgame."
+    },
+    {
+      "step": "9. Sloth of the Xan (or Lust of the Xan)",
+      "what": "Win a Lord/Lady of Sloth (244912 / 244911) or Lord/Lady of Lust (244914 / 244913) on the Beast, get a Xan Weapon Upgrade Device from Mitaar/Vortexx/12-man, and combine (no tradeskill requirement).",
+      "why": "Sloth of the Xan (280727) is a GRENADE weapon that gives Matter Creation +30, Time & Space +30, Add All Off. +30 and Max Health +600 - a weapon that makes your bot bigger. Lust of the Xan (280728) is the Pistol option with Nano C. Init +50 and Ranged Init +50. Both need the Legacy of the Xan expansion and Title Level 6."
+    },
+    {
+      "step": "10. Xan Beta symbiants (Control), then Intelligent QL300, then Alphas",
+      "what": "Raid the Xan 12-man for Control-line Xan Betas; farm the Night Heart in Pandemonium for Intelligent QL300 Control pieces; combine matching Beta + Intelligent of the same unit and slot on your own Engineer to make Alphas.",
+      "why": "Xan Alphas are the best-in-slot symbiants and therefore the last big MC/TS jump. They are NODROP, so they must be crafted on the Engineer that wears them. Beta ear and thigh are adaptable between unit types - see engineer-symbiants.json."
+    },
+    {
+      "step": "11. Long-tail polish",
+      "what": "Finish DB2/DB3, Arid Rift, Neretva, the Inferno questlines and the Sector 42 chain. Pick up the Engineer-only oddments: Augmented Master Engineer Pistol (274973), Infused Solar-Powered Master Engineer Pistol (274557), Dust Brigade Engineer Pistol (274559) / Infused (274560), Premium Nizno's Bomb Blaster (253233, Grenade), Special Edition Kyr'Ozch Grenade Gun (288296), Rusty's Ring of Bolts (267566), Builder's Signet of The Apocalypse (281200).",
+      "why": "Long, low-priority chores that round out a fully-geared 220 Engineer. None of them changes what bot you can cast."
+    }
+  ],
+
+  "notes": [
+    "The Engineer is a ROBOT profession: one bot at a time, and every bot summon reads Matter Creation and Time & Space at the SAME value. Read every endgame decision as 'does this raise MC and TS together, or does it let me keep the bot alive?'",
+    "The Engineer's symbiant unit line is CONTROL (shared with Trader, Bureaucrat and Meta-Physicist) - verified from the ToWear Profession lock in items.ocp, not from a guide. There is no unit CHOICE: of the five lock sets (Artillery {Soldier, Fixer, Agent, Adventurer, Trader}, Control {Engineer, Trader, Bureaucrat, Meta-Physicist}, Extermination {Bureaucrat, NT, Meta-Physicist}, Infantry {MA, Adventurer, Enforcer, Keeper}, Support {MA, Fixer, Adventurer, Trader, Doctor, Meta-Physicist, Keeper}), Engineer appears in exactly one.",
+    "The Engineer's Ofab weapon is the Ofab PEREGRINE (Pistol). Ofab Shark is an Assault Rifle (Soldier), Ofab Cobra is a Rifle, Ofab Silverback is a Shotgun and Ofab Panther is 1h Blunt - all verified from the attack-skill field in items.ocp. Do not buy by name.",
+    "Items hard-locked to Profession 3 (Engineer) that matter at endgame, all verified by a Profession EqualTo 3 requirement in items.ocp: the six-piece Ofab Engineer set plus the Special Edition Ofab Engineer Helmet (267369) and the OFAB Engineer Protective Gear (267936) and Shoulder Wear (268003); the Engineer Nanodeck family (270755 / 280761 / 280775); the Star of Ingenuity (244692) and Stellar Ingenuity (281047); the Master Engineer Pistol family (274973 / 274557); the Dust Brigade Engineer Pistol (274559 / 274560); the Nizno's Bomb Blaster grenade family (253215-253233); the Special Edition Kyr'Ozch Grenade Gun (288296); Rusty's Ring of Bolts (267566); the Chosen/Faithful/First Tier/Second Tier Engineer suits; Engineer NICS (215239); the Liquid Notum NCU TC-03 Prototype (215232); and the Jobe Engineer Support System (248381).",
+    "SEVEN Engineer nanos require NanoFocusLevel bit 64, which only a worn Engineer Nanodeck sets: Ravening M-60 (275815), Improved Isochronal Sloughing Combat Field (273343), Empowered Pre-Nullity Cocoon (273341), Improved Shield of the Obedient Servant (270790), Engineer Composite Specialist Tradeskills 8 hours (273346), Formula 22 (275016) and Intrusive Aura of Slave (275835). This is the most under-documented Engineer endgame gate and it is read straight from the cast requirements in nanos.ocp.",
+    "Only ONE aura runs at a time - a friendly Sympathetic aura (strain 227, 15 nanos) OR a hostile Disruptive aura (strain 236, 14 nanos), never both. Pick per encounter: friendly for a raid that needs AC/reflect/damage-shield, hostile for a contested Battlestation point or an add-heavy pull.",
+    "The Engineer has NO self-heal at all. It heals its BOT. Personal survivability at endgame is the Bio Shielding perk actions, the reflect/absorb cocoons, the 14 special-attack absorbers (strain 286, topping out at Improved Isochronal Sloughing Combat Field 273343 which needs the Nanodeck) and raw HP. Plan for that in every raid.",
+    "Do not summon a bot while nano-debuffed - the bot is built at the skill level you had when you cast it, and it persists. Conversely, the standard Engineer trick is to summon UNDER a Trader wrangle / Mocham's stack and keep the over-equipped bot after the buff fades. AODB's Engineer Guide gives the control rule: 'Amount of Skill Required to Control = Amount of skill to make or wear x 0.8'.",
+    "Currency gates: Victory Points (Battlestations, alien missions) buy the Ofab Engineer set, Ofab Peregrine Mk 1, the QL300 ring, the Special Edition Head and the Ofab back item. Kyr'Ozch Bio-Material clumps - NOT VP - pay for every Ofab Mk 1 to Mk 6 and armour-tier upgrade, each clump at least 80% of the item QL. Tokens come from Inferno and the daily stack.",
+    "The Engineer is the game's tradeskill profession (Mech.E / Elec.E / Quantum FT / Weapon Smithing / Tutoring all at cost factor 1.0). At endgame that is a real raid role: you build other people's alien armour, Ofab upgrades and implants. Combined Officer's and the Stellar Nanodeck both feed that side as well as the bot side, which is why they are the right picks.",
+    "Bring the bot INTO the fight, not the Engineer. Pet commands only reach 50 m and the bot's run speed is the Engineer's run speed x 1.2 (AO-Universe Engineer Guide MKIII) - position yourself so the bot can reach the target and you cannot."
+  ],
+
+  "_unverified": [
+    "PROVENANCE: the VENUE list (which raids exist, their level bands, their locations and their general loot structure) is carried across from the sibling soldier-endgame.json, which was built by reading the AO-Universe and wiki.aodb.us pages listed in _sources. Only a subset of those pages was re-read while writing this file (The Beast, Xan Weapon Upgrade, Pandemonium, Alien Armor, Armorsets, Hunting Grounds). Every ENGINEER-SPECIFIC claim - item ids, requirements, bonuses, profession locks, nano gates, symbiant line - was read fresh from items.ocp / nanos.ocp and verified against itemnames.sql.",
+    "Sector 10's level band was not confirmed; it is listed on the AO-Universe Alien Playfields index without a band that was read.",
+    "The bot-crystal SOURCES (Adonis Garden, Inferno Garden, Inferno Sanctuary, Pandemonium Vendors) come from engineer-pets.json, which cites the AODB wiki. They were not independently re-verified for this file. The bot ids, levels and MC/TS requirements ARE from nanos.ocp and are exact.",
+    "The Stellar Engineer Nanodeck's ToWield requirement list references item ids 244692 and 281047 with operator 34. The exact semantics of operator 34 (read as a 'Flags' comparison on the item id) were NOT established - it is most likely a mutual-exclusion or 'has been combined with' check. The soldier-endgame.json sibling reads the identical pattern on the Stellar Soldier Nanodeck as the deck 'explicitly naming' the Star. Treat the combine chain as community knowledge confirmed by a strong data signal, not as a decoded rule.",
+    "'Sealed Profession Nanodeck' (302080, ToUse Level > 214) exists in the client data and presumably opens into the correct profession deck. Its source is not confirmed.",
+    "How the 'Corrupted' Lord of Sloth (302943) / Lord of Lust (302944) versions are obtained is not established. Their requirements (Title Level 7, Expansion bit 128 = Legacy of the Xan) and bonuses ARE from items.ocp.",
+    "Exact Victory Point costs (the ~84k VP figure for the QL300 ring + Special Edition head + Ofab back) come from a community progress guide via soldier-endgame.json; they are targets, not verified prices.",
+    "The Engineer's role text ('bot DPS + one aura') is reasoned from the class's own verified kit, not quoted from an Engineer raid guide. No current Engineer endgame raid guide was read for this file.",
+    "Drop RATES are not asserted anywhere in this file. The client data has no drop tables."
+  ],
+
+  "_sources": [
+    "LOCAL CLIENT DATA (authoritative for everything Engineer-specific): E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1), read with tools/eng-gear-extractor --prof 3 --wield (68,637 wearable templates, 61,510 usable by profession 3, 132 models hard-locked to Profession EqualTo 3) and with a direct reader for the ToWield action lists of the Nanodeck / Star chain.",
+    "LOCAL CLIENT DATA: E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp via AOBuddy/GameData/profiles/engineer-nanos.json (288 Engineer-castable nanos) - the source of every bot id, bot level, MC/TS requirement and the seven NanoFocusLevel-gated nanos.",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows). Every item id/name pair in this file was verified against it.",
+    "LOCAL: sibling profiles engineer-pets.json (the full bot ladder and crystal sources), engineer-symbiants.json (Control line, and the proof that Control is the Engineer's only line), engineer-build.json (the MC/TS lockstep rule, the aura exclusivity, Champion of Nano Combat), engineer-buffs.json, engineer-leveling.json, engineer-weapons.json and soldier-endgame.json (the venue list this file is aligned to).",
+    "http://wiki.aodb.us/wiki/The_Beast - the Beast loot table read for this file: 10 armour parts, 2 hilts, the 14 profession Stars by name (STAR OF INGENUITY = Engineer), 12 Lord (QL300) / Lady (QL299) weapons, 3 Shadowbreed, 9 hour respawn.",
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade - the full 14-entry upgrade table read for this file: Lord/Lady of Sloth -> Sloth of the Xan (Grenade), Lord/Lady of Lust -> Lust of the Xan (Pistol); the Xan Weapon Upgrade Device drops from Mitaar Hero / Vortexx / the 12-man at QL300.",
+    "http://wiki.aodb.us/wiki/Alien_Armor - the six alien armour types and the six Combined recipes (Arithmetic + Spiritual = Officer's, Arithmetic + Observant = Scout's).",
+    "http://wiki.aodb.us/wiki/Armorsets - the set taxonomy (Tier armours per profession, Alien Combined sets, OFAB profession sets, Dynaboss armour).",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2 - Pandemonium read for this file: level 200-220, the 12 Zodiac bosses by location, the Night Heart's belts / seeds / ~10 symbiants per kill.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man - Xan 12-man: Central Hub 419 x 324, 4h lockout, level 201-220, Xan Weapon Upgrade Device, belt tuning devices, Beta symbiants.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-alien-threat - Mitaar Hero at Central Hub 350 x 410.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/lox-ground-chief-vortexx - Vortexx at Central Hub 523 x 307.",
+    "https://www.ao-universe.com/guides/classic-ao/quests-guides-3/dust-brigade-peacekeeper-constad - the DB1 stage list and the Profession Nanodeck reward.",
+    "https://www.ao-universe.com/guides/classic-ao/location-guides-5/battle-stations - Battlestations: 10-220 bracketed terminals, 500 points, the centre point worth double.",
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-07-alien-playfield - Sector 7: Unicorn Outpost, level 151-200, the four bosses, the 16 NODROP profession-locked Special Edition weapons.",
+    "http://wiki.aodb.us/wiki/Engineer_Guide and https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 (and 3/3) - the 0.8 control rule, pet run speed = owner run speed x 1.2, the 50 m pet-command range, and the one-aura-at-a-time rule.",
+    "NOT USED (block automation, per CLASS-PROFILE-PLAYBOOK section 4): auno.org, aoitems.com, anarchyonline.fandom.com."
+  ]
+}

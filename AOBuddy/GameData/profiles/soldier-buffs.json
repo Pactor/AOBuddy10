@@ -1,0 +1,439 @@
+{
+  "profession": "Soldier",
+  "professionId": 1,
+  "slug": "soldier",
+  "generatedUtc": "2026-09-23T09:40:00Z",
+  "purpose": "Buff reference for AOBuddy10 Soldier decision-making. The Soldier is a pure weapon profession whose ENTIRE nano kit is buffs and aggro management: reflect shields, absorb/AC shields, HP, weapon and special-attack skills, initiative, AddAllOff, evades, damage modifiers, taunts and detaunts. This file places all 177 Soldier-castable nanos from soldier-nanos.json into exactly one section each, and lists the cross-profession buffs a Soldier should ask for.",
+  "dataSources": {
+    "selfAndGivesIds": "AOBuddy/GameData/profiles/soldier-nanos.json (nanos.ocp OMNICELL-CONTENT pack, client 18.8.50_EP1, 177 Soldier-castable nanos). Every id/name/number/castReq marked source=local came from that file and every name was re-checked against itemnames.sql.",
+    "childNanoEffects": "The 7 'Fight (Team)' damage parents and the 18 Shadowlands 'Empowered ...' reflect parents carry only TeamCastNano/CastNano pointers. The real numbers were read directly out of E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp with a reader that mirrors OmniCellContentPack.ReadNanos (record = ID, Instance, ItemType, Type, flags, Attack, Defend, Stats, Actions, Events).",
+    "selfVsOtherTargeting": "Read from each effect function's Target field: Target(3) = applied to the cast target, so the nano can be put on another character; User(1)/Wearer(2) = self only. All 177 were classified this way - 100 Target(3), 56 Wearer(2), 17 User(1), 3 User+Wearer, 1 Wearer+Target. This is the local-data basis for the selfBuffs vs givesToOthers split, NOT a guess.",
+    "statIdResolution": "E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Stat.cs. Used here: 27 Health; 90-97 Projectile/Melee/Energy/Chemical/Radiation/Cold/Poison/FireAC; 205-225 Reflect*AC; 276 AddAllOff; 278 ProjectileDamageModifier, 279 Melee, 280 Energy, 281 Chemical, 282 Radiation, 311 Cold, 316 Fire, 317 Poison; 475-483 MaxReflected*Dmg.",
+    "functionTypeResolution": "E:/Funcom/OmniCell/OmniCell/Libraries/Source/OmniCell.Enums/FunctionType.cs: 53002 Hit, 53012 Skill, 53045 Modify, 53051 CastNano, 53066 TeamCastNano, 53087 AreaCastNano, 53117 TauntNpc, 53162 ResistNanoStrain, 53227 AddOffProc, 53236 RemoveNanoStrain.",
+    "idNameVerification": "E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows).",
+    "crossProfAndGeneral": "wiki.aodb.us Who_Buffs_What and ao-universe.com Buffing Guide. Other professions' nano ids are NOT in the Soldier extraction, so those ids are null and marked source=web."
+  },
+  "coverage": {
+    "soldierNanosTotal": 177,
+    "enumeratedHere": 177,
+    "placement": "selfBuffs 65 (as 3 line-rows covering 33 reflect nanos + 32 individual rows), givesToOthers 78, tauntsAndDetaunts 26, utilityOnOthers 3, debuffs 1, notSoldierCastable 3, testOrUnused 1.",
+    "byCategoryFromSoldierNanosJson": {
+      "Self / Team Buffs": "7 of 7",
+      "Heals / HoT": "4 of 4",
+      "Misc / Utility": "2 of 2",
+      "Armor Buffs": "14 of 14",
+      "Attack Rating Buffs": "2 of 2",
+      "Damage Buffs": "16 of 16",
+      "Detaunt": "6 of 6",
+      "Evade Buffs": "2 of 2",
+      "Health Buffs": "9 of 9",
+      "Initiative Buffs": "3 of 3",
+      "Procs": "2 of 2",
+      "Reflect / Absorb Shields": "61 of 61",
+      "Root": "1 of 1",
+      "Taunt / Aggro": "20 of 20",
+      "Weapon & Special Attack Buffs": "28 of 28"
+    },
+    "note": "Every one of the 177 appears in exactly one section. Rows that summarise a whole line carry representativeId + representativeName and list every tier under 'tiers'."
+  },
+
+  "selfBuffs": [
+    {
+      "name": "Shadowlands team reflect line (Empowered Partial Deflection Shield -> Pre-Nullity Sphere)  [id 233033 = Pre-Nullity Sphere]",
+      "representativeId": 233033,
+      "representativeName": "Pre-Nullity Sphere",
+      "id": 233033,
+      "nanoLine": "ShadowlandReflectBase(694)",
+      "minLevel": 220,
+      "effect": "ONE cast puts a larger reflect on the Soldier and a smaller one on the whole team. 18 ranks. At the top (Pre-Nullity Sphere, level 220) the self child gives all eight Reflect ACs +38 and all eight Max Reflected Damage caps +68; the team child gives +30 / +68.",
+      "keepUp": true,
+      "castReq": "SpaceTime > 1419, MaterialCreation > 1454, Profession == 1, Level > 219, Expansion op22 2",
+      "note": "Strain ShadowlandReflectBase(694) is a SEPARATE nanoline from the ReflectShield(2) mirror shields, so one of these STACKS with a Total Mirror Shield or an Augmented Mirror Shield. This is the reflect you keep up; the mirror shields are the burst on top. Needs Shadowlands (Expansion bit 2). source=local",
+      "tiers": [
+        { "id": 233035, "name": "Empowered Partial Deflection Shield", "minLevel": 0, "selfChild": { "id": 232250, "name": "Empowered Partial Deflection Shield", "reflectAllACs": 10, "maxReflectedDmg": 2 }, "teamChild": { "id": 231323, "name": "Empowered Partial Deflection Shield", "reflectAllACs": 8, "maxReflectedDmg": 2 } },
+        { "id": 233012, "name": "Empowered Minor Deflection Shield", "minLevel": 0, "selfChild": { "id": 232234, "name": "Empowered Minor Deflection Shield", "reflectAllACs": 12, "maxReflectedDmg": 4 }, "teamChild": { "id": 231324, "name": "Empowered Minor Deflection Shield", "reflectAllACs": 9, "maxReflectedDmg": 4 } },
+        { "id": 233014, "name": "Empowered Lesser Deflection Shield", "minLevel": 25, "selfChild": { "id": 232235, "name": "Empowered Lesser Deflection Shield", "reflectAllACs": 13, "maxReflectedDmg": 7 }, "teamChild": { "id": 231325, "name": "Empowered Lesser Deflection Shield", "reflectAllACs": 10, "maxReflectedDmg": 7 } },
+        { "id": 233016, "name": "Empowered Deflection Shield", "minLevel": 25, "selfChild": { "id": 232236, "name": "Empowered Deflection Shield", "reflectAllACs": 14, "maxReflectedDmg": 10 }, "teamChild": { "id": 231326, "name": "Empowered Deflection Shield", "reflectAllACs": 12, "maxReflectedDmg": 10 } },
+        { "id": 233037, "name": "Empowered Greater Deflection Shield", "minLevel": 50, "selfChild": { "id": 232237, "name": "Empowered Greater Deflection Shield", "reflectAllACs": 15, "maxReflectedDmg": 14 }, "teamChild": { "id": 231327, "name": "Empowered Greater Deflection Shield", "reflectAllACs": 13, "maxReflectedDmg": 14 } },
+        { "id": 233039, "name": "Empowered Major Deflection Shield", "minLevel": 75, "selfChild": { "id": 232238, "name": "Empowered Major Deflection Shield", "reflectAllACs": 17, "maxReflectedDmg": 18 }, "teamChild": { "id": 231328, "name": "Empowered Greater Deflection Shield", "reflectAllACs": 14, "maxReflectedDmg": 18 } },
+        { "id": 233041, "name": "Empowered Reactive Deflection Shield", "minLevel": 75, "selfChild": { "id": 232239, "name": "Empowered Reactive Deflection Shield", "reflectAllACs": 19, "maxReflectedDmg": 21 }, "teamChild": { "id": 231329, "name": "Empowered Reactive Deflection Shield", "reflectAllACs": 15, "maxReflectedDmg": 21 } },
+        { "id": 233043, "name": "Empowered Partial Reflective Field", "minLevel": 100, "selfChild": { "id": 232240, "name": "Empowered Partial Reflective Field", "reflectAllACs": 21, "maxReflectedDmg": 25 }, "teamChild": { "id": 231330, "name": "Empowered Partial Reflective Field", "reflectAllACs": 16, "maxReflectedDmg": 25 } },
+        { "id": 233045, "name": "Empowered Minor Reflective Field", "minLevel": 100, "selfChild": { "id": 232241, "name": "Empowered Minor Reflective Field", "reflectAllACs": 22, "maxReflectedDmg": 29 }, "teamChild": { "id": 231331, "name": "Empowered Minor Reflective Field", "reflectAllACs": 17, "maxReflectedDmg": 29 } },
+        { "id": 233047, "name": "Empowered Lesser Reflective Field", "minLevel": 125, "selfChild": { "id": 232242, "name": "Empowered Lesser Reflective Field", "reflectAllACs": 24, "maxReflectedDmg": 33 }, "teamChild": { "id": 231332, "name": "Empowered Lesser Reflective Field", "reflectAllACs": 18, "maxReflectedDmg": 33 } },
+        { "id": 233049, "name": "Empowered Reflective Field", "minLevel": 145, "selfChild": { "id": 232243, "name": "Empowered Reflective Field", "reflectAllACs": 25, "maxReflectedDmg": 37 }, "teamChild": { "id": 231333, "name": "Empowered Reflective Field", "reflectAllACs": 20, "maxReflectedDmg": 37 } },
+        { "id": 233051, "name": "Empowered Greater Reflective Field", "minLevel": 155, "selfChild": { "id": 232233, "name": "Empowered Greater Reflective Field", "reflectAllACs": 26, "maxReflectedDmg": 42 }, "teamChild": { "id": 231334, "name": "Empowered Greater Reflective Field", "reflectAllACs": 22, "maxReflectedDmg": 42 } },
+        { "id": 233018, "name": "Empowered Major Reflective Field", "minLevel": 175, "selfChild": { "id": 232244, "name": "Empowered Major Reflective Field", "reflectAllACs": 28, "maxReflectedDmg": 46 }, "teamChild": { "id": 231335, "name": "Empowered Major Reflective Field", "reflectAllACs": 23, "maxReflectedDmg": 46 } },
+        { "id": 233020, "name": "Empowered Reactive Reflective Field", "minLevel": 185, "selfChild": { "id": 232245, "name": "Empowered Reactive Reflective Field", "reflectAllACs": 30, "maxReflectedDmg": 49 }, "teamChild": { "id": 231336, "name": "Empowered Reactive Reflective Field", "reflectAllACs": 24, "maxReflectedDmg": 49 } },
+        { "id": 233022, "name": "Harmonizing Resonance Field", "minLevel": 201, "selfChild": { "id": 232246, "name": "Harmonizing Resonance Field", "reflectAllACs": 32, "maxReflectedDmg": 53 }, "teamChild": { "id": 231337, "name": "Harmonizing Resonance Field", "reflectAllACs": 25, "maxReflectedDmg": 53 } },
+        { "id": 233025, "name": "Reactive Resonance Field", "minLevel": 207, "selfChild": { "id": 232247, "name": "Reactive Resonance Field", "reflectAllACs": 34, "maxReflectedDmg": 57 }, "teamChild": { "id": 231338, "name": "Reactive Resonance Field", "reflectAllACs": 26, "maxReflectedDmg": 57 } },
+        { "id": 233029, "name": "Adaptive Resonance Field", "minLevel": 212, "selfChild": { "id": 232248, "name": "Adaptive Resonance Field", "reflectAllACs": 36, "maxReflectedDmg": 61 }, "teamChild": { "id": 231339, "name": "Adaptive Resonance Field", "reflectAllACs": 27, "maxReflectedDmg": 61 } },
+        { "id": 233033, "name": "Pre-Nullity Sphere", "minLevel": 220, "selfChild": { "id": 232249, "name": "Pre-Nullity Field", "reflectAllACs": 38, "maxReflectedDmg": 68 }, "teamChild": { "id": 231340, "name": "Pre-Nullity Field", "reflectAllACs": 30, "maxReflectedDmg": 68 } }
+      ]
+    },
+    {
+      "name": "Augmented Mirror Shield line (MK I -> MK V)  [id 273400 = Augmented Mirror Shield MK V]",
+      "representativeId": 273400,
+      "representativeName": "Augmented Mirror Shield MK V",
+      "id": 273400,
+      "nanoLine": "ReflectShield(2)",
+      "minLevel": 0,
+      "effect": "The Soldier's biggest self-reflect: +77 to +82 to all eight Reflect ACs and +250 to +500 to all eight Max Reflected Damage caps, plus Heal Multiplier / Heal Reactivity and snare/root resist. Target(1) = SELF ONLY.",
+      "keepUp": false,
+      "castReq": "MaterialCreation > 1527, SpaceTime > 1490, Profession == 1, NanoFocusLevel op22 64",
+      "note": "SEQUENCING, not keep-up. AO-Universe's Soldier guide states the big mirror shields lock the Soldier's nano skills for 2 minutes after use and run at most ~1:20, so you spend one per damage phase. MK IV (223185) additionally requires character level 220 AND Specialization bit 4; MK V (273400) requires NanoFocusLevel bit 64, which only a worn Soldier Nanodeck sets (see soldier-endgame.json). source=local",
+      "tiers": [
+        { "id": 223229, "name": "Augmented Mirror Shield MK I", "minLevel": 175, "reflectAllACs": 77, "maxReflectedDmg": 250, "castReq": "MaterialCreation > 914, SpaceTime > 880, Profession == 1, Level > 174, Expansion op22 2" },
+        { "id": 223181, "name": "Augmented Mirror Shield MK II", "minLevel": 203, "reflectAllACs": 78, "maxReflectedDmg": 300, "castReq": "MaterialCreation > 1033, SpaceTime > 1003, Profession == 1, Level > 202, Expansion op22 2" },
+        { "id": 223183, "name": "Augmented Mirror Shield MK III", "minLevel": 213, "reflectAllACs": 79, "maxReflectedDmg": 350, "castReq": "MaterialCreation > 1281, SpaceTime > 1247, Profession == 1, Level > 212, Expansion op22 2" },
+        { "id": 223185, "name": "Augmented Mirror Shield MK IV", "minLevel": 220, "reflectAllACs": 80, "maxReflectedDmg": 400, "castReq": "SpaceTime > 1419, MaterialCreation > 1454, Profession == 1, Expansion op22 2, Specialization op22 8, Level > 219" },
+        { "id": 273400, "name": "Augmented Mirror Shield MK V", "minLevel": 0, "reflectAllACs": 82, "maxReflectedDmg": 500, "castReq": "MaterialCreation > 1527, SpaceTime > 1490, Profession == 1, NanoFocusLevel op22 64" }
+      ]
+    },
+    {
+      "name": "Total Mirror Shield line (Mk I -> Mk X)  [id 70300 = Total Mirror Shield Mk X]",
+      "representativeId": 70300,
+      "representativeName": "Total Mirror Shield Mk X",
+      "id": 70300,
+      "nanoLine": "ReflectShield(2)",
+      "minLevel": 0,
+      "effect": "Ten ranks, EVERY one giving all eight Reflect ACs +75 (AO-Universe: the total mirror shield is the '75% reflect' shield). What scales with rank is only the Max Reflected Damage cap: +7 at Mk I up to +136 at Mk X. Target(1) = SELF ONLY.",
+      "keepUp": false,
+      "castReq": "SpaceTime > 590, MaterialCreation > 695, VisualProfession == 1",
+      "note": "Same nanoline (ReflectShield, strain 2) as the Augmented Mirror Shields AND as every Deflection Shield / Reflective Field the Soldier casts on other people - only ONE occupant of strain 2 at a time on a given character. Short duration plus a nano-skill lockout: a cooldown to spend, not a buff to keep up. source=local",
+      "tiers": [
+        { "id": 70308, "name": "Total Mirror Shield Mk I", "reflectAllACs": 75, "maxReflectedDmg": 7, "castReq": "MaterialCreation > 58, SpaceTime > 46, VisualProfession == 1" },
+        { "id": 70309, "name": "Total Mirror Shield Mk II", "reflectAllACs": 75, "maxReflectedDmg": 21, "castReq": "MaterialCreation > 142, SpaceTime > 114, VisualProfession == 1" },
+        { "id": 70306, "name": "Total Mirror Shield Mk III", "reflectAllACs": 75, "maxReflectedDmg": 38, "castReq": "MaterialCreation > 231, SpaceTime > 185, VisualProfession == 1" },
+        { "id": 70307, "name": "Total Mirror Shield Mk IV", "reflectAllACs": 75, "maxReflectedDmg": 49, "castReq": "MaterialCreation > 304, SpaceTime > 236, VisualProfession == 1" },
+        { "id": 70303, "name": "Total Mirror Shield Mk V", "reflectAllACs": 75, "maxReflectedDmg": 66, "castReq": "MaterialCreation > 433, SpaceTime > 332, VisualProfession == 1" },
+        { "id": 70304, "name": "Total Mirror Shield Mk VI", "reflectAllACs": 75, "maxReflectedDmg": 80, "castReq": "MaterialCreation > 533, SpaceTime > 391, VisualProfession == 1" },
+        { "id": 70301, "name": "Total Mirror Shield Mk VII", "reflectAllACs": 75, "maxReflectedDmg": 97, "castReq": "MaterialCreation > 615, SpaceTime > 469, VisualProfession == 1" },
+        { "id": 70302, "name": "Total Mirror Shield Mk VIII", "reflectAllACs": 75, "maxReflectedDmg": 111, "castReq": "MaterialCreation > 627, SpaceTime > 512, VisualProfession == 1" },
+        { "id": 70305, "name": "Total Mirror Shield Mk IX", "reflectAllACs": 75, "maxReflectedDmg": 115, "castReq": "MaterialCreation > 642, SpaceTime > 546, VisualProfession == 1" },
+        { "id": 70300, "name": "Total Mirror Shield Mk X", "reflectAllACs": 75, "maxReflectedDmg": 136, "castReq": "MaterialCreation > 695, SpaceTime > 590, VisualProfession == 1" }
+      ]
+    },
+
+    { "name": "Improved Total Focus", "id": 270806, "nanoLine": "TotalFocus(769)", "minLevel": 0, "effect": "Sharp Obj., Grenade, Heavy Weapons, Bow, Pistol, Rifle, MG/SMG, Shotgun, Assault Rifle and Ranged Energy all +125.", "keepUp": true, "castReq": "SensoryImprovement > 1342, PsychologicalModification > 1342, Profession == 1, NanoFocusLevel op22 64", "note": "The widest weapon buff a Soldier has - ten skills at once. Needs NanoFocusLevel bit 64, i.e. a worn Soldier Nanodeck. source=local" },
+    { "name": "Total Focus", "id": 29255, "nanoLine": "TotalFocus(769)", "minLevel": 0, "effect": "The same ten weapon skills +50, but ALSO Evade-ClsC, Duck-Exp and Dodge-Rng -40 each.", "keepUp": false, "castReq": "SensoryImprovement > 634, PsychologicalModification > 634, VisualProfession == 1", "note": "The no-Nanodeck version. Same nanoline 769 as Improved Total Focus, so only one applies. The -40 evades are a real cost in PvP. source=local" },
+    { "name": "Art of War", "id": 275027, "nanoLine": "AssaultRifleBuffs(212)", "minLevel": 0, "effect": "Assault Rifle +200, all eight damage modifiers +20, Burst +50.", "keepUp": true, "castReq": "PsychologicalModification > 1342, SensoryImprovement > 1342, Profession == 1, NanoFocusLevel op22 64", "note": "Best Assault Rifle buff in the kit and a large part of why an endgame Soldier holds an AR. Nanoline 212 is shared with Art of Peace 203119, Assault Rifle Mastery 29220 and Composite Heavy Artillery 269482 - only one applies. Needs a worn Soldier Nanodeck (NanoFocusLevel bit 64). source=local" },
+    { "name": "Art of Peace", "id": 203119, "nanoLine": "AssaultRifleBuffs(212)", "minLevel": 155, "effect": "Assault Rifle +90, all eight damage modifiers +5.", "keepUp": true, "castReq": "PsychologicalModification > 1046, SensoryImprovement > 1046, Profession == 1, Level > 154, Expansion op22 2, Specialization op22 4", "note": "Level 155 tier of nanoline 212; the best AR buff before Art of War. Shadowlands + Specialization bit 4. source=local" },
+    { "name": "A Sergeant's Knowledge", "id": 203121, "nanoLine": "AssaultRifleBuffs(212)", "minLevel": 25, "effect": "Assault Rifle +30.", "keepUp": true, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 212. source=local" },
+    { "name": "Improved Soldier Clip Junkie", "id": 273402, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 0, "effect": "Full Auto +180, all eight damage modifiers +25, Ranged Init +45, Duck-Exp +25, Dodge-Rng +25.", "keepUp": true, "castReq": "PsychologicalModification > 1342, SensoryImprovement > 1342, Profession == 1, NanoFocusLevel op22 64", "note": "The best Full Auto buff in the game and a large damage/init/evade package on top. Needs a worn Soldier Nanodeck (NanoFocusLevel bit 64). source=local" },
+    { "name": "Soldier Clip Junkie", "id": 203137, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 195, "effect": "Full Auto +120, all eight damage modifiers +10, Ranged Init +15, Duck-Exp +10, Dodge-Rng +10.", "keepUp": true, "castReq": "PsychologicalModification > 1259, SensoryImprovement > 1259, Profession == 1, Level > 194, Expansion op22 2, Specialization op22 4", "note": "The best Full Auto buff available WITHOUT a Nanodeck. Nanoline 281. source=local" },
+    { "name": "Metal Barrage", "id": 203139, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 165, "effect": "Full Auto +92, all eight damage modifiers +6.", "keepUp": true, "castReq": "PsychologicalModification > 1046, SensoryImprovement > 1046, Profession == 1, Level > 164, Expansion op22 2, Specialization op22 4", "note": "Level 165 tier of nanoline 281. source=local" },
+    { "name": "Metal Strike", "id": 203141, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 135, "effect": "Full Auto +85, all eight damage modifiers +3.", "keepUp": true, "castReq": "PsychologicalModification > 895, SensoryImprovement > 895, Profession == 1, Level > 134, Expansion op22 2, Specialization op22 2", "note": "Level 135 tier of nanoline 281. source=local" },
+    { "name": "Metal Storm", "id": 203143, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 100, "effect": "Full Auto +71.", "keepUp": true, "castReq": "PsychologicalModification > 685, SensoryImprovement > 685, Profession == 1, Level > 99, Expansion op22 2, Specialization op22 2", "note": "Level 100 tier of nanoline 281. source=local" },
+    { "name": "Hail of Metal", "id": 203145, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 75, "effect": "Full Auto +57.", "keepUp": true, "castReq": "PsychologicalModification > 483, SensoryImprovement > 483, Profession == 1, Level > 74, Expansion op22 2, Specialization op22 1", "note": "Level 75 tier of nanoline 281. source=local" },
+    { "name": "Metal Rain", "id": 203147, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 50, "effect": "Full Auto +43.", "keepUp": true, "castReq": "PsychologicalModification > 311, SensoryImprovement > 311, Profession == 1, Level > 49, Expansion op22 2, Specialization op22 1", "note": "Level 50 tier of nanoline 281. source=local" },
+    { "name": "Metal Stream", "id": 203149, "nanoLine": "SoldierFullAutoBuff(281)", "minLevel": 25, "effect": "Full Auto +29.", "keepUp": true, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 281. source=local" },
+    { "name": "Improved Ranged Energy Weapon Mastery", "id": 275905, "nanoLine": "RangedEnergyWeaponBuffs(213)", "minLevel": 0, "effect": "Ranged Energy +120.", "keepUp": true, "castReq": "PsychologicalModification > 1342, SensoryImprovement > 1342, Profession == 1, NanoFocusLevel op22 64", "note": "Top of nanoline 213 (shared with Ranged Energy Weapon Mastery 29230 and Laser Surgery 203135). Needs a worn Soldier Nanodeck. source=local" },
+    { "name": "Laser Surgery", "id": 203135, "nanoLine": "RangedEnergyWeaponBuffs(213)", "minLevel": 25, "effect": "Ranged Energy +44.", "keepUp": true, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 213. source=local" },
+    { "name": "The Power of Three", "id": 203129, "nanoLine": "BurstBuff(214)", "minLevel": 75, "effect": "Burst +62, all eight damage modifiers +5.", "keepUp": false, "castReq": "PsychologicalModification > 483, SensoryImprovement > 483, Profession == 1, Level > 74, Expansion op22 2, Specialization op22 1", "note": "Nanoline BurstBuff(214), shared with Riot Control 29251 (+110 Burst) - Riot Control is bigger, so take this only for the damage modifiers. source=local" },
+    { "name": "Power Burst", "id": 203131, "nanoLine": "BurstBuff(214)", "minLevel": 50, "effect": "Burst +48, all eight damage modifiers +2.", "keepUp": false, "castReq": "PsychologicalModification > 311, SensoryImprovement > 311, Profession == 1, Level > 49, Expansion op22 2, Specialization op22 1", "note": "Level 50 tier of nanoline 214. source=local" },
+    { "name": "Power Volley", "id": 203133, "nanoLine": "BurstBuff(214)", "minLevel": 25, "effect": "Burst +33.", "keepUp": false, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 214. source=local" },
+    { "name": "Swiss Cheese", "id": 203127, "nanoLine": "SoldierShotgunBuff(280)", "minLevel": 175, "effect": "Shotgun +90, Fling Shot +2.", "keepUp": true, "castReq": "PsychologicalModification > 1046, SensoryImprovement > 1046, Profession == 1, Level > 174, Expansion op22 2, Specialization op22 4", "note": "Top of nanoline 280; only relevant to a Shotgun build (see soldier-weapons.json - Shotgun costs 1.5 for a Soldier). source=local" },
+    { "name": "Crowd Disperser", "id": 203125, "nanoLine": "SoldierShotgunBuff(280)", "minLevel": 50, "effect": "Shotgun +50.", "keepUp": true, "castReq": "PsychologicalModification > 311, SensoryImprovement > 311, Profession == 1, Level > 49, Expansion op22 2, Specialization op22 1", "note": "Level 50 tier of nanoline 280. source=local" },
+    { "name": "Alleysweeper", "id": 203123, "nanoLine": "SoldierShotgunBuff(280)", "minLevel": 25, "effect": "Shotgun +30.", "keepUp": true, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 280. source=local" },
+    { "name": "Battery Fire", "id": 223227, "nanoLine": "HeavyWeaponsBuffs(592)", "minLevel": 195, "effect": "Heavy Weapons +120.", "keepUp": true, "castReq": "PsychologicalModification > 1046, SensoryImprovement > 1046, Profession == 1, Level > 194, Expansion op22 2, Specialization op22 4", "note": "Top of nanoline 592. Heavy Weapons is a cost-1.0 skill for a Soldier but there are only 85 Heavy Weapons templates in items.ocp, so this is a niche build. source=local" },
+    { "name": "Canonry Fire", "id": 223225, "nanoLine": "HeavyWeaponsBuffs(592)", "minLevel": 100, "effect": "Heavy Weapons +85.", "keepUp": true, "castReq": "PsychologicalModification > 685, SensoryImprovement > 685, Profession == 1, Level > 99, Expansion op22 2, Specialization op22 2", "note": "Level 100 tier of nanoline 592. source=local" },
+    { "name": "Artillery Fire", "id": 223223, "nanoLine": "HeavyWeaponsBuffs(592)", "minLevel": 25, "effect": "Heavy Weapons +45.", "keepUp": true, "castReq": "PsychologicalModification > 157, SensoryImprovement > 157, Profession == 1, Level > 24, Expansion op22 2, Specialization op22 1", "note": "Level 25 tier of nanoline 592. source=local" },
+    { "name": "Improved Precognition", "id": 275844, "nanoLine": "MajorEvasionBuffs(144)", "minLevel": 0, "effect": "Duck-Exp +110, Evade-ClsC +110, Dodge-Rng +110.", "keepUp": true, "castReq": "SensoryImprovement > 1342, PsychologicalModification > 1342, Profession == 1, NanoFocusLevel op22 64", "note": "Best evade self-buff; needs a worn Soldier Nanodeck. Nanoline 144 is shared with Precognition 29247 (+55, castable on others). source=local" },
+    { "name": "Total Combat Survival", "id": 273398, "nanoLine": "HPBuff(151)", "minLevel": 0, "effect": "Max Health +1200, Heal Delta +35, Heal Reactivity +5.", "keepUp": true, "castReq": "BiologicalMetamorphosis > 1243, MaterialCreation > 1243, Profession == 1, NanoFocusLevel op22 64", "note": "The Soldier's biggest self HP buff by a wide margin (+1200 vs the +405 top of the castable-on-others line). Nanoline HPBuff(151), so it REPLACES Battlefield Endurance and every other member of line 151 on the Soldier. Needs a worn Soldier Nanodeck. source=local" },
+    { "name": "Phalanx", "id": 162357, "nanoLine": "NOSTACKING(0)", "minLevel": 0, "effect": "All eight ACs +350.", "keepUp": true, "castReq": "VisualProfession == 1", "note": "This is the CHILD nano that the team version Phalanx (29245) applies. Two different items share the name 'Phalanx' - cast 29245, which team-casts this one. source=local" },
+    { "name": "Notum-Charged Grenades", "id": 302399, "nanoLine": "SiphonBox683(683)", "minLevel": 0, "effect": "Offensive proc: AddOffProc[25, 302398] - a 25 chance value to fire child 302398, which area-casts 302397 = TauntNpc 2000 plus a Health hit of 300-500.", "keepUp": true, "castReq": "MaterialCreation > 1199, SpaceTime > 1199, Profession == 1, TitleLevel > 5", "note": "The bigger of the two Soldier procs. Nanoline SiphonBox683(683) - one proc at a time. Needs AI title level 6+. source=local", "unverified": "The proc chance semantics of AddOffProc's first argument (20 vs 25) are read raw from the function; the client's exact percentage mapping was not established." },
+    { "name": "Fragmentation Grenades", "id": 302395, "nanoLine": "SiphonBox683(683)", "minLevel": 0, "effect": "Offensive proc: AddOffProc[20, 302394] - fires child 302394, which area-casts 302393 = TauntNpc 1000 plus a Health hit of 50-250.", "keepUp": false, "castReq": "MaterialCreation > 499, SpaceTime > 499, Profession == 1, TitleLevel > 3", "note": "The lower proc; same nanoline 683 as Notum-Charged Grenades, so only one runs. Needs AI title level 4+. source=local" },
+    { "name": "Release Me Now", "id": 281239, "nanoLine": "SelfRoot_SnareResistBuff(283)", "minLevel": 0, "effect": "Removes nano strains 145 (snare) and 146 (root) and grants 100 resist to both.", "keepUp": false, "castReq": "VisualProfession == 9, VisualProfession == 14, VisualProfession == 15, VisualProfession == 1, SensoryImprovement > 99, PsychologicalModification > 99, Expansion op22 32", "note": "The Soldier's only anti-root/snare tool. Lost Eden (Expansion bit 32). Its VisualProfession clauses also cover Enforcer (9), Keeper (14) and Shade (15). source=local" },
+    { "name": "Don't Fear the Reaper", "id": 29241, "nanoLine": "DrainHeal(1051)", "minLevel": 0, "effect": "Hit[27, 30, 0, 0] on stat 27 = Health - a small drain-heal.", "keepUp": false, "castReq": "BiologicalMetamorphosis > 664, MaterialMetamorphosis > 664, Profession == 1", "note": "ONE of only two heal nanos a Soldier owns. This is not a heal you can build around; the Soldier survives on reflect, absorb and HP, not on healing. source=local" },
+    { "name": "Adrenaline Rush", "id": 301897, "nanoLine": "DrainHeal(1051)", "minLevel": 0, "effect": "Hit[27, 3, 0, 0] on stat 27 = Health - the smaller drain-heal.", "keepUp": false, "castReq": "BiologicalMetamorphosis > 664, MaterialMetamorphosis > 664, Profession == 1", "note": "Same nanoline 1051 as Don't Fear the Reaper. source=local" }
+  ],
+
+  "wantedFromOthers": [
+    { "buff": "Wrangle (Trader single: 'Weak' -> 'Superb') / Team Skill Wrangler", "id": null, "fromProfession": "Trader", "effect": "Raises nearly two dozen weapon skills AND all nano skills at once; the AO-Universe Buffing Guide ladder runs from 'Weak' (+3) to 'Superb' (+112). Lasts ~3 minutes and debuffs the Trader for the same time.", "useCase": "twink", "note": "THE buff a Soldier asks for. The weapon-skill half lets him equip a higher-QL Assault Rifle and cap Burst/Full Auto above his own skill; the nano-skill half lets him land a bigger Augmented Mirror Shield / Empowered reflect than his own Matter Creation and Time & Space allow. Matter Creation (cost 2.5) and Time & Space (cost 3.2) are the Soldier's two most expensive schools, so this is his main way past them. source=web" },
+    { "buff": "Essence of Behemoth line (Enforcer Str/Sta + Max Health)", "id": null, "fromProfession": "Enforcer", "effect": "Strength and Stamina together (Improved ~+54 each) plus large Max Health.", "useCase": "twink", "note": "Ofab Soldier armour requires Strength 900 / Stamina 1100 at QL300 and Combined Commando's requires Strength 1000 / Agility 1000 (both verified in items.ocp) - Str/Sta buffs are how a Soldier gets into that gear. source=web" },
+    { "buff": "Iron Circle", "id": null, "fromProfession": "Doctor", "effect": "Strength +20, Stamina +20.", "useCase": "twink", "note": "A second, different nanoline source of Str/Sta for the same equip window. source=web" },
+    { "buff": "Nano Init buffs (Doctor initiative line)", "id": null, "fromProfession": "Doctor", "effect": "Large Nano C. Init.", "useCase": "cast", "note": "Nano C. Init costs 4.0 for a Soldier (the most expensive initiative he has) yet he casts a long reflect stack before every pull. An outside nano-init buff is the cheapest way to shorten that. Exact nano name/value not pinned - see _unverified. source=web(flag)" },
+    { "buff": "Complete Heal / HoT / Max Health", "id": null, "fromProfession": "Doctor", "effect": "Complete Heal, heal-over-time and Max Health buffs.", "useCase": "raid", "note": "The Soldier has NO heal (two DrainHeal nanos only), so the reflect stack has to be paired with an outside healer in any long fight. source=web" },
+    { "buff": "Feline Grace", "id": null, "fromProfession": "Agent", "effect": "Agility +25.", "useCase": "twink", "note": "Agility for implants, symbiants and the Agility 1000 requirement on Combined Commando's / Sharpshooter's. source=web" },
+    { "buff": "Enhanced Senses", "id": null, "fromProfession": "Agent", "effect": "Sense +15.", "useCase": "twink", "note": "Sense gates Aimed Shot and high-QL implants/Artillery symbiants. source=web" },
+    { "buff": "False Profession", "id": null, "fromProfession": "Agent", "effect": "Makes the target's profession read as another profession for item requirements.", "useCase": "twink", "note": "The three '...Profession: Soldier' nanos that appear in the Soldier extraction are AGENT nanos (they require Profession == 5) - see notSoldierCastable. An Agent uses them to look like a Soldier, not the other way round. source=local+web" },
+    { "buff": "Composite Attribute Boost", "id": null, "fromProfession": "Any (Shadowlands nanocrystal, self-castable)", "effect": "All six attributes +12.", "useCase": "twink", "note": "Cheap all-attribute window for equipping armour/implants. source=web" },
+    { "buff": "Extra NCU, team run speed and HoT", "id": null, "fromProfession": "Fixer", "effect": "Max NCU, team run-speed and heal-over-time.", "useCase": "raid", "note": "NCU matters more to a Soldier than to most weapon classes: he runs a self reflect + a team reflect + weapon buff + Full Auto buff + HP buff + damage buff + init buff at once. Exact nano names not pinned - see _unverified. source=web(flag)" },
+    { "buff": "Nano-skill buffs (Mocham's Gift / Composite Mochams / Infuse With Knowledge)", "id": null, "fromProfession": "Meta-Physicist", "effect": "+140 to a single nano school, or all six at once with the Composite line.", "useCase": "cast", "note": "Directly raises Matter Creation and Time & Space, which is what gates every mirror shield and Empowered reflect. The MP ids are listed in metaphysicist-buffs.json (29299-29304, 220331-220343). source=web" },
+    { "buff": "Team auras (run speed, heal-over-time, Add All Off., reflect)", "id": null, "fromProfession": "Keeper", "effect": "Passive team auras.", "useCase": "raid", "note": "A Keeper's reflect aura is a DIFFERENT nanoline from the Soldier's own shields, so it adds on top. source=web" },
+    { "buff": "Team AC and Add All Def.", "id": null, "fromProfession": "Bureaucrat", "effect": "Crat team AC / defensive buffs and enemy nano-resist debuffs.", "useCase": "raid", "note": "Note the stacking trap: the Soldier's own Phalanx (29245/162357, +350 all ACs) is in the NOSTACKING(0) strain and the Engineer's Assurance line is in ArmorBuff(3) - check which line an incoming AC buff occupies before taking it. source=web(flag)" },
+    { "buff": "Trade-skill wrangles (Apprentice / Journeyman / Maestro)", "id": null, "fromProfession": "Trader", "effect": "+40 / +80 / +125 to a single trade skill.", "useCase": "twink", "note": "The Star of Fidelity (244690) and Stellar Fidelity (281045) both require Computer Literacy 1500 to equip (verified in items.ocp) - a trade-skill wrangle is the normal way a Soldier reaches that. source=web+local" }
+  ],
+
+  "generalBuffs": [
+    { "name": "Expertise buffs", "effect": "Add to a group of skills.", "source": "ao-universe Buffing Guide: 'All buffs stack with Expertises and Attribute Boosts' - Expertises are a separate nanoline family and stack on top of everything in this file." },
+    { "name": "Composite Attribute Boost / Composite Attribute Improvement", "effect": "All six attributes +12 (+20 on the Nano Can version).", "source": "Shadowlands nanocrystal / nano can, self-castable by any profession. Used to reach the Strength 900 / Stamina 1100 on Ofab Soldier and the 1000/1000 on Combined armour." },
+    { "name": "Composite Melee / Ranged / Ranged Special / Utility", "effect": "Grouped skill boosts.", "source": "Shadowlands composite nanocrystals, self-castable. The Ranged and Ranged-Special composites are the relevant ones for a Soldier. Exact contents per composite not pinned - flag." },
+    { "name": "City buffs (org city)", "effect": "City-wide buffs from the organisation's city.", "source": "Player city. Exact set not pinned - flag." },
+    { "name": "Tower / Notum War buffs", "effect": "Add All Offense / Add All Defense from controlled land-control towers.", "source": "Land control towers. Exact set not pinned - flag." },
+    { "name": "Victory Point and Battlestation temporary buffs", "effect": "Battlefield buffs while a Battlestation instance is running.", "source": "Battlestations. Exact set not pinned - flag." }
+  ],
+
+  "givesToOthers": [
+    {
+      "name": "Armor buff line (Minor Combat Barrier -> Heavy Assault Absorption Shield)  [id 75401 = Heavy Assault Absorption Shield]",
+      "representativeId": 75401,
+      "representativeName": "Heavy Assault Absorption Shield",
+      "id": 75401,
+      "nanoLine": "ArmorBuff(3)",
+      "effect": "All eight ACs +21 to +530 on the cast target. 14 tiers.",
+      "wantedBy": "Everyone, but note the ceiling: +530 is small next to an Engineer's Assurance line (up to +5000 in the SAME nanoline 3). In a team with an Engineer or Meta-Physicist, the Soldier's AC buffs are redundant - his Phalanx (+350 all ACs, a different strain) is not.",
+      "castReq": "MaterialCreation > 679, MaterialMetamorphosis > 760, VisualProfession == 1",
+      "stackingTrap": "All 14 share nanoline ArmorBuff(3) with every other profession's AC buff - one occupant only.",
+      "tiers": [
+        { "id": 75413, "name": "Minor Combat Barrier", "allACs": 21, "castReq": "MaterialCreation > 33, MaterialMetamorphosis > 34, VisualProfession == 1" },
+        { "id": 75412, "name": "Minor Absorption Shield", "allACs": 42, "castReq": "MaterialCreation > 65, MaterialMetamorphosis > 69, VisualProfession == 1" },
+        { "id": 75411, "name": "Lesser Combat Barrier", "allACs": 68, "castReq": "MaterialCreation > 106, MaterialMetamorphosis > 111, VisualProfession == 1" },
+        { "id": 75410, "name": "Lesser Absorption Shield", "allACs": 112, "castReq": "MaterialCreation > 163, MaterialMetamorphosis > 179, VisualProfession == 1" },
+        { "id": 75409, "name": "Combat Barrier", "allACs": 154, "castReq": "MaterialCreation > 221, MaterialMetamorphosis > 246, VisualProfession == 1" },
+        { "id": 29223, "name": "Absorption Shield", "allACs": 196, "castReq": "MaterialMetamorphosis > 326, MaterialCreation > 300, VisualProfession == 1" },
+        { "id": 75408, "name": "Superior Combat Barrier", "allACs": 238, "castReq": "MaterialCreation > 361, MaterialMetamorphosis > 398, VisualProfession == 1" },
+        { "id": 75407, "name": "Superior Absorption Shield", "allACs": 280, "castReq": "MaterialCreation > 447, MaterialMetamorphosis > 478, VisualProfession == 1" },
+        { "id": 75406, "name": "Advanced Combat Barrier", "allACs": 323, "castReq": "MaterialCreation > 540, MaterialMetamorphosis > 553, VisualProfession == 1" },
+        { "id": 75405, "name": "Advanced Absorption Shield", "allACs": 366, "castReq": "MaterialCreation > 609, MaterialMetamorphosis > 617, VisualProfession == 1" },
+        { "id": 75404, "name": "Perfected Combat Barrier", "allACs": 408, "castReq": "MaterialCreation > 619, MaterialMetamorphosis > 649, VisualProfession == 1" },
+        { "id": 75403, "name": "Perfected Absorption Shield", "allACs": 450, "castReq": "MaterialCreation > 629, MaterialMetamorphosis > 679, VisualProfession == 1" },
+        { "id": 75402, "name": "Heavy Assault Combat Barrier", "allACs": 491, "castReq": "MaterialCreation > 645, MaterialMetamorphosis > 722, VisualProfession == 1" },
+        { "id": 75401, "name": "Heavy Assault Absorption Shield", "allACs": 530, "castReq": "MaterialCreation > 679, MaterialMetamorphosis > 760, VisualProfession == 1" }
+      ]
+    },
+    {
+      "name": "Rubi-Ka reflect line, castable on others (Partial Deflection Shield -> Reactive Reflective Field, each with an (Extended) twin)  [id 70314 = Reactive Reflective Field]",
+      "representativeId": 70314,
+      "representativeName": "Reactive Reflective Field",
+      "id": 70314,
+      "nanoLine": "ReflectShield(2)",
+      "effect": "All eight Reflect ACs +10 to +30 and Max Reflected Damage +1 to +49 on the cast target. 14 steps, each existing as a normal and an (Extended) version - the (Extended) one costs more nano skill and gives a slightly higher Max Reflected cap.",
+      "wantedBy": "Any teammate who is being hit. This - not the Soldier's own mirror shields - is the reflect a Soldier hands out, and it is the single most-requested Soldier buff in a team.",
+      "castReq": "SpaceTime > 576, MaterialCreation > 682, VisualProfession == 1, ExpansionPlayfield == 0",
+      "stackingTrap": "Nanoline ReflectShield(2), the SAME line as the Soldier's own Total Mirror Shield and Augmented Mirror Shield. Putting one of these on a Soldier overwrites his mirror shield.",
+      "playfieldTrap": "EVERY one of the 28 carries 'ExpansionPlayfield == 0' in its cast requirement - these are Rubi-Ka-only nanos and cannot be cast in a Shadowlands playfield. In Shadowlands use the Empowered / Resonance line (strain 694) instead, which team-casts automatically. This is read from the client data, not from a guide.",
+      "tiers": [
+        { "id": 70320, "name": "Partial Deflection Shield", "reflectAllACs": 10, "maxReflectedDmg": 1, "castReq": "SpaceTime > 4, MaterialCreation > 5" },
+        { "id": 70317, "name": "Partial Deflection Shield (Extended)", "reflectAllACs": 10, "maxReflectedDmg": 2, "castReq": "SpaceTime > 35, MaterialCreation > 45" },
+        { "id": 70323, "name": "Minor Deflection Shield", "reflectAllACs": 12, "maxReflectedDmg": 3, "castReq": "SpaceTime > 58, MaterialCreation > 73" },
+        { "id": 70321, "name": "Minor Deflection Shield (Extended)", "reflectAllACs": 12, "maxReflectedDmg": 4, "castReq": "SpaceTime > 73, MaterialCreation > 94" },
+        { "id": 70330, "name": "Lesser Deflection Shield", "reflectAllACs": 13, "maxReflectedDmg": 5, "castReq": "SpaceTime > 95, MaterialCreation > 122" },
+        { "id": 70331, "name": "Lesser Deflection Shield (Extended)", "reflectAllACs": 13, "maxReflectedDmg": 7, "castReq": "SpaceTime > 122, MaterialCreation > 152" },
+        { "id": 70337, "name": "Deflection Shield", "reflectAllACs": 14, "maxReflectedDmg": 9, "castReq": "SpaceTime > 142, MaterialCreation > 176" },
+        { "id": 70336, "name": "Deflection Shield (Extended)", "reflectAllACs": 14, "maxReflectedDmg": 10, "castReq": "SpaceTime > 160, MaterialCreation > 195" },
+        { "id": 70334, "name": "Greater Deflection Shield", "reflectAllACs": 15, "maxReflectedDmg": 13, "castReq": "SpaceTime > 203, MaterialCreation > 256" },
+        { "id": 70335, "name": "Greater Deflection Shield (Extended)", "reflectAllACs": 15, "maxReflectedDmg": 14, "castReq": "SpaceTime > 222, MaterialCreation > 283" },
+        { "id": 70326, "name": "Major Deflection Shield", "reflectAllACs": 17, "maxReflectedDmg": 16, "castReq": "SpaceTime > 250, MaterialCreation > 320" },
+        { "id": 70327, "name": "Major Deflection Shield (Extended)", "reflectAllACs": 17, "maxReflectedDmg": 18, "castReq": "SpaceTime > 271, MaterialCreation > 344" },
+        { "id": 70316, "name": "Reactive Deflection Shield", "reflectAllACs": 19, "maxReflectedDmg": 20, "castReq": "SpaceTime > 300, MaterialCreation > 377" },
+        { "id": 70313, "name": "Reactive Deflection Shield (Extended)", "reflectAllACs": 19, "maxReflectedDmg": 21, "castReq": "SpaceTime > 318, MaterialCreation > 407" },
+        { "id": 70318, "name": "Partial Reflective Field", "reflectAllACs": 21, "maxReflectedDmg": 24, "castReq": "SpaceTime > 358, MaterialCreation > 478" },
+        { "id": 70315, "name": "Partial Reflective Field (Extended)", "reflectAllACs": 21, "maxReflectedDmg": 25, "castReq": "SpaceTime > 368, MaterialCreation > 496" },
+        { "id": 70322, "name": "Minor Reflective Field", "reflectAllACs": 22, "maxReflectedDmg": 28, "castReq": "SpaceTime > 413, MaterialCreation > 570" },
+        { "id": 70319, "name": "Minor Reflective Field (Extended)", "reflectAllACs": 22, "maxReflectedDmg": 29, "castReq": "SpaceTime > 429, MaterialCreation > 596" },
+        { "id": 70328, "name": "Lesser Reflective Field", "reflectAllACs": 24, "maxReflectedDmg": 31, "castReq": "SpaceTime > 445, MaterialCreation > 609" },
+        { "id": 70329, "name": "Lesser Reflective Field (Extended)", "reflectAllACs": 24, "maxReflectedDmg": 33, "castReq": "SpaceTime > 456, MaterialCreation > 612" },
+        { "id": 70312, "name": "Reflective Field", "reflectAllACs": 25, "maxReflectedDmg": 36, "castReq": "SpaceTime > 480, MaterialCreation > 619" },
+        { "id": 70310, "name": "Reflective Field (Extended)", "reflectAllACs": 25, "maxReflectedDmg": 37, "castReq": "SpaceTime > 496, MaterialCreation > 623" },
+        { "id": 70332, "name": "Greater Reflective Field", "reflectAllACs": 26, "maxReflectedDmg": 40, "castReq": "SpaceTime > 524, MaterialCreation > 632" },
+        { "id": 70333, "name": "Greater Reflective Field (Extended)", "reflectAllACs": 26, "maxReflectedDmg": 42, "castReq": "SpaceTime > 534, MaterialCreation > 636" },
+        { "id": 70324, "name": "Major Reflective Field", "reflectAllACs": 28, "maxReflectedDmg": 44, "castReq": "SpaceTime > 554, MaterialCreation > 647" },
+        { "id": 70325, "name": "Major Reflective Field (Extended)", "reflectAllACs": 28, "maxReflectedDmg": 46, "castReq": "SpaceTime > 564, MaterialCreation > 663" },
+        { "id": 70314, "name": "Reactive Reflective Field", "reflectAllACs": 30, "maxReflectedDmg": 48, "castReq": "SpaceTime > 576, MaterialCreation > 682" },
+        { "id": 70311, "name": "Reactive Reflective Field (Extended)", "reflectAllACs": 30, "maxReflectedDmg": 49, "castReq": "SpaceTime > 584, MaterialCreation > 688" }
+      ]
+    },
+    {
+      "name": "Team damage line (Intensify Fight (Team) -> Gazump Fight (Team))  [id 223199 = Gazump Fight (Team)]",
+      "representativeId": 223199,
+      "representativeName": "Gazump Fight (Team)",
+      "id": 223199,
+      "nanoLine": "SoldierDamageBase(770)",
+      "effect": "Seven ranks. The Soldier casts on himself and the nano TeamCastNano's a 'Fight' child onto the whole team: +12 (level 25) to +107 (level 205) to all eight damage modifiers.",
+      "wantedBy": "The whole team - this is the Soldier's headline raid contribution alongside the team reflect.",
+      "castReq": "MaterialMetamorphosis > 1649, MaterialCreation > 1380, Profession == 1, Level > 204, Expansion op22 2, Specialization op22 8",
+      "stackingTrap": "The parents sit in SoldierDamageBase(770) but the CHILDREN sit in strain 4 (DamageBuffs_LineA), the same line as the Soldier's own Improved ... Augmentation Cloud and the Engineer's arms/damage buffs - so a team member only gets one of them.",
+      "tiers": [
+        { "id": 223187, "name": "Intensify Fight (Team)", "minLevel": 25, "teamChild": { "id": 217782, "name": "Intensify Fight" }, "allDamageModifiers": 12 },
+        { "id": 223189, "name": "Deepen Fight (Team)", "minLevel": 50, "teamChild": { "id": 217783, "name": "Deepen Fight" }, "allDamageModifiers": 30 },
+        { "id": 223191, "name": "Heighten Fight (Team)", "minLevel": 100, "teamChild": { "id": 217784, "name": "Heighten Fight" }, "allDamageModifiers": 41 },
+        { "id": 223193, "name": "Boost Fight (Team)", "minLevel": 165, "teamChild": { "id": 217785, "name": "Boost Fight" }, "allDamageModifiers": 70 },
+        { "id": 223195, "name": "Reinforce Fight (Team)", "minLevel": 195, "teamChild": { "id": 217786, "name": "Reinforce Fight" }, "allDamageModifiers": 88 },
+        { "id": 223197, "name": "Augment Fight (Team)", "minLevel": 205, "teamChild": { "id": 217787, "name": "Augment Fight" }, "allDamageModifiers": 99 },
+        { "id": 223199, "name": "Gazump Fight (Team)", "minLevel": 205, "teamChild": { "id": 217788, "name": "Gazump Fight" }, "allDamageModifiers": 107 }
+      ]
+    },
+    { "name": "Phalanx", "id": 29245, "nanoLine": "NOSTACKING(0)", "effect": "TeamCastNano[162357] - puts Phalanx (162357) on the whole team: all eight ACs +350.", "wantedBy": "The whole team. Because it is in the NOSTACKING(0) strain and not ArmorBuff(3), it does NOT collide with an Engineer's Assurance or any other profession's AC buff - which makes it the Soldier's most valuable AC give-away, not the Absorption Shield line.", "castReq": "MaterialMetamorphosis > 667, PsychologicalModification > 667, VisualProfession == 1" },
+    { "name": "Full Automatic Targeting", "id": 270248, "nanoLine": "AAOBuffs(836)", "effect": "Add All Off. +74.", "wantedBy": "Every damage dealer in the team.", "castReq": "SensoryImprovement > 760, PsychologicalModification > 760, Profession == 1" },
+    { "name": "Automatic Targeting", "id": 29222, "nanoLine": "AAOBuffs(836)", "effect": "Add All Off. +30.", "wantedBy": "Lower-level teammates; superseded by Full Automatic Targeting (same nanoline 836).", "castReq": "SensoryImprovement > 492, PsychologicalModification > 492, VisualProfession == 1" },
+    { "name": "Composite Heavy Artillery", "id": 269482, "nanoLine": "AssaultRifleBuffs(212)", "effect": "Assault Rifle, Rifle, Grenade, Heavy Weapons, Ranged Energy and MG/SMG all +100.", "wantedBy": "Any ranged-weapon profession - one cast covers six skills. The Soldier also uses it on himself when he is not running Art of War (same nanoline 212).", "castReq": "PsychologicalModification > 911, SensoryImprovement > 911, Profession == 1, Expansion op22 2" },
+    { "name": "Riot Control", "id": 29251, "nanoLine": "BurstBuff(214)", "effect": "Burst +110.", "wantedBy": "Anyone with Burst on their weapon (per items.ocp, 1,136 of the 1,545 Soldier-usable Assault Rifles carry Burst). Who_Buffs_What lists this as a Soldier give-away.", "castReq": "PsychologicalModification > 588, SensoryImprovement > 588, VisualProfession == 1" },
+    { "name": "Assault Rifle Mastery", "id": 29220, "nanoLine": "AssaultRifleBuffs(212)", "effect": "Assault Rifle +60.", "wantedBy": "Any Assault Rifle user. Listed on Who_Buffs_What as 'Assault Rifle Mastery: Soldier - +60 (16 NCU)'.", "castReq": "PsychologicalModification > 235, SensoryImprovement > 235, VisualProfession == 1" },
+    { "name": "Ranged Energy Weapon Mastery", "id": 29230, "nanoLine": "RangedEnergyWeaponBuffs(213)", "effect": "Ranged Energy +70.", "wantedBy": "Any Ranged Energy user.", "castReq": "PsychologicalModification > 304, SensoryImprovement > 304, VisualProfession == 1" },
+    { "name": "Rifle Mastery", "id": 29250, "nanoLine": "RifleBuffs(194)", "effect": "Rifle +50.", "wantedBy": "Agents and any Rifle user. Who_Buffs_What: 'Rifle Mastery - Soldier: +50 (12 NCU)'.", "castReq": "PsychologicalModification > 187, SensoryImprovement > 187, VisualProfession == 1" },
+    { "name": "Pistol Mastery", "id": 29246, "nanoLine": "PistolBuff(199)", "effect": "Pistol +40.", "wantedBy": "Any Pistol user. Its cast requirement lists VisualProfession 1 / 3 / 8 / 10 / 12 - Soldier, Engineer, Bureaucrat, Doctor and Meta-Physicist all have this same nano, which matches Who_Buffs_What exactly.", "castReq": "VisualProfession == 1, VisualProfession == 12, VisualProfession == 3, VisualProfession == 10, VisualProfession == 8, PsychologicalModification > 120, SensoryImprovement > 120" },
+    { "name": "Offensive Steamroller", "id": 29240, "nanoLine": "InitiativeBuffs(152)", "effect": "Melee Init, Ranged Init, Physical Init and Nano C. Init all +133, plus Fling Shot +30.", "wantedBy": "Everyone - a four-initiative buff is useful to every profession, and the Fling Shot rider helps pistol/shotgun users.", "castReq": "PsychologicalModification > 719, SensoryImprovement > 719, VisualProfession == 1" },
+    { "name": "Attack Booster", "id": 29221, "nanoLine": "InitiativeBuffs(152)", "effect": "Melee Init, Ranged Init, Physical Init and Nano C. Init all +43.", "wantedBy": "Mid-level teammates; same nanoline 152 as Offensive Steamroller.", "castReq": "SensoryImprovement > 142, PsychologicalModification > 142, VisualProfession == 1" },
+    { "name": "Quickshot", "id": 29248, "nanoLine": "InitiativeBuffs(152)", "effect": "Ranged Init +28.", "wantedBy": "Low-level ranged teammates; bottom of nanoline 152.", "castReq": "SensoryImprovement > 90, PsychologicalModification > 90, VisualProfession == 1" },
+    {
+      "name": "Health buff line (Body Boost -> Battlefield Endurance)  [id 95697 = Battlefield Endurance]",
+      "representativeId": 95697,
+      "representativeName": "Battlefield Endurance",
+      "id": 95697,
+      "nanoLine": "HPBuff(151)",
+      "effect": "Max Health +20 to +405 and Heal Delta +0 to +3 on the cast target. 7 tiers.",
+      "wantedBy": "Everyone. Who_Buffs_What lists exactly this range for the Soldier: 'Body Boost -/- Battlefield Endurance - +20 to +405 (1-47 NCU), Nanoline: 151'.",
+      "castReq": "BiologicalMetamorphosis > 729, MaterialCreation > 650, VisualProfession == 1",
+      "stackingTrap": "Nanoline HPBuff(151) also holds the Soldier's own Total Combat Survival (+1200). Do not put a Battlefield Endurance on a Soldier who is running Total Combat Survival - it would replace it with a far smaller buff.",
+      "tiers": [
+        { "id": 29091, "name": "Body Boost", "maxHealth": 20, "healDelta": 0, "castReq": "BiologicalMetamorphosis > 4, MaterialCreation > 4, VisualProfession == 1" },
+        { "id": 95696, "name": "Boot Camp Toughness", "maxHealth": 58, "healDelta": 1, "castReq": "BiologicalMetamorphosis > 95, MaterialCreation > 90, VisualProfession == 1" },
+        { "id": 95695, "name": "Combat Hardening", "maxHealth": 105, "healDelta": 1, "castReq": "BiologicalMetamorphosis > 174, MaterialCreation > 159, VisualProfession == 1" },
+        { "id": 95694, "name": "Tough as Nails", "maxHealth": 176, "healDelta": 2, "castReq": "BiologicalMetamorphosis > 299, MaterialCreation > 273, VisualProfession == 1" },
+        { "id": 29254, "name": "Titan Physique", "maxHealth": 241, "healDelta": 2, "castReq": "BiologicalMetamorphosis > 532, MaterialCreation > 514, VisualProfession == 1" },
+        { "id": 95693, "name": "Survivor's Resilience", "maxHealth": 361, "healDelta": 3, "castReq": "BiologicalMetamorphosis > 655, MaterialCreation > 620, VisualProfession == 1" },
+        { "id": 95697, "name": "Battlefield Endurance", "maxHealth": 405, "healDelta": 3, "castReq": "BiologicalMetamorphosis > 729, MaterialCreation > 650, VisualProfession == 1" }
+      ]
+    },
+    {
+      "name": "Augmentation Cloud damage line (Improved Hasty -> Improved Semi-Sentient)  [id 222838 = Improved Semi-Sentient Augmentation Cloud]",
+      "representativeId": 222838,
+      "representativeName": "Improved Semi-Sentient Augmentation Cloud",
+      "id": 222838,
+      "nanoLine": "DamageBuffs_LineA(4)",
+      "effect": "All eight damage modifiers +15 / +20 / +30 / +40 on the cast target.",
+      "wantedBy": "Any damage dealer. NOTE from the cast requirements: these four are shared with Fixer (Profession == 4) and Agent (Profession == 5), so they are not a Soldier exclusive.",
+      "castReq": "Profession == 4, Profession == 1, Profession == 5, SensoryImprovement > 783, MaterialMetamorphosis > 783",
+      "stackingTrap": "Nanoline DamageBuffs_LineA(4) - the same line the 'Fight (Team)' children land in. A team member gets the team Fight buff OR an Augmentation Cloud, not both, so at endgame cast the team line and skip these.",
+      "tiers": [
+        { "id": 222833, "name": "Improved Hasty Augmentation Cloud", "allDamageModifiers": 15, "castReq": "SensoryImprovement > 207, MaterialMetamorphosis > 207" },
+        { "id": 222835, "name": "Improved Augmentation Cloud", "allDamageModifiers": 20, "castReq": "SensoryImprovement > 483, MaterialMetamorphosis > 483" },
+        { "id": 222837, "name": "Improved Neural Interfaced Augmentation Cloud", "allDamageModifiers": 30, "castReq": "SensoryImprovement > 683, MaterialMetamorphosis > 683" },
+        { "id": 222838, "name": "Improved Semi-Sentient Augmentation Cloud", "allDamageModifiers": 40, "castReq": "SensoryImprovement > 783, MaterialMetamorphosis > 783" }
+      ]
+    },
+    { "name": "Helepolis of the Besieger", "id": 29232, "nanoLine": "DamageBuffs_LineA(4)", "effect": "All eight ACs +125, Projectile and Energy damage modifiers +22 each, AND Run Speed -150.", "wantedBy": "A stationary tank. The -150 Run Speed is a real cost - read it before casting this on a kiter.", "castReq": "MaterialMetamorphosis > 657, MaterialCreation > 621, VisualProfession == 1" },
+    { "name": "Persistent Damage Amplifier", "id": 29243, "nanoLine": "DamageBuffs_LineA(4)", "effect": "Projectile and Energy damage modifiers +10 each (Skill[278,10], Skill[280,10]).", "wantedBy": "Low/mid-level teammates. The 'Persistent' pair costs more nano skill than the plain pair for the same numbers - per the client data the only difference is the higher requirement, so the duration is presumably longer; that is NOT established from the data.", "castReq": "MaterialMetamorphosis > 272, MaterialCreation > 246, VisualProfession == 1" },
+    { "name": "Damage Amplifier", "id": 29225, "nanoLine": "DamageBuffs_LineA(4)", "effect": "Projectile and Energy damage modifiers +10 each.", "wantedBy": "Low/mid-level teammates.", "castReq": "MaterialMetamorphosis > 203, MaterialCreation > 183, VisualProfession == 1" },
+    { "name": "Persistent Damage Multiplier", "id": 29244, "nanoLine": "DamageBuffs_LineA(4)", "effect": "Projectile and Energy damage modifiers +4 each.", "wantedBy": "Low-level teammates.", "castReq": "MaterialMetamorphosis > 86, MaterialCreation > 81, VisualProfession == 1" },
+    { "name": "Damage Multiplier", "id": 29226, "nanoLine": "DamageBuffs_LineA(4)", "effect": "Projectile and Energy damage modifiers +4 each.", "wantedBy": "Low-level teammates; the cheapest member of nanoline 4.", "castReq": "MaterialMetamorphosis > 38, MaterialCreation > 37, VisualProfession == 1" },
+    { "name": "Precognition", "id": 29247, "nanoLine": "MajorEvasionBuffs(144)", "effect": "Duck-Exp +55, Dodge-Rng +55, Evade-ClsC +55.", "wantedBy": "Anyone being hit. Same nanoline 144 as the Soldier's own Improved Precognition (+110) - do not cast this on a Soldier running the improved version.", "castReq": "SensoryImprovement > 211, PsychologicalModification > 211, VisualProfession == 1" }
+  ],
+
+  "tauntsAndDetaunts": {
+    "note": "26 of the Soldier's 177 nanos are aggro management, all Target(3) and all in the NOSTACKING(0) strain. TauntNpc values below are read straight from the nano's effect function; positive = taunt, negative = detaunt. AO-Universe notes the Soldier's add management is weaker than an Enforcer's because these are single-target.",
+    "taunts": [
+      { "id": 29228, "name": "Ego Taunt", "tauntNpc": 87, "minLevel": 0 },
+      { "id": 100208, "name": "Draw Attention", "tauntNpc": 199, "minLevel": 0 },
+      { "id": 100206, "name": "Enraged Mind", "tauntNpc": 349, "minLevel": 0 },
+      { "id": 229090, "name": "Minor Insult", "tauntNpc": 350, "minLevel": 15 },
+      { "id": 100205, "name": "Annoying Presence", "tauntNpc": 712, "minLevel": 0 },
+      { "id": 29218, "name": "Aggressive Captivation", "tauntNpc": 890, "minLevel": 0 },
+      { "id": 100207, "name": "Id Assault", "tauntNpc": 1244, "minLevel": 0 },
+      { "id": 29242, "name": "Only You, Only Me", "tauntNpc": 1617, "minLevel": 0 },
+      { "id": 229092, "name": "Lesser Insult", "tauntNpc": 1650, "minLevel": 45 },
+      { "id": 223201, "name": "Obvious Victim", "tauntNpc": 2250, "minLevel": 125 },
+      { "id": 229094, "name": "Casual Insult", "tauntNpc": 2850, "minLevel": 80 },
+      { "id": 223203, "name": "Clear Victim", "tauntNpc": 4580, "minLevel": 185 },
+      { "id": 229096, "name": "Annoying Insult", "tauntNpc": 4950, "minLevel": 130 },
+      { "id": 223205, "name": "Distinct Victim", "tauntNpc": 6125, "minLevel": 205 },
+      { "id": 223207, "name": "Undeniable Victim", "tauntNpc": 8600, "minLevel": 211 },
+      { "id": 229098, "name": "Aggressive Insult", "tauntNpc": 9000, "minLevel": 170 },
+      { "id": 229100, "name": "Disruptive Insult", "tauntNpc": 11000, "minLevel": 201 },
+      { "id": 223209, "name": "Unmistakable Victim", "tauntNpc": 12000, "minLevel": 211 },
+      { "id": 229102, "name": "Intrusive Insult", "tauntNpc": 13000, "minLevel": 209 },
+      { "id": 229104, "name": "Offensive Insult", "tauntNpc": 15000, "minLevel": 219 }
+    ],
+    "detaunts": [
+      { "id": 223211, "name": "Bypass Me", "tauntNpc": -2133, "minLevel": 75 },
+      { "id": 223213, "name": "Circumvent Me", "tauntNpc": -4586, "minLevel": 145 },
+      { "id": 223215, "name": "Elude Me", "tauntNpc": -6080, "minLevel": 195 },
+      { "id": 223217, "name": "Keep Clear of Me", "tauntNpc": -7140, "minLevel": 207 },
+      { "id": 223219, "name": "Shake Off Me", "tauntNpc": -9400, "minLevel": 214 },
+      { "id": 223221, "name": "Desist Me", "tauntNpc": -11000, "minLevel": 219 }
+    ]
+  },
+
+  "utilityOnOthers": [
+    { "name": "Remedy Inhibitor", "id": 267624, "nanoLine": "NOSTACKING(0)", "minLevel": 201, "effect": "ResistNanoStrain[12, 300] and ResistNanoStrain[255, 300], plus ReduceNanoStrainDuration[12, 1000] and [255, 1000].", "castReq": "Profession == 1, Level > 200, MaterialCreation > 1250, MaterialMetamorphosis > 1250", "note": "A level 201+ resist/shorten tool against nano strains 12 and 255. Which live effects strains 12 and 255 correspond to is NOT established from the client data - see _unverified. source=local" },
+    { "name": "One Foot in the Grave", "id": 204305, "nanoLine": "CompleteHealingLine(282)", "minLevel": 175, "effect": "ResistNanoStrain[282, 200] - i.e. it applies a 200 resist against the Complete Healing nanoline on its target.", "castReq": "Profession == 1, Level > 174, MaterialCreation > 829, MaterialMetamorphosis > 912", "note": "This is an anti-heal nano applied to a target, not a heal the Soldier gives. Interpretation flagged - see _unverified. source=local" },
+    { "name": "Feelings of Mortality", "id": 204303, "nanoLine": "CompleteHealingLine(282)", "minLevel": 75, "effect": "ResistNanoStrain[282, 200] - the level 75 version of the same effect.", "castReq": "Profession == 1, Level > 74, MaterialCreation > 467, MaterialMetamorphosis > 508", "note": "Same nanoline 282 as One Foot in the Grave. source=local" }
+  ],
+
+  "debuffs": [
+    { "name": "Pierce Nerves", "id": 266310, "nanoLine": "NOSTACKING(0)", "minLevel": 0, "effect": "Piercing -1000 on the target.", "castReq": "Expansion op22 32, MaterialCreation > 799, Profession == 1, SpaceTime > 799, Profession == 15", "note": "The Soldier's only offensive debuff. Requires Lost Eden (Expansion bit 32). The cast requirement lists Profession 1 AND Profession 15, so a Shade can cast it too. A pure PvP tool - it debuffs one melee skill. source=local" }
+  ],
+
+  "notSoldierCastable": [
+    { "id": 32038, "name": "False Profession: Soldier", "nanoLine": "FalseProfession(218)", "actualCaster": "AGENT", "evidence": "Its cast action requires Profession == 5 (Agent). The VisualProfession == 1 clause is what pulled it into the Soldier extraction; that clause is the 'already looks like a Soldier' branch. Its effects run ChangeVariable(368 VisualProfession, 1) - it makes the AGENT look like a Soldier.", "effect": "RemoveNanoStrain[680], Skill(318) +150, ModifyPercentage -25% to all six nano schools, VisualProfession := 1.", "castReq": "VisualProfession == 5, VisualProfession == 1, Profession == 5, PsychologicalModification > 74, SensoryImprovement > 74, BiologicalMetamorphosis > 74" },
+    { "id": 117227, "name": "Assume Profession: Soldier", "nanoLine": "FalseProfession(218)", "actualCaster": "AGENT", "evidence": "Same structure: Profession == 5 required.", "effect": "RemoveNanoStrain[680], Skill(318) +70, ModifyPercentage -15% to all six nano schools, VisualProfession := 1.", "castReq": "VisualProfession == 5, VisualProfession == 1, Profession == 5, PsychologicalModification > 378, SensoryImprovement > 378, BiologicalMetamorphosis > 378" },
+    { "id": 117216, "name": "Mimic Profession: Soldier", "nanoLine": "FalseProfession(218)", "actualCaster": "AGENT", "evidence": "Same structure: Profession == 5 required.", "effect": "RemoveNanoStrain[680], Skill(318) +15, ModifyPercentage -5% to all six nano schools, VisualProfession := 1.", "castReq": "VisualProfession == 5, VisualProfession == 1, Profession == 5, PsychologicalModification > 677, SensoryImprovement > 677, BiologicalMetamorphosis > 677" }
+  ],
+
+  "testOrUnused": [
+    { "id": 292504, "name": "Test Body Boost - NOT USED", "nanoLine": "HPBuff(151)", "effect": "Max Health +20 - a duplicate of Body Boost (29091).", "castReq": "BiologicalMetamorphosis > 4, MaterialCreation > 4, VisualProfession == 1", "note": "The client data names it 'NOT USED'. Listed for completeness; a bot must never cast it." }
+  ],
+
+  "botStrategyNotes": {
+    "selfKeepUpOrder": [
+      "1. The Shadowlands reflect (Empowered ... / Resonance Field / Pre-Nullity Sphere, ids 233012-233051 + 233033): ONE cast covers the Soldier and the team, and its strain (694) stacks with the mirror shields. This is the reflect that stays up.",
+      "2. Phalanx 29245 (team-casts 162357, all eight ACs +350) - strain NOSTACKING(0), so it collides with nothing.",
+      "3. Total Combat Survival 273398 (+1200 Max Health) if a Soldier Nanodeck is worn, otherwise Battlefield Endurance 95697 (+405).",
+      "4. The weapon buff for the gun actually held: Art of War 275027 (AR, needs Nanodeck) or Composite Heavy Artillery 269482 (six ranged skills) or Art of Peace 203119.",
+      "5. Improved Soldier Clip Junkie 273402 (Full Auto +180, needs Nanodeck) or Soldier Clip Junkie 203137 (+120).",
+      "6. Improved Total Focus 270806 (ten weapon skills +125, needs Nanodeck). Do NOT fall back to Total Focus 29255 in PvP - it costs 40 on all three evades.",
+      "7. Riot Control 29251 (Burst +110) and Full Automatic Targeting 270248 (Add All Off. +74).",
+      "8. Offensive Steamroller 29240 (all four initiatives +133).",
+      "9. Improved Precognition 275844 (evades +110, needs Nanodeck) when solo or in PvP.",
+      "10. The best proc the AI title level allows: Notum-Charged Grenades 302399 (AI 6+) else Fragmentation Grenades 302395 (AI 4+).",
+      "The Total Mirror Shield (70300-70309) and Augmented Mirror Shield (223229/223181/223183/223185/273400) lines are NOT keep-up buffs - they are short, nano-skill-locking cooldowns to spend on a damage phase."
+    ],
+    "nanolineStackingTraps": [
+      "ReflectShield(2) holds THREE different things: the Total Mirror Shields, the Augmented Mirror Shields, and the 28 Deflection Shield / Reflective Field nanos the Soldier casts on other people. Only one occupant per character - a teammate's Reflective Field on a Soldier overwrites his mirror shield.",
+      "ShadowlandReflectBase(694) is a separate line, so an Empowered/Resonance field stacks on top of a mirror shield. That is the whole reason the Soldier's reflect stack works.",
+      "The 28 Rubi-Ka reflect nanos all carry 'ExpansionPlayfield == 0' - they cannot be cast in a Shadowlands playfield at all.",
+      "HPBuff(151) holds both Total Combat Survival (+1200, self) and the Body Boost -> Battlefield Endurance give-away line (+20 to +405). Never let the smaller one land on a Soldier running the bigger one.",
+      "AssaultRifleBuffs(212) holds Art of War (+200 AR), Art of Peace (+90), A Sergeant's Knowledge (+30) and Composite Heavy Artillery (+100 across six skills) - pick one.",
+      "DamageBuffs_LineA(4) holds the Augmentation Cloud line, the Damage Amplifier/Multiplier pairs, Helepolis of the Besieger AND the children of the 'Fight (Team)' line. At endgame cast the team Fight line and stop casting Augmentation Clouds.",
+      "MajorEvasionBuffs(144) holds Precognition (+55, on others) and Improved Precognition (+110, self).",
+      "TotalFocus(769) holds Total Focus and Improved Total Focus. InitiativeBuffs(152) holds Quickshot, Attack Booster and Offensive Steamroller. SiphonBox683(683) holds both procs.",
+      "ArmorBuff(3) is shared with every other profession's AC buff, so the Soldier's Absorption Shield line is usually redundant - Phalanx is not."
+    ],
+    "nanodeckGate": "Six of the Soldier's best nanos require NanoFocusLevel bit 64, which is set only by a worn Soldier Nanodeck (Soldier Nanodeck 270768 / Activated 280768 / Stellar 280782, all ToWield Level > 214, verified in items.ocp): Augmented Mirror Shield MK V 273400, Improved Total Focus 270806, Total Combat Survival 273398, Improved Soldier Clip Junkie 273402, Improved Ranged Energy Weapon Mastery 275905 and Art of War 275027. No amount of nano skill substitutes for the deck.",
+    "twinkPriorityForSoldier": [
+      "Trader Wrangle first - it raises the weapon skills (equip the gun, cap the specials) and the nano skills (land a bigger shield) in one cast.",
+      "Str/Sta for armour: Ofab Soldier QL300 needs Strength 900 / Stamina 1100; Combined Commando's QL300 needs Strength 1000 / Agility 1000 (both from items.ocp).",
+      "Computer Literacy 1500 for the Star of Fidelity (244690) and Stellar Fidelity (281045) - a Trader trade-skill wrangle is the usual route.",
+      "Matter Creation and Time & Space are the expensive pair that gate every reflect; buff them rather than train them past what the shield you actually use needs (Augmented Mirror Shield MK V wants MC 1527 / TS 1490)."
+    ]
+  },
+
+  "_unverified": [
+    "Nano DURATIONS are not in this extraction. The 'spend, do not keep up' advice for the Total Mirror Shield / Augmented Mirror Shield lines comes from the AO-Universe Tepamina Soldier guide (75% reflect, max duration ~1:20, 2-minute nano-skill lockout), not from the client data. Verify durations in game before building a cast rotation on them.",
+    "AddOffProc's first argument (20 on Fragmentation Grenades, 25 on Notum-Charged Grenades) is read raw from the function. Whether it is a percentage chance or another unit is NOT established from the data.",
+    "TauntNpc values are raw function arguments. How a taunt value converts to hate in the live server is not established here; use them only for relative ordering.",
+    "Nano strains 12 and 255 (the two that Remedy Inhibitor resists and shortens) were not resolved to named effects - the AOSharp NanoLine enum was not cross-checked for them.",
+    "'Feelings of Mortality' / 'One Foot in the Grave' apply ResistNanoStrain against nanoline 282 (CompleteHealingLine) on a Target(3). Read literally that is an anti-heal applied to another character. The in-game intent (self-applied lockout marker vs an offensive anti-heal) is NOT established from the client data - do not build bot logic on it.",
+    "The 'Persistent' Damage Amplifier / Multiplier pair (29243 / 29244) has identical stat numbers to the plain pair (29225 / 29226) but higher cast requirements. The obvious explanation is a longer duration; durations are not in this extraction, so that is unconfirmed.",
+    "Cross-profession buff ids are null throughout - they belong to other professions and are not in the Soldier nano extraction.",
+    "The Doctor nano-init nano and the Fixer NCU/run-speed nanos a Soldier wants are named only generically; exact nano names and values were not pinned to a single source.",
+    "Who_Buffs_What does not have a 'what a Soldier wants' section, so the wantedFromOthers list is reasoned from the Soldier's own verified equip/cast requirements plus the AO-Universe Buffing Guide, not copied from a table.",
+    "NCU costs per buff are not in this extraction. Who_Buffs_What gives a few for the Soldier give-aways (Assault Rifle Mastery 16 NCU, Riot Control 39 NCU, Pistol Mastery 8 NCU, Rifle Mastery 12 NCU, the HP line 1-47 NCU); the rest are unknown."
+  ],
+
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/soldier-nanos.json - the 177 Soldier-castable nanos extracted from nanos.ocp (client 18.8.50_EP1): ids, names, nano lines/strains, minLevel, cast requirements and effect functions. Every id/name/number in this file that is marked source=local comes from there.",
+    "LOCAL: E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp - read directly for the child nanos the parents cast: 217782-217788 (the 'Fight' team damage children), 231323-231340 (the team reflect children), 232233-232250 (the self reflect children), 162357 (Phalanx), 302393/302394/302397/302398 (the proc chain).",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows) - every id/name pair above was verified against it.",
+    "LOCAL: E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Stat.cs - stat id to name (Health 27, the eight ACs 90-97, Reflect* 205-225, AddAllOff 276, the eight *DamageModifier stats 278-282/311/316/317, MaxReflected* 475-483).",
+    "LOCAL: E:/Funcom/OmniCell/OmniCell/Libraries/Source/OmniCell.Enums/FunctionType.cs - function id to name (53002 Hit, 53012 Skill, 53045 Modify, 53051 CastNano, 53066 TeamCastNano, 53087 AreaCastNano, 53117 TauntNpc, 53162 ResistNanoStrain, 53227 AddOffProc, 53236 RemoveNanoStrain).",
+    "LOCAL: E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp via tools/eng-gear-extractor --prof 1 - the Soldier Nanodeck family (270768 / 280768 / 280782), Star of Fidelity 244690 and Stellar Fidelity 281045 and their ToWield requirements, used for the nanodeckGate note.",
+    "LOCAL: sibling profiles soldier-build.json (skill cost factors and the role summary) and soldier-endgame.json (the Nanodeck chain and the NanoFocusLevel gate).",
+    "https://wiki.aodb.us/wiki/Who_Buffs_What - what a Soldier buffs on other players: 'Assault Rifle Mastery: Soldier - +60 (16 NCU) Nanoline: 212', 'Riot Control - Soldier: +110 (39 NCU) Nanoline: 214', 'Body Boost -/- Battlefield Endurance - +20 to +405 (1-47 NCU) Nanoline: 151', 'Pistol Mastery - Bureaucrat/Doctor/Engineer/Meta-Physicist/Soldier: +40 (8 NCU) Nanoline: 199', 'Rifle Mastery - Soldier: +50 (12 NCU) Nanoline: 194'. Every one of those matches the local data exactly.",
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide - the Trader wrangle ladder, Enforcer Essence, Doctor Iron Circle, Agent Feline Grace / Enhanced Senses, Composite Attribute Boost, and the 'all buffs stack with Expertises and Attribute Boosts' rule.",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-13 (and parts 2/3) - Total Mirror Shield = 75% reflect, ~1:20 maximum duration, 2-minute nano-skill lockout; reflect-stack sequencing; single-target taunt criticism.",
+    "http://wiki.aodb.us/wiki/Soldier - profession overview: absorption shields that reflect damage back at the attacker, and the Shadowlands stacking team-and-self reflect line.",
+    "NOT USED (block automation, per CLASS-PROFILE-PLAYBOOK section 4): auno.org, aoitems.com, anarchyonline.fandom.com."
+  ]
+}

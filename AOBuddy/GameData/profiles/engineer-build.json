@@ -1,0 +1,3714 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "playstyle": {
+    "role": "Robot pet-master, aura platform and the game's tradeskill profession: one big bot does the damage and holds aggro while the Engineer runs a team aura, keeps shields, reflects and absorbs up, and builds the gear.",
+    "summary": "The Engineer (profession 3) summons a single robot and fights through it. Unlike the Meta-Physicist's three pets drawn from three different nano schools, EVERY Engineer bot reads exactly two skills - Matter Creation and Time & Space - at the SAME value, from Feeble Automaton (MC>4 / TS>4) up to the Widowmaker Battle Drone (MC>1895 / TS>1890). Around that it runs one friendly aura (EngineerAuras, strain 227, 15 nanos) or one hostile aura (EngineerDebuffAuras, strain 236, 14 nanos) - both needing MC + Matter Metamorphosis + Time & Space at the same value - plus the Assurance / Gift of Assurance team armor line, damage shields, reflect cocoons and 12 special-attack absorbers. It is also the only profession with Mechanical Engineering, Electrical Engineering, Quantum FT, Weapon Smithing AND Tutoring all at cost factor 1.0, stacked with two profession perk lines, an AI perk line and its own +80/+125/+200 tradeskill buff nanos.",
+    "strengths": [
+      "One skill pair runs the whole pet game: every bot summon needs only Matter Creation + Time & Space, both at cost factor 1.0 - far simpler and cheaper than the MP's three-school pet spread",
+      "Team auras: 15 friendly Sympathetic auras (strain 227) and 14 hostile Disruptive auras (strain 236) covering AC, reflect, damage shield, arms and negator effects",
+      "The best tradeskill profession in the data: ME/EE/QFT/Weapon Smithing/Tutoring all at cost 1.0, plus Gadgeteer, Mechanic, Tinkerer, Illogical Patterns (+160 to five tradeskills) and The Unknown Factor (+160 to four more), plus Knowledge (+80), Mastery (+125) and Engineer Composite Specialist Tradeskills (273346, +200 ME/EE/QFT)",
+      "A pet-repair line (Quick Fix through A Maker's Touch, plus Master's Repairs) and the Repair Pet perk action keep the bot alive with no healer",
+      "Strong defensive toolkit for a caster: Bio Shielding perk actions, ReflectShield / ShadowlandReflectBase cocoons, damage shields and 12 special-attack absorbers (strain 286)",
+      "Team travel: Beacon Warp / Team Beacon Warp and Shadowland Safeguard recall",
+      "Pistol is its cheapest weapon skill (1.5) and the Engineer has profession-only pistols and grenade launchers, so its own weapon damage is not an afterthought the way the MP's is"
+    ],
+    "weaknesses": [
+      "Only ONE bot at a time - lose it and you have no damage and no tank until you re-summon",
+      "No self-heal nano at all: the Engineer heals its BOT, not itself. Personal survivability is Bio Shielding perk actions, reflects/absorbs and raw HP",
+      "Psychological Modification and Sensory Improvement cost 2.4 each yet gate every tradeskill and weapon buff - an awkward, expensive second axis alongside MC/TS/MM",
+      "Evade-ClsC costs 4.0 (an MP pays 1.6) and Dodge-Rng 2.5, so close-combat evades are effectively unaffordable",
+      "Nano Pool costs 1.8 (an MP or NT pays 1.0) while bots and auras are expensive to cast",
+      "Only one aura runs at a time - friendly or hostile, not both",
+      "Tradeskills are an IP trap: the AOWiki Engineer Guide warns they are \"a massive drain on IP\" and that \"there is no such thing as a Trade skill only engineer\""
+    ],
+    "tips": [
+      "Train Matter Creation and Time & Space in lockstep - a bot checks both at the same number, so one point of MC above TS is wasted.",
+      "Matter Metamorphosis is the third aura skill: MC + MM + TS at the same value. For the top aura (Sympathetic Fortress Screen 154562 / Null Space Disruptor 154725, ~870 each) MM has to keep pace.",
+      "Fund PM and SI to a chosen buff TIER, not to max: the Knowledge nanos want ~468-545 PM/SI for +80, the Mastery nanos ~817-854 for +125, and Engineer Composite Specialist Tradeskills wants 1033 for +200.",
+      "Take Mechanic to rank 3 early - it grants Repair Pet, an instant pet heal that costs no nano.",
+      "Bio Shielding is the survivability line for a class with no self-heal; AO-Universe notes most players run a reflect and a damage shield \"from the Bioshield perk line or from buffs\".",
+      "Your Run Speed sets your bot's - AO-Universe MKIII: \"The runspeed of your pets is your own runspeed*1.2\". Pet commands only reach 50 m.",
+      "Do not summon a bot while nano-debuffed - the bot is built at the skill level you had when you cast it.",
+      "Champion of Nano Combat is the strongest AI perk line for an Engineer: +100 to all six nano schools, including both bot skills.",
+      "Illogical Patterns + The Unknown Factor give +160 across nine tradeskills between them and are both open to Engineer - take them before any melee or off-profile AI line.",
+      "The FalseProfession nanos named \"...Profession: Engineer\" are AGENT nanos (they require Profession == 5) that make an Agent look like an Engineer. An Engineer cannot cast them."
+    ]
+  },
+  "breed": {
+    "recommended": "Nanomage",
+    "reasoning": "Every Engineer bot is gated on Matter Creation and Time & Space, and AOWiki's Engineer:Breed_and_Skills states Intelligence provides \"80% base ability of many nano skills\", that Nanomage \"works well for an engineer; they have better nano skills and intelligence\", and that Atrox Int and nano skills are \"poor\". Local reference/breeds.json backs this: Nanomage has the highest trained Int and Psychic caps (512/512), 4 Max Nano per Nano Pool point (vs 3 Solitus, 2 Atrox) and a 55% nano-cost-reduction cap - which matters because the Engineer pays 1.8 for Nano Pool. The cost is fragility: 2 HP per Body Development point and the lowest Strength/Stamina caps. AO-Universe's Engineer Guide MKIII agrees for most of the game - Nanomage is \"Best at early and mid-game (up to TL5 probably)\".",
+    "alternatives": [
+      {
+        "breed": "Solitus",
+        "note": "The safe default. AO-Universe MKIII: \"With good HP and nanoskills mix probably the best overall breed for the average player, not looking for unique advantages.\" The AOWiki Engineer Guide uses Solitus as the baseline and advises raising \"Agility and Stamina (in addition to Intelligence)\" for their effect on Matter Creation and Time and Space and for easier implant design. Solitus Beta Genome (Int/Sense/Psy +7) is its best AI genome line."
+      },
+      {
+        "breed": "Atrox",
+        "note": "Endgame HP monster, but AOWiki calls its Int and nano skills \"poor\" and breeds.json caps Int/Sense/Psychic at 400 with only 2 nano per Nano Pool point. Viable at 220 with full symbiants and perks - Atrox Secondary Genome returns Agi/Sense/Int/Psy +6 - but slow and expensive to cast bots on the way up."
+      },
+      {
+        "breed": "Opifex",
+        "note": "AO-Universe MKIII rates Opifex for a damage-focused Engineer: \"Best weapons. Highest pistol combo. Best Pistol/Grenade AR.\" Agility 544 / Sense 512 caps suit a pistol-and-evades build, at the cost of Int/Psy (464/448) - i.e. slower bots."
+      }
+    ]
+  },
+  "skillPriorities": [
+    {
+      "skill": "Matter Creation (MC, stat 130)",
+      "target": "max - always",
+      "why": "Cost factor 1.0 (the Engineer's cheapest tier). EVERY bot summon requires MC and Time & Space at the SAME value: Feeble Automaton (43325) MC>4/TS>4, Predator M-30 (301855) MC>889/TS>889, Widowmaker Battle Drone (223323) MC>1895/TS>1890. MC also gates the auras, the pet heals and the special-attack absorbers. The single most important Engineer skill."
+    },
+    {
+      "skill": "Time & Space (TS / SpaceTime, stat 131)",
+      "target": "max - always, keep level with MC",
+      "why": "Cost factor 1.0. The other half of every bot summon. Because a bot checks BOTH at the same number, the LOWER of MC/TS is your real bot level - a point of MC above TS is a wasted point. Also on the auras, pet heals, Shadowland Safeguard recall and Beacon Warp."
+    },
+    {
+      "skill": "Matter Metamorphosis (MM, stat 127)",
+      "target": "max",
+      "why": "Cost factor 1.0. Third skill on every aura: EngineerAuras (strain 227) and EngineerDebuffAuras (strain 236) all need MC + MM + TS at the same value (Sympathetic Fortress Screen 154562 and Null Space Disruptor 154725 want ~870 each). MM also drives the team armor line (Gift of Assurance 227680: MC>1839, MM>1844), the damage shields and Boosted Tendons."
+    },
+    {
+      "skill": "Psychological Modification (PM, stat 129)",
+      "target": "high - to the buff tier you want",
+      "why": "Cost factor 2.4 (expensive) but it gates EVERY Engineer tradeskill and weapon buff: the five Mastery nanos (Electrical Engineering Mastery 227663 PM>817 through Weapon Smithing Mastery 227671 PM>854, +125 each), Engineer Composite Specialist Tradeskills (273346, PM>1033, +200 ME/EE/QFT) and Extreme Prejudice (29762, PM>647, +120 Grenade/+120 Pistol/+50 Heavy Weapons). Fund it to a chosen tier, not to max."
+    },
+    {
+      "skill": "Sensory Improvement (SI, stat 122)",
+      "target": "high - keep level with PM",
+      "why": "Cost factor 2.4. Paired 1:1 with PM on every Engineer buff line, so the lower of PM/SI is what you can actually cast. No Engineer buff wants SI without PM or vice versa."
+    },
+    {
+      "skill": "Biological Metamorphosis (BM, stat 128)",
+      "target": "medium - to the pet-heal tier you want",
+      "why": "Cost factor 2.4. Only needed for the pet-repair line: Quick Fix (116793) MC/TS>83 BM>69, through A Maker's Touch (116791) MC/TS>841 BM>760, plus Master's Repairs (CompleteHealingLine, MC>925/TS>925/BM>836). BM always sits BELOW the MC/TS number on the same nano, so it never drives the build - top it to the heal you want and stop."
+    },
+    {
+      "skill": "Computer Literacy (stat 161)",
+      "target": "max",
+      "why": "Cost factor 1.3 - cheap for an Engineer. AOWiki Engineer:Breed_and_Skills lists it under always-max (\"needed for many things\"); it drives NCU, belts and grid. The NCU Extensions perk adds +100 on top."
+    },
+    {
+      "skill": "Nano Programming (stat 160)",
+      "target": "high",
+      "why": "Cost factor 1.2 - the Engineer is one of the cheapest professions at it. AOWiki: max it \"for implants at lower levels\". The Unknown Factor perk adds +160 cumulative."
+    },
+    {
+      "skill": "Mechanical Engineering (125) / Electrical Engineering (126) / Quantum FT (157) / Weapon Smithing (158)",
+      "target": "high - all four are cost factor 1.0 for the Engineer alone",
+      "why": "All four sit at 1.0 for the Engineer and at 2.0-2.5 for the Meta-Physicist; no other profession has all four in the cheapest tier. On top of the cheap IP the Engineer stacks Gadgeteer (+55/+55/+55/+70), Mechanic (+80/+80/+80/+130), Tinkerer (+65 ME/EE/QFT), Illogical Patterns (+160 to all four plus Tutoring) and its own Knowledge (+80) / Mastery (+125) / Composite Specialist (+200) nanos. Tradeskilling is not a side note for this class."
+    },
+    {
+      "skill": "Tutoring (stat 141)",
+      "target": "high",
+      "why": "Cost factor 1.0 for the Engineer - the same tier as the nano schools - and +160 from Illogical Patterns. Cheap to keep maxed."
+    },
+    {
+      "skill": "Chemistry (163) / Pharma Tech (159)",
+      "target": "medium",
+      "why": "Cost 1.2 / 1.5. Needed for stims, kits and the Alchemist perk line. The Unknown Factor adds +160 to both; Philosopher's Stone (29772) adds +62/+62."
+    },
+    {
+      "skill": "Pistol (stat 112)",
+      "target": "high on a pistol build",
+      "why": "Cost factor 1.5 - by far the cheapest weapon skill the Engineer has (Grenade and Heavy Weapons are 2.0; Assault Rifle and Ranged Energy 3.0; Shotgun 3.2; Rifle and Bow 4.0). 9 of the 13 profession-locked Engineer weapon models in engineer-weapons-endgame.json are pistols (Augmented Master Engineer Pistol 274973, Dust Brigade Engineer Pistol 274559, Pistol of the Maker 214268, Pistol of the Creator 214269 ...). Backed by the Pistol Mastery perk line (+200), the Pistol Mastery nano (29246, +40) and Extreme Prejudice (+120)."
+    },
+    {
+      "skill": "Grenade (stat 109)",
+      "target": "high on a grenade build",
+      "why": "Cost factor 2.0. The other Engineer-locked weapon family (the Nizno's Bomb Blaster line, 253228-253233). Supported by Demolitions (+200), Extreme Prejudice (29762, +120) and Creative Mind (+51)."
+    },
+    {
+      "skill": "Nano C. Init. (stat 149)",
+      "target": "high",
+      "why": "Cost factor 1.6. Bots and auras are long casts and you re-summon after every bot death; Creative Mind adds +100 and the InitiativeBuffs line (Rapid Weapon) helps."
+    },
+    {
+      "skill": "Nano Resist (stat 168)",
+      "target": "high",
+      "why": "Cost factor 1.5 - cheap for an Engineer, and the main defence against being stripped, rooted or nano-debuffed (which also stops you summoning a fresh bot). The Notum Repulsor perk adds a large amount on top."
+    },
+    {
+      "skill": "Treatment (stat 124)",
+      "target": "high",
+      "why": "Cost factor 1.6. AOWiki Engineer:Breed_and_Skills lists Treatment under always-max (\"heal kits and implants\"). First Aid perk +40, Combat Knowledge +64."
+    },
+    {
+      "skill": "Nano Pool (stat 132)",
+      "target": "medium-high",
+      "why": "Cost factor 1.8 - noticeably more expensive for an Engineer than for an MP or NT, who pay 1.0. Bots and auras are costly to cast. AOWiki lists it under \"raise as needed\" for survivability."
+    },
+    {
+      "skill": "Body Development (stat 152)",
+      "target": "medium",
+      "why": "Cost factor 2.4. The Engineer has no self-heal nano - only the Bio Shielding perk actions - so HP is your buffer while the bot holds aggro. AOWiki puts it in \"raise as needed\"."
+    },
+    {
+      "skill": "Duck-Exp (153) / Dodge-Rng (154) / Evade-ClsC (155)",
+      "target": "medium - Duck-Exp first",
+      "why": "Costs are 2.2 / 2.5 / 4.0 - unusually lopsided. Duck-Exp is the cheap one (and Creative Mind adds +51 to it); Evade-ClsC at 4.0 is among the most expensive skills in the whole Engineer column, so do not try to max it. AOWiki: raise evades so you are not \"critted every time\"."
+    },
+    {
+      "skill": "Map Navigation (stat 140)",
+      "target": "as-needed",
+      "why": "Cost factor 1.6. The AOWiki Engineer Guide notes raising it to 80 unlocks the important map upgrades."
+    },
+    {
+      "skill": "Run Speed (stat 156)",
+      "target": "as-needed",
+      "why": "Cost factor 2.0. AO-Universe Engineer Guide MKIII: \"The runspeed of your pets is your own runspeed*1.2\" - your Run Speed directly sets how fast the bot repositions, and pet commands only reach 50 m."
+    },
+    {
+      "skill": "Vehicle Ground (166) / Air (139) / Water (117)",
+      "target": "as-needed",
+      "why": "All three cost 1.6 for an Engineer versus 2.5 for a Meta-Physicist, and the Motorist perk adds +90 each. Cheap travel utility if you want it."
+    },
+    {
+      "skill": "Melee skills (1h Blunt 2.4, 2h Edged 3.2, Piercing 3.2, Melee Energy 4.0, Multi Melee 4.0, Fast Attack 4.0, Sneak Attack 4.0)",
+      "target": "skip",
+      "why": "AOWiki Engineer:Breed_and_Skills calls all melee skills \"Useless for the engineer\", and the cost table agrees - nothing melee is cheaper than 2.4."
+    },
+    {
+      "skill": "Rifle (4.0) / Bow (4.0) / Aimed Shot (4.0) / Multi Ranged (4.0) / Deflect (4.0)",
+      "target": "skip",
+      "why": "The Engineer's most expensive column. Unlike the Meta-Physicist (Bow 2.5, Multi Ranged 2.5, Dimach 2.5) the Engineer gets no discount here at all."
+    }
+  ],
+  "perks": [
+    {
+      "name": "Bio Shielding",
+      "type": "SL profession",
+      "line": "Bio Shielding (10 ranks, levels 10-201)",
+      "effect": "Defensive line (Engineer/Adventurer/Enforcer/Keeper): large flat AC plus shield-AC and reflect. Grants Bio Shield, Bio Cocoon, Bio Rejuvenation and Bio Regrowth - the Engineer's only real self-heal/absorb buttons.",
+      "recommendedAtLevel": "10 - the main survivability line for a pet class with no self-heal nano",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "10-201",
+      "professionLock": [
+        "Engineer",
+        "Adventurer",
+        "Enforcer",
+        "Keeper"
+      ],
+      "cumulativeBonusesAtMaxRank": "ProjectileAC / MeleeAC / EnergyAC / ChemicalAC / RadiationAC / ColdAC / PoisonAC / FireAC +890; ShieldProjectileAC / ShieldMeleeAC / ShieldEnergyAC / ShieldChemicalAC / ShieldRadiationAC / ShieldColdAC / ShieldNanoAC / ShieldFireAC / ShieldPoisonAC +80; ReflectMeleeAC / ReflectPoisonAC / ReflectFireAC / ReflectNanoAC / ReflectColdAC / ReflectProjectileAC / ReflectEnergyAC / ReflectChemicalAC / ReflectRadiationAC +3",
+      "specialActionsGranted": [
+        "Bio Shield",
+        "Bio Cocoon",
+        "Bio Rejuvenation",
+        "Bio Regrowth"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211666,
+          "bonuses": "ShieldProjectileAC=2, ShieldMeleeAC=2, ShieldEnergyAC=2, ShieldChemicalAC=2, ShieldRadiationAC=2, ShieldColdAC=2, ShieldNanoAC=2, ShieldFireAC=2, ShieldPoisonAC=2, ProjectileAC=40, MeleeAC=40, EnergyAC=40, ChemicalAC=40, RadiationAC=40, ColdAC=40, PoisonAC=40, FireAC=40, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0",
+          "grantsSpecialAction": [
+            "Bio Shield"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 20,
+          "perkItemId": 211667,
+          "bonuses": "ShieldProjectileAC=2, ShieldMeleeAC=2, ShieldEnergyAC=2, ShieldChemicalAC=2, ShieldRadiationAC=2, ShieldColdAC=2, ShieldNanoAC=2, ShieldFireAC=2, ShieldPoisonAC=2, ProjectileAC=32, MeleeAC=32, EnergyAC=32, ChemicalAC=32, RadiationAC=32, ColdAC=32, PoisonAC=32, FireAC=32, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0"
+        },
+        {
+          "rank": 3,
+          "minLevel": 40,
+          "perkItemId": 211668,
+          "bonuses": "ShieldProjectileAC=5, ShieldMeleeAC=5, ShieldEnergyAC=5, ShieldChemicalAC=5, ShieldRadiationAC=5, ShieldColdAC=5, ShieldNanoAC=5, ShieldFireAC=5, ShieldPoisonAC=5, ProjectileAC=68, MeleeAC=68, EnergyAC=68, ChemicalAC=68, RadiationAC=68, ColdAC=68, PoisonAC=68, FireAC=68, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0",
+          "grantsSpecialAction": [
+            "Bio Cocoon"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 60,
+          "perkItemId": 211669,
+          "bonuses": "ShieldProjectileAC=6, ShieldMeleeAC=6, ShieldEnergyAC=6, ShieldChemicalAC=6, ShieldRadiationAC=6, ShieldColdAC=6, ShieldNanoAC=6, ShieldFireAC=6, ShieldPoisonAC=6, ProjectileAC=70, MeleeAC=70, EnergyAC=70, ChemicalAC=70, RadiationAC=70, ColdAC=70, PoisonAC=70, FireAC=70, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0"
+        },
+        {
+          "rank": 5,
+          "minLevel": 80,
+          "perkItemId": 211670,
+          "bonuses": "ShieldProjectileAC=6, ShieldMeleeAC=6, ShieldEnergyAC=6, ShieldChemicalAC=6, ShieldRadiationAC=6, ShieldColdAC=6, ShieldNanoAC=6, ShieldFireAC=6, ShieldPoisonAC=6, ProjectileAC=70, MeleeAC=70, EnergyAC=70, ChemicalAC=70, RadiationAC=70, ColdAC=70, PoisonAC=70, FireAC=70, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0"
+        },
+        {
+          "rank": 6,
+          "minLevel": 100,
+          "perkItemId": 211671,
+          "bonuses": "ShieldProjectileAC=6, ShieldMeleeAC=6, ShieldEnergyAC=6, ShieldChemicalAC=6, ShieldRadiationAC=6, ShieldColdAC=6, ShieldNanoAC=6, ShieldFireAC=6, ShieldPoisonAC=6, ProjectileAC=70, MeleeAC=70, EnergyAC=70, ChemicalAC=70, RadiationAC=70, ColdAC=70, PoisonAC=70, FireAC=70, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0"
+        },
+        {
+          "rank": 7,
+          "minLevel": 130,
+          "perkItemId": 211672,
+          "bonuses": "ShieldProjectileAC=11, ShieldMeleeAC=11, ShieldEnergyAC=11, ShieldChemicalAC=11, ShieldRadiationAC=11, ShieldColdAC=11, ShieldNanoAC=11, ShieldFireAC=11, ShieldPoisonAC=11, ProjectileAC=108, MeleeAC=108, EnergyAC=108, ChemicalAC=108, RadiationAC=108, ColdAC=108, PoisonAC=108, FireAC=108, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0",
+          "grantsSpecialAction": [
+            "Bio Rejuvenation"
+          ]
+        },
+        {
+          "rank": 8,
+          "minLevel": 160,
+          "perkItemId": 211673,
+          "bonuses": "ShieldProjectileAC=11, ShieldMeleeAC=11, ShieldEnergyAC=11, ShieldChemicalAC=11, ShieldRadiationAC=11, ShieldColdAC=11, ShieldNanoAC=11, ShieldFireAC=11, ShieldPoisonAC=11, ProjectileAC=109, MeleeAC=109, EnergyAC=109, ChemicalAC=109, RadiationAC=109, ColdAC=109, PoisonAC=109, FireAC=109, ReflectMeleeAC=0, ReflectPoisonAC=0, ReflectFireAC=0, ReflectNanoAC=0, ReflectColdAC=0, ReflectProjectileAC=0, ReflectEnergyAC=0, ReflectChemicalAC=0, ReflectRadiationAC=0"
+        },
+        {
+          "rank": 9,
+          "minLevel": 190,
+          "perkItemId": 211674,
+          "bonuses": "ShieldProjectileAC=11, ShieldMeleeAC=11, ShieldEnergyAC=11, ShieldChemicalAC=11, ShieldRadiationAC=11, ShieldColdAC=11, ShieldNanoAC=11, ShieldFireAC=11, ShieldPoisonAC=11, ProjectileAC=110, MeleeAC=110, EnergyAC=110, ChemicalAC=110, RadiationAC=110, ColdAC=110, PoisonAC=110, FireAC=110, ReflectMeleeAC=1, ReflectPoisonAC=1, ReflectFireAC=1, ReflectNanoAC=1, ReflectColdAC=1, ReflectProjectileAC=1, ReflectEnergyAC=1, ReflectChemicalAC=1, ReflectRadiationAC=1"
+        },
+        {
+          "rank": 10,
+          "minLevel": 201,
+          "perkItemId": 211675,
+          "bonuses": "ShieldProjectileAC=20, ShieldMeleeAC=20, ShieldEnergyAC=20, ShieldChemicalAC=20, ShieldRadiationAC=20, ShieldColdAC=20, ShieldNanoAC=20, ShieldFireAC=20, ShieldPoisonAC=20, ProjectileAC=213, MeleeAC=213, EnergyAC=213, ChemicalAC=213, RadiationAC=213, ColdAC=213, PoisonAC=213, FireAC=213, ReflectMeleeAC=2, ReflectPoisonAC=2, ReflectFireAC=2, ReflectNanoAC=2, ReflectColdAC=2, ReflectProjectileAC=2, ReflectEnergyAC=2, ReflectChemicalAC=2, ReflectRadiationAC=2",
+          "grantsSpecialAction": [
+            "Bio Regrowth"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Gadgeteer",
+      "type": "SL profession",
+      "line": "Gadgeteer (10 ranks, levels 10-203)",
+      "effect": "The Engineer tradeskill+pet backbone. Raises the four engineering tradeskills and, uniquely among the tradeskill lines, also Matter Creation and Time & Space - the two skills every bot summon reads. Grants Reconstruction (r2), Taunt Box (r5), Siphon Box (r7) and Chaotic Energy (r10).",
+      "recommendedAtLevel": "10 (rank 1 at level 10, keep pace with level)",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "10-203",
+      "professionLock": [
+        "Engineer"
+      ],
+      "cumulativeBonusesAtMaxRank": "WeaponSmithing +70; MechanicalEngineering / ElectricalEngineering / QuantumFT +55; MaterialCreation / SpaceTime +30",
+      "specialActionsGranted": [
+        "Reconstruction",
+        "Taunt Box",
+        "Siphon Box",
+        "Chaotic Energy"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211856,
+          "bonuses": "MechanicalEngineering=2, ElectricalEngineering=2, QuantumFT=2, WeaponSmithing=2, MaterialCreation=1, SpaceTime=1"
+        },
+        {
+          "rank": 2,
+          "minLevel": 20,
+          "perkItemId": 211857,
+          "bonuses": "MechanicalEngineering=2, ElectricalEngineering=2, QuantumFT=2, WeaponSmithing=3, MaterialCreation=1, SpaceTime=1",
+          "grantsSpecialAction": [
+            "Reconstruction"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 40,
+          "perkItemId": 211858,
+          "bonuses": "MechanicalEngineering=3, ElectricalEngineering=3, QuantumFT=3, WeaponSmithing=4, MaterialCreation=2, SpaceTime=2"
+        },
+        {
+          "rank": 4,
+          "minLevel": 70,
+          "perkItemId": 211859,
+          "bonuses": "MechanicalEngineering=3, ElectricalEngineering=3, QuantumFT=3, WeaponSmithing=5, MaterialCreation=2, SpaceTime=2"
+        },
+        {
+          "rank": 5,
+          "minLevel": 100,
+          "perkItemId": 211860,
+          "bonuses": "MechanicalEngineering=4, ElectricalEngineering=4, QuantumFT=4, WeaponSmithing=6, MaterialCreation=2, SpaceTime=2",
+          "grantsSpecialAction": [
+            "Taunt Box"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 120,
+          "perkItemId": 211861,
+          "bonuses": "MechanicalEngineering=5, ElectricalEngineering=5, QuantumFT=5, WeaponSmithing=7, MaterialCreation=3, SpaceTime=3"
+        },
+        {
+          "rank": 7,
+          "minLevel": 150,
+          "perkItemId": 211862,
+          "bonuses": "MechanicalEngineering=6, ElectricalEngineering=6, QuantumFT=6, WeaponSmithing=8, MaterialCreation=3, SpaceTime=3",
+          "grantsSpecialAction": [
+            "Siphon Box"
+          ]
+        },
+        {
+          "rank": 8,
+          "minLevel": 180,
+          "perkItemId": 211863,
+          "bonuses": "MechanicalEngineering=7, ElectricalEngineering=7, QuantumFT=7, WeaponSmithing=9, MaterialCreation=4, SpaceTime=4"
+        },
+        {
+          "rank": 9,
+          "minLevel": 200,
+          "perkItemId": 211864,
+          "bonuses": "MechanicalEngineering=9, ElectricalEngineering=9, QuantumFT=9, WeaponSmithing=10, MaterialCreation=4, SpaceTime=4"
+        },
+        {
+          "rank": 10,
+          "minLevel": 203,
+          "perkItemId": 211865,
+          "bonuses": "MechanicalEngineering=14, ElectricalEngineering=14, QuantumFT=14, WeaponSmithing=16, MaterialCreation=8, SpaceTime=8",
+          "grantsSpecialAction": [
+            "Chaotic Energy"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Mechanic",
+      "type": "SL profession",
+      "line": "Mechanic (10 ranks, levels 30-217)",
+      "effect": "The second Engineer tradeskill line and the bigger of the two: the largest Weapon Smithing gain in the game plus MC/TS. Grants Repair Pet (r3) - an instant, nano-free pet heal - and Deconstruction (r6).",
+      "recommendedAtLevel": "30 (rank 3 for Repair Pet as soon as possible)",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "30-217",
+      "professionLock": [
+        "Engineer"
+      ],
+      "cumulativeBonusesAtMaxRank": "WeaponSmithing +130; MechanicalEngineering / ElectricalEngineering / QuantumFT +80; MaterialCreation / SpaceTime +60",
+      "specialActionsGranted": [
+        "Repair Pet",
+        "Deconstruction"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 211916,
+          "bonuses": "MechanicalEngineering=3, ElectricalEngineering=3, QuantumFT=3, WeaponSmithing=6, MaterialCreation=2, SpaceTime=2"
+        },
+        {
+          "rank": 2,
+          "minLevel": 50,
+          "perkItemId": 211917,
+          "bonuses": "MechanicalEngineering=4, ElectricalEngineering=4, QuantumFT=4, WeaponSmithing=7, MaterialCreation=3, SpaceTime=3"
+        },
+        {
+          "rank": 3,
+          "minLevel": 70,
+          "perkItemId": 211918,
+          "bonuses": "MechanicalEngineering=5, ElectricalEngineering=5, QuantumFT=5, WeaponSmithing=8, MaterialCreation=4, SpaceTime=4",
+          "grantsSpecialAction": [
+            "Repair Pet"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 100,
+          "perkItemId": 211919,
+          "bonuses": "MechanicalEngineering=6, ElectricalEngineering=6, QuantumFT=6, WeaponSmithing=9, MaterialCreation=4, SpaceTime=4"
+        },
+        {
+          "rank": 5,
+          "minLevel": 130,
+          "perkItemId": 211920,
+          "bonuses": "MechanicalEngineering=7, ElectricalEngineering=7, QuantumFT=7, WeaponSmithing=10, MaterialCreation=5, SpaceTime=5"
+        },
+        {
+          "rank": 6,
+          "minLevel": 160,
+          "perkItemId": 211921,
+          "bonuses": "MechanicalEngineering=8, ElectricalEngineering=8, QuantumFT=8, WeaponSmithing=11, MaterialCreation=5, SpaceTime=5",
+          "grantsSpecialAction": [
+            "Deconstruction"
+          ]
+        },
+        {
+          "rank": 7,
+          "minLevel": 201,
+          "perkItemId": 211922,
+          "bonuses": "MechanicalEngineering=9, ElectricalEngineering=9, QuantumFT=9, WeaponSmithing=13, MaterialCreation=6, SpaceTime=6"
+        },
+        {
+          "rank": 8,
+          "minLevel": 206,
+          "perkItemId": 211923,
+          "bonuses": "MechanicalEngineering=10, ElectricalEngineering=10, QuantumFT=10, WeaponSmithing=16, MaterialCreation=7, SpaceTime=7"
+        },
+        {
+          "rank": 9,
+          "minLevel": 212,
+          "perkItemId": 211924,
+          "bonuses": "MechanicalEngineering=11, ElectricalEngineering=11, QuantumFT=11, WeaponSmithing=20, MaterialCreation=9, SpaceTime=9"
+        },
+        {
+          "rank": 10,
+          "minLevel": 217,
+          "perkItemId": 211925,
+          "bonuses": "MechanicalEngineering=17, ElectricalEngineering=17, QuantumFT=17, WeaponSmithing=30, MaterialCreation=15, SpaceTime=15"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Pistol Mastery",
+      "type": "SL profession",
+      "line": "Pistol Mastery (10 ranks, levels 10-205)",
+      "effect": "The Engineer's weapon perk line. Pistol is the cheapest weapon skill an Engineer has (cost 1.5) and 9 of the 13 profession-locked Engineer weapon models in the endgame pool are pistols. Grants Quick Shot, Double Shot and Deadeye.",
+      "recommendedAtLevel": "10 on any pistol Engineer",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "10-205",
+      "professionLock": [
+        "Engineer",
+        "Adventurer",
+        "Bureaucrat",
+        "Doctor",
+        "Metaphysicist"
+      ],
+      "cumulativeBonusesAtMaxRank": "Pistol +200; MeleeDamageModifier / PoisonDamageModifier / FireDamageModifier / ColdDamageModifier / ProjectileDamageModifier / EnergyDamageModifier / ChemicalDamageModifier / RadiationDamageModifier +60; FlingShot +20",
+      "specialActionsGranted": [
+        "Quick Shot",
+        "Double Shot",
+        "Deadeye"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211977,
+          "bonuses": "Pistol=10, FlingShot=1, MeleeDamageModifier=2, PoisonDamageModifier=2, FireDamageModifier=2, ColdDamageModifier=2, ProjectileDamageModifier=2, EnergyDamageModifier=2, ChemicalDamageModifier=2, RadiationDamageModifier=2"
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 211978,
+          "bonuses": "Pistol=10, FlingShot=1, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3",
+          "grantsSpecialAction": [
+            "Quick Shot"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 60,
+          "perkItemId": 211979,
+          "bonuses": "Pistol=12, FlingShot=1, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3"
+        },
+        {
+          "rank": 4,
+          "minLevel": 90,
+          "perkItemId": 211980,
+          "bonuses": "Pistol=13, FlingShot=1, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4"
+        },
+        {
+          "rank": 5,
+          "minLevel": 120,
+          "perkItemId": 211981,
+          "bonuses": "Pistol=14, FlingShot=2, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4",
+          "grantsSpecialAction": [
+            "Double Shot"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 150,
+          "perkItemId": 216630,
+          "bonuses": "Pistol=16, FlingShot=2, MeleeDamageModifier=5, PoisonDamageModifier=5, FireDamageModifier=5, ColdDamageModifier=5, ProjectileDamageModifier=5, EnergyDamageModifier=5, ChemicalDamageModifier=5, RadiationDamageModifier=5"
+        },
+        {
+          "rank": 7,
+          "minLevel": 180,
+          "perkItemId": 216631,
+          "bonuses": "Pistol=18, FlingShot=2, MeleeDamageModifier=5, PoisonDamageModifier=5, FireDamageModifier=5, ColdDamageModifier=5, ProjectileDamageModifier=5, EnergyDamageModifier=5, ChemicalDamageModifier=5, RadiationDamageModifier=5"
+        },
+        {
+          "rank": 8,
+          "minLevel": 201,
+          "perkItemId": 216632,
+          "bonuses": "Pistol=22, FlingShot=3, MeleeDamageModifier=7, PoisonDamageModifier=7, FireDamageModifier=7, ColdDamageModifier=7, ProjectileDamageModifier=7, EnergyDamageModifier=7, ChemicalDamageModifier=7, RadiationDamageModifier=7"
+        },
+        {
+          "rank": 9,
+          "minLevel": 203,
+          "perkItemId": 216633,
+          "bonuses": "Pistol=30, FlingShot=3, MeleeDamageModifier=9, PoisonDamageModifier=9, FireDamageModifier=9, ColdDamageModifier=9, ProjectileDamageModifier=9, EnergyDamageModifier=9, ChemicalDamageModifier=9, RadiationDamageModifier=9",
+          "grantsSpecialAction": [
+            "Deadeye"
+          ]
+        },
+        {
+          "rank": 10,
+          "minLevel": 205,
+          "perkItemId": 216634,
+          "bonuses": "Pistol=55, FlingShot=4, MeleeDamageModifier=18, PoisonDamageModifier=18, FireDamageModifier=18, ColdDamageModifier=18, ProjectileDamageModifier=18, EnergyDamageModifier=18, ChemicalDamageModifier=18, RadiationDamageModifier=18"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Demolitions",
+      "type": "SL profession",
+      "line": "Demolitions (10 ranks, levels 20-209)",
+      "effect": "Engineer-only grenade line and the single largest Grenade bonus available. Grants Install Explosive Device, Install Notum Depletion Device, Suppressive Primer and Thermal Primer.",
+      "recommendedAtLevel": "20 on a grenade build; skip on a pistol build",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "20-209",
+      "professionLock": [
+        "Engineer"
+      ],
+      "cumulativeBonusesAtMaxRank": "Grenade +200",
+      "specialActionsGranted": [
+        "Install Explosive Device",
+        "Install Notum Depletion Device",
+        "Suppressive Primer",
+        "Thermal Primer"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 20,
+          "perkItemId": 211823,
+          "bonuses": "Grenade=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 50,
+          "perkItemId": 211824,
+          "bonuses": "Grenade=10",
+          "grantsSpecialAction": [
+            "Install Explosive Device"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 90,
+          "perkItemId": 211825,
+          "bonuses": "Grenade=12"
+        },
+        {
+          "rank": 4,
+          "minLevel": 120,
+          "perkItemId": 211826,
+          "bonuses": "Grenade=13",
+          "grantsSpecialAction": [
+            "Install Notum Depletion Device"
+          ]
+        },
+        {
+          "rank": 5,
+          "minLevel": 150,
+          "perkItemId": 211827,
+          "bonuses": "Grenade=14"
+        },
+        {
+          "rank": 6,
+          "minLevel": 190,
+          "perkItemId": 211828,
+          "bonuses": "Grenade=16"
+        },
+        {
+          "rank": 7,
+          "minLevel": 201,
+          "perkItemId": 211829,
+          "bonuses": "Grenade=18",
+          "grantsSpecialAction": [
+            "Suppressive Primer"
+          ]
+        },
+        {
+          "rank": 8,
+          "minLevel": 203,
+          "perkItemId": 211830,
+          "bonuses": "Grenade=22"
+        },
+        {
+          "rank": 9,
+          "minLevel": 206,
+          "perkItemId": 211831,
+          "bonuses": "Grenade=30"
+        },
+        {
+          "rank": 10,
+          "minLevel": 209,
+          "perkItemId": 211832,
+          "bonuses": "Grenade=55",
+          "grantsSpecialAction": [
+            "Thermal Primer"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Tinkerer",
+      "type": "SL profession",
+      "line": "Tinkerer (4 ranks, levels 60-200)",
+      "effect": "Short 4-rank tradeskill line (Engineer + Trader only) that stacks with Gadgeteer/Mechanic on ME/EE/QFT. Grants Sabotage Quark Field (r2) and Ignition Flare (r4).",
+      "recommendedAtLevel": "60 (fill after Gadgeteer/Mechanic)",
+      "priority": "med",
+      "maxRank": 4,
+      "levelRange": "60-200",
+      "professionLock": [
+        "Engineer",
+        "Trader"
+      ],
+      "cumulativeBonusesAtMaxRank": "MechanicalEngineering / ElectricalEngineering / QuantumFT +65",
+      "specialActionsGranted": [
+        "Sabotage Quark Field",
+        "Ignition Flare"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 60,
+          "perkItemId": 212093,
+          "bonuses": "MechanicalEngineering=10, ElectricalEngineering=10, QuantumFT=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 120,
+          "perkItemId": 212094,
+          "bonuses": "MechanicalEngineering=12, ElectricalEngineering=12, QuantumFT=12",
+          "grantsSpecialAction": [
+            "Sabotage Quark Field"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 180,
+          "perkItemId": 212095,
+          "bonuses": "MechanicalEngineering=16, ElectricalEngineering=16, QuantumFT=16"
+        },
+        {
+          "rank": 4,
+          "minLevel": 200,
+          "perkItemId": 212096,
+          "bonuses": "MechanicalEngineering=27, ElectricalEngineering=27, QuantumFT=27",
+          "grantsSpecialAction": [
+            "Ignition Flare"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Alchemist",
+      "type": "SL profession",
+      "line": "Alchemist (6 ranks, levels 20-160)",
+      "effect": "Chemistry / Pharma Tech line (Engineer/Trader/Doctor). Grants Taint Wounds, Chemical Blindness, Poison Sprinkle and Seal Wounds.",
+      "recommendedAtLevel": "20 if you build stims/kits",
+      "priority": "low",
+      "maxRank": 6,
+      "levelRange": "20-160",
+      "professionLock": [
+        "Engineer",
+        "Trader",
+        "Doctor"
+      ],
+      "cumulativeBonusesAtMaxRank": "Chemistry / Pharmaceuticals +200",
+      "specialActionsGranted": [
+        "Taint Wounds",
+        "Chemical Blindness",
+        "Poison Sprinkle",
+        "Seal Wounds"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 20,
+          "perkItemId": 211676,
+          "bonuses": "Chemistry=15, Pharmaceuticals=15",
+          "grantsSpecialAction": [
+            "Taint Wounds"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 40,
+          "perkItemId": 211677,
+          "bonuses": "Chemistry=20, Pharmaceuticals=20",
+          "grantsSpecialAction": [
+            "Chemical Blindness"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 70,
+          "perkItemId": 211678,
+          "bonuses": "Chemistry=25, Pharmaceuticals=25"
+        },
+        {
+          "rank": 4,
+          "minLevel": 100,
+          "perkItemId": 211679,
+          "bonuses": "Chemistry=30, Pharmaceuticals=30",
+          "grantsSpecialAction": [
+            "Poison Sprinkle"
+          ]
+        },
+        {
+          "rank": 5,
+          "minLevel": 130,
+          "perkItemId": 211680,
+          "bonuses": "Chemistry=40, Pharmaceuticals=40"
+        },
+        {
+          "rank": 6,
+          "minLevel": 160,
+          "perkItemId": 211681,
+          "bonuses": "Chemistry=70, Pharmaceuticals=70",
+          "grantsSpecialAction": [
+            "Seal Wounds"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Power Up",
+      "type": "SL profession",
+      "line": "Power Up (10 ranks, levels 10-205)",
+      "effect": "Ranged Energy weapon line (Soldier/Engineer/Fixer/Agent/Trader/Doctor). Grants the Energize / Power Volley / Power Shock / Power Blast / Power Combo chain.",
+      "recommendedAtLevel": "only on a ranged-energy build",
+      "priority": "low",
+      "maxRank": 10,
+      "levelRange": "10-205",
+      "professionLock": [
+        "Soldier",
+        "Engineer",
+        "Fixer",
+        "Agent",
+        "Trader",
+        "Doctor"
+      ],
+      "cumulativeBonusesAtMaxRank": "RangedEnergy +200; MeleeDamageModifier / PoisonDamageModifier / FireDamageModifier / ColdDamageModifier / ProjectileDamageModifier / EnergyDamageModifier / ChemicalDamageModifier / RadiationDamageModifier +50",
+      "specialActionsGranted": [
+        "Energize",
+        "Power Volley",
+        "Power Shock",
+        "Power Blast",
+        "Power Combo"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211987,
+          "bonuses": "RangedEnergy=10, MeleeDamageModifier=2, PoisonDamageModifier=2, FireDamageModifier=2, ColdDamageModifier=2, ProjectileDamageModifier=2, EnergyDamageModifier=2, ChemicalDamageModifier=2, RadiationDamageModifier=2",
+          "grantsSpecialAction": [
+            "Energize"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 40,
+          "perkItemId": 213398,
+          "bonuses": "RangedEnergy=10, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3"
+        },
+        {
+          "rank": 3,
+          "minLevel": 70,
+          "perkItemId": 213399,
+          "bonuses": "RangedEnergy=12, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3",
+          "grantsSpecialAction": [
+            "Power Volley"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 100,
+          "perkItemId": 213400,
+          "bonuses": "RangedEnergy=13, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3"
+        },
+        {
+          "rank": 5,
+          "minLevel": 130,
+          "perkItemId": 213401,
+          "bonuses": "RangedEnergy=14, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3",
+          "grantsSpecialAction": [
+            "Power Shock"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 150,
+          "perkItemId": 213402,
+          "bonuses": "RangedEnergy=16, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4"
+        },
+        {
+          "rank": 7,
+          "minLevel": 180,
+          "perkItemId": 213403,
+          "bonuses": "RangedEnergy=18, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4"
+        },
+        {
+          "rank": 8,
+          "minLevel": 201,
+          "perkItemId": 213404,
+          "bonuses": "RangedEnergy=22, MeleeDamageModifier=6, PoisonDamageModifier=6, FireDamageModifier=6, ColdDamageModifier=6, ProjectileDamageModifier=6, EnergyDamageModifier=6, ChemicalDamageModifier=6, RadiationDamageModifier=6",
+          "grantsSpecialAction": [
+            "Power Blast"
+          ]
+        },
+        {
+          "rank": 9,
+          "minLevel": 203,
+          "perkItemId": 213409,
+          "bonuses": "RangedEnergy=30, MeleeDamageModifier=8, PoisonDamageModifier=8, FireDamageModifier=8, ColdDamageModifier=8, ProjectileDamageModifier=8, EnergyDamageModifier=8, ChemicalDamageModifier=8, RadiationDamageModifier=8"
+        },
+        {
+          "rank": 10,
+          "minLevel": 205,
+          "perkItemId": 213410,
+          "bonuses": "RangedEnergy=55, MeleeDamageModifier=14, PoisonDamageModifier=14, FireDamageModifier=14, ColdDamageModifier=14, ProjectileDamageModifier=14, EnergyDamageModifier=14, ChemicalDamageModifier=14, RadiationDamageModifier=14",
+          "grantsSpecialAction": [
+            "Power Combo"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Shotgun Mastery",
+      "type": "SL profession",
+      "line": "Shotgun Mastery (10 ranks, levels 10-202)",
+      "effect": "Alternative weapon line (Soldier/Engineer/Trader). Shotgun costs 3.2 for an Engineer - expensive - but the line carries the largest damage-modifier block of the three weapon lines. Grants Leg Shot, Easy Shot and Point Blank.",
+      "recommendedAtLevel": "only on a shotgun build",
+      "priority": "low",
+      "maxRank": 10,
+      "levelRange": "10-202",
+      "professionLock": [
+        "Soldier",
+        "Engineer",
+        "Trader"
+      ],
+      "cumulativeBonusesAtMaxRank": "Shotgun +200; MeleeDamageModifier / PoisonDamageModifier / FireDamageModifier / NanoDamageModifier / ColdDamageModifier / ProjectileDamageModifier / EnergyDamageModifier / ChemicalDamageModifier / RadiationDamageModifier +80",
+      "specialActionsGranted": [
+        "Leg Shot",
+        "Easy Shot",
+        "Point Blank"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 216635,
+          "bonuses": "Shotgun=10, MeleeDamageModifier=2, PoisonDamageModifier=2, FireDamageModifier=2, NanoDamageModifier=2, ColdDamageModifier=2, ProjectileDamageModifier=2, EnergyDamageModifier=2, ChemicalDamageModifier=2, RadiationDamageModifier=2"
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 216636,
+          "bonuses": "Shotgun=10, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, NanoDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3"
+        },
+        {
+          "rank": 3,
+          "minLevel": 60,
+          "perkItemId": 216637,
+          "bonuses": "Shotgun=12, MeleeDamageModifier=3, PoisonDamageModifier=3, FireDamageModifier=3, NanoDamageModifier=3, ColdDamageModifier=3, ProjectileDamageModifier=3, EnergyDamageModifier=3, ChemicalDamageModifier=3, RadiationDamageModifier=3",
+          "grantsSpecialAction": [
+            "Leg Shot"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 90,
+          "perkItemId": 216638,
+          "bonuses": "Shotgun=13, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, NanoDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4"
+        },
+        {
+          "rank": 5,
+          "minLevel": 120,
+          "perkItemId": 216639,
+          "bonuses": "Shotgun=14, MeleeDamageModifier=4, PoisonDamageModifier=4, FireDamageModifier=4, NanoDamageModifier=4, ColdDamageModifier=4, ProjectileDamageModifier=4, EnergyDamageModifier=4, ChemicalDamageModifier=4, RadiationDamageModifier=4"
+        },
+        {
+          "rank": 6,
+          "minLevel": 140,
+          "perkItemId": 216640,
+          "bonuses": "Shotgun=16, MeleeDamageModifier=5, PoisonDamageModifier=5, FireDamageModifier=5, NanoDamageModifier=5, ColdDamageModifier=5, ProjectileDamageModifier=5, EnergyDamageModifier=5, ChemicalDamageModifier=5, RadiationDamageModifier=5"
+        },
+        {
+          "rank": 7,
+          "minLevel": 160,
+          "perkItemId": 216641,
+          "bonuses": "Shotgun=18, MeleeDamageModifier=6, PoisonDamageModifier=6, FireDamageModifier=6, NanoDamageModifier=6, ColdDamageModifier=6, ProjectileDamageModifier=6, EnergyDamageModifier=6, ChemicalDamageModifier=6, RadiationDamageModifier=6",
+          "grantsSpecialAction": [
+            "Easy Shot"
+          ]
+        },
+        {
+          "rank": 8,
+          "minLevel": 180,
+          "perkItemId": 216642,
+          "bonuses": "Shotgun=22, MeleeDamageModifier=9, PoisonDamageModifier=9, FireDamageModifier=9, NanoDamageModifier=9, ColdDamageModifier=9, ProjectileDamageModifier=9, EnergyDamageModifier=9, ChemicalDamageModifier=9, RadiationDamageModifier=9"
+        },
+        {
+          "rank": 9,
+          "minLevel": 200,
+          "perkItemId": 216643,
+          "bonuses": "Shotgun=30, MeleeDamageModifier=14, PoisonDamageModifier=14, FireDamageModifier=14, NanoDamageModifier=14, ColdDamageModifier=14, ProjectileDamageModifier=14, EnergyDamageModifier=14, ChemicalDamageModifier=14, RadiationDamageModifier=14"
+        },
+        {
+          "rank": 10,
+          "minLevel": 202,
+          "perkItemId": 216644,
+          "bonuses": "Shotgun=55, MeleeDamageModifier=30, PoisonDamageModifier=30, FireDamageModifier=30, NanoDamageModifier=30, ColdDamageModifier=30, ProjectileDamageModifier=30, EnergyDamageModifier=30, ChemicalDamageModifier=30, RadiationDamageModifier=30",
+          "grantsSpecialAction": [
+            "Point Blank"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Creative Mind",
+      "type": "AI profession",
+      "line": "Creative Mind (10 ranks, levels 15-210)",
+      "effect": "The Engineer AI profession line: Ranged Init and Nano C. Init plus Grenade and Duck-Exp, and it grants Freak Shield, Medallion and Optimize Bot Protocol - a pet buff, which makes this the Engineer's pet-facing AI line.",
+      "recommendedAtLevel": "15; one of the first AI lines to fill",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "15-210",
+      "professionLock": [
+        "Engineer"
+      ],
+      "cumulativeBonusesAtMaxRank": "RangedInit / NanoCInit +100; Grenade / DuckExp +51",
+      "specialActionsGranted": [
+        "Freak Shield",
+        "Medallion",
+        "Optimize Bot Protocol"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 15,
+          "perkItemId": 251906,
+          "bonuses": "RangedInit=5, NanoCInit=5, Grenade=2, DuckExp=2",
+          "grantsSpecialAction": [
+            "Freak Shield"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 251907,
+          "bonuses": "RangedInit=5, NanoCInit=5, Grenade=2, DuckExp=2"
+        },
+        {
+          "rank": 3,
+          "minLevel": 55,
+          "perkItemId": 251908,
+          "bonuses": "RangedInit=6, NanoCInit=6, Grenade=3, DuckExp=3"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 251909,
+          "bonuses": "RangedInit=6, NanoCInit=6, Grenade=3, DuckExp=3"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 251910,
+          "bonuses": "RangedInit=7, NanoCInit=7, Grenade=4, DuckExp=4"
+        },
+        {
+          "rank": 6,
+          "minLevel": 105,
+          "perkItemId": 251911,
+          "bonuses": "RangedInit=8, NanoCInit=8, Grenade=4, DuckExp=4",
+          "grantsSpecialAction": [
+            "Medallion"
+          ]
+        },
+        {
+          "rank": 7,
+          "minLevel": 105,
+          "perkItemId": 251912,
+          "bonuses": "RangedInit=9, NanoCInit=9, Grenade=5, DuckExp=5"
+        },
+        {
+          "rank": 8,
+          "minLevel": 145,
+          "perkItemId": 251913,
+          "bonuses": "RangedInit=11, NanoCInit=11, Grenade=6, DuckExp=6"
+        },
+        {
+          "rank": 9,
+          "minLevel": 205,
+          "perkItemId": 251914,
+          "bonuses": "RangedInit=15, NanoCInit=15, Grenade=8, DuckExp=8"
+        },
+        {
+          "rank": 10,
+          "minLevel": 210,
+          "perkItemId": 251915,
+          "bonuses": "RangedInit=28, NanoCInit=28, Grenade=14, DuckExp=14",
+          "grantsSpecialAction": [
+            "Optimize Bot Protocol"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Champion of Nano Combat",
+      "type": "AI",
+      "line": "Champion of Nano Combat (10 ranks, levels 25-207)",
+      "effect": "All six nano schools +100 cumulative - including Matter Creation and Time & Space, the two bot skills. For an Engineer this is the highest-value AI perk line in the game. Grants Nano Feast and Bot Confinement.",
+      "recommendedAtLevel": "25; max it",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "25-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MaterialMetamorphosis / SpaceTime / MaterialCreation / BiologicalMetamorphosis / SensoryImprovement / PsychologicalModification +100",
+      "specialActionsGranted": [
+        "Nano Feast",
+        "Bot Confinement"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253123,
+          "bonuses": "MaterialMetamorphosis=5, SpaceTime=5, MaterialCreation=5, BiologicalMetamorphosis=5, SensoryImprovement=5, PsychologicalModification=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253124,
+          "bonuses": "MaterialMetamorphosis=5, SpaceTime=5, MaterialCreation=5, BiologicalMetamorphosis=5, SensoryImprovement=5, PsychologicalModification=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253125,
+          "bonuses": "MaterialMetamorphosis=6, SpaceTime=6, MaterialCreation=6, BiologicalMetamorphosis=6, SensoryImprovement=6, PsychologicalModification=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253126,
+          "bonuses": "MaterialMetamorphosis=6, SpaceTime=6, MaterialCreation=6, BiologicalMetamorphosis=6, SensoryImprovement=6, PsychologicalModification=6"
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253127,
+          "bonuses": "MaterialMetamorphosis=7, SpaceTime=7, MaterialCreation=7, BiologicalMetamorphosis=7, SensoryImprovement=7, PsychologicalModification=7",
+          "grantsSpecialAction": [
+            "Nano Feast"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253128,
+          "bonuses": "MaterialMetamorphosis=8, SpaceTime=8, MaterialCreation=8, BiologicalMetamorphosis=8, SensoryImprovement=8, PsychologicalModification=8"
+        },
+        {
+          "rank": 7,
+          "minLevel": 95,
+          "perkItemId": 253129,
+          "bonuses": "MaterialMetamorphosis=9, SpaceTime=9, MaterialCreation=9, BiologicalMetamorphosis=9, SensoryImprovement=9, PsychologicalModification=9"
+        },
+        {
+          "rank": 8,
+          "minLevel": 95,
+          "perkItemId": 253130,
+          "bonuses": "MaterialMetamorphosis=11, SpaceTime=11, MaterialCreation=11, BiologicalMetamorphosis=11, SensoryImprovement=11, PsychologicalModification=11"
+        },
+        {
+          "rank": 9,
+          "minLevel": 165,
+          "perkItemId": 253131,
+          "bonuses": "MaterialMetamorphosis=15, SpaceTime=15, MaterialCreation=15, BiologicalMetamorphosis=15, SensoryImprovement=15, PsychologicalModification=15"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253132,
+          "bonuses": "MaterialMetamorphosis=28, SpaceTime=28, MaterialCreation=28, BiologicalMetamorphosis=28, SensoryImprovement=28, PsychologicalModification=28",
+          "grantsSpecialAction": [
+            "Bot Confinement"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Illogical Patterns",
+      "type": "AI",
+      "line": "Illogical Patterns (8 ranks, levels 25-25)",
+      "effect": "Mech E / Elec E / Quantum FT / Tutoring / Weapon Smithing +160 cumulative - the largest tradeskill block in the game, and Engineer/Fixer/Trader only. Grants Guesstimate and Memory Scrabble.",
+      "recommendedAtLevel": "25; the top tradeskill perk for an Engineer",
+      "priority": "high",
+      "maxRank": 8,
+      "levelRange": "25-25",
+      "professionLock": [
+        "Engineer",
+        "Fixer",
+        "Trader"
+      ],
+      "cumulativeBonusesAtMaxRank": "MechanicalEngineering / ElectricalEngineering / QuantumFT / Tutoring / WeaponSmithing +160",
+      "specialActionsGranted": [
+        "Guesstimate",
+        "Memory Scrabble"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 252448,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 252449,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 252450,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20",
+          "grantsSpecialAction": [
+            "Guesstimate"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 252451,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 5,
+          "minLevel": 25,
+          "perkItemId": 252452,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 6,
+          "minLevel": 25,
+          "perkItemId": 252453,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 7,
+          "minLevel": 25,
+          "perkItemId": 252454,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20"
+        },
+        {
+          "rank": 8,
+          "minLevel": 25,
+          "perkItemId": 252455,
+          "bonuses": "MechanicalEngineering=20, ElectricalEngineering=20, QuantumFT=20, Tutoring=20, WeaponSmithing=20",
+          "grantsSpecialAction": [
+            "Memory Scrabble"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "The Unknown Factor",
+      "type": "AI",
+      "line": "The Unknown Factor (8 ranks, levels 25-25)",
+      "effect": "Pharma Tech / Nano Programming / Psychology / Chemistry +160 cumulative. The other half of the tradeskill AI block. Grants Hostile Takeover and Chaotic Assumption.",
+      "recommendedAtLevel": "25; pairs with Illogical Patterns",
+      "priority": "high",
+      "maxRank": 8,
+      "levelRange": "25-25",
+      "professionLock": [
+        "Engineer",
+        "Fixer",
+        "Agent",
+        "Trader",
+        "Doctor",
+        "NanoTechnician",
+        "Metaphysicist"
+      ],
+      "cumulativeBonusesAtMaxRank": "Pharmaceuticals / NanoProgramming / Psychology / Chemistry +160",
+      "specialActionsGranted": [
+        "Hostile Takeover",
+        "Chaotic Assumption"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 252463,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 252464,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 252465,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 252466,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20",
+          "grantsSpecialAction": [
+            "Hostile Takeover"
+          ]
+        },
+        {
+          "rank": 5,
+          "minLevel": 25,
+          "perkItemId": 252467,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 6,
+          "minLevel": 25,
+          "perkItemId": 252468,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 7,
+          "minLevel": 25,
+          "perkItemId": 252469,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20"
+        },
+        {
+          "rank": 8,
+          "minLevel": 25,
+          "perkItemId": 252470,
+          "bonuses": "Pharmaceuticals=20, NanoProgramming=20, Psychology=20, Chemistry=20",
+          "grantsSpecialAction": [
+            "Chaotic Assumption"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Alien Technology Expertise",
+      "type": "AI",
+      "line": "Alien Technology Expertise (2 ranks, levels 15-75)",
+      "effect": "Unlocks the use of higher-grade alien (Kyr'Ozch) equipment. No stat bonus of its own - it is an access gate.",
+      "recommendedAtLevel": "15, then 75",
+      "priority": "med",
+      "maxRank": 2,
+      "levelRange": "15-75",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": null,
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 15,
+          "perkItemId": 247748,
+          "bonuses": null
+        },
+        {
+          "rank": 1,
+          "minLevel": 75,
+          "perkItemId": 247749,
+          "bonuses": null
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Champion of Heavy Artillery",
+      "type": "AI",
+      "line": "Champion of Heavy Artillery (10 ranks, levels 25-207)",
+      "effect": "Assault Rifle / Rifle / Ranged Energy / Heavy Weapons / Grenade +100 cumulative. Grants Fuzz and Fire Frenzy.",
+      "recommendedAtLevel": "25 on a grenade / AR / ranged-energy Engineer",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "25-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "AssaultRifle / Rifle / RangedEnergy / HeavyWeapons / Grenade +100",
+      "specialActionsGranted": [
+        "Fuzz",
+        "Fire Frenzy"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253108,
+          "bonuses": "AssaultRifle=5, Rifle=5, RangedEnergy=5, HeavyWeapons=5, Grenade=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253109,
+          "bonuses": "AssaultRifle=5, Rifle=5, RangedEnergy=5, HeavyWeapons=5, Grenade=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253110,
+          "bonuses": "AssaultRifle=6, Rifle=6, RangedEnergy=6, HeavyWeapons=6, Grenade=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253111,
+          "bonuses": "AssaultRifle=6, Rifle=6, RangedEnergy=6, HeavyWeapons=6, Grenade=6"
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253112,
+          "bonuses": "AssaultRifle=7, Rifle=7, RangedEnergy=7, HeavyWeapons=7, Grenade=7",
+          "grantsSpecialAction": [
+            "Fuzz"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253113,
+          "bonuses": "AssaultRifle=8, Rifle=8, RangedEnergy=8, HeavyWeapons=8, Grenade=8"
+        },
+        {
+          "rank": 7,
+          "minLevel": 95,
+          "perkItemId": 253114,
+          "bonuses": "AssaultRifle=9, Rifle=9, RangedEnergy=9, HeavyWeapons=9, Grenade=9"
+        },
+        {
+          "rank": 8,
+          "minLevel": 95,
+          "perkItemId": 253115,
+          "bonuses": "AssaultRifle=11, Rifle=11, RangedEnergy=11, HeavyWeapons=11, Grenade=11"
+        },
+        {
+          "rank": 9,
+          "minLevel": 165,
+          "perkItemId": 253116,
+          "bonuses": "AssaultRifle=15, Rifle=15, RangedEnergy=15, HeavyWeapons=15, Grenade=15"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253117,
+          "bonuses": "AssaultRifle=28, Rifle=28, RangedEnergy=28, HeavyWeapons=28, Grenade=28",
+          "grantsSpecialAction": [
+            "Fire Frenzy"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Champion of Light Artillery",
+      "type": "AI",
+      "line": "Champion of Light Artillery (10 ranks, levels 25-207)",
+      "effect": "Pistol / MG-SMG / Shotgun / Bow +100 cumulative. Grants Collapser and Implode.",
+      "recommendedAtLevel": "25 on a pistol Engineer",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "25-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Pistol / MGSMG / Shotgun / Bow +100",
+      "specialActionsGranted": [
+        "Collapser",
+        "Implode"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253093,
+          "bonuses": "Pistol=5, MGSMG=5, Shotgun=5, Bow=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253094,
+          "bonuses": "Pistol=5, MGSMG=5, Shotgun=5, Bow=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253095,
+          "bonuses": "Pistol=6, MGSMG=6, Shotgun=6, Bow=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253096,
+          "bonuses": "Pistol=6, MGSMG=6, Shotgun=6, Bow=6"
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253097,
+          "bonuses": "Pistol=7, MGSMG=7, Shotgun=7, Bow=7",
+          "grantsSpecialAction": [
+            "Collapser"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253098,
+          "bonuses": "Pistol=8, MGSMG=8, Shotgun=8, Bow=8"
+        },
+        {
+          "rank": 7,
+          "minLevel": 95,
+          "perkItemId": 253099,
+          "bonuses": "Pistol=9, MGSMG=9, Shotgun=9, Bow=9"
+        },
+        {
+          "rank": 8,
+          "minLevel": 95,
+          "perkItemId": 253100,
+          "bonuses": "Pistol=11, MGSMG=11, Shotgun=11, Bow=11"
+        },
+        {
+          "rank": 9,
+          "minLevel": 165,
+          "perkItemId": 253101,
+          "bonuses": "Pistol=15, MGSMG=15, Shotgun=15, Bow=15"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253102,
+          "bonuses": "Pistol=28, MGSMG=28, Shotgun=28, Bow=28",
+          "grantsSpecialAction": [
+            "Implode"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Combat Knowledge",
+      "type": "AI",
+      "line": "Combat Knowledge (8 ranks, levels 25-165)",
+      "effect": "Treatment and First Aid +64 cumulative plus -8 skill lock. Cheap quality-of-life for implant installs and stim use. Grants Initial Strike and Redeem Last Wish.",
+      "recommendedAtLevel": "25; a few ranks early",
+      "priority": "med",
+      "maxRank": 8,
+      "levelRange": "25-165",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Treatment / FirstAid +64; SkillLockModifier -8",
+      "specialActionsGranted": [
+        "Initial Strike",
+        "Redeem Last Wish"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253140,
+          "bonuses": "Treatment=3, FirstAid=3"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253141,
+          "bonuses": "Treatment=3, FirstAid=3"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253142,
+          "bonuses": "Treatment=3, FirstAid=3"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253143,
+          "bonuses": "Treatment=4, FirstAid=4",
+          "grantsSpecialAction": [
+            "Initial Strike"
+          ]
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253144,
+          "bonuses": "Treatment=5, FirstAid=5"
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253145,
+          "bonuses": "Treatment=9, FirstAid=9"
+        },
+        {
+          "rank": 7,
+          "minLevel": 125,
+          "perkItemId": 253146,
+          "bonuses": "Treatment=13, FirstAid=13, SkillLockModifier=-3"
+        },
+        {
+          "rank": 8,
+          "minLevel": 165,
+          "perkItemId": 253147,
+          "bonuses": "Treatment=24, FirstAid=24, SkillLockModifier=-5",
+          "grantsSpecialAction": [
+            "Redeem Last Wish"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Nanomorph",
+      "type": "AI",
+      "line": "Nanomorph (10 ranks, levels 25-195)",
+      "effect": "Max Nano +1000 and all six nano schools +19 across 10 ranks. Grants Tick, Assume Target and Peel Layers.",
+      "recommendedAtLevel": "25",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "25-195",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MaxNanoEnergy +1000; MaterialMetamorphosis / BiologicalMetamorphosis / PsychologicalModification / MaterialCreation / SpaceTime / SensoryImprovement +19",
+      "specialActionsGranted": [
+        "Tick",
+        "Assume Target",
+        "Peel Layers"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 252387,
+          "bonuses": "MaxNanoEnergy=50, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1",
+          "grantsSpecialAction": [
+            "Tick"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 252388,
+          "bonuses": "MaxNanoEnergy=50, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 252389,
+          "bonuses": "MaxNanoEnergy=60, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 252390,
+          "bonuses": "MaxNanoEnergy=65, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1"
+        },
+        {
+          "rank": 5,
+          "minLevel": 25,
+          "perkItemId": 252391,
+          "bonuses": "MaxNanoEnergy=70, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1"
+        },
+        {
+          "rank": 6,
+          "minLevel": 85,
+          "perkItemId": 252392,
+          "bonuses": "MaxNanoEnergy=80, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1",
+          "grantsSpecialAction": [
+            "Assume Target"
+          ]
+        },
+        {
+          "rank": 7,
+          "minLevel": 85,
+          "perkItemId": 252393,
+          "bonuses": "MaxNanoEnergy=90, MaterialMetamorphosis=1, BiologicalMetamorphosis=1, PsychologicalModification=1, MaterialCreation=1, SpaceTime=1, SensoryImprovement=1"
+        },
+        {
+          "rank": 8,
+          "minLevel": 85,
+          "perkItemId": 252394,
+          "bonuses": "MaxNanoEnergy=110, MaterialMetamorphosis=2, BiologicalMetamorphosis=2, PsychologicalModification=2, MaterialCreation=2, SpaceTime=2, SensoryImprovement=2"
+        },
+        {
+          "rank": 9,
+          "minLevel": 85,
+          "perkItemId": 252395,
+          "bonuses": "MaxNanoEnergy=150, MaterialMetamorphosis=4, BiologicalMetamorphosis=4, PsychologicalModification=4, MaterialCreation=4, SpaceTime=4, SensoryImprovement=4"
+        },
+        {
+          "rank": 10,
+          "minLevel": 195,
+          "perkItemId": 252396,
+          "bonuses": "MaxNanoEnergy=275, MaterialMetamorphosis=6, BiologicalMetamorphosis=6, PsychologicalModification=6, MaterialCreation=6, SpaceTime=6, SensoryImprovement=6",
+          "grantsSpecialAction": [
+            "Peel Layers"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Champion of Heavy Infantry",
+      "type": "AI",
+      "line": "Champion of Heavy Infantry (10 ranks, levels 25-207)",
+      "effect": "2hB / 2hE / Melee Energy +100 cumulative. Off-profile for an Engineer. Grants Bluntness and Break.",
+      "recommendedAtLevel": "skip",
+      "priority": "low",
+      "maxRank": 10,
+      "levelRange": "25-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "_2hBlunt / Skill2hEdged / MeleeEnergy +100",
+      "specialActionsGranted": [
+        "Bluntness",
+        "Break"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253064,
+          "bonuses": "_2hBlunt=5, Skill2hEdged=5, MeleeEnergy=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253065,
+          "bonuses": "_2hBlunt=5, Skill2hEdged=5, MeleeEnergy=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253066,
+          "bonuses": "_2hBlunt=6, Skill2hEdged=6, MeleeEnergy=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253067,
+          "bonuses": "_2hBlunt=6, Skill2hEdged=6, MeleeEnergy=6"
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253068,
+          "bonuses": "_2hBlunt=7, Skill2hEdged=7, MeleeEnergy=7",
+          "grantsSpecialAction": [
+            "Bluntness"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253069,
+          "bonuses": "_2hBlunt=8, Skill2hEdged=8, MeleeEnergy=8"
+        },
+        {
+          "rank": 7,
+          "minLevel": 95,
+          "perkItemId": 253070,
+          "bonuses": "_2hBlunt=9, Skill2hEdged=9, MeleeEnergy=9"
+        },
+        {
+          "rank": 8,
+          "minLevel": 95,
+          "perkItemId": 253071,
+          "bonuses": "_2hBlunt=11, Skill2hEdged=11, MeleeEnergy=11"
+        },
+        {
+          "rank": 9,
+          "minLevel": 165,
+          "perkItemId": 253072,
+          "bonuses": "_2hBlunt=15, Skill2hEdged=15, MeleeEnergy=15"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253073,
+          "bonuses": "_2hBlunt=28, Skill2hEdged=28, MeleeEnergy=28",
+          "grantsSpecialAction": [
+            "Break"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Champion of Light Infantry",
+      "type": "AI",
+      "line": "Champion of Light Infantry (10 ranks, levels 25-207)",
+      "effect": "Piercing / 1hB / 1hE / Martial Arts +100 cumulative. Off-profile for an Engineer (all melee is cost 2.4+). Grants Crave and Bore.",
+      "recommendedAtLevel": "skip",
+      "priority": "low",
+      "maxRank": 10,
+      "levelRange": "25-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Piercing / _1hBlunt / _1hEdged / MartialArts +100",
+      "specialActionsGranted": [
+        "Crave",
+        "Bore"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 25,
+          "perkItemId": 253079,
+          "bonuses": "Piercing=5, _1hBlunt=5, _1hEdged=5, MartialArts=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 253080,
+          "bonuses": "Piercing=5, _1hBlunt=5, _1hEdged=5, MartialArts=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 25,
+          "perkItemId": 253081,
+          "bonuses": "Piercing=6, _1hBlunt=6, _1hEdged=6, MartialArts=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 25,
+          "perkItemId": 253082,
+          "bonuses": "Piercing=6, _1hBlunt=6, _1hEdged=6, MartialArts=6"
+        },
+        {
+          "rank": 5,
+          "minLevel": 70,
+          "perkItemId": 253083,
+          "bonuses": "Piercing=7, _1hBlunt=7, _1hEdged=7, MartialArts=7",
+          "grantsSpecialAction": [
+            "Crave"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 70,
+          "perkItemId": 253084,
+          "bonuses": "Piercing=8, _1hBlunt=8, _1hEdged=8, MartialArts=8"
+        },
+        {
+          "rank": 7,
+          "minLevel": 95,
+          "perkItemId": 253085,
+          "bonuses": "Piercing=9, _1hBlunt=9, _1hEdged=9, MartialArts=9"
+        },
+        {
+          "rank": 8,
+          "minLevel": 95,
+          "perkItemId": 253086,
+          "bonuses": "Piercing=11, _1hBlunt=11, _1hEdged=11, MartialArts=11"
+        },
+        {
+          "rank": 9,
+          "minLevel": 165,
+          "perkItemId": 253087,
+          "bonuses": "Piercing=15, _1hBlunt=15, _1hEdged=15, MartialArts=15"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253088,
+          "bonuses": "Piercing=28, _1hBlunt=28, _1hEdged=28, MartialArts=28",
+          "grantsSpecialAction": [
+            "Bore"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Counterweight",
+      "type": "AI",
+      "line": "Counterweight (6 ranks, levels 15-125)",
+      "effect": "Multi Melee / Multi Ranged +100. Only useful if you dual-wield pistols; Engineer Multi Ranged costs 4.0, so this is the cheap way to reach it. Grants Full Frontal and Confinement.",
+      "recommendedAtLevel": "15 only for a dual-pistol build",
+      "priority": "low",
+      "maxRank": 6,
+      "levelRange": "15-125",
+      "professionLock": [
+        "(client-data 0 anomaly)",
+        "Engineer",
+        "Adventurer",
+        "Enforcer",
+        "Shade"
+      ],
+      "cumulativeBonusesAtMaxRank": "MultiRanged / MultiMelee +100",
+      "specialActionsGranted": [
+        "Full Frontal",
+        "Confinement"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 15,
+          "perkItemId": 252403,
+          "bonuses": "MultiRanged=10, MultiMelee=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 252404,
+          "bonuses": "MultiRanged=10, MultiMelee=10"
+        },
+        {
+          "rank": 3,
+          "minLevel": 55,
+          "perkItemId": 252405,
+          "bonuses": "MultiRanged=20, MultiMelee=20",
+          "grantsSpecialAction": [
+            "Full Frontal"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 85,
+          "perkItemId": 252406,
+          "bonuses": "MultiRanged=20, MultiMelee=20"
+        },
+        {
+          "rank": 5,
+          "minLevel": 105,
+          "perkItemId": 252407,
+          "bonuses": "MultiRanged=20, MultiMelee=20"
+        },
+        {
+          "rank": 6,
+          "minLevel": 125,
+          "perkItemId": 252408,
+          "bonuses": "MultiRanged=20, MultiMelee=20",
+          "grantsSpecialAction": [
+            "Confinement"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Opportunist",
+      "type": "AI",
+      "line": "Opportunist (6 ranks, levels 15-125)",
+      "effect": "Parry / Riposte / Dimach +110 cumulative (top rank +30 each). Melee-defence flavoured; low value on a ranged pet class. Grants Opportunity Knocks and Controlled Chance.",
+      "recommendedAtLevel": "skip unless melee",
+      "priority": "low",
+      "maxRank": 6,
+      "levelRange": "15-125",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Parry / Riposte / Dimach +110",
+      "specialActionsGranted": [
+        "Opportunity Knocks",
+        "Controlled Chance"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 15,
+          "perkItemId": 252479,
+          "bonuses": "Parry=10, Riposte=10, Dimach=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 25,
+          "perkItemId": 252480,
+          "bonuses": "Parry=10, Riposte=10, Dimach=10"
+        },
+        {
+          "rank": 3,
+          "minLevel": 55,
+          "perkItemId": 252481,
+          "bonuses": "Parry=15, Riposte=15, Dimach=15"
+        },
+        {
+          "rank": 4,
+          "minLevel": 85,
+          "perkItemId": 252482,
+          "bonuses": "Parry=20, Riposte=20, Dimach=20",
+          "grantsSpecialAction": [
+            "Opportunity Knocks"
+          ]
+        },
+        {
+          "rank": 5,
+          "minLevel": 105,
+          "perkItemId": 252483,
+          "bonuses": "Parry=25, Riposte=25, Dimach=25"
+        },
+        {
+          "rank": 6,
+          "minLevel": 125,
+          "perkItemId": 252484,
+          "bonuses": "Parry=30, Riposte=30, Dimach=30",
+          "grantsSpecialAction": [
+            "Controlled Chance"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Atrox Secondary Genome",
+      "type": "AI breed",
+      "line": "Atrox Secondary Genome (10 ranks, levels 5-207)",
+      "effect": "Atrox-only: Agility / Sense / Intelligence / Psychic, top rank +6 each, +27 each cumulative - the Atrox Engineer's way to claw back nano skill. Grants My Own Fortress and Wit of the Atrox.",
+      "recommendedAtLevel": "Atrox characters, from level 5",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Agility / Sense / Intelligence / Psychic +27",
+      "specialActionsGranted": [
+        "My Own Fortress",
+        "Wit of the Atrox"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 252512,
+          "bonuses": "Agility=1, Sense=1, Intelligence=1, Psychic=1",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 252513,
+          "bonuses": "Agility=1, Sense=1, Intelligence=1, Psychic=1",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 252514,
+          "bonuses": "Agility=1, Sense=1, Intelligence=1, Psychic=1",
+          "grantsSpecialAction": [
+            "My Own Fortress"
+          ],
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 252515,
+          "bonuses": "Agility=2, Sense=2, Intelligence=2, Psychic=2",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 252516,
+          "bonuses": "Agility=2, Sense=2, Intelligence=2, Psychic=2",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 252517,
+          "bonuses": "Agility=2, Sense=2, Intelligence=2, Psychic=2",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 252518,
+          "bonuses": "Agility=3, Sense=3, Intelligence=3, Psychic=3",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 252519,
+          "bonuses": "Agility=4, Sense=4, Intelligence=4, Psychic=4",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 252520,
+          "bonuses": "Agility=5, Sense=5, Intelligence=5, Psychic=5",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 252521,
+          "bonuses": "Agility=6, Sense=6, Intelligence=6, Psychic=6",
+          "grantsSpecialAction": [
+            "Wit of the Atrox"
+          ],
+          "breedRequired": "Atrox"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Atrox"
+    },
+    {
+      "name": "Nanobreed Primary Genome",
+      "type": "AI breed",
+      "line": "Nanobreed Primary Genome (10 ranks, levels 5-207)",
+      "effect": "Nanomage-only: Intelligence / Psychic, top rank +13 each, +54 each cumulative - the biggest ability gain for a caster. Grants Reject and Sword.",
+      "recommendedAtLevel": "Nanomage characters, from level 5",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Intelligence / Psychic +54",
+      "specialActionsGranted": [
+        "Reject",
+        "Sword"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 252560,
+          "bonuses": "Intelligence=2, Psychic=2",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 252561,
+          "bonuses": "Intelligence=2, Psychic=2",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 252562,
+          "bonuses": "Intelligence=3, Psychic=3",
+          "grantsSpecialAction": [
+            "Reject"
+          ],
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 252563,
+          "bonuses": "Intelligence=3, Psychic=3",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 252564,
+          "bonuses": "Intelligence=4, Psychic=4",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 252565,
+          "bonuses": "Intelligence=5, Psychic=5",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 252566,
+          "bonuses": "Intelligence=6, Psychic=6",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 252567,
+          "bonuses": "Intelligence=7, Psychic=7",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 252568,
+          "bonuses": "Intelligence=9, Psychic=9",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 252569,
+          "bonuses": "Intelligence=13, Psychic=13",
+          "grantsSpecialAction": [
+            "Sword"
+          ],
+          "breedRequired": "Nanomage"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Nanomage"
+    },
+    {
+      "name": "Opifex Secondary Genome",
+      "type": "AI breed",
+      "line": "Opifex Secondary Genome (10 ranks, levels 5-207)",
+      "effect": "Opifex-only: Strength / Stamina / Psychic / Intelligence, top rank +6 each, +27 each cumulative. Grants Blinded by Delights and Dizzying Heights.",
+      "recommendedAtLevel": "Opifex characters, from level 5",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Strength / Stamina / Psychic / Intelligence +27",
+      "specialActionsGranted": [
+        "Blinded by Delights",
+        "Dizzying Heights"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 252542,
+          "bonuses": "Strength=1, Stamina=1, Psychic=1, Intelligence=1",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 252543,
+          "bonuses": "Strength=1, Stamina=1, Psychic=1, Intelligence=1",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 252544,
+          "bonuses": "Strength=1, Stamina=1, Psychic=1, Intelligence=1",
+          "grantsSpecialAction": [
+            "Blinded by Delights"
+          ],
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 252545,
+          "bonuses": "Strength=2, Stamina=2, Psychic=2, Intelligence=2",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 252546,
+          "bonuses": "Strength=2, Stamina=2, Psychic=2, Intelligence=2",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 252547,
+          "bonuses": "Strength=2, Stamina=2, Psychic=2, Intelligence=2",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 252548,
+          "bonuses": "Strength=3, Stamina=3, Psychic=3, Intelligence=3",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 252549,
+          "bonuses": "Strength=4, Stamina=4, Psychic=4, Intelligence=4",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 252550,
+          "bonuses": "Strength=5, Stamina=5, Psychic=5, Intelligence=5",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 252551,
+          "bonuses": "Strength=6, Stamina=6, Psychic=6, Intelligence=6",
+          "grantsSpecialAction": [
+            "Dizzying Heights"
+          ],
+          "breedRequired": "Opifex"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Opifex"
+    },
+    {
+      "name": "Solitus Beta Genome",
+      "type": "AI breed",
+      "line": "Solitus Beta Genome (10 ranks, levels 5-207)",
+      "effect": "Solitus-only: Intelligence / Sense / Psychic, top rank +7 each, +36 each cumulative - Int/Psy feed every nano school. Grants Feel and Survival.",
+      "recommendedAtLevel": "Solitus characters, from level 5",
+      "priority": "high",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Intelligence / Sense / Psychic +36",
+      "specialActionsGranted": [
+        "Feel",
+        "Survival"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 253049,
+          "bonuses": "Intelligence=1, Sense=1, Psychic=1",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 253050,
+          "bonuses": "Intelligence=2, Sense=2, Psychic=2",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 253051,
+          "bonuses": "Intelligence=2, Sense=2, Psychic=2",
+          "grantsSpecialAction": [
+            "Feel"
+          ],
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 253052,
+          "bonuses": "Intelligence=3, Sense=3, Psychic=3",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 253053,
+          "bonuses": "Intelligence=3, Sense=3, Psychic=3",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 253054,
+          "bonuses": "Intelligence=4, Sense=4, Psychic=4",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 253055,
+          "bonuses": "Intelligence=4, Sense=4, Psychic=4",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 253056,
+          "bonuses": "Intelligence=5, Sense=5, Psychic=5",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 253057,
+          "bonuses": "Intelligence=5, Sense=5, Psychic=5",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253058,
+          "bonuses": "Intelligence=7, Sense=7, Psychic=7",
+          "grantsSpecialAction": [
+            "Survival"
+          ],
+          "breedRequired": "Solitus"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Solitus"
+    },
+    {
+      "name": "Atrox Primary Genome",
+      "type": "AI breed",
+      "line": "Atrox Primary Genome (10 ranks, levels 5-207)",
+      "effect": "Atrox-only: Strength / Stamina, top rank +13 each, +54 each cumulative. Grants Body Tackle and Mongo Rage.",
+      "recommendedAtLevel": "Atrox characters, from level 5",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Strength / Stamina +54",
+      "specialActionsGranted": [
+        "Body Tackle",
+        "Mongo Rage"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 252492,
+          "bonuses": "Strength=2, Stamina=2",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 252493,
+          "bonuses": "Strength=2, Stamina=2",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 252494,
+          "bonuses": "Strength=3, Stamina=3",
+          "grantsSpecialAction": [
+            "Body Tackle"
+          ],
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 252495,
+          "bonuses": "Strength=3, Stamina=3",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 252496,
+          "bonuses": "Strength=4, Stamina=4",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 252497,
+          "bonuses": "Strength=5, Stamina=5",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 252498,
+          "bonuses": "Strength=6, Stamina=6",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 252499,
+          "bonuses": "Strength=7, Stamina=7",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 252500,
+          "bonuses": "Strength=9, Stamina=9",
+          "breedRequired": "Atrox"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 252501,
+          "bonuses": "Strength=13, Stamina=13",
+          "grantsSpecialAction": [
+            "Mongo Rage"
+          ],
+          "breedRequired": "Atrox"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Atrox"
+    },
+    {
+      "name": "Nanobreed Secondary Genome",
+      "type": "AI breed",
+      "line": "Nanobreed Secondary Genome (10 ranks, levels 5-207)",
+      "effect": "Nanomage-only: Strength / Stamina / Sense / Agility, top rank +6 each, +27 each cumulative. Grants Pen and Notum Shield.",
+      "recommendedAtLevel": "Nanomage characters, from level 5",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Strength / Stamina / Sense / Agility +27",
+      "specialActionsGranted": [
+        "Pen",
+        "Notum Shield"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 253018,
+          "bonuses": "Strength=1, Stamina=1, Sense=1, Agility=1",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 253019,
+          "bonuses": "Strength=1, Stamina=1, Sense=1, Agility=1",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 253020,
+          "bonuses": "Strength=1, Stamina=1, Sense=1, Agility=1",
+          "grantsSpecialAction": [
+            "Pen"
+          ],
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 253021,
+          "bonuses": "Strength=2, Stamina=2, Sense=2, Agility=2",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 253022,
+          "bonuses": "Strength=2, Stamina=2, Sense=2, Agility=2",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 253023,
+          "bonuses": "Strength=2, Stamina=2, Sense=2, Agility=2",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 253024,
+          "bonuses": "Strength=3, Stamina=3, Sense=3, Agility=3",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 253025,
+          "bonuses": "Strength=4, Stamina=4, Sense=4, Agility=4",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 253026,
+          "bonuses": "Strength=5, Stamina=5, Sense=5, Agility=5",
+          "breedRequired": "Nanomage"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253027,
+          "bonuses": "Strength=6, Stamina=6, Sense=6, Agility=6",
+          "grantsSpecialAction": [
+            "Notum Shield"
+          ],
+          "breedRequired": "Nanomage"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Nanomage"
+    },
+    {
+      "name": "Opifex Primary Genome",
+      "type": "AI breed",
+      "line": "Opifex Primary Genome (10 ranks, levels 5-207)",
+      "effect": "Opifex-only: Sense / Agility, top rank +13 each, +54 each cumulative. Grants Opening and Derivate.",
+      "recommendedAtLevel": "Opifex characters, from level 5",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Sense / Agility +54",
+      "specialActionsGranted": [
+        "Opening",
+        "Derivate"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 252527,
+          "bonuses": "Sense=2, Agility=2",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 252528,
+          "bonuses": "Sense=2, Agility=2",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 252529,
+          "bonuses": "Sense=3, Agility=3",
+          "grantsSpecialAction": [
+            "Opening"
+          ],
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 252530,
+          "bonuses": "Sense=3, Agility=3",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 252531,
+          "bonuses": "Sense=4, Agility=4",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 252532,
+          "bonuses": "Sense=5, Agility=5",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 252533,
+          "bonuses": "Sense=6, Agility=6",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 252534,
+          "bonuses": "Sense=7, Agility=7",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 252535,
+          "bonuses": "Sense=9, Agility=9",
+          "breedRequired": "Opifex"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 252536,
+          "bonuses": "Sense=13, Agility=13",
+          "grantsSpecialAction": [
+            "Derivate"
+          ],
+          "breedRequired": "Opifex"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Opifex"
+    },
+    {
+      "name": "Solitus Alpha Genome",
+      "type": "AI breed",
+      "line": "Solitus Alpha Genome (10 ranks, levels 5-207)",
+      "effect": "Solitus-only: Strength / Stamina / Agility, top rank +7 each, +36 each cumulative. Grants Tacky Hack and Sphere.",
+      "recommendedAtLevel": "Solitus characters, from level 5",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "5-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Strength / Stamina / Agility +36",
+      "specialActionsGranted": [
+        "Tacky Hack",
+        "Sphere"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 5,
+          "perkItemId": 253034,
+          "bonuses": "Strength=1, Stamina=1, Agility=1",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 2,
+          "minLevel": 15,
+          "perkItemId": 253035,
+          "bonuses": "Strength=2, Stamina=2, Agility=2",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 3,
+          "minLevel": 35,
+          "perkItemId": 253036,
+          "bonuses": "Strength=2, Stamina=2, Agility=2",
+          "grantsSpecialAction": [
+            "Tacky Hack"
+          ],
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 4,
+          "minLevel": 55,
+          "perkItemId": 253037,
+          "bonuses": "Strength=3, Stamina=3, Agility=3",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 5,
+          "minLevel": 55,
+          "perkItemId": 253038,
+          "bonuses": "Strength=3, Stamina=3, Agility=3",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 6,
+          "minLevel": 55,
+          "perkItemId": 253039,
+          "bonuses": "Strength=4, Stamina=4, Agility=4",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 7,
+          "minLevel": 115,
+          "perkItemId": 253040,
+          "bonuses": "Strength=4, Stamina=4, Agility=4",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 8,
+          "minLevel": 115,
+          "perkItemId": 253041,
+          "bonuses": "Strength=5, Stamina=5, Agility=5",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 9,
+          "minLevel": 202,
+          "perkItemId": 253042,
+          "bonuses": "Strength=5, Stamina=5, Agility=5",
+          "breedRequired": "Solitus"
+        },
+        {
+          "rank": 10,
+          "minLevel": 207,
+          "perkItemId": 253043,
+          "bonuses": "Strength=7, Stamina=7, Agility=7",
+          "grantsSpecialAction": [
+            "Sphere"
+          ],
+          "breedRequired": "Solitus"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql",
+      "breedLock": "Solitus"
+    },
+    {
+      "name": "Genius",
+      "type": "general",
+      "line": "Genius (3 ranks, levels 60-190)",
+      "effect": "Intelligence / Psychic +40 and Nano Pool +120 over 3 ranks. Int is the dominant ability behind Matter Creation and Time & Space. Grants Regain Nano.",
+      "recommendedAtLevel": "60 - high value for every Engineer",
+      "priority": "high",
+      "maxRank": 3,
+      "levelRange": "60-190",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "NanoPool +120; Intelligence / Psychic +40",
+      "specialActionsGranted": [
+        "Regain Nano"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 60,
+          "perkItemId": 211866,
+          "bonuses": "Intelligence=8, Psychic=8, NanoPool=25"
+        },
+        {
+          "rank": 2,
+          "minLevel": 110,
+          "perkItemId": 211867,
+          "bonuses": "Intelligence=12, Psychic=12, NanoPool=35",
+          "grantsSpecialAction": [
+            "Regain Nano"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 190,
+          "perkItemId": 211868,
+          "bonuses": "Intelligence=20, Psychic=20, NanoPool=60"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "NCU Extensions",
+      "type": "general",
+      "line": "NCU Extensions (8 ranks, levels 40-210)",
+      "effect": "Max NCU +130 and Computer Literacy +100 cumulative. NCU is what lets you hold the Engineer's own buff stack plus the auras.",
+      "recommendedAtLevel": "40",
+      "priority": "high",
+      "maxRank": 8,
+      "levelRange": "40-210",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MaxNCU +130; ComputerLiteracy +100",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 40,
+          "perkItemId": 211116,
+          "bonuses": "MaxNCU=10, ComputerLiteracy=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 70,
+          "perkItemId": 211117,
+          "bonuses": "MaxNCU=11, ComputerLiteracy=10"
+        },
+        {
+          "rank": 3,
+          "minLevel": 110,
+          "perkItemId": 211118,
+          "bonuses": "MaxNCU=12, ComputerLiteracy=10"
+        },
+        {
+          "rank": 4,
+          "minLevel": 150,
+          "perkItemId": 211119,
+          "bonuses": "MaxNCU=12, ComputerLiteracy=10"
+        },
+        {
+          "rank": 5,
+          "minLevel": 190,
+          "perkItemId": 211120,
+          "bonuses": "MaxNCU=15, ComputerLiteracy=10"
+        },
+        {
+          "rank": 6,
+          "minLevel": 201,
+          "perkItemId": 211121,
+          "bonuses": "MaxNCU=17, ComputerLiteracy=14"
+        },
+        {
+          "rank": 7,
+          "minLevel": 204,
+          "perkItemId": 211122,
+          "bonuses": "MaxNCU=18, ComputerLiteracy=16"
+        },
+        {
+          "rank": 8,
+          "minLevel": 210,
+          "perkItemId": 212187,
+          "bonuses": "MaxNCU=35, ComputerLiteracy=20"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Cartographer",
+      "type": "general",
+      "line": "Cartographer (5 ranks, levels 20-100)",
+      "effect": "Unlocks the Shadowlands map layers rank by rank and grants Elementary Teleportation.",
+      "recommendedAtLevel": "20 once you enter Shadowlands",
+      "priority": "med",
+      "maxRank": 5,
+      "levelRange": "20-100",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": null,
+      "specialActionsGranted": [
+        "Elementary Teleportation"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 20,
+          "perkItemId": 211748,
+          "bonuses": null,
+          "grantsSpecialAction": [
+            "Elementary Teleportation"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 211749,
+          "bonuses": null
+        },
+        {
+          "rank": 3,
+          "minLevel": 50,
+          "perkItemId": 211750,
+          "bonuses": null
+        },
+        {
+          "rank": 4,
+          "minLevel": 80,
+          "perkItemId": 211751,
+          "bonuses": null
+        },
+        {
+          "rank": 5,
+          "minLevel": 100,
+          "perkItemId": 211752,
+          "bonuses": null
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Enhance DNA",
+      "type": "general",
+      "line": "Enhance DNA (10 ranks, levels 10-190)",
+      "effect": "All six abilities +45 and Body Dev +40 cumulative (top rank +6 / +7); abilities drip down into every skill. Grants Reconstruct DNA and Viral Wipe.",
+      "recommendedAtLevel": "10",
+      "priority": "med",
+      "maxRank": 10,
+      "levelRange": "10-190",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Strength / Stamina / Intelligence / Psychic / Sense / Agility +45; BodyDevelopment +40",
+      "specialActionsGranted": [
+        "Reconstruct DNA",
+        "Viral Wipe"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211793,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=3"
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 211794,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=3"
+        },
+        {
+          "rank": 3,
+          "minLevel": 50,
+          "perkItemId": 211795,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=3"
+        },
+        {
+          "rank": 4,
+          "minLevel": 70,
+          "perkItemId": 211796,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=3"
+        },
+        {
+          "rank": 5,
+          "minLevel": 90,
+          "perkItemId": 211797,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=3",
+          "grantsSpecialAction": [
+            "Reconstruct DNA"
+          ]
+        },
+        {
+          "rank": 6,
+          "minLevel": 110,
+          "perkItemId": 211798,
+          "bonuses": "Strength=4, Stamina=4, Intelligence=4, Psychic=4, Sense=4, Agility=4, BodyDevelopment=4"
+        },
+        {
+          "rank": 7,
+          "minLevel": 130,
+          "perkItemId": 211799,
+          "bonuses": "Strength=5, Stamina=5, Intelligence=5, Psychic=5, Sense=5, Agility=5, BodyDevelopment=4"
+        },
+        {
+          "rank": 8,
+          "minLevel": 150,
+          "perkItemId": 211800,
+          "bonuses": "Strength=5, Stamina=5, Intelligence=5, Psychic=5, Sense=5, Agility=5, BodyDevelopment=5"
+        },
+        {
+          "rank": 9,
+          "minLevel": 170,
+          "perkItemId": 211801,
+          "bonuses": "Strength=5, Stamina=5, Intelligence=5, Psychic=5, Sense=5, Agility=5, BodyDevelopment=5"
+        },
+        {
+          "rank": 10,
+          "minLevel": 190,
+          "perkItemId": 211802,
+          "bonuses": "Strength=6, Stamina=6, Intelligence=6, Psychic=6, Sense=6, Agility=6, BodyDevelopment=7",
+          "grantsSpecialAction": [
+            "Viral Wipe"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Enhance Health",
+      "type": "general",
+      "line": "Enhance Health (7 ranks, levels 30-201)",
+      "effect": "Max Health +1500 cumulative. Pure HP for a class with no self-heal nano.",
+      "recommendedAtLevel": "30",
+      "priority": "med",
+      "maxRank": 7,
+      "levelRange": "30-201",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MaxHealth +1500",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 211051,
+          "bonuses": "MaxHealth=40"
+        },
+        {
+          "rank": 2,
+          "minLevel": 60,
+          "perkItemId": 211052,
+          "bonuses": "MaxHealth=80"
+        },
+        {
+          "rank": 3,
+          "minLevel": 80,
+          "perkItemId": 211053,
+          "bonuses": "MaxHealth=100"
+        },
+        {
+          "rank": 4,
+          "minLevel": 100,
+          "perkItemId": 211054,
+          "bonuses": "MaxHealth=150"
+        },
+        {
+          "rank": 5,
+          "minLevel": 140,
+          "perkItemId": 211055,
+          "bonuses": "MaxHealth=230"
+        },
+        {
+          "rank": 6,
+          "minLevel": 180,
+          "perkItemId": 211056,
+          "bonuses": "MaxHealth=320"
+        },
+        {
+          "rank": 7,
+          "minLevel": 201,
+          "perkItemId": 212180,
+          "bonuses": "MaxHealth=580"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Enhance Nano",
+      "type": "general",
+      "line": "Enhance Nano (7 ranks, levels 30-201)",
+      "effect": "Max Nano +2500 cumulative. Bots and auras are expensive and you re-summon after every pet death.",
+      "recommendedAtLevel": "30",
+      "priority": "med",
+      "maxRank": 7,
+      "levelRange": "30-201",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MaxNanoEnergy +2500",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 211059,
+          "bonuses": "MaxNanoEnergy=80"
+        },
+        {
+          "rank": 2,
+          "minLevel": 60,
+          "perkItemId": 211060,
+          "bonuses": "MaxNanoEnergy=130"
+        },
+        {
+          "rank": 3,
+          "minLevel": 80,
+          "perkItemId": 211061,
+          "bonuses": "MaxNanoEnergy=210"
+        },
+        {
+          "rank": 4,
+          "minLevel": 100,
+          "perkItemId": 211062,
+          "bonuses": "MaxNanoEnergy=290"
+        },
+        {
+          "rank": 5,
+          "minLevel": 140,
+          "perkItemId": 211063,
+          "bonuses": "MaxNanoEnergy=370"
+        },
+        {
+          "rank": 6,
+          "minLevel": 180,
+          "perkItemId": 211064,
+          "bonuses": "MaxNanoEnergy=530"
+        },
+        {
+          "rank": 7,
+          "minLevel": 201,
+          "perkItemId": 212183,
+          "bonuses": "MaxNanoEnergy=890"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "First Aid",
+      "type": "general",
+      "line": "First Aid (4 ranks, levels 30-180)",
+      "effect": "Treatment / First Aid +100 cumulative (top rank +40) and grants a Heal action. Treatment gates implant installs and stim quality.",
+      "recommendedAtLevel": "30",
+      "priority": "med",
+      "maxRank": 4,
+      "levelRange": "30-180",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "Treatment / FirstAid +100",
+      "specialActionsGranted": [
+        "Heal"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 211819,
+          "bonuses": "Treatment=10, FirstAid=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 70,
+          "perkItemId": 211820,
+          "bonuses": "Treatment=20, FirstAid=20",
+          "grantsSpecialAction": [
+            "Heal"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 130,
+          "perkItemId": 211821,
+          "bonuses": "Treatment=30, FirstAid=30"
+        },
+        {
+          "rank": 4,
+          "minLevel": 180,
+          "perkItemId": 211822,
+          "bonuses": "Treatment=40, FirstAid=40"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Ambidextrous",
+      "type": "general",
+      "line": "Ambidextrous (5 ranks, levels 10-150)",
+      "effect": "Multi Melee / Multi Ranged +120 each cumulative plus damage modifiers. The generic dual-wield enabler.",
+      "recommendedAtLevel": "10 only for a dual-pistol build",
+      "priority": "low",
+      "maxRank": 5,
+      "levelRange": "10-150",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MultiMelee / MultiRanged +120; MeleeDamageModifier / ProjectileDamageModifier / EnergyDamageModifier / FireDamageModifier / ColdDamageModifier / ChemicalDamageModifier / PoisonDamageModifier / RadiationDamageModifier +20; AddAllDef +8",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211135,
+          "bonuses": "MultiMelee=10, MultiRanged=10, AddAllDef=0, MeleeDamageModifier=0, ProjectileDamageModifier=0, EnergyDamageModifier=0, FireDamageModifier=0, ColdDamageModifier=0, ChemicalDamageModifier=0, PoisonDamageModifier=0, RadiationDamageModifier=0"
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 211136,
+          "bonuses": "MultiMelee=15, MultiRanged=15, AddAllDef=0, MeleeDamageModifier=0, ProjectileDamageModifier=0, EnergyDamageModifier=0, FireDamageModifier=0, ColdDamageModifier=0, ChemicalDamageModifier=0, PoisonDamageModifier=0, RadiationDamageModifier=0"
+        },
+        {
+          "rank": 3,
+          "minLevel": 80,
+          "perkItemId": 211137,
+          "bonuses": "MultiMelee=20, MultiRanged=20, AddAllDef=0, MeleeDamageModifier=0, ProjectileDamageModifier=0, EnergyDamageModifier=0, FireDamageModifier=0, ColdDamageModifier=0, ChemicalDamageModifier=0, PoisonDamageModifier=0, RadiationDamageModifier=0"
+        },
+        {
+          "rank": 4,
+          "minLevel": 110,
+          "perkItemId": 211138,
+          "bonuses": "MultiMelee=30, MultiRanged=30, AddAllDef=0, MeleeDamageModifier=5, ProjectileDamageModifier=5, EnergyDamageModifier=5, FireDamageModifier=5, ColdDamageModifier=5, ChemicalDamageModifier=5, PoisonDamageModifier=5, RadiationDamageModifier=5"
+        },
+        {
+          "rank": 5,
+          "minLevel": 150,
+          "perkItemId": 212177,
+          "bonuses": "MultiMelee=45, MultiRanged=45, AddAllDef=8, MeleeDamageModifier=15, ProjectileDamageModifier=15, EnergyDamageModifier=15, FireDamageModifier=15, ColdDamageModifier=15, ChemicalDamageModifier=15, PoisonDamageModifier=15, RadiationDamageModifier=15"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Explorer",
+      "type": "general",
+      "line": "Explorer (4 ranks, levels 10-140)",
+      "effect": "Adventuring +60 and RegainXP +100% cumulative (top rank +30 / +40%); grants Exploration Teleportation.",
+      "recommendedAtLevel": "10",
+      "priority": "low",
+      "maxRank": 4,
+      "levelRange": "10-140",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "RegainXPPercentage +100; Adventuring +60",
+      "specialActionsGranted": [
+        "Exploration Teleportation"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 10,
+          "perkItemId": 211812,
+          "bonuses": "Adventuring=5, RegainXPPercentage=10"
+        },
+        {
+          "rank": 2,
+          "minLevel": 30,
+          "perkItemId": 211813,
+          "bonuses": "Adventuring=10, RegainXPPercentage=20",
+          "grantsSpecialAction": [
+            "Exploration Teleportation"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 80,
+          "perkItemId": 211814,
+          "bonuses": "Adventuring=15, RegainXPPercentage=30"
+        },
+        {
+          "rank": 4,
+          "minLevel": 140,
+          "perkItemId": 211815,
+          "bonuses": "Adventuring=30, RegainXPPercentage=40"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Freak Strength",
+      "type": "general",
+      "line": "Freak Strength (3 ranks, levels 120-208)",
+      "effect": "Strength / Stamina +20 and Body Dev +49 cumulative. Grants Grasp, Bearhug and Grip of Colossus.",
+      "recommendedAtLevel": "120 if you need the HP",
+      "priority": "low",
+      "maxRank": 3,
+      "levelRange": "120-208",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "BodyDevelopment +49; Strength / Stamina +20",
+      "specialActionsGranted": [
+        "Grasp",
+        "Bearhug",
+        "Grip of Colossus"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 120,
+          "perkItemId": 211853,
+          "bonuses": "Strength=5, Stamina=5, BodyDevelopment=10",
+          "grantsSpecialAction": [
+            "Grasp"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 200,
+          "perkItemId": 211854,
+          "bonuses": "Strength=5, Stamina=5, BodyDevelopment=14",
+          "grantsSpecialAction": [
+            "Bearhug"
+          ]
+        },
+        {
+          "rank": 3,
+          "minLevel": 208,
+          "perkItemId": 211855,
+          "bonuses": "Strength=10, Stamina=10, BodyDevelopment=25",
+          "grantsSpecialAction": [
+            "Grip of Colossus"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Kung-Fu Master",
+      "type": "general",
+      "line": "Kung-Fu Master (5 ranks, levels 50-203)",
+      "effect": "Martial Arts +50 cumulative (top rank +20). Off-profile for an Engineer.",
+      "recommendedAtLevel": "skip",
+      "priority": "low",
+      "maxRank": 5,
+      "levelRange": "50-203",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "MartialArts +50",
+      "specialActionsGranted": [
+        "Tremor Hand",
+        "Harmonize Body and Mind"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 50,
+          "perkItemId": 211901,
+          "bonuses": "MartialArts=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 100,
+          "perkItemId": 211902,
+          "bonuses": "MartialArts=6"
+        },
+        {
+          "rank": 3,
+          "minLevel": 150,
+          "perkItemId": 211903,
+          "bonuses": "MartialArts=8",
+          "grantsSpecialAction": [
+            "Tremor Hand"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 200,
+          "perkItemId": 211904,
+          "bonuses": "MartialArts=11"
+        },
+        {
+          "rank": 5,
+          "minLevel": 203,
+          "perkItemId": 211905,
+          "bonuses": "MartialArts=20",
+          "grantsSpecialAction": [
+            "Harmonize Body and Mind"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Motorist",
+      "type": "general",
+      "line": "Motorist (4 ranks, levels 30-140)",
+      "effect": "Vehicle Ground / Air / Water +200 each cumulative (top rank +90). Engineer vehicle skills already cost only 1.6.",
+      "recommendedAtLevel": "optional",
+      "priority": "low",
+      "maxRank": 4,
+      "levelRange": "30-140",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "VehicleAir / VehicleGround / VehicleWater +200",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 211070,
+          "bonuses": "VehicleAir=22, VehicleGround=22, VehicleWater=22"
+        },
+        {
+          "rank": 2,
+          "minLevel": 70,
+          "perkItemId": 211067,
+          "bonuses": "VehicleGround=38, VehicleAir=38, VehicleWater=38"
+        },
+        {
+          "rank": 3,
+          "minLevel": 100,
+          "perkItemId": 211068,
+          "bonuses": "VehicleGround=50, VehicleAir=50, VehicleWater=50"
+        },
+        {
+          "rank": 4,
+          "minLevel": 140,
+          "perkItemId": 211069,
+          "bonuses": "VehicleGround=90, VehicleAir=90, VehicleWater=90"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Notum Repulsor",
+      "type": "general",
+      "line": "Notum Repulsor (8 ranks, levels 30-207)",
+      "effect": "Nano Resist +20000 cumulative in exchange for a large negative on all six nano schools; grants Zap Nano, Nano Shakes, Strip Nano and Annihilate Notum Molecules. A PvP nano-strip line, not a PvE one.",
+      "recommendedAtLevel": "PvP only",
+      "priority": "low",
+      "maxRank": 8,
+      "levelRange": "30-207",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "NanoResist +20000; SensoryImprovement / BiologicalMetamorphosis / MaterialMetamorphosis / PsychologicalModification / MaterialCreation / SpaceTime -8000",
+      "specialActionsGranted": [
+        "Zap Nano",
+        "Nano Shakes",
+        "Strip Nano",
+        "Annihilate Notum Molecules"
+      ],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 30,
+          "perkItemId": 212133,
+          "bonuses": "SensoryImprovement=-200, BiologicalMetamorphosis=-200, MaterialMetamorphosis=-200, PsychologicalModification=-200, MaterialCreation=-200, SpaceTime=-200, NanoResist=300",
+          "grantsSpecialAction": [
+            "Zap Nano"
+          ]
+        },
+        {
+          "rank": 2,
+          "minLevel": 60,
+          "perkItemId": 212134,
+          "bonuses": "SensoryImprovement=-400, BiologicalMetamorphosis=-400, MaterialMetamorphosis=-400, PsychologicalModification=-400, MaterialCreation=-400, SpaceTime=-400, NanoResist=900"
+        },
+        {
+          "rank": 3,
+          "minLevel": 90,
+          "perkItemId": 212135,
+          "bonuses": "SensoryImprovement=-800, BiologicalMetamorphosis=-800, MaterialMetamorphosis=-800, PsychologicalModification=-800, MaterialCreation=-800, SpaceTime=-800, NanoResist=1200",
+          "grantsSpecialAction": [
+            "Nano Shakes"
+          ]
+        },
+        {
+          "rank": 4,
+          "minLevel": 110,
+          "perkItemId": 212136,
+          "bonuses": "SensoryImprovement=-1000, BiologicalMetamorphosis=-1000, MaterialMetamorphosis=-1000, PsychologicalModification=-1000, MaterialCreation=-1000, SpaceTime=-1000, NanoResist=1500"
+        },
+        {
+          "rank": 5,
+          "minLevel": 130,
+          "perkItemId": 212137,
+          "bonuses": "SensoryImprovement=-1100, BiologicalMetamorphosis=-1100, MaterialMetamorphosis=-1100, PsychologicalModification=-1100, MaterialCreation=-1100, SpaceTime=-1100, NanoResist=1900"
+        },
+        {
+          "rank": 6,
+          "minLevel": 200,
+          "perkItemId": 212138,
+          "bonuses": "SensoryImprovement=-1200, BiologicalMetamorphosis=-1200, MaterialMetamorphosis=-1200, PsychologicalModification=-1200, MaterialCreation=-1200, SpaceTime=-1200, NanoResist=2200",
+          "grantsSpecialAction": [
+            "Strip Nano"
+          ]
+        },
+        {
+          "rank": 7,
+          "minLevel": 203,
+          "perkItemId": 212139,
+          "bonuses": "SensoryImprovement=-1300, BiologicalMetamorphosis=-1300, MaterialMetamorphosis=-1300, PsychologicalModification=-1300, MaterialCreation=-1300, SpaceTime=-1300, NanoResist=4000"
+        },
+        {
+          "rank": 8,
+          "minLevel": 207,
+          "perkItemId": 212140,
+          "bonuses": "SensoryImprovement=-2000, BiologicalMetamorphosis=-2000, MaterialMetamorphosis=-2000, PsychologicalModification=-2000, MaterialCreation=-2000, SpaceTime=-2000, NanoResist=8000",
+          "grantsSpecialAction": [
+            "Annihilate Notum Molecules"
+          ]
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Training Seminar",
+      "type": "general",
+      "line": "Training Seminar (4 ranks, levels 20-150)",
+      "effect": "XP modifier +22% cumulative (top rank +6%).",
+      "recommendedAtLevel": "20",
+      "priority": "low",
+      "maxRank": 4,
+      "levelRange": "20-150",
+      "professionLock": "none (open to all professions)",
+      "cumulativeBonusesAtMaxRank": "XPModifier +22",
+      "specialActionsGranted": [],
+      "ranks": [
+        {
+          "rank": 1,
+          "minLevel": 20,
+          "perkItemId": 211072,
+          "bonuses": "XPModifier=5"
+        },
+        {
+          "rank": 2,
+          "minLevel": 60,
+          "perkItemId": 211073,
+          "bonuses": "XPModifier=5"
+        },
+        {
+          "rank": 3,
+          "minLevel": 100,
+          "perkItemId": 211074,
+          "bonuses": "XPModifier=6"
+        },
+        {
+          "rank": 4,
+          "minLevel": 150,
+          "perkItemId": 212190,
+          "bonuses": "XPModifier=6"
+        }
+      ],
+      "source": "local: items.ocp perk templates (AOIDs from AOBuddy/GameData/Perks.xml); ToWear criteria + OnWear Modify(53045) functions; action ids resolved via itemnames.sql"
+    },
+    {
+      "name": "Energy Transfer",
+      "type": "LE research proc",
+      "line": "Practical Application (research level 6)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerEnergyTransfer",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Joint Discharge Array",
+      "type": "LE research proc",
+      "line": "Practical Application (research level 8)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "AOWiki name; the local enum entry at this slot is LEProcEngineerReactiveArmor",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Destructive Theorem",
+      "type": "LE research proc",
+      "line": "Serendipity (research level 7)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerDestructiveTheorem",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Drone Missiles",
+      "type": "LE research proc",
+      "line": "Serendipity (research level 10)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerDroneMissiles",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Cushion Blows",
+      "type": "LE research proc",
+      "line": "Mechanical Assistance (research level 1)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerCushionBlows",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Congenial Encasement",
+      "type": "LE research proc",
+      "line": "Mechanical Assistance (research level 2)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerCongenialEncasement",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Splinter Preservation",
+      "type": "LE research proc",
+      "line": "Process Refinement (research level 3)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerSplinterPreservation",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Destructive Signal",
+      "type": "LE research proc",
+      "line": "Ergonomics (research level 3)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerDestructiveSignal",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Endure Barrage",
+      "type": "LE research proc",
+      "line": "Ergonomics (research level 4)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerEndureBarrage",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Assault Force Relief",
+      "type": "LE research proc",
+      "line": "Ergonomics (research level 10)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerAssaultForceRelief",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Personal Protection",
+      "type": "LE research proc",
+      "line": "Military Hardware (research level 1)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerPersonalProtection",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    },
+    {
+      "name": "Drone Explosives",
+      "type": "LE research proc",
+      "line": "Combat Applications (research level 5)",
+      "effect": "Lost Eden research proc perk, unlocked by reaching that research level. Per-proc chance, effect size and duration are NOT in the local perk data - LE research procs are not perk templates in Perks.xml/items.ocp.",
+      "recommendedAtLevel": "slot two procs (one offensive, one defensive) once the research level is reached",
+      "priority": "med",
+      "localEnum": "LEProcEngineerDroneExplosives",
+      "source": "AOSharp.Common/GameData/PerkHash.cs (12 LEProcEngineer* entries) + wiki.aodb.us Engineer:Research_Lines for the line/level mapping"
+    }
+  ],
+  "research": [
+    {
+      "name": "Practical Application",
+      "track": "LE personal research",
+      "effect": "Grants the proc perks Energy Transfer (research level 6) and Joint Discharge Array (level 8); completes with Intelligence +25.",
+      "note": "Int at the end of the line feeds every nano school - a good all-round Engineer pick."
+    },
+    {
+      "name": "Serendipity",
+      "track": "LE personal research",
+      "effect": "Stamina +5/+10/+20 and Max Health +50/+100 along the line; grants Destructive Theorem (level 7) and Drone Missiles (level 10).",
+      "note": "Drone Missiles is the pet-flavoured offensive proc."
+    },
+    {
+      "name": "Mechanical Assistance",
+      "track": "LE personal research",
+      "effect": "Agility +25; grants Cushion Blows (level 1) and Congenial Encasement (level 2).",
+      "note": "The cheapest procs to reach - both defensive."
+    },
+    {
+      "name": "Process Refinement",
+      "track": "LE personal research",
+      "effect": "Strength +15/+20/+25; grants Splinter Preservation (level 3).",
+      "note": "Low priority for a caster/pet Engineer."
+    },
+    {
+      "name": "Ergonomics",
+      "track": "LE personal research",
+      "effect": "Max NCU +4 and Intelligence +5/+20; grants Destructive Signal (level 3), Endure Barrage (level 4) and Assault Force Relief (level 10).",
+      "note": "Three procs plus NCU and Int - the densest Engineer line."
+    },
+    {
+      "name": "Military Hardware",
+      "track": "LE personal research",
+      "effect": "Weapon-skill bonuses along the line; grants Personal Protection (level 1).",
+      "note": "Take at least level 1 for the proc if you run a weapon."
+    },
+    {
+      "name": "Combat Applications",
+      "track": "LE personal research",
+      "effect": "Combat-skill bonuses along the line; grants Drone Explosives (level 5).",
+      "note": "AOSharp PerkLine.cs spells this CombatApplications; AOWiki titles the section \"Combat Application\"."
+    },
+    {
+      "name": "Global Advantage lines (Health, Offensive Power, Defensive Power, Medical Knowledge, Combat Knowledge, Nano Technology Knowledge)",
+      "track": "LE global research",
+      "effect": "The six cross-profession global LE research lines; they apply to an Engineer exactly as to any other profession.",
+      "note": "Present in AOSharp.Common/GameData/PerkLine.cs as GlobalAdvantage*. Not Engineer-specific."
+    },
+    {
+      "name": "LE vehicle lines (Personal Mechanized Vehicle, Anti-Personnel Turret, Anti-Vehicular Battery, Mechanized Scout/Assault Vehicle, plus armor and weapon upgrades)",
+      "track": "LE research (all professions)",
+      "effect": "Lost Eden vehicle and turret research. Despite the engineering theme these are open to every profession, not Engineer-only.",
+      "note": "Enumerated from AOSharp.Common/GameData/PerkLine.cs. Per-rank effects not present in local data."
+    }
+  ],
+  "_perkCoverage": {
+    "method": "Every perk AOID in AOBuddy/GameData/Perks.xml (992 entries across 118 distinct perk lines) was probed against items.ocp with tools/mp-weapon-extractor (--probe-ids --probe-only). A perk line is Engineer-trainable when its perk items' ToWear action either carries \"Profession EqualTo 3\" or carries NO Profession requirement at all. Per-rank minimum level = the ToWear \"Level GreaterThan N\" + 1; per-rank bonuses = the OnWear Modify (53045) functions; granted special actions = the func53182 argument ids resolved against itemnames.sql.",
+    "perkLinesInClientData": 118,
+    "perkTemplatesProbed": 991,
+    "perkTemplatesNotFoundInItemsOcp": 1,
+    "engineerTrainableLines": 44,
+    "engineerTrainableLinesEnumeratedHere": 44,
+    "engineerRanksEnumerated": 345,
+    "breakdown": {
+      "SL profession lines": 9,
+      "AI profession line": 1,
+      "AI general lines": 12,
+      "AI breed genome lines": 8,
+      "general lines": 14
+    },
+    "note": "8 of the 44 lines are breed genome lines and only the 2 matching your breed are trainable, so one Engineer character can reach 38 of these 44. The 12 LE research proc perks are listed separately in the perks array: they are NOT perk templates in Perks.xml or items.ocp, so their ranks and numbers could not be read from local data.",
+    "coverageStatement": "44 of 44 Engineer-trainable perk lines enumerated, with every rank (345 ranks total), every rank's minimum level, every rank's stat bonuses and every granted special action, all from local client data. 12 of 12 Engineer LE research procs listed by name and research line, with NO local numbers - that is the one gap."
+  },
+  "_unverified": [
+    "LE research proc perks: the 12 LEProcEngineer* names come from AOSharp.Common/GameData/PerkHash.cs and the line/level mapping from wiki.aodb.us Engineer:Research_Lines. None of them appear in Perks.xml or items.ocp, so their proc chance, effect size, duration and offensive/defensive classification are NOT verified from local data.",
+    "Name conflict: PerkHash.cs has LEProcEngineerReactiveArmor, but wiki.aodb.us Engineer:Research_Lines names the Practical Application level-8 proc \"Joint Discharge Array\" and shows no perk called \"Reactive Armor\". Both names are recorded; which is the live in-game name is unresolved.",
+    "Per-research-level stat bonuses for the seven Engineer LE lines (Int +25; Sta +5/+10/+20 and Max Health +50/+100; Agi +25; Str +15/+20/+25; NCU +4 and Int +5/+20) come from wiki.aodb.us only - there is no local research data file in this repo.",
+    "The SL / AI / general grouping of perk lines is NOT an explicit flag in the client data. Perk templates carry only Profession, Level, Breed and the previous-rank chain. The grouping here is inferred from the min-level signature (AI lines repeat levels: 25/25/25/25/70/70/95/95/165/207 for the general AI lines and 15/15/55/55/55/105/105/145/205/210 for the AI profession lines) corroborated by the AOSharp PerkLine enum ordering and AOWiki naming. The Alien-Experience-level requirement itself is not present in the perk item.",
+    "Counterweight client-data anomaly: ranks 1-3 carry \"Profession EqualTo 3\" (Engineer), but ranks 4, 5 and 6 carry \"Profession EqualTo 0\" in its place (Adventurer/Enforcer/Shade unchanged). Engineer access to Counterweight ranks 4-6 is therefore NOT verified from the client data.",
+    "Perk bonuses are recorded per rank from each rank item's own OnWear Modify list; cumulativeBonusesAtMaxRank is the SUM across ranks. Whether AO applies perk rank bonuses cumulatively or replaces per rank was not verified from client data - the per-rank values in each perk's \"ranks\" array are the raw, unambiguous figures.",
+    "Alien Technology Expertise has 3 template ids in Perks.xml all named \"Alien Technology Expertise 1\", showing only 2 distinct level gates (15 and 75). The true rank count of that line is not resolvable from local data.",
+    "reference/breeds.json uses _breedStatValues Solitus=0 / Opifex=1 / Nanomage=2 / Atrox=3, but the client perk data and AOSharp.Common/GameData/Breed.cs use Solitus=1 / Opifex=2 / Nanomage=3 / Atrox=4. The genome perk entries here use the AOSharp/client numbering; breeds.json may need correcting.",
+    "The FalseProfession line (strain 218) is NOT an Engineer line. All three nanos - False Profession: Engineer (32034), Assume Profession: Engineer (117224), Mimic Profession: Engineer (117213) - require \"Profession == 5\" (AGENT) to cast and set VisualProfession(368) to 3 while applying a -5% to -25% penalty to all six nano schools. They appear in engineer-nanos.json only because that file's castability criterion accepts VisualProfession(368)==3. They are an Agent faking an Engineer.",
+    "Assault Rifle is commonly cited as an endgame Engineer weapon in the community, but nothing local supports it: AR costs 3.0 for an Engineer, no Engineer-locked AR exists in engineer-weapons-endgame.json (all 13 locked models are pistols or grenade launchers), no Engineer nano buffs AR, and the only AR-relevant perk line (Champion of Heavy Artillery) is open to every profession. Treat an AR Engineer as a community build, not a data-derived one.",
+    "One perk AOID present in Perks.xml was not found in items.ocp (991 of 992 probed); the missing template was not identified.",
+    "Exact IP costs per skill point at a given title level are not computed here - reference/skillcaps.json supplies cost FACTORS only, and its own _capComputationNote flags the cap curve as future work.",
+    "reference/skillcaps.json's own _dependencyReliability note flags the ability-dependency strings (e.g. which abilities feed Nano Pool and Body Dev.) as best-effort; only the cost arrays are cross-checked. Any ability-to-skill reasoning above leans on the cost factors, not those strings."
+  ],
+  "_sources": [
+    "LOCAL: E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - every perk line, rank, minimum level, profession/breed lock and stat bonus in the perks array, read via tools/mp-weapon-extractor --probe-ids",
+    "LOCAL: E:\\Funcom\\AOBuddy10\\AOBuddy\\GameData\\Perks.xml - the 992 perk AOIDs across 118 perk-line names that were probed",
+    "LOCAL: E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql - id to name for every perk template and every granted special action",
+    "LOCAL: AOBuddy/GameData/profiles/engineer-nanos.json (288 Engineer-castable nanos from nanos.ocp) - every nano id and cast requirement quoted in playstyle and skillPriorities",
+    "LOCAL: AOBuddy/GameData/profiles/engineer-weapons-endgame.json (602 endgame models from items.ocp) - weapon-skill cost factors, per-skill model counts and the 13 Engineer-locked weapon models",
+    "LOCAL: AOBuddy/GameData/profiles/reference/skillcaps.json - the Engineer column of the 69-skill x 14-profession cost-factor table (index 5 of _professionOrder)",
+    "LOCAL: AOBuddy/GameData/profiles/reference/breeds.json - ability caps, HP/nano per point, nano-cost-reduction caps",
+    "LOCAL: AOSharp.Common/GameData/PerkHash.cs - the 12 LEProcEngineer* proc-perk enum names",
+    "LOCAL: AOSharp.Common/GameData/PerkLine.cs - the seven Engineer LE research line names (PracticalApplication, Serendipity, MechanicalAssistance, ProcessRefinement, Ergonomics, MilitaryHardware, CombatApplications) and the GlobalAdvantage* / LE vehicle lines",
+    "LOCAL: AOSharp.Common/GameData/Breed.cs and Profession.cs - Breed and Profession id numbering",
+    "WEB: http://wiki.aodb.us/wiki/Engineer:Breed_and_Skills - breed recommendation and the always-max / raise-as-needed / useless skill groupings",
+    "WEB: http://wiki.aodb.us/wiki/Engineer:Research_Lines - the seven Engineer LE research lines, their proc perks and research levels",
+    "WEB: http://wiki.aodb.us/wiki/Engineer_Guide - bot progression naming, Gadgeteer/Mechanic/Bio Shielding advice, pistol progression, the tradeskill IP warning",
+    "WEB: http://wiki.aodb.us/wiki/Engineer - profession overview (\"the Engineer/robot-pet duo is quite formidable\", \"the Engineer's weapon skills are not that great\")",
+    "WEB: https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 - per-breed verdicts, pet run-speed rule and the 50 m pet-command range",
+    "WEB: https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-33 - Bioshield reflect/damage-shield note and the ranged-over-melee reasoning",
+    "NOT USED (block automation, per playbook section 4): auno.org, aoitems.com, anarchyonline.fandom.com"
+  ]
+}

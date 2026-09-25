@@ -1,0 +1,2140 @@
+{
+ "profile": "Bureaucrat weapons + allowed special attacks (for AOBuddy10 bot decision-making)",
+ "profession": {
+  "id": 8,
+  "name": "Bureaucrat"
+ },
+ "generatedUtc": "2026-09-23T06:57:00Z",
+ "generatedBy": "tools/mp-weapon-extractor/gen-weapons-profile.ps1",
+ "dataSource": {
+  "itemData": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) - full converted item pack",
+  "itemNames": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+  "extractor": "E:\\Funcom\\AOBuddy10\\tools\\mp-weapon-extractor (net10)",
+  "skillCosts": "AOBuddy/GameData/profiles/reference/skillcaps.json",
+  "nanoEvidence": "AOBuddy/GameData/profiles/bureaucrat-nanos.json",
+  "weaponsInData": 10730,
+  "note": "A weapon's wield requirements live in its ToWield action (OmniCell.Enums.ActionType.ToWield=8). Operator.GreaterThan(2) means 'stat >= value'. Special-attack stats present in those requirements = the specials that weapon allows. Requirement VALUES scale with the template's QL; values shown are for the listed QL."
+ },
+ "howToReadSpecialsAtRuntime": "For the equipped weapon, read its ToWield criteria: any requirement whose stat is in specialAttackStats is a special that weapon allows (the value is the skill needed at that QL). Wield-skill stat(s) give the weapon type. This mirrors the item data exactly.",
+ "specialAttackStats": {
+  "Brawl": 142,
+  "Dimach": 144,
+  "SneakAttack": 146,
+  "FastAttack": 147,
+  "Burst": 148,
+  "FlingShot": 150,
+  "AimedShot": 151,
+  "FullAuto": 167,
+  "Backstab": 489,
+  "passiveNotOnDemand": [
+   "Riposte(143)",
+   "Parry(145)"
+  ],
+  "note": "BowSpecialAttack(121) is a support SKILL for bow Aimed Shot, not an on-demand special."
+ },
+ "professionRestrictionEncoding": {
+  "stat": "Profession (stat 60 / 0x3C)",
+  "form": "A ToWield Requirement with Statnumber=60. Operator EqualTo(0) + Value=<professionId> locks the weapon to that profession (several such requirements OR together for a multi-profession lock).",
+  "usableRule": "Weapon is Bureaucrat-equippable unless it carries a Profession EqualTo lock and 8 is not among the locked ids. Weapons with no profession requirement are usable by any profession that meets the skill.",
+  "professionLockedCount": 28
+ },
+ "howWeaponSkillsWereChosen": {
+  "rule": "The client data does not encode 'profession X uses weapon skill Y', so the list is operator-supplied - but each entry is justified by three measured signals recorded per type: (1) skillCostFactor/skillCostRank from reference/skillcaps.json, (2) weaponsProfessionLocked, the count of templates whose ToWield locks them to this profession, and (3) professionNanoBuffLines, the profession's own nano lines that buff that skill, read from bureaucrat-nanos.json.",
+  "list": [
+   "Pistol",
+   "MartialArts",
+   "MGSMG",
+   "Shotgun",
+   "1hBlunt",
+   "RangedEnergy",
+   "MeleeEnergy"
+  ],
+  "note": "Skills NOT on the list are still equippable if the raw skill is met - see otherWeaponSkillsInData."
+ },
+ "dualWieldAndMultiSkills": {
+  "note": "wield lists EVERY trainable-skill requirement in the ToWield action; specials lists the on-demand special-attack skills.",
+  "multiMeleeStatId": 101,
+  "multiRangedStatId": 134,
+  "finding": "In this data (client 18.8.50_EP1) MultiMelee(101)/MultiRanged(134) appear as a ToWield criterion on only 6 templates.",
+  "dualWieldMechanic": "Dual-wielding is gated by the CHARACTER's Multi Melee / Multi Ranged skill for the off-hand slot, not by a per-weapon ToWield criterion."
+ },
+ "usableWeaponTypes": [
+  {
+   "weaponSkill": "Pistol",
+   "skillCostFactor": 1.6,
+   "skillCostRank": 3,
+   "weaponsTotalInData": 1398,
+   "weaponsUsable": 1182,
+   "weaponsProfessionLocked": 24,
+   "playerWieldableModelsInData": 576,
+   "professionNanoBuffLines": "PistolBuff",
+   "role": "Bureaucrat IP cost factor 1.6 (rank 3 of 11 distinct cost tiers this profession has, 1 = cheapest). 1182 of 1398 Pistol templates in items.ocp are not profession-locked away from Bureaucrat, and 24 are locked to Bureaucrat by a ToWield Profession(60) EqualTo 8 criterion. The profession's own nano kit buffs this skill: nano line(s) PistolBuff in bureaucrat-nanos.json.",
+   "allowedSpecialsObservedForType": [
+    "AimedShot",
+    "Burst",
+    "FlingShot",
+    "FullAuto"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 267255,
+     "name": "Dreadloch Balanced Freedom Arms",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1700
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 850
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "260-365 @ 1.2s/1.2s",
+     "dpsProxy": 130.2
+    },
+    {
+     "id": 305021,
+     "name": "Sinister Pistol of The Revoked",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1649
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 799
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 200,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "230-375 @ 1.2s/1.2s",
+     "dpsProxy": 126
+    },
+    {
+     "id": 214296,
+     "name": "Mobilizer Pistol",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1700
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "25-775 @ 1s/3.6s",
+     "dpsProxy": 87
+    },
+    {
+     "id": 214301,
+     "name": "Pistol of Indoctrination",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1700
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "25-775 @ 1s/3.6s",
+     "dpsProxy": 87
+    },
+    {
+     "id": 214295,
+     "name": "Motivator Pistol",
+     "ql": 299,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1694
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "25-772 @ 1s/3.59s",
+     "dpsProxy": 86.8
+    },
+    {
+     "id": 214300,
+     "name": "Pistol of Education",
+     "ql": 299,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 1694
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "25-772 @ 1s/3.59s",
+     "dpsProxy": 86.8
+    },
+    {
+     "id": 245223,
+     "name": "Dark Pistol of The Revoked",
+     "ql": 100,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 520
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 260
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "75-190 @ 1.2s/1.2s",
+     "dpsProxy": 55.2
+    },
+    {
+     "id": 245222,
+     "name": "Dark Pistol",
+     "ql": 99,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 515
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 257
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "74-188 @ 1.2s/1.2s",
+     "dpsProxy": 54.6
+    },
+    {
+     "id": 208015,
+     "name": "Sleek Minor Fantastic 04",
+     "ql": 150,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 850
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "100-300 @ 2s/2s",
+     "dpsProxy": 50
+    },
+    {
+     "id": 208014,
+     "name": "Sleek Minor Fantastic",
+     "ql": 149,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 844
+      }
+     ],
+     "specials": [],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "99-298 @ 2s/2s",
+     "dpsProxy": 49.6
+    },
+    {
+     "id": 281505,
+     "name": "Peh'Wer Pistol",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1650
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1125
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "261-348 @ 1.2s/1.2s",
+     "dpsProxy": 126.9
+    },
+    {
+     "id": 244913,
+     "name": "Lady of Lust",
+     "ql": 299,
+     "primaryWield": "Pistol",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1125
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": null,
+     "damage": "75-350 @ 1s/1s",
+     "dpsProxy": 106.2
+    },
+    {
+     "id": 265061,
+     "name": "Ofab Peregrine Mk 6",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1650
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1100
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "248-358 @ 1.2s/1.2s",
+     "dpsProxy": 126.2
+    },
+    {
+     "id": 254618,
+     "name": "Kyr'Ozch Pistol",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 262529,
+     "name": "Otek Pistol",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 254625,
+     "name": "Kyr'Ozch Pistol - Type 1",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1000
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 254632,
+     "name": "Kyr'Ozch Pistol - Type 4",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1500
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 265054,
+     "name": "Ofab Peregrine Mk 5",
+     "ql": 300,
+     "primaryWield": "Pistol",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Pistol",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1650
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1100
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "237-342 @ 1.2s/1.2s",
+     "dpsProxy": 120.6
+    }
+   ]
+  },
+  {
+   "weaponSkill": "MartialArts",
+   "skillCostFactor": 2.8,
+   "skillCostRank": 8,
+   "weaponsTotalInData": 256,
+   "weaponsUsable": 223,
+   "weaponsProfessionLocked": 0,
+   "playerWieldableModelsInData": 87,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 2.8 (rank 8 of 11 distinct cost tiers this profession has, 1 = cheapest). 223 of 256 MartialArts templates in items.ocp are not profession-locked away from Bureaucrat, and none are locked to Bureaucrat. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 302946,
+     "name": "Corrupted Lord of Wisdom",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 1999
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 999
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1099
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 7,
+     "expansion": null,
+     "damage": "200-550 @ 1.8s/1.8s",
+     "dpsProxy": 104.2
+    },
+    {
+     "id": 294001,
+     "name": "Lady of Wisdom",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-400 @ 2.5s/2.5s",
+     "dpsProxy": 65
+    },
+    {
+     "id": 267258,
+     "name": "Dreadloch Shen Sticks",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 1300
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 650
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "310-490 @ 1.5s/1.5s",
+     "dpsProxy": 133.3
+    },
+    {
+     "id": 303406,
+     "name": "Junior Ofab Boar",
+     "ql": 220,
+     "primaryWield": "MartialArts",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 1499
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 999
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 799
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 219,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "235-290 @ 1.5s/1.5s",
+     "dpsProxy": 87.5
+    },
+    {
+     "id": 288664,
+     "name": "Kyr'Ozch Nunchacko",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "290-340 @ 1.5s/1.5s",
+     "dpsProxy": 105
+    },
+    {
+     "id": 301885,
+     "name": "X1-R4 Viral Force-Blades",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2199
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 1229
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 659
+      },
+      {
+       "special": "SneakAttack",
+       "requiredValue": 999
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "307-472 @ 1.4s/1.4s",
+     "dpsProxy": 139.1
+    },
+    {
+     "id": 293996,
+     "name": "Kuma Tonfa - Right Hand",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "325-495 @ 1.5s/1.5s",
+     "dpsProxy": 136.7
+    },
+    {
+     "id": 293993,
+     "name": "Kuma Tonfa - Left Hand",
+     "ql": 300,
+     "primaryWield": "MartialArts",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MartialArts",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "325-495 @ 1.5s/1.5s",
+     "dpsProxy": 136.7
+    }
+   ]
+  },
+  {
+   "weaponSkill": "MGSMG",
+   "skillCostFactor": 3.2,
+   "skillCostRank": 10,
+   "weaponsTotalInData": 562,
+   "weaponsUsable": 499,
+   "weaponsProfessionLocked": 0,
+   "playerWieldableModelsInData": 213,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 3.2 (rank 10 of 11 distinct cost tiers this profession has, 1 = cheapest). 499 of 562 MGSMG templates in items.ocp are not profession-locked away from Bureaucrat, and none are locked to Bureaucrat. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "Burst",
+    "FlingShot",
+    "FullAuto"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 283379,
+     "name": "Envy of the Xan",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1688
+      },
+      {
+       "special": "FullAuto",
+       "requiredValue": 1688
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "268-408 @ 1.2s/1.2s",
+     "dpsProxy": 140.8
+    },
+    {
+     "id": 244842,
+     "name": "Lady of Envy",
+     "ql": 299,
+     "primaryWield": "MGSMG",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1688
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": null,
+     "damage": "250-275 @ 2s/2s",
+     "dpsProxy": 65.6
+    },
+    {
+     "id": 265194,
+     "name": "Ofab Hawk Mk 6",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1575
+      },
+      {
+       "special": "FullAuto",
+       "requiredValue": 1890
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "325-475 @ 1.2s/1.2s",
+     "dpsProxy": 166.7
+    },
+    {
+     "id": 254520,
+     "name": "Kyr'Ozch Submachine Gun",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "245-385 @ 1.2s/1.2s",
+     "dpsProxy": 131.2
+    },
+    {
+     "id": 305027,
+     "name": "Gamma Reaper",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 1999
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1499
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 999
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 204,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-420 @ 1.1s/1.1s",
+     "dpsProxy": 152.3
+    },
+    {
+     "id": 283380,
+     "name": "Rhat'Ata Gun",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1688
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1125
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "268-408 @ 1.2s/1.2s",
+     "dpsProxy": 140.8
+    },
+    {
+     "id": 265187,
+     "name": "Ofab Hawk Mk 5",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1575
+      },
+      {
+       "special": "FullAuto",
+       "requiredValue": 1890
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "258-405 @ 1.2s/1.2s",
+     "dpsProxy": 138.1
+    },
+    {
+     "id": 265180,
+     "name": "Ofab Hawk Mk 4",
+     "ql": 300,
+     "primaryWield": "MGSMG",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "MGSMG",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1575
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "258-405 @ 1.2s/1.2s",
+     "dpsProxy": 138.1
+    }
+   ]
+  },
+  {
+   "weaponSkill": "Shotgun",
+   "skillCostFactor": 3.2,
+   "skillCostRank": 10,
+   "weaponsTotalInData": 603,
+   "weaponsUsable": 537,
+   "weaponsProfessionLocked": 0,
+   "playerWieldableModelsInData": 241,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 3.2 (rank 10 of 11 distinct cost tiers this profession has, 1 = cheapest). 537 of 603 Shotgun templates in items.ocp are not profession-locked away from Bureaucrat, and none are locked to Bureaucrat. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "AimedShot",
+    "Burst",
+    "FlingShot"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 280725,
+     "name": "Greed of the Xan",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1125
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "425-569 @ 1.5s/1.5s",
+     "dpsProxy": 165.7
+    },
+    {
+     "id": 244862,
+     "name": "Lord of Greed",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": null,
+     "damage": "225-450 @ 2s/2s",
+     "dpsProxy": 84.4
+    },
+    {
+     "id": 264891,
+     "name": "Ofab Silverback Mk 5",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1100
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "240-600 @ 1.4s/1.4s",
+     "dpsProxy": 150
+    },
+    {
+     "id": 254583,
+     "name": "Kyr'Ozch Shotgun",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "200-500 @ 1.5s/1.5s",
+     "dpsProxy": 116.7
+    },
+    {
+     "id": 301901,
+     "name": "Perfected Diamondine Kick Pistol",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2249
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 999
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 749
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "285-430 @ 1.2s/1.2s",
+     "dpsProxy": 149
+    },
+    {
+     "id": 264884,
+     "name": "Ofab Silverback Mk 4",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1100
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "210-525 @ 1.4s/1.4s",
+     "dpsProxy": 131.2
+    },
+    {
+     "id": 264898,
+     "name": "Ofab Silverback Mk 6",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1100
+      },
+      {
+       "special": "AimedShot",
+       "requiredValue": 1100
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "230-550 @ 1.5s/1.6s",
+     "dpsProxy": 125.8
+    },
+    {
+     "id": 302941,
+     "name": "Corrupted Lord of Greed",
+     "ql": 300,
+     "primaryWield": "Shotgun",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "Shotgun",
+       "requiredValue": 1999
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 1125
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 7,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-600 @ 1.8s/1.8s",
+     "dpsProxy": 125
+    }
+   ]
+  },
+  {
+   "weaponSkill": "1hBlunt",
+   "skillCostFactor": 3.2,
+   "skillCostRank": 10,
+   "weaponsTotalInData": 854,
+   "weaponsUsable": 820,
+   "weaponsProfessionLocked": 0,
+   "playerWieldableModelsInData": 368,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 3.2 (rank 10 of 11 distinct cost tiers this profession has, 1 = cheapest). 820 of 854 1hBlunt templates in items.ocp are not profession-locked away from Bureaucrat, and none are locked to Bureaucrat. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 281503,
+     "name": "Kur'Ush Mallet",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "369-468 @ 1.4s/1.4s",
+     "dpsProxy": 149.5
+    },
+    {
+     "id": 244742,
+     "name": "Lord of Abandonment",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2250
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1125
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1350
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 7,
+     "expansion": null,
+     "damage": "75-550 @ 3s/3s",
+     "dpsProxy": 52.1
+    },
+    {
+     "id": 267253,
+     "name": "Dreadloch Enhanced Panther",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1320
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "350-468 @ 1.4s/1.4s",
+     "dpsProxy": 146.1
+    },
+    {
+     "id": 264977,
+     "name": "Ofab Panther Mk 6",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1320
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "330-468 @ 1.4s/1.4s",
+     "dpsProxy": 142.5
+    },
+    {
+     "id": 254674,
+     "name": "Kyr'Ozch Hammer",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "300-425 @ 1.5s/1.5s",
+     "dpsProxy": 120.8
+    },
+    {
+     "id": 305035,
+     "name": "Skull of Anguish",
+     "ql": 1,
+     "primaryWield": "1hBlunt",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2149
+      }
+     ],
+     "specials": [
+      {
+       "special": "Brawl",
+       "requiredValue": 1249
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 499
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 1049
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 204,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "310-420 @ 1.3s/1.3s",
+     "dpsProxy": 140.4
+    },
+    {
+     "id": 280717,
+     "name": "Abandonment of the Xan",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 1799
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 899
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "350-468 @ 1.4s/1.4s",
+     "dpsProxy": 146.1
+    },
+    {
+     "id": 264970,
+     "name": "Ofab Panther Mk 5",
+     "ql": 300,
+     "primaryWield": "1hBlunt",
+     "line": "Ofab",
+     "wield": [
+      {
+       "skill": "1hBlunt",
+       "requiredValue": 2200
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1100
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1320
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 440
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "330-468 @ 1.5s/1.5s",
+     "dpsProxy": 133
+    }
+   ]
+  },
+  {
+   "weaponSkill": "RangedEnergy",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "weaponsTotalInData": 451,
+   "weaponsUsable": 442,
+   "weaponsProfessionLocked": 3,
+   "playerWieldableModelsInData": 193,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 4 (rank 11 of 11 distinct cost tiers this profession has, 1 = cheapest). 442 of 451 RangedEnergy templates in items.ocp are not profession-locked away from Bureaucrat, and 3 are locked to Bureaucrat by a ToWield Profession(60) EqualTo 8 criterion. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "AimedShot",
+    "Burst",
+    "FlingShot",
+    "FullAuto"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 208058,
+     "name": "Freedom Arms Negotiator 2569",
+     "ql": 50,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 192
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 96
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "9-90 @ 1.15s/2s",
+     "dpsProxy": 15.7
+    },
+    {
+     "id": 208057,
+     "name": "Freedom Arms Negotiator 2570",
+     "ql": 49,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 188
+      }
+     ],
+     "specials": [
+      {
+       "special": "FlingShot",
+       "requiredValue": 94
+      }
+     ],
+     "professionLock": [
+      "Profession EqualTo Bureaucrat"
+     ],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "9-88 @ 1.15s/2s",
+     "dpsProxy": 15.4
+    },
+    {
+     "id": 267128,
+     "name": "Dreadloch Rapier",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1000
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1000
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "230-350 @ 1s/1s",
+     "dpsProxy": 145
+    },
+    {
+     "id": 254646,
+     "name": "Kyr'Ozch Energy Pistol - Type 5",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1500
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1000
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 211229,
+     "name": "Serious Destruction",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 1400
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "Shadowlands",
+     "damage": "100-425 @ 1s/1s",
+     "dpsProxy": 131.2
+    },
+    {
+     "id": 254639,
+     "name": "Kyr'Ozch Energy Pistol",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "225-325 @ 1s/1s",
+     "dpsProxy": 137.5
+    },
+    {
+     "id": 211228,
+     "name": "Destruction",
+     "ql": 299,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 1395
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "Shadowlands",
+     "damage": "100-424 @ 1s/1s",
+     "dpsProxy": 131
+    },
+    {
+     "id": 257126,
+     "name": "Amplified Sleek Cannon",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 810
+      },
+      {
+       "skill": "HeavyWeapons",
+       "requiredValue": 540
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 675
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 200,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "221-564 @ 1.8s/1.4s",
+     "dpsProxy": 122.7
+    },
+    {
+     "id": 267124,
+     "name": "Dreadlock Thrasher",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 2100
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "280-450 @ 1.5s/1.5s",
+     "dpsProxy": 121.7
+    },
+    {
+     "id": 267125,
+     "name": "Dreadloch Thrasher",
+     "ql": 300,
+     "primaryWield": "RangedEnergy",
+     "line": "Dreadloch",
+     "wield": [
+      {
+       "skill": "RangedEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "Burst",
+       "requiredValue": 1000
+      },
+      {
+       "special": "FlingShot",
+       "requiredValue": 1000
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 209,
+     "titleLevelReq": null,
+     "expansion": "LostEden",
+     "damage": "275-550 @ 1.7s/1.7s",
+     "dpsProxy": 121.3
+    }
+   ]
+  },
+  {
+   "weaponSkill": "MeleeEnergy",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "weaponsTotalInData": 280,
+   "weaponsUsable": 257,
+   "weaponsProfessionLocked": 1,
+   "playerWieldableModelsInData": 115,
+   "professionNanoBuffLines": null,
+   "role": "Bureaucrat IP cost factor 4 (rank 11 of 11 distinct cost tiers this profession has, 1 = cheapest). 257 of 280 MeleeEnergy templates in items.ocp are not profession-locked away from Bureaucrat, and 1 are locked to Bureaucrat by a ToWield Profession(60) EqualTo 8 criterion. No Bureaucrat nano line in bureaucrat-nanos.json buffs this skill.",
+   "allowedSpecialsObservedForType": [
+    "Brawl",
+    "Dimach",
+    "FastAttack",
+    "SneakAttack"
+   ],
+   "representativeWeapons": [
+    {
+     "id": 280730,
+     "name": "Dusk of the Xan",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 1799
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-350 @ 1s/1s",
+     "dpsProxy": 162.5
+    },
+    {
+     "id": 246244,
+     "name": "Sword of Dawn",
+     "ql": 200,
+     "primaryWield": "MeleeEnergy",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 999
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-750 @ 2s/2s",
+     "dpsProxy": 125
+    },
+    {
+     "id": 254702,
+     "name": "Kyr'Ozch Energy Hammer",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "325-400 @ 1s/1s",
+     "dpsProxy": 181.2
+    },
+    {
+     "id": 246243,
+     "name": "Broken Sword of Dawn",
+     "ql": 199,
+     "primaryWield": "MeleeEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 500
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "126-376 @ 1s/1s",
+     "dpsProxy": 125.5
+    },
+    {
+     "id": 254709,
+     "name": "Kyr'Ozch Energy Hammer - Type 112",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Kyr'Ozch",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 2000
+      }
+     ],
+     "specials": [
+      {
+       "special": "FastAttack",
+       "requiredValue": 1000
+      },
+      {
+       "special": "Brawl",
+       "requiredValue": 1200
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 400
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": null,
+     "expansion": "AlienInvasion",
+     "damage": "325-400 @ 1s/1s",
+     "dpsProxy": 181.2
+    },
+    {
+     "id": 280729,
+     "name": "Dawn of the Xan",
+     "ql": 300,
+     "primaryWield": "MeleeEnergy",
+     "line": "Xan",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 1799
+      }
+     ],
+     "specials": [
+      {
+       "special": "SneakAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "FastAttack",
+       "requiredValue": 899
+      },
+      {
+       "special": "Dimach",
+       "requiredValue": 450
+      }
+     ],
+     "professionLock": [],
+     "levelReq": 0,
+     "titleLevelReq": 6,
+     "expansion": "LegacyOfTheXan",
+     "damage": "300-350 @ 1s/1s",
+     "dpsProxy": 162.5
+    },
+    {
+     "id": 246255,
+     "name": "Broken Sword of Dusk",
+     "ql": 199,
+     "primaryWield": "MeleeEnergy",
+     "line": "other",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 500
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "126-376 @ 1s/1s",
+     "dpsProxy": 125.5
+    },
+    {
+     "id": 246256,
+     "name": "Sword of Dusk",
+     "ql": 200,
+     "primaryWield": "MeleeEnergy",
+     "line": "Beast",
+     "wield": [
+      {
+       "skill": "MeleeEnergy",
+       "requiredValue": 999
+      }
+     ],
+     "specials": [],
+     "professionLock": [],
+     "levelReq": 199,
+     "titleLevelReq": null,
+     "expansion": null,
+     "damage": "250-750 @ 2s/2s",
+     "dpsProxy": 125
+    }
+   ]
+  }
+ ],
+ "professionOnlyWeapons": {
+  "count": 28,
+  "byWeaponSkill": [
+   {
+    "weaponSkill": "Pistol",
+    "count": 24
+   },
+   {
+    "weaponSkill": "RangedEnergy",
+    "count": 3
+   },
+   {
+    "weaponSkill": "MeleeEnergy",
+    "count": 1
+   }
+  ],
+  "distinctNames": [
+   "Dark Pistol",
+   "Dark Pistol of The Revoked",
+   "Dreadloch Balanced Freedom Arms",
+   "Freedom Arms Negotiator 2569",
+   "Freedom Arms Negotiator 2570",
+   "Mobilizer Pistol",
+   "Motivator Pistol",
+   "Pistol of Education",
+   "Pistol of Indoctrination",
+   "Sinister Pistol of The Revoked",
+   "Sleek Minor Fantastic",
+   "Sleek Minor Fantastic 04",
+   "Small Ebony Figurine",
+   "Special Edition Kyr'Ozch Pistol"
+  ],
+  "note": "Templates whose ToWield carries a Profession EqualTo Bureaucrat(8) criterion. Some of these are locked to a GROUP of professions (e.g. 'Small Ebony Figurine'), not to Bureaucrat alone - the professionLock field on each representative weapon shows the full lock."
+ },
+ "otherWeaponSkillsInData": [
+  {
+   "weaponSkill": "AssaultRifle",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 1467,
+   "totalInData": 1547
+  },
+  {
+   "weaponSkill": "1hEdged",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 887,
+   "totalInData": 960
+  },
+  {
+   "weaponSkill": "Rifle",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 852,
+   "totalInData": 905
+  },
+  {
+   "weaponSkill": "Piercing",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 712,
+   "totalInData": 820
+  },
+  {
+   "weaponSkill": "2hEdged",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 605,
+   "totalInData": 764
+  },
+  {
+   "weaponSkill": "2hBlunt",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 446,
+   "totalInData": 503
+  },
+  {
+   "weaponSkill": "Bow",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 352,
+   "totalInData": 377
+  },
+  {
+   "weaponSkill": "Grenade",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 319,
+   "totalInData": 359
+  },
+  {
+   "weaponSkill": "HeavyWeapons",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 84,
+   "totalInData": 85
+  },
+  {
+   "weaponSkill": "MultiMelee",
+   "skillCostFactor": 4,
+   "skillCostRank": 11,
+   "usableInData": 0,
+   "totalInData": 6
+  }
+ ],
+ "unverifiedOrCaveats": [
+  "The usable weapon-skill list is an operator choice (see howWeaponSkillsWereChosen). The three measured signals recorded per type are the evidence; the choice itself is a judgement.",
+  "Requirement values scale with QL; a named weapon spans a QL range. Values shown are for the exact template QL listed.",
+  "dpsProxy = avgDamage / (attack + recharge) from the item's own stats. It is a comparison number only - it ignores initiative caps, crit, add-damage, buffs and specials.",
+  "Representative weapons are the highest-dpsProxy model of each weapon LINE present in the skill plus the next highest-dpsProxy models; that is a stated selection rule, not a community tier list.",
+  "GM/test/monster templates are filtered out with the same measured bounds as bureaucrat-weapons-endgame.json (max damage >= 1000, primary requirement > 2600, or QL >= 200 with a requirement under 100). See that file's definition.exclusions."
+ ],
+ "_sources": [
+  {
+   "kind": "local",
+   "what": "Weapon templates, ToWield criteria, specials, profession lock, expansion and title-level gates, damage/delay stats",
+   "where": "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (client 18.8.50_EP1)"
+  },
+  {
+   "kind": "local",
+   "what": "Id -> Name verification",
+   "where": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql"
+  },
+  {
+   "kind": "local",
+   "what": "Profession IP cost factors per skill",
+   "where": "AOBuddy/GameData/profiles/reference/skillcaps.json"
+  },
+  {
+   "kind": "local",
+   "what": "Profession weapon-buff nano lines (evidence that the kit supports a weapon skill)",
+   "where": "AOBuddy/GameData/profiles/bureaucrat-nanos.json"
+  },
+  {
+   "kind": "local",
+   "what": "Per-weapon acquisition, endgame tiers and the Xan walkthrough",
+   "where": "AOBuddy/GameData/profiles/bureaucrat-weapons-endgame.json"
+  }
+ ],
+ "_unverified": [
+  "The client data has no 'profession X uses weapon skill Y' table. The seven skills in usableWeaponTypes are an OPERATOR CHOICE made on a stated, data-driven rule (see howWeaponSkillsWereChosen and the _deviations block); the justification numbers beside each are computed, the selection itself is a judgement.",
+  "Wield requirements, specials and damage are read at each representative's own QL and scale with QL.",
+  "'Where to get' for these representatives lives in bureaucrat-weapon-sources.json; 25 of the 68 representative ids have no cited acquisition and say so."
+ ],
+ "_deviations": [
+  "PISTOL IS THE ONLY CHEAP WEAPON SKILL A BUREAUCRAT HAS: IP cost factor 1.6. The next cheapest is Martial Arts at 2.8, then 1h Blunt / MG-SMG / Shotgun / Brawling / Sharp Objects at 3.2, and EVERYTHING else - including Assault Rifle, Rifle, Ranged Energy, Bow, Grenade, Heavy Weapons, both 2h skills, 1h Edged, Piercing, Melee Energy and every ranged special including Fling Shot - is 4.0. The Shade file could list three real options and the Soldier file eight; the Crat has one.",
+  "The seven skills here were chosen by a rule that is stated rather than remembered: include a skill if its IP cost is 3.2 or lower, OR if at least one weapon in items.ocp is profession-locked to Bureaucrat in that skill. That admits Pistol (1.6), Martial Arts (2.8), MG-SMG, Shotgun and 1h Blunt (3.2), plus Ranged Energy and Melee Energy (both 4.0, but carrying Crat-locked models).",
+  "28 WEAPONS ARE LOCKED TO BUREAUCRAT - 24 Pistol, 3 Ranged Energy, 1 Melee Energy. The Metaphysicist file's equivalent block is named metaphysicistOnlyWeapons; this file uses the generic professionOnlyWeapons key. The Crat's locked list is almost pure Pistol, which is the single strongest piece of in-data evidence for the skill choice above.",
+  "THE 'SMALL EBONY FIGURINE' TRAP BITES HERE, ON A CRAT-LOCKED ITEM. Playbook section 9b warns that one name covers nine templates. Two of them are Bureaucrat-locked and they are DIFFERENT WEAPONS: 202404 is QL223 Melee Energy (req 649) and 202420 is QL203 Pistol (req 549). Any row that printed 'Small Ebony Figurine' without its id would be wrong about the weapon skill.",
+  "There is no Multi Melee or Multi Ranged weapon a Bureaucrat can wield: of the 6 MultiMelee templates in the data, 0 are usable by profession 8. Dual wield for a Crat is gated by the character's Multi skill (cost 4.0), not by the weapon."
+ ]
+}

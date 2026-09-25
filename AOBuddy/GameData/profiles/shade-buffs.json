@@ -1,0 +1,1847 @@
+{
+ "profession": "Shade",
+ "professionId": 15,
+ "slug": "shade",
+ "purpose": "Buff reference for AOBuddy10 Shade decision-making. Unlike every other class profiled so far, the outward-facing half of this file is almost empty: a Shade's nanos are self-only. selfBuffs below is EXHAUSTIVE - all 79 castable nanos from shade-nanos.json, not a sample.",
+ "dataSources": {
+  "selfAndGivesIds": "AOBuddy/GameData/profiles/shade-nanos.json (nanos.ocp extraction, client 18.8.50_EP1, 79 castable nanos found by Profession(60)==15 or VisualProfession(368)==15 on a ToUse action). Ids, nano lines, level requirements, cast requirements and effect functions are all from that file.",
+  "whereToBuy": "AOBuddy/GameData/profiles/shade-nano-sources.json (crystal item criteria joined per nano id).",
+  "crossProfAndGeneral": "ao-universe.com Comprehensive Shade Guide and Buffing Guide, wiki.aodb.us. Cross-profession buff ids are NOT in the local Shade data (they are other professions' nanos) so ids are null and the entries are marked source=web."
+ },
+ "selfBuffs": [
+  {
+   "name": "Shade's Caress",
+   "id": 266300,
+   "nanoLine": "NemesisNanoPrograms",
+   "nanoStrain": 1000,
+   "role": "PvP",
+   "minLevel": 100,
+   "effect": "CastNano[275242]",
+   "castReqs": [
+    "Expansion op22 32",
+    "PsychologicalModification > 799",
+    "Profession == 15",
+    "SensoryImprovement > 799",
+    "Level > 99"
+   ],
+   "keepUp": false,
+   "lineRole": "Shade's Caress: the Shade nemesis nano. ao-universe notes it removes auras from Keeper NCUs.",
+   "where": "mission-roll / Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[216694,265454]; nanoProgramExpansionBits=32; combinedExpansionBits=32",
+   "category": "Misc / Utility"
+  },
+  {
+   "name": "Spirit Siphon",
+   "id": 297342,
+   "nanoLine": "SpiritDrain",
+   "nanoStrain": 1035,
+   "role": "core mechanic",
+   "minLevel": 0,
+   "effect": "CastNano[301114]; SpawnItem[IERC,5,0]; SpawnItem[IERC,10,0]; SpawnItem[IERC,20,0]; SpawnItem[IERC,30,0]; SpawnItem[IERC,40,0]; SpawnItem[IERC,50,0]; SpawnItem[IERC,60,0]; SpawnItem[IERC,70,0]; SpawnItem[IERC,80,0]; SpawnItem[IERC,90,0]; SpawnItem[IERC,100,0]; SpawnItem[IERC,110,0]; SpawnItem[IERC,120,0]; SpawnItem[IERC,130,0]; SpawnItem[IERC,140,0]; SpawnItem[IERC,150,0]; SpawnItem[IERC,160,0]; SpawnItem[IERC,170,0]; SpawnItem[IERC,180,0]; SpawnItem[IERC,190,0]; SpawnItem[IERC,200,0]; SpawnItem[IERC,210,0]; SpawnItem[IERC,220,0]; SpawnItem[IERC,230,0]; SpawnItem[IERC,240,0]; SpawnItem[IERC,250,0]; SpawnItem[IERC,260,0]; SpawnItem[IERC,270,0]; SpawnItem[IERC,280,0]; SpawnItem[IERC,290,0]; SpawnItem[IERC,300,0]; Hit[27,-1,0,0]",
+   "castReqs": [
+    "PercentRemainingHealth < 21",
+    "Flags op4 0",
+    "Expansion op22 2",
+    "Profession == 15",
+    "SelectedTargetType op22 16"
+   ],
+   "keepUp": false,
+   "lineRole": "Spirit Siphon: the nano that produces Soul Capsules, and therefore Spirits. See shade-symbiants.json. ao-universe says it is based on Dimach skill.",
+   "where": "shadowlands / Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[297333,303969,303970,303971,303972,303973,303974,304516]; nanoProgramExpansionBits=2; combinedExpansionBits=2",
+   "category": "Summon Weapon / Shield (Creation)"
+  },
+  {
+   "name": "Nanite Depravation",
+   "id": 275839,
+   "nanoLine": "WeaponEffectAdd_On2",
+   "nanoStrain": 861,
+   "role": "debuff proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[25,275840]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1544",
+    "BiologicalMetamorphosis > 1554",
+    "PsychologicalModification > 1629",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": false,
+   "lineRole": "Nanite Depravation / Basic Nanite Depravation: an offensive proc that debuffs the target.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,275706]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Misc / Utility"
+  },
+  {
+   "name": "Basic Nanite Depravation",
+   "id": 275841,
+   "nanoLine": "WeaponEffectAdd_On2",
+   "nanoStrain": 861,
+   "role": "debuff proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[21,275842]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1334",
+    "BiologicalMetamorphosis > 1444",
+    "PsychologicalModification > 1509",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": false,
+   "lineRole": "Nanite Depravation / Basic Nanite Depravation: an offensive proc that debuffs the target.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,275706]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Misc / Utility"
+  },
+  {
+   "name": "Winding Serpent",
+   "id": 301593,
+   "nanoLine": "AADBuffs",
+   "nanoStrain": 1002,
+   "role": "defence",
+   "minLevel": 0,
+   "effect": "Modify AddAllDef +25",
+   "castReqs": [
+    "PsychologicalModification > 337",
+    "SensoryImprovement > 337",
+    "VisualProfession == 15",
+    "Expansion op22 32"
+   ],
+   "keepUp": true,
+   "lineRole": "Winding Serpent: flat Add All Def.",
+   "where": "mission-roll / Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[301594]; nanoProgramExpansionBits=32; combinedExpansionBits=32",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Improved Prowler",
+   "id": 273393,
+   "nanoLine": "AgilityBuff",
+   "nanoStrain": 195,
+   "role": "defence",
+   "minLevel": 0,
+   "effect": "Modify EvadeClsC +140; Modify DuckExp +80; Modify DodgeRanged +80; Modify Agility +110; Modify Concealment +100; Modify RunSpeed +350",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1429",
+    "SensoryImprovement > 1243",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,273394]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sneak",
+   "id": 210746,
+   "nanoLine": "AgilityBuff",
+   "nanoStrain": 195,
+   "role": "defence",
+   "minLevel": 25,
+   "effect": "Modify EvadeClsC +30; Modify DuckExp +15; Modify DodgeRanged +15; Modify Agility +25; Modify Concealment +20",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 218",
+    "SensoryImprovement > 194",
+    "Level > 24"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210747,216694,222585,303970,303971]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Mugger",
+   "id": 210748,
+   "nanoLine": "AgilityBuff",
+   "nanoStrain": 195,
+   "role": "defence",
+   "minLevel": 75,
+   "effect": "Modify EvadeClsC +50; Modify DuckExp +25; Modify DodgeRanged +25; Modify Concealment +45; Modify Agility +45",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 503",
+    "SensoryImprovement > 461",
+    "Level > 74"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210749,216694,222586,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Scrounger",
+   "id": 210750,
+   "nanoLine": "AgilityBuff",
+   "nanoStrain": 195,
+   "role": "defence",
+   "minLevel": 135,
+   "effect": "Modify EvadeClsC +75; Modify DuckExp +35; Modify DodgeRanged +35; Modify Concealment +60; Modify Agility +65",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 838",
+    "SensoryImprovement > 762",
+    "Level > 134"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210751,216694,303972,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Prowler",
+   "id": 210752,
+   "nanoLine": "AgilityBuff",
+   "nanoStrain": 195,
+   "role": "defence",
+   "minLevel": 185,
+   "effect": "Modify EvadeClsC +70; Modify DuckExp +40; Modify DodgeRanged +40; Modify Agility +80; Modify Concealment +80",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1011",
+    "SensoryImprovement > 930",
+    "Level > 184"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210753,216694,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Dual Defender",
+   "id": 210804,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 0,
+   "effect": "Modify MultiMelee +20; Modify Parry +12",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 95",
+    "SensoryImprovement > 81"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210805,216694,222590,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Triple Wall",
+   "id": 275843,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 0,
+   "effect": "Modify MultiMelee +180; Modify Parry +100; Modify MartialArts +30; Modify AddAllOff +30; Modify AddAllDef +30; Modify MeleeInit +150",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1429",
+    "SensoryImprovement > 1243",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,275854]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Double Cover",
+   "id": 210806,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 25,
+   "effect": "Modify MultiMelee +45; Modify Parry +27",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 258",
+    "SensoryImprovement > 234",
+    "Level > 24"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210807,216694,222591,303970,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Twice the Shield",
+   "id": 210808,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 75,
+   "effect": "Modify MultiMelee +80; Modify Parry +48",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 601",
+    "SensoryImprovement > 555",
+    "Level > 74"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210809,216694,222592,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Double Fence",
+   "id": 210810,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 145,
+   "effect": "Modify MultiMelee +112; Modify Parry +68",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 875",
+    "SensoryImprovement > 801",
+    "Level > 144"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210811,216694,303972,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Duplex Wall",
+   "id": 210812,
+   "nanoLine": "MultiwieldBuff",
+   "nanoStrain": 245,
+   "role": "off-hand",
+   "minLevel": 195,
+   "effect": "Modify MultiMelee +130; Modify Parry +80",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1031",
+    "SensoryImprovement > 947",
+    "Level > 194"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210813,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ritualistic Touch",
+   "id": 210353,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[25,210341]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 31",
+    "BiologicalMetamorphosis > 31",
+    "PsychologicalModification > 37"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210354,216694,222552,303969,304516]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ritualistic Blow",
+   "id": 210355,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[25,210342]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 105",
+    "BiologicalMetamorphosis > 105",
+    "PsychologicalModification > 123"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210356,216694,222553,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Rudimentary Dissipation",
+   "id": 210387,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[15,210382]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 129",
+    "BiologicalMetamorphosis > 129",
+    "PsychologicalModification > 148"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210388,216694,222554,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Degeneration of Rapidity",
+   "id": 210401,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[100,301120]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 224",
+    "BiologicalMetamorphosis > 224",
+    "PsychologicalModification > 250",
+    "Specialization op22 1",
+    "EquippedWeapons op107 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210402,216694,303970,303971,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Degeneration of Celerity",
+   "id": 210407,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[100,301121]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1028",
+    "BiologicalMetamorphosis > 1028",
+    "PsychologicalModification > 1118",
+    "Specialization op22 4",
+    "EquippedWeapons op107 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210408,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Degeneration of Haste",
+   "id": 224177,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 0,
+   "effect": "AddOffProc[100,224156]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1539",
+    "BiologicalMetamorphosis > 1549",
+    "PsychologicalModification > 1800",
+    "Specialization op22 8",
+    "EquippedWeapons op107 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224178]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ritualistic Grasp",
+   "id": 210357,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 25,
+   "effect": "AddOffProc[25,210343]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 202",
+    "BiologicalMetamorphosis > 202",
+    "PsychologicalModification > 228",
+    "Level > 24",
+    "Specialization op22 1"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210358,216694,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Quintessence of Incapacitation",
+   "id": 210376,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 25,
+   "effect": "AddOffProc[10,210373]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 251",
+    "BiologicalMetamorphosis > 251",
+    "PsychologicalModification > 278",
+    "Level > 24",
+    "Specialization op22 1"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210377,216694,303970,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ritualistic Caress",
+   "id": 210359,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 50,
+   "effect": "AddOffProc[25,210344]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 304",
+    "BiologicalMetamorphosis > 304",
+    "PsychologicalModification > 334",
+    "Level > 49",
+    "Specialization op22 1"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210360,216694,303970,303971,303972]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Primitive Dissipation",
+   "id": 210389,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 50,
+   "effect": "AddOffProc[15,210383]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 367",
+    "BiologicalMetamorphosis > 367",
+    "PsychologicalModification > 408",
+    "Level > 49",
+    "Specialization op22 1"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210390,216694,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ritualistic Embrace",
+   "id": 210361,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 75,
+   "effect": "AddOffProc[25,210345]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 495",
+    "BiologicalMetamorphosis > 495",
+    "PsychologicalModification > 542",
+    "Level > 74",
+    "Specialization op22 1"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210362,216694,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sacrificial Touch",
+   "id": 210363,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 100,
+   "effect": "AddOffProc[25,210346]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 645",
+    "BiologicalMetamorphosis > 645",
+    "PsychologicalModification > 701",
+    "Level > 99",
+    "Specialization op22 2"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210364,216694,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Quintessence of Paralyzation",
+   "id": 210378,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 100,
+   "effect": "AddOffProc[12,210375]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 706",
+    "BiologicalMetamorphosis > 706",
+    "PsychologicalModification > 773",
+    "Level > 99",
+    "Specialization op22 2"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210379,216694,303972,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Intrinsic Dissipation",
+   "id": 210391,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 100,
+   "effect": "AddOffProc[15,210384]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 699",
+    "BiologicalMetamorphosis > 699",
+    "PsychologicalModification > 765",
+    "Level > 99",
+    "Specialization op22 2"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210392,216694,303972,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sacrificial Blow",
+   "id": 210365,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 135,
+   "effect": "AddOffProc[25,210347]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 848",
+    "BiologicalMetamorphosis > 848",
+    "PsychologicalModification > 930",
+    "Level > 134",
+    "Specialization op22 2"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210366,216694,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Elemental Dissipation",
+   "id": 210393,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 155,
+   "effect": "AddOffProc[15,210385]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 926",
+    "BiologicalMetamorphosis > 926",
+    "PsychologicalModification > 1006",
+    "Level > 154",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210394,216694,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sacrificial Grasp",
+   "id": 210367,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 165,
+   "effect": "AddOffProc[25,210348]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 939",
+    "BiologicalMetamorphosis > 939",
+    "PsychologicalModification > 1018",
+    "Level > 164",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210368,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sacrificial Caress",
+   "id": 210369,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 175,
+   "effect": "AddOffProc[25,210349]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1010",
+    "BiologicalMetamorphosis > 1010",
+    "PsychologicalModification > 1095",
+    "Level > 174",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210370,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sacrificial Embrace",
+   "id": 210371,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 195,
+   "effect": "AddOffProc[25,210350]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1051",
+    "BiologicalMetamorphosis > 1051",
+    "PsychologicalModification > 1147",
+    "Level > 194",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210372,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Quintessence of Petrification",
+   "id": 210380,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 195,
+   "effect": "AddOffProc[13,210375]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1046",
+    "BiologicalMetamorphosis > 1046",
+    "PsychologicalModification > 1140",
+    "Level > 194",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210381,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Primordial Dissipation",
+   "id": 210395,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 195,
+   "effect": "AddOffProc[15,210386]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1043",
+    "BiologicalMetamorphosis > 1043",
+    "PsychologicalModification > 1137",
+    "Level > 194",
+    "Specialization op22 4"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210396,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ceremonial Grasp",
+   "id": 224163,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 203,
+   "effect": "AddOffProc[25,224114]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1158",
+    "BiologicalMetamorphosis > 1159",
+    "PsychologicalModification > 1284",
+    "Level > 202",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224164,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Quintessence of Transfixion",
+   "id": 224169,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 207,
+   "effect": "AddOffProc[14,224153]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1296",
+    "BiologicalMetamorphosis > 1299",
+    "PsychologicalModification > 1463",
+    "Level > 206",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224170]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Primal Dissipation",
+   "id": 224159,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 209,
+   "effect": "AddOffProc[15,224155]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1227",
+    "BiologicalMetamorphosis > 1232",
+    "PsychologicalModification > 1399",
+    "Level > 208",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224160]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ceremonial Caress",
+   "id": 224165,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 212,
+   "effect": "AddOffProc[25,224112]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1319",
+    "BiologicalMetamorphosis > 1324",
+    "PsychologicalModification > 1519",
+    "Level > 211",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224166]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Chthonic Dissipation",
+   "id": 224161,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 216,
+   "effect": "AddOffProc[15,224154]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1444",
+    "BiologicalMetamorphosis > 1415",
+    "PsychologicalModification > 1679",
+    "Level > 215",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224162]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Ceremonial Embrace",
+   "id": 224167,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 218,
+   "effect": "AddOffProc[26,224113]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1499",
+    "BiologicalMetamorphosis > 1514",
+    "PsychologicalModification > 1760",
+    "Level > 217",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224168]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Quintessence of Stupefication",
+   "id": 224171,
+   "nanoLine": "ShadeProcBuff",
+   "nanoStrain": 521,
+   "role": "proc",
+   "minLevel": 220,
+   "effect": "AddOffProc[15,224151]",
+   "castReqs": [
+    "Profession == 15",
+    "SpaceTime > 1569",
+    "BiologicalMetamorphosis > 1579",
+    "PsychologicalModification > 1840",
+    "Level > 219",
+    "Specialization op22 8"
+   ],
+   "keepUp": true,
+   "lineRole": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,224172]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Henchman",
+   "id": 210321,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +30",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 81",
+    "SensoryImprovement > 81"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210322,216695,222549,303867,303868,303885,303886,303891,303892,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Devotee",
+   "id": 210323,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +70",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 308",
+    "SensoryImprovement > 308"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210324,216695,222550,303869,303870,303886,303887,303893,303894,303970,303971,303972]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Minion",
+   "id": 210325,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +90",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 555",
+    "SensoryImprovement > 555"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210326,216695,222551,303870,303888,303889,303893,303894,303895,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Disciple",
+   "id": 210327,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +110",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 789",
+    "SensoryImprovement > 789"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210328,216695,303871,303889,303895,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Fanatic",
+   "id": 210329,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +135",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 878",
+    "SensoryImprovement > 878"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210330,216695,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Fervor of the Zealot",
+   "id": 210331,
+   "nanoLine": "FastAttackBuffs",
+   "nanoStrain": 519,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify FastAttack +150",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 2",
+    "Profession == 9",
+    "PsychologicalModification > 949",
+    "SensoryImprovement > 949"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210332,216695,303872,303890,303896,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Slap of the Zombie",
+   "id": 210732,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify Dimach +19; Modify MartialArts +16",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 40",
+    "SensoryImprovement > 35"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210733,216694,222581,303969,303970,304516]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Knock of the Poltergeist",
+   "id": 210734,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 25,
+   "effect": "Modify Dimach +40; Modify MartialArts +34",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 182",
+    "SensoryImprovement > 158",
+    "Level > 24"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210735,216694,222582,303970,303971]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Kick of the Phantom",
+   "id": 210736,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 50,
+   "effect": "Modify Dimach +75; Modify MartialArts +64",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 447",
+    "SensoryImprovement > 396",
+    "Level > 49"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210737,216694,222583,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Hand of the Shadow",
+   "id": 210738,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 100,
+   "effect": "Modify Dimach +94; Modify MartialArts +80",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 666",
+    "SensoryImprovement > 611",
+    "Level > 99"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210739,216694,222584,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Touch of the Specter",
+   "id": 210740,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 135,
+   "effect": "Modify Dimach +110; Modify MartialArts +94",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 861",
+    "SensoryImprovement > 786",
+    "Level > 134"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210741,216694,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Voice of the Banshee",
+   "id": 210742,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 165,
+   "effect": "Modify Dimach +127; Modify MartialArts +108",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 962",
+    "SensoryImprovement > 890",
+    "Level > 164"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210743,216694,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Kiss of the Vampire",
+   "id": 210744,
+   "nanoLine": "MartialArtsBuff",
+   "nanoStrain": 209,
+   "role": "special",
+   "minLevel": 195,
+   "effect": "Modify Dimach +140; Modify MartialArts +120",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1046",
+    "SensoryImprovement > 959",
+    "Level > 194"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210745,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Symbiosis",
+   "id": 225281,
+   "nanoLine": "NOSTACKING",
+   "nanoStrain": 0,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "CastNano[209986]; CastNano[209987]; CastNano[210019]; CastNano[210020]",
+   "castReqs": [
+    "Profession == 15",
+    "Flags op4 0"
+   ],
+   "keepUp": false,
+   "lineRole": "Client \"NOSTACKING\" strain. Symbiosis (id 225281) is the Sublime Rapport perk-level-10 special that upgrades the Totemic Rites \"Ritual\" perks; Pierce Nerves (id 266310) shows Modify Piercing -1000, i.e. it is a DEBUFF cast on a target, not a self-buff - the nano extraction cannot tell target from self, so this is flagged.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. No nano-crystal item was located in items.ocp for this nano id. crystalItem(s)=[]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Misc / Utility"
+  },
+  {
+   "name": "Pierce Nerves",
+   "id": 266310,
+   "nanoLine": "NOSTACKING",
+   "nanoStrain": 0,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify Piercing -1000",
+   "castReqs": [
+    "Expansion op22 32",
+    "MaterialCreation > 799",
+    "Profession == 1",
+    "SpaceTime > 799",
+    "Profession == 15"
+   ],
+   "keepUp": false,
+   "lineRole": "Client \"NOSTACKING\" strain. Symbiosis (id 225281) is the Sublime Rapport perk-level-10 special that upgrades the Totemic Rites \"Ritual\" perks; Pierce Nerves (id 266310) shows Modify Piercing -1000, i.e. it is a DEBUFF cast on a target, not a self-buff - the nano extraction cannot tell target from self, so this is flagged.",
+   "where": "mission-roll / Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[38522,265441]; nanoProgramExpansionBits=32; combinedExpansionBits=32",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Footpad Apprentice",
+   "id": 210787,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +30",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 141",
+    "SensoryImprovement > 123"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210788,216694,222587,303885,303886,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Silent Dagger",
+   "id": 210789,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +70",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 308",
+    "SensoryImprovement > 308"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210790,216694,222588,303844,303845,303886,303887,303888,303889,303970,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Dagger in the Back",
+   "id": 210791,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +90",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 681",
+    "SensoryImprovement > 681"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210792,216694,222589,303846,303888,303889,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Backpiercer",
+   "id": 210793,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +110",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 891",
+    "SensoryImprovement > 891"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210794,216694,303847,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Shuffle of the Rogue",
+   "id": 210795,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +135",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 988",
+    "SensoryImprovement > 988"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210796,216694,303847,303890,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Backstabber",
+   "id": 210797,
+   "nanoLine": "SneakAttackBuffs",
+   "nanoStrain": 208,
+   "role": "special",
+   "minLevel": 0,
+   "effect": "Modify SneakAttack +150",
+   "castReqs": [
+    "Profession == 15",
+    "Profession == 14",
+    "Profession == 6",
+    "PsychologicalModification > 1034",
+    "SensoryImprovement > 1034"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[210798,216694,303848,303890,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Sneaking Health Drain",
+   "id": 273390,
+   "nanoLine": "HealthDrain",
+   "nanoStrain": 844,
+   "role": "sustain",
+   "minLevel": 0,
+   "effect": "CastNano[273391]; Hit[27,-950,-950,91]; Hit[27,-950,-950,91]",
+   "castReqs": [
+    "BiologicalMetamorphosis > 1554",
+    "SpaceTime > 1544",
+    "Profession == 15",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": false,
+   "lineRole": "Health-drain nanos. Dissolving Vitality is the lower version of Sneaking Health Drain. These are the Shade substitute for a heal.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,273392]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Heals / HoT"
+  },
+  {
+   "name": "Dissolving Vitality",
+   "id": 301895,
+   "nanoLine": "HealthDrain",
+   "nanoStrain": 844,
+   "role": "sustain",
+   "minLevel": 0,
+   "effect": "CastNano[301894]; Hit[27,-250,-250,91]; Hit[27,-250,-250,91]",
+   "castReqs": [
+    "BiologicalMetamorphosis > 699",
+    "SpaceTime > 699",
+    "Profession == 15"
+   ],
+   "keepUp": false,
+   "lineRole": "Health-drain nanos. Dissolving Vitality is the lower version of Sneaking Health Drain. These are the Shade substitute for a heal.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[301896]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Heals / HoT"
+  },
+  {
+   "name": "Faster than your Shadow",
+   "id": 272371,
+   "nanoLine": "RunspeedBuffs",
+   "nanoStrain": 150,
+   "role": "travel",
+   "minLevel": 0,
+   "effect": "Modify RunSpeed +250",
+   "castReqs": [
+    "PsychologicalModification > 749",
+    "SensoryImprovement > 749",
+    "Profession == 15"
+   ],
+   "keepUp": false,
+   "lineRole": "Faster than your Shadow: the Shade run-speed buff. Run Speed is the Shade primary Shadowlands travel skill and costs 1.0 IP.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,272372]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Shadow in the Night",
+   "id": 273395,
+   "nanoLine": "ConcealmentBuff",
+   "nanoStrain": 193,
+   "role": "utility",
+   "minLevel": 0,
+   "effect": "Modify Concealment +750",
+   "castReqs": [
+    "PsychologicalModification > 1429",
+    "SensoryImprovement > 1243",
+    "Profession == 15",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": true,
+   "lineRole": "Shadow in the Night: the Shade Concealment buff.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,273396]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Smoke Bomb",
+   "id": 301160,
+   "nanoLine": "EmergencySneak",
+   "nanoStrain": 1049,
+   "role": "utility",
+   "minLevel": 0,
+   "effect": "(2 non-effect functions only)",
+   "castReqs": [
+    "NumFightingOpponents == 0",
+    "Flags op123 2",
+    "Flags op4 0",
+    "Profession == 15",
+    "Concealment > 599",
+    "Expansion op22 2"
+   ],
+   "keepUp": false,
+   "lineRole": "Smoke Bomb: drop aggro and hide IN COMBAT. Added in patch 18.7.",
+   "where": "shadowlands / Shadowlands-gated: Expansion(389) BitAnd ShadowLands bit set on the nano program's use criteria. SL nanos are NOT mission-rollable (obtained via garden/drop/quest); the specific SL source/tier is not present in local data. crystalItem(s)=[301161]; nanoProgramExpansionBits=2; combinedExpansionBits=2",
+   "category": "Misc / Utility"
+  },
+  {
+   "name": "Release Me Now",
+   "id": 281239,
+   "nanoLine": "SelfRoot_SnareResistBuff",
+   "nanoStrain": 283,
+   "role": "utility",
+   "minLevel": 0,
+   "effect": "RemoveNanoStrain[145]; RemoveNanoStrain[146]; ResistNanoStrain[145,100]; ResistNanoStrain[146,100]",
+   "castReqs": [
+    "VisualProfession == 9",
+    "VisualProfession == 14",
+    "VisualProfession == 15",
+    "VisualProfession == 1",
+    "SensoryImprovement > 99",
+    "PsychologicalModification > 99",
+    "Expansion op22 32"
+   ],
+   "keepUp": false,
+   "lineRole": "Release Me Now: breaks and resists root/snare. ao-universe gives it a 4-minute cooldown.",
+   "where": "mission-roll / Lost Eden-expansion profession nano. No shop entry for its crystal in local vendor data; classified mission-rollable by the AO default rule for non-shop profession nano crystals. crystalItem(s)=[301144]; nanoProgramExpansionBits=32; combinedExpansionBits=32",
+   "category": "Root"
+  },
+  {
+   "name": "Sharpen Dagger",
+   "id": 211152,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 0,
+   "effect": "Modify Piercing +29",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 124",
+    "SensoryImprovement > 107"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211153,216694,222596,303969,303970]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Whetstone Effect",
+   "id": 211154,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 0,
+   "effect": "Modify Piercing +12",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 4",
+    "SensoryImprovement > 4"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211155,216694,303969,303970,303971,303972,303973,303974,304516]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Improved Puncture of the Tarasque",
+   "id": 270804,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 0,
+   "effect": "Modify Piercing +200; Modify MultiMelee +30; Modify SharpObject +140; Modify MeleeDamageModifier +45; Modify ProjectileDamageModifier +45; Modify EnergyDamageModifier +45; Modify FireDamageModifier +45; Modify ColdDamageModifier +45; Modify ChemicalDamageModifier +45; Modify PoisonDamageModifier +45; Modify RadiationDamageModifier +45",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1429",
+    "SensoryImprovement > 1243",
+    "NanoFocusLevel op22 64"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[216694,270805]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Piercing Tooth",
+   "id": 211150,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 25,
+   "effect": "Modify Piercing +54",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 284",
+    "SensoryImprovement > 259",
+    "Level > 24"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211151,216694,222595,303970,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Piercing Gash",
+   "id": 211148,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 75,
+   "effect": "Modify Piercing +85",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 530",
+    "SensoryImprovement > 490",
+    "Level > 74"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211149,216694,222594,303971,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Probe of Death",
+   "id": 211146,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 100,
+   "effect": "Modify Piercing +110; Modify MeleeDamageModifier +3; Modify ProjectileDamageModifier +3; Modify EnergyDamageModifier +3; Modify FireDamageModifier +3; Modify ColdDamageModifier +3; Modify ChemicalDamageModifier +3; Modify PoisonDamageModifier +3; Modify RadiationDamageModifier +3",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 783",
+    "SensoryImprovement > 709",
+    "Level > 99"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211147,216694,222593,303972,303973]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Master Piercer",
+   "id": 211144,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 155,
+   "effect": "Modify Piercing +127; Modify MultiMelee +4; Modify MeleeDamageModifier +7; Modify ProjectileDamageModifier +7; Modify EnergyDamageModifier +7; Modify FireDamageModifier +7; Modify ColdDamageModifier +7; Modify ChemicalDamageModifier +7; Modify PoisonDamageModifier +7; Modify RadiationDamageModifier +7",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 917",
+    "SensoryImprovement > 845",
+    "Level > 154"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211145,216694,303973,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  },
+  {
+   "name": "Puncture of the Tarasque",
+   "id": 211142,
+   "nanoLine": "ShadePiercingBuff",
+   "nanoStrain": 546,
+   "role": "weapon skill",
+   "minLevel": 195,
+   "effect": "Modify Piercing +140; Modify MultiMelee +10; Modify SharpObject +80; Modify MeleeDamageModifier +15; Modify ProjectileDamageModifier +15; Modify EnergyDamageModifier +15; Modify FireDamageModifier +15; Modify ColdDamageModifier +15; Modify ChemicalDamageModifier +15; Modify PoisonDamageModifier +15; Modify RadiationDamageModifier +15",
+   "castReqs": [
+    "Profession == 15",
+    "PsychologicalModification > 1039",
+    "SensoryImprovement > 953",
+    "Level > 194"
+   ],
+   "keepUp": true,
+   "lineRole": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line.",
+   "where": "mission-roll / No Expansion gate on nano program or crystal, and no shop entry in local vendor data (which only covers researched playfields). Classified mission-rollable by the AO default rule for non-shop, non-expansion profession nano crystals. crystalItem(s)=[211143,216694,303974]; nanoProgramExpansionBits=0; combinedExpansionBits=0",
+   "category": "Self / Team Buffs"
+  }
+ ],
+ "selfBuffLineIndex": [
+  {
+   "nanoLine": "ShadeProcBuff",
+   "role": "proc",
+   "nanoCount": 28,
+   "what": "The Shade offensive weapon-proc lines. ao-universe groups them as: DD + lifetap (Ritualistic Touch/Blow/Grasp/Caress/Embrace, Sacrificial Touch/Blow/Grasp/Caress/Embrace, Ceremonial Grasp/Caress/Embrace), HP and nano DoT (Rudimentary -> Primitive -> Intrinsic -> Elemental -> Primordial -> Primal -> Chthonic Dissipation), stun (Quintessence of Incapacitation -> Paralyzation -> Petrification -> Transfixion -> Stupefication) and initiative debuff (Degeneration of Rapidity -> Celerity -> Haste). ONE PROC ACTIVE AT A TIME. Patch 18.7 made damage procs heal the Shade a little and DoT procs restore a little nano."
+  },
+  {
+   "nanoLine": "ShadePiercingBuff",
+   "role": "weapon skill",
+   "nanoCount": 8,
+   "what": "Self Piercing buff line. ao-universe order: Whetstone Effect -> Sharpen Dagger -> Piercing Tooth -> Piercing Gash -> Probe of Death -> Master Piercer -> Puncture of the Tarasque -> Improved Puncture of the Tarasque. The top three also add damage-type modifiers and Multi Melee. Patch 18.7 added Sharp Objects modifiers to this line."
+  },
+  {
+   "nanoLine": "MartialArtsBuff",
+   "role": "special",
+   "nanoCount": 7,
+   "what": "Self Martial Arts + Dimach line: Slap of the Zombie -> Knock of the Poltergeist -> Kick of the Phantom -> Hand of the Shadow -> Touch of the Specter -> Voice of the Banshee -> Kiss of the Vampire."
+  },
+  {
+   "nanoLine": "MultiwieldBuff",
+   "role": "off-hand",
+   "nanoCount": 6,
+   "what": "Self Multi Melee buff line: Dual Defender -> Double Cover -> Twice the Shield -> Double Fence -> Duplex Wall -> Triple Wall. Multi Melee is what holds the off-hand weapon; the top tier also adds Parry, Martial Arts and Add All Off/Def."
+  },
+  {
+   "nanoLine": "SneakAttackBuffs",
+   "role": "special",
+   "nanoCount": 6,
+   "what": "Self Sneak Attack buff line: Footpad Apprentice -> Silent Dagger -> Dagger in the Back -> Backpiercer -> Shuffle of the Rogue -> Backstabber. IMPORTANT: since patch 18.7 the FIRST TWO of these can be cast on another player - they are the only outward buff a Shade has."
+  },
+  {
+   "nanoLine": "FastAttackBuffs",
+   "role": "special",
+   "nanoCount": 6,
+   "what": "Self Fast Attack buff line: Fervor of the Henchman -> Devotee -> Minion -> Disciple -> Fanatic -> Zealot."
+  },
+  {
+   "nanoLine": "AgilityBuff",
+   "role": "defence",
+   "nanoCount": 5,
+   "what": "Self Agility + evades line: Sneak -> Mugger -> Scrounger -> Prowler -> Improved Prowler. Patch 18.7 added Concealment modifiers to this line, and the top tier adds Run Speed."
+  },
+  {
+   "nanoLine": "NOSTACKING",
+   "role": "special",
+   "nanoCount": 2,
+   "what": "Client \"NOSTACKING\" strain. Symbiosis (id 225281) is the Sublime Rapport perk-level-10 special that upgrades the Totemic Rites \"Ritual\" perks; Pierce Nerves (id 266310) shows Modify Piercing -1000, i.e. it is a DEBUFF cast on a target, not a self-buff - the nano extraction cannot tell target from self, so this is flagged."
+  },
+  {
+   "nanoLine": "HealthDrain",
+   "role": "sustain",
+   "nanoCount": 2,
+   "what": "Health-drain nanos. Dissolving Vitality is the lower version of Sneaking Health Drain. These are the Shade substitute for a heal."
+  },
+  {
+   "nanoLine": "WeaponEffectAdd_On2",
+   "role": "debuff proc",
+   "nanoCount": 2,
+   "what": "Nanite Depravation / Basic Nanite Depravation: an offensive proc that debuffs the target."
+  },
+  {
+   "nanoLine": "SpiritDrain",
+   "role": "core mechanic",
+   "nanoCount": 1,
+   "what": "Spirit Siphon: the nano that produces Soul Capsules, and therefore Spirits. See shade-symbiants.json. ao-universe says it is based on Dimach skill."
+  },
+  {
+   "nanoLine": "RunspeedBuffs",
+   "role": "travel",
+   "nanoCount": 1,
+   "what": "Faster than your Shadow: the Shade run-speed buff. Run Speed is the Shade primary Shadowlands travel skill and costs 1.0 IP."
+  },
+  {
+   "nanoLine": "ConcealmentBuff",
+   "role": "utility",
+   "nanoCount": 1,
+   "what": "Shadow in the Night: the Shade Concealment buff."
+  },
+  {
+   "nanoLine": "AADBuffs",
+   "role": "defence",
+   "nanoCount": 1,
+   "what": "Winding Serpent: flat Add All Def."
+  },
+  {
+   "nanoLine": "NemesisNanoPrograms",
+   "role": "PvP",
+   "nanoCount": 1,
+   "what": "Shade's Caress: the Shade nemesis nano. ao-universe notes it removes auras from Keeper NCUs."
+  },
+  {
+   "nanoLine": "EmergencySneak",
+   "role": "utility",
+   "nanoCount": 1,
+   "what": "Smoke Bomb: drop aggro and hide IN COMBAT. Added in patch 18.7."
+  },
+  {
+   "nanoLine": "SelfRoot_SnareResistBuff",
+   "role": "utility",
+   "nanoCount": 1,
+   "what": "Release Me Now: breaks and resists root/snare. ao-universe gives it a 4-minute cooldown."
+  }
+ ],
+ "procRules": {
+  "nanoProcs": "The ShadeProcBuff nanos are separate NANO STRAINS from the LE research procs, so a Shade runs one nano proc alongside its research procs. ao-universe: use the STUN proc for PvP and ordinary mobs, a DAMAGE proc for team damage, and the INITIATIVE-DEBUFF proc (Degeneration of Rapidity/Celerity/Haste) for solo aliens and bosses, which are immune to stuns - it interrupts their nukes. The stun line scales badly at the top: \"only 1% additional chance per tier at high levels\".",
+  "researchProcs": "SEPARATE SYSTEM - see shade-build.json leProcPerks.researchLineMapping. The 12 LE research procs split into two mutually exclusive types and only ONE of each type can be active at a time.",
+  "castRequirements": "The proc nanos are gated on Psychological Modification above all - it is a cast requirement on 73 of the 79 Shade nanos and tops out at 1,840 (read from shade-nanos.json). Biological Metamorphosis (32 nanos, to 1,579), Time & Space (33, to 1,569) and Sensory Improvement (43, to 1,243) gate the rest. Matter Creation gates exactly ONE nano and is not worth IP.",
+  "_sources": [
+   "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+   "http://wiki.aodb.us/wiki/Patch_18.7"
+  ]
+ },
+ "wantedFromOthers": [
+  {
+   "buff": "Composite Infuses / Mocham's Gift lines",
+   "id": null,
+   "fromProfession": "Meta-Physicist (or an Agent in False Profession)",
+   "effect": "Raises all six nano skills at once.",
+   "useCase": "cast",
+   "note": "ao-universe names Infuses and Mochams from an MP, or an Agent in False Profession, as what a Shade needs to meet its own nano requirements. This matters because the top Shade proc needs 1,840 Psychological Modification. source=web"
+  },
+  {
+   "buff": "Mark of Peril",
+   "id": null,
+   "fromProfession": "Martial Artist",
+   "effect": "Critical chance.",
+   "useCase": "raid",
+   "note": "The ao-universe Shade guide says Mark of Peril and the Agent's Take the Shot STACK for critical chance. source=web"
+  },
+  {
+   "buff": "Take the Shot",
+   "id": null,
+   "fromProfession": "Agent",
+   "effect": "CONFLICTING SOURCES - see note.",
+   "useCase": "raid",
+   "note": "SOURCE CONFLICT, do not hard-code: the ao-universe Comprehensive Shade Guide presents Take the Shot as a crit buff that stacks with Mark of Peril for a Shade, but ao-universe's own Buffing Guide says Take the Shot buffs AIMED SHOT - a ranged special a Shade cannot use. Unresolved. source=web"
+  },
+  {
+   "buff": "Computer Literacy buffs (tutoring device, 10-Intel contract, the Gauntlet buff, CL pistols, a Syndicate Brain Spirit)",
+   "id": null,
+   "fromProfession": "various / items",
+   "effect": "Raises Computer Literacy toward the ~1,750 needed for a Pandemonium belt at level 200.",
+   "useCase": "twink",
+   "note": "Computer Literacy is DARK BLUE for a Shade (IP cost 2.4) and is the single hardest requirement it has to twink. The documented stack is on the Funcom forums: Syndicate Brain +25 CL, Apotheosis 1 +50 CL, research ability and completion trickle, a CL tutoring device, a 10-Intel contract, the Gauntlet buff, CL pistols, Intelligence trickle. source=web"
+  },
+  {
+   "buff": "Leet aura / team morphs",
+   "id": null,
+   "fromProfession": "Adventurer",
+   "effect": "Crit modifier, Concealment and Run Speed.",
+   "useCase": "raid",
+   "note": "Patch 18.7 gave Shades access to some team morphs as Adventurer buffs; wiki.aodb.us records \"Leet auras affect CritMod, Concealment, and RunSpeed\". source=web"
+  },
+  {
+   "buff": "Bloodletting",
+   "id": null,
+   "fromProfession": "Trader",
+   "effect": "Not a stat buff - it is a PERK-CHAIN TRIGGER.",
+   "useCase": "raid",
+   "note": "wiki.aodb.us/wiki/Perk_Chains: all three Spirit Phylactery \"Unsealed\" perks gain a bonus when the target carries a Trader's Bloodletting. Worth asking for in a raid team. source=web"
+  }
+ ],
+ "_wantedFromOthersCoverage": "THIN ON PURPOSE. Unlike the Meta-Physicist file, no allowed source publishes a \"what a Shade should ask for\" list. The five entries above are everything the fetched pages actually state. A Shade obviously also benefits from the generic buffs every profession wants (Trader wrangles, Enforcer Essence for HP, Doctor initiative and HP buffs, Crat/Keeper team auras) but no fetched page says so for this class, so they are NOT asserted here.",
+ "generalBuffs": [
+  {
+   "name": "Withered Flesh / Corrupted Flesh / Desecrated Flesh",
+   "effect": "Right-click damage-absorb shields (Skin of the Believer line): 500 / 500 / 3,000 points.",
+   "source": "Temple of Three Winds / Inner Sanctum / the TOTW Raid respectively. ao-universe stresses you do NOT have to wear these - you right-click them from inventory."
+  },
+  {
+   "name": "Barrow Strength / Might of the Revenant / Strength of the Immortal",
+   "effect": "Right-click damage buffs.",
+   "source": "Same three sources as the Flesh line. Right-click from inventory."
+  },
+  {
+   "name": "Composite skill nanocrystals (the SL composite lines)",
+   "effect": "Grouped skill boosts, self-castable by every profession.",
+   "source": "SL composite nanocrystals. Not enumerated for a Shade on any fetched page; exact contents and ids NOT pinned - flag."
+  },
+  {
+   "name": "The Awakening",
+   "effect": "A 5-hour buff.",
+   "source": "The Xan 12-man instance (Legacy of the Xan)."
+  }
+ ],
+ "givesToOthers": [
+  {
+   "name": "Footpad Apprentice",
+   "id": 210787,
+   "effect": "Sneak Attack +30 - castable on another player since patch 18.7.",
+   "wantedBy": "Adventurers, Keepers and other Shades - the three professions that use Sneak Attack. Patch 18.7 also made this nano line castable BY Adventurers and Keepers.",
+   "representativeId": 210787,
+   "representativeName": "Footpad Apprentice"
+  },
+  {
+   "name": "Silent Dagger",
+   "id": 210789,
+   "effect": "Sneak Attack +70 - the best targetable version. Castable on another player since patch 18.7.",
+   "wantedBy": "Adventurers, Keepers and other Shades.",
+   "representativeId": 210789,
+   "representativeName": "Silent Dagger"
+  }
+ ],
+ "_givesToOthersFinding": "THIS IS THE SHADE'S BIGGEST DEVIATION FROM EVERY OTHER CLASS PROFILE. A Meta-Physicist hands out 14 buff lines; a Shade hands out TWO nanos, and both are the same Sneak Attack line, and they only help the three Sneak-Attack professions. ao-universe states the kit outright: \"The Shade utilizes two types of nano, the first type are self-only skill buffs and the second, again self-only, are Process or 'proc' buffs.\" The only exception is the patch-18.7 change: \"Shade's two first Sneak attack buffs can now be cast on any target, the best target nano increases the target's sneak attack skill by 70 points.\" Everything else a Shade casts outward is hostile - debuffs, stuns, DoTs and leeches. Any team-buff logic written against the MP or Doctor shape will find nothing to do here.",
+ "botStrategyNotes": {
+  "selfKeepUpOrder": [
+   "1. Weapon skill first: the top ShadePiercingBuff you can cast (Improved Puncture of the Tarasque id 270804 +200 Piercing / +30 Multi Melee / +140 Sharp Objects, else Puncture of the Tarasque id 211142 +140 Piercing). This is what sets the QL of weapon you can hold.",
+   "2. Multi Melee: Triple Wall id 275843 (+180 Multi Melee, +100 Parry, +30 Martial Arts, +30 Add All Off, +30 Add All Def), else Duplex Wall id 210812.",
+   "3. Sneak Attack: Backstabber id 210797 (+150).",
+   "4. Fast Attack: Fervor of the Zealot id 210331 (+150).",
+   "5. Agility/evades: Improved Prowler id 273393 (+140 Evade-ClsC, +110 Agility, +100 Concealment, +80 Duck-Exp, +80 Dodge-Rng), else Prowler id 210752.",
+   "6. Dimach/Martial Arts: Kiss of the Vampire id 210744 (+140 Dimach, +120 Martial Arts).",
+   "7. Add All Def: Winding Serpent id 301593 (+25).",
+   "8. Concealment: Shadow in the Night id 273395 (+750) when you need to set up or travel.",
+   "9. Run Speed: Faster than your Shadow id 272371 (+250) out of combat.",
+   "10. ONE offensive proc, chosen for the fight - see procRules."
+  ],
+  "doNotStack": "Within a nano LINE only the highest version holds - casting Prowler over Improved Prowler downgrades you. The nanoLine field on every row above is the strain to check before casting.",
+  "situational": [
+   "Smoke Bomb id 301160 - drop aggro and hide IN COMBAT. The Shade panic button.",
+   "Release Me Now id 281239 - breaks and resists root/snare (strains 145/146), 4-minute cooldown per ao-universe.",
+   "Sneaking Health Drain id 273390 and Dissolving Vitality id 301895 - the Shade's only healing, and both are drains, so they need a target.",
+   "Spirit Siphon id 297342 - cast on any target under 20% health, on cooldown, all the time. It is how you get Spirits.",
+   "Shade's Caress id 266300 - the nemesis nano; ao-universe notes it removes auras from Keeper NCUs."
+  ],
+  "noTeamBuffLogic": "Do not write a team-buff routine for this class beyond the two Sneak Attack nanos (210787, 210789) and only for Adventurer / Keeper / Shade teammates."
+ },
+ "whereToBuyNanos": {
+  "summary": "Shade nanos are sold by the Shadowlands garden and sanctuary vendors. ao-universe's shopping-by-profession page puts PANDEMONIUM GARDEN far ahead with 13 Shade listings, then Inferno Sanctuary/Garden, Adonis Garden/Sanctuary, Elysium Garden/Sanctuary and Penumbra Sanctuary; Scheol Garden carries only one.",
+  "localCrossCheck": "shade-nano-sources.json resolved a crystal item for 78 of the 79 nanos and classified 77 as mission-roll and 2 as shadowlands from the crystal's own item criteria. The local data has no vendor table, so the garden list above is the web source for where to buy rather than roll.",
+  "_sources": [
+   "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/sl-nano-shopping-by-profession"
+  ]
+ },
+ "_deviations": [
+  "GIVES ALMOST NOTHING TO OTHERS - 2 nanos, one line, three eligible professions. See _givesToOthersFinding. This is the single largest structural difference from the MP template.",
+  "NO HEALS. The Heals/HoT category in shade-nanos.json holds two HEALTH DRAINS, not heals. A Shade sustains by leeching off the target, which means it cannot top itself up out of combat and cannot help a teammate at all.",
+  "THE BUFF KIT IS A WEAPON-SKILL KIT. 70 of the 79 nanos are self buffs and the big ones all feed one attack: Piercing, Multi Melee, Sneak Attack, Fast Attack, Dimach, evades. There is no nano that changes what the Shade DOES, only how hard it hits.",
+  "PROCS ARE THE KIT, AND THEY HAVE TWO SEPARATE STACKING SYSTEMS. 21 of the 79 nanos are ShadeProcBuff, and on top of them sit 12 LE research procs with their own two-type exclusivity rule. A bot has to model both: one nano proc, one type-1 research proc, one type-2 research proc.",
+  "THE WEAPON-SKILL BUFF IS A GEAR GATE, NOT A DAMAGE BUFF. +200 Piercing from Improved Puncture of the Tarasque is what lets a Shade equip the next weapon QL. Buff-before-equip ordering matters more for this class than for a caster.",
+  "NANO SCHOOLS ARE LOPSIDED. Psychological Modification gates 73 of 79 nanos; Matter Creation gates 1. A generic \"train the nano schools\" routine wastes most of the IP it spends."
+ ],
+ "_unverified": [
+  "No fetched source gives the numeric effect, proc chance or duration of any Shade proc nano - only the line names and the in-client effect functions recorded above.",
+  "SOURCE CONFLICT on Take the Shot (Agent): the Shade guide presents it as a crit buff stacking with Mark of Peril; ao-universe's Buffing Guide says it buffs Aimed Shot. Unresolved - recorded as a conflict, not resolved in either direction.",
+  "The cross-profession buff list is only what the fetched pages state for a Shade. The generic buffs every profession wants are deliberately NOT listed here as Shade facts.",
+  "Pierce Nerves (id 266310, Modify Piercing -1000) and Symbiosis (id 225281) sit on the client strain NOSTACKING and are almost certainly not self-buffs - Pierce Nerves reads as a target debuff and Symbiosis as the Sublime Rapport perk-10 special. The nano extraction does not record target type, so they are carried in the list with this flag rather than silently dropped.",
+  "keepUp on each row is a derived judgement from the nano line role, not a sourced value.",
+  "The Shadowlands garden vendor list is ao-universe's count of Shade listings per garden, not an id-level vendor table - the local data has no vendor data for these."
+ ],
+ "_sources": [
+  "LOCAL AOBuddy/GameData/profiles/shade-nanos.json (nanos.ocp extraction, client 18.8.50_EP1) - every id, nano line, strain, level requirement, cast requirement and effect in selfBuffs.",
+  "LOCAL AOBuddy/GameData/profiles/shade-nano-sources.json - the per-nano crystal/acquisition join.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql - id -> name verification.",
+  "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+  "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide",
+  "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/sl-nano-shopping-by-profession",
+  "http://wiki.aodb.us/wiki/Patch_18.7",
+  "https://wiki.aodb.us/wiki/Shade",
+  "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965",
+  "https://wiki.aodb.us/wiki/Perk_Chains"
+ ]
+}

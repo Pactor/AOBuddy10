@@ -1,0 +1,4036 @@
+{
+ "profession": "Shade",
+ "professionId": 15,
+ "slug": "shade",
+ "generatedBy": "shadework/gen/build.py over tools/eng-gear-extractor --prof 15 (items.ocp 18.8.50_EP1)",
+ "expansionRequirement": "SHADOWLANDS-ONLY. A Shade cannot be created on a free (froob) account, so there is no free-account Shade path at any level. Supported by the data: the profession's signature nano Spirit Siphon (id 297342) carries an Expansion(389) BitAnd 2 = Shadowlands requirement in its ToUse action, and the Shade's implant-slot items (Spirits) carry the same Shadowlands bit on their ToWear action.",
+ "playstyle": {
+  "role": "Dual-wield Piercing melee striker. No pets, no implants, no symbiants, no taunt and no team heal - the Shade is pure single-target damage that survives on evades, Add-All-Def and a wall of weapon procs.",
+  "summary": "The Shade (profession 15) is one of the two Shadowlands-only professions. It wields two Piercing weapons, opens from behind with Sneak Attack (skill 146, the Backstab-style opener), sustains with Fast Attack and Dimach, and leeches health back with proc and drain nanos. It has the lowest possible IP cost (1.0) on Piercing, Multi Melee, Sneak Attack, Dimach, Evade-ClsC, Melee Init., Concealment, Run Speed and Tutoring, and the maximum cost (4.0) on EVERY ranged weapon skill and on every other melee weapon skill except Martial Arts (1.6) - so the weapon choice is not a preference, it is the only affordable one. Its 79 castable nanos (shade-nanos.json) are almost entirely self-buffs and offensive procs; it gives no buffs to other players. In the implant slots it wears Spirits, and for armour it wears Tattoos, Body Wraps and Ofab Shade armour.",
+  "strengths": [
+   "Highest burst opener in the game from behind a target (Sneak Attack, IP cost 1.0); on every Shade-locked weapon line the Sneak Attack requirement is exactly half the Piercing requirement.",
+   "Evade-ClsC, Duck-Exp, Concealment and Run Speed are all cheap (1.0-1.2), and the perk lines Lithe, Acrobat, Shadow, Careful in Battle and Sublime Rapport all stack evades on top of that.",
+   "21 offensive weapon procs in the ShadeProcBuff nano line alone plus two health-drain nanos, which is how a Shade sustains without a heal.",
+   "Spirits (its implant substitute) need no surgery clinic and no Treatment ladder, so the Shade skips the entire implant-twinking game every other profession has to play.",
+   "Self-buffs its own weapon skill hard: the ShadePiercingBuff line tops out at Puncture of the Tarasque (id 211142, +140 Piercing) and Improved Puncture of the Tarasque (id 270804, +200 Piercing, +30 Multi Melee, +140 Sharp Objects)."
+  ],
+  "weaknesses": [
+   "Locked to one weapon skill. Every ranged skill and 1hB/1hE/2hB/2hE/Melee Energy cost 4.0 IP - the maximum in the table - so there is no viable second weapon build.",
+   "No pets, no taunt, no team heal and no buff to give. The Shade brings damage and nothing else.",
+   "Cannot use implants at all, so it cannot twink equip requirements the way every other profession does; and a Spirit cannot be over-equipped, so Spirit QL is hard-capped by level and ability.",
+   "Very expensive defensive skills where it matters: Body Dev. 2.6 (the highest of any profession in reference/skillcaps.json) and Dodge-Rng 2.4, so HP is thin and ranged attacks hurt.",
+   "Nano Pool 2.5, Nano C. Init 2.8, Matter Creation and Matter Met 3.2, Nano Programming 4.0 - it is not a caster in any sense and cannot build its own implants or clusters either.",
+   "Needs to be BEHIND the target for its opener, which makes it fragile the moment a mob turns around, and useless as an off-tank."
+  ],
+  "tips": [
+   "Keep Piercing at the top of the IP list at all times - it is both your damage skill and the wield requirement on every Shade weapon; the QL of weapon you can hold IS your damage.",
+   "Multi Melee (cost 1.0) is what lets you hold the off-hand weapon. Counterweight, Acrobat and Stiletto Mastery all add to it.",
+   "Keep an offensive proc up at all times. The ShadeProcBuff families (Ritualistic/Sacrificial/Ceremonial, Dissipation, Quintessence, Degeneration) are separate nano strains, so several can run together.",
+   "Psychological Modification gates 73 of your 79 nanos (max requirement 1,840) and costs only 1.4 - it is the one nano school worth real IP. Matter Creation (3.2) gates exactly one nano; skip it.",
+   "Spirits do not accept over-equipment (client description text on Whispering Spirit id 218576), so plan Spirit QL against your real Agility/Sense and level, not against a buffed number.",
+   "THE SHADE DANCE: only the first perk of a chain needs you behind the target (patch 17.9), and chains check the user, not the target - so reposition once per chain and let the rest fire from the front, even if the chain finishes on a different mob.",
+   "BACKSTAB needs four things at once: Sneak Attack 100+, a weapon that carries the Sneak Attack special in its ToWield, you behind the target, and the target already engaged with another combatant - so in a team it fires off the tank's aggro.",
+   "PICK THE PROC FOR THE FIGHT: ao-universe says stun proc for PvP and ordinary mobs, damage proc for team damage, and the INITIATIVE-DEBUFF proc (Degeneration of Rapidity/Celerity/Haste) for solo aliens and bosses, which are immune to stuns - it interrupts their nukes.",
+   "Survivability is LIFESTEAL, not healing: the Ritual/Devour perks, Sneaking Health Drain, the Siphon Being and Sap Life procs, Shade's Caress, Diffuse, Exultation and Dimach. A Funcom-forums Shade says Deflect is not worth IP.",
+   "KITING is a real Shade leveling technique: ao-universe/wiki suggest 2 points in Sublime Rapport plus 2 in Totemic Rites (damage plus recovery), or DoT perks with 2 in Spirit Phylactery, and say the trick is finding a clean kiting circle rather than using the standard movement keys. It lets a Shade kill well above its level without twinked gear.",
+   "Computer Literacy is DARK BLUE for a Shade and is the real gate on NCU and on the Pandemonium belt (around 1,750 Comp. Lit. at level 200). Budget for it early - Apotheosis 1 alone is +50."
+  ]
+ },
+ "breed": {
+  "recommended": "Opifex",
+  "reasoning": "Derived from reference/breeds.json plus reference/skillcaps.json, not from a guide. Every skill a Shade lives on keys off Agility and Sense: Piercing is 20% Str / 50% Agi / 30% Sta, Multi Melee 30/60/10, Sneak Attack 80% Agi / 20% Sen, Fast Attack 60% Agi / 40% Sen, Dimach 100% Sense, Riposte 50/50 Agi/Sen, Concealment 30% Agi / 70% Sen, and all three evades 50% Agi / 20% Sta / 30% Psy. Opifex has the highest trained caps in exactly those two abilities (Agility 544, Sense 512, against Solitus 480/480) and the highest creation base (Agi 15, Sen 10). Nothing in the Shade kit wants Intelligence or Psychic enough to pay for a Nanomage.",
+  "alternatives": [
+   {
+    "breed": "Solitus",
+    "note": "Even 480 caps across the board. Loses ~64 Agility and ~32 Sense of headroom against Opifex but gains Strength and Stamina, which matter for the Piercing (30% Sta) and Melee Init. (60% Sta) components and for Body Dev. - the Shade's most expensive survivability skill at cost 2.6."
+   },
+   {
+    "breed": "Atrox",
+    "note": "Most HP per Body Dev. point, which partly offsets the Shade's 2.6 Body Dev. cost, and the highest Strength/Stamina caps. Costs you the Agility and Sense the whole kit is built on. A survivability pick, not an optimum."
+   },
+   {
+    "breed": "Nanomage",
+    "note": "Worst fit. Its advantage is Intelligence/Psychic, and the Shade's only Int/Psy-gated content is its own self-buff nanos, whose top requirement is 1,840 Psy Mod - reachable on any breed with gear. Lowest HP of the four breeds on a class that already has the most expensive Body Dev. in the game."
+   }
+  ],
+  "_breedLock": "No breed restriction on the Shade profession was found in the client item data; breed availability is a character-creation rule, not an item criterion, so it is not provable from items.ocp. Flagged in _unverified. The web pass found all four breeds discussed as playable Shades, which is consistent with no lock.",
+  "_webCorroboration": "The Opifex pick derived here from ability caps vs skill dependencies is what ao-universe recommends independently: \"The most popular breed for Shade is Opifex. The slight-framed homo opifex has highly developed senses and is very agile, and these two attributes are central to the fighting style of the shade.\" Its breed-statistics page adds that Opifex has the highest evades and \"very easy equipping of... shades' spirits\". Solitus is called the balanced choice; Atrox is recommended specifically for PvP-with-AI players (best health per point, Mongo Rage) with low Sense as the cost; Nanomage is a differentiation pick with low Agility and low health, whose one draw is the Nanomage-only Dreadloch Endurance Booster. Shadowbreeds unlock at level 205/210/215 and are per-BREED and per-faction, not per-profession."
+ },
+ "skillPriorities": [
+  {
+   "skill": "Piercing",
+   "target": "cap",
+   "why": "IP cost 1.0 - the cheapest it can be. Both the damage skill and the wield requirement on all 89 Shade-locked Piercing weapons; the top one (Bloodlust QL300, id 247069) needs Piercing 2,000."
+  },
+  {
+   "skill": "Multi Melee",
+   "target": "cap",
+   "why": "IP cost 1.0. Gates the OFF-HAND weapon. Only 6 templates in items.ocp carry a Multi Melee ToWield criterion and none is Shade-usable, so this is a character skill, not a weapon requirement."
+  },
+  {
+   "skill": "Sneak Attack",
+   "target": "cap",
+   "why": "IP cost 1.0. The opener. On the Shade-locked lines the Sneak Attack requirement is exactly half the Piercing requirement (Bloodlust QL300: Piercing 2,000 / Sneak Attack 1,000)."
+  },
+  {
+   "skill": "Evade-ClsC",
+   "target": "cap",
+   "why": "IP cost 1.0 and the evade that matters against melee mobs. Perk lines Lithe, Acrobat, Shadow, Shade Touch and Sublime Rapport all add to it."
+  },
+  {
+   "skill": "Melee Init.",
+   "target": "cap",
+   "why": "IP cost 1.0. Sets your attack speed against the weapon attack/recharge. (Physic. Init costs 3.4 - do not confuse the two.)"
+  },
+  {
+   "skill": "Dimach",
+   "target": "cap",
+   "why": "IP cost 1.0, 100% Sense. An allowed special on most Shade weapon lines, buffed by the Sublime Rapport perk line and by the MartialArtsBuff nano line (Kiss of the Vampire, id 210744, +140 Dimach)."
+  },
+  {
+   "skill": "Concealment",
+   "target": "cap",
+   "why": "IP cost 1.0. Shadow in the Night (id 273395) alone gives +750. Needed to set up the opener and to move through Shadowlands camps."
+  },
+  {
+   "skill": "Run Speed",
+   "target": "cap",
+   "why": "IP cost 1.0, and Faster than your Shadow (id 272371) gives +250. Positioning is the Shade defence."
+  },
+  {
+   "skill": "Duck-Exp",
+   "target": "high",
+   "why": "IP cost 1.2 - the second-cheapest evade."
+  },
+  {
+   "skill": "Fast Attack",
+   "target": "high",
+   "why": "IP cost 1.4. The sustained-damage special; the Killing Blows research line adds to it."
+  },
+  {
+   "skill": "Riposte",
+   "target": "high",
+   "why": "IP cost 1.4. Passive in combat, but a hard ToWield requirement on the Sigd, Bloodlust, Bronto Vet Lancet, Thousand Stings and Nippy John Stiletto lines (typically 40% of the Piercing requirement) - so it is a WIELD gate, not just a defence."
+  },
+  {
+   "skill": "Psychological Modification",
+   "target": "to 1,840",
+   "why": "IP cost 1.4 and the gate on 73 of the 79 Shade nanos (shade-nanos.json), topping out at 1,840. The only nano school worth real IP."
+  },
+  {
+   "skill": "Nano Resist",
+   "target": "high",
+   "why": "IP cost 1.5. Shadowlands and endgame content is full of casting mobs and a Shade has no defensive nanos beyond Release Me Now (id 281239, snare/root resist)."
+  },
+  {
+   "skill": "Treatment",
+   "target": "moderate",
+   "why": "IP cost 1.5. A Shade needs NO Treatment for its implant slots (Spirits need none), so this is only for first-aid kits and stims - a real IP saving versus every other profession."
+  },
+  {
+   "skill": "Sensory Improvement",
+   "target": "to 1,243",
+   "why": "IP cost 1.6. Second nano school by usage: a cast requirement on 43 of 79 nanos."
+  },
+  {
+   "skill": "Martial Arts",
+   "target": "situational",
+   "why": "IP cost 1.6. Only 2 Shade-locked Martial Arts weapons exist (Huzzum's Iron Fist id 303055, Special Edition Kyr'Ozch Nunchacko id 288291) and the Shade Touch perk line buffs it. A fallback, not a build."
+  },
+  {
+   "skill": "Sharp Objects",
+   "target": "situational",
+   "why": "IP cost 1.6. Buffed +140 by Improved Puncture of the Tarasque (id 270804), but no Shade-usable weapon in items.ocp has Sharp Objects as its primary wield skill."
+  },
+  {
+   "skill": "Biological Metamorphosis",
+   "target": "to 1,579",
+   "why": "IP cost 1.9. Cast requirement on 32 of 79 nanos."
+  },
+  {
+   "skill": "Time & Space",
+   "target": "to 1,569",
+   "why": "IP cost 1.9. Cast requirement on 33 of 79 nanos."
+  },
+  {
+   "skill": "Dodge-Rng",
+   "target": "as IP allows",
+   "why": "IP cost 2.4 - expensive, but it is the evade against ranged mobs and a Shade has no other answer to them."
+  },
+  {
+   "skill": "Body Dev.",
+   "target": "as IP allows",
+   "why": "IP cost 2.6 - the HIGHEST Body Dev. cost of any profession in reference/skillcaps.json. Thin HP is a structural Shade weakness; buy HP from Spirits and perks rather than IP where you can."
+  },
+  {
+   "skill": "Matter Creation",
+   "target": "skip",
+   "why": "IP cost 3.2 and a cast requirement on exactly ONE of the 79 Shade nanos (max 799). Do not spend IP here."
+  },
+  {
+   "skill": "Physic. Init",
+   "target": "skip",
+   "why": "IP cost 3.4. Melee Init (1.0) is the initiative a Piercing weapon uses. Physical Init appears only as a requirement on gear (the Xan Spirit lines) - meet it from items, not IP."
+  },
+  {
+   "skill": "every ranged weapon skill",
+   "target": "skip entirely",
+   "why": "Pistol, Rifle, Bow, MG/SMG, Assault Rifle, Shotgun, Ranged Energy, Grenade, Heavy Weapons, Multi Ranged, Ranged Init., Fling Shot, Aimed Shot, Burst, Full Auto and Bow Special Attack are ALL IP cost 4.0 for a Shade - the maximum in the table."
+  },
+  {
+   "skill": "1h Blunt / 1h Edged / 2h Blunt / 2h Edged / Melee Energy / Brawling",
+   "target": "skip entirely",
+   "why": "All IP cost 4.0. There is exactly one Shade-locked Melee Energy weapon (Special Edition Kyr'Ozch Energy Rapier, id 288287) and it is not worth a 4.0 skill."
+  },
+  {
+   "skill": "Nano Programming",
+   "target": "skip entirely",
+   "why": "IP cost 4.0. A Shade builds no implants and no clusters, so this skill has no use at all for the class."
+  }
+ ],
+ "_skillCostFactors": {
+  "Concealment": 1.0,
+  "Dimach": 1.0,
+  "Evade-ClsC": 1.0,
+  "Melee Init.": 1.0,
+  "Multi Melee": 1.0,
+  "Piercing": 1.0,
+  "Run Speed": 1.0,
+  "Sneak Attack": 1.0,
+  "Tutoring": 1.0,
+  "Duck-Exp": 1.2,
+  "Deflect": 1.4,
+  "Fast Attack": 1.4,
+  "Psychological Modifications": 1.4,
+  "Quantum FT": 1.4,
+  "Riposte": 1.4,
+  "Swimming": 1.4,
+  "Nano Resist": 1.5,
+  "Treatment": 1.5,
+  "Adventuring": 1.6,
+  "Break & Entry": 1.6,
+  "Martial Arts": 1.6,
+  "Sensory Improvement": 1.6,
+  "Sharp Objects": 1.6,
+  "Pharma Tech": 1.8,
+  "Trap Disarming": 1.8,
+  "Biological Metamorphosis": 1.9,
+  "Time & Space": 1.9,
+  "Computer Literacy": 2.4,
+  "Dodge-Rng": 2.4,
+  "Map Navigation": 2.4,
+  "Perception": 2.4,
+  "Psychology": 2.4,
+  "First Aid": 2.5,
+  "Nano Pool": 2.5,
+  "Body Dev.": 2.6,
+  "Nano C. Init.": 2.8,
+  "Chemistry": 3.2,
+  "Electrical Engineering": 3.2,
+  "Matter Creation": 3.2,
+  "Matter Metamorphosis": 3.2,
+  "Mechanical Engineering": 3.2,
+  "Vehicle Air": 3.2,
+  "Vehicle Ground": 3.2,
+  "Vehicle Water": 3.2,
+  "Weapon Smithing": 3.2,
+  "Physic. Init": 3.4,
+  "1h Blunt": 4.0,
+  "1h Edged": 4.0,
+  "2h Blunt": 4.0,
+  "2h Edged": 4.0,
+  "Aimed Shot": 4.0,
+  "Assault Rifle": 4.0,
+  "Bow": 4.0,
+  "Bow Special Attack": 4.0,
+  "Brawling": 4.0,
+  "Burst": 4.0,
+  "Fling Shot": 4.0,
+  "Full Auto": 4.0,
+  "Grenade": 4.0,
+  "Heavy Weapons": 4.0,
+  "MG/SMG": 4.0,
+  "Melee Energy": 4.0,
+  "Multi Ranged": 4.0,
+  "Nano Programming": 4.0,
+  "Pistol": 4.0,
+  "Ranged Energy": 4.0,
+  "Ranged Init.": 4.0,
+  "Rifle": 4.0,
+  "Shotgun": 4.0
+ },
+ "perks": [
+  {
+   "name": "Ambushing",
+   "type": "LE research",
+   "line": "Ambushing (10 ranks, level 1-200)  [id 262078 = Ambushing]",
+   "representativeId": 262078,
+   "representativeName": "Ambushing",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Concealment +115, SneakAttack +50, Agility +20, Sense +20",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "LE research: Sneak Attack and Concealment - the opener skills.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262078,
+     "name": "Ambushing",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "SneakAttack": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262079,
+     "name": "Ambushing",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Concealment": 10
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262080,
+     "name": "Ambushing",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "SneakAttack": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262081,
+     "name": "Ambushing",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Concealment": 15
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262082,
+     "name": "Ambushing",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262083,
+     "name": "Ambushing",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "SneakAttack": 25
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262084,
+     "name": "Ambushing",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Concealment": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262085,
+     "name": "Ambushing",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Agility": 20
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262086,
+     "name": "Ambushing",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Sense": 20
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262087,
+     "name": "Ambushing",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Concealment": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 125,
+     "proc": "Drain Essence",
+     "stackingType": "type 1"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Assassin's Awareness",
+   "type": "LE research",
+   "line": "Assassin's Awareness (10 ranks, level 1-200)  [id 262018 = Assassin's Awareness]",
+   "representativeId": 262018,
+   "representativeName": "Assassin's Awareness",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): PsychologicalModification +90, Intelligence +20, Psychic +15, ComputerLiteracy +15, SpaceTime +15, BiologicalMetamorphosis +15",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "low",
+   "why": "LE research: Psy Mod, Bio Met, Time & Space, Computer Literacy, Psychic, Intelligence. Nano-school line - relevant only because Psy Mod gates 73 of the Shade's 79 nanos.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262018,
+     "name": "Assassin's Awareness",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Psychic": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262019,
+     "name": "Assassin's Awareness",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "ComputerLiteracy": 15
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262020,
+     "name": "Assassin's Awareness",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "SpaceTime": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262021,
+     "name": "Assassin's Awareness",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 15
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262022,
+     "name": "Assassin's Awareness",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "Psychic": 10
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262023,
+     "name": "Assassin's Awareness",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Agility": 0
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262024,
+     "name": "Assassin's Awareness",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "PsychologicalModification": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262025,
+     "name": "Assassin's Awareness",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Agility": 0
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262026,
+     "name": "Assassin's Awareness",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Intelligence": 20
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262027,
+     "name": "Assassin's Awareness",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "PsychologicalModification": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 150,
+     "proc": "Shadowed Gift",
+     "stackingType": "type 2"
+    },
+    {
+     "atResearchLevel": 190,
+     "proc": "Siphon Being",
+     "stackingType": "type 1"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Honed Senses",
+   "type": "LE research",
+   "line": "Honed Senses (10 ranks, level 1-200)  [id 262028 = Honed Senses]",
+   "representativeId": 262028,
+   "representativeName": "Honed Senses",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +150, Sense +30, BodyDevelopment +25, ComputerLiteracy +20, Stamina +20",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "low",
+   "why": "LE research: Sense, Max Health, Body Dev., Computer Literacy. Mostly a stat-filler line.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262028,
+     "name": "Honed Senses",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Sense": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262029,
+     "name": "Honed Senses",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "MaxHealth": 50
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262030,
+     "name": "Honed Senses",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Sense": 10
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262031,
+     "name": "Honed Senses",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "ComputerLiteracy": 20
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262032,
+     "name": "Honed Senses",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "BodyDevelopment": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262033,
+     "name": "Honed Senses",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Sense": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262034,
+     "name": "Honed Senses",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262035,
+     "name": "Honed Senses",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Stamina": 20
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262036,
+     "name": "Honed Senses",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MaxHealth": 100
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262037,
+     "name": "Honed Senses",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 175,
+     "proc": "Twisted Caress",
+     "stackingType": "type 1"
+    },
+    {
+     "atResearchLevel": 200,
+     "proc": "Blackheart",
+     "stackingType": "type 1"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Killing Blows",
+   "type": "LE research",
+   "line": "Killing Blows (10 ranks, level 1-200)  [id 262038 = Killing Blows]",
+   "representativeId": 262038,
+   "representativeName": "Killing Blows",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): FastAttack +130, Stamina +20, Strength +15, Agility +10, HealDelta +10",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "LE research: Fast Attack. Fast Attack is the Shade special used in sustained melee (IP cost 1.4).",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262038,
+     "name": "Killing Blows",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262039,
+     "name": "Killing Blows",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262040,
+     "name": "Killing Blows",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "FastAttack": 15
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262041,
+     "name": "Killing Blows",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Agility": 10
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262042,
+     "name": "Killing Blows",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "FastAttack": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262043,
+     "name": "Killing Blows",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Strength": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262044,
+     "name": "Killing Blows",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "FastAttack": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262045,
+     "name": "Killing Blows",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "HealDelta": 10
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262046,
+     "name": "Killing Blows",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Stamina": 20
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262047,
+     "name": "Killing Blows",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "FastAttack": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Devious Spirit",
+     "stackingType": "type 1"
+    },
+    {
+     "atResearchLevel": 50,
+     "proc": "Misdirection",
+     "stackingType": "type 2"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Lithe",
+   "type": "LE research",
+   "line": "Lithe (10 ranks, level 1-200)  [id 262068 = Lithe]",
+   "representativeId": 262068,
+   "representativeName": "Lithe",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): EvadeClsC +95, Agility +50, DodgeRanged +25, Riposte +15, Strength +10",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "med",
+   "why": "LE research: Agility, Evade-ClsC, Dodge-Rng and Riposte - pure survivability for a class with no tanking tools.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262068,
+     "name": "Lithe",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Agility": 0
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262069,
+     "name": "Lithe",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "Agility": 5
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262070,
+     "name": "Lithe",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Strength": 10
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262071,
+     "name": "Lithe",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "EvadeClsC": 15
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262072,
+     "name": "Lithe",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "Riposte": 15
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262073,
+     "name": "Lithe",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "DodgeRanged": 25
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262074,
+     "name": "Lithe",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "EvadeClsC": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262075,
+     "name": "Lithe",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Agility": 20
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262076,
+     "name": "Lithe",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "EvadeClsC": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262077,
+     "name": "Lithe",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Agility": 25
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Sap Life",
+     "stackingType": "type 1"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Malicious Forethought",
+   "type": "LE research",
+   "line": "Malicious Forethought (10 ranks, level 1-200)  [id 262058 = Malicious Forethought]",
+   "representativeId": 262058,
+   "representativeName": "Malicious Forethought",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): BiologicalMetamorphosis +50, SpaceTime +50, Intelligence +15, Strength +15, Parry +10, MaxNCU +4, XPModifier +2",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "low",
+   "why": "LE research: Max NCU, XP%, Parry, Bio Met, Time & Space, Int, Str. A grab-bag line.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262058,
+     "name": "Malicious Forethought",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "MaxNCU": 4
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262059,
+     "name": "Malicious Forethought",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "XPModifier": 2
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262060,
+     "name": "Malicious Forethought",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Stamina": 0
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262061,
+     "name": "Malicious Forethought",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Stamina": 0
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262062,
+     "name": "Malicious Forethought",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "Parry": 10
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262063,
+     "name": "Malicious Forethought",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Intelligence": 15
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262064,
+     "name": "Malicious Forethought",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Strength": 15
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262065,
+     "name": "Malicious Forethought",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "BiologicalMetamorphosis": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262066,
+     "name": "Malicious Forethought",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "SpaceTime": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262067,
+     "name": "Malicious Forethought",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Stamina": 0
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 75,
+     "proc": "Toxic Confusion",
+     "stackingType": "type 2"
+    },
+    {
+     "atResearchLevel": 100,
+     "proc": "Elusive Spirit",
+     "stackingType": "type 1"
+    },
+    {
+     "atResearchLevel": 200,
+     "proc": "Blackened Legacy",
+     "stackingType": "type 2"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Piercing Mastery",
+   "type": "SL",
+   "line": "Piercing Mastery (10 ranks, level 10-208)  [id 211967 = Piercing Mastery]",
+   "representativeId": 211967,
+   "representativeName": "Piercing Mastery",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Piercing +200",
+   "recommendedAtLevel": "rank 1 at level 10; rank 10 at level 208",
+   "priority": "high",
+   "why": "The single biggest Piercing perk in the game and Shade-only. Piercing is the Shade weapon skill (IP cost 1.0) and the wield requirement on every Shade weapon.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211967,
+     "name": "Piercing Mastery",
+     "minLevel": 10,
+     "bonusesThisRank": {
+      "Piercing": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211968,
+     "name": "Piercing Mastery",
+     "minLevel": 30,
+     "bonusesThisRank": {
+      "Piercing": 10
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211969,
+     "name": "Piercing Mastery",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "Piercing": 12
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211970,
+     "name": "Piercing Mastery",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "Piercing": 13
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211971,
+     "name": "Piercing Mastery",
+     "minLevel": 130,
+     "bonusesThisRank": {
+      "Piercing": 14
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211972,
+     "name": "Piercing Mastery",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "Piercing": 16
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211973,
+     "name": "Piercing Mastery",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Piercing": 18
+     }
+    },
+    {
+     "rank": 8,
+     "id": 211974,
+     "name": "Piercing Mastery",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "Piercing": 22
+     }
+    },
+    {
+     "rank": 9,
+     "id": 211975,
+     "name": "Piercing Mastery",
+     "minLevel": 202,
+     "bonusesThisRank": {
+      "Piercing": 30
+     }
+    },
+    {
+     "rank": 10,
+     "id": 211976,
+     "name": "Piercing Mastery",
+     "minLevel": 208,
+     "bonusesThisRank": {
+      "Piercing": 55
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Stab",
+     "unlocksAtPerkLevel": 10,
+     "what": "direct damage"
+    },
+    {
+     "name": "Double Stab",
+     "unlocksAtPerkLevel": 30,
+     "what": "DD + DoT; needs the Stab flag"
+    },
+    {
+     "name": "Perforate",
+     "unlocksAtPerkLevel": 90,
+     "what": "DD"
+    },
+    {
+     "name": "Lacerate",
+     "unlocksAtPerkLevel": 130,
+     "what": "DD + DoT; needs Perforate"
+    },
+    {
+     "name": "Impale",
+     "unlocksAtPerkLevel": 190,
+     "what": "DD"
+    },
+    {
+     "name": "Gore",
+     "unlocksAtPerkLevel": 201,
+     "what": "DD + DoT; needs Impale"
+    },
+    {
+     "name": "Hecatomb",
+     "unlocksAtPerkLevel": 208,
+     "what": "DD + DoT; needs Gore. The wiki ranks the chain Low/Low/Moderate/Moderate/High/High/Insane, so Hecatomb is the Shade finisher."
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Shade Touch",
+   "type": "SL",
+   "line": "Shade Touch (7 ranks, level 20-205)  [id 212144 = Shade Touch]",
+   "representativeId": 212144,
+   "representativeName": "Shade Touch",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 7,
+   "effect": "Full line (all ranks summed, from items.ocp): MartialArts +100, DuckExp +30, DodgeRanged +30, EvadeClsC +30",
+   "recommendedAtLevel": "rank 1 at level 20; rank 7 at level 205",
+   "priority": "med",
+   "why": "Shade-only SL line: Martial Arts plus all three evades. Only worth the IP on a Martial-Arts Shade or as evade filler.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212144,
+     "name": "Shade Touch",
+     "minLevel": 20,
+     "bonusesThisRank": {
+      "MartialArts": 5,
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1
+     }
+    },
+    {
+     "rank": 2,
+     "id": 212145,
+     "name": "Shade Touch",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "MartialArts": 8,
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2
+     }
+    },
+    {
+     "rank": 3,
+     "id": 212146,
+     "name": "Shade Touch",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "MartialArts": 10,
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2
+     }
+    },
+    {
+     "rank": 4,
+     "id": 212147,
+     "name": "Shade Touch",
+     "minLevel": 130,
+     "bonusesThisRank": {
+      "MartialArts": 13,
+      "DuckExp": 3,
+      "DodgeRanged": 3,
+      "EvadeClsC": 3
+     }
+    },
+    {
+     "rank": 5,
+     "id": 212148,
+     "name": "Shade Touch",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "MartialArts": 15,
+      "DuckExp": 4,
+      "DodgeRanged": 4,
+      "EvadeClsC": 4
+     }
+    },
+    {
+     "rank": 6,
+     "id": 212149,
+     "name": "Shade Touch",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "MartialArts": 19,
+      "DuckExp": 6,
+      "DodgeRanged": 6,
+      "EvadeClsC": 6
+     }
+    },
+    {
+     "rank": 7,
+     "id": 212150,
+     "name": "Shade Touch",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "MartialArts": 30,
+      "DuckExp": 12,
+      "DodgeRanged": 12,
+      "EvadeClsC": 12
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Atrophy",
+     "unlocksAtPerkLevel": 20,
+     "what": "DD + DoT + initiative debuff"
+    },
+    {
+     "name": "Consume the Soul",
+     "unlocksAtPerkLevel": 60,
+     "what": "usable ONLY when the target is under 15% health"
+    },
+    {
+     "name": "Doom Touch",
+     "unlocksAtPerkLevel": 130,
+     "what": "DD + AC debuff"
+    },
+    {
+     "name": "Spirit Dissolution",
+     "unlocksAtPerkLevel": 205,
+     "what": "requires the Ritual of Spirit flag from Totemic Rites"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Shadow",
+   "type": "AI",
+   "line": "Shadow (10 ranks, level 15-210)  [id 248115 = Shadow]",
+   "representativeId": 248115,
+   "representativeName": "Shadow",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Concealment +100, DuckExp +100, DodgeRanged +100, EvadeClsC +100, SneakAttack +50",
+   "recommendedAtLevel": "rank 1 at level 15; rank 10 at level 210",
+   "priority": "med",
+   "why": "Shade-only SL line: Concealment and all three evades plus Sneak Attack. Defensive/opener line.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 248115,
+     "name": "Shadow",
+     "minLevel": 15,
+     "bonusesThisRank": {
+      "Concealment": 5,
+      "DuckExp": 5,
+      "DodgeRanged": 5,
+      "EvadeClsC": 5,
+      "SneakAttack": 2
+     }
+    },
+    {
+     "rank": 2,
+     "id": 248116,
+     "name": "Shadow",
+     "minLevel": 15,
+     "bonusesThisRank": {
+      "Concealment": 5,
+      "DuckExp": 5,
+      "DodgeRanged": 5,
+      "EvadeClsC": 5,
+      "SneakAttack": 2
+     }
+    },
+    {
+     "rank": 3,
+     "id": 248117,
+     "name": "Shadow",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "Concealment": 6,
+      "DuckExp": 6,
+      "DodgeRanged": 6,
+      "EvadeClsC": 6,
+      "SneakAttack": 3
+     }
+    },
+    {
+     "rank": 4,
+     "id": 248118,
+     "name": "Shadow",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "Concealment": 6,
+      "DuckExp": 6,
+      "DodgeRanged": 6,
+      "EvadeClsC": 6,
+      "SneakAttack": 3
+     }
+    },
+    {
+     "rank": 5,
+     "id": 248119,
+     "name": "Shadow",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "Concealment": 7,
+      "DuckExp": 7,
+      "DodgeRanged": 7,
+      "EvadeClsC": 7,
+      "SneakAttack": 4
+     }
+    },
+    {
+     "rank": 6,
+     "id": 248120,
+     "name": "Shadow",
+     "minLevel": 105,
+     "bonusesThisRank": {
+      "Concealment": 8,
+      "DuckExp": 8,
+      "DodgeRanged": 8,
+      "EvadeClsC": 8,
+      "SneakAttack": 4
+     }
+    },
+    {
+     "rank": 7,
+     "id": 248121,
+     "name": "Shadow",
+     "minLevel": 105,
+     "bonusesThisRank": {
+      "Concealment": 9,
+      "DuckExp": 9,
+      "DodgeRanged": 9,
+      "EvadeClsC": 9,
+      "SneakAttack": 5
+     }
+    },
+    {
+     "rank": 8,
+     "id": 248122,
+     "name": "Shadow",
+     "minLevel": 145,
+     "bonusesThisRank": {
+      "Concealment": 11,
+      "DuckExp": 11,
+      "DodgeRanged": 11,
+      "EvadeClsC": 11,
+      "SneakAttack": 6
+     }
+    },
+    {
+     "rank": 9,
+     "id": 248123,
+     "name": "Shadow",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "Concealment": 15,
+      "DuckExp": 15,
+      "DodgeRanged": 15,
+      "EvadeClsC": 15,
+      "SneakAttack": 8
+     }
+    },
+    {
+     "rank": 10,
+     "id": 248124,
+     "name": "Shadow",
+     "minLevel": 210,
+     "bonusesThisRank": {
+      "Concealment": 28,
+      "DuckExp": 28,
+      "DodgeRanged": 28,
+      "EvadeClsC": 28,
+      "SneakAttack": 13
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Blur",
+     "unlocksAtPerkLevel": 15,
+     "what": "AMS + DMS debuff"
+    },
+    {
+     "name": "Diffuse",
+     "unlocksAtPerkLevel": 105,
+     "what": "life drain"
+    },
+    {
+     "name": "Chaos Ritual",
+     "unlocksAtPerkLevel": 210,
+     "what": "DD"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Spirit Phylactery",
+   "type": "SL",
+   "line": "Spirit Phylactery (10 ranks, level 20-203)  [id 212049 = Spirit Phylactery]",
+   "representativeId": 212049,
+   "representativeName": "Spirit Phylactery",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +400, AddAllDef +150, SneakAttack +100, AddAllOff +60",
+   "recommendedAtLevel": "rank 1 at level 20; rank 10 at level 203",
+   "priority": "high",
+   "why": "Shade-only SL line: HP, Add All Def, Add All Off and Sneak Attack in one line, and the only SL perk line that raises Add All Off.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212049,
+     "name": "Spirit Phylactery",
+     "minLevel": 20,
+     "bonusesThisRank": {
+      "MaxHealth": 7,
+      "AddAllDef": 5,
+      "AddAllOff": 2,
+      "SneakAttack": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 212050,
+     "name": "Spirit Phylactery",
+     "minLevel": 40,
+     "bonusesThisRank": {
+      "MaxHealth": 8,
+      "AddAllDef": 6,
+      "AddAllOff": 3,
+      "SneakAttack": 5
+     }
+    },
+    {
+     "rank": 3,
+     "id": 212051,
+     "name": "Spirit Phylactery",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "MaxHealth": 10,
+      "AddAllDef": 7,
+      "AddAllOff": 4,
+      "SneakAttack": 6
+     }
+    },
+    {
+     "rank": 4,
+     "id": 212052,
+     "name": "Spirit Phylactery",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "MaxHealth": 14,
+      "AddAllDef": 8,
+      "AddAllOff": 4,
+      "SneakAttack": 6
+     }
+    },
+    {
+     "rank": 5,
+     "id": 212053,
+     "name": "Spirit Phylactery",
+     "minLevel": 130,
+     "bonusesThisRank": {
+      "MaxHealth": 19,
+      "AddAllDef": 9,
+      "AddAllOff": 5,
+      "SneakAttack": 7
+     }
+    },
+    {
+     "rank": 6,
+     "id": 212054,
+     "name": "Spirit Phylactery",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "MaxHealth": 32,
+      "AddAllDef": 11,
+      "AddAllOff": 5,
+      "SneakAttack": 8
+     }
+    },
+    {
+     "rank": 7,
+     "id": 212055,
+     "name": "Spirit Phylactery",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "MaxHealth": 42,
+      "AddAllDef": 16,
+      "AddAllOff": 6,
+      "SneakAttack": 9
+     }
+    },
+    {
+     "rank": 8,
+     "id": 212056,
+     "name": "Spirit Phylactery",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "MaxHealth": 52,
+      "AddAllDef": 21,
+      "AddAllOff": 7,
+      "SneakAttack": 11
+     }
+    },
+    {
+     "rank": 9,
+     "id": 212057,
+     "name": "Spirit Phylactery",
+     "minLevel": 202,
+     "bonusesThisRank": {
+      "MaxHealth": 76,
+      "AddAllDef": 27,
+      "AddAllOff": 9,
+      "SneakAttack": 15
+     }
+    },
+    {
+     "rank": 10,
+     "id": 212058,
+     "name": "Spirit Phylactery",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "MaxHealth": 140,
+      "AddAllDef": 40,
+      "AddAllOff": 15,
+      "SneakAttack": 28
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Capture Vigor",
+     "unlocksAtPerkLevel": 20,
+     "what": "AMS/DMS leech plus a detaunt"
+    },
+    {
+     "name": "Unsealed Blight",
+     "unlocksAtPerkLevel": 40,
+     "what": "HP and nano DoT"
+    },
+    {
+     "name": "Capture Essence",
+     "unlocksAtPerkLevel": 100,
+     "what": ""
+    },
+    {
+     "name": "Unsealed Pestilence",
+     "unlocksAtPerkLevel": 130,
+     "what": ""
+    },
+    {
+     "name": "Capture Spirit",
+     "unlocksAtPerkLevel": 160,
+     "what": ""
+    },
+    {
+     "name": "Unsealed Contagion",
+     "unlocksAtPerkLevel": 202,
+     "what": ""
+    },
+    {
+     "name": "Capture Vitality",
+     "unlocksAtPerkLevel": 203,
+     "what": ""
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Stiletto Mastery",
+   "type": "LE research",
+   "line": "Stiletto Mastery (10 ranks, level 1-200)  [id 262048 = Stiletto Mastery]",
+   "representativeId": 262048,
+   "representativeName": "Stiletto Mastery",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Piercing +115, MultiMelee +85, MeleeInit +75",
+   "recommendedAtLevel": "rank 1 at level 1; rank 10 at level 200",
+   "priority": "high",
+   "why": "LE research. Piercing, Multi Melee and Melee Init. across the line - Piercing sets your weapon QL and Multi Melee holds the off-hand.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 262048,
+     "name": "Stiletto Mastery",
+     "minLevel": 1,
+     "bonusesThisRank": {
+      "Piercing": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 262049,
+     "name": "Stiletto Mastery",
+     "minLevel": 50,
+     "bonusesThisRank": {
+      "MultiMelee": 10
+     }
+    },
+    {
+     "rank": 3,
+     "id": 262050,
+     "name": "Stiletto Mastery",
+     "minLevel": 75,
+     "bonusesThisRank": {
+      "Strength": 0
+     }
+    },
+    {
+     "rank": 4,
+     "id": 262051,
+     "name": "Stiletto Mastery",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Piercing": 15
+     }
+    },
+    {
+     "rank": 5,
+     "id": 262052,
+     "name": "Stiletto Mastery",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "MeleeInit": 25
+     }
+    },
+    {
+     "rank": 6,
+     "id": 262053,
+     "name": "Stiletto Mastery",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "MultiMelee": 25
+     }
+    },
+    {
+     "rank": 7,
+     "id": 262054,
+     "name": "Stiletto Mastery",
+     "minLevel": 175,
+     "bonusesThisRank": {
+      "Piercing": 30
+     }
+    },
+    {
+     "rank": 8,
+     "id": 262055,
+     "name": "Stiletto Mastery",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MeleeInit": 50
+     }
+    },
+    {
+     "rank": 9,
+     "id": 262056,
+     "name": "Stiletto Mastery",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MultiMelee": 50
+     }
+    },
+    {
+     "rank": 10,
+     "id": 262057,
+     "name": "Stiletto Mastery",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "Piercing": 60
+     }
+    }
+   ],
+   "researchProcs": [
+    {
+     "atResearchLevel": 75,
+     "proc": "Concealed Surprise",
+     "stackingType": "type 2"
+    }
+   ],
+   "_researchProcsSource": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ]
+  },
+  {
+   "name": "Sublime Rapport",
+   "type": "SL",
+   "line": "Sublime Rapport (10 ranks, level 10-203)  [id 212151 = Sublime Rapport]",
+   "representativeId": 212151,
+   "representativeName": "Sublime Rapport",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): Dimach +200, Parry +40, DuckExp +30, DodgeRanged +30, EvadeClsC +30",
+   "recommendedAtLevel": "rank 1 at level 10; rank 10 at level 203",
+   "priority": "high",
+   "why": "Shade-only SL line: Dimach plus Parry and all three evades. Dimach costs a Shade 1.0 and is one of its three usable specials.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212151,
+     "name": "Sublime Rapport",
+     "minLevel": 10,
+     "bonusesThisRank": {
+      "Dimach": 10,
+      "Parry": 2,
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1
+     }
+    },
+    {
+     "rank": 2,
+     "id": 212152,
+     "name": "Sublime Rapport",
+     "minLevel": 30,
+     "bonusesThisRank": {
+      "Dimach": 10,
+      "Parry": 2,
+      "DuckExp": 1,
+      "DodgeRanged": 1,
+      "EvadeClsC": 1
+     }
+    },
+    {
+     "rank": 3,
+     "id": 212153,
+     "name": "Sublime Rapport",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "Dimach": 12,
+      "Parry": 2,
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2
+     }
+    },
+    {
+     "rank": 4,
+     "id": 212154,
+     "name": "Sublime Rapport",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "Dimach": 13,
+      "Parry": 3,
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2
+     }
+    },
+    {
+     "rank": 5,
+     "id": 212155,
+     "name": "Sublime Rapport",
+     "minLevel": 120,
+     "bonusesThisRank": {
+      "Dimach": 14,
+      "Parry": 3,
+      "DuckExp": 2,
+      "DodgeRanged": 2,
+      "EvadeClsC": 2
+     }
+    },
+    {
+     "rank": 6,
+     "id": 212156,
+     "name": "Sublime Rapport",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "Dimach": 16,
+      "Parry": 3,
+      "DuckExp": 3,
+      "DodgeRanged": 3,
+      "EvadeClsC": 3
+     }
+    },
+    {
+     "rank": 7,
+     "id": 212157,
+     "name": "Sublime Rapport",
+     "minLevel": 170,
+     "bonusesThisRank": {
+      "Dimach": 18,
+      "Parry": 4,
+      "DuckExp": 3,
+      "DodgeRanged": 3,
+      "EvadeClsC": 3
+     }
+    },
+    {
+     "rank": 8,
+     "id": 212158,
+     "name": "Sublime Rapport",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "Dimach": 22,
+      "Parry": 5,
+      "DuckExp": 4,
+      "DodgeRanged": 4,
+      "EvadeClsC": 4
+     }
+    },
+    {
+     "rank": 9,
+     "id": 212159,
+     "name": "Sublime Rapport",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "Dimach": 30,
+      "Parry": 6,
+      "DuckExp": 4,
+      "DodgeRanged": 4,
+      "EvadeClsC": 4
+     }
+    },
+    {
+     "rank": 10,
+     "id": 212160,
+     "name": "Sublime Rapport",
+     "minLevel": 203,
+     "bonusesThisRank": {
+      "Dimach": 55,
+      "Parry": 10,
+      "DuckExp": 8,
+      "DodgeRanged": 8,
+      "EvadeClsC": 8
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Exultation",
+     "unlocksAtPerkLevel": 10,
+     "what": "life drain + DD"
+    },
+    {
+     "name": "Ethereal Touch",
+     "unlocksAtPerkLevel": 30,
+     "what": "AC debuff"
+    },
+    {
+     "name": "Dimensional Fist",
+     "unlocksAtPerkLevel": 90,
+     "what": "needs the Ethereal Touch flag"
+    },
+    {
+     "name": "Disorientate",
+     "unlocksAtPerkLevel": 150,
+     "what": "DD + stun"
+    },
+    {
+     "name": "Convulsive Tremor",
+     "unlocksAtPerkLevel": 190,
+     "what": "DD + DoT + initiative debuff"
+    },
+    {
+     "name": "Symbiosis",
+     "unlocksAtPerkLevel": 203,
+     "what": "upgrades the Totemic Rites \"Ritual\" specials"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Totemic Rites",
+   "type": "SL",
+   "line": "Totemic Rites (10 ranks, level 10-204)  [id 212097 = Totemic Rites]",
+   "representativeId": 212097,
+   "representativeName": "Totemic Rites",
+   "professionLock": [
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): MeleeDamageModifier +208, PoisonDamageModifier +208, FireDamageModifier +208, NanoDamageModifier +208, ColdDamageModifier +208, ProjectileDamageModifier +208, EnergyDamageModifier +208, ChemicalDamageModifier +208, RadiationDamageModifier +208, SneakAttack +100, MartialArts +40",
+   "recommendedAtLevel": "rank 1 at level 10; rank 10 at level 204",
+   "priority": "high",
+   "why": "Shade-only SL line: adds to EVERY damage type plus Sneak Attack and Martial Arts. The largest flat add-damage perk a Shade has.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212097,
+     "name": "Totemic Rites",
+     "minLevel": 10,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 4,
+      "PoisonDamageModifier": 4,
+      "FireDamageModifier": 4,
+      "NanoDamageModifier": 4,
+      "ColdDamageModifier": 4,
+      "ProjectileDamageModifier": 4,
+      "EnergyDamageModifier": 4,
+      "ChemicalDamageModifier": 4,
+      "RadiationDamageModifier": 4,
+      "MartialArts": 1,
+      "SneakAttack": 5
+     }
+    },
+    {
+     "rank": 2,
+     "id": 212098,
+     "name": "Totemic Rites",
+     "minLevel": 40,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 8,
+      "PoisonDamageModifier": 8,
+      "FireDamageModifier": 8,
+      "NanoDamageModifier": 8,
+      "ColdDamageModifier": 8,
+      "ProjectileDamageModifier": 8,
+      "EnergyDamageModifier": 8,
+      "ChemicalDamageModifier": 8,
+      "RadiationDamageModifier": 8,
+      "MartialArts": 2,
+      "SneakAttack": 5
+     }
+    },
+    {
+     "rank": 3,
+     "id": 212099,
+     "name": "Totemic Rites",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 11,
+      "PoisonDamageModifier": 11,
+      "FireDamageModifier": 11,
+      "NanoDamageModifier": 11,
+      "ColdDamageModifier": 11,
+      "ProjectileDamageModifier": 11,
+      "EnergyDamageModifier": 11,
+      "ChemicalDamageModifier": 11,
+      "RadiationDamageModifier": 11,
+      "MartialArts": 2,
+      "SneakAttack": 6
+     }
+    },
+    {
+     "rank": 4,
+     "id": 212100,
+     "name": "Totemic Rites",
+     "minLevel": 90,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 15,
+      "PoisonDamageModifier": 15,
+      "FireDamageModifier": 15,
+      "NanoDamageModifier": 15,
+      "ColdDamageModifier": 15,
+      "ProjectileDamageModifier": 15,
+      "EnergyDamageModifier": 15,
+      "ChemicalDamageModifier": 15,
+      "RadiationDamageModifier": 15,
+      "MartialArts": 3,
+      "SneakAttack": 6
+     }
+    },
+    {
+     "rank": 5,
+     "id": 212101,
+     "name": "Totemic Rites",
+     "minLevel": 120,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 18,
+      "PoisonDamageModifier": 18,
+      "FireDamageModifier": 18,
+      "NanoDamageModifier": 18,
+      "ColdDamageModifier": 18,
+      "ProjectileDamageModifier": 18,
+      "EnergyDamageModifier": 18,
+      "ChemicalDamageModifier": 18,
+      "RadiationDamageModifier": 18,
+      "MartialArts": 3,
+      "SneakAttack": 7
+     }
+    },
+    {
+     "rank": 6,
+     "id": 212102,
+     "name": "Totemic Rites",
+     "minLevel": 150,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 20,
+      "PoisonDamageModifier": 20,
+      "FireDamageModifier": 20,
+      "NanoDamageModifier": 20,
+      "ColdDamageModifier": 20,
+      "ProjectileDamageModifier": 20,
+      "EnergyDamageModifier": 20,
+      "ChemicalDamageModifier": 20,
+      "RadiationDamageModifier": 20,
+      "MartialArts": 4,
+      "SneakAttack": 8
+     }
+    },
+    {
+     "rank": 7,
+     "id": 212103,
+     "name": "Totemic Rites",
+     "minLevel": 170,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 24,
+      "PoisonDamageModifier": 24,
+      "FireDamageModifier": 24,
+      "NanoDamageModifier": 24,
+      "ColdDamageModifier": 24,
+      "ProjectileDamageModifier": 24,
+      "EnergyDamageModifier": 24,
+      "ChemicalDamageModifier": 24,
+      "RadiationDamageModifier": 24,
+      "MartialArts": 5,
+      "SneakAttack": 9
+     }
+    },
+    {
+     "rank": 8,
+     "id": 212104,
+     "name": "Totemic Rites",
+     "minLevel": 190,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 28,
+      "PoisonDamageModifier": 28,
+      "FireDamageModifier": 28,
+      "NanoDamageModifier": 28,
+      "ColdDamageModifier": 28,
+      "ProjectileDamageModifier": 28,
+      "EnergyDamageModifier": 28,
+      "ChemicalDamageModifier": 28,
+      "RadiationDamageModifier": 28,
+      "MartialArts": 5,
+      "SneakAttack": 11
+     }
+    },
+    {
+     "rank": 9,
+     "id": 212105,
+     "name": "Totemic Rites",
+     "minLevel": 201,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 30,
+      "PoisonDamageModifier": 30,
+      "FireDamageModifier": 30,
+      "NanoDamageModifier": 30,
+      "ColdDamageModifier": 30,
+      "ProjectileDamageModifier": 30,
+      "EnergyDamageModifier": 30,
+      "ChemicalDamageModifier": 30,
+      "RadiationDamageModifier": 30,
+      "MartialArts": 6,
+      "SneakAttack": 15
+     }
+    },
+    {
+     "rank": 10,
+     "id": 212106,
+     "name": "Totemic Rites",
+     "minLevel": 204,
+     "bonusesThisRank": {
+      "MeleeDamageModifier": 50,
+      "PoisonDamageModifier": 50,
+      "FireDamageModifier": 50,
+      "NanoDamageModifier": 50,
+      "ColdDamageModifier": 50,
+      "ProjectileDamageModifier": 50,
+      "EnergyDamageModifier": 50,
+      "ChemicalDamageModifier": 50,
+      "RadiationDamageModifier": 50,
+      "MartialArts": 9,
+      "SneakAttack": 28
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Ritual of Devotion",
+     "unlocksAtPerkLevel": 10,
+     "what": "DD plus a self add-damage buff"
+    },
+    {
+     "name": "Devour Vigor",
+     "unlocksAtPerkLevel": 40,
+     "what": "life drain + DD"
+    },
+    {
+     "name": "Ritual of Zeal",
+     "unlocksAtPerkLevel": 90,
+     "what": ""
+    },
+    {
+     "name": "Devour Essence",
+     "unlocksAtPerkLevel": 120,
+     "what": ""
+    },
+    {
+     "name": "Ritual of Spirit",
+     "unlocksAtPerkLevel": 170,
+     "what": ""
+    },
+    {
+     "name": "Devour Vitality",
+     "unlocksAtPerkLevel": 190,
+     "what": ""
+    },
+    {
+     "name": "Ritual of Blood",
+     "unlocksAtPerkLevel": 204,
+     "what": ""
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Acrobat",
+   "type": "SL",
+   "line": "Acrobat (4 ranks, level 30-140) - shared with MartialArtist/Fixer/Adventurer  [id 211655 = Acrobat]",
+   "representativeId": 211655,
+   "representativeName": "Acrobat",
+   "professionLock": [
+    "MartialArtist",
+    "Fixer",
+    "Adventurer",
+    "Shade"
+   ],
+   "ranks": 4,
+   "effect": "Full line (all ranks summed, from items.ocp): DuckExp +190, DodgeRanged +190, EvadeClsC +190, Agility +30, MultiMelee +30, MultiRanged +30",
+   "recommendedAtLevel": "rank 1 at level 30; rank 4 at level 140",
+   "priority": "med",
+   "why": "Shared SL line (MA/Fixer/Adv/Shade): Agility, all three evades and Multi Melee/Multi Ranged.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211655,
+     "name": "Acrobat",
+     "minLevel": 30,
+     "bonusesThisRank": {
+      "Agility": 4,
+      "DuckExp": 20,
+      "DodgeRanged": 20,
+      "EvadeClsC": 20,
+      "MultiMelee": 4,
+      "MultiRanged": 4
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211656,
+     "name": "Acrobat",
+     "minLevel": 60,
+     "bonusesThisRank": {
+      "Agility": 6,
+      "DuckExp": 35,
+      "DodgeRanged": 35,
+      "EvadeClsC": 35,
+      "MultiMelee": 6,
+      "MultiRanged": 6
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211657,
+     "name": "Acrobat",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "Agility": 8,
+      "DuckExp": 55,
+      "DodgeRanged": 55,
+      "EvadeClsC": 55,
+      "MultiMelee": 8,
+      "MultiRanged": 8
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211658,
+     "name": "Acrobat",
+     "minLevel": 140,
+     "bonusesThisRank": {
+      "Agility": 12,
+      "DuckExp": 80,
+      "DodgeRanged": 80,
+      "EvadeClsC": 80,
+      "MultiMelee": 12,
+      "MultiRanged": 12
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Limber",
+     "unlocksAtPerkLevel": 60,
+     "what": "evade buff"
+    },
+    {
+     "name": "Dance of Fools",
+     "unlocksAtPerkLevel": 140,
+     "what": "evade buff"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Careful in Battle",
+   "type": "SL",
+   "line": "Careful in Battle (10 ranks, level 40-219) - shared with MartialArtist/Fixer/Bureaucrat  [id 211738 = Careful in Battle]",
+   "representativeId": 211738,
+   "representativeName": "Careful in Battle",
+   "professionLock": [
+    "MartialArtist",
+    "Fixer",
+    "Bureaucrat",
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "Full line (all ranks summed, from items.ocp): AddAllDef +300, CritialResistance +80",
+   "recommendedAtLevel": "rank 1 at level 40; rank 10 at level 219",
+   "priority": "med",
+   "why": "Shared SL line (MA/Fixer/Crat/Shade): Add All Def and critical resistance over the line.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 211738,
+     "name": "Careful in Battle",
+     "minLevel": 40,
+     "bonusesThisRank": {
+      "CritialResistance": 2,
+      "AddAllDef": 20
+     }
+    },
+    {
+     "rank": 2,
+     "id": 211739,
+     "name": "Careful in Battle",
+     "minLevel": 70,
+     "bonusesThisRank": {
+      "CritialResistance": 2,
+      "AddAllDef": 20
+     }
+    },
+    {
+     "rank": 3,
+     "id": 211740,
+     "name": "Careful in Battle",
+     "minLevel": 100,
+     "bonusesThisRank": {
+      "CritialResistance": 3,
+      "AddAllDef": 22
+     }
+    },
+    {
+     "rank": 4,
+     "id": 211741,
+     "name": "Careful in Battle",
+     "minLevel": 130,
+     "bonusesThisRank": {
+      "CritialResistance": 3,
+      "AddAllDef": 23
+     }
+    },
+    {
+     "rank": 5,
+     "id": 211742,
+     "name": "Careful in Battle",
+     "minLevel": 160,
+     "bonusesThisRank": {
+      "CritialResistance": 4,
+      "AddAllDef": 24
+     }
+    },
+    {
+     "rank": 6,
+     "id": 211743,
+     "name": "Careful in Battle",
+     "minLevel": 200,
+     "bonusesThisRank": {
+      "CritialResistance": 7,
+      "AddAllDef": 26
+     }
+    },
+    {
+     "rank": 7,
+     "id": 211744,
+     "name": "Careful in Battle",
+     "minLevel": 205,
+     "bonusesThisRank": {
+      "CritialResistance": 9,
+      "AddAllDef": 28
+     }
+    },
+    {
+     "rank": 8,
+     "id": 211745,
+     "name": "Careful in Battle",
+     "minLevel": 207,
+     "bonusesThisRank": {
+      "CritialResistance": 12,
+      "AddAllDef": 32
+     }
+    },
+    {
+     "rank": 9,
+     "id": 211746,
+     "name": "Careful in Battle",
+     "minLevel": 212,
+     "bonusesThisRank": {
+      "CritialResistance": 15,
+      "AddAllDef": 40
+     }
+    },
+    {
+     "rank": 10,
+     "id": 211747,
+     "name": "Careful in Battle",
+     "minLevel": 219,
+     "bonusesThisRank": {
+      "CritialResistance": 23,
+      "AddAllDef": 65
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Evasive Stance",
+     "unlocksAtPerkLevel": 40,
+     "what": "scales with how many perks in the line are trained"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Counterweight",
+   "type": "AI",
+   "line": "Counterweight (6 ranks, level 15-125) - shared with Engineer/Adventurer/Enforcer  [id 252403 = Counterweight]",
+   "representativeId": 252403,
+   "representativeName": "Counterweight",
+   "professionLock": [
+    "Engineer",
+    "Adventurer",
+    "Enforcer",
+    "Shade"
+   ],
+   "ranks": 6,
+   "effect": "Full line (all ranks summed, from items.ocp): MultiRanged +100, MultiMelee +100",
+   "recommendedAtLevel": "rank 1 at level 15; rank 6 at level 125",
+   "priority": "med",
+   "why": "Shared SL line (Engi/Adv/Enf/Shade): Multi Melee, which is what lets a Shade hold the off-hand weapon.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 252403,
+     "name": "Counterweight",
+     "minLevel": 15,
+     "bonusesThisRank": {
+      "MultiRanged": 10,
+      "MultiMelee": 10
+     }
+    },
+    {
+     "rank": 2,
+     "id": 252404,
+     "name": "Counterweight",
+     "minLevel": 25,
+     "bonusesThisRank": {
+      "MultiRanged": 10,
+      "MultiMelee": 10
+     }
+    },
+    {
+     "rank": 3,
+     "id": 252405,
+     "name": "Counterweight",
+     "minLevel": 55,
+     "bonusesThisRank": {
+      "MultiRanged": 20,
+      "MultiMelee": 20
+     }
+    },
+    {
+     "rank": 4,
+     "id": 252406,
+     "name": "Counterweight",
+     "minLevel": 85,
+     "bonusesThisRank": {
+      "MultiRanged": 20,
+      "MultiMelee": 20
+     }
+    },
+    {
+     "rank": 5,
+     "id": 252407,
+     "name": "Counterweight",
+     "minLevel": 105,
+     "bonusesThisRank": {
+      "MultiRanged": 20,
+      "MultiMelee": 20
+     }
+    },
+    {
+     "rank": 6,
+     "id": 252408,
+     "name": "Counterweight",
+     "minLevel": 125,
+     "bonusesThisRank": {
+      "MultiRanged": 20,
+      "MultiMelee": 20
+     }
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Full Frontal",
+     "unlocksAtPerkLevel": 55,
+     "what": "ranged-init and run-speed debuff"
+    },
+    {
+     "name": "Confinement",
+     "unlocksAtPerkLevel": 125,
+     "what": "DD + taunt"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  },
+  {
+   "name": "Spatial Displacement",
+   "type": "SL",
+   "line": "Spatial Displacement (10 ranks, level 70-212) - shared with MartialArtist/Fixer/Adventurer/Keeper  [id 212123 = Spatial Displacement]",
+   "representativeId": 212123,
+   "representativeName": "Spatial Displacement",
+   "professionLock": [
+    "MartialArtist",
+    "Fixer",
+    "Adventurer",
+    "Keeper",
+    "Shade"
+   ],
+   "ranks": 10,
+   "effect": "No stat bonus on any rank in items.ocp - every rank of this line grants a perk ACTION (a clickable special) rather than a passive stat.",
+   "recommendedAtLevel": "rank 1 at level 70; rank 10 at level 212",
+   "priority": "low",
+   "why": "Shared SL line (MA/Fixer/Adv/Keeper/Shade). No stat bonus on any rank in items.ocp - it is an action-only line.",
+   "rankTable": [
+    {
+     "rank": 1,
+     "id": 212123,
+     "name": "Spatial Displacement",
+     "minLevel": 70,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 2,
+     "id": 212124,
+     "name": "Spatial Displacement",
+     "minLevel": 90,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 3,
+     "id": 212125,
+     "name": "Spatial Displacement",
+     "minLevel": 130,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 4,
+     "id": 212126,
+     "name": "Spatial Displacement",
+     "minLevel": 160,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 5,
+     "id": 212127,
+     "name": "Spatial Displacement",
+     "minLevel": 180,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 6,
+     "id": 212128,
+     "name": "Spatial Displacement",
+     "minLevel": 200,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 7,
+     "id": 212129,
+     "name": "Spatial Displacement",
+     "minLevel": 201,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 8,
+     "id": 212130,
+     "name": "Spatial Displacement",
+     "minLevel": 204,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 9,
+     "id": 212131,
+     "name": "Spatial Displacement",
+     "minLevel": 207,
+     "bonusesThisRank": {}
+    },
+    {
+     "rank": 10,
+     "id": 212132,
+     "name": "Spatial Displacement",
+     "minLevel": 212,
+     "bonusesThisRank": {}
+    }
+   ],
+   "perkSpecials": [
+    {
+     "name": "Removal 1",
+     "unlocksAtPerkLevel": 90,
+     "what": "reduces snare duration"
+    },
+    {
+     "name": "Removal 2",
+     "unlocksAtPerkLevel": 160,
+     "what": "reduces root duration"
+    },
+    {
+     "name": "Purge 1",
+     "unlocksAtPerkLevel": 200,
+     "what": "both"
+    },
+    {
+     "name": "Purge 2",
+     "unlocksAtPerkLevel": 204,
+     "what": "both"
+    },
+    {
+     "name": "Great Purge",
+     "unlocksAtPerkLevel": 212,
+     "what": "both, plus a short root/snare resistance buff"
+    }
+   ],
+   "_perkSpecialsSource": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+    "https://wiki.aodb.us/wiki/Shade:Perks"
+   ]
+  }
+ ],
+ "research": [
+  {
+   "name": "Ambushing",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): Concealment +115, SneakAttack +50, Agility +20, Sense +20",
+   "ranks": 10,
+   "representativeId": 262078,
+   "representativeName": "Ambushing",
+   "procsGranted": [
+    {
+     "atResearchLevel": 125,
+     "proc": "Drain Essence"
+    }
+   ]
+  },
+  {
+   "name": "Assassin's Awareness",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): PsychologicalModification +90, Intelligence +20, Psychic +15, ComputerLiteracy +15, SpaceTime +15, BiologicalMetamorphosis +15",
+   "ranks": 10,
+   "representativeId": 262018,
+   "representativeName": "Assassin's Awareness",
+   "procsGranted": [
+    {
+     "atResearchLevel": 150,
+     "proc": "Shadowed Gift"
+    },
+    {
+     "atResearchLevel": 190,
+     "proc": "Siphon Being"
+    }
+   ]
+  },
+  {
+   "name": "Honed Senses",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): MaxHealth +150, Sense +30, BodyDevelopment +25, ComputerLiteracy +20, Stamina +20",
+   "ranks": 10,
+   "representativeId": 262028,
+   "representativeName": "Honed Senses",
+   "procsGranted": [
+    {
+     "atResearchLevel": 175,
+     "proc": "Twisted Caress"
+    },
+    {
+     "atResearchLevel": 200,
+     "proc": "Blackheart"
+    }
+   ]
+  },
+  {
+   "name": "Killing Blows",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): FastAttack +130, Stamina +20, Strength +15, Agility +10, HealDelta +10",
+   "ranks": 10,
+   "representativeId": 262038,
+   "representativeName": "Killing Blows",
+   "procsGranted": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Devious Spirit"
+    },
+    {
+     "atResearchLevel": 50,
+     "proc": "Misdirection"
+    }
+   ]
+  },
+  {
+   "name": "Lithe",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): EvadeClsC +95, Agility +50, DodgeRanged +25, Riposte +15, Strength +10",
+   "ranks": 10,
+   "representativeId": 262068,
+   "representativeName": "Lithe",
+   "procsGranted": [
+    {
+     "atResearchLevel": 1,
+     "proc": "Sap Life"
+    }
+   ]
+  },
+  {
+   "name": "Malicious Forethought",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): BiologicalMetamorphosis +50, SpaceTime +50, Intelligence +15, Strength +15, Parry +10, MaxNCU +4, XPModifier +2",
+   "ranks": 10,
+   "representativeId": 262058,
+   "representativeName": "Malicious Forethought",
+   "procsGranted": [
+    {
+     "atResearchLevel": 75,
+     "proc": "Toxic Confusion"
+    },
+    {
+     "atResearchLevel": 100,
+     "proc": "Elusive Spirit"
+    },
+    {
+     "atResearchLevel": 200,
+     "proc": "Blackened Legacy"
+    }
+   ]
+  },
+  {
+   "name": "Stiletto Mastery",
+   "track": "LE",
+   "effect": "Full line (all ranks summed, from items.ocp): Piercing +115, MultiMelee +85, MeleeInit +75",
+   "ranks": 10,
+   "representativeId": 262048,
+   "representativeName": "Stiletto Mastery",
+   "procsGranted": [
+    {
+     "atResearchLevel": 75,
+     "proc": "Concealed Surprise"
+    }
+   ]
+  }
+ ],
+ "leProcPerks": {
+  "_what": "The Shade research-proc perks. Names and packet hashes come from the local AOSharp.Common PerkHash enum (LEProcShade*). Which research LINE grants each proc is NOT encoded there and is left unstated rather than guessed.",
+  "count": 12,
+  "perks": [
+   {
+    "name": "Shadowed Gift",
+    "enum": "LEProcShadeShadowedGift",
+    "packetHash": "0x53414746"
+   },
+   {
+    "name": "Siphon Being",
+    "enum": "LEProcShadeSiphonBeing",
+    "packetHash": "0x53504247"
+   },
+   {
+    "name": "Twisted Caress",
+    "enum": "LEProcShadeTwistedCaress",
+    "packetHash": "0x504c534e"
+   },
+   {
+    "name": "Blackheart",
+    "enum": "LEProcShadeBlackheart",
+    "packetHash": "0x434b4845"
+   },
+   {
+    "name": "Devious Spirit",
+    "enum": "LEProcShadeDeviousSpirit",
+    "packetHash": "0x44565350"
+   },
+   {
+    "name": "Misdirection",
+    "enum": "LEProcShadeMisdirection",
+    "packetHash": "0x53444952"
+   },
+   {
+    "name": "Concealed Surprise",
+    "enum": "LEProcShadeConcealedSurprise",
+    "packetHash": "0x48525356"
+   },
+   {
+    "name": "Toxic Confusion",
+    "enum": "LEProcShadeToxicConfusion",
+    "packetHash": "0x4f4e4655"
+   },
+   {
+    "name": "Elusive Spirit",
+    "enum": "LEProcShadeElusiveSpirit",
+    "packetHash": "0x45555352"
+   },
+   {
+    "name": "Blackened Legacy",
+    "enum": "LEProcShadeBlackenedLegacy",
+    "packetHash": "0x42434c47"
+   },
+   {
+    "name": "Sap Life",
+    "enum": "LEProcShadeSapLife",
+    "packetHash": "0x53504c49"
+   },
+   {
+    "name": "Drain Essence",
+    "enum": "LEProcShadeDrainEssence",
+    "packetHash": "0x44524553"
+   }
+  ],
+  "researchLineMapping": {
+   "_what": "Which research LINE and which research LEVEL grants each Shade proc perk. The local PerkHash enum has only the names; this mapping is from wiki.aodb.us/wiki/Shade:Research_Lines cross-checked against the ao-universe Comprehensive Shade Guide.",
+   "_source": [
+    "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ],
+   "_researchLevelCaps": "A research line has 10 levels whose character-level requirements are 1 / 50 / 75 / 100 / 125 / 150 / 175 / 190 / 190 / 200 (wiki.aodb.us/wiki/Research; the ao-universe Shade tables match). NOTE: wiki.aodb.us/wiki/Player_Level publishes a DIFFERENT ladder (1/25/50/100/...) - the two wiki pages disagree and the Research page is the one that matches ao-universe. Flagged in _unverified.",
+   "mapping": [
+    {
+     "line": "Ambushing",
+     "atResearchLevel": 125,
+     "proc": "Drain Essence",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Assassin's Awareness",
+     "atResearchLevel": 150,
+     "proc": "Shadowed Gift",
+     "stackingType": "type 2"
+    },
+    {
+     "line": "Assassin's Awareness",
+     "atResearchLevel": 190,
+     "proc": "Siphon Being",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Honed Senses",
+     "atResearchLevel": 175,
+     "proc": "Twisted Caress",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Honed Senses",
+     "atResearchLevel": 200,
+     "proc": "Blackheart",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Killing Blows",
+     "atResearchLevel": 1,
+     "proc": "Devious Spirit",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Killing Blows",
+     "atResearchLevel": 50,
+     "proc": "Misdirection",
+     "stackingType": "type 2"
+    },
+    {
+     "line": "Lithe",
+     "atResearchLevel": 1,
+     "proc": "Sap Life",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Malicious Forethought",
+     "atResearchLevel": 75,
+     "proc": "Toxic Confusion",
+     "stackingType": "type 2"
+    },
+    {
+     "line": "Malicious Forethought",
+     "atResearchLevel": 100,
+     "proc": "Elusive Spirit",
+     "stackingType": "type 1"
+    },
+    {
+     "line": "Malicious Forethought",
+     "atResearchLevel": 200,
+     "proc": "Blackened Legacy",
+     "stackingType": "type 2"
+    },
+    {
+     "line": "Stiletto Mastery",
+     "atResearchLevel": 75,
+     "proc": "Concealed Surprise",
+     "stackingType": "type 2"
+    }
+   ],
+   "stackingRule": "THE RULE THAT MATTERS FOR A BOT: Shade procs split into two mutually exclusive groups and only ONE of each group can be active at a time. Type 1 = Blackheart, Devious Spirit, Drain Essence, Elusive Spirit, Sap Life, Siphon Being, Twisted Caress. Type 2 = Blackened Legacy, Concealed Surprise, Misdirection, Shadowed Gift, Toxic Confusion. So a Shade runs at most two research procs plus one nano proc. Patch 18.7 moved several procs between the two types, so this reflects the current client, not the original assignment.",
+   "type1": [
+    "Blackheart",
+    "Devious Spirit",
+    "Drain Essence",
+    "Elusive Spirit",
+    "Sap Life",
+    "Siphon Being",
+    "Twisted Caress"
+   ],
+   "type2": [
+    "Blackened Legacy",
+    "Concealed Surprise",
+    "Misdirection",
+    "Shadowed Gift",
+    "Toxic Confusion"
+   ],
+   "_sourceConflict": "ao-universe lists Malicious Forethought research level 10 as \"Sap Life\" rather than \"Blackened Legacy\", but that same page then grants Sap Life twice and never grants Blackened Legacy anywhere despite listing it in its own proc table. The wiki reading (Blackened Legacy) is internally consistent and is what is recorded here; the conflict is listed in _unverified.",
+   "_effectsUnknown": "The numeric effect, proc chance and trigger of every one of the 12 Shade research procs is NOT published on any allowed source. Only the names, the lines and the stacking types are recorded."
+  }
+ },
+ "generalPerkLinesAlsoAvailable": {
+  "_what": "Perk lines in items.ocp with NO profession lock at all, so a Shade can take them. Rank counts, level requirements and the summed line bonus are read from the item templates. Includes the breed genome lines, the AI \"Champion of ...\" lines, the Shadowbreed lines and the vehicle lines.",
+  "count": 84,
+  "lines": [
+   {
+    "name": "Adumbrated",
+    "representativeId": 215392,
+    "representativeName": "Adumbrated",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 26
+    }
+   },
+   {
+    "name": "Alien Technology Expertise",
+    "representativeId": 247748,
+    "representativeName": "Alien Technology Expertise",
+    "ranks": 3,
+    "minLevel": 15,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Ambidextrous",
+    "representativeId": 211135,
+    "representativeName": "Ambidextrous",
+    "ranks": 6,
+    "minLevel": 10,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {
+     "MultiMelee": 130,
+     "MultiRanged": 130,
+     "MeleeDamageModifier": 20,
+     "ProjectileDamageModifier": 20,
+     "EnergyDamageModifier": 20,
+     "FireDamageModifier": 20,
+     "ColdDamageModifier": 20,
+     "ChemicalDamageModifier": 20,
+     "PoisonDamageModifier": 20,
+     "RadiationDamageModifier": 20,
+     "AddAllDef": 8
+    }
+   },
+   {
+    "name": "Ambigous",
+    "representativeId": 230908,
+    "representativeName": "Ambigous",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 33
+    }
+   },
+   {
+    "name": "Anti-Personnel Turret Armor Upgrade",
+    "representativeId": 262591,
+    "representativeName": "Anti-Personnel Turret Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Anti-Personnel Turret Weapon Upgrade",
+    "representativeId": 262594,
+    "representativeName": "Anti-Personnel Turret Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Anti-Vehicular Battery Armor Upgrade",
+    "representativeId": 262598,
+    "representativeName": "Anti-Vehicular Battery Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Anti-Vehicular Battery Weapon Upgrade",
+    "representativeId": 262601,
+    "representativeName": "Anti-Vehicular Battery Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Atrox Primary Genome",
+    "representativeId": 252492,
+    "representativeName": "Atrox Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 54,
+     "Stamina": 54
+    }
+   },
+   {
+    "name": "Atrox Secondary Genome",
+    "representativeId": 252512,
+    "representativeName": "Atrox Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Agility": 27,
+     "Sense": 27,
+     "Intelligence": 27,
+     "Psychic": 27
+    }
+   },
+   {
+    "name": "Balanced",
+    "representativeId": 230903,
+    "representativeName": "Balanced",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 4
+    }
+   },
+   {
+    "name": "Benighted",
+    "representativeId": 215393,
+    "representativeName": "Benighted",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 16
+    }
+   },
+   {
+    "name": "Black",
+    "representativeId": 215394,
+    "representativeName": "Black",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 36
+    }
+   },
+   {
+    "name": "Blazing",
+    "representativeId": 215395,
+    "representativeName": "Blazing",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 12
+    }
+   },
+   {
+    "name": "Bright",
+    "representativeId": 215396,
+    "representativeName": "Bright",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 29
+    }
+   },
+   {
+    "name": "Cartographer",
+    "representativeId": 211748,
+    "representativeName": "Cartographer",
+    "ranks": 5,
+    "minLevel": 20,
+    "maxRankLevel": 100,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Casual",
+    "representativeId": 230904,
+    "representativeName": "Casual",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 5
+    }
+   },
+   {
+    "name": "Champion of Heavy Artillery",
+    "representativeId": 253108,
+    "representativeName": "Champion of Heavy Artillery",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "AssaultRifle": 100,
+     "Rifle": 100,
+     "RangedEnergy": 100,
+     "HeavyWeapons": 100,
+     "Grenade": 100
+    }
+   },
+   {
+    "name": "Champion of Heavy Infantry",
+    "representativeId": 253064,
+    "representativeName": "Champion of Heavy Infantry",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "_2hBlunt": 100,
+     "Skill2hEdged": 100,
+     "MeleeEnergy": 100
+    }
+   },
+   {
+    "name": "Champion of Light Artillery",
+    "representativeId": 253093,
+    "representativeName": "Champion of Light Artillery",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Pistol": 100,
+     "MGSMG": 100,
+     "Shotgun": 100,
+     "Bow": 100
+    }
+   },
+   {
+    "name": "Champion of Light Infantry",
+    "representativeId": 253079,
+    "representativeName": "Champion of Light Infantry",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Piercing": 100,
+     "_1hBlunt": 100,
+     "_1hEdged": 100,
+     "MartialArts": 100
+    }
+   },
+   {
+    "name": "Champion of Nano Combat",
+    "representativeId": 253123,
+    "representativeName": "Champion of Nano Combat",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "MaterialMetamorphosis": 100,
+     "SpaceTime": 100,
+     "MaterialCreation": 100,
+     "BiologicalMetamorphosis": 100,
+     "SensoryImprovement": 100,
+     "PsychologicalModification": 100
+    }
+   },
+   {
+    "name": "Cloudless",
+    "representativeId": 215397,
+    "representativeName": "Cloudless",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 19
+    }
+   },
+   {
+    "name": "Combat Knowledge",
+    "representativeId": 253140,
+    "representativeName": "Combat Knowledge",
+    "ranks": 8,
+    "minLevel": 25,
+    "maxRankLevel": 165,
+    "fullLineBonuses": {
+     "Treatment": 64,
+     "FirstAid": 64,
+     "SkillLockModifier": -8
+    }
+   },
+   {
+    "name": "Dark",
+    "representativeId": 215398,
+    "representativeName": "Dark",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 35
+    }
+   },
+   {
+    "name": "Darkened",
+    "representativeId": 215399,
+    "representativeName": "Darkened",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 27
+    }
+   },
+   {
+    "name": "Doubtful",
+    "representativeId": 230900,
+    "representativeName": "Doubtful",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 22
+    }
+   },
+   {
+    "name": "Dubious",
+    "representativeId": 230901,
+    "representativeName": "Dubious",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 23
+    }
+   },
+   {
+    "name": "Dusky",
+    "representativeId": 215400,
+    "representativeName": "Dusky",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 7
+    }
+   },
+   {
+    "name": "Enhance DNA",
+    "representativeId": 211793,
+    "representativeName": "Enhance DNA",
+    "ranks": 10,
+    "minLevel": 10,
+    "maxRankLevel": 190,
+    "fullLineBonuses": {
+     "Strength": 45,
+     "Stamina": 45,
+     "Intelligence": 45,
+     "Psychic": 45,
+     "Sense": 45,
+     "Agility": 45,
+     "BodyDevelopment": 40
+    }
+   },
+   {
+    "name": "Enhance Health",
+    "representativeId": 211057,
+    "representativeName": "Enhance Health",
+    "ranks": 8,
+    "minLevel": 10,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {
+     "MaxHealth": 1540
+    }
+   },
+   {
+    "name": "Enhance Nano",
+    "representativeId": 211065,
+    "representativeName": "Enhance Nano",
+    "ranks": 8,
+    "minLevel": 10,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 2580
+    }
+   },
+   {
+    "name": "Enhanced Nano Damage",
+    "representativeId": 211803,
+    "representativeName": "Enhanced Nano Damage",
+    "ranks": 6,
+    "minLevel": 160,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 2000,
+     "NanoDamageMultiplier": 18
+    }
+   },
+   {
+    "name": "Explorer",
+    "representativeId": 211812,
+    "representativeName": "Explorer",
+    "ranks": 4,
+    "minLevel": 10,
+    "maxRankLevel": 140,
+    "fullLineBonuses": {
+     "RegainXPPercentage": 100,
+     "Adventuring": 60
+    }
+   },
+   {
+    "name": "First Aid",
+    "representativeId": 211819,
+    "representativeName": "First Aid",
+    "ranks": 4,
+    "minLevel": 30,
+    "maxRankLevel": 180,
+    "fullLineBonuses": {
+     "Treatment": 100,
+     "FirstAid": 100
+    }
+   },
+   {
+    "name": "Freak Strength",
+    "representativeId": 211853,
+    "representativeName": "Freak Strength",
+    "ranks": 3,
+    "minLevel": 120,
+    "maxRankLevel": 208,
+    "fullLineBonuses": {
+     "BodyDevelopment": 49,
+     "Strength": 20,
+     "Stamina": 20
+    }
+   },
+   {
+    "name": "Genius",
+    "representativeId": 211866,
+    "representativeName": "Genius",
+    "ranks": 3,
+    "minLevel": 60,
+    "maxRankLevel": 190,
+    "fullLineBonuses": {
+     "NanoPool": 120,
+     "Intelligence": 40,
+     "Psychic": 40
+    }
+   },
+   {
+    "name": "Global Advantage - Combat Knowledge",
+    "representativeId": 268786,
+    "representativeName": "Global Advantage - Combat Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Global Advantage - Defensive Power",
+    "representativeId": 268780,
+    "representativeName": "Global Advantage - Defensive Power",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Global Advantage - Health",
+    "representativeId": 268730,
+    "representativeName": "Global Advantage - Health",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Global Advantage - Medical Knowledge",
+    "representativeId": 268783,
+    "representativeName": "Global Advantage - Medical Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Global Advantage - Nano Technology Knowledge",
+    "representativeId": 268789,
+    "representativeName": "Global Advantage - Nano Technology Knowledge",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Global Advantage - Offensive Power",
+    "representativeId": 268777,
+    "representativeName": "Global Advantage - Offensive Power",
+    "ranks": 3,
+    "minLevel": 51,
+    "maxRankLevel": 201,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Gloomy",
+    "representativeId": 215401,
+    "representativeName": "Gloomy",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 8
+    }
+   },
+   {
+    "name": "Indeterminated",
+    "representativeId": 230907,
+    "representativeName": "Indeterminated",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 32
+    }
+   },
+   {
+    "name": "Kung-Fu Master",
+    "representativeId": 211901,
+    "representativeName": "Kung-Fu Master",
+    "ranks": 5,
+    "minLevel": 50,
+    "maxRankLevel": 203,
+    "fullLineBonuses": {
+     "MartialArts": 50
+    }
+   },
+   {
+    "name": "Loustrous",
+    "representativeId": 215402,
+    "representativeName": "Loustrous",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 20
+    }
+   },
+   {
+    "name": "Luminous",
+    "representativeId": 215403,
+    "representativeName": "Luminous",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 1
+    }
+   },
+   {
+    "name": "Mechanized Assault Vehicle Armor Upgrade",
+    "representativeId": 263035,
+    "representativeName": "Mechanized Assault Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Mechanized Assault Vehicle Weapon Upgrade",
+    "representativeId": 263038,
+    "representativeName": "Mechanized Assault Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Mechanized Scout Vehicle Armor Upgrade",
+    "representativeId": 263028,
+    "representativeName": "Mechanized Scout Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Mechanized Scout Vehicle Weapon Upgrade",
+    "representativeId": 263031,
+    "representativeName": "Mechanized Scout Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Metoric",
+    "representativeId": 215404,
+    "representativeName": "Metoric",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 3
+    }
+   },
+   {
+    "name": "Motorist",
+    "representativeId": 211070,
+    "representativeName": "Motorist",
+    "ranks": 4,
+    "minLevel": 30,
+    "maxRankLevel": 140,
+    "fullLineBonuses": {
+     "VehicleGround": 200,
+     "VehicleAir": 200,
+     "VehicleWater": 200
+    }
+   },
+   {
+    "name": "Murky",
+    "representativeId": 215405,
+    "representativeName": "Murky",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 34
+    }
+   },
+   {
+    "name": "NCU Extensions",
+    "representativeId": 211123,
+    "representativeName": "NCU Extensions",
+    "ranks": 9,
+    "minLevel": 1,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "MaxNCU": 140,
+     "ComputerLiteracy": 110
+    }
+   },
+   {
+    "name": "Nanobreed Primary Genome",
+    "representativeId": 252560,
+    "representativeName": "Nanobreed Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Intelligence": 54,
+     "Psychic": 54
+    }
+   },
+   {
+    "name": "Nanobreed Secondary Genome",
+    "representativeId": 253018,
+    "representativeName": "Nanobreed Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 27,
+     "Stamina": 27,
+     "Sense": 27,
+     "Agility": 27
+    }
+   },
+   {
+    "name": "Nanomorph",
+    "representativeId": 252387,
+    "representativeName": "Nanomorph",
+    "ranks": 10,
+    "minLevel": 25,
+    "maxRankLevel": 195,
+    "fullLineBonuses": {
+     "MaxNanoEnergy": 1000,
+     "MaterialMetamorphosis": 19,
+     "BiologicalMetamorphosis": 19,
+     "PsychologicalModification": 19,
+     "MaterialCreation": 19,
+     "SpaceTime": 19,
+     "SensoryImprovement": 19
+    }
+   },
+   {
+    "name": "Noctivagant",
+    "representativeId": 215406,
+    "representativeName": "Noctivagant",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 17
+    }
+   },
+   {
+    "name": "Noctivagous",
+    "representativeId": 215407,
+    "representativeName": "Noctivagous",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 18
+    }
+   },
+   {
+    "name": "Nocturnal",
+    "representativeId": 215408,
+    "representativeName": "Nocturnal",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 9
+    }
+   },
+   {
+    "name": "Notum Repulsor",
+    "representativeId": 212133,
+    "representativeName": "Notum Repulsor",
+    "ranks": 8,
+    "minLevel": 30,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "NanoResist": 20000,
+     "SensoryImprovement": -8000,
+     "BiologicalMetamorphosis": -8000,
+     "MaterialMetamorphosis": -8000,
+     "PsychologicalModification": -8000,
+     "MaterialCreation": -8000,
+     "SpaceTime": -8000
+    }
+   },
+   {
+    "name": "Opifex Primary Genome",
+    "representativeId": 252527,
+    "representativeName": "Opifex Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Sense": 54,
+     "Agility": 54
+    }
+   },
+   {
+    "name": "Opifex Secondary Genome",
+    "representativeId": 252542,
+    "representativeName": "Opifex Secondary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 27,
+     "Stamina": 27,
+     "Psychic": 27,
+     "Intelligence": 27
+    }
+   },
+   {
+    "name": "Opportunist",
+    "representativeId": 252479,
+    "representativeName": "Opportunist",
+    "ranks": 6,
+    "minLevel": 15,
+    "maxRankLevel": 125,
+    "fullLineBonuses": {
+     "Parry": 110,
+     "Riposte": 110,
+     "Dimach": 110
+    }
+   },
+   {
+    "name": "Personal Mechanized Vehicle Armor Upgrade",
+    "representativeId": 262431,
+    "representativeName": "Personal Mechanized Vehicle Armor Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Personal Mechanized Vehicle Weapon Upgrade",
+    "representativeId": 262434,
+    "representativeName": "Personal Mechanized Vehicle Weapon Upgrade",
+    "ranks": 3,
+    "minLevel": null,
+    "maxRankLevel": null,
+    "fullLineBonuses": {}
+   },
+   {
+    "name": "Radient",
+    "representativeId": 215409,
+    "representativeName": "Radient",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 10
+    }
+   },
+   {
+    "name": "Scintillant",
+    "representativeId": 215410,
+    "representativeName": "Scintillant",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 30
+    }
+   },
+   {
+    "name": "Shady",
+    "representativeId": 215374,
+    "representativeName": "Shady",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 25
+    }
+   },
+   {
+    "name": "Shiny",
+    "representativeId": 215411,
+    "representativeName": "Shiny",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 21
+    }
+   },
+   {
+    "name": "Solitus Primary Genome",
+    "representativeId": 253034,
+    "representativeName": "Solitus Primary Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Strength": 36,
+     "Stamina": 36,
+     "Agility": 36
+    }
+   },
+   {
+    "name": "Solitus Seconday Genome",
+    "representativeId": 253049,
+    "representativeName": "Solitus Seconday Genome",
+    "ranks": 10,
+    "minLevel": 5,
+    "maxRankLevel": 207,
+    "fullLineBonuses": {
+     "Intelligence": 36,
+     "Sense": 36,
+     "Psychic": 36
+    }
+   },
+   {
+    "name": "Splendent",
+    "representativeId": 215412,
+    "representativeName": "Splendent",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 2
+    }
+   },
+   {
+    "name": "Splendid",
+    "representativeId": 215413,
+    "representativeName": "Splendid",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 11
+    }
+   },
+   {
+    "name": "Training Seminar",
+    "representativeId": 211075,
+    "representativeName": "Training Seminar",
+    "ranks": 5,
+    "minLevel": 1,
+    "maxRankLevel": 150,
+    "fullLineBonuses": {
+     "XPModifier": 23
+    }
+   },
+   {
+    "name": "Uncertain",
+    "representativeId": 230905,
+    "representativeName": "Uncertain",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 6
+    }
+   },
+   {
+    "name": "Undecided",
+    "representativeId": 230911,
+    "representativeName": "Undecided",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 15
+    }
+   },
+   {
+    "name": "Undefinable",
+    "representativeId": 230902,
+    "representativeName": "Undefinable",
+    "ranks": 1,
+    "minLevel": 215,
+    "maxRankLevel": 215,
+    "fullLineBonuses": {
+     "ShadowBreed": 24
+    }
+   },
+   {
+    "name": "Undetermined",
+    "representativeId": 230910,
+    "representativeName": "Undetermined",
+    "ranks": 1,
+    "minLevel": 210,
+    "maxRankLevel": 210,
+    "fullLineBonuses": {
+     "ShadowBreed": 14
+    }
+   },
+   {
+    "name": "Unsettled",
+    "representativeId": 230909,
+    "representativeName": "Unsettled",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 13
+    }
+   },
+   {
+    "name": "Vague",
+    "representativeId": 230906,
+    "representativeName": "Vague",
+    "ranks": 1,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 31
+    }
+   },
+   {
+    "name": "Vivid",
+    "representativeId": 246220,
+    "representativeName": "Vivid",
+    "ranks": 2,
+    "minLevel": 205,
+    "maxRankLevel": 205,
+    "fullLineBonuses": {
+     "ShadowBreed": 56
+    }
+   }
+  ]
+ },
+ "_deviations": [
+  "NO PETS. shade-pets.json is deliberately absent: there is no SummonPet function in any of the 79 Shade-castable nanos in shade-nanos.json. The Pets tab will correctly show \"not generated yet\".",
+  "NO IMPLANTS. Verified from the data: 44,060 implant templates (ItemClass 3) exist in items.ocp and NOT ONE of them carries a profession lock, so the prohibition is a client/server rule, not an item criterion. The evidence is the client's own description text on Whispering Spirit (id 218576). See shade-implants.json.",
+  "NO SYMBIANTS. With --prof 15 the symbiant extractor returns 14 usable templates out of 1,462 wearable ones, and 12 of those 14 are the known unlocked Xan Artillery anomaly (ids 278908-278919) plus two unlocked one-offs (245306, 245895). A Shade wears SPIRITS (ItemClass 5, 844 templates, 842 locked to profession 15). See shade-symbiants.json, which holds the Spirits and says so on the page.",
+  "PERKS COME FROM THE CLIENT DATA HERE, NOT FROM THE WEB. The metaphysicist-build.json perk block was written from web guides with prose effects. For the Shade, every perk line, its rank count, each rank's level requirement, each rank's item id and each rank's exact stat bonus is read out of items.ocp (slot-less ToWear templates whose name matches the AOSharp PerkLine enum). This is a strictly better method and should be back-ported to the other classes - the same extraction is a --prof change.",
+  "ONE WEAPON SKILL, NOT A LIST. The MP template assumes a profession picks among several weapon skills. A Shade has exactly one affordable skill (Piercing, 1.0) with Martial Arts (1.6) as a distant second; every other weapon skill in the game costs it 4.0. usableWeaponTypes in shade-weapons.json is therefore a very short list and the otherWeaponSkillsInData block is the interesting part.",
+  "RIPOSTE AND PARRY ARE WIELD REQUIREMENTS, NOT JUST PASSIVES. The playbook §3 encoding note says Riposte/Parry are passive and not on-demand specials - true - but on the Shade-locked weapon lines (Sigd, Bloodlust, Bronto Vet Lancet, Thousand Stings, Nippy John Stiletto) they appear as hard ToWield skill requirements at ~40% of the Piercing requirement. A Shade that ignores them cannot equip its own weapons.",
+  "NO BUFFS GIVEN TO OTHERS. Every one of the 79 castable nanos targets self (shade-nanos.json). The givesToOthers block in the buffs schema is genuinely empty for this class.",
+  "TREATMENT IS NOT A LADDER SKILL. Every other profile treats Treatment as the implant-ladder gate. For a Shade it gates nothing it wears - Spirits need no Treatment and no surgery clinic - so its 1.5 cost factor is misleading if read against the implant model."
+ ],
+ "_unverified": [
+  "Breed availability for the Shade profession is a character-creation rule and is not encoded in items.ocp; the recommendation above is derived from ability caps vs skill dependencies, not from a fetched guide.",
+  "Perk RANK COSTS (how many perk points each rank costs) are not in items.ocp and are not stated here.",
+  "Which LE research LINE grants each LEProcShade* proc perk is not encoded in the local data. The procs are listed by name only, with no line assignment.",
+  "Perk bonuses recorded with amount 0 in the rank tables are exactly what the client stores - those ranks grant a perk ACTION rather than a stat. The action itself is not in this extraction.",
+  "The \"target\" column in skillPriorities is a judgement about IP allocation, not a sourced number. The IP COST FACTORS it is derived from are data (reference/skillcaps.json, Shade = _professionOrder index 11).",
+  "generalPerkLinesAlsoAvailable means \"has no profession lock in items.ocp\". Some entries (vehicle lines, Shadowbreed lines, breed genome lines) are gated by things other than profession - breed, AI title level, expansion - which this extraction does not resolve.",
+  "The ability-synergy percentages quoted in the breed reasoning come from reference/skillcaps.json, where several are themselves marked \"(unverified)\" by that file. The COST factors, which carry the argument, are the cross-checked part.",
+  "The numeric effect, proc chance and trigger of all 12 Shade LE research procs are not published on any allowed source - only the names, the lines that grant them and their stacking type.",
+  "SOURCE CONFLICT: wiki.aodb.us/wiki/Research gives the research-level character requirements as 1/50/75/100/125/150/175/190/190/200 (matching ao-universe) while wiki.aodb.us/wiki/Player_Level gives 1/25/50/100/... The Research-page ladder is recorded here.",
+  "SOURCE CONFLICT: ao-universe lists Malicious Forethought research level 10 as Sap Life; wiki.aodb.us/wiki/Shade:Research_Lines lists it as Blackened Legacy. The wiki reading is recorded because the ao-universe page grants Sap Life twice and never grants Blackened Legacy.",
+  "AI PERK LINES: the ao-universe Comprehensive Shade Guide names only Shadow and Counterweight as Shade AI lines. The five \"Champion of ...\" lines are marked \"(Any)\" profession on wiki.aodb.us/wiki/Perk_Chains, which implies but does not state Shade access. Starfall is explicitly NOT a Shade line (listed Crat/Doc/MP/NT). Champion of Vigor, Atrox Regeneration, Bio Shielding, Genius, Extremism and Assassin could not be confirmed for a Shade.",
+  "ao-universe claims patch 18.7 let Shades \"wear all items that are open to other professions such as token boards, helmets and back items\". That sentence does NOT appear in the wiki.aodb.us Patch 18.7 notes, which list only nano/perk/proc changes for the Shade. Single-sourced.",
+  "SOURCE QUALITY: wiki.aodb.us's Shade pages are largely 2006-era stubs - Shade:Weapons contains only Tango Dirk and Improved Tango Dirk, Shade:Perks has empty headings for Sublime Rapport and Shade Touch, and Shade:Armor has empty Rubi-Ka and Alien Invasion sections. The load-bearing web source for this class is the ao-universe Comprehensive Shade Guide."
+ ],
+ "_sources": [
+  "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (client 18.8.50_EP1) via tools/eng-gear-extractor --prof 15: every perk line, rank, level requirement, item id and stat bonus above.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql: every id -> name in this file was re-verified against it.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkLine.cs: the 272-entry perk-line enum used to separate real perk lines from other slot-less wearables.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/PerkHash.cs: the 12 LEProcShade* research-proc perk names.",
+  "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json (Shade = _professionOrder index 11): every IP cost factor quoted above.",
+  "LOCAL AOBuddy/GameData/profiles/reference/breeds.json: ability caps and creation bases behind the breed pick.",
+  "LOCAL AOBuddy/GameData/profiles/shade-nanos.json: the nano-school cast requirements (Psy Mod on 73 of 79 nanos to 1,840; Sense Imp 43 to 1,243; Time & Space 33 to 1,569; Bio Met 32 to 1,579; Matter Creation 1 to 799).",
+  "LOCAL AOBuddy/GameData/profiles/shade-weapons.json and shade-weapons-endgame.json: the weapon wield/special requirement figures quoted in skillPriorities.",
+  "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+  "https://wiki.aodb.us/wiki/Shade:Perks",
+  "https://wiki.aodb.us/wiki/Shade:Research_Lines",
+  "https://wiki.aodb.us/wiki/Perk_Chains",
+  "https://wiki.aodb.us/index.php?title=Shade:Breed_and_Skills&action=raw",
+  "https://wiki.aodb.us/wiki/Shade:Tips_and_Tricks",
+  "https://wiki.aodb.us/wiki/Patch_17.9",
+  "http://wiki.aodb.us/wiki/Patch_18.7",
+  "https://wiki.aodb.us/wiki/Patch_18.8",
+  "https://wiki.aodb.us/wiki/Research",
+  "https://wiki.aodb.us/wiki/Shade",
+  "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/breed-statistics",
+  "https://www.ao-universe.com/guides/shadowlands/gameplay-guides-5/shadowbreeds",
+  "https://forums.funcom.com/t/new-shade-coming-back/120089",
+  "https://forums.funcom.com/t/shade-endgame-soloing-and-deflect-returning-player/30753",
+  "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965"
+ ],
+ "perkMechanics": {
+  "headline": "A SHADE IS A PERK-DAMAGE CLASS. ao-universe: \"Shades are meant to do most damage through their perk specials\", and a 220 Shade on the Funcom forums puts it at \"Shades damage is 80% perks at end game\". That is why the perk tables in this file matter more than the weapon tables do.",
+  "damageScaling": "Shade perk-special damage scales off BUFFED PIERCING divided by 2, read as a perk item QL, in three tiers at QL 1-500 / 501-1000 / 1001-1500+. Every Shade perk special runs off Piercing EXCEPT the Shade Touch line, and you must be wielding at least one Piercing weapon for them to fire.",
+  "facingRule": "Since patch 17.9 only the FIRST perk of a chain requires you to be behind the target, and chains check the USER rather than the target - so a chain started on one mob carries over to the next. ao-universe/wiki call this the \"Shade Dance\": reposition once per chain, not once per perk.",
+  "perkBudget": "SL perks: 1 per 10 levels to 200 plus 1 per shadowlevel = 40 at level 220. AI perks: 1 per Alien Level, max AI 30. The ao-universe guide gives no single ideal path - it says to take two lines to 200, a third with what is left, and a fourth in shadowlevels.",
+  "crossProfessionChainTriggers": [
+   "All three Spirit Phylactery \"Unsealed\" perks gain a bonus from a Trader's Bloodletting.",
+   "Sublime Rapport's Ethereal Touch is the bonus trigger for Tremor Hand in the any-profession Kung Fu Master line."
+  ],
+  "_sources": [
+   "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+   "https://wiki.aodb.us/wiki/Shade:Perks",
+   "https://wiki.aodb.us/wiki/Perk_Chains",
+   "https://wiki.aodb.us/wiki/Patch_17.9",
+   "https://wiki.aodb.us/wiki/Shade:Tips_and_Tricks",
+   "https://forums.funcom.com/t/new-shade-coming-back/120089"
+  ]
+ },
+ "apotheosis": {
+  "_what": "The game-wide Apotheosis research line (added in patch 18.8.15) applies to a Shade like any other profession. 100,000 SK per level. Listed because its level-200 and level-210 rewards are load-bearing for the two things a Shade struggles with: Computer Literacy for the Pandemonium belt, and Concealment / Run Speed.",
+  "rewardsByCharacterLevel": [
+   [
+    200,
+    "+50 to all trade and repair skills"
+   ],
+   [
+    201,
+    "+500 health, +500 nano, +5 to all abilities"
+   ],
+   [
+    203,
+    "+4% heal efficiency, +4% DND efficiency, +2% critical chance"
+   ],
+   [
+    205,
+    "+100 Deflect, +20 Add All Def, +25 Nano Resist"
+   ],
+   [
+    207,
+    "+20 to all evades, +20 Add All Off"
+   ],
+   [
+    210,
+    "+10 to all abilities, +30 First Aid/Treatment, +50 Concealment, +75 Run Speed"
+   ],
+   [
+    213,
+    "+20 to all damage types, +20 nano delta and heal delta"
+   ],
+   [
+    215,
+    "+35 to all nano skills, -5% nano cost, +50 Nano Init, +10 nano range"
+   ],
+   [
+    218,
+    "+30 to all melee and ranged skills"
+   ],
+   [
+    220,
+    "+30 to all specials"
+   ]
+  ],
+  "note": "Patch 18.8.15 also made Alien Armor equippable without the Alien Technology Expertise perk line at Apotheosis 10.",
+  "_sources": [
+   "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+   "https://wiki.aodb.us/wiki/Patch_18.8",
+   "https://forums.funcom.com/t/shade-equiping-pande-belt-at-200/79965"
+  ]
+ },
+ "_skillPrioritiesCrossCheck": {
+  "_what": "An independent, sourced skill list, recorded next to the IP-cost-derived one above so the two can be compared. Where they disagree the disagreement is stated, not smoothed over.",
+  "aodbMaxAlways": [
+   "Body Development",
+   "Dimach",
+   "Piercing",
+   "Sneak Attack",
+   "Fast Attack",
+   "Melee Initiative",
+   "Evade Close Combat",
+   "Run Speed",
+   "Tutoring",
+   "Biological Metamorphosis",
+   "Psychological Modification",
+   "Time and Space",
+   "Concealment"
+  ],
+  "aodbExplicitCaps": [
+   "Nano Initiative: never invest IP",
+   "Multi Melee: cap at 1500",
+   "Riposte / Parry / First Aid: cap at 801",
+   "Sensory Improvement: only as far as 4-hour composites / the last weapon buffs",
+   "Adventuring: 250-300",
+   "Map Navigation: cannot be reset - be careful"
+  ],
+  "aouCritical": [
+   "Piercing (the only melee skill buffed by the Shade's own nanos AND perks)",
+   "Sneak Attack (100+ minimum for Backstab; the damage multiplier scales with it)",
+   "Evade-ClsC",
+   "Run Speed",
+   "Melee Initiative",
+   "Psychological Modifications",
+   "Sensory Improvements",
+   "Body Development (critical, because Shade HP is low)"
+  ],
+  "aouLowPriority": [
+   "Martial Arts",
+   "Dimach (weak next to perk specials, 600+ has diminishing returns - BUT Mystery of Pisces and Cosmic Guide of the Pisces both require high Dimach)",
+   "Riposte / Parry (equipping only, not endgame viable)"
+  ],
+  "disagreements": [
+   "BODY DEV: both web sources call it critical; the IP table says it is the Shade's single most expensive skill (2.6, the highest Body Dev cost of any profession). Both are true - it is critical AND expensive, which is exactly why a Shade buys HP from Spirits, perks and Apotheosis rather than from IP.",
+   "DIMACH: the IP table says 1.0 (as cheap as it gets) while ao-universe calls it low priority because perk specials out-damage it. The two are reconcilable: cheap to raise, weak as an attack, but it is a gear requirement (Mystery of Pisces) and Spirit Siphon is Dimach-based.",
+   "COMPUTER LITERACY: neither the IP table (2.4) nor the guides make this optional - ao-universe calls it DARK BLUE for a Shade and it is the gate on NCU and on the Pandemonium belt (~1,750 Comp. Lit. needed at level 200). It is under-weighted in the IP-derived list above.",
+   "BACKSTAB DOES NOT NEED CONCEALMENT. ao-universe's breed page states Backstab does not require you to be concealed, so Concealment is not mandatory despite being a green (cost 1.0) skill."
+  ],
+  "_sources": [
+   "https://wiki.aodb.us/index.php?title=Shade:Breed_and_Skills&action=raw",
+   "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide",
+   "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/breed-statistics"
+  ]
+ }
+}

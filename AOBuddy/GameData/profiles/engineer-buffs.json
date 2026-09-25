@@ -1,0 +1,1618 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "generatedUtc": "2026-09-23T05:40:00Z",
+  "purpose": "Buff reference for AOBuddy10 Engineer decision-making: self-buffs to keep up, the very large set of buffs/auras the Engineer hands to OTHER players (its signature role), buffs to request from other professions, and general/consumable buffs. Pet buffs are deliberately NOT here - they live in engineer-pets.json.",
+  "dataSources": {
+    "selfAndGivesIds": "AOBuddy/GameData/profiles/engineer-nanos.json (nanos.ocp OMNICELL-CONTENT pack, client 18.8.50_EP1, 288 Engineer-castable nanos). Every id/name/number marked source=local came from that file.",
+    "childNanoEffects": "Aura/team/absorber parents only carry TeamCastNano / AreaCastNano / ChangeVariable. The REAL effects were read out of nanos.ocp with the extractor's diagnostic mode: dotnet run -c Release --project tools/mp-nano-extractor -- \"E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp\" <outdir> \"<ids>\" which prints strain, cast action requirements and every Event function with FunctionType/Target/ticks/args.",
+    "statIdResolution": "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs (decimal arg -> hex enum). Key ones used here: 90-97 = Projectile/Melee/Energy/Chemical/Radiation/Cold/Poison/FireAC; 205-208,216,217,219,225 = Reflect*AC; 226-234 = Shield*AC (damage shield); 276 = AddAllOff; 277 = AddAllDef; 278-282,311,316,317 = the eight *DamageModifier stats; 360 = Scale; 156 = RunSpeed; 168 = NanoResist; 475-483 = MaxReflected*Dmg; 516 = AttackShield; 517 = SpecialAttackShield.",
+    "functionTypeResolution": "E:\\Funcom\\OmniCell\\OmniCell\\Libraries\\Source\\OmniCell.Enums\\FunctionType.cs. 53045 Modify, 53012 Skill, 53110 ChangeVariable, 53066 TeamCastNano, 53087 AreaCastNano, 53117 TauntNpc, 53162 ResistNanoStrain, 53002 Hit, 53060 MonsterShape, 53184 ModifyPercentage, 53227 AddOffProc, 53236 RemoveNanoStrain, 53154 SummonPlayer, 53155 SummonTeamMates, 53240 = 'Undefined' in that enum (single nano-id argument; the named child nano carries the real effect).",
+    "selfVsOtherTargeting": "Read from each effect function's Target field: Target(3) = applied to the cast target (so the nano can be put on another character), User(1)/Wearer(2) = self only. This is the local-data basis for the selfBuffs vs givesToOthers split.",
+    "idNameVerification": "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql",
+    "crossProfAndGeneral": "ao-universe.com Buffing Guide + Engineer Guide MKIII, wiki.aodb.us Who_Buffs_What and Engineer:Tips_and_Tricks. Other professions' nano ids are NOT in the Engineer extraction, so those ids are null and marked source=web."
+  },
+  "coverage": {
+    "engineerNanosTotal": 288,
+    "nonPetNanosInScopeOfThisFile": 151,
+    "nonPetNanosEnumeratedHere": 151,
+    "byCategory": {
+      "Self / Team Buffs": "87 of 87",
+      "Auras - Team (friendly)": "15 of 15",
+      "Auras - Debuff (hostile)": "14 of 14",
+      "Special Attack Absorbers": "14 of 14",
+      "Misc / Utility": "16 of 16",
+      "Travel / Recall": "4 of 4",
+      "Heals / HoT": "1 of 1 (deferred to engineer-pets.json, see deferredToPetsFile)"
+    },
+    "excludedByDesign": "137 of 288 - Pets - Robot (90), Pets - Towers / Deployables (1), Pet Heals / Repair (10), Pet Buffs / Pet Utility (36). Those belong to engineer-pets.json.",
+    "note": "Every one of the 151 in-scope nanos appears in exactly one of: selfBuffs, givesToOthers, hostileAurasAndDebuffs, travelAndUtility, deferredToPetsFile, notEngineerCastable, noOpOrEventNanos."
+  },
+  "selfBuffs": [
+    {
+      "name": "Aegis Barrier",
+      "id": 29789,
+      "nanoLine": "ArmorBuff(3)",
+      "effect": "All eight ACs +720 (Projectile/Melee/Energy/Chemical/Radiation/Cold/Poison/Fire).",
+      "keepUp": true,
+      "note": "Top of the 32-step RK armor ladder (MC/MM 873). Same nanoline (3) as EVERY Force Field / Screen / Barrier tier AND as the SL 'Assurance' line - only one occupant of line 3 at a time. Full tier list under givesToOthers 'Armor buff line'. source=local",
+      "castReq": "MaterialMetamorphosis>873, MaterialCreation>873, VisualProfession==3"
+    },
+    {
+      "name": "Gift of Assurance",
+      "id": 227680,
+      "altIds": [
+        227678,
+        227676,
+        227674
+      ],
+      "nanoLine": "ArmorBuff(3)",
+      "effect": "All eight ACs +5000. Lesser Shadowlands tiers: Assurance Relief 227678 (+3500, L210), Assurance Attention 227676 (+2500, L201), Assurance Advocacy 227674 (+1500, L185).",
+      "keepUp": true,
+      "note": "Replaces Aegis Barrier from L185 up (same nanoline 3). Requires Shadowlands (Expansion bit2) and Specialization 4/8. source=local",
+      "castReq": "MaterialCreation>1839, MaterialMetamorphosis>1844, Profession==3, Level>219, Specialization op22 8, Expansion op22 2"
+    },
+    {
+      "name": "Plasma Shield",
+      "id": 29774,
+      "nanoLine": "DamageShields(1)",
+      "effect": "All eight Shield*AC +65 (damage shield: attackers take 65 back) AND EnergyAC +1200.",
+      "keepUp": true,
+      "note": "Best Engineer damage shield (MC/MM 858). Each member of the line also gives a big bonus to ONE armor class - Melee for the 'Spikes' names, Energy for the 'Electrical/Plasma/Cocoon/Array' names, Radiation for the 'Retaliatory Barrier' names - so pick by the AC you want as well as by shield value. 13 tiers, one nanoline (1): only one applies. source=local"
+    },
+    {
+      "name": "Fortress of Spikes",
+      "id": 29763,
+      "nanoLine": "DamageShields(1)",
+      "effect": "All eight Shield*AC +53 AND MeleeAC +800.",
+      "keepUp": false,
+      "note": "Melee-AC variant of the top damage shield (MC/MM 815); use instead of Plasma Shield when melee AC matters more than energy AC. source=local"
+    },
+    {
+      "name": "Reactive Harmonic Cocoon",
+      "id": 70295,
+      "nanoLine": "ReflectShield(2)",
+      "effect": "All eight Reflect*AC +29 and all eight MaxReflected*Dmg +40.",
+      "keepUp": true,
+      "note": "Best RK reflect self/other buff (ST/MC 823). RK ONLY - the cast action carries ExpansionPlayfield==0, so it cannot be cast in Shadowlands; use the Empowered line there. 6 tiers share nanoline 2 and the Empowered line's children are ALSO nanoline 2, so they collide. source=local"
+    },
+    {
+      "name": "Empowered Pre-Nullity Cocoon",
+      "id": 273341,
+      "nanoLine": "ShadowlandReflectBase(694) -> child 302379 in ReflectShield(2)",
+      "effect": "Team-casts 302379 on the whole team: Reflect*AC +29 and MaxReflected*Dmg +60 to each member (recipient must be Level>200).",
+      "keepUp": true,
+      "note": "Best reflect the Engineer has; needs NanoFocusLevel bit 64 and MC/ST 1929. The child is nanoline 2, so it replaces the self-cast Harmonic Cocoon line on everyone it lands on. source=local"
+    },
+    {
+      "name": "Entropy Weapon",
+      "id": 29760,
+      "nanoLine": "DamageBuffs_LineA(4)",
+      "effect": "All eight *DamageModifier stats +20 (adds flat damage to every hit, bypassing AC).",
+      "keepUp": true,
+      "note": "Best all-damage self/other damage buff on RK (MC/MM 683). Same nanoline (4) as Gun Enhancement / Energy Spike / Controlled Energy Overload / Boosted Tendons. source=local"
+    },
+    {
+      "name": "Boosted Tendons",
+      "id": 269463,
+      "nanoLine": "DamageBuffs_LineA(4)",
+      "effect": "All eight *DamageModifier stats +35 AND RangedInit +205.",
+      "keepUp": true,
+      "note": "SELF ONLY (effect functions target Wearer, not Target) - cannot be given away, unlike the rest of nanoline 4. Shadowlands (Expansion bit2), MC/MM 911. Replaces Entropy Weapon on the Engineer itself. source=local"
+    },
+    {
+      "name": "Rapid Weapon",
+      "id": 29779,
+      "altIds": [
+        29778,
+        29188
+      ],
+      "nanoLine": "InitiativeBuffs(152)",
+      "effect": "RangedInit +114. Lesser: Quick Weapon 29778 (+52, PM/SI 199), Swift Weapon 29188 (+12, MM/SI 4).",
+      "keepUp": true,
+      "note": "Ranged initiative only - the Engineer's weapons are ranged. Cast on Target, so it is also a give-away buff. PM/SI 593. source=local"
+    },
+    {
+      "name": "Engineer Composite Specialist Tradeskills (8 hours)",
+      "id": 273346,
+      "nanoLine": "ElectricalEngineeringBuff(172)",
+      "effect": "MechanicalEngineering +200, ElectricalEngineering +200, QuantumFT +200, WeaponSmithing +200, Pharmaceuticals +200, Chemistry +200 - all six specialist trade skills in one 8-hour nano.",
+      "keepUp": true,
+      "note": "SELF ONLY (targets Wearer). TRAP: it sits in nanoline 172, the SAME line as Electrical Engineering Knowledge/Mastery - so it cannot coexist with those two, but it DOES stack with the FQP(173)/ME(174)/Pharma(175)/WS(176) Knowledge/Mastery nanos, which are separate lines and only give +80/+125. Needs NanoFocusLevel bit 64 and PM/SI 1033. source=local"
+    },
+    {
+      "name": "Electrical Engineering Mastery",
+      "id": 227663,
+      "altIds": [
+        227652
+      ],
+      "nanoLine": "ElectricalEngineeringBuff(172)",
+      "effect": "ElectricalEngineering +125 (Knowledge 227652 = +80, L75).",
+      "keepUp": true,
+      "note": "L130, Specialization bit2, Shadowlands. Superseded by the Composite Specialist nano (same line 172). source=local"
+    },
+    {
+      "name": "Field Quantum Physics Mastery",
+      "id": 227665,
+      "altIds": [
+        227655
+      ],
+      "nanoLine": "FieldQuantumPhysicsBuff(173)",
+      "effect": "QuantumFT +125 (Knowledge 227655 = +80, L80).",
+      "keepUp": true,
+      "note": "L130. Stacks with lines 172/174/175/176. source=local"
+    },
+    {
+      "name": "Mechanical Engineering Mastery",
+      "id": 227667,
+      "altIds": [
+        227657
+      ],
+      "nanoLine": "MechanicalEngineeringBuff(174)",
+      "effect": "MechanicalEngineering +125 (Knowledge 227657 = +80, L80).",
+      "keepUp": true,
+      "note": "L135. source=local"
+    },
+    {
+      "name": "Pharmaceuticals Mastery",
+      "id": 227669,
+      "altIds": [
+        227659
+      ],
+      "nanoLine": "PharmaceuticalsBuff(175)",
+      "effect": "Pharmaceuticals +125 (Knowledge 227659 = +80, L85).",
+      "keepUp": true,
+      "note": "L135. source=local"
+    },
+    {
+      "name": "Weapon Smithing Mastery",
+      "id": 227671,
+      "altIds": [
+        227661
+      ],
+      "nanoLine": "WeaponSmithingBuff(176)",
+      "effect": "WeaponSmithing +125 (Knowledge 227661 = +80, L90).",
+      "keepUp": true,
+      "note": "L140. source=local"
+    },
+    {
+      "name": "Philosopher's Stone",
+      "id": 29772,
+      "nanoLine": "Chemistry_PharmBuff(196)",
+      "effect": "Chemistry +62 and Pharmaceuticals +62.",
+      "keepUp": true,
+      "note": "Separate line (196) from the Pharmaceuticals Knowledge/Mastery line (175) - the two stack. Confirmed cross-profession give-away on wiki.aodb.us Who_Buffs_What ('Philosopher's Stone (Engineer): +62'). source=local+web"
+    },
+    {
+      "name": "Crowbar Subtlety",
+      "id": 29189,
+      "nanoLine": "Breaking_Entry_DisarmTrapsBuff(206)",
+      "effect": "BreakingEntry +32.",
+      "keepUp": false,
+      "note": "Situational (chests/doors). AO-Universe Buffing Guide lists it as Engineer, 7 NCU, FP-able. source=local+web"
+    },
+    {
+      "name": "Trap Artifice",
+      "id": 29785,
+      "nanoLine": "DisarmTrapBuff(235)",
+      "effect": "TrapDisarm +79.",
+      "keepUp": false,
+      "note": "Situational. Separate line from Crowbar Subtlety despite the shared 'Breaking & Entry / Disarm Traps' theme. source=local"
+    },
+    {
+      "name": "Extreme Prejudice",
+      "id": 29762,
+      "nanoLine": "GrenadeBuffs(207)",
+      "effect": "Grenade +120, Pistol +120, HeavyWeapons +50.",
+      "keepUp": true,
+      "note": "The Engineer's own weapon-skill buff and a famous give-away. LOCAL DATA SAYS Grenade +120 / Pistol +120 / HeavyWeapons +50; the AO-Universe Buffing Guide lists only '+50 Heavy Weapons, +120 Pistol' and omits the Grenade component - local data is authoritative here. SI/PM 647. source=local (web disagrees, see _unverified)"
+    },
+    {
+      "name": "Pistol Mastery",
+      "id": 29246,
+      "nanoLine": "PistolBuff(199)",
+      "effect": "Pistol +40.",
+      "keepUp": true,
+      "note": "Shared nano - its cast action lists VisualProfession 1/3/8/10/12 (Soldier, Engineer, Bureaucrat, Doctor, Meta-Physicist). wiki.aodb.us Who_Buffs_What: 'Pistol Mastery (Bureaucrat/Doctor/Engineer/Meta-Physicist/Soldier): +40'. Separate line (199) from Extreme Prejudice (207) - they stack. source=local+web"
+    },
+    {
+      "name": "Slayerdroid Transference",
+      "id": 31593,
+      "nanoLine": "NOSTACKING(0)",
+      "effect": "Turns the Engineer into a Slayerdroid (MonsterShape 22821, Scale +50) and grants MartialArts +400, MultiMelee +50, Brawl +50, FastAttack +50, ProjectileAC +150, MeleeAC +150, EnergyAC +150.",
+      "keepUp": false,
+      "note": "SELF ONLY (User/Wearer). Novelty/melee shapeshift - it does NOT buff the pet and it changes your model. Cast action also requires MonsterData==0 (you must not already be shapeshifted). MC/ST 855. source=local"
+    },
+    {
+      "name": "Shield of the Obedient Servant",
+      "id": 202260,
+      "nanoLine": "NOSTACKING(0) -> child 285698 in ShieldoftheObedientServant(831)",
+      "effect": "Applies child 285698: AddAllOff +220, all eight Shield*AC +60 (damage shield), all eight *DamageModifier +20.",
+      "keepUp": false,
+      "note": "TARGET UNRESOLVED - the parent uses function 53240 (unnamed 'Undefined' in OmniCell's FunctionType enum) on Wearer, and the child's own functions target Target. Unlike the confirmed pet nanos it carries NO NPCFamily/MonsterData requirement, so it may well be a self buff; the name argues for the pet. Do not auto-cast until confirmed. L185, MC/MM 1022. source=local(flag)"
+    },
+    {
+      "name": "Improved Shield of the Obedient Servant",
+      "id": 270790,
+      "nanoLine": "NOSTACKING(0) -> child 285699 in ShieldoftheObedientServant(831)",
+      "effect": "Applies child 285699: AddAllOff +280, all eight Shield*AC +60, all eight *DamageModifier +150.",
+      "keepUp": false,
+      "note": "Same targeting caveat as 202260. Needs NanoFocusLevel bit 64, MC 1839 / MM 1769. source=local(flag)"
+    }
+  ],
+  "wantedFromOthers": [
+    {
+      "buff": "Wrangle (Trader, single: Weak -> Superb) / Team Skill Wrangler",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "Raises nearly two dozen weapon skills AND all nano skills at once; the single-target ladder in the AO-Universe Buffing Guide runs from 'Weak' (+3, 3 NCU) up to 'Superb' (+112), with team/premium versions similar. 'It is short in duration (3 minutes) and debuffs the trader casting it for the same duration.'",
+      "useCase": "twink",
+      "note": "THE #1 buff an Engineer asks for, and for two distinct reasons: (a) the nano-skill half (MaterialCreation / SpaceTime / MaterialMetamorphosis) lets the Engineer land a robot, aura or armor buff above its normal ceiling - the pet stays after the wrangle drops; (b) the weapon-skill half lets it over-equip its ranged weapon. Every Engineer nano in this file is gated on MC/ST/MM (e.g. Gift of Assurance needs MC 1839 / MM 1844), so one wrangle can move several tiers. source=web (ao-universe Buffing Guide; ao-universe Engineer Guide MKIII lists 'Team Skill Wrangler (Premium) - Adds nano skills and weapon skills' under Trader Buffs)"
+    },
+    {
+      "buff": "Trade-skill Wrangles (Apprentice / Journeyman / Maestro)",
+      "id": null,
+      "fromProfession": "Trader",
+      "effect": "+40 / +80 / +125 to a single trade skill, no level limit.",
+      "useCase": "twink",
+      "note": "Engineers are the game's tradeskill class; these stack on top of the Engineer's own Knowledge/Mastery nanos for building bot trimmers, implants and Nano Programming work. source=web (ao-universe Engineer Guide MKIII, Trader Buffs section)"
+    },
+    {
+      "buff": "Composite Mochams (1h/2h/4h/8h) and Composite Infuse With Knowledge",
+      "id": null,
+      "fromProfession": "Meta-Physicist",
+      "effect": "All six nano skills +140 (Mochams) or +90 (Infuse) in one nano.",
+      "useCase": "cast",
+      "note": "The AO-Universe Engineer Guide MKIII names exactly these ('Composite Infuse With Knowledge - Add 90', 'Composite Mochams (1 hour) - Add 140') as what an Engineer wants in order to cast a higher bot. They last 1-8 hours unlike a wrangle, so this is the buff you keep up and the wrangle is the last push on top. MP ids are in metaphysicist-buffs.json (220337/220339/220341/220343, 220335). source=web+cross-file"
+    },
+    {
+      "buff": "Mocham's Gift: MatCrea / SpaceTime / MatMet",
+      "id": null,
+      "fromProfession": "Meta-Physicist",
+      "effect": "+140 to one nano skill each (MP ids 29300 MatCrea, 29301 SpaceTime, 29302 MatMet).",
+      "useCase": "cast",
+      "note": "Exactly the three schools every Engineer nano is gated on. Six separate nanolines, so all three stack. source=cross-file (metaphysicist-buffs.json, local MP extraction)"
+    },
+    {
+      "buff": "Essence of Behemoth line (e.g. Improved Essence of Behemoth)",
+      "id": null,
+      "fromProfession": "Enforcer",
+      "effect": "Strength and Stamina together (Improved ~+54 each) plus a large Max Health bonus.",
+      "useCase": "twink",
+      "note": "Str/Sta for implant, symbiant and armor ability requirements. source=web (ao-universe Buffing Guide)"
+    },
+    {
+      "buff": "Prodigious Strength",
+      "id": null,
+      "fromProfession": "Enforcer",
+      "effect": "Strength +40 (nanoline 156).",
+      "useCase": "twink",
+      "note": "wiki.aodb.us Who_Buffs_What lists nanoline 156 as Prodigious Strength (Enforcer) +40 > Muscle Booster (MA) +25 > Iron Circle (Doctor) +20 > Muscle Stim (MA) +12 > Enlarge (Doctor) +10. One nanoline - take the best only. source=web"
+    },
+    {
+      "buff": "Iron Circle",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Strength +20 (nanoline 156).",
+      "useCase": "twink",
+      "note": "Same nanoline 156 as Prodigious Strength - does NOT stack with it. source=web (Who_Buffs_What)"
+    },
+    {
+      "buff": "Nano Init buff (Doctor init line)",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Large Nano Init -> faster casting.",
+      "useCase": "cast",
+      "note": "Useful for an Engineer chain-recasting bot, aura, armor, shield and reflect after a wipe. Exact nano name/value NOT pinned in the sources checked - flagged. source=web(flag)"
+    },
+    {
+      "buff": "Max Health / heals / HoT",
+      "id": null,
+      "fromProfession": "Doctor",
+      "effect": "Large Max Health, heal-over-time and complete heals.",
+      "useCase": "raid",
+      "note": "The Engineer has NO self-heal in its nano list (Master's Repairs is a pet repair), so an outside healer matters more to it than to an MP. source=web"
+    },
+    {
+      "buff": "Feline Grace / Enhanced Senses",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Agility +25 / Sense +15.",
+      "useCase": "twink",
+      "note": "Ability requirements on implants and symbiants. source=web (ao-universe Buffing Guide)"
+    },
+    {
+      "buff": "Chemical Concoction (Chemistry/Pharma Tech, nanoline 196)",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "+50 Chemistry/Pharmaceuticals.",
+      "useCase": "twink",
+      "note": "SAME NANOLINE (196) as the Engineer's own Philosopher's Stone (+62) - the Engineer's is strictly better, so never take the Agent version. Who_Buffs_What lists both under nanoline 196. source=web"
+    },
+    {
+      "buff": "False Profession / Assume Profession / Mimic Profession",
+      "id": null,
+      "fromProfession": "Agent",
+      "effect": "Sets the target's VisualProfession (stat 368) to the mimicked profession plus Skill(318) +150/+70/+15, at a -25%/-15%/-5% penalty to all six nano skills while active.",
+      "useCase": "twink",
+      "note": "These are AGENT SELF-buffs, not something an Agent casts on an Engineer - see notEngineerCastable. Listed here only because the 'False Profession: Engineer' family (32034/117224/117213) shows up in the Engineer nano extraction via its VisualProfession==3 clause. An Engineer wanting off-profession gear uses tradeskills/wrangles instead. source=local+web"
+    },
+    {
+      "buff": "Eagle Eye (Perception) / Robust Treatment / run speed",
+      "id": null,
+      "fromProfession": "Adventurer",
+      "effect": "Perception +240 (Eagle Eye), Treatment buff, strong run-speed buffs.",
+      "useCase": "twink",
+      "note": "Treatment for implant assembly; Perception for scope gear and locked doors. Who_Buffs_What lists Eagle Eye (Adventurer) +240 and Blood Makes Noise (Fixer) +240 in the same Perception group. source=web"
+    },
+    {
+      "buff": "Blood Makes Noise (Perception) + NCU + team run speed + HoT",
+      "id": null,
+      "fromProfession": "Fixer",
+      "effect": "Perception +240; Grid Armor / NCU; team run speed; heal-over-time.",
+      "useCase": "raid",
+      "note": "NCU matters unusually much for an Engineer - it is already carrying an aura, an armor buff, a damage shield, a reflect, a damage buff, an init buff and up to six tradeskill buffs. source=web"
+    },
+    {
+      "buff": "Soldier reflect shields",
+      "id": null,
+      "fromProfession": "Soldier",
+      "effect": "High reflect percentage.",
+      "useCase": "raid",
+      "note": "wiki.aodb.us Engineer:Tips_and_Tricks - the Engineer's Sympathetic Reactive Cocoon aura (which raises MaxReflected damage, i.e. the CAP, not the reflect %) 'can be combined with soldier reflect shields to significantly increase damage returned to attackers'. source=web"
+    },
+    {
+      "buff": "Keeper auras (run speed, heal-over-time, +AAO/damage, reflect)",
+      "id": null,
+      "fromProfession": "Keeper",
+      "effect": "Passive team auras.",
+      "useCase": "raid",
+      "note": "Keeper auras are a different nanoline family from the Engineer's Sympathetic auras, so a team can run both. Exact ids not pinned - flagged. source=web(flag)"
+    },
+    {
+      "buff": "Composite Attribute Boost",
+      "id": null,
+      "fromProfession": "Any (self-castable Shadowlands nanocrystal)",
+      "effect": "All six attributes +12.",
+      "useCase": "twink",
+      "note": "Meets ability requirements on implants/symbiants when twinking. Exact item id not pinned from a non-blocked source - flagged. source=web(flag)"
+    }
+  ],
+  "generalBuffs": [
+    {
+      "name": "Expertise buffs",
+      "effect": "Add to a group of skills.",
+      "source": "ao-universe Buffing Guide: 'All buffs below stack with Expertises and Attribute Boosts' - i.e. Expertises are a separate nanoline family and stack on top of everything in this file."
+    },
+    {
+      "name": "Composite Attribute Boost",
+      "effect": "All six attributes +12.",
+      "source": "Self-castable Shadowlands nanocrystal; used to reach ability requirements when twinking implants/symbiants. Exact id NOT pinned from a non-blocked source - flagged."
+    },
+    {
+      "name": "Shadowlands composite nanocrystals (Nano / Utility / Melee / Ranged / Melee-Special / Ranged-Special)",
+      "effect": "Grouped skill boosts, self-castable by every profession.",
+      "source": "Shadowlands nanocrystal line. Exact contents/ids NOT pinned - flagged. Check nanoline overlap against the Engineer's own lines before stacking."
+    },
+    {
+      "name": "City buffs (org city)",
+      "effect": "City-wide buffs (nano cost, stats).",
+      "source": "Player city. Exact set NOT pinned - flagged."
+    },
+    {
+      "name": "Tower / Notum War buffs",
+      "effect": "Add All Offense / Add All Defense from controlled land-control towers.",
+      "source": "Land control. Exact set NOT pinned - flagged."
+    },
+    {
+      "name": "Pep / Wen (First Aid / Treatment) stims",
+      "effect": "Temporary First Aid / Treatment window for self-heal and implant assembly.",
+      "source": "Consumables. Exact items NOT pinned - flagged."
+    }
+  ],
+  "givesToOthers": [
+    {
+      "name": "Armor buff line (Megaboost -> Screen/Barrier/Field -> Force Field -> Assurance)  [id 227680 = Gift of Assurance]",
+      "id": 227680,
+      "nanoLine": "ArmorBuff(3)",
+      "effect": "All eight ACs +N on the cast target. 36 tiers from +13 to +5000.",
+      "wantedBy": "EVERY profession. The Engineer's bread-and-butter give-away at every level; at endgame the Assurance tiers (+1500 to +5000 AC) are the largest single AC buff in the game.",
+      "stackingTrap": "All 36 share nanoline 3 - one occupant only. The SL Assurance tiers are in the SAME line as the RK Force Fields.",
+      "tiers": [
+        {
+          "id": 29743,
+          "name": "Armor Megaboost",
+          "effect": "all ACs +13",
+          "castReq": "MC/MM 18"
+        },
+        {
+          "id": 70548,
+          "name": "Greater Armor Megaboost",
+          "effect": "all ACs +23",
+          "castReq": "MC/MM 35"
+        },
+        {
+          "id": 70546,
+          "name": "Flawed Shielding Barrier",
+          "effect": "all ACs +33",
+          "castReq": "MC/MM 51"
+        },
+        {
+          "id": 70545,
+          "name": "Flawed Protective Field",
+          "effect": "all ACs +46",
+          "castReq": "MC/MM 73"
+        },
+        {
+          "id": 70544,
+          "name": "Flawed Defensive Screen",
+          "effect": "all ACs +66",
+          "castReq": "MC/MM 103"
+        },
+        {
+          "id": 70543,
+          "name": "Basic Shielding Barrier",
+          "effect": "all ACs +85",
+          "castReq": "MC/MM 132"
+        },
+        {
+          "id": 70542,
+          "name": "Basic Protective Field",
+          "effect": "all ACs +105",
+          "castReq": "MC 162 / ST 162 (this one tier uses SpaceTime, not MatMet)"
+        },
+        {
+          "id": 70541,
+          "name": "Basic Defensive Screen",
+          "effect": "all ACs +122",
+          "castReq": "MC/MM 182"
+        },
+        {
+          "id": 70540,
+          "name": "Lesser Shielding Barrier",
+          "effect": "all ACs +147",
+          "castReq": "MC/MM 210"
+        },
+        {
+          "id": 70556,
+          "name": "Lesser Protective Field",
+          "effect": "all ACs +168",
+          "castReq": "MC/MM 236"
+        },
+        {
+          "id": 70555,
+          "name": "Lesser Defensive Screen",
+          "effect": "all ACs +189",
+          "castReq": "MC/MM 270"
+        },
+        {
+          "id": 70554,
+          "name": "Shielding Barrier",
+          "effect": "all ACs +206",
+          "castReq": "MC/MM 303"
+        },
+        {
+          "id": 70553,
+          "name": "Protective Field",
+          "effect": "all ACs +231",
+          "castReq": "MC/MM 349"
+        },
+        {
+          "id": 70551,
+          "name": "Defensive Screen",
+          "effect": "all ACs +252",
+          "castReq": "MC/MM 385"
+        },
+        {
+          "id": 70552,
+          "name": "Superior Shielding Barrier",
+          "effect": "all ACs +273",
+          "castReq": "MC/MM 409"
+        },
+        {
+          "id": 70550,
+          "name": "Superior Protective Field",
+          "effect": "all ACs +301",
+          "castReq": "MC/MM 443"
+        },
+        {
+          "id": 70549,
+          "name": "Superior Defensive Screen",
+          "effect": "all ACs +322",
+          "castReq": "MC/MM 473"
+        },
+        {
+          "id": 70547,
+          "name": "Advanced Shielding Barrier",
+          "effect": "all ACs +343",
+          "castReq": "MC/MM 512"
+        },
+        {
+          "id": 70539,
+          "name": "Advanced Protective Field",
+          "effect": "all ACs +364",
+          "castReq": "MC/MM 549"
+        },
+        {
+          "id": 70538,
+          "name": "Advanced Defensive Screen",
+          "effect": "all ACs +389",
+          "castReq": "MC/MM 589"
+        },
+        {
+          "id": 70537,
+          "name": "Perfected Shielding Barrier",
+          "effect": "all ACs +418",
+          "castReq": "MC/MM 638"
+        },
+        {
+          "id": 70536,
+          "name": "Perfected Protective Field",
+          "effect": "all ACs +440",
+          "castReq": "MC/MM 675"
+        },
+        {
+          "id": 70535,
+          "name": "Perfected Defensive Screen",
+          "effect": "all ACs +472",
+          "castReq": "MC/MM 697"
+        },
+        {
+          "id": 70534,
+          "name": "Flawed Force Field",
+          "effect": "all ACs +517",
+          "castReq": "MC/MM 725"
+        },
+        {
+          "id": 70533,
+          "name": "Basic Force Field",
+          "effect": "all ACs +545",
+          "castReq": "MC/MM 741"
+        },
+        {
+          "id": 70532,
+          "name": "Lesser Force Field",
+          "effect": "all ACs +566",
+          "castReq": "MC/MM 753"
+        },
+        {
+          "id": 70531,
+          "name": "Force Field",
+          "effect": "all ACs +590",
+          "castReq": "MC/MM 774"
+        },
+        {
+          "id": 70530,
+          "name": "Superior Force Field",
+          "effect": "all ACs +617",
+          "castReq": "MC/MM 798"
+        },
+        {
+          "id": 70529,
+          "name": "Advanced Force Field",
+          "effect": "all ACs +652",
+          "castReq": "MC/MM 832"
+        },
+        {
+          "id": 70557,
+          "name": "Heavy Assault Force Field",
+          "effect": "all ACs +672",
+          "castReq": "MC/MM 849"
+        },
+        {
+          "id": 29788,
+          "name": "Ultimate Force Field",
+          "effect": "all ACs +690",
+          "castReq": "MC/MM 864"
+        },
+        {
+          "id": 29789,
+          "name": "Aegis Barrier",
+          "effect": "all ACs +720",
+          "castReq": "MC/MM 873"
+        },
+        {
+          "id": 227674,
+          "name": "Assurance Advocacy",
+          "effect": "all ACs +1500",
+          "castReq": "MC/MM 1102, Level>184, Specialization bit4, Shadowlands"
+        },
+        {
+          "id": 227676,
+          "name": "Assurance Attention",
+          "effect": "all ACs +2500",
+          "castReq": "MC/MM 1195, Level>200, Specialization bit8, Shadowlands"
+        },
+        {
+          "id": 227678,
+          "name": "Assurance Relief",
+          "effect": "all ACs +3500",
+          "castReq": "MC 1598 / MM 1600, Level>209, Specialization bit8, Shadowlands"
+        },
+        {
+          "id": 227680,
+          "name": "Gift of Assurance",
+          "effect": "all ACs +5000",
+          "castReq": "MC 1839 / MM 1844, Level>219, Specialization bit8, Shadowlands"
+        }
+      ],
+      "representativeId": 227680,
+      "representativeName": "Gift of Assurance"
+    },
+    {
+      "name": "Damage shield line (Spikes / Electrical / Barrier / Cocoon / Plasma)  [id 29774 = Plasma Shield]",
+      "id": 29774,
+      "nanoLine": "DamageShields(1)",
+      "effect": "All eight Shield*AC +N (the target returns N damage to melee attackers) PLUS a large bonus to one specific AC.",
+      "wantedBy": "Tanks and anything being hit in melee; also anyone who wants the extra single-AC chunk (Melee / Energy / Radiation).",
+      "stackingTrap": "13 tiers, one nanoline (1). Also note the Engineer's Sympathetic damage-shield AURA children (154539/154540/154541) carry a cast requirement that the recipient already has Shield*AC > 0 - the aura BOOSTS an existing damage shield rather than granting one, so give the target one of these first.",
+      "tiers": [
+        {
+          "id": 29782,
+          "name": "Spike Shield",
+          "effect": "Shield*AC +1, MeleeAC +40",
+          "castReq": "MC/MM 40"
+        },
+        {
+          "id": 55774,
+          "name": "Electrical Chastiser",
+          "effect": "Shield*AC +4, EnergyAC +100",
+          "castReq": "MC/MM 113"
+        },
+        {
+          "id": 55773,
+          "name": "Lesser Retaliatory Barrier",
+          "effect": "Shield*AC +7, RadiationAC +110",
+          "castReq": "MC/MM 186"
+        },
+        {
+          "id": 29781,
+          "name": "Spike Armor",
+          "effect": "Shield*AC +11, MeleeAC +120",
+          "castReq": "MC/MM 251"
+        },
+        {
+          "id": 55772,
+          "name": "Electrical Discharge Field",
+          "effect": "Shield*AC +15, EnergyAC +140",
+          "castReq": "MC/MM 363"
+        },
+        {
+          "id": 29773,
+          "name": "Pillar of Spikes",
+          "effect": "Shield*AC +19, MeleeAC +180",
+          "castReq": "MC/MM 434"
+        },
+        {
+          "id": 55770,
+          "name": "Energy Cocoon",
+          "effect": "Shield*AC +24, EnergyAC +220",
+          "castReq": "MC/MM 531"
+        },
+        {
+          "id": 55771,
+          "name": "Retaliatory Barrier",
+          "effect": "Shield*AC +28, RadiationAC +230",
+          "castReq": "MC/MM 620"
+        },
+        {
+          "id": 55769,
+          "name": "Citadel of Spikes",
+          "effect": "Shield*AC +39, MeleeAC +240",
+          "castReq": "MC/MM 693"
+        },
+        {
+          "id": 55768,
+          "name": "Sparkling Field Array",
+          "effect": "Shield*AC +39, EnergyAC +400",
+          "castReq": "MC/MM 729"
+        },
+        {
+          "id": 55767,
+          "name": "Greater Retaliatory Barrier",
+          "effect": "Shield*AC +43, RadiationAC +600",
+          "castReq": "MC/MM 762"
+        },
+        {
+          "id": 29763,
+          "name": "Fortress of Spikes",
+          "effect": "Shield*AC +53, MeleeAC +800",
+          "castReq": "MC/MM 815"
+        },
+        {
+          "id": 29774,
+          "name": "Plasma Shield",
+          "effect": "Shield*AC +65, EnergyAC +1200",
+          "castReq": "MC/MM 858"
+        }
+      ],
+      "representativeId": 29774,
+      "representativeName": "Plasma Shield"
+    },
+    {
+      "name": "Harmonic Cocoon reflect line (Rubi-Ka)  [id 70295 = Reactive Harmonic Cocoon]",
+      "id": 70295,
+      "nanoLine": "ReflectShield(2)",
+      "effect": "All eight Reflect*AC +N and all eight MaxReflected*Dmg +M on the cast target.",
+      "wantedBy": "Tanks and anyone stacking reflect; combines with Soldier reflect shields because the MaxReflected component raises the CAP on what a reflect returns.",
+      "stackingTrap": "RK ONLY - every tier's cast action carries ExpansionPlayfield==0. In Shadowlands use the Empowered line. Both lines' EFFECTS sit in nanoline 2, so they replace each other on the recipient.",
+      "tiers": [
+        {
+          "id": 70294,
+          "name": "Partial Harmonic Cocoon",
+          "effect": "Reflect*AC +10, MaxReflected*Dmg +3",
+          "castReq": "ST/MC 147"
+        },
+        {
+          "id": 70298,
+          "name": "Minor Harmonic Cocoon",
+          "effect": "Reflect*AC +13, MaxReflected*Dmg +7",
+          "castReq": "ST/MC 310"
+        },
+        {
+          "id": 70297,
+          "name": "Lesser Harmonic Cocoon",
+          "effect": "Reflect*AC +16, MaxReflected*Dmg +10",
+          "castReq": "ST/MC 447"
+        },
+        {
+          "id": 70296,
+          "name": "Harmonic Cocoon",
+          "effect": "Reflect*AC +19, MaxReflected*Dmg +15",
+          "castReq": "ST/MC 644"
+        },
+        {
+          "id": 70299,
+          "name": "Greater Harmonic Cocoon",
+          "effect": "Reflect*AC +25, MaxReflected*Dmg +30",
+          "castReq": "ST/MC 735"
+        },
+        {
+          "id": 70295,
+          "name": "Reactive Harmonic Cocoon",
+          "effect": "Reflect*AC +29, MaxReflected*Dmg +40",
+          "castReq": "ST/MC 823"
+        }
+      ],
+      "representativeId": 70295,
+      "representativeName": "Reactive Harmonic Cocoon"
+    },
+    {
+      "name": "Empowered Harmonic Cocoon line (team reflect, Shadowlands)  [id 273341 = Empowered Pre-Nullity Cocoon]",
+      "id": 273341,
+      "nanoLine": "ShadowlandReflectBase(694); children are ReflectShield(2)",
+      "effect": "TeamCastNano of a child nano onto every team member (ticks 120 x 12000 ms plus 240 x 6000 ms = ~24 minutes of re-application). The child gives Reflect*AC +N and MaxReflected*Dmg +M and carries its own Level requirement on the recipient.",
+      "wantedBy": "The whole team - the Shadowlands replacement for the RK Harmonic Cocoon line and the only way to reflect-buff six people with one cast.",
+      "stackingTrap": "Children are nanoline 2, so they overwrite a self/other-cast Harmonic Cocoon. Note the top RK tier (70295, +29/+40) has MORE Reflect AC than every Empowered tier except Pre-Nullity.",
+      "tiers": [
+        {
+          "id": 233099,
+          "name": "Empowered Partial Harmonic Cocoon",
+          "child": 233082,
+          "effect": "Reflect*AC +10, MaxReflected*Dmg +3 (recipient Level>0)",
+          "castReq": "ST/MC 193, Level>24, Shadowlands"
+        },
+        {
+          "id": 233089,
+          "name": "Empowered Minor Harmonic Cocoon",
+          "child": 233083,
+          "effect": "Reflect*AC +13, MaxReflected*Dmg +7 (recipient Level>24)",
+          "castReq": "ST/MC 416, Level>49, Shadowlands"
+        },
+        {
+          "id": 233091,
+          "name": "Empowered Lesser Harmonic Cocoon",
+          "child": 233084,
+          "effect": "Reflect*AC +16, MaxReflected*Dmg +10 (recipient Level>49)",
+          "castReq": "ST/MC 595, Level>74, Shadowlands"
+        },
+        {
+          "id": 233093,
+          "name": "Empowered Harmonic Cocoon",
+          "child": 233085,
+          "effect": "Reflect*AC +19, MaxReflected*Dmg +15 (recipient Level>74)",
+          "castReq": "ST/MC 861, Level>99, Shadowlands"
+        },
+        {
+          "id": 233095,
+          "name": "Empowered Greater Harmonic Cocoon",
+          "child": 233086,
+          "effect": "Reflect*AC +22, MaxReflected*Dmg +20 (recipient Level>124)",
+          "castReq": "ST/MC 980, Level>144, Shadowlands"
+        },
+        {
+          "id": 233097,
+          "name": "Empowered Reactive Harmonic Cocoon",
+          "child": 233087,
+          "effect": "Reflect*AC +25, MaxReflected*Dmg +40 (recipient Level>174)",
+          "castReq": "ST/MC 1102, Level>184, Shadowlands"
+        },
+        {
+          "id": 273341,
+          "name": "Empowered Pre-Nullity Cocoon",
+          "child": 302379,
+          "effect": "Reflect*AC +29, MaxReflected*Dmg +60 (recipient Level>200)",
+          "castReq": "ST/MC 1929, NanoFocusLevel bit 64"
+        }
+      ],
+      "representativeId": 273341,
+      "representativeName": "Empowered Pre-Nullity Cocoon"
+    },
+    {
+      "name": "Damage buff line (Gun Enhancement -> Entropy Weapon)  [id 29760 = Entropy Weapon]",
+      "id": 29760,
+      "nanoLine": "DamageBuffs_LineA(4)",
+      "effect": "Adds flat damage to every hit via the *DamageModifier stats (ignores the target's AC).",
+      "wantedBy": "Every damage dealer without a better same-line buff.",
+      "stackingTrap": "One nanoline (4). Boosted Tendons (269463) is in this line but targets Wearer - SELF ONLY, cannot be given away.",
+      "tiers": [
+        {
+          "id": 29764,
+          "name": "Gun Enhancement",
+          "effect": "ProjectileDamageModifier +5",
+          "castReq": "MC/MM 63"
+        },
+        {
+          "id": 29758,
+          "name": "Energy Spike",
+          "effect": "EnergyDamageModifier +8",
+          "castReq": "MC/MM 174"
+        },
+        {
+          "id": 81922,
+          "name": "Controlled Energy Overload",
+          "effect": "EnergyDamageModifier +16",
+          "castReq": "MC/MM 460"
+        },
+        {
+          "id": 29760,
+          "name": "Entropy Weapon",
+          "effect": "all eight *DamageModifier +20",
+          "castReq": "MC/MM 683"
+        },
+        {
+          "id": 269463,
+          "name": "Boosted Tendons",
+          "effect": "all eight *DamageModifier +35 and RangedInit +205 - SELF ONLY (targets Wearer)",
+          "castReq": "MC/MM 911, Shadowlands"
+        }
+      ],
+      "representativeId": 29760,
+      "representativeName": "Entropy Weapon"
+    },
+    {
+      "name": "Ranged initiative line (Swift / Quick / Rapid Weapon)  [id 29779 = Rapid Weapon]",
+      "id": 29779,
+      "nanoLine": "InitiativeBuffs(152)",
+      "effect": "RangedInit +N on the cast target.",
+      "wantedBy": "Any ranged profession (Soldier, Agent, Fixer, Crat, Trader, other Engineers). Ranged init only - there is no melee-init version in the Engineer list.",
+      "stackingTrap": "One nanoline (152).",
+      "tiers": [
+        {
+          "id": 29188,
+          "name": "Swift Weapon",
+          "effect": "RangedInit +12",
+          "castReq": "MM/SI 4"
+        },
+        {
+          "id": 29778,
+          "name": "Quick Weapon",
+          "effect": "RangedInit +52",
+          "castReq": "PM/SI 199"
+        },
+        {
+          "id": 29779,
+          "name": "Rapid Weapon",
+          "effect": "RangedInit +114",
+          "castReq": "PM/SI 593"
+        }
+      ],
+      "representativeId": 29779,
+      "representativeName": "Rapid Weapon"
+    },
+    {
+      "name": "Sympathetic aura line (team aura - only ONE can run at a time)  [id 154550 = Sympathetic Reactive Cocoon]",
+      "id": 154550,
+      "nanoLine": "EngineerAuras(227); children are strains 228/229/230/231",
+      "effect": "A persistent TEAM aura: the parent runs TeamCastNano(child) for 720 ticks at 2000 ms (~24 minutes), re-applying the child to every team member every 2 seconds. The PARENT's own effect list is only the TeamCastNano - the child nano carries the real stats.",
+      "wantedBy": "The whole team. The Engineer's most distinctive group contribution. wiki.aodb.us Engineer:Tips_and_Tricks: Sympathetic Arms Enhancement 'is a completely separate Nanoline to the other professions' damage buffs and stacks up onto an already impressive array of damage added that effectively ignores AC'; Sympathetic Reactive Cocoon 'can be combined with soldier reflect shields to significantly increase damage returned to attackers'.",
+      "stackingTrap": "All 15 parents share strain 227 -> only ONE aura at a time; choose armour OR damage OR damage-shield OR reflect. The CHILDREN are in four DIFFERENT strains (228 armour, 229 damage, 230 damage shield, 231 reflect), which is why the aura stacks with other professions' equivalents. wiki.aodb.us: 'The Sympathetic line is not available in shops.' The auras also count as buffs for PvP-flag spreading (Engineer:Tips_and_Tricks).",
+      "subLines": [
+        {
+          "type": "Armour aura (child strain 228 EngineerAura_Armour) - all eight ACs +N",
+          "tiers": [
+            {
+              "id": 154567,
+              "name": "Sympathetic Armor Boost",
+              "child": 154549,
+              "effect": "all ACs +101",
+              "castReq": "MC/MM/ST 170"
+            },
+            {
+              "id": 154566,
+              "name": "Sympathetic Shielding Barrier",
+              "child": 154548,
+              "effect": "all ACs +198",
+              "castReq": "MC/MM/ST 329"
+            },
+            {
+              "id": 154565,
+              "name": "Sympathetic Protective Field",
+              "child": 154547,
+              "effect": "all ACs +280",
+              "castReq": "MC/MM/ST 455"
+            },
+            {
+              "id": 154564,
+              "name": "Sympathetic Defensive Screen",
+              "child": 154546,
+              "effect": "all ACs +399",
+              "castReq": "MC/MM/ST 677"
+            },
+            {
+              "id": 154563,
+              "name": "Sympathetic Force Field",
+              "child": 154545,
+              "effect": "all ACs +500",
+              "castReq": "MC/MM/ST 746"
+            },
+            {
+              "id": 154562,
+              "name": "Sympathetic Fortress Screen",
+              "child": 154544,
+              "effect": "all ACs +627",
+              "castReq": "MC/MM/ST 870"
+            }
+          ]
+        },
+        {
+          "type": "Damage aura (child strain 229 EngineerAura_DamageBuff) - all eight *DamageModifier +N",
+          "tiers": [
+            {
+              "id": 154561,
+              "name": "Sympathetic Arms Enhancement",
+              "child": 154543,
+              "effect": "all eight *DamageModifier +14",
+              "castReq": "MC/MM/ST 381"
+            },
+            {
+              "id": 154560,
+              "name": "Sympathetic Entropy Infusion",
+              "child": 154542,
+              "effect": "all eight *DamageModifier +25",
+              "castReq": "MC/MM/ST 810"
+            }
+          ]
+        },
+        {
+          "type": "Damage-shield aura (child strain 230 EngineerAura_DamageShieldBuff) - all eight Shield*AC +N. NOTE: each child's own cast action requires the recipient to ALREADY have Shield*AC > 0, i.e. it boosts an existing damage shield rather than granting one.",
+          "tiers": [
+            {
+              "id": 154559,
+              "name": "Sympathetic Retaliatory Barrier",
+              "child": 154541,
+              "effect": "all Shield*AC +14",
+              "castReq": "MC/MM/ST 430"
+            },
+            {
+              "id": 154558,
+              "name": "Sympathetic Energy Cocoon",
+              "child": 154540,
+              "effect": "all Shield*AC +25",
+              "castReq": "MC/MM/ST 705"
+            },
+            {
+              "id": 154557,
+              "name": "Sympathetic Plasma Shielding",
+              "child": 154539,
+              "effect": "all Shield*AC +38",
+              "castReq": "MC/MM/ST 864"
+            }
+          ]
+        },
+        {
+          "type": "Reflect aura (child strain 231 EngineerAura_ReflectionDamageBuff) - all eight MaxReflected*Dmg +N (raises the CAP on reflected damage; it does not add reflect %)",
+          "tiers": [
+            {
+              "id": 154553,
+              "name": "Sympathetic Harmonic Field",
+              "child": 154538,
+              "effect": "all MaxReflected*Dmg +23",
+              "castReq": "MC/MM/ST 417"
+            },
+            {
+              "id": 154552,
+              "name": "Sympathetic Harmonic Cocoon",
+              "child": 154537,
+              "effect": "all MaxReflected*Dmg +30",
+              "castReq": "MC/MM/ST 537"
+            },
+            {
+              "id": 154551,
+              "name": "Sympathetic Reactive Field",
+              "child": 154536,
+              "effect": "all MaxReflected*Dmg +44",
+              "castReq": "MC/MM/ST 731"
+            },
+            {
+              "id": 154550,
+              "name": "Sympathetic Reactive Cocoon",
+              "child": 154535,
+              "effect": "all MaxReflected*Dmg +61",
+              "castReq": "MC/MM/ST 855"
+            }
+          ]
+        }
+      ],
+      "representativeId": 154550,
+      "representativeName": "Sympathetic Reactive Cocoon"
+    },
+    {
+      "name": "Sloughing / Isochronal special-attack absorber line  [id 273343 = Improved Isochronal Sloughing Combat Field]",
+      "id": 273343,
+      "nanoLine": "EngineerSpecialAttackAbsorber(286) and SpecialAttackAbsorberBase(768)",
+      "effect": "Sets Stat 517 SpecialAttackShield = N (and on the two best, Stat 516 AttackShield = 1). N = the number of incoming SPECIAL attacks (Burst / Full Auto / Aimed Shot / Fling / Brawl / etc.) absorbed outright; AttackShield absorbs one normal attack. Self versions use ChangeVariable directly and refresh on a tick (223311 = 480 ticks x 3000 ms, ~24 min, topping the counter back to 9 every 3 s). The '...Field' versions TeamCastNano a child that sets 517 on every team member.",
+      "wantedBy": "The whole team in PvP and against special-attack-heavy mobs. Nobody else in the game hands out special-attack absorption.",
+      "stackingTrap": "Parents and children are strain 286 (except the two 768 parents), so a team member cannot hold both the Engineer's team field and a self absorber.",
+      "selfVersions": [
+        {
+          "id": 204345,
+          "name": "Sloughing Protective Barrier",
+          "effect": "SpecialAttackShield = 2",
+          "castReq": "Level>49, MC/ST 452"
+        },
+        {
+          "id": 204347,
+          "name": "Coherent Sloughing Protective Barrier",
+          "effect": "SpecialAttackShield = 2",
+          "castReq": "Level>74, MC/ST 508"
+        },
+        {
+          "id": 204349,
+          "name": "Sloughing Defensive Shield",
+          "effect": "SpecialAttackShield = 4",
+          "castReq": "Level>99, MC/ST 673"
+        },
+        {
+          "id": 204351,
+          "name": "Coherent Sloughing Defensive Shield",
+          "effect": "SpecialAttackShield = 4",
+          "castReq": "Level>124, MC/ST 832"
+        },
+        {
+          "id": 223307,
+          "name": "Isochronal Sloughing Protective Barrier",
+          "effect": "SpecialAttackShield = 5",
+          "castReq": "Level>124, MC/ST 896, Shadowlands, Specialization bit2"
+        },
+        {
+          "id": 204353,
+          "name": "Sloughing Assault Shield",
+          "effect": "SpecialAttackShield = 6",
+          "castReq": "Level>174, MC/ST 990"
+        },
+        {
+          "id": 204355,
+          "name": "Coherent Sloughing Assault Shield",
+          "effect": "SpecialAttackShield = 7",
+          "castReq": "Level>184, MC/ST 1024"
+        },
+        {
+          "id": 223309,
+          "name": "Isochronal Sloughing Defensive Shield",
+          "effect": "SpecialAttackShield = 7",
+          "castReq": "Level>194, MC/ST 1137, Shadowlands, Specialization bit4"
+        },
+        {
+          "id": 223311,
+          "name": "Isochronal Sloughing Assault Shield",
+          "effect": "SpecialAttackShield = 9 AND AttackShield = 1",
+          "castReq": "Level>217, MC 1759 / ST 1754, Shadowlands, Specialization bit8"
+        }
+      ],
+      "teamVersions": [
+        {
+          "id": 204418,
+          "name": "Sloughing Protective Field",
+          "child": 204415,
+          "effect": "team: SpecialAttackShield = 1",
+          "castReq": "Level>74, MC/ST 569"
+        },
+        {
+          "id": 204420,
+          "name": "Sloughing Shielding Field",
+          "child": 204416,
+          "effect": "team: SpecialAttackShield = 2",
+          "castReq": "Level>134, MC/ST 855"
+        },
+        {
+          "id": 204422,
+          "name": "Sloughing Combat Field",
+          "child": 231055,
+          "effect": "team: SpecialAttackShield = 3",
+          "castReq": "Level>194, MC/ST 1034"
+        },
+        {
+          "id": 237273,
+          "name": "Isochronal Sloughing Combat Field",
+          "child": 233081,
+          "effect": "team: SpecialAttackShield = 2 (the child itself requires Shadowlands)",
+          "castReq": "Level>211, MC 1687 / ST 1684, Shadowlands, Specialization bit8",
+          "note": "Odd: far more expensive than 204422 yet its child sets a LOWER value (2 vs 3). Values read straight from the pack - see _unverified."
+        },
+        {
+          "id": 273343,
+          "name": "Improved Isochronal Sloughing Combat Field",
+          "child": 273344,
+          "effect": "team: SpecialAttackShield = 4 AND AttackShield = 1",
+          "castReq": "MC/ST 2047, NanoFocusLevel bit 64"
+        }
+      ],
+      "representativeId": 273343,
+      "representativeName": "Improved Isochronal Sloughing Combat Field"
+    },
+    {
+      "name": "Specialist trade-skill buffs (Knowledge / Mastery)  [id 227663 = Electrical Engineering Mastery]",
+      "id": 227663,
+      "nanoLine": "ElectricalEngineeringBuff(172), FieldQuantumPhysicsBuff(173), MechanicalEngineeringBuff(174), PharmaceuticalsBuff(175), WeaponSmithingBuff(176)",
+      "effect": "+80 (Knowledge) or +125 (Mastery) to one specialist trade skill, cast on the target.",
+      "wantedBy": "Anyone building implants, weapons or trimmers, and other Engineers. Five separate nanolines, so all five stack on one target. ao-universe Engineer Guide MKIII: 'Each of the Knowledge Nanos adds 80 to trade skills as listed. Each of the Mastery Nanos adds 125.'",
+      "stackingTrap": "The Engineer's own Composite Specialist Tradeskills (273346, +200 to all six) is SELF-ONLY and sits in line 172, so it cannot be combined with Electrical Engineering Knowledge/Mastery.",
+      "tiers": [
+        {
+          "id": 227652,
+          "name": "Electrical Engineering Knowledge",
+          "effect": "ElectricalEngineering +80",
+          "castReq": "PM/SI 468, Level>74, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227663,
+          "name": "Electrical Engineering Mastery",
+          "effect": "ElectricalEngineering +125",
+          "castReq": "PM/SI 817, Level>129, Specialization bit2, Shadowlands"
+        },
+        {
+          "id": 227655,
+          "name": "Field Quantum Physics Knowledge",
+          "effect": "QuantumFT +80",
+          "castReq": "PM/SI 488, Level>79, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227665,
+          "name": "Field Quantum Physics Mastery",
+          "effect": "QuantumFT +125",
+          "castReq": "PM/SI 825, Level>129, Specialization bit2, Shadowlands"
+        },
+        {
+          "id": 227657,
+          "name": "Mechanical Engineering Knowledge",
+          "effect": "MechanicalEngineering +80",
+          "castReq": "PM/SI 507, Level>79, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227667,
+          "name": "Mechanical Engineering Mastery",
+          "effect": "MechanicalEngineering +125",
+          "castReq": "PM/SI 838, Level>134, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227659,
+          "name": "Pharmaceuticals Knowledge",
+          "effect": "Pharmaceuticals +80",
+          "castReq": "PM/SI 526, Level>84, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227669,
+          "name": "Pharmaceuticals Mastery",
+          "effect": "Pharmaceuticals +125",
+          "castReq": "PM/SI 844, Level>134, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227661,
+          "name": "Weapon Smithing Knowledge",
+          "effect": "WeaponSmithing +80",
+          "castReq": "PM/SI 545, Level>89, Specialization bit1, Shadowlands"
+        },
+        {
+          "id": 227671,
+          "name": "Weapon Smithing Mastery",
+          "effect": "WeaponSmithing +125",
+          "castReq": "PM/SI 854, Level>139, Specialization bit1, Shadowlands"
+        }
+      ],
+      "representativeId": 227663,
+      "representativeName": "Electrical Engineering Mastery"
+    },
+    {
+      "name": "Philosopher's Stone",
+      "id": 29772,
+      "nanoLine": "Chemistry_PharmBuff(196)",
+      "effect": "Chemistry +62 and Pharmaceuticals +62 on the target.",
+      "wantedBy": "Anyone building implants or stims. Who_Buffs_What nanoline 196: 'Philosopher's Stone (Engineer): +62' beats 'Chemical Concoction (Agent): +50'. Stacks with Pharmaceuticals Knowledge/Mastery (line 175).",
+      "castReq": "PM/SI 256"
+    },
+    {
+      "name": "Extreme Prejudice",
+      "id": 29762,
+      "nanoLine": "GrenadeBuffs(207)",
+      "effect": "Grenade +120, Pistol +120, HeavyWeapons +50 on the target.",
+      "wantedBy": "Pistol and grenade users of every profession - one of the best-known Engineer give-aways (AO-Universe: 43 NCU, FP-able). Separate line from Pistol Mastery (199), so both stack for +160 Pistol.",
+      "castReq": "SI/PM 647"
+    },
+    {
+      "name": "Pistol Mastery",
+      "id": 29246,
+      "nanoLine": "PistolBuff(199)",
+      "effect": "Pistol +40 on the target.",
+      "wantedBy": "Pistol users. Shared nano - its cast action lists VisualProfession 1/3/8/10/12, so Soldier/Engineer/Bureaucrat/Doctor/Meta-Physicist can all cast it.",
+      "castReq": "PM/SI 120"
+    },
+    {
+      "name": "Crowbar Subtlety",
+      "id": 29189,
+      "nanoLine": "Breaking_Entry_DisarmTrapsBuff(206)",
+      "effect": "BreakingEntry +32 on the target.",
+      "wantedBy": "Anyone opening locked chests/doors. AO-Universe: 7 NCU, FP-able.",
+      "castReq": "PM/SI 103"
+    },
+    {
+      "name": "Trap Artifice",
+      "id": 29785,
+      "nanoLine": "DisarmTrapBuff(235)",
+      "effect": "TrapDisarm +79 on the target.",
+      "wantedBy": "Anyone disarming traps. Separate nanoline from Crowbar Subtlety, so both can sit on one target.",
+      "castReq": "PM/SI 349"
+    },
+    {
+      "name": "Team Beacon Warp",
+      "id": 154913,
+      "nanoLine": "BeaconWarp(293)",
+      "effect": "SummonTeamMates - warps the whole team to the Engineer's position.",
+      "wantedBy": "Every team, for travel. Rubi-Ka only (cast action requires ExpansionPlayfield==0).",
+      "castReq": "MC/ST/MM 742"
+    },
+    {
+      "name": "Beacon Warp",
+      "id": 154914,
+      "nanoLine": "BeaconWarp(293)",
+      "effect": "SummonPlayer - warps one player to the Engineer's position.",
+      "wantedBy": "Anyone who needs a lift to where the Engineer is standing. Rubi-Ka only.",
+      "castReq": "MC/ST/MM 421"
+    }
+  ],
+  "hostileAurasAndDebuffs": {
+    "note": "Not buffs, but they come out of the same aura machinery and share the Engineer's one-aura-at-a-time decision. Parents run AreaCastNano(child, radius) for 720 ticks at 2000 ms with a cast requirement of NPCFamily==0 - an ~24-minute hostile area aura re-applying every 2 s. Child effects read from nanos.ocp.",
+    "strain": "EngineerDebuffAuras(236) on all 14 parents - one hostile aura at a time.",
+    "addAllOffenseDebuff": [
+      {
+        "id": 154719,
+        "name": "Disruptive Photon Deflector",
+        "child": 154705,
+        "childStrain": "AAODebuffs(13)",
+        "radius": 7,
+        "effect": "AddAllOff -370 on everything in range",
+        "castReq": "PM 183, MM/ST 206"
+      },
+      {
+        "id": 154718,
+        "name": "Disruptive Photon Absorber",
+        "child": 154704,
+        "childStrain": "AAODebuffs(13)",
+        "radius": 7,
+        "effect": "AddAllOff -640",
+        "castReq": "PM 344, MM/ST 393"
+      },
+      {
+        "id": 154717,
+        "name": "Disruptive Photon Devourer",
+        "child": 154703,
+        "childStrain": "AAODebuffs(13)",
+        "radius": 7,
+        "effect": "AddAllOff -890",
+        "castReq": "PM 512, MM/ST 566"
+      },
+      {
+        "id": 154716,
+        "name": "Disruptive Photon Annihilator",
+        "child": 154702,
+        "childStrain": "AAODebuffs(13)",
+        "radius": 7,
+        "effect": "AddAllOff -1095",
+        "castReq": "PM 629, MM/ST 701"
+      },
+      {
+        "id": 154715,
+        "name": "Disruptive Void Projector",
+        "child": 154701,
+        "childStrain": "AAODebuffs(13)",
+        "radius": 9,
+        "effect": "AddAllOff -1210",
+        "castReq": "PM 710, MM/ST 782"
+      }
+    ],
+    "damageShieldNegator": [
+      {
+        "id": 154724,
+        "name": "Disruptive Field Negator",
+        "child": 154710,
+        "radius": 10,
+        "effect": "all Shield*AC -4, plus TauntNpc[75]",
+        "castReq": "MC/MM/ST 93"
+      },
+      {
+        "id": 154723,
+        "name": "Disruptive Shielding Negator",
+        "child": 154709,
+        "radius": 10,
+        "effect": "all Shield*AC -14, TauntNpc[124]",
+        "castReq": "MC/MM/ST 264"
+      },
+      {
+        "id": 154722,
+        "name": "Disruptive Barrier Negator",
+        "child": 154708,
+        "radius": 10,
+        "effect": "all Shield*AC -28, TauntNpc[184]",
+        "castReq": "MC/MM/ST 518"
+      },
+      {
+        "id": 154721,
+        "name": "Disruptive Retaliatory Negator",
+        "child": 154707,
+        "radius": 10,
+        "effect": "all Shield*AC -44, TauntNpc[238]",
+        "castReq": "MC/MM/ST 712"
+      },
+      {
+        "id": 154720,
+        "name": "Disruptive Retributive Negator",
+        "child": 154706,
+        "radius": 10,
+        "effect": "all Shield*AC -61, TauntNpc[299]",
+        "castReq": "MC/MM/ST 838"
+      }
+    ],
+    "reflectNegator": [
+      {
+        "id": 154728,
+        "name": "Disruptive Field Harmonics",
+        "child": 154714,
+        "radius": 10,
+        "effect": "all Reflect*AC -15, TauntNpc[104]",
+        "castReq": "MC/MM/ST 194"
+      },
+      {
+        "id": 154727,
+        "name": "Disruptive Cocoon Harmonics",
+        "child": 154713,
+        "radius": 10,
+        "effect": "all Reflect*AC -22, TauntNpc[178]",
+        "castReq": "MC/MM/ST 493"
+      },
+      {
+        "id": 154726,
+        "name": "Disruptive Phase Harmonics",
+        "child": 154712,
+        "radius": 10,
+        "effect": "all Reflect*AC -36, TauntNpc[245]",
+        "castReq": "MC/MM/ST 723"
+      },
+      {
+        "id": 154725,
+        "name": "Null Space Disruptor",
+        "child": 154711,
+        "radius": 10,
+        "effect": "all Reflect*AC -48, TauntNpc[315]",
+        "castReq": "MC/MM/ST 873"
+      }
+    ],
+    "standaloneDebuffs": [
+      {
+        "id": 266307,
+        "name": "Technical Incompetence",
+        "nanoLine": "NOSTACKING(0)",
+        "effect": "Target: all six nano skills -750.",
+        "castReq": "Lost Eden (Expansion bit32), BM/PM 799; the flattened requirement list contains BOTH Profession==5 (Agent) and Profession==3 (Engineer)",
+        "note": "A hostile nano-skill crush, not a buff. See _unverified about requirement-tree flattening."
+      },
+      {
+        "id": 266309,
+        "name": "Unsteady Hands",
+        "nanoLine": "NOSTACKING(0)",
+        "effect": "Target: Burst -600, MG/SMG -600, RangedInit -600.",
+        "castReq": "Lost Eden (Expansion bit32), MC/ST 799; flattened requirement list contains BOTH Profession==3 (Engineer) and Profession==4 (Fixer)",
+        "note": "Hostile ranged-attack crush. See _unverified."
+      }
+    ]
+  },
+  "travelAndUtility": [
+    {
+      "id": 233839,
+      "name": "Shadowland Anchor",
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "SetAnchor - places the Shadowlands recall anchor (also Set[214 CurrentNano,1]).",
+      "minLevel": 75
+    },
+    {
+      "id": 233841,
+      "name": "Shadowland Safeguard",
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "SetAnchor - higher-level anchor.",
+      "minLevel": 190
+    },
+    {
+      "id": 233843,
+      "name": "Initiate Shadowland Recall",
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "RecallToAnchor - teleports the Engineer to its anchor.",
+      "minLevel": 80
+    },
+    {
+      "id": 233845,
+      "name": "Impel Shadowland Recall",
+      "nanoLine": "ShadowlandBindandRecall(738)",
+      "effect": "RecallToAnchor - higher-level recall.",
+      "minLevel": 185
+    },
+    {
+      "id": 154914,
+      "name": "Beacon Warp",
+      "nanoLine": "BeaconWarp(293)",
+      "effect": "SummonPlayer - see givesToOthers.",
+      "minLevel": 0
+    },
+    {
+      "id": 154913,
+      "name": "Team Beacon Warp",
+      "nanoLine": "BeaconWarp(293)",
+      "effect": "SummonTeamMates - see givesToOthers.",
+      "minLevel": 0
+    }
+  ],
+  "deferredToPetsFile": [
+    {
+      "id": 204343,
+      "name": "Coherent Polarized Screening",
+      "why": "Top tier of the PET root/snare-resist line: it applies child 285697 (strain 285 PetSnare_RootResistanceBuff) = NanoResist +200, ResistNanoStrain(Snare 145) 65%, ResistNanoStrain(Root 146) 65%. The lower tiers of the same line (204335 Polarized Screening, 204337 Superior, 204339 Lesser, 204341 Greater) are already flagged petTargeted=true in engineer-nanos.json. Belongs in engineer-pets.json.",
+      "castReq": "Level>184, MC/ST 1024"
+    },
+    {
+      "id": 302254,
+      "name": "Sedative Injectors",
+      "why": "AddOffProc[5, 302253] where the cast action requires NPCFamily==95 (the robot pet family) - a PET offensive proc. Child 302253 (strain 145 Snare) = RunSpeed -1200 on whatever the pet hits. Belongs in engineer-pets.json.",
+      "castReq": "MC/ST 1300, Level>210, NPCFamily==95"
+    },
+    {
+      "id": 263301,
+      "name": "Lesser Miniaturization",
+      "why": "Cast requirement includes MonsterData==218783 / MonsterData==218928 (pet templates) and NPCFamily==95 - a PET buff. Effect: AddAllDef +30, Scale -30 (shrinks the robot).",
+      "castReq": "MC/ST 572, Shadowlands"
+    },
+    {
+      "id": 263303,
+      "name": "Miniaturization",
+      "why": "Same pet gating as 263301. Effect: AddAllDef +50, Scale -50.",
+      "castReq": "MC/ST 572, Shadowlands"
+    },
+    {
+      "id": 270351,
+      "name": "Master's Repairs",
+      "why": "Nanoline CompleteHealingLine(282). Applies child 301858 whose only function is Hit[27,10,0,0] on Target. Name and line both say pet repair (the Engineer has no other heal). Target not positively resolved - flagged in _unverified.",
+      "castReq": "MC/ST 925, BM 836"
+    }
+  ],
+  "notEngineerCastable": [
+    {
+      "id": 32034,
+      "name": "False Profession: Engineer",
+      "nanoLine": "FalseProfession(218)",
+      "actualCaster": "AGENT",
+      "evidence": "Its cast action requires Profession==5 (Agent); the VisualProfession==3 clause (which is what pulled it into the Engineer extraction) is the 'already looks like an Engineer' branch. Effects target User/Wearer and it runs ChangeVariable(368 VisualProfession, 3) - it makes the AGENT look like an Engineer.",
+      "effect": "RemoveNanoStrain[680], Skill(318) +150, ModifyPercentage -25% to all six nano skills, VisualProfession := 3.",
+      "castReq": "PM/SI/BM 103"
+    },
+    {
+      "id": 117224,
+      "name": "Assume Profession: Engineer",
+      "nanoLine": "FalseProfession(218)",
+      "actualCaster": "AGENT",
+      "evidence": "Same as 32034.",
+      "effect": "Skill(318) +70, ModifyPercentage -15% to all six nano skills, VisualProfession := 3.",
+      "castReq": "PM/BM 427, SI 426"
+    },
+    {
+      "id": 117213,
+      "name": "Mimic Profession: Engineer",
+      "nanoLine": "FalseProfession(218)",
+      "actualCaster": "AGENT",
+      "evidence": "Same as 32034.",
+      "effect": "Skill(318) +15, ModifyPercentage -5% to all six nano skills, VisualProfession := 3.",
+      "castReq": "PM/SI/BM 716"
+    }
+  ],
+  "noOpOrEventNanos": [
+    {
+      "id": 156284,
+      "name": "Does Nothing 1",
+      "effect": "No effect functions at all - placeholder/shop filler in the client data.",
+      "castReq": "MC/ST 202, Cash>79"
+    },
+    {
+      "id": 156285,
+      "name": "Does nothing 2",
+      "effect": "No effect functions at all.",
+      "castReq": "MC/ST 644, Cash>239"
+    },
+    {
+      "id": 285182,
+      "name": "Gravity Shift - Block",
+      "effect": "No effect functions. Cast action is gated on PlayfieldProxy==7015 and Flags op91 285181 - an instance/event mechanic, not a buff. Flattened requirement list contains Profession 3, 7 and 11.",
+      "castReq": "PlayfieldProxy==7015"
+    }
+  ],
+  "botStrategyNotes": {
+    "selfKeepUpOrder": [
+      "1. Armor: Gift of Assurance 227680 at L220 (else the best Assurance tier, else Aegis Barrier 29789) - nanoline 3, one only.",
+      "2. Aura: ONE Sympathetic aura (strain 227). Default Sympathetic Fortress Screen 154562 (all ACs +627) for survivability, or Sympathetic Entropy Infusion 154560 (all damage +25) when the team is DPS-limited.",
+      "3. Damage shield: Plasma Shield 29774 (nanoline 1) - and note the Sympathetic damage-shield aura children only land on someone who already has one.",
+      "4. Reflect: Empowered Pre-Nullity Cocoon 273341 in Shadowlands (team-wide), Reactive Harmonic Cocoon 70295 on Rubi-Ka (nanoline 2 either way).",
+      "5. Damage: Boosted Tendons 269463 on self (also +205 RangedInit); Entropy Weapon 29760 for everyone else (nanoline 4).",
+      "6. Init: Rapid Weapon 29779 (nanoline 152).",
+      "7. Special-attack absorber: Isochronal Sloughing Assault Shield 223311 on self (9 specials + 1 attack), or Improved Isochronal Sloughing Combat Field 273343 for the team.",
+      "8. Tradeskills when building: Engineer Composite Specialist Tradeskills 273346 (+200 x6, self) PLUS FQP/ME/Pharma/WS Mastery 227665/227667/227669/227671 - but NOT Electrical Engineering Knowledge/Mastery (same line 172 as the composite).",
+      "9. Weapon skills: Extreme Prejudice 29762 + Pistol Mastery 29246 (different lines, they stack)."
+    ],
+    "nanolineStackingTraps": [
+      "ArmorBuff(3): all 32 RK tiers AND the 4 SL Assurance tiers are one line - a single occupant.",
+      "EngineerAuras(227): all 15 Sympathetic parents share the strain -> ONE aura at a time (armour OR damage OR damage shield OR reflect). Their CHILDREN sit in four different strains (228/229/230/231), which is why the aura stacks with other professions' buffs of the same type.",
+      "EngineerDebuffAuras(236): all 14 Disruptive parents share the strain -> one hostile aura at a time, and running one means not running a Sympathetic aura.",
+      "ElectricalEngineeringBuff(172): Engineer Composite Specialist Tradeskills 273346 (+200 all six) sits in this line and therefore CANNOT coexist with Electrical Engineering Knowledge 227652 / Mastery 227663. It DOES stack with lines 173/174/175/176.",
+      "ReflectShield(2): the RK Harmonic Cocoon tiers AND the children of the SL Empowered line both live here - a recipient holds one.",
+      "DamageBuffs_LineA(4): Gun Enhancement / Energy Spike / Controlled Energy Overload / Entropy Weapon / Boosted Tendons - one only; Boosted Tendons is self-only.",
+      "EngineerSpecialAttackAbsorber(286): the self ChangeVariable versions and the team-cast children are all strain 286 - a team member cannot hold both the Engineer's team field and a self absorber.",
+      "PistolBuff(199) and GrenadeBuffs(207) are DIFFERENT lines: Pistol Mastery +40 and Extreme Prejudice +120 Pistol stack for +160 Pistol.",
+      "Chemistry_PharmBuff(196) vs PharmaceuticalsBuff(175) are different lines - Philosopher's Stone +62 stacks with Pharmaceuticals Mastery +125.",
+      "Breaking_Entry_DisarmTrapsBuff(206) vs DisarmTrapBuff(235) are different lines - Crowbar Subtlety and Trap Artifice stack."
+    ],
+    "twinkPriorityForEngineer": [
+      "Trader Wrangle is the single biggest enabler: it raises MaterialCreation / SpaceTime / MaterialMetamorphosis (every Engineer nano is gated on those) AND the weapon skills, so one wrangle both lands a higher bot and over-equips the weapon.",
+      "Meta-Physicist Composite Mochams (+140 all nano skills) is the durable version of the same thing and is exactly what the AO-Universe Engineer Guide MKIII names for casting a bigger bot.",
+      "The Engineer's own tradeskill buffs (composite +200, or the five Mastery lines) plus a Trader trade-skill wrangle cover implant building and trimmer construction.",
+      "Attribute buffs for gear requirements: Enforcer Prodigious Strength / Essence of Behemoth (Str/Sta), Agent Feline Grace (Agi) / Enhanced Senses (Sense), Composite Attribute Boost (+12 all)."
+    ],
+    "whereEngineerDiffersFromTheMpTemplate": [
+      "The MP's give-away story is ONE thing (nano skills). The Engineer's is many: AC, damage shield, reflect, flat damage, ranged init, five trade skills, pistol/grenade, special-attack absorption, team teleport and a persistent team aura - so givesToOthers is by far the biggest section of this file.",
+      "The Engineer has essentially NO self nano-skill buff; it depends on the MP and the Trader for that. That is the exact mirror image of the MP's position.",
+      "givesToOthers here is a nano-by-nano ladder at every level (36 armour tiers, 13 damage shields, 15 auras, 10 tradeskill nanos), not a handful of top-tier nanos.",
+      "The Engineer has an AURA system (one at a time, 24-minute re-application) that the MP has nothing equivalent to, and a hostile aura branch that is a combat decision, not a buff decision.",
+      "The Engineer has no self-heal (Master's Repairs is a pet repair), so outside HP/heals matter more than for an MP.",
+      "The MP file's 'False Profession' puzzle is resolved here with hard evidence: those nanos require Profession==5 and are AGENT self-buffs that only appear in a profession extraction because of their VisualProfession clause."
+    ]
+  },
+  "_unverified": [
+    "TauntNpc (FunctionType 53117) appears on the nine damage-shield/reflect Disruptive aura children with values 75-315. The function NAME comes from OmniCell's FunctionType enum; what a taunt component means on a HOSTILE area aura (who is taunted and by how much) is NOT established from the data. Reported as the raw function - do not build bot logic on an interpretation of it.",
+    "FunctionType 53240 is literally named 'Undefined' in OmniCell's enum. Every 'parent -> child nano' relationship marked with it here (the Sympathetic auras' second function pair, the Empowered cocoons, Coherent Polarized Screening, Shield of the Obedient Servant, Master's Repairs) is inferred from the argument being a nano id whose name matches the parent. Exact targeting semantics unconfirmed.",
+    "Shield of the Obedient Servant 202260 / Improved 270790: unresolved whether they buff the Engineer or the pet. No NPCFamily/MonsterData gate (unlike the confirmed pet nanos), but the name argues for the pet. Left in selfBuffs with a flag; do not auto-cast.",
+    "Master's Repairs 270351: child 301858's only function is Hit[27,10,0,0]. The AttackType/argument layout for FunctionType 53002 was not decoded, so the heal AMOUNT is unknown.",
+    "Technical Incompetence 266307 and Unsteady Hands 266309 each list TWO different Profession EqualTo values in their flattened cast-requirement list (5+3 and 3+4). The extractor flattens the requirement TREE, so an OR-branch cannot be distinguished from an AND - whether an Engineer can actually cast these is unresolved.",
+    "Isochronal Sloughing Combat Field 237273 (L212, Spec bit8) team-casts a child that sets SpecialAttackShield = 2, LOWER than the cheaper Sloughing Combat Field 204422 (=3). Read directly from nanos.ocp; the reason (its child additionally requires Shadowlands) is not established.",
+    "Extreme Prejudice 29762: local data gives Grenade +120, Pistol +120, HeavyWeapons +50. The AO-Universe Buffing Guide lists only '+50 Heavy Weapons' and '+120 Pistol'. Local data is treated as authoritative; the discrepancy is unexplained.",
+    "AO-Universe's Buffing Guide lists 'Composite Heavy Artillery' (+100 Grenade / HeavyWeapons / MG-SMG / RangedEnergy / Rifle) under Engineer. Local data contradicts it: nano 269482 'Composite Heavy Artillery' requires Profession==1 (SOLDIER) and is not in the 288-nano Engineer extraction. It is NOT an Engineer buff.",
+    "Nanos whose effect functions target 'Target' are recorded here as castable on others. That is the local-data signal; it does not by itself prove the client allows a friendly target for every one of them (e.g. the shared Pistol Mastery). Confirmed by web source for Pistol Mastery, Extreme Prejudice, Philosopher's Stone and Crowbar Subtlety only.",
+    "Aura/absorber DURATIONS are given as ticks x interval from the pack (720 x 2000 ms = ~24 min). Whether the client displays that as the buff duration was not cross-checked.",
+    "Cross-profession buff ids in wantedFromOthers are null - they are other professions' nanos and not in the Engineer extraction. Doctor nano-init name/value, Keeper aura names, Composite Attribute Boost id, and the general/city/tower buff sets are not pinned to a single source.",
+    "NCU costs are not in this file - the pack's nano records were read for effects and cast requirements only. AO-Universe supplies three (Extreme Prejudice 43 NCU, Philosopher's Stone 17 NCU, Crowbar Subtlety 7 NCU)."
+  ],
+  "_sources": [
+    "AOBuddy/GameData/profiles/engineer-nanos.json - local nanos.ocp extraction (OMNICELL-CONTENT, client 18.8.50_EP1), 288 Engineer-castable nanos; every id/name/effect/castReq marked source=local",
+    "E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp read via tools/mp-nano-extractor diagnostic mode - all child-nano effects (154535-154549, 154701-154714, 204415/204416/231055/233081/273344, 233082-233087, 302379, 302253, 285697-285699, 301858) plus every Target/tick value",
+    "E:\\Funcom\\AOBuddy10\\AOSharp.Common\\GameData\\Stat.cs - stat id -> name (AC 90-97, Shield 226-234, Reflect 205-225, MaxReflected 475-483, DamageModifier 278-317, AddAllOff 276, AddAllDef 277, AttackShield 516, SpecialAttackShield 517, Scale 360, RunSpeed 156, NanoResist 168)",
+    "E:\\Funcom\\OmniCell\\OmniCell\\Libraries\\Source\\OmniCell.Enums\\FunctionType.cs - function id -> name",
+    "E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql - id/name verification",
+    "https://wiki.aodb.us/wiki/Who_Buffs_What - Pistol Mastery +40 (Bureaucrat/Doctor/Engineer/Meta-Physicist/Soldier), Extreme Prejudice +120 (Engineer), Philosopher's Stone +62 vs Chemical Concoction +50 (nanoline 196), Strength nanoline 156 ladder, Perception +240 (Eagle Eye / Blood Makes Noise)",
+    "https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/buffing-guide - Trader single/team/umbral wrangle ladder ('Weak' +3 to 'Superb' +112), '3 minutes and debuffs the trader casting it', trade-skill wrangles +40/+80/+125, 'All buffs below stack with Expertises and Attribute Boosts', 'Buffs in the same Nanoline do not stack with each other', Engineer NCU/FP notes",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 - 'Team Skill Wrangler (Premium) - Adds nano skills and weapon skills'; MP 'Composite Infuse With Knowledge - Add 90' / 'Composite Mochams (1 hour) - Add 140' as what an Engineer wants to cast a higher bot; 'Each of the Knowledge Nanos adds 80 to trade skills... each of the Mastery Nanos adds 125'",
+    "https://wiki.aodb.us/wiki/Engineer:Tips_and_Tricks - Sympathetic Arms Enhancement is 'a completely separate Nanoline to the other professions' damage buffs'; Sympathetic Reactive Cocoon 'can be combined with soldier reflect shields'; 'The Sympathetic line is not available in shops'; auras 'count as buffs for the purposes of spreading the PvP flag'",
+    "https://wiki.aodb.us/wiki/Engineer_Guide and http://wiki.aodb.us/wiki/Engineer:Nano_Programms - Engineer nano list cross-check"
+  ]
+}

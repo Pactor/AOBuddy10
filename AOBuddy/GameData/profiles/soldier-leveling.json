@@ -1,0 +1,323 @@
+{
+  "profession": "Soldier",
+  "professionId": 1,
+  "slug": "soldier",
+  "symbiantUnitType": "Artillery",
+  "generatedUtc": "2026-09-23T10:40:00Z",
+  "summary": "Level 1-220 (+ AI title levels 1-30 + LE research) leveling path, hunting spots and key quests for the Soldier (profession 1), written for AOBuddy10. The Soldier has NO pet, NO real heal (two DrainHeal nanos) and NO crowd control. It levels by holding the biggest Assault Rifle its skills allow and keeping a stack of reflect and absorb nanos up. That makes the whole leveling curve a race between two numbers: the weapon skills that let you hold the next gun, and the Matter Creation / Time & Space that let you cast the next shield. Both of those are read out of the client data below, not from a guide - every nano level gate comes from soldier-nanos.json and every weapon/armour requirement from items.ocp. Where you actually go to kill things is class-agnostic; those windows come from Faffy's AO Levelling Chart (a local file) and the AODB Hunting Grounds page.",
+  "dataSources": {
+    "nanoGates": "AOBuddy/GameData/profiles/soldier-nanos.json (177 Soldier-castable nanos from nanos.ocp, client 18.8.50_EP1). Every 'at level N you can cast X' statement below is the nano's own ToUse Level requirement, not an estimate.",
+    "weaponAndArmourGates": "E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp read with tools/eng-gear-extractor --prof 1 --wield and tools/mp-weapon-extractor --prof 1. Every wield/wear requirement quoted below is from there.",
+    "spotWindows": "LOCAL: E:/Funcom/FAFFY'S LEVELLING GUIDE CHART/Chart.html - a published level-by-level chart of where to grind from 1 to 220, parsed column-by-column so every window below is an exact level range from the chart, not a guess. Cross-checked against http://wiki.aodb.us/wiki/Hunting_Grounds for the named area, its level range and its playfield.",
+    "idNameVerification": "E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows).",
+    "notCovered": "Perks and research are in soldier-build.json; implants in soldier-implants.json; symbiants (Artillery) in soldier-symbiants.json; weapons in soldier-weapons.json; the 200+ raid list in soldier-endgame.json. This file does not repeat them."
+  },
+
+  "professionMechanicsThatShapeLeveling": [
+    "TWO SKILL TRACKS, ALWAYS. Assault Rifle / Burst / Full Auto / Ranged Init. decide what you can hold; Matter Creation (cost 2.5) and Time & Space (cost 3.2) decide what shield you can cast. Matter Creation is a cast requirement on 102 of the Soldier's 177 nanos and Time & Space on 64. Letting the nano pair fall behind is the classic mistake - you end up with a gun you cannot survive behind.",
+    "THE REFLECT LADDER IS FLAT AT THE BOTTOM AND STEEP AT THE TOP. Total Mirror Shield Mk I needs only MC 58 / TS 46, so a Soldier has 75% reflect from single digits. Mk X needs MC 695 / TS 590. Then nothing until Augmented Mirror Shield MK I at LEVEL 175 (MC 914 / TS 880). Plan for a long plateau between ~level 60 and 175 where your reflect does not improve - your armour and HP have to.",
+    "THE SHADOWLANDS REFLECT LINE IS THE REAL PROGRESSION. The 'Empowered ...' / Resonance line (strain 694) unlocks at levels 0 / 25 / 50 / 75 / 100 / 125 / 145 / 155 / 175 / 185 / 201 / 207 / 212 / 220 and STACKS with a mirror shield (different strain). One cast covers you and the team. If you own Shadowlands, buy the next tier the level you reach it.",
+    "SPECIALIZATION BITS GATE MOST SOLDIER NANOS. The weapon buffs, the team damage line and the detaunts all carry 'Specialization op22 1/2/4/8' in their cast requirements. Specialization 1 / 2 / 3 / 4 are quest rewards, so the quest track is not optional for a Soldier the way it is for some classes.",
+    "NO HEAL MEANS STIMS AND PULL DISCIPLINE. The entire heal kit is Don't Fear the Reaper (29241) and Adrenaline Rush (301897), both tiny DrainHeals. Budget first aid kits and stims at every level.",
+    "SINGLE-TARGET AGGRO ONLY. The 20 taunts and 6 detaunts are all single-target. A Soldier can hold one mob, not a camp. Pull one at a time.",
+    "THE PERENNIUM BLASTER GIVES XP. Perennium Blaster (246422-246427, QL50-199) and Rebuilt Perennium Blaster (260700-260705) carry 'XPModifier +3' as a WORN bonus, and the Superior versions (246428 / 260706, QL200) carry +4. Verified in items.ocp. It is Soldier-only, needs Shadowlands, and wants Assault Rifle 996 / Burst 747 / Full Auto 897 - a genuine twink target because it makes every kill worth more."
+  ],
+
+  "brackets": [
+    {
+      "levelRange": "1-6",
+      "where": [
+        "Arete Landing (1-10) - the ID card quest chain (Faffy chart: levels 1-9)",
+        "The Old Backyards (1-10) - reachable from Borealis / Newland City / West Athen / Omni-1 / Rome",
+        "ICC Shuttleport free newbie quests"
+      ],
+      "fight": "Rookie leets and yard grinder mobs. Do the Arete ID-card chain first, then grind leets (Faffy chart: 'Grind on leets', levels 10-16).",
+      "classNotes": "Buy a starting Assault Rifle and the lowest shop nanos immediately. Total Mirror Shield Mk I (70308) only needs Matter Creation 58 / Time & Space 46 - a Soldier can be running a 75% reflect before level 10, which is why low-level Soldiers feel unusually tanky. Also grab the base Absorption Shield ladder (75413 Minor Combat Barrier upward) and Body Boost (29091).",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "6-15",
+      "where": [
+        "Condemned Subway (8-20), entrances in Borealis / West Athen / Rome Stretch - instanced, so team BEFORE entering",
+        "Newland City area (5-15)",
+        "Faffy chart: Subway 'Workmen' at 11-15"
+      ],
+      "fight": "Subway workmen and trash. Get the Subway elite daily running at 16.",
+      "classNotes": "Loot the Ring of the Nucleus Basalis (202717) from Abmouth Supremus - it is +50 Max NCU for a Treatment 1050 requirement and nothing else this cheap comes close. A Soldier needs NCU badly because he runs self reflect + team reflect + weapon buff + Full Auto buff + HP + damage + init simultaneously. Keep climbing the Total Mirror Shield ladder (Mk II 70309 at MC 142 / TS 114, Mk III 70306 at MC 231 / TS 185).",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "15-25",
+      "where": [
+        "Condemned Subway - Deep Subway and the Subway elite daily (Faffy chart: 16-25)",
+        "Oasis (15-25), Newland Desert",
+        "The Pipes (20-30), Lush Fields",
+        "Get +50% XP cans from Canbert in Borealis (Faffy chart, level 17)"
+      ],
+      "fight": "Deep Subway, Abmouth for the ring, Oasis mobs, and RK team missions pulled to your level.",
+      "classNotes": "Level 25 unlocks the first real Soldier nano tier: Intensify Fight (Team) 223187 (team +12 to all eight damage modifiers), A Sergeant's Knowledge 203121 (Assault Rifle +30), Metal Stream 203149 (Full Auto +29), Power Volley 203133 (Burst +33), Alleysweeper 203123 (Shotgun +30), Laser Surgery 203135 (Ranged Energy +44), Artillery Fire 223223 (Heavy Weapons +45). All of them need Shadowlands AND Specialization bit 1, so if you are a froob you skip this whole family and live on Assault Rifle Mastery 29220 (+60) instead.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "25-40",
+      "where": [
+        "Temple of Three Winds (20-60), Greater Tir County - Faffy chart: 'Grind on cultists' 25-33, then TotW elite daily from 26",
+        "Steps of Madness - grind the first 3 rooms (Faffy chart: 29-40)",
+        "Rhinoman Cockpit (25-40), Newland Desert",
+        "Nascence Crippler Cave (SL) - mobs 19-33, then statics 34-49"
+      ],
+      "fight": "TotW cultists and the elite daily; Steps of Madness first three rooms; Crippler Cave if you own Shadowlands (it drops the DOJA chip).",
+      "classNotes": "Research the composite nanos at 25. This is the band where a Soldier's reflect stops scaling with level and starts scaling only with Matter Creation / Time & Space, so put implant clusters into MC and TS, not only into Assault Rifle. Deepen Fight (Team) 223189 at level 50 is the next team-damage step; Crowd Disperser 203125 and Metal Rain 203147 also land at 50.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "40-60",
+      "where": [
+        "Temple of Three Winds - LAST CHANCE, you cannot ENTER past level 60. Faffy chart: elite daily, Deathless Legionnaires and boss kills at 42-57",
+        "Virus Builders (40-60), Pleasant Meadows",
+        "Biomare (50-100), Longest Road - base defenders at 38-45",
+        "Bot Hackers (50-90), Pleasant Meadows",
+        "Nascence Core / Two Mountains / Steppe of Despair heckler runs (40-70) if you own Shadowlands",
+        "Elysium Predators at Sabre's Cradle (Faffy chart: 50-65) - drops the DOJA chip"
+      ],
+      "fight": "Do all your TotW boss loot BEFORE 60 - the dungeon hard-locks entry past 60. Then Biomare base defenders and Nascence hecklers.",
+      "classNotes": "Level 50: Deepen Fight (Team) 223189 (+30 team damage modifiers). Around here the Total Mirror Shield ladder tops out for most Soldiers (Mk V 70303 at MC 433 / TS 332, Mk VI 70304 at MC 533 / TS 391). From 60 to 175 there is NO new self-reflect tier at all - the Augmented Mirror Shield line does not start until level 175. If you have Shadowlands, the Empowered reflect line fills that gap: Empowered Greater Deflection Shield 233037 at 50, Empowered Major / Reactive Deflection Shield 233039 / 233041 at 75.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "60-80",
+      "where": [
+        "Core Hecklers / Two Mountains Hecklers / Steppe of Despair heckler run (40-70), Nascence (SL)",
+        "Chapel of Chants (60-75), Elysium (SL)",
+        "Whispervale Spiders (67-100), Spiderdust Grove, Elysium (SL)",
+        "Biomare toxic floaters/bloaters and Biomare missions (Faffy chart: 55-67), Biomare elite daily from 61",
+        "Grind claws / shades / bothackers (Faffy chart: 60-69), then demons in Perpetual Wastelands (70-80)",
+        "Mort Borgs (70-130), Mort Crater - team",
+        "The Reck: Entvineds at the Mining Outpost (Faffy chart: 80-89)"
+      ],
+      "fight": "Heckler teams if you have Shadowlands (fastest SK in the game), otherwise Biomare missions and the RK borg/demon camps.",
+      "classNotes": "Level 75 gives the Soldier its first DETAUNT, Bypass Me 223211 (TauntNpc -2133). That matters more than it sounds: with no heal and single-target taunts, the only way a Soldier survives a heckler team pulling wrong is to shed aggro. Also level 75: Hail of Metal 203145 (Full Auto +57) and Empowered Major / Reactive Deflection Shield. Aim for QL125 implants and your first Artillery symbiants.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "80-110",
+      "where": [
+        "Callous Mortiigs (85-105), Cape Callous, Elysium (SL) - Faffy: 'Mortiigs west of Spade, or Spiders west of Cold Rock' 71-89",
+        "Coldrock Spiders (74-100), Whitepass, Elysium (SL)",
+        "Port 7 Devs (90-105), Outer Isles, Elysium (SL)",
+        "Teamed Elysium Hecklers around the portal to Jobe Market, or the kite hill north of it (Faffy chart: 90-125)",
+        "Mort cyborgs with a team (Faffy chart: 85-100), then Perpetual Wastelands cyborgs (101-115)",
+        "The Reck dailies from 90 (speak to Sovic for Omni/Neutral or Tettle for Clan/Neutral)",
+        "Elysium quest track: Elmo Fitz, Ulf Reinhart and the five 'One Who Has Taken Vow of Truth' missions (Faffy chart: 85-139) - do them all before 150",
+        "Mantis Den part 1 daily from 101"
+      ],
+      "fight": "Elysium camps and heckler teams; cyborg missions on the RK side; start the Elysium quest track for the mini-XP and DM-XP rewards.",
+      "classNotes": "Level 100: Heighten Fight (Team) 223191 (+41 team damage), Metal Storm 203143 (Full Auto +71), Canonry Fire 223225 (Heavy Weapons +85), and the Empowered Partial / Minor Reflective Field (233043 / 233045). Complete Specialization 1 in this band - almost every Soldier weapon nano is gated on a Specialization bit. Push toward QL200 implants; the Ofab set you are aiming for wants Strength 900 / Stamina 1100 at QL300, so start building Str/Sta now.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "110-130",
+      "where": [
+        "South Beach / Port 7 / North heckler runs (105-150), Elysium (SL)",
+        "Upper / Lower Scheol (SL; enterable at 80)",
+        "PW Base Borgs (130+), Perpetual Wastelands",
+        "Inner Sanctum - get a level 220 to make you a permanent IS key (Faffy chart: 125-139)",
+        "Elysium Catacombs SL Elite Daily from 120 (needs a team)",
+        "Mantis Den part 2 daily from 125",
+        "Faffy chart: if you pull the 'Extraction' or 'A Contingent Spy' daily, grind the mobs there - exit and re-enter to respawn, and do NOT complete the mission until you are done for the day (81-156)"
+      ],
+      "fight": "Elysium heckler runs, Scheol, and the daily/elite-daily stack. Accumulate tokens on the token board.",
+      "classNotes": "Level 125: Obvious Victim 223201 (taunt 2250). Level 125 also unlocks Empowered Lesser Reflective Field 233047. This is the middle of the reflect plateau - your survivability now comes from armour and Body Dev., not from a new shield. Body Dev. is your SECOND-CHEAPEST skill (cost 1.1, cheaper than for any profession except the Enforcer) - max it.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "130-160",
+      "where": [
+        "Whirling Rocks (135-160), The Hourglass, Adonis (SL)",
+        "North Heckler Run (115-150), The Brink, Elysium (SL)",
+        "Teamed Adonis Hecklers (Faffy chart: 130-179)",
+        "Solo Dark Ruins (150-170) - Faffy: '11 x 7 million xp'; Dark Ruins - Solo is listed 160-180 on AODB",
+        "Inner Sanctum: grind the 1st floor (140-150), then the DS room (151-160)",
+        "DS weekly with a team from 145; RK missions become viable with a good team from 145",
+        "Mantis Den part 3 daily from 150; Scheol Catacombs SL Elite Daily from 151",
+        "Elysium quest: the Prophetess (do before 150)"
+      ],
+      "fight": "Adonis hecklers and solo Dark Ruins. Complete Specialization 2 around 150. Target QL170-200 Artillery symbiants.",
+      "classNotes": "Level 135 Metal Strike 203141 (Full Auto +85). Level 145 Empowered Reflective Field 233049, level 145 Circumvent Me 223213 (detaunt -4586). Level 155: Art of Peace 203119 (Assault Rifle +90, the best AR buff before Art of War) and Empowered Greater Reflective Field 233051. Stop around 150 and optimise gear - this is the band where a badly twinked Soldier stalls, because Adonis hecklers hit hard and the reflect plateau is still on.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "160-190",
+      "where": [
+        "Clan Side Hecklers / Omni Side Hecklers (160-190), East and West Adonis (SL)",
+        "Dark Ruins - Team (170-200), Adonis",
+        "Alappa (180-220), Penumbra West Side - full team (Faffy chart: 160-200)",
+        "The Reck: more Reck dailies (141-159), then Paradise Lost daily and Isle of the Dead (160-170)",
+        "Criminal hideout mob grinding (Faffy chart: 176-190)",
+        "Scheol quest track: 16x DM-XP from the Jobe Scientists questline and 10x from Knowledge of the Yuttos - get the Scheol garden key first (Faffy chart: 171+)",
+        "7x DM-XP from the Elysium Catacomb bosses (171-199)",
+        "Adonis Catacombs SL Elite Daily from 180",
+        "Phatmos and Friends (170-220), Inferno"
+      ],
+      "fight": "Adonis heckler teams, Dark Ruins team runs, Alappa, and the Scheol/Penumbra quest DM-XP.",
+      "classNotes": "THE BIG ONE: level 175 unlocks Augmented Mirror Shield MK I (223229) - Matter Creation 914 / Time & Space 880 - the first new self-reflect tier since the Total Mirror Shields. Also 165 Metal Barrage 203139 and Boost Fight (Team) 223193, 175 Swiss Cheese 203127 and Empowered Major Reflective Field 233018, 185 Clear Victim 223203 and Empowered Reactive Reflective Field 233020. The Hellspinner Shock Cannon upgrade path opens too: Boosted Hellspinner Shock Cannon (201940) needs level 175 and Assault Rifle 998, Augmented (201939) needs level 190 and Assault Rifle 1018 - both Soldier-only.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "190-200",
+      "where": [
+        "Penumbra Hecklers (180-220), Brink locations (SL)",
+        "Inferno Sided Missions (180-220), Cave of Enlightenment / Safe Hill",
+        "Inferno Garden Missions and Inferno Missions near Ergo (190-220)",
+        "Alappaa with a full team; Dark Ruins DOJA chip turn-in only from 186",
+        "Battlestations - runs during peak periods (Faffy chart: 151-200)",
+        "Penumbra: roll missions ~195-200 for Shadowbreed gear"
+      ],
+      "fight": "Penumbra hecklers and Inferno missions. Collect the Penumbra progression items and do the Cama Garden Key quest. Start banking Victory Points.",
+      "classNotes": "Level 195: Reinforce Fight (Team) 223195 (+88 team damage), Soldier Clip Junkie 203137 (Full Auto +120 - the best Full Auto buff you can get without a Nanodeck), Battery Fire 223227 (Heavy Weapons +120), Elude Me 223215 (detaunt -6080). Also in this band: the Perennium Blaster (246422-246427, Shadowlands, Soldier-only) becomes reachable at Assault Rifle 996 / Burst 747 / Full Auto 897 and it carries XPModifier +3, so getting it EARLY pays for itself in XP. FROOB CAP: free accounts stop at 200 with no SL/AI/LE, so this is the froob ceiling.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "200-210",
+      "where": [
+        "The 255 Incarnator (200-220), Inferno (SL)",
+        "Inferno Missions / New Inferno Missions (190-220), near Ergo - Faffy notes old Inferno missions are faster with a good team",
+        "Alappaa SL Elite Daily and DOJA chip (201-214)",
+        "Freelancers Inc when up; finish the day with daily / prisoner / DOJA / LotV / Battlestation dailies (Faffy chart: 201-220)",
+        "Prisoner dailies from 201",
+        "Dust Brigade 1 (Peacekeeper Constad) from level 205 - see soldier-endgame.json"
+      ],
+      "fight": "Inferno mobs and the daily stack. Register and start the Dust Brigade chain at 205 - DB1 is where the Soldier Nanodeck (270768) comes from.",
+      "classNotes": "Level 201: Remedy Inhibitor 267624 and Harmonizing Resonance Field 233022. Level 203: Augmented Mirror Shield MK II 223181. Level 205: Augment Fight (Team) 223197 and Gazump Fight (Team) 223199 (+99 / +107 team damage - the last two team-damage tiers), Distinct Victim 223205. Level 207: Reactive Resonance Field 233025, Keep Clear of Me 223217. PRIORITY: get the Soldier Nanodeck. Wearing it sets NanoFocusLevel bit 64, which is the only way to cast Art of War (+200 AR), Improved Soldier Clip Junkie (+180 Full Auto), Improved Total Focus (+125 to ten weapon skills), Total Combat Survival (+1200 Health), Improved Ranged Energy Weapon Mastery and Augmented Mirror Shield MK V. Six of your best nanos are simply unavailable without it.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "210-220",
+      "where": [
+        "Tuin (215-220), Sorrow Peninsula, Inferno (SL)",
+        "Inferno questlines - 4 different ones (Faffy chart: 211-220)",
+        "Penumbra quest: 13x DM-XP from the Xan Civilization questline (180-220)",
+        "Arid Rift (210-220), Outzone: Central Hub",
+        "LotV from 215; Battlestations for Victory Points",
+        "The full endgame raid list is in soldier-endgame.json"
+      ],
+      "fight": "Inferno questlines, Arid Rift, Neretva, and the endgame raid rotation. Finish the Dust Brigade chain (DB2, DB3).",
+      "classNotes": "Level 209 Intrusive Insult 229102. Level 211 Undeniable Victim 223207 and Unmistakable Victim 223209. Level 212: Augmented Mirror Shield MK III 223183 and Adaptive Resonance Field 233029. Level 214 Shake Off Me 223219. Level 219 Offensive Insult 229104 (taunt 15000) and Desist Me 223221 (detaunt -11000). Level 220: Augmented Mirror Shield MK IV 223185 - which additionally needs Specialization bit 4 - and Pre-Nullity Sphere 233033 (the top of the team reflect line, self +38 / team +30 reflect). Augmented Mirror Shield MK V 273400 has no level requirement at all but needs a worn Nanodeck. Gear checklist: Ofab Soldier set upgraded twice, Combined Commando's or Sharpshooter's, QL240+ Artillery symbiants, the Stellar Soldier Nanodeck chain, and ~84k Victory Points for the QL300 ring, the Special Edition Ofab Soldier Helmet (267379) and the Ofab back item.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "AI title levels 1-30 (AXP, a parallel track)",
+      "where": [
+        "Daily Alien Missions (1-220), Freelancer Office",
+        "Alien Mothership Missions (1-220), Outzone Staging Area",
+        "Alien City Raids / city defence (1-220), organisation cities",
+        "Alien playfields: Sector 7, Sector 10, Sector 13, Sector 28, Sector 35, Sector 42",
+        "Arid Rift (210-220), Outzone: Central Hub"
+      ],
+      "fight": "Alien mobs during city defence and mothership/sector runs. AXP is a separate bar from XP/SK; AI levels unlock perk points and Title Level gates. Requires the Alien Invasion expansion.",
+      "classNotes": "Two Soldier nanos are gated on TITLE LEVEL, not character level: Fragmentation Grenades 302395 needs TitleLevel > 3 (AI 4+) and Notum-Charged Grenades 302399 needs TitleLevel > 5 (AI 6+). Those are the Soldier's only offensive procs, so early AI levels pay off immediately. Title Level 6 is also the requirement on QL300 Combined armour and on several Soldier-only rings (Warrior's Signet of The Apocalypse 281207). City defence is the safest AXP for a class with no heal - you fight next to your own guards.",
+      "xpType": "AXP"
+    }
+  ],
+
+  "keyQuests": [
+    { "name": "Arete Landing ID card chain", "where": "Arete Landing", "reward": "Starter gear, credits and the first XP", "level": "1-9" },
+    { "name": "Condemned Subway / Abmouth Supremus", "where": "Instanced; entrances in Borealis, West Athen and Rome Stretch", "reward": "Ring of the Nucleus Basalis (202717, +50 Max NCU) - the single best early item for a buff-heavy Soldier", "level": "8-25" },
+    { "name": "Subway elite daily", "where": "Condemned Subway", "reward": "Daily XP and tokens (Faffy chart: 16-25)", "level": "16-25" },
+    { "name": "TotW access quest", "where": "Temple of Three Winds, Greater Tir County", "reward": "Entry to TotW - and you must do all TotW content before level 60, entry hard-locks after that", "level": "20-30" },
+    { "name": "TotW elite daily", "where": "Temple of Three Winds", "reward": "Daily XP (Faffy chart: from 26)", "level": "26-57" },
+    { "name": "TotW boss runs", "where": "Temple of Three Winds", "reward": "Boss loot; MUST be done at or below level 60", "level": "25-60" },
+    { "name": "Biomare elite daily", "where": "Biomare, Longest Road", "reward": "Daily XP - a gamma access card helps greatly (Faffy chart: from 61)", "level": "61-100" },
+    { "name": "Specialization 1 / 2 / 3 / 4", "where": "Spec 1 ~80-110, Spec 2 ~150, Spec 3 Adonis (group), Spec 4 endgame", "reward": "Specialization bits 1/2/4/8 - these are CAST REQUIREMENTS on most Soldier weapon nanos, the team damage line and the detaunts, so they are not optional", "level": "80-220" },
+    { "name": "Elysium quest track (Elmo Fitz, Ulf Reinhart, One Who Has Taken Vow of Truth x5, the Prophetess)", "where": "Elysium (SL)", "reward": "2x mini-XP, 1x DM-XP, 6x mini-XP + 4x DM-XP; do all before level 150", "level": "85-149" },
+    { "name": "Scheol quest track (Jobe Scientists, Knowledge of the Yuttos)", "where": "Scheol (SL)", "reward": "16x DM-XP and 10x DM-XP. Get the Scheol garden key first", "level": "171-220" },
+    { "name": "Penumbra: Xan Civilization questline", "where": "Penumbra (SL)", "reward": "13x DM-XP", "level": "180-220" },
+    { "name": "Cama Garden Key quest", "where": "Penumbra (SL)", "reward": "Penumbra garden hub travel and progression", "level": "190-200" },
+    { "name": "Galahad Garden Key quest", "where": "Inferno (SL)", "reward": "Inferno garden access - a safe staging point, which matters to a class with no heal", "level": "190+" },
+    { "name": "Inferno questlines (four of them)", "where": "Inferno (SL)", "reward": "Endgame XP and progression (Faffy chart: 211-220)", "level": "211-220" },
+    { "name": "Dust Brigade 1 - Peacekeeper Constad", "where": "Register first; full team with a tank and a doc", "reward": "SOLDIER NANODECK (270768) - the gate on six of the Soldier's best nanos. See soldier-endgame.json", "level": "205-220" },
+    { "name": "Arid Rift and Neretva Canyons", "where": "Outzone: Central Hub / Central Gateway", "reward": "Endgame XP, AXP and Xan Beta symbiant hand-ins", "level": "201-220" }
+  ],
+
+  "keys": [
+    { "name": "Subway access", "forWhat": "Enter the Condemned Subway", "how": "Instanced dungeon entered from Borealis, West Athen or Rome Stretch. Team BEFORE entering so you share one instance." },
+    { "name": "TotW access", "forWhat": "Enter the Temple of Three Winds", "how": "Complete the access quest. Hard gate: you cannot ENTER past level 60, so do every TotW boss before then." },
+    { "name": "Gamma access card", "forWhat": "Biomare elite daily", "how": "Faffy's chart notes it 'helps greatly' from level 61. How you get it is not recorded here - see _unverified." },
+    { "name": "Permanent Inner Sanctum key", "forWhat": "Inner Sanctum grinding (140-160) and the DS weekly", "how": "Faffy chart: get help from a level 220 to make you a permanent IS key, from around level 125." },
+    { "name": "Scheol garden key", "forWhat": "The Jobe Scientists and Knowledge of the Yuttos questlines", "how": "Faffy chart: get the Scheol garden key before attempting those questlines." },
+    { "name": "Cama Garden Key (Penumbra)", "forWhat": "Penumbra garden hub travel", "how": "Collect the Penumbra progression items and complete the Cama Garden Key quest at 190-200." },
+    { "name": "Galahad / Lord Mordeth Garden Keys (Inferno)", "forWhat": "Inferno garden access and staging", "how": "Inferno pocket-boss patterns; see soldier-endgame.json." },
+    { "name": "Hold Hell at Bay ring (231234)", "forWhat": "Surviving Pandemonium", "how": "Quest chain at 200-220; Nano Resist +700 and Run Speed +100, Title Level 6, Shadowlands. Verified in items.ocp. See soldier-endgame.json." },
+    { "name": "Ring of the Nucleus Basalis (202717)", "forWhat": "Not a door key, but the must-loot item of the early game", "how": "Drops from Abmouth Supremus in the Condemned Subway. +50 Max NCU for Treatment 1050." }
+  ],
+
+  "weaponLadder": {
+    "note": "Soldier-only Assault Rifles and Ranged Energy weapons from items.ocp, in wield order. Every requirement is the ToWield list of the top-QL template of that model. This is a ladder of TARGETS, not a claim that each is the best choice at that point - see soldier-weapons.json for the full picture.",
+    "steps": [
+      { "name": "Cheap Division 9 Plasmaprojector", "id": 163318, "ql": "1-49", "wield": "Assault Rifle 211, Ranged Energy 141, Burst 176", "professionLock": "Soldier only" },
+      { "name": "Division 9 Plasmaprojector", "id": 163320, "ql": "50-149", "wield": "Assault Rifle 632, Ranged Energy 422, Burst 527", "professionLock": "Soldier only", "note": "The classic froob Soldier gun; wiki.aodb.us/wiki/Soldier:Weapons lists it as the froob pick." },
+      { "name": "Hellfury Assault Cannon", "id": 153977, "ql": "80", "wield": "Assault Rifle 407, Burst 324, character level 71+", "professionLock": "none (the Boosted/Augmented upgrades ARE Soldier-only)" },
+      { "name": "Hellspinner Shock Cannon", "id": 153976, "ql": "84", "wield": "Assault Rifle 440, Burst 329, Full Auto 368, character level 71+", "professionLock": "none" },
+      { "name": "Fine Division 9 Plasmaprojector", "id": 163322, "ql": "150-199", "wield": "Assault Rifle 843, Ranged Energy 562, Burst 702", "professionLock": "Soldier only" },
+      { "name": "Boosted Hellspinner Shock Cannon", "id": 201940, "ql": "190", "wield": "Assault Rifle 998, Burst 494, Full Auto 511, character level 175+", "professionLock": "Soldier only", "noDrop": true },
+      { "name": "Augmented Hellspinner Shock Cannon", "id": 201939, "ql": "190", "wield": "Assault Rifle 1018, Burst 516, Full Auto 528, character level 190+", "professionLock": "Soldier only", "noDrop": true },
+      { "name": "Excellent Division 9 Plasmaprojector", "id": 163324, "ql": "200", "wield": "Assault Rifle 847, Ranged Energy 565, Burst 706", "professionLock": "Soldier only" },
+      { "name": "Perennium Blaster", "id": 246422, "ql": "50-199", "wield": "Assault Rifle 996, Burst 747, Full Auto 897; Shadowlands", "professionLock": "Soldier only", "why": "Carries XPModifier +3 as a worn bonus - it makes every kill worth more XP. Rebuilt Perennium Blaster (260700-260705) is the NODROP twin with the same requirements." },
+      { "name": "Superior Perennium Blaster", "id": 246428, "ql": "200", "wield": "Assault Rifle 1001, Burst 751, Full Auto 901; Shadowlands", "professionLock": "Soldier only", "why": "XPModifier +4. wiki.aodb.us/wiki/Soldier:Weapons calls the Rebuilt Perennium 'arguably the best assault rifle in game'." },
+      { "name": "Twice Augmented Hellspinner Shock Cannon", "id": 257124, "ql": "300", "wield": "Assault Rifle 1018, Burst 516, Full Auto 528, character level 201+", "professionLock": "Soldier only", "noDrop": true },
+      { "name": "Ofab Shark Mk 1 -> Mk 6  [id 265068 = Ofab Shark Mk 1]", "representativeId": 265068, "representativeName": "Ofab Shark Mk 1", "id": 265068, "ql": "up to 300", "wield": "Mk 6 QL300: Assault Rifle 2200, Burst 1650, Full Auto 1980", "professionLock": "none on the weapon itself", "why": "Bought with Victory Points at Mk 1 and upgraded to Mk 6 with Kyr'Ozch Bio-Material clumps. This is the endgame baseline - see soldier-endgame.json." },
+      { "name": "Amplified Kyr'Ozch Carbine - Type 5 / 12 / 13  [id 257144 = Amplified Kyr'Ozch Carbine - Type 5]", "representativeId": 257144, "representativeName": "Amplified Kyr'Ozch Carbine - Type 5", "id": 257144, "altIds": [257143, 257142], "ql": "300", "wield": "see soldier-weapons.json", "professionLock": "Soldier only", "why": "The alien-upgrade endgame Assault Rifles." }
+    ]
+  },
+
+  "froobVsPaid": "FROOB (free play = Classic Rubi-Ka + free Notum Wars): hard cap level 200, NO Shadowlands, NO Alien Invasion, NO Lost Eden. That is unusually painful for a Soldier because of what the client data shows is gated: EVERY tier of the weapon-buff family (A Sergeant's Knowledge, Art of Peace, the Metal Stream -> Soldier Clip Junkie Full Auto ladder, Alleysweeper -> Swiss Cheese, Artillery Fire -> Battery Fire, Power Volley -> The Power of Three) carries 'Expansion op22 2' AND a Specialization bit, so a froob Soldier cannot cast a single one of them. The whole 'Fight (Team)' team damage line is Shadowlands-only too, as is every 'Empowered' team reflect, every Augmented Mirror Shield, the Perennium Blaster and all of the Tier armour. A froob Soldier's buff kit is therefore: the Total Mirror Shield line (70300-70309), the Absorption Shield / Combat Barrier line (75401-75413, 29223), Assault Rifle Mastery 29220 (+60), Riot Control 29251 (+110 Burst), Rifle/Pistol/Ranged Energy Mastery, Total Focus 29255, Automatic Targeting 29222, Precognition 29247, Offensive Steamroller 29240 and the Body Boost -> Battlefield Endurance HP line. That is still a complete, functional class - a froob Soldier has 75% reflect from level 10 and the best AC buffs on Rubi-Ka - but it plateaus at Total Mirror Shield Mk X and never gets a Full Auto buff. Best froob gear: the Division 9 Plasmaprojector line (Soldier-only, no expansion gate) and Notum Infused Kevlar Armor (Soldier-only, level 180+, no expansion gate). PAID (SL) unlocks the heckler/garden highway, the entire weapon-buff family, the Empowered reflect line and levels 201-220. PAID (AI) adds the AXP track, the two procs (Title Level 4+ / 6+) and Combined armour. PAID (LE) adds research, Battlestations/Victory Points and the whole Ofab Soldier set.",
+
+  "tips": [
+    "Train Matter Creation and Time & Space alongside Assault Rifle, not after it. 102 of your 177 nanos check Matter Creation and 64 check Time & Space. A Soldier who only trains the gun has no reflect, and reflect is the class.",
+    "Total Mirror Shield Mk I costs almost nothing (MC 58 / TS 46) - have a 75% reflect running from single digits. Nothing else in the game gives a level-10 character that.",
+    "Expect a reflect plateau from about level 60 to 175: after Total Mirror Shield Mk X there is NO new self-reflect until Augmented Mirror Shield MK I at level 175. Bridge it with the Shadowlands Empowered line (which stacks, different strain) and with armour/Body Dev.",
+    "Body Dev. costs 1.1 for a Soldier - the second-cheapest skill in the whole 69-skill table and cheaper than for any profession except the Enforcer. Max it; the reflect layer is spread over that HP pool.",
+    "Pull ONE mob at a time. All 20 taunts and all 6 detaunts are single-target, and you cannot heal. A Soldier holds one target, not a camp.",
+    "Learn the detaunts as they unlock (Bypass Me 75, Circumvent Me 145, Elude Me 195, Keep Clear of Me 207, Shake Off Me 214, Desist Me 219). With no heal, shedding aggro IS your emergency button.",
+    "Buy the next Specialization as soon as it is available - Specialization bits 1/2/4/8 are literal cast requirements on the weapon buffs, the team damage line and the detaunts, not just a power bump.",
+    "Get a Perennium Blaster as early as your skills allow (Assault Rifle 996 / Burst 747 / Full Auto 897, Shadowlands, Soldier only). XPModifier +3 means it pays for the twinking effort in XP.",
+    "Do TotW completely before level 60 - entry hard-locks and several of the best low-level items are in there.",
+    "Loot the Ring of the Nucleus Basalis from Abmouth early. NCU is a real constraint for a Soldier: self reflect + team reflect + weapon buff + Full Auto buff + HP + damage + init all at once.",
+    "Get a Trader wrangle before every equip step. It raises the weapon skills (hold the next gun, cap the next special) and the nano skills (cast the next shield) in one cast - the single most efficient outside help a Soldier can get.",
+    "From 60 up, chase heckler teams. You bring a team reflect, a team AC buff (Phalanx, which stacks with everything) and a team damage buff - that makes a Soldier a wanted team member, not just a DPS slot.",
+    "At 205, drop everything and do Dust Brigade 1. The Soldier Nanodeck is worth more than any other single item in the game to this class - six of your best nanos do not exist without it.",
+    "Carry stims and first-aid kits at every level. Your entire heal kit is two DrainHeal nanos.",
+    "Grind AI levels in city defence: it is the safest AXP for a class with no heal, and Title Level 4 and 6 unlock your only two procs.",
+    "Faffy's chart trick for the 81-156 band: when you pull the 'Extraction' or 'A Contingent Spy' daily, grind the mobs inside it, respawning them by exiting and re-entering, and do NOT complete the mission until you are done for the day."
+  ],
+
+  "_coverage": {
+    "brackets": "14 (1-6 through 210-220, plus the AI/AXP track).",
+    "nanoGatesUsed": "Every 'at level N' claim in classNotes is the nano's own ToUse Level requirement from soldier-nanos.json. The complete list of level-gated Soldier nanos is: 15, 25 (x7), 45, 50 (x3), 75 (x4), 80, 100 (x4), 125 (x2), 130, 135, 145 (x2), 155 (x2), 165 (x2), 170, 175 (x3), 185 (x2), 195 (x4), 201 (x3), 203, 205 (x3), 207 (x2), 209, 211 (x2), 212 (x2), 213, 214, 219 (x2), 220 (x2).",
+    "spotSources": "Every level window is either Faffy's chart (exact column range) or the AODB Hunting Grounds level range for the named area. Where the two differ, both are given."
+  },
+
+  "_unverified": [
+    "Where the 'gamma access card' for the Biomare elite daily comes from is not recorded - Faffy's chart only says it 'helps greatly'.",
+    "Specialization 1/2/3/4 quest givers and exact locations were not confirmed on a page for this file; the level bands (~80-110, ~150, Adonis group quest, endgame) come from community progress guides. The Specialization BITS on each nano ARE from the client data and are exact.",
+    "The 'DOJA chip', 'mini XP', 'DM-XP' and 'LotV' shorthand is Faffy's chart's own terminology and is reproduced as-is. It is not expanded or interpreted here.",
+    "Faffy's chart is a froob-oriented guide ('Faffy's Anarchy Online Froob Guide'), so its Rubi-Ka windows are tuned for characters without expansions. The Shadowlands rows are present and used, but a paid Soldier will outrun several RK windows.",
+    "Token board / tokens, the Battlestation Victory Point rates and the exact 220 checklist numbers (84k VP, QL240+ symbiants) are carried from soldier-endgame.json, which cites the athenpaladins progress guide - they are community targets, not hard requirements.",
+    "Level windows from the AODB Hunting Grounds page and from Faffy's chart disagree by a few levels in several places (e.g. Dark Ruins Solo: AODB 160-180 vs Faffy 150-170). Both numbers are given rather than picking one.",
+    "No claim is made about which spot is FASTEST for a Soldier specifically - the spot windows are class-agnostic. The class-specific content in this file is the nano/weapon/armour gate timeline, which is exact.",
+    "The Hellfury / Hellspinner 'Boosted' and 'Augmented' upgrade steps are proven Soldier-only with level and skill requirements from items.ocp, but HOW you upgrade one (the tradeskill or quest) is not established here."
+  ],
+
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/soldier-nanos.json - 177 Soldier-castable nanos from nanos.ocp (client 18.8.50_EP1). Every level gate, Specialization bit and Expansion bit quoted in this file is a nano's own ToUse requirement.",
+    "LOCAL: E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp read with tools/eng-gear-extractor --prof 1 --wield - the weapon ladder's wield requirements, the profession locks, the NODROP flags and the XPModifier bonus on the Perennium Blaster family.",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows) - every id/name pair verified.",
+    "LOCAL: E:/Funcom/FAFFY'S LEVELLING GUIDE CHART/Chart.html - a published level-by-level chart (1-220) of where to grind, parsed column-by-column so each window is an exact level range. Rows used: Arete, Subway, TotW, Steps of Madness, Biomare, The Reck, Mort cyborgs, Inner Sanctum, RK missions, Misc., daily/elite-daily/BS/DS rows, Nascence grinding, Elysium grinding, Elysium quests, Scheol quests, Dark Ruins, Adonis hecklers, Penumbra quests, Alappaa, Inferno quests, New Inferno missions and SL Elite Daily.",
+    "http://wiki.aodb.us/wiki/Hunting_Grounds - every named hunting area with its level range and playfield (Arete Landing 1-10, Condemned Subway 8-20, Temple of Three Winds 20-60, Biomare 50-100, Mort Borgs 70-130, Core Hecklers 40-70, Chapel of Chants 60-75, Callous Mortiigs 85-105, South Beach/Port 7/North heckler runs 105-150, Whirling Rocks 135-160, Clan/Omni Side Hecklers 160-190, Dark Ruins Solo 160-180 / Team 170-200, Alappa 180-220, Penumbra Hecklers 180-220, Inferno Sided Missions 180-220, Tuin 215-220, The 255 Incarnator 200-220, and the alien rows).",
+    "LOCAL: sibling profiles soldier-build.json (skill cost factors: Assault Rifle / Ranged Init. / Fling Shot / Pistol / Ranged Energy / Heavy Weapons 1.0, Body Dev. 1.1, Burst / Full Auto / MG-SMG / Shotgun 1.5, Matter Creation 2.5, Time & Space 3.2), soldier-buffs.json (the nano-line stacking traps and the Nanodeck gate), soldier-endgame.json (the 200+ raid list, the Dust Brigade chain and the 220 checklist), soldier-gear.json and soldier-weapons.json.",
+    "http://wiki.aodb.us/wiki/Soldier:Weapons - weapon picks by bracket: Division 9 Plasmaprojector as the froob gun, the Rebuilt Perennium Blaster as 'arguably the best assault rifle in game', and the Ofab Shark Mk 1-6 line.",
+    "http://wiki.aodb.us/wiki/Soldier:Breed_and_Skills - 'Our main attack skill' (Assault Rifle), 'All Soldier guns rely on this initiative' (Ranged Init.), 'Our ultimate PvM special' (Full Auto).",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-13 (and 2/3) - implant and symbiant level milestones, reflect sequencing, and the criticism that Soldier add management is weaker than an Enforcer's.",
+    "NOT USED (block automation, per CLASS-PROFILE-PLAYBOOK section 4): auno.org, aoitems.com, anarchyonline.fandom.com."
+  ]
+}

@@ -1,0 +1,322 @@
+{
+  "profession": "Engineer",
+  "professionId": 3,
+  "slug": "engineer",
+  "symbiantUnitType": "Control",
+  "summary": "Level 1-220 (+ AI title levels 1-30 + LE research) leveling path, hunting spots, bot ladder and key quests for the Engineer (profession 3), written for AOBuddy10. The Engineer levels behind a ROBOT: every bot nano is a Profession(60)==3 nano whose ToUse action requires Matter Creation (stat 130) and Time & Space (stat 131) at (near-)equal values AND a Cash (stat 61) amount, and whose effect is 'Hit[61,-cost,-cost]' (a literal credit drain) plus SpawnItem[<shell>,<PET LEVEL>,0]. That second SpawnItem argument is the bot's LEVEL, which is how the ladder below is derived - every pet level here is read out of nanos.ocp, not guessed. The whole leveling identity is: summon the biggest bot you can control, send it in, shoot/grenade from behind it, repair it with the Pet Heals line, and re-summon when it dies. The signature Engineer trick is running a bot ABOVE your own nano skills using a Trader Wrangle and/or an MP's Mocham's Gift: you only need 80% of the casting requirement to keep the bot obeying you, so a buffed cast leaves you a bot you can still control after the buff drops. This file is a curated aggregation of LOCAL client data (bot ladder, nano ids, item ids, playfield names) plus reputable community sources for the route (see _sources); anything not cleanly cross-checked is in _unverified.",
+  "petMechanics": {
+    "castSkills": ["Matter Creation (stat 130)", "Time & Space (stat 131)"],
+    "castCost": "Every robot nano from 'Feeble Android' (45712) upward also carries a Cash (stat 61) requirement and drains exactly that many credits on summon (effect 'Hit[61,-cost,-cost,0]'). Range in the client data: 131 credits (Feeble Android) to 3694 credits (Ravening M-60, 275815). The eleven Automaton-line nanos (43325, 45692, 45710, 45704, 45718, 45724, 45737, 45676, 45731, 45698, 45681) carry NO cash requirement - the first bots are free.",
+    "controlThreshold": "You must keep buffed Matter Creation and Time & Space at 80% of the nano's casting requirement or the bot goes over-equipped: it drops to behind/follow state and refuses every order ('Illegal command. Master not recognised.'). Over-equip percentage = 100 - (buffed skill / requirement) x 100; 20 or higher = over-equipped. Source: AO-Universe Over-Equipped guide + AODB Engineer:Tips and Tricks.",
+    "overEquipTrick": "Cast the bot with a Trader Wrangle (and/or MP Mocham's Gift) up, then let the buff fade. Because control only needs 80% of the cast requirement, the bot keeps obeying. This is the core Engineer power curve at every bracket - AO-Universe's Engineer guide calls the difference between a self-cast bot and a Mocham's/Wrangle bot 'massive'.",
+    "range": "Bots stop fighting and return to you beyond roughly 50 metres (AO-Universe Engineer Guide MKIII).",
+    "commands": ["/pet guard (default: follows, attacks anything that attacks you)", "/pet follow", "/pet behind", "/pet wait (stops all action and clears its hate list - use this to hand aggro back in a team)", "/pet attack", "/pet terminate", "/pet report", "/pet rename"],
+    "startupCrystal": "Engineer: Startup Crystal - Feeble Automaton (item 43329) uploads nano 43325 'Feeble Automaton' (MC/TS 4, pet level 1). 'Engineer Robot Shell' (43328 / 46083) is the summoned shell item.",
+    "_source": "local: AOBuddy/GameData/profiles/engineer-nanos.json (from OmniCell Datafiles/nanos.ocp, names joined from itemnames.sql); Stat.cs Cash = 0x3D = 61."
+  },
+  "botLadder": {
+    "note": "Complete robot ladder read from engineer-nanos.json category 'Pets - Robot' (90 of 90 nanos enumerated). 'pet' = the level of the summoned bot (2nd argument of SpawnItem). 'mc'/'ts' = the Matter Creation / Time & Space values in the cast action. 'cash' = credits drained on summon. Only the Shadowlands entries carry an explicit character-Level requirement; the whole Rubi-Ka ladder is gated by nano skill alone, which is exactly why wrangling works.",
+    "rubiKa": [
+      {"family": "Automaton", "petLevels": "1-15", "mcTsRange": "4-88", "cash": "none", "nanos": [
+        {"id": 43325, "name": "Feeble Automaton", "pet": 1, "mc": 4, "ts": 4},
+        {"id": 45692, "name": "Patchwork Automaton", "pet": 2, "mc": 11, "ts": 11},
+        {"id": 45710, "name": "Lesser Automaton", "pet": 3, "mc": 18, "ts": 18},
+        {"id": 45704, "name": "Inferior Automaton", "pet": 4, "mc": 25, "ts": 25},
+        {"id": 45718, "name": "Flawed Automaton", "pet": 5, "mc": 32, "ts": 32},
+        {"id": 45724, "name": "Common Automaton", "pet": 6, "mc": 39, "ts": 39},
+        {"id": 45737, "name": "Automaton", "pet": 7, "mc": 46, "ts": 46},
+        {"id": 45676, "name": "Upgraded Automaton", "pet": 9, "mc": 57, "ts": 57},
+        {"id": 45731, "name": "Advanced Automaton", "pet": 11, "mc": 68, "ts": 68},
+        {"id": 45698, "name": "Perfected Automaton", "pet": 13, "mc": 78, "ts": 78},
+        {"id": 45681, "name": "Semi-Sentient Automaton", "pet": 15, "mc": 88, "ts": 88}
+      ]},
+      {"family": "Android", "petLevels": "17-43", "mcTsRange": "98-214", "cash": "131-339", "nanos": [
+        {"id": 45712, "name": "Feeble Android", "pet": 17, "mc": 98, "ts": 98, "cash": 131},
+        {"id": 45691, "name": "Patchwork Android", "pet": 19, "mc": 108, "ts": 108, "cash": 147},
+        {"id": 45709, "name": "Lesser Android", "pet": 21, "mc": 118, "ts": 118, "cash": 163},
+        {"id": 45703, "name": "Inferior Android", "pet": 23, "mc": 128, "ts": 128, "cash": 179},
+        {"id": 45717, "name": "Flawed Android", "pet": 25, "mc": 138, "ts": 138, "cash": 195},
+        {"id": 45723, "name": "Common Android", "pet": 28, "mc": 153, "ts": 153, "cash": 219},
+        {"id": 45736, "name": "Android", "pet": 31, "mc": 166, "ts": 166, "cash": 243},
+        {"id": 45675, "name": "Upgraded Android", "pet": 34, "mc": 178, "ts": 178, "cash": 267},
+        {"id": 45730, "name": "Advanced Android", "pet": 37, "mc": 190, "ts": 190, "cash": 291},
+        {"id": 45697, "name": "Perfected Android", "pet": 40, "mc": 202, "ts": 202, "cash": 315},
+        {"id": 45680, "name": "Semi-Sentient Android", "pet": 43, "mc": 214, "ts": 214, "cash": 339}
+      ]},
+      {"family": "Gladiatorbot", "petLevels": "46-76", "mcTsRange": "229-403", "cash": "363-603", "nanos": [
+        {"id": 45713, "name": "Feeble Gladiatorbot", "pet": 46, "mc": 229, "ts": 229, "cash": 363},
+        {"id": 45693, "name": "Patchwork Gladiatorbot", "pet": 49, "mc": 245, "ts": 245, "cash": 387},
+        {"id": 45711, "name": "Lesser Gladiatorbot", "pet": 52, "mc": 261, "ts": 261, "cash": 411},
+        {"id": 45705, "name": "Inferior Gladiatorbot", "pet": 55, "mc": 277, "ts": 277, "cash": 435},
+        {"id": 45719, "name": "Flawed Gladiatorbot", "pet": 58, "mc": 295, "ts": 295, "cash": 459},
+        {"id": 45725, "name": "Common Gladiatorbot", "pet": 61, "mc": 313, "ts": 313, "cash": 483},
+        {"id": 45701, "name": "Gladiatorbot", "pet": 64, "mc": 331, "ts": 331, "cash": 507},
+        {"id": 45664, "name": "Upgraded Gladiatorbot", "pet": 67, "mc": 349, "ts": 349, "cash": 531},
+        {"id": 45732, "name": "Advanced Gladiatorbot", "pet": 70, "mc": 367, "ts": 367, "cash": 555},
+        {"id": 45699, "name": "Perfected Gladiatorbot", "pet": 73, "mc": 385, "ts": 385, "cash": 579},
+        {"id": 45682, "name": "Semi-Sentient Gladiatorbot", "pet": 76, "mc": 403, "ts": 403, "cash": 603}
+      ]},
+      {"family": "Guardbot", "petLevels": "79-109", "mcTsRange": "418-568", "cash": "627-867", "nanos": [
+        {"id": 45714, "name": "Feeble Guardbot", "pet": 79, "mc": 418, "ts": 418, "cash": 627},
+        {"id": 45694, "name": "Patchwork Guardbot", "pet": 82, "mc": 433, "ts": 433, "cash": 651},
+        {"id": 45686, "name": "Lesser Guardbot", "pet": 85, "mc": 448, "ts": 448, "cash": 675},
+        {"id": 45706, "name": "Inferior Guardbot", "pet": 88, "mc": 463, "ts": 463, "cash": 699},
+        {"id": 45720, "name": "Flawed Guardbot", "pet": 91, "mc": 478, "ts": 478, "cash": 723},
+        {"id": 45726, "name": "Common Guardbot", "pet": 94, "mc": 493, "ts": 493, "cash": 747},
+        {"id": 45702, "name": "Guardbot", "pet": 97, "mc": 508, "ts": 508, "cash": 771},
+        {"id": 45665, "name": "Upgraded Guardbot", "pet": 100, "mc": 523, "ts": 523, "cash": 795},
+        {"id": 45733, "name": "Advanced Guardbot", "pet": 103, "mc": 538, "ts": 538, "cash": 819},
+        {"id": 45700, "name": "Perfected Guardbot", "pet": 106, "mc": 553, "ts": 553, "cash": 843},
+        {"id": 45683, "name": "Semi-Sentient Guardbot", "pet": 109, "mc": 568, "ts": 568, "cash": 867}
+      ]},
+      {"family": "Warbot", "petLevels": "112-145", "mcTsRange": "583-710", "cash": "891-1155", "nanos": [
+        {"id": 45715, "name": "Feeble Warbot", "pet": 112, "mc": 583, "ts": 583, "cash": 891},
+        {"id": 45695, "name": "Patchwork Warbot", "pet": 115, "mc": 595, "ts": 595, "cash": 915},
+        {"id": 45687, "name": "Lesser Warbot", "pet": 118, "mc": 607, "ts": 607, "cash": 939},
+        {"id": 45707, "name": "Inferior Warbot", "pet": 121, "mc": 619, "ts": 619, "cash": 963},
+        {"id": 45721, "name": "Flawed Warbot", "pet": 124, "mc": 631, "ts": 631, "cash": 987},
+        {"id": 45727, "name": "Common Warbot", "pet": 127, "mc": 643, "ts": 643, "cash": 1011},
+        {"id": 45668, "name": "Warbot", "pet": 130, "mc": 655, "ts": 655, "cash": 1035},
+        {"id": 45666, "name": "Upgraded Warbot", "pet": 133, "mc": 667, "ts": 667, "cash": 1059},
+        {"id": 45734, "name": "Advanced Warbot", "pet": 136, "mc": 679, "ts": 679, "cash": 1083},
+        {"id": 45677, "name": "Perfected Warbot", "pet": 139, "mc": 691, "ts": 691, "cash": 1107},
+        {"id": 45684, "name": "Semi-Sentient Warbot", "pet": 142, "mc": 701, "ts": 701, "cash": 1131},
+        {"id": 45689, "name": "Military-Grade Warbot", "pet": 145, "mc": 710, "ts": 710, "cash": 1155}
+      ]},
+      {"family": "Warmachine", "petLevels": "148-181", "mcTsRange": "719-818", "cash": "1179-1443", "nanos": [
+        {"id": 45716, "name": "Feeble Warmachine", "pet": 148, "mc": 719, "ts": 719, "cash": 1179},
+        {"id": 45696, "name": "Patchwork Warmachine", "pet": 151, "mc": 728, "ts": 728, "cash": 1204},
+        {"id": 45688, "name": "Lesser Warmachine", "pet": 154, "mc": 737, "ts": 737, "cash": 1227},
+        {"id": 45708, "name": "Inferior Warmachine", "pet": 157, "mc": 746, "ts": 746, "cash": 1251},
+        {"id": 45722, "name": "Flawed Warmachine", "pet": 160, "mc": 755, "ts": 755, "cash": 1275},
+        {"id": 45728, "name": "Common Warmachine", "pet": 163, "mc": 764, "ts": 764, "cash": 1299},
+        {"id": 45669, "name": "Warmachine", "pet": 166, "mc": 773, "ts": 773, "cash": 1323},
+        {"id": 45667, "name": "Upgraded Warmachine", "pet": 169, "mc": 782, "ts": 782, "cash": 1347},
+        {"id": 45735, "name": "Advanced Warmachine", "pet": 172, "mc": 791, "ts": 791, "cash": 1371},
+        {"id": 45678, "name": "Perfected Warmachine", "pet": 175, "mc": 800, "ts": 800, "cash": 1395},
+        {"id": 45670, "name": "Semi-Sentient Warmachine", "pet": 178, "mc": 809, "ts": 809, "cash": 1419},
+        {"id": 45690, "name": "Military-Grade Warmachine", "pet": 181, "mc": 818, "ts": 818, "cash": 1443}
+      ]},
+      {"family": "Wardroid", "petLevels": "184-190", "mcTsRange": "826-844", "cash": "1467-1515", "nanos": [
+        {"id": 45729, "name": "Decommissioned Wardroid", "pet": 184, "mc": 826, "ts": 826, "cash": 1467},
+        {"id": 45679, "name": "Reactivated Wardroid", "pet": 187, "mc": 835, "ts": 835, "cash": 1492},
+        {"id": 45685, "name": "Semi-Sentient Wardroid", "pet": 190, "mc": 844, "ts": 844, "cash": 1515}
+      ]},
+      {"family": "Slayerdroid", "petLevels": "193-200", "mcTsRange": "852-873", "cash": "1539-1595", "nanos": [
+        {"id": 45672, "name": "Slayerdroid Protector", "pet": 193, "mc": 852, "ts": 852, "cash": 1539},
+        {"id": 45674, "name": "Slayerdroid Warden", "pet": 196, "mc": 861, "ts": 861, "cash": 1563},
+        {"id": 45673, "name": "Slayerdroid Sentinel", "pet": 198, "mc": 867, "ts": 867, "cash": 1579},
+        {"id": 45671, "name": "Slayerdroid Guardian", "pet": 200, "mc": 873, "ts": 873, "cash": 1595}
+      ]}
+    ],
+    "shadowlandsAndEndgame": [
+      {"id": 223325, "name": "Prototype Predator M-30", "pet": 100, "mc": 687, "ts": 687, "cash": 1592, "charLevel": 100, "gates": "Expansion BitAnd 2 (Shadowlands), Specialization BitAnd 2"},
+      {"id": 301855, "name": "Predator M-30", "pet": 150, "mc": 889, "ts": 889, "cash": 2591, "charLevel": 150, "gates": "Expansion BitAnd 2, Specialization BitAnd 2"},
+      {"id": 223327, "name": "Upgraded Predator M-30", "pet": 175, "mc": 1086, "ts": 1086, "cash": 2872, "charLevel": 175, "gates": "Expansion BitAnd 2, Specialization BitAnd 4"},
+      {"id": 223313, "name": "Slayerdroid Annihilator", "pet": 201, "mc": 1095, "ts": 1094, "cash": 3208, "charLevel": 175, "gates": "Expansion BitAnd 2, Specialization BitAnd 4"},
+      {"id": 223329, "name": "Advanced Predator M-30", "pet": 203, "mc": 1284, "ts": 1284, "cash": 3240, "charLevel": 203, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223315, "name": "Devastator Drone", "pet": 205, "mc": 1254, "ts": 1249, "cash": 3272, "charLevel": 205, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223331, "name": "Semi-Sentient Predator M-30", "pet": 207, "mc": 1463, "ts": 1462, "cash": 3304, "charLevel": 207, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223317, "name": "Battlefield Devastator Drone", "pet": 209, "mc": 1403, "ts": 1400, "cash": 3336, "charLevel": 209, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223333, "name": "Military-Grade Predator M-30", "pet": 211, "mc": 1642, "ts": 1640, "cash": 3368, "charLevel": 211, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223319, "name": "Fieldsweeper Devastator Drone", "pet": 213, "mc": 1582, "ts": 1578, "cash": 3400, "charLevel": 213, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223335, "name": "Marauder M-45", "pet": 215, "mc": 1721, "ts": 1718, "cash": 3432, "charLevel": 215, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223321, "name": "Desolator Assault Drone", "pet": 217, "mc": 1762, "ts": 1756, "cash": 3464, "charLevel": 217, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223337, "name": "Military-Grade Marauder M-45", "pet": 219, "mc": 1850, "ts": 1846, "cash": 3496, "charLevel": 219, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 223323, "name": "Widowmaker Battle Drone", "pet": 220, "mc": 1895, "ts": 1890, "cash": 3512, "charLevel": 220, "gates": "Expansion BitAnd 2, Specialization BitAnd 8"},
+      {"id": 275815, "name": "Ravening M-60", "pet": 220, "mc": 1959, "ts": 1957, "cash": 3694, "charLevel": "none in data", "gates": "NanoFocusLevel BitAnd 64 (no Expansion or Specialization requirement in the data)"}
+    ]
+  },
+  "brackets": [
+    {
+      "levelRange": "1-6",
+      "where": ["Arete Landing (1-10)", "The Old Backyards (1-10) - reachable from Borealis / Newland City / West Athen / Rome", "ICC Shuttleport / newbie island free-gear quests", "Newland City area (5-15)"],
+      "fight": "Rookie leets, rollerrats and the backyard grinder mobs. Do every free newbie quest for the NCU belt, backpack and starter tokens. Buy or roll the cheapest QL1-20 pistol or grenade launcher - your own damage barely matters yet.",
+      "petNotes": "Upload 'Engineer: Startup Crystal - Feeble Automaton' (item 43329 -> nano 43325) immediately. Climb the free, cash-free Automaton line as fast as MC/TS allow: Feeble (43325, pet 1, MC/TS 4) -> Patchwork (45692, pet 2, 11) -> Lesser (45710, pet 3, 18) -> Inferior (45704, pet 4, 25) -> Flawed (45718, pet 5, 32) -> Common Automaton (45724, pet 6, 39). Leave the bot on /pet guard so it aggros for you. IP goes into Matter Creation and Time & Space above everything else.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "6-15",
+      "where": ["Condemned Subway (8-20) - instanced; entrances in Borealis / West Athen / Rome Stretch; team BEFORE entering so you share one instance", "Newland City area (5-15)", "RK newbie / team missions from mission terminals"],
+      "fight": "Subway trash, then the boss Abmouth Supremus in a team for the Ring of the Nucleus Basalis (202717/202718), Belt of Justice and Juggler's Treat. Roll low-QL missions for credits - from level ~17 every bot summon costs money.",
+      "petNotes": "Automaton (45737, pet 7, MC/TS 46) -> Upgraded (45676, pet 9, 57) -> Advanced (45731, pet 11, 68) -> Perfected (45698, pet 13, 78) -> Semi-Sentient Automaton (45681, pet 15, 88). Subway corridors are ideal: send the bot into a pull, stand back at the doorway, shoot. Learn /pet wait now - it clears the bot's hate list and is what makes you welcome in a team.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "15-25",
+      "where": ["Condemned Subway (8-20) - finish it and farm the Abmouth ring", "Oasis (15-25), Newland Desert", "The Pipes (20-30), Lush Fields", "RK team missions pulled to your level", "Newland / Borealis shops for QL30-ish implants and NCU"],
+      "fight": "Subway bosses, Oasis mobs and mission mobs. Buy your first implant set - Matter Creation and Time & Space in every slot that carries them, Intelligence everywhere else it fits.",
+      "petNotes": "First CASH bots: Feeble Android (45712, pet 17, MC/TS 98, 131cr) -> Patchwork (45691, pet 19) -> Lesser (45709, pet 21) -> Inferior (45703, pet 23) -> Flawed Android (45717, pet 25, MC/TS 138, 195cr). Keep a few thousand credits on you or you cannot re-summon after a death. This is where a Wrangle first pays: a wrangled Flawed Android at level 19-20 out-tanks anything in the Subway.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "25-40",
+      "where": ["Temple of Three Winds (20-60), Greater Tir County - unlock via Windcaller Karrec at ICC HQ (Bronto Burger + Maddy Cardile credit card), then the portal", "Rhinoman Cockpit (25-40), Newland Desert", "The Pipes (20-30), Lush Fields", "RK team missions"],
+      "fight": "TOTW trash and mini-bosses (Guardian of Tomorrow, the Curator for Notum Rings of Three, Lien the Memorystalker for NCU memory, Neleb the Deranged). Neleb drops Neleb's Nano-circuit Robe (151895) - the classic cheap MC/TS twink robe for an Engineer; farm it. Research composite nanos at 25.",
+      "petNotes": "Common Android (45723, pet 28, MC/TS 153) -> Android (45736, pet 31, 166) -> Upgraded (45675, pet 34, 178) -> Advanced Android (45730, pet 37, 190). Put Neleb's robe on and immediately re-cast one step higher. The bot tanks the corridor while you grenade/pistol from the doorway; use the Pet Heals line (Quick Fix 116793, Patchy Repairs 116794, Recondition Parts 116797) rather than letting it die.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "40-60",
+      "where": ["Temple of Three Winds (20-60), Greater Tir County - LAST CHANCE, you cannot ENTER past level 60", "Virus Builders (40-60), Pleasant Meadows", "Biomare (50-100), The Longest Road - the Lab Director boss", "Bot Hackers (50-90), Pleasant Meadows", "Nascense Wilds / Two Mountains / Steppe of Despair heckler runs (40-70), Nascence (SL)", "RK team missions at higher QL"],
+      "fight": "TOTW big bosses in a team: Uklesh the Frozen, Khalum, Aztur the Immortal. Loot everything you will want later - the dungeon hard-locks at 60. Biomare is the classic 50-100 RK dungeon. Push to QL100+ implants.",
+      "petNotes": "Perfected Android (45697, pet 40, MC/TS 202) -> Semi-Sentient Android (45680, pet 43, 214) -> the Gladiatorbot family opens at MC/TS 229: Feeble (45713, pet 46) -> Patchwork (45693, pet 49) -> Lesser (45711, pet 52) -> Inferior (45705, pet 55) -> Flawed (45719, pet 58) -> Common Gladiatorbot (45725, pet 61, MC/TS 313). Gladiatorbots are the first bots that genuinely tank for a team. Start carrying trimmers (Positive Aggressive-Defensive from shops; Increase Aggressiveness is tradeskilled): agg/def at 100% makes the bot attack faster, the aggressiveness trimmer makes mobs stick to it.",
+      "xpType": "XP"
+    },
+    {
+      "levelRange": "60-80",
+      "where": ["Core Hecklers / Two Mountains Hecklers / Steppe of Despair heckler run (40-70), Nascence (SL)", "Chapel of Chants (60-75), Elysium (SL)", "Whispervale Spiders (67-100), Spiderdust Grove, Elysium (SL)", "Biomare (50-100), The Longest Road (froob-friendly)", "Bot Hackers (50-90), Pleasant Meadows (froob-friendly)", "Mort Borgs (70-130), Mort Crater", "The Reck (Broken Shores) - Entvined and the Bog Golems"],
+      "fight": "Heckler teams are the fastest SK in the game from here on, and Engineers are wanted in them (bot damage plus the team AC aura). Froob path stays on Rubi-Ka: Biomare, Bot Hackers, borg camps, The Reck, missions. Install QL125 implants and your first low symbiants.",
+      "petNotes": "Gladiatorbot (45701, pet 64, MC/TS 331) -> Upgraded (45664, pet 67) -> Advanced (45732, pet 70) -> Perfected (45699, pet 73) -> Semi-Sentient Gladiatorbot (45682, pet 76, MC/TS 403), then Feeble Guardbot (45714, pet 79, MC/TS 418). Start running a team aura: the EngineerAuras strain 227 'Sympathetic ...' line (154550-154567) is a whole-team AC / reflect / damage-shield buff and is a large part of why a heckler team takes an Engineer. Keep the pet-heal line current (Rebuild Casing 116792, Intricate Repairs 116795).",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "80-110",
+      "where": ["Callous Mortiigs (85-105), Cape Callous, Elysium (SL)", "Coldrock Spiders (74-100), Whitepass, Elysium (SL)", "Port 7 Devs (90-105), Outer Isles, Elysium (SL)", "South Beach / Port 7 heckler runs (105-150), Outer Isles / The Brink, Elysium (SL)", "Biomare (50-100), The Longest Road", "Mort Borgs (70-130), Mort Crater (froob path)", "RK missions (froob path)"],
+      "fight": "Elysium camps and heckler runs. Complete Specialization 1. Work toward QL200 implants and 110+ symbiants - the Engineer wears the CONTROL symbiant unit line (verified from the ToWear profession lock in items.ocp: Control = Engineer / Trader / Bureaucrat / Meta-Physicist).",
+      "petNotes": "Guardbot family: Patchwork (45694, pet 82, MC/TS 433) -> Lesser (45686, pet 85) -> Inferior (45706, pet 88) -> Flawed (45720, pet 91) -> Common (45726, pet 94) -> Guardbot (45702, pet 97, MC/TS 508) -> Upgraded Guardbot (45665, pet 100, 523) -> Advanced (45733, pet 103) -> Perfected (45700, pet 106) -> Semi-Sentient Guardbot (45683, pet 109, MC/TS 568). If you own Shadowlands AND have Specialization 2, 'Prototype Predator M-30' (223325) unlocks at character level 100 for MC/TS 687 - a separate SL bot family, not a straight upgrade, so test both. Start using the Pet Buffs line (Assist / Monitor / Enhance Combat Array 205229 / 205231 / 205233 and up) for flat AddAllOff / AddAllDef on the bot.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "110-130",
+      "where": ["South Beach / Port 7 / North heckler runs (105-150), Elysium (SL)", "Upper / Lower Scheol (SL; enterable at 80)", "Mort Borgs (70-130), Mort Crater", "PW Base Borgs (130+), The Perpetual Wastelands", "Cyborg missions and RK team missions (froob path)"],
+      "fight": "Elysium and Scheol mobs, cyborg camps on the RK side. Complete the Elysium key quest. Accumulate ~400 tokens on the token board. Keep Computer Literacy up for NCU - the aura, bot buffs and self buffs all sit in NCU at once.",
+      "petNotes": "Warbot family opens at MC/TS 583: Feeble (45715, pet 112) -> Patchwork (45695, pet 115) -> Lesser (45687, pet 118) -> Inferior (45707, pet 121) -> Flawed (45721, pet 124) -> Common (45727, pet 127) -> Warbot (45668, pet 130, MC/TS 655). This is the bracket where a wrangled Engineer solos camps a team is grinding: park the Warbot on a spawn point, keep the aura up, repair between pulls with the Energize Shell / Conductive Spike line (203869 / 203871 / 203873, 203861 / 203863 / 203865) which also strips the pet root and snare strains 145/146.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "130-160",
+      "where": ["Whirling Rocks (135-160), The Hourglass, Adonis (SL)", "North heckler run (115-150), The Brink, Elysium (SL)", "Dark Ruins - Solo (160-180) approach, Adonis (SL)", "PW Base Borgs (130+), The Perpetual Wastelands", "Battle Station and alien / city dailies (LE + AI)"],
+      "fight": "Elysium and Adonis hecklers for heavy SK. Complete Specialization 2 around 150. Target QL170-200 Control symbiants. Stop around 150 and redo your implant/symbiant set - the jump in MC/TS is worth more than the levels.",
+      "petNotes": "Warbot into Warmachine: Upgraded Warbot (45666, pet 133, MC/TS 667) -> Advanced (45734, pet 136) -> Perfected (45677, pet 139) -> Semi-Sentient (45684, pet 142) -> Military-Grade Warbot (45689, pet 145, MC/TS 710) -> Feeble Warmachine (45716, pet 148, 719) -> Patchwork (45696, pet 151) -> Lesser (45688, pet 154) -> Inferior Warmachine (45708, pet 157, MC/TS 746). With Shadowlands + Specialization 2, 'Predator M-30' (301855, pet 150, MC/TS 889) unlocks at character level 150. From here the top of the ladder is a pure nano-skill race - every point of MC/TS is a bigger bot.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "160-190",
+      "where": ["Clan Side Hecklers (160-190), East Adonis (SL)", "Omni Side Hecklers (160-190), West Adonis (SL)", "Dark Ruins - Solo (160-180) and Dark Ruins - Team (170-200), Adonis (SL)", "Phatmos and Friends (170-220), Inferno (SL)", "Alappa (180-220), Penumbra West Side (SL)", "Penumbra Hecklers (180-220), Brink locations (SL)"],
+      "fight": "Adonis hecklers and Dark Ruins are the staple 160-200 grind; Dark Ruins Solo is especially good for an Engineer because the bot is a full tank. Complete the Adonis quest for Specialization 3 (needs group help). Pick up alien armor mats. Target 1000+ tokens by 190.",
+      "petNotes": "Warmachine into Wardroid: Flawed Warmachine (45722, pet 160, MC/TS 755) -> Common (45728, pet 163) -> Warmachine (45669, pet 166) -> Upgraded (45667, pet 169) -> Advanced (45735, pet 172) -> Perfected (45678, pet 175) -> Semi-Sentient (45670, pet 178) -> Military-Grade Warmachine (45690, pet 181, MC/TS 818) -> Decommissioned Wardroid (45729, pet 184, 826) -> Reactivated Wardroid (45679, pet 187, 835) -> Semi-Sentient Wardroid (45685, pet 190, MC/TS 844). With SL + Specialization 3 at character level 175 you also unlock 'Upgraded Predator M-30' (223327, pet 175, MC/TS 1086) and 'Slayerdroid Annihilator' (223313, pet 201, MC/TS 1095) - the Annihilator is the single biggest jump on the ladder and is worth wrangling hard for. Add the team blockers: Sloughing Protective Field (204418, level 75) / Sloughing Shielding Field (204420, level 135) absorb special attacks for the whole team.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "190-200",
+      "where": ["Penumbra Hecklers (180-220), Brink locations (SL)", "Alappa (180-220), Penumbra West Side (SL)", "Inferno Sided Missions (180-220), Cave of Enlightenment / dungeon near Safe Hill (SL)", "Inferno Garden Missions (190-220) and Inferno Missions near Ergo (190-220)", "Battle Station for Victory Points", "FROOB PATH: Smuggler's Den, The Reck, PW borgs, RK missions"],
+      "fight": "Penumbra progression (Ravine fragments and Insignia of Vanya for the Cama Garden key), the Penumbra PF run, then Inferno missions. Gather VP for the Ofab Engineer set. FROOB CEILING: free accounts stop at 200 and never see any of the SL content above.",
+      "petNotes": "The Slayerdroid family closes out the Rubi-Ka ladder: Slayerdroid Protector (45672, pet 193, MC/TS 852) -> Warden (45674, pet 196, 861) -> Sentinel (45673, pet 198, 867) -> Slayerdroid Guardian (45671, pet 200, MC/TS 873, 1595cr). That is the best bot a FROOB Engineer will ever run, and it needs no expansion and no character level - only nano skill - so a twinked froob can hold it long before level 200. Paid accounts should already be on Slayerdroid Annihilator (223313).",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "200-210",
+      "where": ["The 255 Incarnator (200-220), Inferno (SL)", "Inferno Missions / New Inferno Missions (190-220), near Ergo", "Inferno Garden Missions (190-220)", "Alliance / org raids", "Battle Station, city and alien dailies"],
+      "fight": "Inferno mobs and Alliance raids. Buy and upgrade the Ofab Engineer set with VP (Ofab -> Improved -> Penultimate). Push LE research to L9 and Alien Levels 24+. Get a +10 Pandemonium access ring.",
+      "petNotes": "Character-level-gated SL bots now land every two levels: Advanced Predator M-30 (223329, char 203, MC/TS 1284) and Devastator Drone (223315, char 205, MC/TS 1254) - both need Shadowlands (Expansion bit 2) and Specialization BitAnd 8. Queue Semi-Sentient Predator M-30 (223331, char 207) and Battlefield Devastator Drone (223317, char 209) as you hit the level. At this tier you are re-casting under Wrangle + Mocham's; check /oe after every buff drop.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "210-220",
+      "where": ["Tuin (215-220), Inferno Frontier (SL)", "The 255 Incarnator (200-220), Inferno", "Inferno Missions / New Inferno Missions (190-220)", "Arid Rift (210-220), Outzone: Central Hub (AI)", "Battle Station runs", "Alliance raids: Pandemonium, The Xan, APF, Dust Brigade"],
+      "fight": "Solo Inferno regulars with the bot tanking; run the Dust Brigade chain (register first), Arid Rift and Neretva Canyon. Reach Alien Level 26+. Accumulate 2500+ tokens for APF loot and VP for the Special Edition Ofab Engineer Helmet (267369), OFAB Engineer Protective Gear (267936) and OFAB Engineer Shoulder Wear (268003). Upgrade to QL240+ Control symbiants.",
+      "petNotes": "Top of the ladder, in character-level order: Military-Grade Predator M-30 (223333, char 211, MC/TS 1642) -> Fieldsweeper Devastator Drone (223319, char 213, 1582) -> Marauder M-45 (223335, char 215, 1721) -> Desolator Assault Drone (223321, char 217, 1762) -> Military-Grade Marauder M-45 (223337, char 219, 1850) -> Widowmaker Battle Drone (223323, char 220, MC/TS 1895) and Ravening M-60 (275815, pet 220, MC/TS 1959, gated on NanoFocusLevel BitAnd 64 instead of Expansion/Specialization). Also drop the Jamming Tower (274369, crystal 274372) - MC/TS only 19, so it is castable at any level and is free utility. Keep the top blocker up (Isochronal Sloughing Assault Shield 223311, level 218; team version Isochronal Sloughing Combat Field 237273, level 212) and one aura running at all times.",
+      "xpType": "SK"
+    },
+    {
+      "levelRange": "AI title levels 1-30 (AXP, parallel track)",
+      "where": ["Daily Alien Missions (1-220), Freelancer Office", "Alien Missions / Mothership (1-220), Outzone Staging Area", "Alien City Raids / Defense (1-220), organization cities", "Arid Rift (210-220), Outzone: Central Hub", "Alien playfields Sector 7 / 10 / 13 / 28 / 35"],
+      "fight": "Alien mobs during city raids and mothership / sector runs. AXP is a SEPARATE bar from XP/SK; AI levels unlock perks and title-level gates. Requires the Alien Invasion expansion - not available to froobs.",
+      "petNotes": "City defense is the safest AXP an Engineer can farm: the bot tanks the alien attackers, your team aura covers the defenders, and you never have to move. Bring a Sympathetic aura and a blocker. Aim for AL24-26+ by 210-220 for the perk lines and gear requirements.",
+      "xpType": "AXP"
+    }
+  ],
+  "keyQuests": [
+    {"name": "Newbie yard / Arete free-gear quests", "where": "Arete Landing, ICC Shuttleport, The Old Backyards", "reward": "NCU belt, backpack, starter NCU and tokens", "level": "1-10"},
+    {"name": "Engineer startup crystal", "where": "Given at character creation / newbie trainer", "reward": "Engineer: Startup Crystal - Feeble Automaton (item 43329) -> nano 43325, your first bot", "level": "1"},
+    {"name": "Condemned Subway / Abmouth Supremus", "where": "Condemned Subway (instanced; entrances from Borealis / West Athen / Rome Stretch)", "reward": "Ring of the Nucleus Basalis (202717 / 202718, upgradeable NCU ring; Superior version 305028), Belt of Justice, Juggler's Treat", "level": "8-25"},
+    {"name": "TOTW access quest (Windcaller Karrec)", "where": "ICC HQ, Andromeda - Bronto Burger from the Annoying Dude + credit card from Maddy Cardile", "reward": "Portal access to the Temple of Three Winds", "level": "20-30"},
+    {"name": "Neleb the Deranged (TOTW)", "where": "Temple of Three Winds, Greater Tir County", "reward": "Neleb's Nano-circuit Robe (151895) - the classic cheap Matter Creation / Time & Space twink robe for an Engineer; also Neleb's Notum Battlerod (152026)", "level": "25-60"},
+    {"name": "TOTW boss runs (Uklesh, Khalum, Aztur, Guardian of Tomorrow, the Curator, Lien)", "where": "Temple of Three Winds - MUST be done at or below level 60 (you cannot ENTER past 60)", "reward": "Notum Rings of Three, NCU memory, robe tiers, Guardian Tank Armor, Stygian Desolator, Purifying Rod", "level": "25-60"},
+    {"name": "Biomare / the Lab Director", "where": "Biomare (50-100), The Longest Road", "reward": "Mid-level armor and weapon drops; a standard 50-100 RK dungeon that an Engineer can carry because the bot is a full tank", "level": "50-100"},
+    {"name": "Aban Garden Key quest", "where": "Nascence (SL; client spells the playfields 'Nascense') - collect Insignias of Aban", "reward": "Free travel between the Nascence Redeemed transit statues", "level": "10-60"},
+    {"name": "Elysium key quest", "where": "Elysium (SL)", "reward": "Elysium garden / Sanctuary access and travel", "level": "110-130"},
+    {"name": "Specialization 1 / 2 / 3 / 4 quests", "where": "Spec 1 ~80-110, Spec 2 ~150, Spec 3 Adonis (group, ~160+), Spec 4 endgame", "reward": "ENGINEER-CRITICAL: the entire Shadowlands bot ladder is hard-gated on these. Prototype / Predator M-30 need Specialization BitAnd 2; Upgraded Predator M-30 and Slayerdroid Annihilator need BitAnd 4; every bot from Advanced Predator M-30 (char 203) upward needs BitAnd 8.", "level": "80-220"},
+    {"name": "Engineer Tier armor questlines (Tier 1 -> 2 -> 3 -> 4)", "where": "Shadowlands tradeskill / quest chain", "reward": "First Tier Engineer set (5 pieces) -> Second Tier Engineer set (7, adds Helmet + Shoulderpad) -> Faithful Engineer set (8, adds the Back item 'Faithful Engineer Helper') -> Chosen Engineer set (8). Every piece is Engineer-locked and NODROP in the client data.", "level": "150-220"},
+    {"name": "Cama Garden Key quest", "where": "Penumbra (SL) - Insignia of Vanya plus Ravine fragments", "reward": "Penumbra garden hub travel and progression", "level": "190-200"},
+    {"name": "Galahad Garden Key quest", "where": "Inferno (SL) - 9 complete QL220-255 pocket-boss patterns", "reward": "Inferno garden access (safe staging, no DoT)", "level": "190-220"},
+    {"name": "Dust Brigade quest chain (DB1 -> DB2 -> DB3)", "where": "Endgame RK; register first. Access items present in the client data: Dust Brigade Security Pass (268797 / 269707), Dust Brigade Security Codes (273731), Dust Brigade Attunement (nano 273550).", "reward": "Enhanced Dustbrigade armor (QL200, NODROP, NO profession lock: Combat Chestpiece 269993, Spirit-tech Chestpiece 269994, Sleeves 269996, Covering 269997, Flexible Boots 270392, Chemist Gloves 270393, Notum Gloves 270394) plus questline completion", "level": "200-220"},
+    {"name": "Arid Rift & Neretva Canyon", "where": "Outzone: Central Hub (Arid Rift, 210-220) and endgame RK / alien content", "reward": "Endgame XP, AXP and quest rewards", "level": "210-220"}
+  ],
+  "keys": [
+    {"name": "Subway access", "forWhat": "Enter the Condemned Subway", "how": "Instanced dungeon; entrances in Borealis, West Athen and Rome Stretch. Form the team BEFORE zoning in so everyone shares one instance."},
+    {"name": "TOTW portal", "forWhat": "Enter the Temple of Three Winds (Greater Tir County)", "how": "Complete Windcaller Karrec's quest at ICC HQ (Bronto Burger + Maddy Cardile credit card), then use the portal. HARD GATE: you cannot enter past level 60."},
+    {"name": "Insignia of Aban", "forWhat": "Aban Garden Key - Nascence hub travel", "how": "Drops from mobs at the Nascence entrance; collect them and hand in the garden key quest."},
+    {"name": "Insignia of Vanya", "forWhat": "Cama Garden Key - Penumbra hub travel", "how": "Collected in Penumbra alongside Ravine fragments during Penumbra progression."},
+    {"name": "Ravine fragments", "forWhat": "Penumbra progression", "how": "Collected in Penumbra at 190-200."},
+    {"name": "Pocket-boss patterns (9 complete, QL220-255)", "forWhat": "Galahad Garden Key (Inferno garden)", "how": "Farm Inferno pocket bosses for the pattern pieces and assemble 9 complete patterns."},
+    {"name": "Garden / Sanctuary keys per SL zone", "forWhat": "Safe rez points and inter-garden travel in Nascence / Elysium / Scheol / Adonis / Penumbra / Inferno", "how": "Each Shadowlands zone has its own garden key chain; do it when you enter the zone."},
+    {"name": "Dust Brigade Security Pass / Attunement", "forWhat": "Dust Brigade instances", "how": "Dust Brigade Security Pass (268797, 269707), Dust Brigade Security Codes (273731) and Dust Brigade Attunement (nano 273550) exist in the client data as the DB access chain. The exact quest steps to obtain them were NOT verified - see _unverified."},
+    {"name": "Pandemonium access ring (+10 or better)", "forWhat": "Reaching the inner Pandemonium islands", "how": "Researched / obtained at 200-210; gates the Intelligent QL300 symbiant farm."},
+    {"name": "Ring of the Nucleus Basalis", "forWhat": "Not a door key, but the must-loot early NCU ring", "how": "Drops from Abmouth Supremus in the Condemned Subway. Items 202717 / 202718; Superior Ring of the Nucleus Basalis is 305028. Extra NCU matters more to an Engineer than to most classes because the team aura, the bot buffs and the self buffs all sit in NCU at the same time."}
+  ],
+  "froobVsPaid": "FROOB (free play = Classic Rubi-Ka + free Notum Wars): hard level cap 200, NO Shadowlands, NO Alien Invasion, NO Lost Eden. For an Engineer this is a much softer cap than for most classes, and the reason is visible in the client data: the ENTIRE Rubi-Ka bot ladder up to Slayerdroid Guardian (45671, pet level 200, MC/TS 873, 1595 credits) carries NO Expansion requirement and NO character-level requirement - it is gated purely on Matter Creation and Time & Space. A twinked, wrangled froob Engineer can therefore run a level-200 bot well before level 200 and solo most of Rubi-Ka. Froob route: Arete / backyards -> Condemned Subway -> TOTW (must finish by 60) -> Virus Builders / Bot Hackers / Biomare -> Mort borgs -> PW borgs / The Reck / Smuggler's Den -> RK missions to 200. What froobs lose: the whole Shadowlands bot family (every Predator M-30 / Devastator Drone / Marauder M-45 / Desolator / Widowmaker nano carries Expansion BitAnd 2 plus a Specialization bit), the heckler/garden SK highway, levels 201-220, AI levels and perks, and LE research plus the Ofab Engineer set. PAID (SL) is the single biggest jump for an Engineer, because Specialization 2/3/4 are what unlock the top bots. PAID (AI) adds the AXP track and alien armor. PAID (LE) adds research, Battle Station VP and the Ofab Engineer set.",
+  "tips": [
+    "The Engineer loop at EVERY level: summon the biggest bot you can control, /pet guard, send it, shoot from behind it, repair it, re-summon when it dies. Your own weapon is secondary until endgame.",
+    "WRANGLE THE BOT. Cast with a Trader Wrangle (and/or an MP's Mocham's Gift) running, then let the buff drop - you only need 80% of the cast requirement to keep control. AO-Universe's Engineer guide calls the difference between a self-cast bot and a Mocham's/Wrangle bot 'massive'. Every step of the ladder in this file is reachable a bracket early this way.",
+    "Watch the over-equip line: OE% = 100 - (buffed skill / requirement) x 100. At 20 or more the bot stops obeying, drops to behind/follow and answers 'Illegal command. Master not recognised.' Check /oe after every buff expiry and before a long fight.",
+    "CARRY CREDITS. Every bot from Feeble Android up literally spends credits to summon (a Cash stat-61 requirement plus a Hit[61,-cost] drain): 131 credits at pet level 17, 1595 at Slayerdroid Guardian, 3694 at Ravening M-60. Dying broke in a dungeon means no bot.",
+    "Matter Creation and Time & Space are the only two skills that drive your power curve, and they compete for the same implant slots - balance them rather than maxing one. Intelligence raises both.",
+    "Neleb's Nano-circuit Robe (151895) from TOTW is the classic Engineer MC/TS twink robe - farm it before level 60 and it carries you through many rungs of the bot ladder.",
+    "Run a team aura from the 60s on: the EngineerAuras strain 227 'Sympathetic ...' line (154550-154567) is a whole-team AC / reflect / damage-shield buff on its own nanoline, and it is a large part of why teams invite Engineers.",
+    "Learn /pet wait. It stops the bot and clears its hate list. An uncontrolled bot pulling extra mobs is the fastest way to be dropped from a team - AO-Universe: 'you generally cannot let it go on an uncontrolled rampage, it'll upset people in a team'.",
+    "Trim the bot: Positive Aggressive-Defensive (shop, QL100 max) lets you set its agg/def to 100%; Increase Aggressiveness (tradeskilled, QL200 max) raises its taunt by about 90 at QL200; Divert Energy to Offense (shop, QL200 max) gives roughly +40 AAO and +40 damage at the cost of 1000 AC and a 5-minute Mechanical Engineering lock.",
+    "Keep the Pet Heals line current (Quick Fix 116793 -> Patchy Repairs 116794 -> Recondition Parts 116797 -> Rebuild Casing 116792 -> Field Workshop 116796 -> Intricate Repairs 116795 -> A Maker's Touch 116791) and the Energize Shell / Conductive Spike line (203869 / 203871 / 203873 and 203861 / 203863 / 203865), which also strips the pet root and snare strains 145/146 - a rooted bot is a dead bot.",
+    "Cast the Jamming Tower (274369, nano crystal 274372) - it needs only MC/TS 19, so it is available at essentially any level and is a free deployable.",
+    "Beacon Warp (154914) and Team Beacon Warp (154913) are Engineer-only and Rubi-Ka-only (the nanos carry ExpansionPlayfield == 0). They warp a teamed, targeted player to you across zones and even into mission instances - the single most socially valuable utility an Engineer has for raids, mission runs and hauling a team to a camp.",
+    "Do TOTW boss loot BEFORE level 60 - the dungeon hard-locks entry past 60.",
+    "From 60 chase heckler teams; from 160 chase Adonis hecklers and Dark Ruins. Dark Ruins Solo (160-180) is especially good for an Engineer because the bot is a real tank.",
+    "Stack dailies once you own AI/LE: city dailies, Battle Station, alien daily / mothership and LE dailies give tokens, VP, AXP and XP in parallel.",
+    "Grind AI levels in city defense - the bot tanks alien attackers and your aura covers the defenders. Low risk, and you are useful while you farm.",
+    "Engineer is the tradeskill class (Mechanical Engineering, Electrical Engineering, Quantum Field Tech, Weapon Smithing, Nano Programming, Computer Literacy, Chemistry, Pharma Tech, Psychology, Breaking & Entering) and self-buffs most of it: EE 227652 / 227663, ME 227657 / 227667, QFT 227655 / 227665, Pharmaceuticals 227659 / 227669, Weapon Smithing 227661 / 227671, plus 'Engineer Composite Specialist Tradeskills (8 hours)' 273346 (+200 ME/EE/QFT). AO-Universe warns tradeskills eat all free IP before Title Level 6 - do not chase them before roughly level 125 if you want to level at pace."
+  ],
+  "_coverage": {
+    "brackets": "14 of 14 (level 1 through 220 plus the parallel AI title-level track). Every bracket names real hunting areas with the level ranges as given by the AODB Hunting Grounds page, and the exact bot(s) to be running there with nano id, pet level and MC/TS requirement.",
+    "botLadder": "90 of 90 robot nanos in engineer-nanos.json category 'Pets - Robot' are enumerated (75 Rubi-Ka across 8 families + 15 Shadowlands/endgame). Every id, pet level, MC/TS value, cash cost and expansion/specialization gate is read from local client data.",
+    "keyQuests": "15 entries",
+    "keys": "10 entries",
+    "tips": "17 entries",
+    "itemIdVerification": "Every item id in this file was looked up in E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql and the name matched (131,384 rows). Every nano id came from engineer-nanos.json (generated from OmniCell Datafiles/nanos.ocp). Playfield names were checked against E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\playfields.ocp where present."
+  },
+  "_unverified": [
+    "The bit-to-number mapping of the Specialization gate is an interpretation, not a reading: the client data literally says 'Specialization BitAnd 2 / 4 / 8'. I read those as Specialization 2 / 3 / 4 on the standard 1/2/4/8 bitfield convention. The raw values are quoted in botLadder so you can re-derive them; confirm the mapping in game before scripting against it.",
+    "'Ravening M-60' (275815) carries 'NanoFocusLevel BitAnd 64' and NO Expansion or Specialization requirement in the data. What NanoFocusLevel bit 64 corresponds to in game was NOT determined. The same gate appears on 'Improved Isochronal Sloughing Combat Field' (273343) and 'Improved Shield of the Obedient Servant' (270790).",
+    "Relative POWER of the Shadowlands bot families versus the Rubi-Ka families is NOT established. The data gives pet level, MC/TS and cost only. Note that 'Prototype Predator M-30' (223325) yields pet level 100 for MC/TS 687, while 'Perfected Guardbot' (45700) yields pet level 106 for MC/TS 553 - so the SL family is clearly not a simple linear upgrade. Test in game; do not assume a higher MC requirement means a better bot.",
+    "The AODB wiki Engineer Guide lists the bot lines as 'Automatons (1-43), Gladiator Bots (47-123), Warbots (129-182), Slayerdroids (185-189), Black Slayerdroids (201-217), Widowmaker (220)' plus a 'Dog Pets (100-220)' line. That does NOT match the local 18.8.50_EP1 client data, which has 8 Rubi-Ka families including Android / Guardbot / Warmachine / Wardroid, no 'Black Slayerdroid', and no dog pet castable by profession 3 anywhere in the 288 Engineer nanos. The wiki page itself states it is 'extremely outdated'. The ladder in this file is the client data; the wiki level ranges are NOT used.",
+    "Per-bracket level ranges for hunting spots are the AODB Hunting Grounds page's own ranges, blended with the bot ladder as guidance, not exact gates. The only hard gate confirmed is TOTW = cannot enter past level 60.",
+    "The froob level cap of 200 and 'no SL/AI/LE on free accounts' is well-established AO knowledge but was not re-confirmed against a primary Funcom page in this pass. What IS confirmed from local data is the Engineer-specific half: no Rubi-Ka bot nano carries an Expansion requirement, and every Shadowlands bot does.",
+    "Specialization quest givers and locations (Spec 1/2/3/4) are summarised from general community progress guides, not from per-quest pages. Verify each on ao-universe before scripting.",
+    "Dust Brigade access chain: the item/nano ids listed (Security Pass 268797/269707, Security Codes 273731, Attunement 273550) are real client-data entries verified by id, but the QUEST steps to obtain them were not verified.",
+    "Pet trimmer numbers (+40 AAO / +40 damage and -1000 AC for Divert Energy to Offense; about 90 aggressiveness at QL200 for Increase Aggressiveness) come from the AODB Engineer:Tips and Tricks page, not from local item data - the trimmer item ids were not resolved in this pass.",
+    "The Bronto Burger / Maddy Cardile TOTW unlock route reflects post-18.7 retail per community guides; spot-check it on your server.",
+    "Whether Engineer bots were ever on a duration timer (the way Meta-Physicist pets were before 18.7) was NOT verified. No timer appears in the nano data read here.",
+    "Abmouth Supremus drop rate for the Ring of the Nucleus Basalis is not quoted here because it could not be confirmed from a permitted source."
+  ],
+  "_sources": [
+    "LOCAL: AOBuddy/GameData/profiles/engineer-nanos.json - generated from E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\nanos.ocp via OmniCell.Core; the source of every bot id, pet level (SpawnItem argument 2), MC/TS requirement, Cash cost and Expansion/Specialization gate in this file.",
+    "LOCAL: E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql - every item id/name in this file verified against it (131,384 rows).",
+    "LOCAL: E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp read via tools/eng-gear-extractor (--prof 3) - Ofab Engineer / First-Second Tier / Faithful / Chosen Engineer profession locks and NODROP flags, and the Enhanced Dustbrigade armor set.",
+    "LOCAL: E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\playfields.ocp - playfield name verification (note the client spells Nascence as 'Nascense').",
+    "LOCAL: AOSharp.Common/GameData/Stat.cs - Cash = 0x3D = stat 61, which is what the bot nanos drain.",
+    "AO-Universe Engineer Guide MKIII (1/3) - https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13 - breeds, 'Bots cost credits', MC and Time and Space as the two cast skills, the 80% control / 125% over-equip thresholds, the pet command list, 50-metre pet range, essential skills.",
+    "AO-Universe Engineer Guide MKIII (2/3) - https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-23 - 'launch and control as big a bot as possible', weapon and armor tiers by level, trimmers, implant priorities, named dungeons (Biomare, Crypt of Home, Penumbra temple, Mercenaries Camp, Inferno bosses).",
+    "AO-Universe Engineer Guide MKIII (3/3) - https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-33 - team role, aura mechanics, /pet wait and hate-list management, the tradeskill IP warning before Title Level 6.",
+    "AO-Universe Over-Equipped guide - https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/over-equipped - the OE formula (100 - buffed/requirement x 100, 20 or higher = OE), the 20/40/60/80% penalty steps, and 'the pet will become OE. The pet will default to the /pet follow state and completely refuse to take any orders from the pet owner'; Trader Wrangle and MP Mocham's Gift named as the over-equip buffs.",
+    "AODB Wiki Engineer Guide - http://wiki.aodb.us/wiki/Engineer_Guide - 'Amount of Skill Required to Control = Amount of skill to make or wear * 0.8', Mocham's/Wrangle usage, MC and Time and Space competing for implant slots, Neleb's Nano-circuit Robe as an MC/TS item. (The page self-declares as outdated for its pet-line table - see _unverified.)",
+    "AODB Wiki Engineer:Tips and Tricks - https://wiki.aodb.us/wiki/Engineer:Tips_and_Tricks - 'Illegal command. Master not recognised.' below 80% skill; trimmer effects; Beacon Warp mechanics (target must be teamed and targeted as the cast finishes, works across zones and into mission instances, blocked in Mission Agency areas).",
+    "AODB Wiki Hunting Grounds - http://wiki.aodb.us/wiki/Hunting_Grounds - every named hunting area, its level range and its playfield, as used in the brackets above.",
+    "AO-Universe Condemned Subway - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/condemned-subway",
+    "AO-Universe Temple of the Three Winds - https://www.ao-universe.com/guides/classic-ao/encounter-guides-3/low-level-encounter/temple-of-the-three-winds",
+    "AO-Universe Aban Garden Key Quest (Nascence) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/nascence/aban-garden-key-quest",
+    "AO-Universe Cama Garden Key Quest (Penumbra) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/cama-garden-key-quest",
+    "AO-Universe Galahad Garden Key Quest (Inferno) - https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/galahad-garden-key-quest",
+    "AO-Universe Battle Stations - https://www.ao-universe.com/guides/classic-ao/location-guides-5/battle-stations",
+    "Sibling profile (authoritative for the nano ladder): AOBuddy/GameData/profiles/engineer-nanos.json"
+  ]
+}

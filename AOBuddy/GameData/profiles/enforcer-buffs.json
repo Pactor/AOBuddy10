@@ -1,0 +1,938 @@
+{
+ "profession": "Enforcer",
+ "professionId": 9,
+ "slug": "enforcer",
+ "generatedBy": "tools/mp-nano-extractor --prof 9 (nanos.ocp) plus its diagnostic function dump for every one of the 159 ids and for the 16 child nanos they cast, joined to enforcer-nano-sources.json. Prose is curated; every id, name, number, nano line, strain, level, cast requirement and cast target is read from the client data.",
+ "purpose": "Every nano an Enforcer can cast, in exactly ONE section, with the nanoline (= stacking strain) on every row so a bot or a player can see what overwrites what. The Enforcer's kit is taunts, Mongo rage HP and Absorb / damage-shield layers, so those three are enumerated to the last nano.",
+ "dataSources": {
+  "nanoPrograms": "E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp (OMNICELL-CONTENT v3, client 18.8.50_EP1) via OmniCell.Core NanoLoader",
+  "names": "E:/Funcom/attic/extracted-client-data/itemnames.sql",
+  "nanoLineEnum": "AOSharp.Common/GameData/NanoEnums.cs (NanoLine)",
+  "statEnum": "AOSharp.Common/GameData/Stat.cs",
+  "castability": "A nano is Enforcer-castable when a ToUse action (ActionType 3) carries Profession(60)==9 OR VisualProfession(368)==9. 70 of the 159 gate via Profession(60), 89 via VisualProfession(368).",
+  "castTarget": "Read from the nano's own effect functions: Target(3) = castable on another character, Wearer(2)/User(1) = self only. Where a nano has several functions, the target of its stat-modifying functions (53045/53012/53110/53026) decides.",
+  "acquisition": "AOBuddy/GameData/profiles/enforcer-nano-sources.json (nano-crystal criteria in items.ocp)"
+ },
+ "howEnforcerBuffsStack": {
+  "rule": "Two nanos in the SAME nanoline (NanoStrain, stat 75) never coexist: the newer replaces the older regardless of which is stronger. Two nanos in DIFFERENT nanolines always stack. The nanoLine field on every row below is that strain, read from the nano itself - it is the authoritative stacking key, not the nano's name or its category.",
+  "theTraps": [
+   "TRAP 1 - Mongo's X and Essence of X are the SAME line. Both are HPBuff(151). The Mongo's line (9 ids, self only, up to Max Health +20000 on Mongo's Kraken) and the Essence line (8 ids, cast on ANY target, up to Max Health +1998 on Improved Essence of Behemoth) cannot both be on one character. An Enforcer who buffs himself with an Essence throws away his own Mongo's; a teammate re-buffed by a second Enforcer loses the first one's.",
+   "TRAP 2 - Ice Burn does not stack with the damage shields. Ice Burn (269460) is DamageShields(1), the same line as all 15 'Avenging Shield -> Coruscating Screen' shields. Casting the Shadowlands proc-shield removes the reflective shield and vice versa.",
+   "TRAP 3 - Superior Fortify is self-only and sits in the TEAM Absorb line. Superior Fortify (273320) is AbsorbACBuff(219), the same line as the 10 'Thicken Skin -> Greater Fortify' absorbs the Enforcer casts on other people. It is Wearer-targeted, so an Enforcer running it cannot also carry a teammate's Absorb, and casting Greater Fortify on himself drops it.",
+   "TRAP 4 - every Challenger switches the Enforcer's nano casting off. All 19 Challenger(5) nanos end in CastNano[157742] or CastNano[157743], both named 'Nano skills inoperative', both applying -4000 to all six nano schools (Sensory Improvement 122, Matter Metamorphosis 127, Biological Metamorphosis 128, Psychological Modification 129, Matter Creation 130, Time & Space 131). While Challenger is up the Enforcer cannot cast anything else, so every other buff has to go up FIRST.",
+   "TRAP 5 - Rage costs healing. All 6 Rage(189) nanos apply a negative HealReactivity (stat 689): -5 on Berserk Rage up to -50 on Hellish Rage. They also strip roots, snares and stuns via RemoveNanoStrain. The Mongo's line goes the other way and gives HealReactivity +20, so the two pull against each other.",
+   "TRAP 6 - the melee weapon buffs split across targets INSIDE one line. MeleeWeaponBuffLine(180) holds 25 nanos: 23 are Wearer (self only, the Shadowlands 'Thugs Glory / Skill of the Reaper' ladder) and 2 are Target (Brutal Thug 29630 and Headcracker 29644, the old Rubi-Ka buffs an Enforcer can put on someone else). A teammate who receives Brutal Thug loses whatever other strain-180 buff he had.",
+   "TRAP 7 - the single-target taunts are strain 0 (NOSTACKING). NanoLine 0 is not a stacking line at all: each taunt is an instant TauntNpc effect that lands on its own. They never collide with each other or with anything else, so the only reason to cast a smaller one is nano cost."
+  ],
+  "nanodeckGate": "7 nanos carry a NanoFocusLevel BitAnd 64 requirement in their ToUse criteria - the Enforcer Nanodeck gate. They are the top of their lines and are uncastable without it: Hellish Rage (275830), Improved Element of Malice (275014), Improved Essence of Behemoth (273629), Mongo Demolish! (270786), Mongo's Kraken (273322), Superior Fortify (273320), Valiant Challenger to Behemoth (275833).",
+  "specializationGate": "22 nanos carry a Specialization BitAnd requirement (1/2/4/8 = first through fourth specialisation). They are the Shadowlands ladder: the Mongo's line above Mongo's Titan, the Spite -> Element of Malice taunts, the Fearbringer -> Dreadbringer procs and all six Element of <damage type> nanos."
+ },
+ "selfBuffs": [
+  {
+   "name": "Mongo rage HP line, SELF (Mongo's Troll -> Mongo's Kraken, 9 ranks)  [id 273322 = Mongo's Kraken]",
+   "representativeId": 273322,
+   "representativeName": "Mongo's Kraken",
+   "id": 273322,
+   "nanoLine": "HPBuff(151)",
+   "coversNanoIds": [
+    223109,
+    95703,
+    223107,
+    95705,
+    273322,
+    95699,
+    95698,
+    223111,
+    223113
+   ],
+   "coversCount": 9,
+   "minLevel": 210,
+   "keepUp": true,
+   "effect": "The Enforcer's signature buff. Max Health +500 to +20000, Strength and Stamina +10 to +54, and HealReactivity +20 on every rank. Every rank also fires Set[Health,1] under a flag condition - the client-side 'refill into the new maximum' step. Self only (target User). Ladder: Mongo's Troll 95698 = +500; Mongo's Golem 95705 = +1500; Mongo's Cyclops 95703 = +3500; Mongo's Titan 95699 = +6000; Mongo's Gargantua 223107 = +8000; Mongo's Colossus 223109 = +10500; Mongo's Leviathan 223111 = +12000; Mongo's Behemoth 223113 = +15000; Mongo's Kraken 273322 = +20000.",
+   "castReq": "BiologicalMetamorphosis > 1532, MaterialCreation > 1532, Profession == 9, NanoFocusLevel op22 64",
+   "note": "SAME LINE as Essence of X - see howEnforcerBuffsStack TRAP 1. Mongo's Gargantua and above need a Specialization bit; Mongo's Kraken needs the Enforcer Nanodeck (NanoFocusLevel 64).",
+   "source": "mission-roll for the Rubi-Ka ranks; shadowlands for Mongo's Gargantua, Mongo's Colossus, Mongo's Leviathan, Mongo's Behemoth"
+  },
+  {
+   "name": "Rage line (Berserk Rage -> Hellish Rage, 6 ranks)  [id 275830 = Hellish Rage]",
+   "representativeId": 275830,
+   "representativeName": "Hellish Rage",
+   "id": 275830,
+   "nanoLine": "Rage(189)",
+   "coversNanoIds": [
+    100250,
+    100253,
+    100252,
+    275830,
+    100251,
+    100254
+   ],
+   "coversCount": 6,
+   "minLevel": 0,
+   "keepUp": false,
+   "effect": "Run Speed +50 to +400, Nano Resist +150 to +1200, all four initiatives +100 to +500, and HealReactivity -5 to -50. Each rank also runs RemoveNanoStrain over a long list of root, snare, stun and movement strains (145, 146, 186, 13, 643, 135, 136, 187, 659, 239, 640, 856, 6, 7, 582, 9, 8). This is the Enforcer's break-free button, not a maintenance buff. Self only (target User).",
+   "castReq": "BiologicalMetamorphosis > 1434, MaterialCreation > 1434, MaterialMetamorphosis > 1234, Flags op92 239, Profession == 9, NanoFocusLevel op22 64",
+   "note": "Costs healing received while it is up. Hellish Rage needs the Enforcer Nanodeck.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Challenger line (Challenger to Cyclops -> Valiant Challenger to Behemoth, 19 ranks)  [id 275833 = Valiant Challenger to Behemoth]",
+   "representativeId": 275833,
+   "representativeName": "Valiant Challenger to Behemoth",
+   "id": 275833,
+   "nanoLine": "Challenger(5)",
+   "coversNanoIds": [
+    49757,
+    49752,
+    49743,
+    49749,
+    49754,
+    49745,
+    49758,
+    49750,
+    49742,
+    49747,
+    49755,
+    49746,
+    49759,
+    49753,
+    49744,
+    49751,
+    49756,
+    49748,
+    275833
+   ],
+   "coversCount": 19,
+   "minLevel": 0,
+   "keepUp": false,
+   "effect": "Add All Off. +27 to +301 and all eight damage modifiers +12 to +110, plus a Scale increase (the Enforcer visibly grows). Three named grades per size - plain / Brave / Mighty - topped by Valiant Challenger to Behemoth (275833). Self only (target Wearer).",
+   "castReq": "BiologicalMetamorphosis > 1234, MaterialMetamorphosis > 1234, Profession == 9, NanoFocusLevel op22 64",
+   "note": "EVERY rank casts 'Nano skills inoperative' (157742 on the lower ranks, 157743 on Leviathan and Behemoth), applying -4000 to all six nano schools. Cast it LAST. See TRAP 4.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Shadowlands melee weapon buff ladder, SELF (23 ranks over 1h Blunt / 1h Edged / 2h Blunt / 2h Edged)  [id 202856 = Rampage of Juggernaut]",
+   "representativeId": 202856,
+   "representativeName": "Rampage of Juggernaut",
+   "id": 202856,
+   "nanoLine": "MeleeWeaponBuffLine(180)",
+   "coversNanoIds": [
+    202776,
+    202826,
+    202848,
+    202739,
+    202828,
+    202850,
+    202774,
+    202830,
+    202840,
+    202791,
+    202832,
+    202852,
+    202793,
+    202834,
+    202842,
+    202816,
+    202836,
+    202844,
+    202854,
+    202846,
+    202856,
+    202818,
+    202838
+   ],
+   "coversCount": 23,
+   "minLevel": 195,
+   "keepUp": true,
+   "effect": "Four parallel Shadowlands ladders inside one nanoline, 5-6 ranks each: 1h Blunt (Threat of the Bully -> Calling of Thor), 1h Edged (Edge of Steel -> Rampage of the Berserker), 2h Blunt (Threat of the Bully -> Rampage of Juggernaut) and 2h Edged (Skill of the Butcher -> Skill of the Guillotine), each running +14 to +120. The level 125+ ranks add damage modifiers; Edge of Diamond and Rampage of the Berserker also add Melee Init, Multi Melee and Fast Attack.",
+   "castReq": "PsychologicalModification > 865, SensoryImprovement > 865, Profession == 9, Level > 194",
+   "note": "ONE nanoline for all four weapon skills: an Enforcer can only hold ONE melee weapon buff, so buff the skill of the weapon actually equipped. Same line as the two castable-on-others buffs in givesToOthers (TRAP 6).",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Piercing buff line (Talon of the Hawk -> Vlad's Revenge, 7 ranks)  [id 202858 = Vlad's Revenge]",
+   "representativeId": 202858,
+   "representativeName": "Vlad's Revenge",
+   "id": 202858,
+   "nanoLine": "EnforcerPiercingBuff(278)",
+   "coversNanoIds": [
+    202870,
+    202868,
+    202866,
+    202864,
+    202862,
+    202860,
+    202858
+   ],
+   "coversCount": 7,
+   "minLevel": 195,
+   "keepUp": true,
+   "effect": "Piercing +17 to +120. The level 125+ ranks add +2 to +7 to all eight damage modifiers, and Vlad's Revenge also gives Melee Init +15, Multi Melee +3 and Fast Attack +3. Self only.",
+   "castReq": "PsychologicalModification > 865, SensoryImprovement > 865, Profession == 9, Level > 194",
+   "note": "A SEPARATE line (278) from MeleeWeaponBuffLine(180), so a Piercing Enforcer can hold this AND a strain-180 buff. Piercing is the only Enforcer weapon skill with its own nanoline.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Melee Energy buff line (Harnessed Lightning -> Call of the Maelstorm, 5 ranks)  [id 203215 = Call of the Maelstorm]",
+   "representativeId": 203215,
+   "representativeName": "Call of the Maelstorm",
+   "id": 203215,
+   "nanoLine": "EnforcerMeleeEnergyBuff(279)",
+   "coversNanoIds": [
+    203213,
+    203211,
+    203209,
+    203207,
+    203215
+   ],
+   "coversCount": 5,
+   "minLevel": 195,
+   "keepUp": true,
+   "effect": "Melee Energy +29 to +120, with +2 to +5 to all eight damage modifiers on the level 155+ ranks. Self only.",
+   "castReq": "PsychologicalModification > 869, SensoryImprovement > 869, Profession == 9, Level > 194",
+   "note": "Its own line (279), so it stacks with strain 180 and strain 278.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Fast Attack buff line, SELF (4 ranks: Fervor of the Minion / Disciple / Fanatic / Zealot)  [id 210331 = Fervor of the Zealot]",
+   "representativeId": 210331,
+   "representativeName": "Fervor of the Zealot",
+   "id": 210331,
+   "nanoLine": "FastAttackBuffs(519)",
+   "coversNanoIds": [
+    210327,
+    210329,
+    210325,
+    210331
+   ],
+   "coversCount": 4,
+   "minLevel": 0,
+   "keepUp": true,
+   "effect": "Fast Attack +90 / +110 / +135 / +150. Self only (target Wearer).",
+   "castReq": "Profession == 15, Profession == 14, Profession == 2, Profession == 9, PsychologicalModification > 949, SensoryImprovement > 949",
+   "note": "Shared with Martial Artist, Keeper and Shade - the cast criteria list Profession 15, 14, 2 and 9. The two lowest ranks of the same line are castable on other people; see givesToOthers.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Element of <damage type> line (6 Shadowlands nanos)  [id 301853 = Element of Impact]",
+   "representativeId": 301853,
+   "representativeName": "Element of Impact",
+   "id": 301853,
+   "nanoLine": "DamageChangeBuffs(597)",
+   "coversNanoIds": [
+    222706,
+    222693,
+    222915,
+    222917,
+    222919,
+    301853
+   ],
+   "coversCount": 6,
+   "minLevel": 220,
+   "keepUp": true,
+   "effect": "Sets the Enforcer's DamageType1 (stat 339) and adds to that type's damage modifier: Element of Ice (222706, L0) -> Cold +11; Element of Flame (222693, L50) -> Fire +5; Element of Corrosion (222915, L185) -> Chemical +17; Element of Poison (222917, L213) -> Poison +24; Element of Radiation (222919, L218) -> Radiation +33; Element of Impact (301853, L220) -> Melee +45.",
+   "castReq": "MaterialCreation > 1359, MaterialMetamorphosis > 1354, Profession == 9, Specialization op22 8, Expansion op22 2, Level > 219",
+   "note": "One line (597) - only one Element can be up. Pick the damage type the target is weakest to. All six are Shadowlands- and Specialization-gated.",
+   "source": "shadowlands"
+  },
+  {
+   "name": "Taunt proc line (Fearbringer -> Dreadbringer, 6 ranks)  [id 226283 = Dreadbringer]",
+   "representativeId": 226283,
+   "representativeName": "Dreadbringer",
+   "id": 226283,
+   "nanoLine": "EnforcerTauntProcs(627)",
+   "coversNanoIds": [
+    226270,
+    226273,
+    226276,
+    226278,
+    226281,
+    226283
+   ],
+   "coversCount": 6,
+   "minLevel": 219,
+   "keepUp": true,
+   "effect": "Installs a melee proc (ProcInitiative2 = 3, ProcChance2, ProcNano2). The proc fires a child nano that taunts: Fearbringer (226270, L75) -> ProcChance2 15, child 226059 = TauntNpc 687; Irebringer (226273, L165) -> ProcChance2 22, child 226060 = TauntNpc 1841; Wrathbringer (226276, L195) -> ProcChance2 27, child 226061 = TauntNpc 2011; Hatebringer (226278, L207) -> ProcChance2 28, child 226062 = TauntNpc 2227; Ragebringer (226281, L214) -> ProcChance2 30, child 226063 = TauntNpc 2308; Dreadbringer (226283, L219) -> ProcChance2 35, child 226064 = TauntNpc 2333.",
+   "castReq": "Profession == 9, PsychologicalModification > 1429, MaterialMetamorphosis > 1434, Expansion op22 2, Specialization op22 8, Level > 218",
+   "note": "Free aggro while auto-attacking. All six share line 627, so only the best one an Enforcer can cast should be up. Each child proc has its own strain (628-633), so the proc itself never collides with anything.",
+   "source": "shadowlands"
+  },
+  {
+   "name": "Superior Fortify",
+   "id": 273320,
+   "nanoLine": "AbsorbACBuff(219)",
+   "minLevel": 0,
+   "effect": "Absorb +1371 on all eight damage types (AbsorbProjectileAC 238 through AbsorbFireAC 245). The top of the Absorb line and its only self-targeted member.",
+   "castReq": "MaterialCreation > 1334, BiologicalMetamorphosis > 1334, Profession == 9, NanoFocusLevel op22 64",
+   "source": "mission-roll",
+   "keepUp": true,
+   "note": "Same line (219) as the ten Absorbs the Enforcer casts on other people - see TRAP 3. Needs the Enforcer Nanodeck (NanoFocusLevel 64)."
+  },
+  {
+   "name": "Ice Burn",
+   "id": 269460,
+   "nanoLine": "DamageShields(1)",
+   "minLevel": 0,
+   "effect": "All eight Shield ACs +70, Cold AC +415, Max Health +510, and a proc: child nano 269457 'Cutting Remark', TauntNpc 10000.",
+   "castReq": "MaterialMetamorphosis > 809, MaterialCreation > 809, Profession == 9, Expansion op22 2",
+   "source": "shadowlands / Shadowlands",
+   "keepUp": true,
+   "note": "Shadowlands-gated. SAME nanoline (1) as the 15 damage shields the Enforcer casts on others - see TRAP 2. The 10000-point taunt proc is why an aggro Enforcer runs this instead of a plain shield."
+  },
+  {
+   "name": "Release Me Now",
+   "id": 281239,
+   "nanoLine": "SelfRoot_SnareResistBuff(283)",
+   "minLevel": 0,
+   "effect": "Removes nano strains 145 and 146 (root and snare) and grants ResistNanoStrain 145/146 at 100. The Lost Eden snare/root break.",
+   "castReq": "VisualProfession == 9, VisualProfession == 14, VisualProfession == 15, VisualProfession == 1, SensoryImprovement > 99, PsychologicalModification > 99, Expansion op22 32",
+   "source": "mission-roll / Lost Eden",
+   "keepUp": false,
+   "note": "Its cast criteria are VisualProfession 9, 14, 15 or 1 - shared with Keeper, Shade and Soldier. Requires Lost Eden."
+  }
+ ],
+ "givesToOthers": [
+  {
+   "name": "Absorb line (Thicken Skin -> Greater Fortify, 10 ranks)  [id 270350 = Greater Fortify]",
+   "representativeId": 270350,
+   "representativeName": "Greater Fortify",
+   "id": 270350,
+   "nanoLine": "AbsorbACBuff(219)",
+   "coversNanoIds": [
+    117688,
+    117687,
+    117686,
+    117685,
+    117684,
+    270350,
+    117683,
+    117682,
+    117681,
+    117680
+   ],
+   "coversCount": 10,
+   "minLevel": 0,
+   "effect": "Absorb +198 to +857 on all eight damage types (stats 238-245), cast on ANY target. Ladder: Thicken Skin 117681 = +198; Ward from Harm 117680 = +280; Shock Absorber 117683 = +364; Gird for Punishment 117684 = +436; Fortify 117685 = +525; Deaden Pain 117687 = +594; Shrug Off Blows 117682 = +642; Absorb Punishment 117688 = +697; Failing Impregnability 117686 = +745; Greater Fortify 270350 = +857.",
+   "castReq": "MaterialCreation > 745, BiologicalMetamorphosis > 745, Profession == 9",
+   "wantedBy": "Everyone in a team taking damage - this is the Enforcer's headline team buff alongside the damage shields.",
+   "note": "Line 219. It collides with the Enforcer's own Superior Fortify (TRAP 3). Note the naming is not the ranking: Failing Impregnability (+745) sits ABOVE Absorb Punishment (+697).",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Damage shield line (Avenging Shield -> Coruscating Screen, 15 ranks)  [id 55751 = Coruscating Screen]",
+   "representativeId": 55751,
+   "representativeName": "Coruscating Screen",
+   "id": 55751,
+   "nanoLine": "DamageShields(1)",
+   "coversNanoIds": [
+    55743,
+    55741,
+    55747,
+    55745,
+    55742,
+    55751,
+    55744,
+    55748,
+    29642,
+    29645,
+    29646,
+    55749,
+    55746,
+    55750,
+    29658
+   ],
+   "coversCount": 15,
+   "minLevel": 0,
+   "effect": "All eight Shield ACs +1 to +60 - damage reflected back at whatever hits the wearer - plus Max Health +18 to +479 and an AC bonus on the matching damage type. Cast on ANY target. Ladder: Avenging Shield 55741 = +1; Bristling Shield 55742 = +3; Field of Sparks 55744 = +5; Glowing Retribution 29642 = +8; Arctic Cloak 55743 = +11; Poison Stingers 55746 = +15; Immolation Shield 29645 = +18; Bristling Guard 55745 = +22; Barbaric Blades 55747 = +25; Lightning Shield 55749 = +30; Toxic Barrier 29658 = +36; Glacial Cloak 55748 = +40; Lick of Fire 29646 = +47; Screen of Blades 55750 = +55; Coruscating Screen 55751 = +60.",
+   "castReq": "MaterialMetamorphosis > 679, MaterialCreation > 679, VisualProfession == 9",
+   "wantedBy": "Any melee character, and the Enforcer himself whenever he is not running Ice Burn.",
+   "note": "Line 1 - collides with Ice Burn (TRAP 2).",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Team HP line, ON OTHERS (Essence of Vitality -> Improved Essence of Behemoth, 8 ranks)  [id 273629 = Improved Essence of Behemoth]",
+   "representativeId": 273629,
+   "representativeName": "Improved Essence of Behemoth",
+   "id": 273629,
+   "nanoLine": "HPBuff(151)",
+   "coversNanoIds": [
+    95708,
+    95704,
+    95700,
+    95702,
+    95701,
+    95706,
+    95707,
+    273629
+   ],
+   "coversCount": 8,
+   "minLevel": 215,
+   "effect": "Max Health +112 to +1998 with Strength and Stamina +5 to +54, cast on ANY target. Ladder: Essence of Vitality 95707 = +112; Essence of Might 95706 = +171; Essence of Boundless Health 95704 = +240; Essence of Cyclops 95702 = +401; Essence of Gargantua 95701 = +707; Essence of Colossus 95700 = +819; Essence of Behemoth 95708 = +996; Improved Essence of Behemoth 273629 = +1998.",
+   "castReq": "BiologicalMetamorphosis > 1532, MaterialCreation > 1532, Profession == 9, NanoFocusLevel op22 64, Level > 214",
+   "wantedBy": "Every profession. This is the standard 'Enforcer, can I get HP?' buff.",
+   "note": "SAME LINE (151) as the Enforcer's own Mongo's X - TRAP 1. Improved Essence of Behemoth needs the Enforcer Nanodeck and level 215.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Focused Anger",
+   "id": 29641,
+   "nanoLine": "InitiativeBuffs(152)",
+   "minLevel": 0,
+   "effect": "Melee Init, Ranged Init, Physical Init and Nano C. Init all +72. Cast on any target.",
+   "castReq": "PsychologicalModification > 283, SensoryImprovement > 283, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "Anyone - it buffs all four initiatives at once."
+  },
+  {
+   "name": "Physical Dominance",
+   "id": 29649,
+   "nanoLine": "InitiativeBuffs(152)",
+   "minLevel": 0,
+   "effect": "Melee Init +107 and Physical Init +107. Cast on any target.",
+   "castReq": "PsychologicalModification > 527, SensoryImprovement > 527, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "Melee characters.",
+   "note": "Same line (152) as Focused Anger, so only one of the two can be on a character."
+  },
+  {
+   "name": "Prodigious Strength",
+   "id": 29652,
+   "nanoLine": "StrengthBuff(156)",
+   "minLevel": 0,
+   "effect": "Strength +40 on the cast target.",
+   "castReq": "BiologicalMetamorphosis > 634, MaterialMetamorphosis > 634, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "Anyone who needs Strength for a requirement check - equipping gear, implants or symbiants."
+  },
+  {
+   "name": "Thug's Delight",
+   "id": 43371,
+   "nanoLine": "_1HBluntBuff(179)",
+   "minLevel": 0,
+   "effect": "1h Blunt +14 on the cast target.",
+   "castReq": "PsychologicalModification > 4, SensoryImprovement > 4, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "1h Blunt users."
+  },
+  {
+   "name": "Brutal Thug",
+   "id": 29630,
+   "nanoLine": "MeleeWeaponBuffLine(180)",
+   "minLevel": 0,
+   "effect": "1h Blunt +87 and 2h Blunt +87 on the cast target.",
+   "castReq": "PsychologicalModification > 365, SensoryImprovement > 365, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "1h Blunt and 2h Blunt users - the classic Enforcer blunt buff.",
+   "note": "Line 180, shared with the Enforcer's own Shadowlands self-buff ladder (TRAP 6)."
+  },
+  {
+   "name": "Headcracker",
+   "id": 29644,
+   "nanoLine": "MeleeWeaponBuffLine(180)",
+   "minLevel": 0,
+   "effect": "1h Blunt +46 and 2h Blunt +46 on the cast target.",
+   "castReq": "PsychologicalModification > 148, SensoryImprovement > 148, VisualProfession == 9",
+   "source": "mission-roll",
+   "wantedBy": "1h Blunt and 2h Blunt users; the lower rank of Brutal Thug.",
+   "note": "Line 180."
+  },
+  {
+   "name": "Fervor of the Henchman",
+   "id": 210321,
+   "nanoLine": "FastAttackBuffs(519)",
+   "minLevel": 0,
+   "effect": "Fast Attack +30 on the cast target.",
+   "castReq": "Profession == 15, Profession == 14, Profession == 2, Profession == 9, PsychologicalModification > 81, SensoryImprovement > 81",
+   "source": "mission-roll",
+   "wantedBy": "Melee characters using Fast Attack weapons.",
+   "note": "Line 519 - the castable-on-others end of the Fervor ladder."
+  },
+  {
+   "name": "Fervor of the Devotee",
+   "id": 210323,
+   "nanoLine": "FastAttackBuffs(519)",
+   "minLevel": 0,
+   "effect": "Fast Attack +70 on the cast target.",
+   "castReq": "Profession == 15, Profession == 14, Profession == 2, Profession == 9, PsychologicalModification > 308, SensoryImprovement > 308",
+   "source": "mission-roll",
+   "wantedBy": "Melee characters using Fast Attack weapons.",
+   "note": "Line 519."
+  }
+ ],
+ "tauntsAndAggro": {
+  "note": "18 of the Enforcer's 159 nanos exist to take and hold aggro. Every single-target taunt is strain 0 (NOSTACKING), i.e. an instant effect that never overwrites anything. The Mongo line is the AoE half: the nano the Enforcer casts hits HIMSELF for a fixed amount of Health and then area-casts a CHILD nano (strain 1037, 'Taunt') on everything within 20m - and that child's taunt value is chosen at cast time from three Psychological Modification bands. Those child ids and bands are read out of nanos.ocp and listed below; the parent nano contains NO taunt number at all.",
+  "singleTargetTaunts": [
+   {
+    "id": 100213,
+    "name": "Taunting Glare",
+    "tauntNpc": 125,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 45, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100211,
+    "name": "Aggressive Instincts",
+    "tauntNpc": 339,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 136, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100212,
+    "name": "Baleful Stare",
+    "tauntNpc": 638,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 267, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100210,
+    "name": "Roar of Aggression",
+    "tauntNpc": 1123,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 546, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100209,
+    "name": "Primal Hatred",
+    "tauntNpc": 1664,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 644, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 223115,
+    "name": "Spite",
+    "tauntNpc": 2475,
+    "minLevel": 125,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 752, Profession == 9, Level > 124, Expansion op22 2, Specialization op22 2",
+    "source": "shadowlands / Shadowlands"
+   },
+   {
+    "id": 223117,
+    "name": "Impart Resentment",
+    "tauntNpc": 4750,
+    "minLevel": 185,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 939, VisualProfession == 9, Level > 184, Expansion op22 2, Specialization op22 4",
+    "source": "shadowlands / Shadowlands"
+   },
+   {
+    "id": 223119,
+    "name": "Belligerent Stance",
+    "tauntNpc": 5865,
+    "minLevel": 203,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 1033, VisualProfession == 9, Level > 202, Expansion op22 2, Specialization op22 8",
+    "source": "shadowlands / Shadowlands"
+   },
+   {
+    "id": 223121,
+    "name": "Rancorous Enmity",
+    "tauntNpc": 7600,
+    "minLevel": 211,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 1231, VisualProfession == 9, Level > 210, Expansion op22 2, Specialization op22 8",
+    "source": "shadowlands / Shadowlands"
+   },
+   {
+    "id": 223123,
+    "name": "Element of Malice",
+    "tauntNpc": 10000,
+    "minLevel": 216,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 1355, Profession == 9, Level > 215, Expansion op22 2, Specialization op22 8",
+    "source": "shadowlands / Shadowlands"
+   },
+   {
+    "id": 275014,
+    "name": "Improved Element of Malice",
+    "tauntNpc": 50000,
+    "minLevel": 0,
+    "nanoLine": "NOSTACKING(0)",
+    "castReq": "PsychologicalModification > 1533, Profession == 9, NanoFocusLevel op22 64",
+    "source": "mission-roll"
+   }
+  ],
+  "mongoAreaTaunts": [
+   {
+    "id": 100198,
+    "name": "Mongo Slam!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 12,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 100194,
+    "childTauntNanoName": "Mongo Slam!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_50": 2000,
+     "from_50_to_149": 3000,
+     "at_least_150": 4000
+    },
+    "castReq": "BiologicalMetamorphosis > 9, PsychologicalModification > 9, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100200,
+    "name": "Mongo Bash!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 79,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 100193,
+    "childTauntNanoName": "Mongo Bash!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_350": 5000,
+     "from_350_to_449": 6000,
+     "at_least_450": 7000
+    },
+    "castReq": "BiologicalMetamorphosis > 249, PsychologicalModification > 249, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100197,
+    "name": "Mongo Smash!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 169,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 100196,
+    "childTauntNanoName": "Mongo Smash!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_550": 8000,
+     "from_550_to_599": 9000,
+     "at_least_600": 10000
+    },
+    "castReq": "BiologicalMetamorphosis > 399, PsychologicalModification > 399, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 100199,
+    "name": "Mongo Crush!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 224,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 100195,
+    "childTauntNanoName": "Mongo Crush!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_750": 11000,
+     "from_750_to_999": 12000,
+     "at_least_1000": 13000
+    },
+    "castReq": "BiologicalMetamorphosis > 595, PsychologicalModification > 595, VisualProfession == 9",
+    "source": "mission-roll"
+   },
+   {
+    "id": 301291,
+    "name": "Mongo Break!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 312,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 301290,
+    "childTauntNanoName": "Mongo Break!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_1100": 15000,
+     "from_1100_to_1199": 17000,
+     "at_least_1200": 19000
+    },
+    "castReq": "BiologicalMetamorphosis > 849, PsychologicalModification > 849, Profession == 9, TitleLevel > 5",
+    "source": "mission-roll"
+   },
+   {
+    "id": 270786,
+    "name": "Mongo Demolish!",
+    "nanoLine": "MongoBuff(188)",
+    "healthCostToSelf": 550,
+    "areaRadiusMeters": 20,
+    "childTauntNanoId": 270788,
+    "childTauntNanoName": "Mongo Demolish!",
+    "childTauntNanoLine": "Taunt(1037)",
+    "childTauntByPsyMod": {
+     "below_1300": 20000,
+     "from_1300_to_1499": 22500,
+     "at_least_1500": 25000
+    },
+    "castReq": "BiologicalMetamorphosis > 1149, PsychologicalModification > 1149, Profession == 9, NanoFocusLevel op22 64",
+    "source": "mission-roll"
+   }
+  ],
+  "mongoRampage": {
+   "id": 204199,
+   "name": "Mongo Rampage!",
+   "nanoLine": "NOSTACKING(0)",
+   "minLevel": 0,
+   "effect": "Max Health +6000, Run Speed -700, Scale +50, a Hit of 300 Health on the Enforcer every 7 seconds for 1200 ticks, and an area cast of child nano 204200 (TauntNpc 6000) in a 10m radius every 15 seconds for 900 ticks. A rooted-in-place AoE taunt aura, not a buff.",
+   "castReq": "Profession == 9",
+   "playfieldRestriction": "Its second action is PlayfieldType NotBitAnd 1 - the client blocks it in one class of playfield. Which class bit 1 denotes was NOT established from the client data; see _unverified.",
+   "source": "mission-roll"
+  }
+ },
+ "crowdControlAndDebuffs": [
+  {
+   "name": "Fear line (Fearsome Shout -> Dominate Foe, 4 ranks)  [id 121135 = Dominate Foe]",
+   "representativeId": 121135,
+   "representativeName": "Dominate Foe",
+   "id": 121135,
+   "nanoLine": "Fear(256)",
+   "coversNanoIds": [
+    121135,
+    121132,
+    121133,
+    121134
+   ],
+   "coversCount": 4,
+   "minLevel": 0,
+   "effect": "Fear on the target plus Add All Def. (stat 277) -15 / -30 / -47 / -78: Fearsome Shout 121132 = AddAllDef -15; Quivering Wreck 121133 = AddAllDef -30; Spine of Jelly 121134 = AddAllDef -47; Dominate Foe 121135 = AddAllDef -78.",
+   "castReq": "PsychologicalModification > 691, BiologicalMetamorphosis > 691, VisualProfession == 9, Psychic < 460",
+   "note": "Line 256. A fleeing mob is a mob that is not hitting the team - and also a mob running into the next pull.",
+   "source": "mission-roll"
+  },
+  {
+   "name": "Slowdown",
+   "id": 266304,
+   "nanoLine": "NOSTACKING(0)",
+   "minLevel": 0,
+   "effect": "Evade Close, Dodge Ranged, Duck Explosions and Run Speed all -400 on the target.",
+   "castReq": "Expansion op22 32, BiologicalMetamorphosis > 799, Profession == 9, MaterialCreation > 799, Profession == 2",
+   "source": "mission-roll / Lost Eden",
+   "note": "Requires Lost Eden. Its cast criteria list Profession 9 OR Profession 2 (Martial Artist). Strain 0, so it lands on its own."
+  },
+  {
+   "name": "You are Next",
+   "id": 279347,
+   "nanoLine": "Fear_PVP(883)",
+   "minLevel": 0,
+   "effect": "Fear on the target plus child nano 279344 ('Snared', UnremovableSnare strain 887).",
+   "castReq": "VisualProfession == 9, PsychologicalModification > 119, BiologicalMetamorphosis > 119, Flags op44 3, Flags op4 0, Flags op42 0",
+   "source": "mission-roll",
+   "note": "A PvP tool: its criteria include the duel/PvP Flags clauses (Flags op44 3, Flags op4 0, Flags op42 0). Strain 883, separate from the PvE Fear line."
+  },
+  {
+   "name": "Put up or Shut Up",
+   "id": 279361,
+   "nanoLine": "Knockback(884)",
+   "minLevel": 0,
+   "effect": "Casts 279360 ('Stunned by Put up or Shut Up', Mezz strain 147), 279363 ('Aftereffect of Put up or Shut Up', UnremovableSnare strain 887) and 279362 ('Affected by Put up or Shut Up'), plus a knockback function (53230) under a Flags condition.",
+   "castReq": "VisualProfession == 9, SensoryImprovement > 119, SpaceTime > 119, Flags op101 279362, Flags op122 2, Flags op4 0, Flags op42 0",
+   "source": "mission-roll",
+   "note": "PvP knockback/stun. Strain 884."
+  }
+ ],
+ "utilityOnOthers": [
+  {
+   "name": "Charge!",
+   "id": 287753,
+   "nanoLine": "Charge(1057)",
+   "minLevel": 0,
+   "effect": "Casts 301145 ('Stunned by Charge!', Stun strain 1003) on the target, plus a 53243 function with argument 4000. The Lost Eden gap-closer.",
+   "castReq": "MaxHealth op50 3, Profession == 9, RunSpeed > 249, Expansion op22 32",
+   "source": "mission-roll / Lost Eden",
+   "note": "Cast criteria: Max Health op50 3, Profession == 9, Run Speed > 249, Lost Eden. The Run Speed 250 floor is a real gate and is one reason an Enforcer puts a Rage up before charging."
+  },
+  {
+   "name": "Restrain Enthusiasm",
+   "id": 266302,
+   "nanoLine": "HPBuff(151)",
+   "minLevel": 0,
+   "effect": "Its only effect function is CastNano[266302] - the nano casts ITS OWN id.",
+   "castReq": "Expansion op22 32, MaterialCreation > 799, Profession == 11, SensoryImprovement > 799, Profession == 9",
+   "source": "mission-roll / Lost Eden",
+   "note": "A client-data anomaly, recorded as found. Requires Lost Eden; its cast criteria list Profession 11 (Nanotechnician) OR Profession 9. It sits in HPBuff(151) with the Mongo's/Essence line, so if it does anything in game it would overwrite them. What it actually does is UNKNOWN - see _unverified."
+  }
+ ],
+ "notEnforcerCastable": [
+  {
+   "id": 117228,
+   "name": "Assume Profession: Enforcer",
+   "nanoLine": "FalseProfession(218)",
+   "actualCaster": "AGENT",
+   "evidence": "Its ToUse action requires Profession == 5 (Agent). The VisualProfession == 9 clause is the 'already looks like an Enforcer' branch and is what pulled it into the profession-9 extraction. Its effects set the AGENT's VisualProfession to Enforcer and apply a nano-school penalty to the Agent.",
+   "effect": "RemoveNanoStrain[680] | Skill[318,70] | ModifyPercentage PsychologicalModification -15 | ModifyPercentage SensoryImprovement -15 | ModifyPercentage MaterialMetamorphosis -15 | ModifyPercentage MaterialCreation -15 | ModifyPercentage SpaceTime -15 | ModifyPercentage BiologicalMetamorphosis -15 | ChangeVariable[368,9] | RemoveNanoStrain[1055]",
+   "castReq": "VisualProfession == 5, VisualProfession == 9, Profession == 5, PsychologicalModification > 364, SensoryImprovement > 364, BiologicalMetamorphosis > 364"
+  },
+  {
+   "id": 32041,
+   "name": "False Profession: Enforcer",
+   "nanoLine": "FalseProfession(218)",
+   "actualCaster": "AGENT",
+   "evidence": "Its ToUse action requires Profession == 5 (Agent). The VisualProfession == 9 clause is the 'already looks like an Enforcer' branch and is what pulled it into the profession-9 extraction. Its effects set the AGENT's VisualProfession to Enforcer and apply a nano-school penalty to the Agent.",
+   "effect": "RemoveNanoStrain[680] | Skill[318,150] | ModifyPercentage PsychologicalModification -25 | ModifyPercentage SensoryImprovement -25 | ModifyPercentage MaterialMetamorphosis -25 | ModifyPercentage MaterialCreation -25 | ModifyPercentage SpaceTime -25 | ModifyPercentage BiologicalMetamorphosis -25 | ChangeVariable[368,9] | RemoveNanoStrain[1055]",
+   "castReq": "VisualProfession == 5, VisualProfession == 9, Profession == 5, PsychologicalModification > 60, SensoryImprovement > 60, BiologicalMetamorphosis > 60"
+  },
+  {
+   "id": 117217,
+   "name": "Mimic Profession: Enforcer",
+   "nanoLine": "FalseProfession(218)",
+   "actualCaster": "AGENT",
+   "evidence": "Its ToUse action requires Profession == 5 (Agent). The VisualProfession == 9 clause is the 'already looks like an Enforcer' branch and is what pulled it into the profession-9 extraction. Its effects set the AGENT's VisualProfession to Enforcer and apply a nano-school penalty to the Agent.",
+   "effect": "RemoveNanoStrain[680] | Skill[318,15] | ModifyPercentage PsychologicalModification -5 | ModifyPercentage SensoryImprovement -5 | ModifyPercentage MaterialMetamorphosis -5 | ModifyPercentage MaterialCreation -5 | ModifyPercentage SpaceTime -5 | ModifyPercentage BiologicalMetamorphosis -5 | ChangeVariable[368,9] | RemoveNanoStrain[1055]",
+   "castReq": "VisualProfession == 5, VisualProfession == 9, Profession == 5, PsychologicalModification > 669, SensoryImprovement > 669, BiologicalMetamorphosis > 669"
+  }
+ ],
+ "wantedFromOthers": [
+  {
+   "buff": "Wrangle / Team Skill Wrangler",
+   "id": null,
+   "fromProfession": "Trader",
+   "effect": "Raises every weapon skill and every nano skill at once for a few minutes.",
+   "useCase": "twink",
+   "note": "The Enforcer's six nano schools all cost 2.5 - its joint most expensive tier, from reference/skillcaps.json - while its top nanos need Psychological Modification 1534 (Improved Element of Malice), Biological Metamorphosis 1533 and Matter Creation 1533 (Mongo's Kraken, Improved Essence of Behemoth). A wrangle is how most Enforcers reach those without capping the schools."
+  },
+  {
+   "buff": "Heals and Heal-over-time",
+   "id": null,
+   "fromProfession": "Doctor",
+   "effect": "Direct healing.",
+   "useCase": "raid",
+   "note": "Mechanically load-bearing for this class. ZERO of the Enforcer's 159 nanos contain a heal function; the only thing in its kit that touches healing is a PENALTY (the Rage line's HealReactivity -5 to -50). A raiding Enforcer's survivability is Mongo HP + Absorb + shields + someone else's heals."
+  },
+  {
+   "buff": "Armour / AC buffs",
+   "id": null,
+   "fromProfession": "Engineer / Meta-Physicist / Soldier",
+   "effect": "Add to all eight ACs (stats 90-97).",
+   "useCase": "general",
+   "note": "The Enforcer has NO AC buff of its own. Its defensive kit is Absorb (line 219, stats 238-245) and reflective Shield AC (line 1, stats 226-234) - different stats from plain AC, so an Engineer's or MP's armour buff stacks on top of everything in this file."
+  },
+  {
+   "buff": "Composite / Expertise attribute and skill buffs",
+   "id": null,
+   "fromProfession": "Nanotechnician / Bureaucrat / Meta-Physicist",
+   "effect": "Add to groups of skills and abilities in their own nanolines.",
+   "useCase": "general",
+   "note": "Different nanolines from everything here, so they stack with all of it. Which specific nanos these are was NOT extracted in this pass - they belong to those professions' profiles - so no id is asserted."
+  },
+  {
+   "buff": "Initiative debuffs, snares and roots on the mob",
+   "id": null,
+   "fromProfession": "Any",
+   "effect": "Reduces what the mob does to the tank.",
+   "useCase": "raid",
+   "note": "General teamplay rather than an Enforcer-specific dependency."
+  }
+ ],
+ "generalBuffs": [
+  {
+   "name": "Attribute Boosts and Expertises",
+   "effect": "Add to an ability or a group of skills.",
+   "source": "Separate nanoline families from everything in this file, so they stack with all of it. No id is asserted here because they are not Enforcer nanos and were not extracted in this pass."
+  }
+ ],
+ "botStrategyNotes": {
+  "selfBuffCastOrder": [
+   "1. Mongo's X, highest rank castable - it is the health pool everything else is measured against, and it is self-only.",
+   "2. Superior Fortify (273320) if the Enforcer Nanodeck is worn, else the best line-219 Absorb the Enforcer can put on himself.",
+   "3. Ice Burn (269460) if Shadowlands, else the best damage shield from line 1 - they are the SAME line, pick one.",
+   "4. The weapon buff for the weapon actually held: line 180 for 1hB/1hE/2hB/2hE, Vlad's Revenge (202858) for Piercing (line 278), Call of the Maelstorm (203215) for Melee Energy (line 279).",
+   "5. The best self-castable Fervor (line 519) and the best Element of <type> (line 597).",
+   "6. The best taunt proc (line 627).",
+   "7. Challenger LAST - once it lands the Enforcer cannot cast anything else until it drops (TRAP 4).",
+   "Rage is NOT in this order: it is a reactive break-free, and its HealReactivity penalty makes it wrong to leave running."
+  ],
+  "aggroRotation": [
+   "Opening a pull: the biggest single-target taunt the Enforcer can cast (line 0, no stacking cost).",
+   "Adds, or a team member pulling aggro: a Mongo (line 188). Choose by Health cost against current Health - Mongo Slam! costs 12 Health, Mongo Demolish! costs 550.",
+   "The Mongo child taunt scales with Psychological Modification, so a bot must read its own PsyMod and know which of the three bands it is in before choosing a Mongo.",
+   "The taunt proc (line 627) covers aggro between casts for free while auto-attacking.",
+   "Mongo Rampage! (204199) is the emergency AoE-aura option, at the cost of Run Speed -700 - it pins the Enforcer in place."
+  ],
+  "whatNotToDo": [
+   "Never cast an Essence on yourself - it replaces your own Mongo's X (TRAP 1).",
+   "Never cast a damage shield while Ice Burn is up, or vice versa (TRAP 2).",
+   "Never cast a team Absorb on yourself while Superior Fortify is up (TRAP 3).",
+   "Never cast Challenger before the rest of the buff set (TRAP 4).",
+   "Do not keep Rage up as a maintenance buff (TRAP 5)."
+  ]
+ },
+ "coverage": {
+  "enforcerCastableNanosTotal": 159,
+  "enumeratedHere": 159,
+  "unplaced": [],
+  "placement": {
+   "selfBuffs": 88,
+   "givesToOthers": 41,
+   "tauntsAndAggro": 18,
+   "crowdControlAndDebuffs": 7,
+   "utilityOnOthers": 2,
+   "notEnforcerCastable": 3
+  },
+  "byNanoLine": {
+   "AbsorbACBuff(219)": 11,
+   "Challenger(5)": 19,
+   "Charge(1057)": 1,
+   "DamageChangeBuffs(597)": 6,
+   "DamageShields(1)": 16,
+   "EnforcerMeleeEnergyBuff(279)": 5,
+   "EnforcerPiercingBuff(278)": 7,
+   "EnforcerTauntProcs(627)": 6,
+   "FalseProfession(218)": 3,
+   "FastAttackBuffs(519)": 6,
+   "Fear(256)": 4,
+   "Fear_PVP(883)": 1,
+   "HPBuff(151)": 18,
+   "InitiativeBuffs(152)": 2,
+   "Knockback(884)": 1,
+   "MeleeWeaponBuffLine(180)": 25,
+   "MongoBuff(188)": 6,
+   "NOSTACKING(0)": 13,
+   "Rage(189)": 6,
+   "SelfRoot_SnareResistBuff(283)": 1,
+   "StrengthBuff(156)": 1,
+   "_1HBluntBuff(179)": 1
+  },
+  "byCategoryFromEnforcerNanosJson": {
+   "Heals / HoT": 1,
+   "Health Buffs": 18,
+   "Initiative Buffs": 2,
+   "Misc / Utility": 13,
+   "Procs": 1,
+   "Reflect / Absorb Shields": 11,
+   "Root": 1,
+   "Self / Team Buffs": 65,
+   "Taunt / Aggro": 11,
+   "Weapon & Special Attack Buffs": 36
+  },
+  "note": "Every one of the 159 Enforcer-castable nanos appears in exactly one section. Line-summary rows carry representativeId + representativeName and list every id they cover in coversNanoIds, so no id is hidden behind a label."
+ },
+ "_deviations": [
+  "NO PETS. enforcer-pets.json is deliberately absent: no SummonPet function appears in any of the 159 Enforcer-castable nanos. 'enforcer' is already present in the renderer's PETLESS list in tools/aodb/app.py, so the Pets tab correctly states the class has no pets and no app.py change was needed.",
+  "NO HEALS AT ALL. The Soldier and Doctor templates both carry a Heals/HoT section. The Enforcer has none - zero of its 159 nanos contain a heal function. enforcer-nanos.json files Mongo Rampage! (204199) under 'Heals / HoT' because its Max Health +6000 looks like one to the generic classifier; it is an AoE taunt aura and is placed under tauntsAndAggro here.",
+  "NO AC BUFF AND NO REFLECT. Where the Soldier's defensive kit is reflect (ShadowlandReflectBase) plus armour buffs (ArmorBuff line 3), the Enforcer has neither. Its two defensive lines are Absorb (AbsorbACBuff 219, stats 238-245) and reflective damage shields (DamageShields 1, stats 226-234). Nothing here touches plain AC except as a side bonus on the shields.",
+  "THE SIGNATURE SELF-BUFF AND THE SIGNATURE TEAM BUFF ARE THE SAME STRAIN. HPBuff(151) holds BOTH the Enforcer's own Mongo's line (9 nanos, target User) and the Essence line it gives away (8 nanos, target Target). No other finished class has its headline self-buff and its headline team buff colliding like this; it is TRAP 1 and it drives the whole bot cast order.",
+  "THE TOP SELF-BUFF DISABLES ITS OWN CASTING. Every Challenger(5) rank ends in CastNano[157742/157743] 'Nano skills inoperative' = -4000 to all six nano schools. No other finished class has a buff that locks out its own nano kit, and it turns the buff SET into a buff ORDER.",
+  "TAUNT VALUES ARE NOT IN THE PARENT NANO. The Mongo line's parent carries only the Health cost and an AreaCastNano; the actual TauntNpc number lives in a child nano (strain 1037) and is picked at cast time from three Psychological Modification bands. Reading only the parent - which is what enforcer-nanos.json effectSummary shows - reports the Mongo line as having no taunt at all. The child ids and bands were pulled from nanos.ocp with the extractor's diagnostic mode and are listed in tauntsAndAggro.mongoAreaTaunts.",
+  "A NANO THAT CASTS ITSELF. Restrain Enthusiasm (266302) has exactly one effect function: CastNano[266302], its own id. Recorded as found under utilityOnOthers with its behaviour marked unknown rather than guessed.",
+  "FALSE PROFESSION NANOS ARE AGENT NANOS - the same finding as the Soldier pass, reproduced here: 3 nanos in FalseProfession(218) were pulled in by their VisualProfession == 9 clause but require Profession == 5 to cast. They are listed under notEnforcerCastable."
+ ],
+ "_unverified": [
+  "Cast TARGET is read from each nano's effect functions (Target(3) vs Wearer(2)/User(1)). That is the client's own encoding but it is not the same thing as the client's targeting UI: a Wearer-targeted buff may still be castable on a friendly target in some cases. Nothing here claims a buff is castable on others unless its stat-modifying functions target Target(3).",
+  "Nano DURATIONS are not in this extraction. No row states how long a buff lasts.",
+  "NCU cost is not in this extraction. An Enforcer running the full self-buff set may not fit it in NCU; that has not been computed.",
+  "Mongo Rampage! (204199) carries a second action 'PlayfieldType NotBitAnd 1'. Which playfield class bit 1 denotes was not established from the client data nor from ao-universe / wiki.aodb.us, so the restriction is stated but not explained.",
+  "Restrain Enthusiasm (266302) does nothing readable - its only function casts its own id. Whether the live server special-cases it is unknown.",
+  "The three Psychological Modification bands on the Mongo child taunts are read from the child nano's own per-function requirements. Whether the live server evaluates them against buffed or unbuffed PsyMod is not established.",
+  "Which specific nanos other professions would buff an Enforcer with (wantedFromOthers) is described by effect, not by id, because those nanos were not extracted in this pass. No id is asserted for them.",
+  "The proc CHANCE numbers on the taunt proc line are the ProcChance2 (stat 557) argument read from the nano. Reading that argument as a percentage is the usual interpretation but is not proven from the data.",
+  "Set[Health,1] on every Mongo's rank is described here as the client-side refill step. That reading comes from the function's own shape (a Set on stat 27 under a Flags condition, in a Max Health buff); no source on the allowed list documents it."
+ ],
+ "_sources": [
+  "LOCAL E:/Funcom/OmniCell/OmniCell/Datafiles/nanos.ocp (client 18.8.50_EP1): every nano id, name, NanoStrain, cast criterion, effect function, function target, child nano id and numeric argument in this file.",
+  "LOCAL E:/Funcom/attic/extracted-client-data/itemnames.sql: every id -> name above was verified against it by script.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/NanoEnums.cs: the NanoLine names printed beside each strain.",
+  "LOCAL E:/Funcom/AOBuddy10/AOSharp.Common/GameData/Stat.cs: the stat names behind every numeric stat id quoted.",
+  "LOCAL AOBuddy/GameData/profiles/enforcer-nanos.json: the 159-nano castable set this file partitions.",
+  "LOCAL AOBuddy/GameData/profiles/enforcer-nano-sources.json: the per-nano acquisition (mission-roll / shadowlands) and expansion gate.",
+  "LOCAL AOBuddy/GameData/profiles/reference/skillcaps.json: the Enforcer nano-school cost factors quoted in wantedFromOthers.",
+  "TOOL tools/mp-nano-extractor (net10), run as --prof 9 --slug enforcer and again in its diagnostic id-dump mode over all 159 ids plus the 16 child nanos they cast."
+ ]
+}

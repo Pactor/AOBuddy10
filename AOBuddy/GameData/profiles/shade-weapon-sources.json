@@ -1,0 +1,688 @@
+{
+ "profile": "Acquisition sources for Shade representative weapons (AOBuddy10)",
+ "profession": "Shade",
+ "generatedUtc": "2026-09-23T06:31:25Z",
+ "generatedBy": "tools/mp-weapon-extractor/gen-weapon-sources.ps1",
+ "method": [
+  "Representative ids are taken from shade-weapons.json (usableWeaponTypes[].representativeWeapons).",
+  "how/where/steps/\refs are JOINED from shade-weapons-endgame.json, where each endgame model carries an acquisition resolved from the cited ao-universe.com / wiki.aodb.us guides listed in that file's _sources. Match is by item id, else by model name (representative ids can be a lower QL of the same model).",
+  "expansion is read from the weapon's own ToWield Expansion(389) BitAnd criterion in items.ocp, mapped via AOSharp.Common ExpansionFlags - authoritative client data.",
+  "Anything with no cited acquisition is written how='unknown' with no where/steps. No vendor, mob or mission is guessed."
+ ],
+ "sources": {
+  "214159": {
+   "name": "Spike of Menace",
+   "ql": 299,
+   "how": "tradeskill",
+   "where": "Turn Spirit weapon line - OMNI-TEK side",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "NOT a drop. It is the Omni-Tek Piercing entry in the Turn Spirit weapon line.",
+    "Step 1: get the base weapon, an INAMORATA RAPIER. The Inamorata/Sacrosanct weapons drop from sided Shadowlands mobs, crossed over: \"Unredeemed mobs drop the redeemed weapons - and vise versa.\" Piercing entries are Sacrosanct Stiletto (Clan) and Inamorata Rapier (Omni).",
+    "Step 2: add a GREY GLYPH OF ABAN-SHERE. This step needs Weapon Smithing at 6x the weapon QL, Electrical Engineering at 5x and Field Quantum Physics at 4x.",
+    "Step 3: add a TURN SPIRIT OF THE TORMENTOR. This step needs NO tradeskill skill, but the spirit must be at least 80% of the weapon QL. Turn Spirits come from Yuttos \"Manuals\", ICC Weapon Supplies terminals, or as rare drops off Shadowlands dyna bosses.",
+    "The upgrade \"add[s] a profession requirement and remove[s] the Shadowlands expansion requirement\" - which is exactly what items.ocp shows: Spike of Menace is Shade-locked with no expansion gate.",
+    "Spike of Menace covers QL100-299; Susurrating Spike of Menace is the QL300 version."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/turn-spirit-weapons",
+    "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/inamorata-and-sacrosanct-weapons"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Spike of Menace')."
+  },
+  "214160": {
+   "name": "Susurrating Spike of Menace",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Turn Spirit weapon line - OMNI-TEK side, QL300",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "The QL300 version of Spike of Menace. Same three-step Turn Spirit build: Inamorata Rapier + Grey Glyph of Aban-Shere + Turn Spirit of the Tormentor."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/turn-spirit-weapons",
+    "http://wiki.aodb.us/wiki/Turn_Spirit_weapons"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Susurrating Spike of Menace')."
+  },
+  "214164": {
+   "name": "Trick Poker",
+   "ql": 299,
+   "how": "tradeskill",
+   "where": "Turn Spirit weapon line - CLAN side",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "NOT a drop. It is the Clan Piercing entry in the Turn Spirit weapon line.",
+    "Step 1: base weapon SACROSANCT STILETTO (drops from sided Shadowlands mobs - unredeemed mobs drop the redeemed weapons and vice versa).",
+    "Step 2: GREY GLYPH OF ABAN-SHERE. Needs Weapon Smithing 6x weapon QL, Electrical Engineering 5x, Field Quantum Physics 4x.",
+    "Step 3: TURN SPIRIT OF AN-BATHEL THE ARTFUL. No tradeskill skill needed; the spirit must be at least 80% of the weapon QL.",
+    "Trick Poker covers QL100-299; Twinkling Trick Poker is the QL300 version."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/turn-spirit-weapons",
+    "http://wiki.aodb.us/wiki/Turn_Spirit_weapons",
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/inamorata-and-sacrosanct-weapons"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Trick Poker')."
+  },
+  "214165": {
+   "name": "Twinkling Trick Poker",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Turn Spirit weapon line - CLAN side, QL300",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "The QL300 version of Trick Poker. Same three-step Turn Spirit build: Sacrosanct Stiletto + Grey Glyph of Aban-Shere + Turn Spirit of An-Bathel the Artful."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/turn-spirit-weapons",
+    "http://wiki.aodb.us/wiki/Turn_Spirit_weapons"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Twinkling Trick Poker')."
+  },
+  "226486": {
+   "name": "Die Nadel",
+   "ql": 300,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231086": {
+   "name": "Sigd I",
+   "ql": 19,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231088": {
+   "name": "Sigd II",
+   "ql": 29,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231090": {
+   "name": "Sigd III",
+   "ql": 39,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231092": {
+   "name": "Sigd IV",
+   "ql": 59,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231094": {
+   "name": "Sigd V",
+   "ql": 99,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231096": {
+   "name": "Sigd VI",
+   "ql": 149,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231098": {
+   "name": "Sigd VII",
+   "ql": 199,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231100": {
+   "name": "Sigd VIII",
+   "ql": 249,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231102": {
+   "name": "Sigd IX",
+   "ql": 299,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "231103": {
+   "name": "Sigd X",
+   "ql": 300,
+   "how": "shop",
+   "where": "Shadowlands garden shops (Scheol and Adonis normal gardens)",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "Shop stock, not a drop. A Funcom-forums Shade thread states it directly: \"you can't get them till the Scheol gardens (and there will be only 0, 1 or 2 QLs in the store, so getting the right QL for you is a challenge in itself)\".",
+    "The same thread caps the line: \"the Sigd daggers in Scheol and Adonis normal gardens aren't going to be above QL150\" - so the Sigd line does NOT carry a Shade past the mid game.",
+    "An ao-universe forum post groups Sigd with the weapons that need Brawl to equip: \"Spend all your IP in Brawl just to equip SL weapons with RK damage (Chicanery, Die Kleine Nadel, Sigd, NFKs)\". Brawl costs a Shade 4.0 IP - the maximum - so budget for that before buying one.",
+    "UNKNOWN: the numbered tiers Sigd I..X that exist in items.ocp are not documented on any allowed source; only \"Sigd\"/\"Sigd daggers\" generically."
+   ],
+   "refs": [
+    "https://forums.funcom.com/t/shade-rk2019-weapons/83733",
+    "https://www.ao-universe.com/forum/viewtopic.php?t=4652"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Sigd X')."
+  },
+  "244778": {
+   "name": "Lady of Deceit",
+   "ql": 299,
+   "how": "drop",
+   "where": "The Beast, Pandemonium (Shadowlands)",
+   "expansion": null,
+   "tier": "TL6",
+   "steps": [
+    "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). 'Lord of X' is QL 300 and 'Lady of X' QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/The_Beast",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Lady of Deceit')."
+  },
+  "245607": {
+   "name": "Nippy John Stiletto",
+   "ql": 160,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "246243": {
+   "name": "Broken Sword of Dawn",
+   "ql": 199,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "246244": {
+   "name": "Sword of Dawn",
+   "ql": 200,
+   "how": "tradeskill",
+   "where": "Pandemonium (Shadowlands)",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "Notum Seed + Sunrise Hilt = Sword of Dawn  (Clan/Redeemed side)",
+    "Novictum Seed + Sunset Hilt = Sword of Dusk  (Omni/Unredeemed side)",
+    "Requires 500 Weapon Smithing - the only step in the whole Xan line with a real skill requirement.",
+    "Notum Seed drops from The Night Heart on the Redeemed (Clan) side of Pandemonium; Novictum Seed from The Night Heart on the Unredeemed (Omni) side. Neither is a 100% drop; both also turn up in player shops.",
+    "Sunrise Hilt (Clan) and Sunset Hilt (Omni) are 100% NODROP drops from The Beast. Recorded rates over 104 kills: Sunrise 18.27%, Sunset 4.81%.",
+    "Neutrals capped at 25,000 faction cannot obtain these."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/sword-of-dawndusk",
+    "http://wiki.aodb.us/wiki/The_Beast"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Sword of Dawn')."
+  },
+  "246255": {
+   "name": "Broken Sword of Dusk",
+   "ql": 199,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "246256": {
+   "name": "Sword of Dusk",
+   "ql": 200,
+   "how": "tradeskill",
+   "where": "Pandemonium (Shadowlands)",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "Notum Seed + Sunrise Hilt = Sword of Dawn  (Clan/Redeemed side)",
+    "Novictum Seed + Sunset Hilt = Sword of Dusk  (Omni/Unredeemed side)",
+    "Requires 500 Weapon Smithing - the only step in the whole Xan line with a real skill requirement.",
+    "Notum Seed drops from The Night Heart on the Redeemed (Clan) side of Pandemonium; Novictum Seed from The Night Heart on the Unredeemed (Omni) side. Neither is a 100% drop; both also turn up in player shops.",
+    "Sunrise Hilt (Clan) and Sunset Hilt (Omni) are 100% NODROP drops from The Beast. Recorded rates over 104 kills: Sunrise 18.27%, Sunset 4.81%.",
+    "Neutrals capped at 25,000 faction cannot obtain these."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/tradeskill-guides-5/weapon-3/sword-of-dawndusk",
+    "http://wiki.aodb.us/wiki/The_Beast"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Sword of Dusk')."
+  },
+  "247069": {
+   "name": "Bloodlust",
+   "ql": 300,
+   "how": "quest",
+   "where": "Elysium - The Melting Pot (720 x 1565), the Yuttos NPC \"One Who Wins Over Mind\"",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "Quest reward. Take the quest from the Yuttos NPC One Who Wins Over Mind at The Melting Pot in Elysium, coordinates 720 x 1565.",
+    "Kill the Mortiig Chieftain for him. \"Shades should receive a QL120 Bloodlust.\"",
+    "Player caveat from the Funcom forums: it is \"rather a slow 2/2 weapon\"."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/elysium/one-who-wins-over-mind",
+    "https://forums.funcom.com/t/shade-rk2019-weapons/83733"
+   ],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Acquisition joined from shade-weapons-endgame.json (model 'Bloodlust')."
+  },
+  "254702": {
+   "name": "Kyr'Ozch Energy Hammer",
+   "ql": 300,
+   "how": "drop",
+   "where": "Alien city raids / Alien Mothership",
+   "expansion": "AlienInvasion",
+   "tier": "expansion",
+   "steps": [
+    "Untyped Kyr'Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+    "An untyped Kyr'Ozch weapon has no special attacks until it is typed with a Kyr'Ozch Bio-Material - Type [n] clump (see the '- Type' entries)."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material",
+    "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+   ],
+   "notes": "Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Kyr'Ozch Energy Hammer')."
+  },
+  "254709": {
+   "name": "Kyr'Ozch Energy Hammer - Type 112",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Alien city raids / Alien Mothership (base weapon + clump)",
+   "expansion": "AlienInvasion",
+   "tier": "expansion",
+   "steps": [
+    "Kyr'Ozch Bio-Material - Type [n] + untyped Kyr'Ozch weapon = the typed weapon. The type decides which special attacks the weapon gets.",
+    "Make the typed clump first: Kyr'Ozch Structural Analyzer + Solid Clump of Kyr'Ozch Bio-Material = Kyr'Ozch Bio-Material - Type [n].",
+    "The Structural Analyzer is either Field Quantum Physics All-Purpose Tool (reusable) + Kyr'Ozch Atomic Re-Structuralizing Tool (consumed; a common Hacker'Uri drop) at 600 Quantum FT, or the reward for Uncle Bazzit's AI Perk 3 quest.",
+    "Typing needs 6x the weapon's QL in Mechanical Engineering and 6x QL in Weapon Smithing, and the clump must be at least 90% of the weapon's QL. Typing is PERMANENT - a weapon cannot be re-typed or cleared.",
+    "Solid Clumps and the untyped weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership. Alien City Raid needs the AI expansion, an org city and a fully charged city controller with a CRU; documented raid bosses are Ankari, Cha, Illari, Jaxx, Rimah and Xoch. No drop rates are published.",
+    "Type -> specials: 1 Fling Shot; 2 Aimed Shot; 3 Fling+Aimed; 4 Burst; 5 Fling+Burst; 12 Burst+Full Auto; 13 Fling+Burst+Full Auto; 48 Brawl+Dimach; 76 Brawl+Fast Attack; 112 Brawl+Dimach+Fast Attack; 240 Brawl+Dimach+Fast Attack+Sneak Attack; 880 Dimach+Fast Attack+Parry+Riposte; 992 Dimach+Fast Attack+Sneak Attack+Parry+Riposte."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons",
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material",
+    "https://wiki.aodb.us/wiki/Kyr'Ozch_Structural_Analyzer",
+    "http://wiki.aodb.us/wiki/Alien_City_Raid"
+   ],
+   "notes": "Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Kyr'Ozch Energy Hammer - Type 112')."
+  },
+  "254716": {
+   "name": "Kyr'Ozch Energy Rapier",
+   "ql": 300,
+   "how": "drop",
+   "where": "Alien city raids / Alien Mothership",
+   "expansion": "AlienInvasion",
+   "tier": "expansion",
+   "steps": [
+    "Untyped Kyr'Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+    "An untyped Kyr'Ozch weapon has no special attacks until it is typed with a Kyr'Ozch Bio-Material - Type [n] clump (see the '- Type' entries)."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material",
+    "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+   ],
+   "notes": "Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Kyr'Ozch Energy Rapier')."
+  },
+  "265005": {
+   "name": "Ofab Viper Mk 4",
+   "ql": 300,
+   "how": "shop|tradeskill",
+   "where": "Battlestation - Ofab terminals, Unicorn Defence Hub",
+   "expansion": "LostEden",
+   "tier": "expansion",
+   "steps": [
+    "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the 'Ofab Shop') in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+    "Upgraded Mk 1 -> Mk 6 (five upgrades, strictly sequential) by adding a Kyr'Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon's QL. Each upgrade also changes the weapon's appearance.",
+    "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+    "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+    "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+   ],
+   "refs": [
+    "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+    "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+    "http://wiki.aodb.us/wiki/Battle_Station",
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material"
+   ],
+   "notes": "Wielding requires expansion 'LostEden' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Ofab Viper Mk 4')."
+  },
+  "265012": {
+   "name": "Ofab Viper Mk 5",
+   "ql": 300,
+   "how": "shop|tradeskill",
+   "where": "Battlestation - Ofab terminals, Unicorn Defence Hub",
+   "expansion": "LostEden",
+   "tier": "expansion",
+   "steps": [
+    "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the 'Ofab Shop') in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+    "Upgraded Mk 1 -> Mk 6 (five upgrades, strictly sequential) by adding a Kyr'Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon's QL. Each upgrade also changes the weapon's appearance.",
+    "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+    "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+    "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+   ],
+   "refs": [
+    "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+    "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+    "http://wiki.aodb.us/wiki/Battle_Station",
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material"
+   ],
+   "notes": "Wielding requires expansion 'LostEden' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Ofab Viper Mk 5')."
+  },
+  "265019": {
+   "name": "Ofab Viper Mk 6",
+   "ql": 300,
+   "how": "shop|tradeskill",
+   "where": "Battlestation - Ofab terminals, Unicorn Defence Hub",
+   "expansion": "LostEden",
+   "tier": "expansion",
+   "steps": [
+    "Bought as Mk 1 with Victory Points at the Ofab weapon terminals in the Unicorn Defence Hub (the 'Ofab Shop') in the Battle Station central area. VP is earned on Battlestations and on Lost Eden (Alien Mothership) missions. Terminals are bracketed by level: 10-30, 31-60, 61-100, 101-150, 151-200, 201-214, 215-220.",
+    "Upgraded Mk 1 -> Mk 6 (five upgrades, strictly sequential) by adding a Kyr'Ozch Bio-Material clump to the weapon. No tradeskill skill is required; the clump must be at least 80% of the weapon's QL. Each upgrade also changes the weapon's appearance.",
+    "Bio-Material by weapon: Type 34 for Ofab Panther (1h Blunt) and Ofab Bear (2h Blunt); Type 18 for Ofab Mongoose (1h Edged), Ofab Wolf (2h Edged) and Ofab Viper (Piercing); Type 812 for Ofab Peregrine (Pistol), Ofab Hawk (SMG) and Ofab Tiger (Bow); Type 687 for Ofab Cobra (Rifle), Ofab Shark (Assault Rifle) and Ofab Silverback (Shotgun).",
+    "The clumps drop from the bosses in Lost Eden Alien Mothership missions (taken from the Unicorn Recruiter at the Unicorn Outpost in the Outerzones, via ICC) and from the Dreadloch bosses at the Clan and Omni camps.",
+    "No VP price list is published; the only figure found is a player report of 1100 VP for a QL75 Ofab Pistol."
+   ],
+   "refs": [
+    "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades",
+    "https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons",
+    "http://wiki.aodb.us/wiki/Battle_Station",
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material"
+   ],
+   "notes": "Wielding requires expansion 'LostEden' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Ofab Viper Mk 6')."
+  },
+  "267258": {
+   "name": "Dreadloch Shen Sticks",
+   "ql": 300,
+   "how": "drop",
+   "where": "Dreadloch camps (Lost Eden), level 210-220",
+   "expansion": "LostEden",
+   "tier": "expansion",
+   "steps": [
+    "Dreadloch weapons are a DIRECT DROP from the Dreadloch camp bosses, not a tradeskill. They are QL300 only and require the Lost Eden expansion to wield (from the item's own Expansion(389) criterion).",
+    "There are two sets of five camps, one per side. Omni-side camps (the CLAN quest chain, started by Captain Cante Hawke in Old Athens): Clondyke - Force Recon Commander 191; Eastern Foul Plains - Special Agent Moxy; Pleasant Meadows - Major Woon; Southern Artery Valley - Assault Commander Pax; Upper Stret East Bank - Peal Thunder.",
+    "Clan-side camps (the OMNI quest chain, started by Paolo Turin near the Grid terminal in Omni-1 Trade 409x542, who sends you to Sergeant Jasmine Cordell in Omni-1 Entertainment 906x629): Belial Forest 3184x503 - Brigadier Crux; Athen Shire / War Academy 1720x1920 - Assault Commander Sleek; The Longest Road / Drumdar 3650x574 - Chief Gunner Kyle Swan; Broken Shores 2240x4765 - Special Agent Deko; Upper Stret East Bank / Safe Haventown 1798.6x2207.0 - Carillion Thunder.",
+    "The bosses have a 2-hour respawn and the corpse can be looted for 29 minutes before it rots. The quest is NOT required to claim the loot - completing it adds a merit token worth +50 side tokens and +500 Victory Points.",
+    "The same bosses also drop high-quality Kyr'Ozch clumps for Ofab upgrades, Hellfyre Magma Suit armour, the merit/combat board bases and the Dreadloch utility items (Damage Amplifier, Endurance Booster, Sniper's Friend, Stab Guidance System, Survival Predictor).",
+    "No per-weapon drop rate is published on either allowed source."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/omni-dreadloch-camps-clan-quests",
+    "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/clan-dreadloch-camps-omni-quests",
+    "http://wiki.aodb.us/wiki/Soldier:Weapons"
+   ],
+   "notes": "Wielding requires expansion 'LostEden' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Dreadloch Shen Sticks')."
+  },
+  "280719": {
+   "name": "Deceit of the Xan",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+   "expansion": "LegacyOfTheXan",
+   "tier": "TL6",
+   "steps": [
+    "Xan Weapon Upgrade Device + [base weapon QL 299/300] = [X] of the Xan. No tradeskill skill required.",
+    "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / 'Mitaar Hero' (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+    "Base weapon for most sins is the matching Lord/Lady of [sin] from The Beast in Pandemonium.",
+    "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+    "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+   ],
+   "notes": "Wielding requires expansion 'LegacyOfTheXan' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Deceit of the Xan')."
+  },
+  "280729": {
+   "name": "Dawn of the Xan",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+   "expansion": "LegacyOfTheXan",
+   "tier": "TL6",
+   "steps": [
+    "Xan Weapon Upgrade Device + [base weapon QL 299/300] = [X] of the Xan. No tradeskill skill required.",
+    "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / 'Mitaar Hero' (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+    "Base weapon for most sins is the matching Lord/Lady of [sin] from The Beast in Pandemonium.",
+    "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+    "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+   ],
+   "notes": "Wielding requires expansion 'LegacyOfTheXan' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Dawn of the Xan')."
+  },
+  "280730": {
+   "name": "Dusk of the Xan",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Legacy of the Xan team instances (device) + Pandemonium (base weapon)",
+   "expansion": "LegacyOfTheXan",
+   "tier": "TL6",
+   "steps": [
+    "Xan Weapon Upgrade Device + [base weapon QL 299/300] = [X] of the Xan. No tradeskill skill required.",
+    "The Xan Weapon Upgrade Device is QL 300, NODROP/Unique and is consumed by the combine. It drops in the three Legacy of the Xan team instances entered from floor portals in the Central Hub playfield: The Alien Threat / 'Mitaar Hero' (portal at 350 x 410, boss Technomaster Sinuh), LoX: Ground Chief Vortexx (portal at 523 x 307), and The Xan 12-man (portal at 419 x 324, final boss Deranged Xan). Since patch 18.3 none of them need the old prerequisite quests. No drop rate is published. The combine itself needs NO tradeskill skill.",
+    "Base weapon for most sins is the matching Lord/Lady of [sin] from The Beast in Pandemonium.",
+    "Dawn of the Xan and Dusk of the Xan take Sword of Dawn / Sword of Dusk instead (see those entries).",
+    "Angst of the Xan additionally accepts High Lord of Angst; Anger/Envy/Angst of the Xan additionally accept the matching Superior Rebuilt Perennium weapon."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/tradeskill-guides-2/weapons/xan-weapon-upgrade"
+   ],
+   "notes": "Wielding requires expansion 'LegacyOfTheXan' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Dusk of the Xan')."
+  },
+  "288288": {
+   "name": "Special Edition Kyr'Ozch Rapier",
+   "ql": 150,
+   "how": "unknown",
+   "where": null,
+   "expansion": "AlienInvasion",
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "ToWield carries a Profession EqualTo Shade criterion in items.ocp. Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "288664": {
+   "name": "Kyr'Ozch Nunchacko",
+   "ql": 300,
+   "how": "drop",
+   "where": "Alien city raids / Alien Mothership",
+   "expansion": "AlienInvasion",
+   "tier": "expansion",
+   "steps": [
+    "Untyped Kyr'Ozch weapons drop from the alien city-raid boss (the General) and from the boss on the alien Mothership; ao-universe and wiki.aodb.us give no per-mob table and no drop rates.",
+    "An untyped Kyr'Ozch weapon has no special attacks until it is typed with a Kyr'Ozch Bio-Material - Type [n] clump (see the '- Type' entries)."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Kyr'Ozch_Bio-Material",
+    "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/weapon-2/upgrading-alien-weapons"
+   ],
+   "notes": "Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'Kyr'Ozch Nunchacko')."
+  },
+  "293993": {
+   "name": "Kuma Tonfa - Left Hand",
+   "ql": 300,
+   "how": "unknown",
+   "where": null,
+   "expansion": "LegacyOfTheXan",
+   "tier": "TL6",
+   "steps": [],
+   "refs": [],
+   "notes": "Wielding requires expansion 'LegacyOfTheXan' (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "293996": {
+   "name": "Kuma Tonfa - Right Hand",
+   "ql": 300,
+   "how": "unknown",
+   "where": null,
+   "expansion": "LegacyOfTheXan",
+   "tier": "TL6",
+   "steps": [],
+   "refs": [],
+   "notes": "Wielding requires expansion 'LegacyOfTheXan' (ToWield Expansion stat 389, items.ocp). Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "294001": {
+   "name": "Lady of Wisdom",
+   "ql": 300,
+   "how": "drop",
+   "where": "The Beast, Pandemonium (Shadowlands)",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "Drops from The Beast, the final boss of the Pandemonium raid (Shadowlands). 'Lord of X' is QL 300 and 'Lady of X' QL 299; the two are otherwise identical items. The Beast has a 9-hour respawn; loot pooled over 104 documented kills shows 2-4 weapons, 4 armour pieces, both hilts, 1-2 profession stars and one Shadowbreed per kill. No individual weapon drop rate is published."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/The_Beast",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Lady of Wisdom')."
+  },
+  "301885": {
+   "name": "X1-R4 Viral Force-Blades",
+   "ql": 300,
+   "how": "tradeskill",
+   "where": "Alien Playfield (APF) - upgrade of the Blades of Boltar",
+   "expansion": "AlienInvasion",
+   "tier": "expansion",
+   "steps": [
+    "Craft: Blades of Boltar plus an Action Probability Estimator (an APF loot tradeskill).",
+    "The chain below it: QL250+ Kyr'Ozch Energy Rapier Type 992 + Energy Redistribution Unit = Blades of Boltar."
+   ],
+   "refs": [
+    "http://wiki.aodb.us/wiki/Blades_of_Boltar",
+    "https://www.ao-universe.com/guides/alien-invasion/tradeskill-guides-3/general-crafting-2/apf-loot-tradeskills"
+   ],
+   "notes": "Wielding requires expansion 'AlienInvasion' (ToWield Expansion stat 389, items.ocp). Acquisition joined from shade-weapons-endgame.json (model 'X1-R4 Viral Force-Blades')."
+  },
+  "302946": {
+   "name": "Corrupted Lord of Wisdom",
+   "ql": 300,
+   "how": "drop",
+   "where": "Pyramid of Home / \"Dark Pyramid Below\" (6-man, level 201-220)",
+   "expansion": null,
+   "tier": "TL7",
+   "steps": [
+    "A DIRECT DROP - not a tradeskill step above 'X of the Xan'. The Corrupted weapons are a parallel endgame drop line, added in patch 18.8.6 (27 Oct 2015).",
+    "They drop from the bosses of Pyramid of Home, a 6-man level 201-220 dungeon: Cybernetic Daemon, Azdaja the Joyous, Maiden, then Phobettor. Portals last 4 hours (18.8.7).",
+    "Entrance: the giant crater north of the city of Home on Rubi-Ka; since 18.8.6 you enter through the large door behind Number Nine inside the Temple of Home, Broken Shores.",
+    "Access needs ONE of: any Profession Nanodeck worn (Dust Brigade quest base version or the Xan-upgraded one), the quest 'Guarding the Source' completed, or the Legacy of the Xan quests completed. The guide reports it also worked with just a Beast profession star worn.",
+    "Patch 18.8.8 (9 Nov 2015) confirms what these are: the duplicate 'Chaos of the Xan' entry was renamed and modified into the Corrupted Lord of Chaos, and the Achaean Conqueror was added to drop alongside the other Corrupted weapons. That is why the client data shows them as QL 300 Legacy-of-the-Xan-gated weapons with the same flavour text as the 'X of the Xan' items but different damage and a title level 7 (level 205+) gate instead of title level 6.",
+    "The Wisdom versions come in Atrox and non-Atrox and right/left-hand variants, adjusted with a screwdriver to match breed.",
+    "No per-boss drop rates are published."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below",
+    "http://wiki.aodb.us/wiki/Patch_18.8"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Corrupted Lord of Wisdom')."
+  },
+  "303406": {
+   "name": "Junior Ofab Boar",
+   "ql": 220,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": null,
+   "steps": [],
+   "refs": [],
+   "notes": "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "305026": {
+   "name": "Slayerdroid Notum-Imbued Claw",
+   "ql": 200,
+   "how": "unknown",
+   "where": null,
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [],
+   "refs": [],
+   "notes": "Acquisition (vendor/mob/mission) NOT verified: no entry on ao-universe.com or wiki.aodb.us for this model, and the per-item drop databases (auno.org, aoitems.com) are blocked to automation. No drop location is approximated."
+  },
+  "305525": {
+   "name": "Uklesh's Talon",
+   "ql": 300,
+   "how": "drop",
+   "where": "Temple of Three Winds RAID - Uklesh the Beguiling",
+   "expansion": null,
+   "tier": "high-rk",
+   "steps": [
+    "QL300, from Uklesh the Beguiling in the TOTW Raid. Level 201+ to enter.",
+    "Carries a 3% stun proc."
+   ],
+   "refs": [
+    "https://www.ao-universe.com/guides/shadowlands/professions-guides/comprehensive-shade-guide"
+   ],
+   "notes": "Acquisition joined from shade-weapons-endgame.json (model 'Uklesh's Talon')."
+  }
+ },
+ "_sources": [
+  {
+   "coverage": {
+    "representativeIdsCovered": 42,
+    "withCitedAcquisition": 24,
+    "howUnknownButExpansionKnown": 3,
+    "howUnknownAndNoExpansion": 15
+   },
+   "inheritedFrom": "shade-weapons-endgame.json (_sources there lists every ao-universe.com / wiki.aodb.us URL behind the acquisition text reproduced here)",
+   "honestFlag": "'unknown' means no drop mob, vendor or mission could be verified on an allowed source. auno.org (anti-bot 403), aoitems.com (parked) and anarchyonline.fandom.com (402) are blocked to automation, and the playbook forbids recording fuzzy secondhand claims from them.",
+   "toImprove": "Extend the acquisition table in tools/mp-weapon-extractor/gen-weapons-endgame.ps1 ($acq) with further cited weapon lines; every model whose name matches gains a source here automatically."
+  }
+ ]
+}

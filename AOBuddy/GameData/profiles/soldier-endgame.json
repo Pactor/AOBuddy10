@@ -1,0 +1,466 @@
+{
+  "profession": "Soldier",
+  "professionId": 1,
+  "symbiantUnitType": "Artillery",
+  "levelCapContext": "AO level cap is 220 (+ up to 30 AI/research levels). 'Endgame' = ~level 200-220, AI 24-30, research L9-10. Soldier-specific gates read out of the client data: the Soldier Nanodeck needs level 215 (ToWield Level > 214), Augmented Mirror Shield MK IV needs level 220 + Specialization 4, the Star of Fidelity needs level 200 + Computer Literacy 1500, the Amplified Kyr'Ozch Carbines need level 201, and the Dreadloch Modified Shark needs level 210.",
+  "content": [
+    {
+      "name": "Pandemonium (Adonis inner realm)",
+      "type": "raid",
+      "level": "200-220. Needs a Hold Hell at Bay (HHAB) ring to survive the ~6k fire DoT of the Pandemonium environment. 4h lockout per Zodiac kill, 9h on the Beast.",
+      "whatDropsForSoldier": "The Night Heart (level 250, Pandemonium Antenora / 2nd island) drops the Intelligent QL300 Artillery symbiants that are the second half of every Xan Alpha - verified for Soldier slots Brain (235422), Ocular (219139), Ear (235440), Chest (235475), Right Arm (235457), Left Arm and more in soldier-symbiants.json; it also drops Conscious QL290 and Vital QL260 Artillery pieces. The 12 Zodiac bosses drop tradeable phatz plus the belts and weapon seeds used game-wide.",
+      "soldierRole": "Front-line weapon DPS and the raid's reflect blanket. Full Auto and Burst on the boss, Total Mirror Shield / Augmented Mirror Shield for the spike phases, and the Shadowlands team reflect line (Empowered Reactive Reflective Field 185 -> Harmonizing Resonance Field 201 -> Reactive Resonance Field 207 -> Adaptive Resonance Field 212 -> Pre-Nullity Sphere 220) on the team. Also the taunt/detaunt toolbox (20 taunts, 6 detaunts in soldier-nanos.json) to shed or hold aggro.",
+      "note": "This is the farm zone for the Artillery Intelligent QL300 half of your Alphas, and it is where the Beast lives. The HHAB ring is a hard prerequisite - get it before planning Alpha farming."
+    },
+    {
+      "name": "The Beast (Beast Lair, Pandemonium)",
+      "type": "raid",
+      "level": "Endgame (players ~201-220); 9 hour respawn. The wiki's 'level 300' is the MOB's level, not a player requirement.",
+      "whatDropsForSoldier": "Per kill: 4 armour parts + both hilts + 1-2 Stars + 2-4 weapons + 1 random Shadowbreed. THE Soldier drops: 'Lord of Anger' (id 244802, QL300) / 'Lady of Anger' (id 244801, QL299) - verified in items.ocp as an Assault Rifle, ToWield Assault Rifle 2250 / Full Auto 2025, 200-400 damage, 3.0s attack and recharge, no profession lock - and 'Star of Fidelity' (id 244690, QL250), verified Profession EqualTo 1 (Soldier only), Level > 199, Computer Literacy > 1499, giving Assault Rifle +30, Full Auto +30, First Aid +30, Strength +30. The 10 Beast armour parts (Sigil of Bahomet 244750, Helmet of Hypocrisy 244716, Burden of Competence 244718, Shoulderplates of Sabotage 244713, Cuirass of Obstinacy 244717, Sleeves of Senseless Violence 244705, Gauntlets of Deformation 244704, Armplates of Elimination 244712, Greaves of Malfeasance 244715, Boots of Concourse 244714) are NOT profession-locked - they need Computer Literacy > 1749, Shadowlands and Level > 214. Sigil of Bahomet is the standout for any profession (+1800 Health, +1800 Nano, +30 NCU, +120 Run Speed).",
+      "soldierRole": "Pure weapon DPS plus reflect support; Soldier is not a required Beast role but is a strong damage slot. Keep the team reflect up through the damage phases.",
+      "note": "Lord/Lady of Anger is the Soldier's Xan weapon STARTING PIECE - it is the input to the Xan Weapon Upgrade. Star of Fidelity is the star that turns an Activated Soldier Nanodeck into a Stellar Soldier Nanodeck. Both chains start here."
+    },
+    {
+      "name": "Guarding the Source (Beast Star quest)",
+      "type": "quest",
+      "level": "190-220. Starts with 'One Who is Invited Last' (Yutto NPC) at 2485 x 1190 in Yutto Marshes.",
+      "whatDropsForSoldier": "A guaranteed 'Star of Fidelity' (id 244690) - the Soldier star - without having to win the Beast roll. Chain: recover a Temporal Recovery System Unit -> deliver it to Ergo in Inferno -> kill Libra (first Pandemonium Zodiac) for an Activation Code -> return it to Ergo -> attack the Beast (no kill credit needed) -> take the portal to the Pyramid in Broken Shores -> target Number Nine.",
+      "soldierRole": "Weapon DPS on Libra and on the Beast tag; the rest is travel and turn-ins.",
+      "note": "This is the reliable route to the Star of Fidelity. Completing it is also one of the three accepted entry tickets for the Pyramid of Home."
+    },
+    {
+      "name": "Pyramid of Home (Dark Pyramid Below)",
+      "type": "raid",
+      "level": "201-220, team of 6. In the crater north of the city of Home, Broken Shores; also reachable by the portal from the Beast Lair into Number Nine's room.",
+      "whatDropsForSoldier": "'Corrupted Lord of Anger' (id 302938, QL300) - verified in items.ocp as an Assault Rifle with LOWER wield requirements than the Beast original (Assault Rifle 1999 / Burst 999 / Full Auto 1799, Legacy of the Xan expansion bit), 250-600 damage, 1.6s attack and recharge, Burst recharge 1.5s, Full Auto recharge 3.0s. It is the easiest-to-wield 600-max-damage AR in the game and a direct alternative to chasing a Beast roll.",
+      "soldierRole": "Weapon DPS in a 6-man; the reflect stack matters because Cybernetic Daemon's fireballs, the Maiden's lasers and Phobettor's combined kit are burst damage. Bosses: Cybernetic Daemon (stun/pushback/fireballs), Azdaja the Joyous (mind control, morphs, NCU manipulation), Maiden (fire walls, lasers, clones), Phobettor (final, combines all three).",
+      "note": "Entry requires ONE of: a worn Profession Nanodeck, a completed 'Guarding the Source', or completed Legacy of the Xan quests. Every boss can drop corrupted Lords. Also drops the Achaean Conqueror (grenade weapon) - not a Soldier item."
+    },
+    {
+      "name": "The Xan (12-man) / Hall of the Elders",
+      "type": "raid",
+      "level": "201-220 (wiki.aodb.us says 210+). 4-hour lockout. Entrance in the Central Hub (Xan Hub) at 419 x 324.",
+      "whatDropsForSoldier": "Artillery-unit Xan Beta symbiants from the Deranged Xan: Right Arm (278899), Right Hand (278900), Feet (278904) - all QL300, min level 201. Plus the Xan Weapon Upgrade Device (id 280786), the Nanodeck Activation Device (280785 / 281157), Base NCU Type 00, belt tuning devices, Xan Beta spirits, and the 5-hour 'The Awakening' completion buff. Bosses: Xan Spirit of Redemption (250), Left Hand of Insanity + Right Hand of Madness, Deranged Xan.",
+      "soldierRole": "Weapon DPS plus reflect on the raid. Unlike the Meta-Physicist, Soldier is NOT the profession the mind-control mechanic singles out - keep swinging and keep the team reflect running. Since 18.3 you no longer need Vortexx and The Alien Threat completed to enter.",
+      "note": "One of three sources of the Xan Weapon Upgrade Device, and the source of 3 of your 13 Artillery Xan Betas. The other Betas come from Mitaar Hero, Vortexx, Arid Rift and Neretva - see soldier-symbiants.json."
+    },
+    {
+      "name": "Mitaar Hero (The Alien Threat)",
+      "type": "instance",
+      "level": "201-220. Entrance in the Central Hub at 350 x 410, at the bottom of the ramp to Arid Rift. No lockout timer.",
+      "whatDropsForSoldier": "Artillery Xan Beta symbiants from Technomaster Sinuh: Brain (278892), Chest (278895), Left Wrist (278898), Left Hand (278897) - QL300, min level 201. Also the Xan Weapon Upgrade Device (280786), the Nanodeck Activation Device, Base NCUs, Memory Cells, belt tuning devices and Merit Board Bases.",
+      "soldierRole": "Weapon DPS. The fight is a platform/NCU-buff dance (coloured spirit platforms; missing a colour stacks damage, cocoons, NSD and NCU wipes) - a Soldier with the reflect stack and a taunt bar is a safe body to send after platforms.",
+      "note": "No lockout makes this the cheapest repeat source of the Xan Weapon Upgrade Device and the Nanodeck Activation Device - the two items that gate the Soldier's weapon and nanodeck upgrades."
+    },
+    {
+      "name": "Ground Chief Vortexx",
+      "type": "instance",
+      "level": "201-220. Floor portal in the Central Hub at 523 x 307, southeast of the Mitaar entrance.",
+      "whatDropsForSoldier": "Artillery Xan Beta symbiants: Ocular (278893), Left Arm (278896), Right Wrist (278901), Waist (278902) - QL300, min level 201. Also a source of the Xan Weapon Upgrade Device.",
+      "soldierRole": "Weapon DPS. Bring the four Notum Crystals (Blood Red, Pulsating Green, Golden, Cobalt Blue) - they are fight-mechanic consumables used inside, farmed from Dust Brigade Operators / Engineers / Superior Commandos / Technicians in Neretva Canyons.",
+      "note": "Since patch 18.3 the Neretva Canyons quests are no longer required for access, but you still need the crystals for the mechanic."
+    },
+    {
+      "name": "Arid Rift questline",
+      "type": "quest",
+      "level": "201-220. Entered from the Central Gateway / Central Hub.",
+      "whatDropsForSoldier": "The Artillery 'Xan Ear Symbiant, Artillery Unit Beta' (id 278894, QL300) is HANDED OVER on completion - it is not a drop. Chain: Unicorn Coordinator in Central Gateway -> Unicorn Commander Ryker at the Arid Rift entrance -> Demolitionist Hock -> 3 alien cocoons -> crystal shards via the Crystal Cutter -> Evolved Alien Entity -> Professor Morgan Parser -> Lindsay Wriste / Charlie Moss -> jamming devices + alien drop ship -> Kyr'Ozch Envoy in the Xan Hub.",
+      "soldierRole": "Weapon DPS through a long quest chain; the Kyr'Ozch Envoy is the final kill.",
+      "note": "The ONLY source of your Artillery Beta Ear. Finishing Arid Rift is also on the 220 progression checklist."
+    },
+    {
+      "name": "Neretva Canyons (Areas A-F, then Area X)",
+      "type": "quest",
+      "level": "201-220. Shuttle in the Central Gateway at 728 x 561 (around the ravine to the left, then follow the sign).",
+      "whatDropsForSoldier": "The Artillery 'Xan Thigh Symbiant, Artillery Unit Beta' (id 278903, QL300) is handed over by Lance Corporal DeGeus on completing Area X (the Dust Brigade main camp). Neretva mobs (Dust Brigade Operators, Engineers, Superior Commandos, Technicians) also drop the four Notum Crystals used inside Ground Chief Vortexx.",
+      "soldierRole": "Weapon DPS through Areas A-F in any order, then Area X.",
+      "note": "The ONLY source of your Artillery Beta Thigh, and the crystal farm for Vortexx. Another 220 checklist item."
+    },
+    {
+      "name": "Xan Alpha symbiant crafting",
+      "type": "tradeskill",
+      "level": "Endgame (min level 201 on the Betas, 219 on the Intelligent QL300s).",
+      "whatDropsForSoldier": "Not a drop - you combine a matching Artillery Xan BETA with an Artillery INTELLIGENT QL300 of the SAME slot on your own character. Betas come from Mitaar Hero / Vortexx / the Xan 12-man / Arid Rift / Neretva; Intelligent QL300s come from the Night Heart in Pandemonium.",
+      "soldierRole": "None - bench work between raids.",
+      "note": "Alphas are NODROP, so they must be built on the Soldier that will wear them. soldier-symbiants.json lists all 13 Artillery Xan Beta ids (278892-278904) and the matching Intelligent QL300s."
+    },
+    {
+      "name": "Xan Weapon Upgrade (tradeskill)",
+      "type": "tradeskill",
+      "level": "Endgame. No tradeskill requirement - it is a 'no-skill' combine.",
+      "whatDropsForSoldier": "Lord/Lady of Anger + Xan Weapon Upgrade Device (id 280786) = 'Anger of the Xan' (id 280722, QL300). Verified in items.ocp: Assault Rifle, ToWield Assault Rifle 2250 / Burst 1688 / Full Auto 2025 + Legacy of the Xan expansion, 320-560 damage, 1.4s attack and recharge, Burst recharge 1.2s, Full Auto recharge 3.0s. That is roughly double the Beast original's sustained damage for the same Assault Rifle requirement.",
+      "soldierRole": "None - bench work.",
+      "note": "Anger is the ONLY Assault Rifle in the 14-weapon Xan upgrade table (Angst=Rifle, Abandonment=1HB, Chaos=Bow, Deceit=Piercing, Envy=MG/SMG, Gluttony=2HB, Greed=Shotgun, Hatred=1HE, Lust=Pistol, Pride=2HE, Sloth=Grenade, Dusk/Dawn=Melee Energy). The 'Modified Xan Weapons' second upgrade tier (Bhan'Zor Hammer, Kur'Ush Mallet, Peh'Wer / Troa'Ler Pistol, Rhat'Ata Gun, Gan'Kar Rifle) has NO assault-rifle entry, so Anger of the Xan is the end of that line for a Soldier."
+    },
+    {
+      "name": "Alien City Raids (org city invasion)",
+      "type": "raid",
+      "level": "High-level org content. Needs the Alien Invasion expansion, an org city and a fully charged city controller. Four team members are required to board the alien mothership at the end.",
+      "whatDropsForSoldier": "Generals and Admirals drop Kyr'Ozch Bio-Material (the clumps that upgrade alien weapons and craft alien armour), viral components, Crystalline Disks and the named Lead Viralbots - e.g. Xoch drops Enduring Lead Viralbots (health), Ankari drops Arithmetic Lead Viralbots (nano/trade skills). For a Soldier the viralbots that matter are the ones feeding STRONG (melee/damage) and SUPPLE (ranged) armour, which combine into Combined Commando's.",
+      "soldierRole": "Wave DPS on the ground phase, then boarding party on the ship phase. Soldier reflect is genuinely valuable on the waves.",
+      "note": "The person who deploys the Controller Recompiler Unit normally claims the General's loot unless the org has a distribution rule."
+    },
+    {
+      "name": "Alien Mothership missions (Lost Eden)",
+      "type": "instance",
+      "level": "No level lock per the AO-Universe guide, but a team of at least 2 is required. Mission from a Unicorn NPC at the Unicorn Outpost in the Outzones (via the ICC transport room).",
+      "whatDropsForSoldier": "The Kyr'Ozch Bio-Material clumps that upgrade Ofab Shark Mk 1 -> Mk 6 (all upgrades ascending, max 5 upgrades; the clump must be at least 80% of the item's QL), Dreadloch weapons including the 'Dreadloch Modified Shark' (id 267158, QL300) - verified in items.ocp as an Assault Rifle, Lost Eden, Level > 209, Assault Rifle 2000 / Burst 1000 / Full Auto 1800, 320-560 damage, 1.4s attack and recharge, with Add All Off. +20 on wear and a cold proc on hit. Also Victory Point items (Cell Templates, Mitochondria Samples, Plasmid Cultures, Protein Mapping Data) and bio-material in nine types. Boss rooms are the five Masters (BioMet, Time & Space, PsyMod, Silence, Nanovoid) and the Cocoon Accelerator rooms.",
+      "soldierRole": "Team weapon DPS; runs are short and repeatable, so this is the steady grind for VP and Ofab upgrade clumps.",
+      "note": "The Dreadloch Modified Shark is a Dreadloch customisation of the Ofab Shark with LOWER requirements than Ofab Shark Mk 6 and higher top damage - check it before spending five clumps on Mk upgrades. Dreadloch weapons also drop from the Dreadloch camps on the Clan and Omni sides."
+    },
+    {
+      "name": "Sector 7 (Alien Playfield)",
+      "type": "raid",
+      "level": "151-200 per the AO-Universe guide. Team required; located at the Unicorn Outpost. Your team's instance persists ~2 minutes of inactivity.",
+      "whatDropsForSoldier": "'Special Edition Kyr'Ozch Carbine' (id 288283, QL150) - verified in items.ocp as Profession EqualTo 1 (Soldier only), Level > 150, Assault Rifle 699 / Burst 499 / Full Auto 599, Alien Invasion. It is one of the 16 NODROP profession-locked Special Edition weapons and has deliberately low requirements. Also Power Core Parts (one per main boss, needed for the Kyr'Ozch Technician fight), Viral Belt components, Sector 7 NCUs and Victory Point clumps. Bosses: Control Leech (east), Kyr'Ozch Maid (centre), Defense Drone Tower (west), Kyr'Ozch Technician (spawned from the Power Core).",
+      "soldierRole": "Team DPS. Control Leech's 'Warped Mind' turns players on each other - a mind-controlled Soldier with Full Auto up is dangerous, so be ready to be calmed.",
+      "note": "A pre-220 venue, but worth a run: the SE Carbine is a cheap, NODROP, Soldier-only AR that carries a twink straight into the alien sectors."
+    },
+    {
+      "name": "Sector 10 (Alien Playfield)",
+      "type": "raid",
+      "level": "unknown - listed on the AO-Universe Alien Playfields index and the AOWiki Raids page between Sectors 7 and 13, but no per-sector guide content was retrieved.",
+      "whatDropsForSoldier": "unknown. Expect alien loot, bio-material and VP in line with the other sectors, but the boss and loot table were NOT verified - do not plan a farming run on this entry.",
+      "soldierRole": "unknown (team weapon DPS by analogy, not verified).",
+      "note": "Flagged in _unverified. Sectors 13, 28 and 35 are the ones that drop the Kyr'Ozch Data Cores you actually need for Sector 42."
+    },
+    {
+      "name": "Sector 13 (Alien Playfield)",
+      "type": "raid",
+      "level": "180-220. Team required; mission from the Unicorn Security Administrator at the top of the APF area, then the Sector 13 portal.",
+      "whatDropsForSoldier": "Kyr'Ozch Data Core (one of the three needed for Sector 42), Kyr'Ozch Helmet (tokenboard quest item), Kyr'Ozch Battlesuit components (bounty), and tradeskill items (Action Probability Estimator, Dynamic Gas Redistribution Valves, ICE-Breaker Source). Final boss: Master Genesplicer Cha'Khaz.",
+      "soldierRole": "Team DPS and add control. Alien vectors spawn larvae if not killed fast - Full Auto and the Fragmentation Grenades (302395) / Notum-Charged Grenades (302399) area procs are exactly what this fight wants.",
+      "note": "Mechanic: use a Biological Transceiver after the initial waves to get the yellow protection nano; without it the laser fence is instant death."
+    },
+    {
+      "name": "Sector 28 (Alien Playfield)",
+      "type": "raid",
+      "level": "180-220. Team required; mission from the Unicorn Security Administrator, then the Sector 28 portal.",
+      "whatDropsForSoldier": "Kyr'Ozch Data Core (Sector 42 access), tradeskill items, and bounty items worth 10 tokens or 4 million credits. Boss: Embalmer Cha'Khaz, who spawns waves of Support Sentries and Drone Harvesters.",
+      "soldierRole": "Escort DPS - the objective is protecting the Rookie Alien Hunter (2 million credits: 1M up front, 1M at the boss). Keep up with him, kill the ambushes, and never aggro him.",
+      "note": "Laser fences are instant death. Getting too far ahead of the Rookie isolates him and restarts the sector."
+    },
+    {
+      "name": "Sector 35 (Alien Playfield)",
+      "type": "raid",
+      "level": "180-220. Team required; mission from the Unicorn Security Administrator at the Alien Playfield entrance.",
+      "whatDropsForSoldier": "Kyr'Ozch Data Core (Sector 42 access), tradeskill items, bounty items, and 'Unexamined Alien Spongle' from trash for the daily alien missions. Bosses: Field Marshal Cha'Khaz and Field Support Cha'Khaz, spawned together.",
+      "soldierRole": "Tower-defence DPS. Kill the SUPPORT general first - while he lives the Field Marshal carries a huge reflect shield and you will hit him for 40-80 damage. Never attack or heal the three towers: instant death.",
+      "note": "A fight where a Soldier sees his own mechanic used against him - the boss's reflect shield is the whole reason target priority matters here."
+    },
+    {
+      "name": "Sector 42 (Alien Playfield / APF) - the Zodiac / Artillery Commander",
+      "type": "raid",
+      "level": "180-220, realistically 205-220. 90-minute Recall Beacon; with the Unicorn Authorization buff you can leave and re-enter for 20 minutes only.",
+      "whatDropsForSoldier": "APF nano items and endgame alien loot. The sector re-uses upgraded versions of the other sectors' bosses: East Signal Tower = Field Marshal and Field Support Cha'Khaz (APF 35), North Signal Tower = Master Genesplicer Cha'Khaz (APF 13), West Signal Tower = Proto-Embalmer (APF 28 loot). Killing the three simultaneously spawns the Artillery Commander.",
+      "soldierRole": "Coordinated raid DPS on one of three simultaneous pulls, plus team reflect. This is a raid where being a reliable damage body on a timer matters more than utility.",
+      "note": "Access needs 3 Kyr'Ozch Data Cores (one each from Sectors 13, 28 and 35), traded to the Unicorn Access Supervisor outside the Sector 42 gates for a Decrypted Kyr'Ozch Data Core. Do not roll on 210+ APF items before you are level 210."
+    },
+    {
+      "name": "Battlestations (Victory Points -> Ofab)",
+      "type": "daily",
+      "level": "10-220, bracketed terminals. Teams race to 500 points by holding terminals; the centre control point is worth double.",
+      "whatDropsForSoldier": "Victory Points, spent at the Ofab shop / profession armour terminal in the Unicorn Defense Hub. For a Soldier: the 'Ofab Soldier' armour set - Helmet (264432/264431), Body Armor (264450/264449), Sleeves (264444/264443), Gloves (264438/264437), Pants (264462/264461), Boots (264456/264455) - verified in items.ocp as ToWear Profession EqualTo 1 (Soldier only), Lost Eden, QL300 needing Strength 900 / Stamina 1100, giving 1418-1890 AC in all types plus Add All Off. +15 and Max Health. And the 'Ofab Shark' assault rifle Mk 1-6 (Mk 1 id 265068, Mk 6 id 265103; Mk 6 QL300 = Assault Rifle 2200 / Burst 1650 / Full Auto 1980, 310-550 damage, 1.4s). VP also buys the QL300 ring, the Special Edition Head and the Ofab back item at 220 (~84k VP for the three).",
+      "soldierRole": "PvP/PvM contribution for VP. Soldier is a strong Battlestation body: reflect plus Full Auto is brutal in a terminal scrum.",
+      "note": "Ofab SHARK is the Soldier's AR, not Ofab Peregrine (that is a Pistol - verified in items.ocp). Ofab weapon Mk upgrades are NOT bought with VP: you buy Mk 1 and then apply Kyr'Ozch Bio-Material clumps from alien missions and Dreadloch bosses, each clump at least 80% of the item QL, Mk1 -> Mk6 in five ascending steps."
+    },
+    {
+      "name": "Alien weapon upgrading (Kyr'Ozch Carbine line)",
+      "type": "tradeskill",
+      "level": "Endgame; the Amplified versions need level 201.",
+      "whatDropsForSoldier": "The alien Assault Rifle is the Kyr'Ozch CARBINE. Verified in items.ocp at QL300: base Kyr'Ozch Carbine (254492, Assault Rifle 2000, no specials); Type 5 (254499, + Burst 1500 / Fling Shot 1000); Type 12 (254506, + Burst 1500 / Full Auto 1800); Type 13 (254513, + Burst 1500 / Fling Shot 1000 / Full Auto 1800). The AMPLIFIED versions - Amplified Kyr'Ozch Carbine Type 5 (257144), Type 12 (257143), Type 13 (257142) - are all ToWield Profession EqualTo 1, SOLDIER ONLY, Level > 200, Alien Invasion.",
+      "soldierRole": "None - bench work between alien runs.",
+      "note": "Type 13 is the one to chase: it is the only carbine carrying Burst AND Fling Shot AND Full Auto. Upgrading needs Kyr'Ozch Bio-Material of the right type from city raids, sectors and mothership missions."
+    },
+    {
+      "name": "Alien armour (Combined sets)",
+      "type": "tradeskill",
+      "level": "Endgame; QL300 Combined pieces need Title Level 6 (level 190+) and 1000 in the two governing abilities.",
+      "whatDropsForSoldier": "'Combined Commando's' is the Soldier's set - verified in items.ocp: the QL300 Jacket (246660) needs Strength 1000 + Agility 1000, Alien Invasion, and gives +30 to EVERY melee AND ranged weapon skill including Assault Rifle, Burst, Full Auto and Fling Shot, plus Add All Off. +15, Add All Def. +15 and +10 to every damage modifier. 'Combined Sharpshooter's' (246696, Agility 1000 + Sense 1000) is the alternative: the same ranged skills and Add All Off. +15, but it trades the damage modifiers for +40 to all three initiatives plus evades, Perception and Concealment. Recipes: Combined Commando's = Strong + Supple; Combined Sharpshooter's = Observant + Supple. When combining, the Strong/Spiritual/Observant piece must be at least 80% of the Supple/Enduring/Arithmetic piece's QL, and the result takes the higher QL.",
+      "soldierRole": "None - bench work; the raw armour comes from alien city raids and the sectors.",
+      "note": "Do not copy the Meta-Physicist's answer here. The MP wants Spiritual/Arithmetic (Officer's) for nano skills. A Soldier wants Strong+Supple (Commando's) for damage, or Observant+Supple (Sharpshooter's) if he is short on initiative. Both statements above are read from the item data, not from a guide."
+    },
+    {
+      "name": "Dust Brigade 1 - Peacekeeper Constad questline",
+      "type": "quest",
+      "level": "205-220, all factions/classes. Full team with tank and doc recommended; parts are soloable.",
+      "whatDropsForSoldier": "THE Profession Nanodeck. The 'Soldier Nanodeck' (id 270768) is verified in items.ocp as ToWield Profession EqualTo 1, Level > 214, and on wear it sets NanoFocusLevel bit 6 plus Range Increaser (Weapon) +5, Run Speed +25, Critical Resistance +2. That NanoFocusLevel bit is the hard gate on the Soldier's three best late nano crystals: Augmented Mirror Shield MK V (crystal 273401, 82% reflect), Improved Total Focus (crystal 270807, +125 to ALL ranged weapon skills) and Total Combat Survival (crystal 273399, +1200 Max Health, +35 Heal Delta). The chain also hands out profession nano crystals across its stages (Priest Fontain / Priest Atalas in The Dead Maze, Jon Solare and David Meyers, the Steep Shores relay tower, 5 Mort checkpoints, Eastern Fouls Plain terminals, 4 drill sergeants + the Primary Computer, 5 relay towers, keeping Sean Powell alive).",
+      "soldierRole": "Weapon DPS on timed objectives; several stages have hard timers (1h, 30min, 45min each, 2h).",
+      "note": "This is the single most Soldier-specific endgame chore in the game and the Meta-Physicist template does not capture it: without a worn Soldier Nanodeck you cannot even upload AMS MK V, Improved Total Focus or Total Combat Survival."
+    },
+    {
+      "name": "Dust Brigade 2 - Deus Ex Machina",
+      "type": "instance",
+      "level": "Endgame (~210+), full team. Requires DB1 completed.",
+      "whatDropsForSoldier": "Enhanced Dust Brigade Armor parts (these also drop in DB1) and continuation of the DB chain.",
+      "soldierRole": "Weapon DPS plus reflect; a standard team slot.",
+      "note": "Second stage of the chain. Completing the whole DB questline is a 215-220 progression checkbox."
+    },
+    {
+      "name": "Dust Brigade 3 - Locating the Threat / The Facility",
+      "type": "instance",
+      "level": "Endgame (~215-220), full team. Requires DB1 AND DB2.",
+      "whatDropsForSoldier": "Profession-specific final rewards. The reward set is per-profession - the AO-Universe listing names e.g. Touch of Sai Fung (Martial Artist) and the Aggressive Staff of Julian Redfire (Meta-Physicist); the exact SOLDIER reward item was not on the retrieved page and is deliberately not named here (see _unverified). Stages: Peacekeeper Coursey in Newland City -> Priest Fontain in Broken Shores -> back to Coursey, then use the Zero-Point Transmission Relay Scoop on 5 Communication Relay Towers (45 min each).",
+      "soldierRole": "Weapon DPS through a long multi-floor instance.",
+      "note": "Finishing DB3 closes the Dust Brigade questline. Six floors; the 1st, 3rd and 5th are filler with no loot."
+    },
+    {
+      "name": "Nanodeck upgrade chain (Soldier)",
+      "type": "tradeskill",
+      "level": "Level 215+ (all three decks are ToWield Level > 214).",
+      "whatDropsForSoldier": "Soldier Nanodeck (270768, from DB1) + Nanodeck Activation Device (280785 / 281157, from Mitaar Hero, Vortexx or the Xan 12-man) = Activated Soldier Nanodeck (280768, equip delay 3.0s -> 2.0s). Activated deck + Star of Fidelity (244690, from the Beast or Guarding the Source) = Stellar Soldier Nanodeck (280782) plus Stellar Fidelity (281045). Verified in items.ocp: the Stellar Soldier Nanodeck's ToWield explicitly names item 244690 (Star of Fidelity) and 281045 (Stellar Fidelity), its equip delay drops to 1.0s, and on wear it adds Assault Rifle +30, Full Auto +30, Burst +30, MG/SMG +30, Ranged Energy +30, Heavy Weapons +30, First Aid +30 and Strength +30 ON TOP of the base deck's Range Increaser +5 / Run Speed +25 / Critical Resistance +2.",
+      "soldierRole": "None - bench work, but the payoff is the largest single Soldier item upgrade in the game.",
+      "note": "A worn Profession Nanodeck is also one of the three entry tickets to the Pyramid of Home. There is also a 'Sealed Profession Nanodeck' (302080, ToUse Level > 214) in the client data which opens into the correct profession deck - source not confirmed, see _unverified."
+    },
+    {
+      "name": "Albtraum",
+      "type": "instance",
+      "level": "Instanced Inferno playfield for a single team (2-6 people), added in patch 17.3.",
+      "whatDropsForSoldier": "Phobia Beads (the only 100% drop; 5 of them complete the quest chain for the final reward), Ancient Combat Tuner, Ancient Manual Aiming Aid, Dormant Ancient Circuits and Energy Infused Crystals (convertible into devices). Bosses: Mutant Shadow Eremite (AoE stun), Wings of Despair (AoE nano drain), Overwhelming Horror (18k nuke), Keeper of Tortured Souls (final, combines all of the above).",
+      "soldierRole": "Weapon DPS plus reflect. The 18k nuke and the AoE stun are exactly what the reflect stack and Total Mirror Shield exist for.",
+      "note": "No assault rifle drops here - the value for a Soldier is the utility/tuner items and the quest chain reward, not a weapon."
+    },
+    {
+      "name": "Alappaa",
+      "type": "instance",
+      "level": "160-220, team instanced playfield in Penumbra, added in patch 17.5. Entrance near Blue Mist; target the NPC Anticipating Six if you are on the Penumbra questline.",
+      "whatDropsForSoldier": "Frozen Crystal Compounds (feed galactic-grade Arul Saba gems and shoulderpad upgrades), Frozen Shoulderpads, and pharmacy tradeskill items. Bosses: Cascading Molokh (spawns turrets; drops Bane of Ice, Frozen Crystal Compounds, rare Frozen Shoulderpads), Novictum Blight (summoned by using Bane of Ice on the Pulsating Ice Obelisk), Reprogramed Mezzorash (final, after escorting Sheila Marlene through five ambushes).",
+      "soldierRole": "Weapon DPS on an escort; each team gets its own instance so there is no competition for the bosses.",
+      "note": "Jewellery and shoulderpad content, not weapon content. Worth running for the Arul Saba gem materials that every endgame character wants."
+    },
+    {
+      "name": "The Collector (Caina, Pandemonium)",
+      "type": "instance",
+      "level": "200-220, single team, all factions. No lockout - repeatable. Portal near the instanced Pandemonium portal; you must already have Pandemonium access.",
+      "whatDropsForSoldier": "Six bronze boxes plus random corpse drops containing items from across the game's dungeons and encounters; bronze chests can contain silver or gold chests. Encounters: Collected Essence (kill Essence Fragments to shrink it), Sister Botanicus (kill Orchid Plants, free cocooned teammates), Immortal Guardians (do not fight - get kicked over three walls), The Secretary (grants the Dimension Shift knockback perk), The Collector (kick coloured shades into the opposite-coloured tower).",
+      "soldierRole": "Weapon DPS in a 6-man with heavy mechanics. Designed as one of the hardest single-team challenges in the game.",
+      "note": "No lockout makes this a repeatable loot lottery rather than a targeted Soldier farm. Listed for completeness; nothing in it is Soldier-specific."
+    },
+    {
+      "name": "Inferno missions, Xan Reliquary and pocket bosses",
+      "type": "instance",
+      "level": "Inferno 190+; the Xan Reliquary missions need level 170 minimum. Xan Reliquary is just outside the Ergo cave area.",
+      "whatDropsForSoldier": "Tokens, Inferno boots and HHAB components, and pocket-boss pattern pieces. Xan Reliquary bosses drop garden-key pocket-boss parts (A, B, C, D); harder difficulty gives more waves, more bosses and better rewards. Pocket bosses are also the Artillery symbiant farm for everything outside the Xan tiers: Rallies Fete (level 235, Inferno north from Sorrow) drops Alert Waist Symbiant, Artillery Unit Aban (235525, QL280); Xark the Battletoad (level 255, Penumbra Forest south from Purity) drops Alert Left Wrist Symbiant, Artillery Unit Aban (235542, QL280); the full list of 112 farm locations is in soldier-symbiants.json.",
+      "soldierRole": "Solo and small-team weapon DPS. A Soldier with the reflect stack and a top AR is one of the better solo Inferno grinders.",
+      "note": "Pocket-boss method: farm the four pattern pieces (Aban/Abhan, Bhotaar, Chi, Dom), combine in order into a Complete Blueprint Pattern, combine that with a Crystal Filled by the Source (Nano Programming 6x QL), novictalise it with Subdued Flow of Novictum via an Ancient Novictum Refiner (Quantum FT 4.5x QL), then right-click the crystal on an Incarnator whose QL is at least the boss QL (the Pandemonium Incarnator caps at 270)."
+    },
+    {
+      "name": "Penumbra missions (Shadowbreed / Shadow gear)",
+      "type": "instance",
+      "level": "Level 150-210 team range; roll them at ~205-210.",
+      "whatDropsForSoldier": "Shadowbreed gear and tokens from rolled Penumbra missions; a step toward Pandemonium access.",
+      "soldierRole": "Weapon DPS; a Soldier clears rolled missions comfortably.",
+      "note": "On the 205-210 section of the standard AO progress checklist: 'roll penumbra missions to get your shadow breed'."
+    },
+    {
+      "name": "Adonis / Penumbra / Inferno open-world hunting",
+      "type": "grind",
+      "level": "Adonis ~160-190, Penumbra ~180-205, Inferno 190-220.",
+      "whatDropsForSoldier": "Pocket-boss pattern pieces, Artillery symbiants from the named Shadowlands bosses (soldier-symbiants.json lists each with playfield and boss level - e.g. The Maggot Lord 205, The Worm King 202, Churn / Quake / Toss 195, Defiler of Scheol 220, Morrow 215, Quondam 215), tokens, and the raw SK/XP for the last levels to 220.",
+      "soldierRole": "Solo or small-team weapon DPS. This is where a Soldier's self-sufficiency shows: reflect plus Total Combat Survival plus a top AR means he does not need a doctor to farm.",
+      "note": "Treat this as the filler between raid lockouts, not as a gear target in itself. Specific camps were not enumerated from a levelling guide - see _unverified."
+    },
+    {
+      "name": "Ergo / Inferno access and the Great Ice Golem",
+      "type": "quest",
+      "level": "Inferno-level progression.",
+      "whatDropsForSoldier": "The +7 De'Valos Protection Ring that lets you enter Inferno: hand Ergo (Penumbra) a molar looted from the Great Ice Golem. The Golem drops 6 molars per kill, enough for 6 people.",
+      "soldierRole": "Team weapon DPS on the Golem.",
+      "note": "Progression gate, not gear. You need it before Inferno hunting, the Inferno quests and Pandemonium."
+    },
+    {
+      "name": "Hold Hell at Bay ring quest (Pandemonium access)",
+      "type": "quest",
+      "level": "200-220, all factions/classes.",
+      "whatDropsForSoldier": "The HHAB ring, which protects you from the ~6k fire damage DoT of the Pandemonium environment. Chain: kill Xark and Razor for Xark's Whisker and Razor's Fang; farm Hellion Mirrors; kill the Central Hellion Fanatic and the spawned Hellion Imps and Orchard Philanderers; trade mirrors to the Pain demons; deal with the Withered Old Witches and Malahs; spawn and kill the dragon Tchu; trade the components to Nhohor the Techno Shaman.",
+      "soldierRole": "Weapon DPS across a long multi-stage chain with several raid-sized kills (Xark, Tchu).",
+      "note": "Hard prerequisite for Pandemonium, which makes it a hard prerequisite for Lord/Lady of Anger, the Star of Fidelity and the Intelligent QL300 Artillery symbiants. Do it BEFORE you start planning Alphas."
+    },
+    {
+      "name": "Inferno Boots quest",
+      "type": "quest",
+      "level": "Inferno-level (190+).",
+      "whatDropsForSoldier": "Inferno Boots. Give the boot components to Nhohor the Techno Shaman, an NPC spawned on Rubi-Ka (Eastern Foul Plains, 490 x 3800) by killing the dragon Tchu - which takes many teams. Nhohor despawns 10 minutes after Tchu dies.",
+      "soldierRole": "Weapon DPS on a many-team dragon kill.",
+      "note": "Shares the Tchu kill with the HHAB ring chain - plan them together. On the 210-215 progress checklist alongside the HHAB items."
+    },
+    {
+      "name": "Galahad Garden Key and Lord Mordeth Garden Key (Inferno)",
+      "type": "quest",
+      "level": "Inferno-level (190+); the Xan Reliquary missions that drop the pattern parts need level 170.",
+      "whatDropsForSoldier": "Garden access - a safe staging garden with no environmental DoT, fast return and buffs. Galahad needs 9 complete QL220-255 pocket-boss patterns from the Inferno depths / Xan Reliquary (parts A, B, C, D). Lord Mordeth starts in the North East Unredeemed Temple in Inferno: find Immortal Hypnagogic Yutt-Chi Mord in the second big room, to the left.",
+      "soldierRole": "Solo or small-team weapon DPS to farm the pattern parts.",
+      "note": "Staging convenience, not gear - but it saves a lot of travel when you are running Pandemonium and Inferno repeatedly."
+    },
+    {
+      "name": "Tarasque (Camelot Castle basement)",
+      "type": "raid",
+      "level": "150+ minimum; a single 210+ team can do it with Shadowlands. 9 hour respawn. Waypoint 115 300 120, the final large chamber with 14 Scarred Lizards. 25% PvP zone.",
+      "whatDropsForSoldier": "Living Dragonflesh Armor components (Skull, Flesh, Claws, Wing, Skin, Marrow - crafted into the set), and general drops including the Aura Magnifier, Heavily Padded Overcoat, Robust Backpack, Smart Hood of the Wanderer and the Signet Ring of the Green Knight. No assault rifle.",
+      "soldierRole": "Weapon DPS on a long-respawn world boss in a PvP-flagged zone; bring the org.",
+      "note": "Legacy Rubi-Ka raid. At 220 this is a farm-for-others / nostalgia run rather than a gear target, but the Living Dragonflesh set and the utility items are still traded."
+    },
+    {
+      "name": "Temple of the Three Winds (201+ raid instance)",
+      "type": "raid",
+      "level": "201+ instanced version of the classic dungeon.",
+      "whatDropsForSoldier": "Bosses include Aztur the Immortal, Nematet and The Loremaster; community-confirmed drops include Blessing of the Gripper, Wit of the Immortal and the Ceremonial Blade. Aztur's classic drops are the Stygian Desolator (2HE sword), the Ring of Tattered Flame (100% drop) and the Doctor-only Holy Book of the Immortal - none of which is a Soldier weapon.",
+      "soldierRole": "Weapon DPS. Acolytes AoE-debuff, Windcallers fear, and there are mind-control attacks and mannequin spawns on teleports.",
+      "note": "Included because it is a real 201+ endgame instance, but nothing in it is Soldier-specific. Run it for tradeable items, not for your own kit."
+    },
+    {
+      "name": "Rubi-Ka dynabosses / dyna camps",
+      "type": "grind",
+      "level": "Scales with the dyna's level; endgame dynas are the 200+ ones.",
+      "whatDropsForSoldier": "unknown at the item level - dyna loot tables are randomised and no citable per-dyna table naming a Soldier item was found. The verified endgame reason to camp dynas is tower-tagging missions for Victory Points plus general SK and credit income.",
+      "soldierRole": "Solo or duo weapon DPS. A reflect-stacked Soldier is one of the better solo dyna killers.",
+      "note": "Flagged in _unverified: do not plan a farming evening on this entry. The AO progress guide's endgame VP advice is 'grind VP through tower tagging missions and inferno runs'."
+    },
+    {
+      "name": "Lost Eden and Elysium team dailies",
+      "type": "daily",
+      "level": "Endgame (200-220).",
+      "whatDropsForSoldier": "Tokens, Victory Points and AI/research XP. The Sector 35 'Unexamined Alien Spongle' feeds the daily alien missions; the Arid AI-team daily yields components for a warp device; Ofab armour and weapons can also be bought with VP earned from alien missions and Barkeeper missions, not only Battlestations.",
+      "soldierRole": "Fast team weapon DPS on short objectives.",
+      "note": "The steady currency loop that pays for the Ofab set, the QL300 ring, the Special Edition Head and the Ofab back item."
+    }
+  ],
+  "progressionOrder": [
+    {
+      "step": "1. Weapon first - get a real endgame Assault Rifle in hand",
+      "what": "Soldier is a pure-weapon profession, so the weapon is the foundation, not the final polish. Ladder, all verified from items.ocp: Rebuilt Perennium Blaster / Superior Rebuilt Perennium Blaster (260705 / 260706, SOLDIER ONLY, Shadowlands, QL200 needs Assault Rifle 1000 / Burst 750 / Full Auto 900, 175-425 damage at 1.0s attack and recharge) -> Kyr'Ozch Carbine Type 13 (254513, Assault Rifle 2000 / Burst 1500 / Fling Shot 1000 / Full Auto 1800) -> Ofab Shark Mk 1 (265068) upgraded to Mk 6 (265103, Assault Rifle 2200 / Burst 1650 / Full Auto 1980, 310-550 at 1.4s) or Dreadloch Modified Shark (267158, level 210, Assault Rifle 2000 / Burst 1000 / Full Auto 1800, 320-560 at 1.4s, Add All Off. +20 and a cold proc) -> Corrupted Lord of Anger (302938, Assault Rifle 1999 / Burst 999 / Full Auto 1799, 250-600 at 1.6s) -> Lord/Lady of Anger (244802 / 244801) -> Anger of the Xan (280722, Assault Rifle 2250 / Burst 1688 / Full Auto 2025, 320-560 at 1.4s with a 1.2s Burst recharge).",
+      "why": "Everything else in a Soldier's kit multiplies weapon damage. A Soldier in perfect symbiants with a bad rifle does nothing; a Soldier with Anger of the Xan and mediocre symbiants still kills. The Perennium Blaster's 1.0s attack and recharge is why it survives as a twink weapon far below its damage tier, and the Dreadloch Modified Shark is the cheapest route to 560 max damage because its requirements are 200 Assault Rifle and 650 Burst lower than Ofab Shark Mk 6."
+    },
+    {
+      "step": "2. Specials and attack rating - make the weapon actually fire",
+      "what": "Train Full Auto, Burst and Fling Shot to the exact numbers your chosen rifle's ToWield lists (they are per-weapon, not per-level), then stack attack rating: Full Automatic Targeting (nano 270248, Add All Off. +74), Improved Total Focus (270806, +125 to ALL ranged weapon skills), Soldier Clip Junkie (203137, level 195, Full Auto +120 plus +10 to every damage modifier), Art of Peace (203119, level 155, Assault Rifle +90), Metal Barrage (203139, level 165, Full Auto +92), Gazump Fight (Team) (223199, level 205) and Offensive Steamroller (29240, +133 to all initiatives). Add the two area procs: Fragmentation Grenades (302395) and Notum-Charged Grenades (302399).",
+      "why": "Specials are where a Soldier's burst damage lives - a Full Auto that will not fire because you are 25 points short is a wasted weapon. Attack rating and initiative decide whether your normal swings land at all. This step has no equivalent at all in the Meta-Physicist ladder."
+    },
+    {
+      "step": "3. Build the reflect stack - the Soldier's survivability IS a nano stack",
+      "what": "Layer, from the 61 reflect/absorb nanos in soldier-nanos.json: the Augmented Mirror Shield line (MK I 223229 at level 175, MK II 223181 at 203, MK III 223183 at 213, MK IV 223185 at 220 - 80% reflect, needs Specialization 4 - and MK V 273400, 82% reflect) as your emergency button; the Shadowlands team reflect line (Empowered Reactive Reflective Field 233020 at 185 -> Harmonizing Resonance Field 233022 at 201 -> Reactive Resonance Field 233025 at 207 -> Adaptive Resonance Field 233029 at 212 -> Pre-Nullity Sphere 233033 at 220) for the team; Total Mirror Shield Mk I-X (70300-70309, +75 reflect in every damage type) as the classic 75% panic button; and the passive layer - Heavy Assault Absorption Shield (75401, +530 AC all types), Phalanx (162357, +350 AC, team-castable via 29245) and Total Combat Survival (273398, +1200 Max Health, +35 Heal Delta).",
+      "why": "This is the Soldier's raid identity and the reason teams bring one. It is also a hard sequencing constraint: the big shields lock your nano skills for 2 minutes, so you cannot chain them - you have to know which one you are spending. Do this before raid gear because it is what keeps you alive long enough to collect raid gear."
+    },
+    {
+      "step": "4. Base implants -> Artillery symbiants",
+      "what": "Fill every slot with QL200+ implants, then swap in Artillery-unit symbiants (Soldier shares the Artillery line with Fixer, Agent, Adventurer and Trader - verified from the ToWear Profession lock in items.ocp). Push to a stable QL240+ baseline, then the QL260 Vital / QL280 Alert / QL290 Conscious / QL300 Intelligent Aban tiers. soldier-symbiants.json catalogues all 305 usable Artillery items across 38 tiers with a cited farm route for 244 of them.",
+      "why": "Symbiants beat implants on raw ability and skill, and they are what carry Strength, Stamina, Agility, Assault Rifle and the special-attack skills up to the numbers your rifle needs. The QL240+ baseline is a 220 checkbox and the platform for Betas and Alphas later."
+    },
+    {
+      "step": "5. Ofab Soldier armour via Battlestation Victory Points",
+      "what": "Grind VP on Battlestations, alien missions and Barkeeper missions; buy the six-piece Ofab Soldier set (Helmet 264432, Body Armor 264450, Sleeves 264444, Gloves 264438, Pants 264462, Boots 264456 - Soldier only, Lost Eden, QL300 needs Strength 900 / Stamina 1100) and upgrade each piece with Kyr'Ozch Bio-Material clumps (clump at least 80% of the piece QL). Buy Ofab Shark Mk 1 with VP at the same time and upgrade it the same way.",
+      "why": "Ofab replaced Tier as the baseline profession armour: 1418-1890 AC in every type, Add All Off. +15 on helmet and body, Max Health, and it is bought with a currency you earn rather than won on a raid roll. It is the cheapest way to get raid-ready."
+    },
+    {
+      "step": "6. Perks, research and AI levels",
+      "what": "Push Personal and Global research to L9-10 and AI levels to 24-30, and finish your perk lines. Personal research caps at 5% of total cost per reward, so bank big XP/SK rewards for it.",
+      "why": "Permanent power with no drop RNG, and AI levels unlock perk points and gear requirements. The standard 220 target is AI 26+ with research approaching finished."
+    },
+    {
+      "step": "7. Alien armour - Combined Commando's",
+      "what": "Farm Kyr'Ozch bio-material and the Strong (melee/damage) and Supple (ranged) viralbot armour from alien city raids, the sectors and mothership missions, then combine Strong + Supple into the Combined Commando's set (Jacket 246660, QL300 needs Strength 1000 + Agility 1000). Combined Sharpshooter's (246696, Observant + Supple) is the alternative if you need initiative and evades rather than damage modifiers.",
+      "why": "Combined Commando's gives +30 to every weapon skill INCLUDING Assault Rifle, Burst, Full Auto and Fling Shot, Add All Off. +15, Add All Def. +15 and +10 to every damage modifier - it is a direct DPS item, not just armour. This is where the Soldier's answer diverges hardest from the Meta-Physicist's (Miy's Nano / Officer's for nano skills)."
+    },
+    {
+      "step": "8. Pandemonium access, then Lord/Lady of Anger and the Star of Fidelity",
+      "what": "Do the Hold Hell at Bay ring quest (Xark, Razor, Hellion Mirrors, Tchu, Nhohor) so you survive the Pandemonium environment. Then raid the Beast for Lord of Anger (244802) / Lady of Anger (244801) and the Star of Fidelity (244690). If the Beast roll is not going your way, run 'Guarding the Source' (level 190-220, starts at One Who is Invited Last, Yutto Marshes 2485 x 1190) for a guaranteed Star of Fidelity.",
+      "why": "Two separate endgame chains both start on the Beast's corpse: the Anger weapon line and the Stellar Nanodeck line. The HHAB ring is a hard prerequisite for both."
+    },
+    {
+      "step": "9. The Nanodeck chain - the Soldier's biggest single item upgrade",
+      "what": "Complete Dust Brigade 1 (Peacekeeper Constad, level 205-220) for the Soldier Nanodeck (270768). Run Mitaar Hero, Vortexx or the Xan 12-man for a Nanodeck Activation Device (280785 / 281157) to make the Activated Soldier Nanodeck (280768). Attach the Star of Fidelity to get the Stellar Soldier Nanodeck (280782) plus Stellar Fidelity (281045).",
+      "why": "Wearing any Soldier Nanodeck sets the NanoFocusLevel bit that gates Augmented Mirror Shield MK V (82% reflect), Improved Total Focus (+125 to all ranged weapon skills) and Total Combat Survival (+1200 Health) - three of your best nanos are simply unavailable without it. The Stellar version then adds Assault Rifle +30, Full Auto +30, Burst +30, MG/SMG +30, Ranged Energy +30, Heavy Weapons +30, First Aid +30 and Strength +30, and cuts the equip delay from 3.0s to 1.0s. A worn deck is also an entry ticket to the Pyramid of Home."
+    },
+    {
+      "step": "10. Anger of the Xan",
+      "what": "Take Lord/Lady of Anger plus a Xan Weapon Upgrade Device (280786, from Mitaar Hero, Vortexx or the Xan 12-man) and do the no-skill combine for Anger of the Xan (280722): Assault Rifle 2250 / Burst 1688 / Full Auto 2025, 320-560 damage at 1.4s attack and recharge with a 1.2s Burst recharge.",
+      "why": "This is the Soldier's best Assault Rifle and the end of the line - the 'Modified Xan Weapons' second upgrade tier has no assault-rifle entry, so nothing upgrades past it. Note it costs you Burst 1688 that the Beast original did not require, so train Burst before you combine."
+    },
+    {
+      "step": "11. Xan Beta symbiants (Artillery)",
+      "what": "Collect all 13 Artillery Xan Betas: Brain / Chest / Left Wrist / Left Hand from Mitaar Hero (278892, 278895, 278898, 278897); Ocular / Left Arm / Right Wrist / Waist from Ground Chief Vortexx (278893, 278896, 278901, 278902); Right Arm / Right Hand / Feet from the Xan 12-man (278899, 278900, 278904); Ear from the Arid Rift questline (278894); Thigh from Neretva Canyons Area X (278903).",
+      "why": "Betas are the first half of every Alpha and are strong upgrades on their own. Two of the thirteen are quest hand-overs, not drops, so they cannot be traded for - budget the questline time."
+    },
+    {
+      "step": "12. Intelligent QL300 Artillery symbiants, then craft Alphas",
+      "what": "Farm the Night Heart (level 250, Pandemonium Antenora) for Intelligent QL300 Artillery symbiants (Brain 235422, Ocular 219139, Ear 235440, Chest 235475, Right Arm 235457 and the rest listed in soldier-symbiants.json), then combine each with its matching Artillery Beta of the same slot on your own character.",
+      "why": "Alphas are the best-in-slot symbiants and are NODROP, so they must be built on the Soldier that will wear them. Few Intelligent pieces drop per kill, so this is the grind bottleneck - it is last for a reason."
+    },
+    {
+      "step": "13. Long-tail polish",
+      "what": "Dust Brigade 2 and 3, Neretva and Arid Rift completion, Albtraum's five Phobia Beads, Alappaa's Frozen Crystal Compounds for galactic Arul Saba gems, The Collector for chest loot, Amplified Kyr'Ozch Carbine Type 13 (257142) as a swap weapon, Beast armour pieces (Sigil of Bahomet 244750 is the standout), and the VP purchases at 220 - QL300 ring, Special Edition Head and Ofab back item (~84k VP for the three).",
+      "why": "None of these gate anything else; they are the last few percent. Do them between lockouts once the twelve steps above are done."
+    }
+  ],
+  "notes": [
+    "Soldier is a PURE WEAPON profession: no pets, no meaningful nuking, no crowd control. Damage comes from an Assault Rifle plus Full Auto and Burst, and survivability comes from a stack of reflect/absorb nanos. Read every gear decision as 'does this raise my rifle's damage, my special-attack skills, or my reflect?'",
+    "The Soldier's symbiant unit type is ARTILLERY (shared with Fixer, Agent, Adventurer and Trader) - verified from the ToWear Profession lock in items.ocp, not from a guide. Match 'Artillery' on every Beta, Alpha and Intelligent piece.",
+    "The Soldier's alien weapon is the Kyr'Ozch CARBINE (assault rifle) and the Soldier's Ofab weapon is the Ofab SHARK. Ofab Peregrine is a Pistol and Ofab Cobra is a Rifle - both verified from the attack-skill field in items.ocp. Do not buy by name.",
+    "Items hard-locked to Profession 1 (Soldier) that matter at endgame, all verified by a Profession EqualTo 1 requirement in items.ocp: the Perennium Blaster / Rebuilt Perennium Blaster family (246427/246428/260705/260706), the Amplified Kyr'Ozch Carbines Types 5/12/13 (257144/257143/257142), the Special Edition Kyr'Ozch Carbine (288283), the six-piece Ofab Soldier armour set, the Soldier Nanodeck family (270768/280768/280782) and the Star of Fidelity (244690).",
+    "A worn Soldier Nanodeck sets NanoFocusLevel bit 6, which is the requirement on the Augmented Mirror Shield MK V, Improved Total Focus and Total Combat Survival crystals (273401 / 270807 / 273399). Without a deck those three nanos are unusable no matter how high your nano skills are. This is the most under-documented Soldier endgame gate.",
+    "The big reflect shields lock your nano skills for 2 minutes after use, so the reflect stack is a sequencing problem, not a 'keep it up' problem. Plan which shield you spend on which damage phase.",
+    "Augmented Mirror Shield MK IV additionally requires Specialization 4 and level 220 (verified on crystal 223186), so it is genuinely a 220-only nano.",
+    "The Beast drops both halves of two different Soldier chains in one loot table - the Anger weapon and the Star of Fidelity - so Beast attendance is worth more to a Soldier than the generic 'filler DPS' role suggests.",
+    "Currency gates: Victory Points (Battlestations, alien missions, Barkeeper missions) buy the Ofab Soldier set, Ofab Shark Mk 1, the QL300 ring, the Special Edition Head and the Ofab back item (~84k VP for the 220 trio). Kyr'Ozch Bio-Material clumps - NOT VP - pay for every Ofab Mk 1 to Mk 6 upgrade, and each clump must be at least 80% of the item's QL.",
+    "Sector 42 access is three Kyr'Ozch Data Cores, one each from Sectors 13, 28 and 35, traded to the Unicorn Access Supervisor for a Decrypted Kyr'Ozch Data Core. Do not roll on 210+ APF items before you are level 210.",
+    "The Pandemonium environment does ~6k fire damage over time; the Hold Hell at Bay ring is the protection, and without it Pandemonium, the Night Heart, the Beast and The Collector are all off the table.",
+    "Alphas and the Stellar Nanodeck are built on the character that wears them - do not plan to buy a finished Alpha or a finished Stellar deck."
+  ],
+  "_unverified": [
+    "Sector 10: listed on the AO-Universe Alien Playfields index and the AOWiki Raids page, but no per-sector guide content (bosses, level range, loot) could be retrieved. Its content entry is deliberately 'unknown' rather than filled in by analogy with the other sectors.",
+    "Rubi-Ka dynaboss / dyna-camp loot: no citable per-dyna loot table was found, so no specific Soldier item is claimed. The only verified endgame reason to camp dynas is tower-tagging VP income.",
+    "Dust Brigade 3 profession-specific final reward for SOLDIER: the AO-Universe page names DB3 rewards for other professions (Martial Artist, Meta-Physicist, Trader) but the Soldier reward item was not on the retrieved content. Left unnamed rather than guessed.",
+    "'Sealed Profession Nanodeck' (item 302080, ToUse Level > 214, opens into the correct profession deck) exists in items.ocp but its SOURCE was not found on any reputable page. Probably newer content; do not assume it replaces the DB1 reward.",
+    "Battlestation Victory Point PRICES for individual Ofab Soldier pieces and for Ofab Shark Mk 1 were not found on a citable page - only the ~84k VP total for the 220 trio (QL300 ring + Special Edition Head + Ofab back) from the Athen Paladins progress guide. Check the in-game terminal.",
+    "Alien Mothership missions have 'no level locks' per the AO-Universe guide; the practical level floor for surviving them was not stated on that page and is not asserted here.",
+    "'The Gauntlet' is listed as a Shadowlands raid on the AOWiki Raids page but no guide content was retrieved for it, so it was deliberately left out of `content` rather than filled with assumptions.",
+    "Beast per-kill drop counts (4 armour + 2 hilts + 1-2 stars + 2-4 weapons + 1 Shadowbreed) and the 9-hour respawn come from the AOWiki Beast page summary; confirm against live drop tables.",
+    "Star of Fidelity drop RATE from the Beast was not retrieved (the wiki states the 14 stars range from ~1.92% to ~14.42% without a per-star breakdown in the fetched content).",
+    "Whether NanoFocusLevel bit 6 is set by EVERY profession's nanodeck or is Soldier-specific was not checked across all 14 decks - only the three Soldier decks (270768 / 280768 / 280782) were probed, and all three set it.",
+    "Whether Combined Commando's or Combined Sharpshooter's is the current Soldier meta was NOT resolved from a guide. Both entries state the exact verified item bonuses from items.ocp so the choice can be made on data; no community consensus is claimed.",
+    "Exact Inferno / Penumbra / Adonis hunting CAMPS for a level 200+ Soldier were not enumerated from a levelling guide; the entry points at the verified symbiant boss list in soldier-symbiants.json instead of naming spots.",
+    "The Xan 12-man guide lists Beta symbiant slots for the Deranged Xan slightly differently from the per-item drop join in soldier-symbiants.json (which is sourced from the TinkerTools drop API). Where they disagree, soldier-symbiants.json's per-item join was used because it is item-level data; re-check in-game if a specific slot fails to drop.",
+    "Corrupted Lord of Anger carries an Expansion BitAnd 128 (Legacy of the Xan) requirement in items.ocp even though the Pyramid of Home is physically in Broken Shores on Rubi-Ka. That is what the client data says; it was not cross-checked against a patch note."
+  ],
+  "_sources": [
+    "LOCAL CLIENT DATA (authoritative) - E:\\Funcom\\OmniCell\\OmniCell\\Datafiles\\items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1), read with tools/mp-weapon-extractor --probe-ids / --probe-name. Every item id, ToWield/ToWear requirement, damage range, attack and recharge time, expansion bit, profession lock and OnWear modifier quoted in this file was read from it.",
+    "LOCAL CLIENT DATA - E:\\Funcom\\attic\\extracted-client-data\\itemnames.sql (131,384 rows). Every item name/id pair in this file was verified against it.",
+    "LOCAL DATA - AOBuddy/GameData/profiles/soldier-symbiants.json (Artillery line: 305 usable items, 244 with a cited farm route, 112 farm locations) and soldier-nanos.json (177 castable nanos, 61 of them reflect/absorb).",
+    "http://wiki.aodb.us/wiki/The_Beast - Beast loot table: 10 armour parts by name, 2 hilts, 14 profession Stars by name (Star of Fidelity = Soldier), Lord QL300 / Lady QL299 weapons, random Shadowbreed, 9h respawn.",
+    "http://wiki.aodb.us/wiki/Xan_Weapon_Upgrade - the full 14-entry Xan weapon upgrade table (Lord/Lady of Anger -> Anger of the Xan, Assault Rifle); the device drops from Mitaar Hero / Vortexx / the 12-man; no-skill tradeskill.",
+    "http://wiki.aodb.us/wiki/Modified_Xan_Weapons - the second upgrade tier (Bhan'Zor Hammer, Kur'Ush Mallet, Peh'Wer / Troa'Ler Pistol, Rhat'Ata Gun, Gan'Kar Rifle); confirms there is NO assault-rifle entry above Anger of the Xan.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-xan-12-man - Xan 12-man: 419 x 324 Central Hub, 4h lockout, level 201-220, bosses, Xan Weapon Upgrade Device, belt tuning devices, Nanodeck Activation Device, Base NCU Type 00, Beta symbiants and spirits, The Awakening buff.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/the-alien-threat - Mitaar Hero: 350 x 410 Central Hub, level 201-220, Technomaster Sinuh, platform/NCU mechanic, no lockout, Xan Weapon Upgrade Device + Nanodeck Activation Device + Beta symbiants.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/lox-ground-chief-vortexx - Vortexx: 523 x 307 Central Hub floor portal, the four Notum Crystals, the 18.3 access change, Beta symbiants.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/quest-guides/arid-rift - the Arid Rift chain and the Beta Ear hand-over after the Kyr'Ozch Envoy.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/location-guides/neretva-canyons - Neretva shuttle at 728 x 561, Areas A-F then Area X, Beta Thigh from Lance Corporal DeGeus.",
+    "https://www.ao-universe.com/guides/legacy-of-the-xan/encounter-guides-2/pyramid-of-home---dark-pyramid-below - Pyramid of Home: crater north of Home (Broken Shores), level 201-220, team of 6, the three entry tickets, Cybernetic Daemon / Azdaja the Joyous / Maiden / Phobettor, corrupted Lord weapons + Achaean Conqueror.",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/pandemonium-2 - Pandemonium: level 200-220, the 12 Zodiacs by name, portal islands, the Night Heart (belts, seeds, symbiants), 4h Zodiac / 9h Beast lockouts.",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/hold-hell-at-bay-ring-quest - HHAB ring: level 200-220, protects against the ~6k fire DoT, the full chain (Xark, Razor, Hellion Mirrors, Tchu, Nhohor).",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/guarding-the-source-beast-star - Guarding the Source: level 190-220, One Who is Invited Last at Yutto Marshes 2485 x 1190, the full chain, guaranteed profession Star (Star of Fidelity for Soldier).",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/pandemonium/the-collector - The Collector: Caina, level 200-220, single team, no lockout, the five encounters, six bronze boxes.",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/penumbra/alappaa - Alappaa: Penumbra, patch 17.5, level 160-220, Cascading Molokh / Novictum Blight / Reprogramed Mezzorash, Frozen Crystal Compounds and Frozen Shoulderpads.",
+    "http://wiki.aodb.us/wiki/Albtraum - Albtraum: instanced Inferno playfield (patch 17.3, 2-6 players), Mutant Shadow Eremite / Wings of Despair / Overwhelming Horror / Keeper of Tortured Souls, Phobia Beads and the Ancient Combat Tuner / Ancient Manual Aiming Aid.",
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-07-alien-playfield - Sector 7: Unicorn Outpost, level 151-200, the four bosses, 16 NODROP profession-locked Special Edition weapons, Power Core Parts, VP clumps.",
+    "http://www.ao-universe.com/index.php?id=14&pid=42 - Sector 13 Alien Playfield: level 180-220, Master Genesplicer Cha'Khaz, the Biological Transceiver protection nano, Kyr'Ozch Data Core / Helmet / Battlesuit components.",
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-28-alien-playfield - Sector 28: level 180-220, protect the Rookie Alien Hunter (2M credits), Embalmer Cha'Khaz, Kyr'Ozch Data Core.",
+    "https://www.ao-universe.com/guides/alien-invasion/quests-guides/sector-35-alien-playfield - Sector 35: level 180-220, tower defence, Field Marshal + Field Support Cha'Khaz (kill Support first - reflect shield), Kyr'Ozch Data Core, Unexamined Alien Spongle.",
+    "https://www.athenpaladins.org/forums/viewtopic.php?t=8260 and http://wiki.aodb.us/wiki/Sector_42 - Sector 42: 3 Data Cores from Sectors 13/28/35 traded to the Unicorn Access Supervisor for a Decrypted Data Core, level 180-220 (realistically 205-220), 90-minute Recall Beacon, the three signal-tower bosses and the Artillery Commander.",
+    "http://wiki.aodb.us/wiki/Alien_City_Raid - org city raid: AI expansion + org city + charged controller, 4 players to board the mothership, Generals/Admirals drop viral components, crystalline disks and named Lead Viralbots (Xoch = Enduring, Ankari = Arithmetic), the CRU deployer takes the General's loot.",
+    "https://www.ao-universe.com/guides/lost-eden/encounter-guides/high-level-encounter/le-missions---alien-motherships - Mothership missions: Unicorn Outpost via the ICC transport room, team of 2+, no level lock, the five Masters and the Cocoon Accelerator rooms, nine bio-material types, VP items.",
+    "http://wiki.aodb.us/wiki/Alien_Armor - the six alien armour types (Strong/Supple/Enduring/Observant/Arithmetic/Spiritual) and the six Combined recipes (Strong+Supple = Commando's, Observant+Supple = Sharpshooter's, etc.), the 80% QL rule and the six tradeskills involved.",
+    "https://wiki.aodb.us/wiki/OFAB_Weapon_Upgrades + http://wiki.aodb.us/wiki/Ofab_Armor_Upgrades + https://www.ao-universe.com/guides/lost-eden/tradeskill-guides/weapon/upgrading-ofab-weapons - Ofab bought with VP at the Unicorn Defense Hub / Battle Station shop; upgrades are Kyr'Ozch Bio-Material clumps from alien missions and Dreadloch camps, clump at least 80% of item QL, Mk1 -> Mk6 in five ascending steps.",
+    "https://www.ao-universe.com/guides/classic-ao/location-guides-5/battle-stations - Battlestations: level 10-220 bracketed terminals, 500 points to win, the centre point worth double, VP from participation and from kill poles, the Ofab shop.",
+    "http://wiki.aodb.us/wiki/Soldier:Weapons - Soldier weapon picks by bracket: Division 9 Plasmaprojector (froob), Rebuilt Perennium Blaster ('arguably the best assault rifle in game'), Ofab Shark Mk 1-6 (Victory Points + Alien Mothership bosses), Kyr'Ozch Carbine Type 13.",
+    "http://wiki.aodb.us/wiki/Soldier - Soldier profession overview: armed-combat specialist, damage absorption shields that reflect damage back at the attacker, Shadowlands stacking team and self reflect shields, composite weapon buffs, Gazump Fight team damage.",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-13 (and parts 2/3) - Total Mirror Shield gives 75% reflect, locks nano skills for 2 minutes, max duration 1:20; 'Soldiers have the best reflects in the game'.",
+    "https://www.ao-universe.com/guides/classic-ao/quests-guides-3/dust-brigade-peacekeeper-constad - the DB1 stage list with timers, the Profession Nanodeck reward, and the DB3 stage list.",
+    "http://wiki.aodb.us/wiki/Dust_Brigade_Missions - Dust Brigade questline structure; DB1 requires level 205 for 'Home Again' from Peacekeeper Constad; full team with tank and doc.",
+    "https://athenpaladins.org/forums/viewtopic.php?t=7386 - AO progress guide 205-220: Ofab pieces, QL300 weapons / alien weapons, QL240+ symbiants, research L9 and AI 24+ then 26+, roll Penumbra for Shadowbreed, DB quest registration, +10 Pande ring, Inferno boots and HHAB, completed DB/Neretva/Arid, ~84k VP for the QL300 ring + Special Edition Head + Ofab back.",
+    "http://wiki.aodb.us/wiki/Tarasque - Tarasque: Camelot Castle basement (waypoint 115 300 120), level 150+ (a 210+ team with SL), 9h respawn, 25% PvP zone, Living Dragonflesh components and the utility drops.",
+    "https://forums.funcom.com/t/guide-temple-of-the-three-winds-201-raid-instance/127610 and https://wiki.aodb.us/wiki/Temple_of_Three_Winds - ToTW 201+ instance: Aztur the Immortal / Nematet / The Loremaster, Acolyte AoE debuffs, Windcaller fear, Stygian Desolator and the Ring of Tattered Flame.",
+    "https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/xan-reliquary---new-inferno-missions-6 + https://www.ao-universe.com/guides/shadowlands/quests-guides-2/inferno/galahad-garden-key-quest + http://www.ao-universe.com/index.php?id=14&pid=343 (Lord Mordeth Garden Key) + https://www.ao-universe.com/index.php?id=14&pid=110 (Inferno Boots Quest) - Xan Reliquary level 170+, garden-key pocket-boss parts A-D, the 9 QL220-255 patterns, Nhohor spawned by Tchu at EFP 490 x 3800 for 10 minutes.",
+    "https://wiki.aodb.us/wiki/De'Valos_Protection_Rings + https://www.ao-universe.com/forum/viewtopic.php?t=5416 - the +7 Inferno ring from Ergo in exchange for a Great Ice Golem molar (the Golem drops 6 molars per kill).",
+    "http://wiki.aodb.us/wiki/Raids - the raid index used to check that no endgame venue was missed (Rubi-Ka, Shadowlands, Alien and Legacy of the Xan groupings)."
+  ]
+}

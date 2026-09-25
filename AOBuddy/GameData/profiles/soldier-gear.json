@@ -1,0 +1,351 @@
+{
+  "profession": "Soldier",
+  "professionId": 1,
+  "slug": "soldier",
+  "generatedUtc": "2026-09-23T10:05:00Z",
+  "symbiantUnitType": "Artillery",
+  "summary": "The Soldier is a pure ranged weapon profession: it wins by keeping an Assault Rifle firing with Burst and Full Auto while a stack of reflect and absorb nanos holds the damage off. So its gear is chosen for (1) the weapon skills and specials that let it hold a higher-QL gun - Assault Rifle, Burst, Full Auto, Fling Shot, Ranged Init.; (2) Add All Off. and damage modifiers; (3) Max Health and ACs, because Body Dev. is its second-cheapest skill and the reflect layer is spread over that HP pool; and (4) the Strength/Stamina/Agility that gate its own armour. It does NOT want nano-skill armour the way a caster does - the only nano skills it needs are Matter Creation and Time & Space, and those are better bought with buffs and symbiants than with armour. Every armour piece, requirement, bonus and profession lock below was read out of the client item pack, not from a guide. Weapons are in soldier-weapons.json, implants in soldier-implants.json and symbiants (Artillery line) in soldier-symbiants.json - they are deliberately NOT repeated here.",
+  "dataSources": {
+    "itemTemplates": "E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1), read with tools/eng-gear-extractor --prof 1 --wield. That run returned 68,637 wearable templates of which 61,643 are usable by profession 1 and 166 models are hard-locked to Profession EqualTo 1 (Soldier only).",
+    "whatWasRead": "For every model below: quality (QL), the ToWear/ToWield requirement list (stat, operator, value), the slot mask (cloth bits 1-15 / weapon bits 1-15), the item Stats 'Flags' entry (bit 26 NoDrop, bit 27 Unique) and every Wear-event stat-modify function (the bonuses granted when worn). Bonus numbers below are the TOP-QL template of each model.",
+    "expansionGate": "ToWear stat 389 (Expansion) BitAnd: bit 2 = Shadowlands, bit 8 = Alien Invasion, bit 32 = Lost Eden. This is the authoritative expansion signal, not a guide.",
+    "sideGate": "ToWear stat 33 (Side) EqualTo: 1 = Clan, 2 = Omni. This is what separates the Chosen (Omni) and Faithful (Clan) suits and the Omni-only tank armour.",
+    "idNameVerification": "E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows). Every id/name pair in this file was checked against it.",
+    "web": "wiki.aodb.us and ao-universe.com for WHERE things come from (the client data has requirements and bonuses but not drop tables). Cited per row."
+  },
+
+  "armorSets": [
+    {
+      "name": "Ofab Soldier Armor (Ofab -> Improved -> Penultimate)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "AllEightACs": "394 (gloves) to 1890 (body) at QL300",
+        "MaxHealth": "265-750 per piece (1000 on the Improved body)",
+        "AssaultRifle": "+50 gloves, +50 pants (+55 each on Improved)",
+        "FullAuto": "+50 gloves (+55 Improved)",
+        "MGSMG": "+50 gloves, +50 pants",
+        "Burst": "+25 sleeves (+30 Improved)",
+        "AimedShot": "+25 sleeves",
+        "MultiRanged": "+25 sleeves",
+        "RangedInit": "+50 helmet, +25 sleeves (+55/+30 Improved)",
+        "AddAllOff": "+15 helmet, +15 body (+20 each on Improved)",
+        "RangedEnergy": "+50 boots",
+        "RunSpeed": "+40 boots"
+      },
+      "levelRange": "Endgame (Lost Eden). QL300 pieces require Strength 900 and Stamina 1100.",
+      "source": "Victory Points at the Ofab vendor (Ofab Soldier Vendor, id 266573). Upgraded Ofab -> Improved -> Penultimate with Kyr'Ozch Bio-Material clumps, not with VP (wiki.aodb.us/wiki/Ofab_Armor_Upgrades).",
+      "priority": "high",
+      "professionLock": "Profession EqualTo 1 - Soldier only, verified in items.ocp",
+      "expansion": "Lost Eden (Expansion BitAnd 32)",
+      "pieces": [
+        { "slot": "Head", "name": "Ofab Soldier Helmet", "id": 264431, "altIds": [264432], "improved": { "name": "Improved Ofab Soldier Helmet", "id": 264429, "altIds": [264430] }, "penultimate": { "name": "Penultimate Ofab Soldier Helmet", "id": 264427, "altIds": [264428] }, "bonusesAtQl300": { "allEightACs": 1418, "MaxHealth": 400, "RangedInit": 50, "AddAllOff": 15, "Intelligence": 11 } },
+        { "slot": "Body", "name": "Ofab Soldier Body Armor", "id": 264449, "altIds": [264450], "improved": { "name": "Improved Ofab Soldier Body Armor", "id": 264447, "altIds": [264448] }, "penultimate": { "name": "Penultimate Ofab Soldier Body Armor", "id": 264445, "altIds": [264446] }, "bonusesAtQl300": { "allEightACs": 1890, "MaxHealth": 750, "Stamina": 25, "AddAllOff": 15, "PsychologicalModification": 7 } },
+        { "slot": "Arms", "name": "Ofab Soldier Sleeves", "id": 264443, "altIds": [264444], "improved": { "name": "Improved Ofab Soldier Sleeves", "id": 264441, "altIds": [264442] }, "penultimate": { "name": "Penultimate Ofab Soldier Sleeves", "id": 264439, "altIds": [264440] }, "bonusesAtQl300": { "allEightACs": 578, "MaxHealth": 265, "RangedInit": 25, "AimedShot": 25, "Burst": 25, "MultiRanged": 25 } },
+        { "slot": "Hands", "name": "Ofab Soldier Gloves", "id": 264437, "altIds": [264438], "improved": { "name": "Improved Ofab Soldier Gloves", "id": 264435, "altIds": [264436] }, "penultimate": { "name": "Penultimate Ofab Soldier Gloves", "id": 264433, "altIds": [264434] }, "bonusesAtQl300": { "allEightACs": 394, "MaxHealth": 265, "FullAuto": 50, "AssaultRifle": 50, "MGSMG": 50, "MaterialCreation": 15 } },
+        { "slot": "Legs", "name": "Ofab Soldier Pants", "id": 264461, "altIds": [264462], "improved": { "name": "Improved Ofab Soldier Pants", "id": 264459, "altIds": [264460] }, "penultimate": { "name": "Penultimate Ofab Soldier Pants", "id": 264457, "altIds": [264458] }, "bonusesAtQl300": { "allEightACs": 1392, "AssaultRifle": 50, "MGSMG": 50, "Agility": 12, "SpaceTime": 11 } },
+        { "slot": "Feet", "name": "Ofab Soldier Boots", "id": 264455, "altIds": [264456], "improved": { "name": "Improved Ofab Soldier Boots", "id": 264453, "altIds": [264454] }, "penultimate": { "name": "Penultimate Ofab Soldier Boots", "id": 264451, "altIds": [264452] }, "bonusesAtQl300": { "allEightACs": 709, "MaxHealth": 265, "RangedEnergy": 50, "RunSpeed": 40, "FirstAid": 40, "MaterialMetamorphosis": 11 } },
+        { "slot": "Back", "name": "OFAB Soldier Protective Gear", "id": 267939, "bonusesAtQl300": { "allEightACs": 2000, "MaxHealth": 300, "MaxNanoEnergy": 300, "Burst": 60, "MaxNCU": 25, "Psychic": 15, "Intelligence": 15, "AddAllOff": 15, "ReflectAllACs": 5 }, "note": "Only exists at QL300. The +5 to every Reflect AC is a rare stat on armour and adds on top of the nano reflect stack." },
+        { "slot": "Shoulder", "name": "OFAB Soldier Shoulder Wear", "id": 268186, "bonusesAtQl300": { "MaxHealth": 450, "allEightACs": 375, "RangedInit": 50, "AssaultRifle": 25, "Strength": 15, "Stamina": 15, "AddAllOff": 10 }, "note": "Only exists at QL300." },
+        { "slot": "Head (alternative)", "name": "Special Edition Ofab Soldier Helmet", "id": 267379, "altIds": [267380], "bonusesAtQl300": { "allEightACs": 1600, "MaxHealth": 750, "RangedInit": 150, "AddAllOff": 50, "Strength": 25, "Stamina": 25 }, "note": "Strictly better than every tier of the normal Ofab helmet on every stat: +1600 AC, +750 health, +150 Ranged Init and +50 Add All Off. vs the Penultimate's +1418 / +600 / +70 / +20. This is the 'Special Edition Head' that the 220 checklist buys with Victory Points." }
+      ]
+    },
+    {
+      "name": "Combined Commando's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "AllEightACs": "480 (gloves/sleeves) to 1900 (jacket) at QL300",
+        "AllMeleeAndRangedWeaponSkills": "+30 each, INCLUDING Assault Rifle, Burst, Full Auto and Fling Shot",
+        "AddAllOff": "+15",
+        "AddAllDef": "+15",
+        "AllEightDamageModifiers": "+10"
+      },
+      "levelRange": "Endgame (Alien Invasion). QL300 pieces require Strength 1000, Agility 1000 and Title Level 6 (level 190+).",
+      "source": "Tradeskilled from Strong + Supple alien armour farmed in alien city raids, the sectors and mothership missions. Recipe per wiki.aodb.us/wiki/Alien_Armor: Strong + Supple = Commando's. The Strong/Observant piece must be at least 80% of the Supple piece's QL and the result takes the higher QL.",
+      "priority": "high",
+      "professionLock": "none - Combined armour is not profession-locked (verified: the ToWear requirement list contains no Profession EqualTo clause). What makes it 'the Soldier's set' is the stat spread, not a lock.",
+      "expansion": "Alien Invasion (Expansion BitAnd 8)",
+      "pieces": [
+        { "slot": "Head", "name": "Combined Commando's Headwear", "id": 246633, "altIds": [246634, 246657, 246658], "allEightACs": "1200-1425" },
+        { "slot": "Body", "name": "Combined Commando's Jacket", "id": 246659, "altIds": [246660], "allEightACs": "1600-1900" },
+        { "slot": "Arms", "name": "Combined Commando's Sleeves", "id": 246661, "altIds": [246662], "allEightACs": "420-480" },
+        { "slot": "Hands", "name": "Combined Commando's Gloves", "id": 246663, "altIds": [246664], "allEightACs": "420-480" },
+        { "slot": "Legs", "name": "Combined Commando's Legwear", "id": 246665, "altIds": [246666], "allEightACs": "1050-1200" },
+        { "slot": "Feet", "name": "Combined Commando's Footwear", "id": 246667, "altIds": [246668], "allEightACs": "610-715" },
+        { "slot": "Head (boss version)", "name": "Gannondorf's Combined Commando's Headwear", "id": 257381, "note": "QL300 only, requires character level 210+ instead of Title Level 6; otherwise the same stat block as the normal headwear." }
+      ]
+    },
+    {
+      "name": "Combined Sharpshooter's Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "AllEightACs": "480 to 1900 at QL300",
+        "RangedWeaponSkills": "Bow, Pistol, Assault Rifle and the rest of the ranged set +30 each",
+        "MeleeInit/RangedInit/PhysicalInit": "+40 each",
+        "Evades": "Evade-ClsC / Dodge-Rng / Duck-Exp +30 (on the boss headwear at least)",
+        "AddAllOff": "+15"
+      },
+      "levelRange": "Endgame (Alien Invasion). QL300 requires Agility 1000, Sense 1000 and Title Level 6.",
+      "source": "Tradeskilled from Observant + Supple alien armour (wiki.aodb.us/wiki/Alien_Armor).",
+      "priority": "high",
+      "professionLock": "none",
+      "expansion": "Alien Invasion (Expansion BitAnd 8)",
+      "note": "The alternative to Commando's, and the one to take if you are short on initiative rather than on damage: it trades Commando's +10 damage modifiers and melee skills for +40 to all three initiatives plus evades. Agility/Sense 1000 is also an easier requirement for an Opifex Soldier than Strength/Agility 1000. This choice is already stated in soldier-endgame.json and is repeated here so the two files agree.",
+      "pieces": [
+        { "slot": "Head", "name": "Combined Sharpshooter's Headwear", "id": 246693, "altIds": [246694] },
+        { "slot": "Body", "name": "Combined Sharpshooter's Jacket", "id": 246695, "altIds": [246696] },
+        { "slot": "Arms", "name": "Combined Sharpshooter's Sleeves", "id": 246697, "altIds": [246698] },
+        { "slot": "Hands", "name": "Combined Sharpshooter's Gloves", "id": 246699, "altIds": [246700] },
+        { "slot": "Legs", "name": "Combined Sharpshooter's Legwear", "id": 246701, "altIds": [246702] },
+        { "slot": "Feet", "name": "Combined Sharpshooter's Footwear", "id": 246703, "altIds": [246704] },
+        { "slot": "Head (boss version)", "name": "Haitte's Combined Sharpshooter's Headwear", "id": 257384, "note": "QL300, level 210+; adds Evade-ClsC / Dodge-Rng / Duck-Exp +30." }
+      ]
+    },
+    {
+      "name": "Pernicious Armor",
+      "slotsCovered": ["Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back"],
+      "keyBonuses": {
+        "AllEightACs": "300 (gauntlets) to 1800 Projectile / 1500 others (body and energy shield) at QL300",
+        "AssaultRifle": "+10",
+        "MGSMG": "+10",
+        "RangedEnergy": "+10",
+        "FullAuto": "+10",
+        "Burst": "+10",
+        "DodgeRanged": "+10",
+        "RangedInit": "+10",
+        "NanoResist": "+10"
+      },
+      "levelRange": "Level 200+ (ToWear Level GreaterThan 199), Strength 900 and Agility 900 at QL300. Shadowlands.",
+      "source": "Shadowlands dynaboss armour - wiki.aodb.us/wiki/Armorsets lists 'Pernicious Armor' under Dynaboss Armor (alongside Bellum Badonis, Merlin, Nonpartisan and Sanguisugent). Which specific dynabosses drop which piece is NOT established here - see _unverified.",
+      "priority": "med",
+      "professionLock": "Profession EqualTo 1 - Soldier only, verified in items.ocp",
+      "expansion": "Shadowlands (Expansion BitAnd 2)",
+      "noDrop": true,
+      "note": "Every piece carries the SAME block of +10s to the Soldier's whole weapon kit, so partial sets are useful - the usual play is to keep one or two Pernicious pieces in an otherwise Ofab/Combined setup because nothing else gives Full Auto, Burst and Ranged Init. on the same slot. The Energy Shield is a BACK piece, which is a slot Ofab only covers with the QL300 Protective Gear.",
+      "pieces": [
+        { "slot": "Body", "name": "Pernicious Body Armor", "id": 226457, "altIds": [226458] },
+        { "slot": "Back", "name": "Pernicious Energy Shield", "id": 226463, "altIds": [226464] },
+        { "slot": "Arms", "name": "Pernicious Sleeves", "id": 226459, "altIds": [226460] },
+        { "slot": "Hands", "name": "Pernicious Gauntlets", "id": 226461, "altIds": [226462] },
+        { "slot": "Legs", "name": "Pernicious Pants", "id": 226453, "altIds": [226454] },
+        { "slot": "Feet", "name": "Pernicious Boots", "id": 226455, "altIds": [226456] }
+      ]
+    },
+    {
+      "name": "Soldier Tier armour: First Tier Soldier Jobe -> Second Tier Soldier Jobe -> Chosen Soldier (Omni) / Faithful Soldier (Clan)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back", "Shoulder"],
+      "keyBonuses": {
+        "AllEightACs": "1000-1200 (First Tier QL160) -> 1000-1500 (Second Tier QL220) -> 900-1800 (Chosen/Faithful QL300)",
+        "MaxHealth": "+300 (First Tier body) -> +600 (Second Tier body) -> +900 (Chosen/Faithful body)",
+        "Grenade": "+30 (Second Tier body) -> +40 (Chosen/Faithful body)",
+        "Psychology": "+40 (Chosen/Faithful helmet)",
+        "Stamina": "+20, Intelligence +10, PsychologicalModification +10, BiologicalMetamorphosis +16 on the Chosen/Faithful pieces"
+      },
+      "levelRange": "First Tier QL100-160 (Strength 480 / Stamina 585), Second Tier QL160-220 (Strength 660 / Stamina 805), Chosen/Faithful QL220-300 (Strength 900 / Stamina 1100)",
+      "source": "Shadowlands Jobe tradeskill/quest armour chain - wiki.aodb.us/wiki/Tier_1_Armor, /Tier_2_Armor, /Chosen_Armor. Faithful = Clan, Chosen = Omni: the client enforces this with a Side EqualTo requirement (Chosen = Side 2, Faithful = Side 1).",
+      "priority": "med",
+      "professionLock": "Profession EqualTo 1 - Soldier only, verified in items.ocp",
+      "expansion": "Shadowlands (Expansion BitAnd 2)",
+      "noDrop": true,
+      "note": "The free profession set you build while levelling through Shadowlands. It is an AC and Health set, not a weapon set - the only weapon stat on it is Grenade, which a Soldier does not use. Replaced by Ofab at endgame; the Cuirass (back) and Shoulderplate are worth keeping longer because Ofab only covers those two slots at QL300.",
+      "pieces": [
+        { "tier": "First Tier", "slot": "Body", "name": "First Tier Soldier Jobe Body Armor", "id": 217033, "altIds": [217034] },
+        { "tier": "First Tier", "slot": "Arms", "name": "First Tier Soldier Jobe Sleeves", "id": 217031, "altIds": [217032] },
+        { "tier": "First Tier", "slot": "Hands", "name": "First Tier Soldier Jobe Gloves", "id": 217029, "altIds": [217030] },
+        { "tier": "First Tier", "slot": "Legs", "name": "First Tier Soldier Jobe Pants", "id": 217037, "altIds": [217038] },
+        { "tier": "First Tier", "slot": "Feet", "name": "First Tier Soldier Jobe Boots", "id": 217035, "altIds": [217036] },
+        { "tier": "Second Tier", "slot": "Head", "name": "Second Tier Soldier Jobe Helmet", "id": 217002, "altIds": [217003] },
+        { "tier": "Second Tier", "slot": "Body", "name": "Second Tier Soldier Jobe Body Armor", "id": 216996, "altIds": [216997] },
+        { "tier": "Second Tier", "slot": "Back", "name": "Second Tier Soldier Jobe Cuirass", "id": 217004, "altIds": [217005] },
+        { "tier": "Second Tier", "slot": "Arms", "name": "Second Tier Soldier Jobe Sleeves", "id": 216998, "altIds": [216999] },
+        { "tier": "Second Tier", "slot": "Hands", "name": "Second Tier Soldier Jobe Gloves", "id": 217000, "altIds": [217001] },
+        { "tier": "Second Tier", "slot": "Legs", "name": "Second Tier Soldier Jobe Pants", "id": 216992, "altIds": [216993] },
+        { "tier": "Second Tier", "slot": "Feet", "name": "Second Tier Soldier Jobe Boots", "id": 216994, "altIds": [216995] },
+        { "tier": "Chosen (Omni, Side EqualTo 2)", "slot": "Head", "name": "Chosen Soldier Helmet", "id": 216920, "altIds": [216921] },
+        { "tier": "Chosen (Omni)", "slot": "Body", "name": "Chosen Soldier Body Armor", "id": 216926, "altIds": [216927] },
+        { "tier": "Chosen (Omni)", "slot": "Back", "name": "Chosen Soldier Cuirass", "id": 216916, "altIds": [216917] },
+        { "tier": "Chosen (Omni)", "slot": "Shoulder", "name": "Chosen Soldier Shoulderplate", "id": 216918, "altIds": [216919] },
+        { "tier": "Chosen (Omni)", "slot": "Arms", "name": "Chosen Soldier Sleeves", "id": 216924, "altIds": [216925] },
+        { "tier": "Chosen (Omni)", "slot": "Hands", "name": "Chosen Soldier Gloves", "id": 216922, "altIds": [216923] },
+        { "tier": "Chosen (Omni)", "slot": "Legs", "name": "Chosen Soldier Pants", "id": 216930, "altIds": [216931] },
+        { "tier": "Chosen (Omni)", "slot": "Feet", "name": "Chosen Soldier Boots", "id": 216928, "altIds": [216929] },
+        { "tier": "Faithful (Clan, Side EqualTo 1)", "slot": "Head", "name": "Faithful Soldier Helmet", "id": 214834, "altIds": [214835] },
+        { "tier": "Faithful (Clan)", "slot": "Body", "name": "Faithful Soldier Body Armor", "id": 214828, "altIds": [214829] },
+        { "tier": "Faithful (Clan)", "slot": "Back", "name": "Faithful Soldier Cuirass", "id": 214838, "altIds": [214839] },
+        { "tier": "Faithful (Clan)", "slot": "Shoulder", "name": "Faithful Soldier Shoulderplate", "id": 214836, "altIds": [214837] },
+        { "tier": "Faithful (Clan)", "slot": "Arms", "name": "Faithful Soldier Sleeves", "id": 214830, "altIds": [214831] },
+        { "tier": "Faithful (Clan)", "slot": "Hands", "name": "Faithful Soldier Gloves", "id": 214832, "altIds": [214833] },
+        { "tier": "Faithful (Clan)", "slot": "Legs", "name": "Faithful Soldier Pants", "id": 214824, "altIds": [214825] },
+        { "tier": "Faithful (Clan)", "slot": "Feet", "name": "Faithful Soldier Boots", "id": 214826, "altIds": [214827] }
+      ]
+    },
+    {
+      "name": "Miy's Ranged Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet", "Back"],
+      "keyBonuses": {
+        "AllEightACs": "250-1900 at QL300 (Projectile/Melee/Energy/Cold/Fire are the high side)",
+        "AssaultRifle": "+16 (helmet)",
+        "Rifle": "+16 (legs)",
+        "Shotgun": "+16 (gloves)",
+        "RangedEnergy": "+16 (boots)",
+        "Bow": "+16 (body)",
+        "MGSMG": "+8, Pistol +8 (sleeves)",
+        "RangedInit": "+50 (body)",
+        "MaxNCU": "+16 helmet, +16 body, +12 legs",
+        "Agility": "+22 (legs)",
+        "Stamina": "+22, Strength +17 (body)"
+      },
+      "levelRange": "QL1-300; requires Agility 825 and Strength 765 at QL300. No level requirement, no expansion gate, no profession lock.",
+      "source": "The ranged variant of Miy's. wiki.aodb.us/wiki/Miy's_Nano_Armor covers the family; the Miy's sets drop from Medusae-type mobs. Exact drop camps for the RANGED variant are not established here - see _unverified.",
+      "priority": "med",
+      "professionLock": "none",
+      "note": "The Soldier's counterpart to the caster's Miy's Nano set. Nothing else this cheap puts Assault Rifle, Rifle, Shotgun, Ranged Energy, Bow, Pistol and MG/SMG on seven separate slots plus +50 Ranged Init and +44 NCU. It is the obvious mid-game bridge between Tier armour and Ofab, and the Cloak (270340/270341) covers the back slot with +1400 to every AC and +10 to all six attributes.",
+      "pieces": [
+        { "slot": "Head", "name": "Miy's Ranged Armor Helmet", "id": 268860, "altIds": [268861] },
+        { "slot": "Body", "name": "Miy's Ranged Body Armor", "id": 268862, "altIds": [268863] },
+        { "slot": "Arms", "name": "Miy's Ranged Armor Sleeves", "id": 268866, "altIds": [268867] },
+        { "slot": "Hands", "name": "Miy's Ranged Armor Gloves", "id": 268864, "altIds": [268865] },
+        { "slot": "Legs", "name": "Miy's Ranged Armor Legs", "id": 268868, "altIds": [268869] },
+        { "slot": "Feet", "name": "Miy's Ranged Armor Boots", "id": 268870, "altIds": [268871] },
+        { "slot": "Back", "name": "Miy's Ranged Armor Cloak", "id": 270340, "altIds": [270341] }
+      ]
+    },
+    {
+      "name": "Notum Infused Kevlar Armor",
+      "slotsCovered": ["Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "MeleeAC/ProjectileAC": "250-1000 at QL200 (Fire and Radiation are much weaker)",
+        "RangedInit": "+25, NanoCInit +15, Burst +5 (sleeves)",
+        "DodgeRanged": "+30, Duck-Exp +20, Evade-ClsC +10, Critical Increase +1 (pants)",
+        "RunSpeed": "+40 boots, +30 gloves",
+        "Concealment": "+20, RangedEnergy +10, HeavyWeapons +10, MaxHealth +200 (body)",
+        "FirstAid": "+15, Fling Shot +10, Treatment +10 (gloves)"
+      },
+      "levelRange": "QL1-200; requires Agility 526, Strength 476 and character LEVEL 180 at QL200.",
+      "source": "Rubi-Ka Soldier-only set. Where it comes from is NOT established here - see _unverified.",
+      "priority": "budget",
+      "professionLock": "Profession EqualTo 1 - Soldier only, verified in items.ocp",
+      "note": "The one Soldier-only Rubi-Ka armour set in the data, and the only armour in this file that gives a Critical Increase. The level-180 gate means it is NOT a levelling set despite the low QL - it is a froob/no-expansion endgame set, and on a froob Soldier (cap 200, no SL/AI/LE) it is the best profession armour that exists.",
+      "pieces": [
+        { "slot": "Body", "name": "Notum Infused Kevlar Body Armor", "id": 165141, "altIds": [165142] },
+        { "slot": "Arms", "name": "Notum Infused Kevlar Armor Sleeves", "id": 165145, "altIds": [165146] },
+        { "slot": "Hands", "name": "Notum Infused Kevlar Armor Gloves", "id": 165147, "altIds": [165148] },
+        { "slot": "Legs", "name": "Notum Infused Kevlar Armor Pants", "id": 165143, "altIds": [165144] },
+        { "slot": "Feet", "name": "Notum Infused Kevlar Armor Boots", "id": 165149, "altIds": [165150] }
+      ]
+    },
+    {
+      "name": "Omni-Pol Trooper Armor (and the Quality version)",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": { "note": "Stat block not summarised here - the base version exists only at QL1 and the Quality version only at QL200." },
+      "levelRange": "QL1 (base) and QL200 (Quality)",
+      "source": "Omni-Pol / faction armour. Acquisition NOT established here - see _unverified.",
+      "priority": "budget",
+      "professionLock": "Profession EqualTo 1 - Soldier only, verified in items.ocp",
+      "note": "Listed for completeness because it is one of only six Soldier-locked armour SETS in the client data. Do not plan around it until its source is confirmed.",
+      "pieces": [
+        { "slot": "Head", "name": "Omni-Pol Trooper Armor Helmet", "id": 201121, "quality": { "name": "Quality Omni-Pol Trooper Armor Helmet", "id": 201122 } },
+        { "slot": "Body", "name": "Omni-Pol Trooper Body Armor", "id": 201127, "quality": { "name": "Quality Omni-Pol Trooper Body Armor", "id": 201128 } },
+        { "slot": "Arms", "name": "Omni-Pol Trooper Armor Sleeves", "id": 201111, "quality": { "name": "Quality Omni-Pol Trooper Armor Sleeves", "id": 201112 } },
+        { "slot": "Hands", "name": "Omni-Pol Trooper Armor Gloves", "id": 201117, "quality": { "name": "Quality Omni-Pol Trooper Armor Gloves", "id": 201118 } },
+        { "slot": "Legs", "name": "Omni-Pol Trooper Armor Pants", "id": 201124, "quality": { "name": "Quality Omni-Pol Trooper Armor Pants", "id": 201125 } },
+        { "slot": "Feet", "name": "Omni-Pol Trooper Armor Boots", "id": 201114, "quality": { "name": "Quality Omni-Pol Trooper Armor Boots", "id": 201115 } }
+      ]
+    },
+    {
+      "name": "Carbonum Armor",
+      "slotsCovered": ["Head", "Body", "RightArm", "LeftArm", "Hands", "Legs", "Feet"],
+      "keyBonuses": {
+        "MeleeAC/ChemicalAC": "300-1200 at QL200",
+        "MaxNanoEnergy": "45-160 per piece",
+        "NanoCInit": "+8 per piece",
+        "MaxNCU": "+8 per piece"
+      },
+      "levelRange": "QL1-200; QL200 requires Stamina 580 and Agility 476. No level or expansion gate.",
+      "source": "Tradeskilled Rubi-Ka armour, buyable/craftable at any QL - the standard cheap levelling armour. There is an Omni-only variant (Omni Carbonum, ids 208284-208287+) that adds Max Health.",
+      "priority": "budget",
+      "professionLock": "none",
+      "note": "No weapon stats at all - pure AC and NCU filler for the levelling band before you can wear a real set. The +8 NCU per piece (56 across a full set) is the reason people keep it on longer than the ACs justify.",
+      "pieces": [
+        { "slot": "Head", "name": "Carbonum Plate Helmet", "id": 162426, "altIds": [162437] },
+        { "slot": "Body", "name": "Carbonum Breastplate", "id": 162431, "altIds": [162432] },
+        { "slot": "Arms", "name": "Carbonum Plate Arms", "id": 162429, "altIds": [162430] },
+        { "slot": "Hands", "name": "Carbonum Plate Gloves", "id": 162427, "altIds": [162428] },
+        { "slot": "Legs", "name": "Carbonum Plate Legs", "id": 162433, "altIds": [162434] },
+        { "slot": "Feet", "name": "Carbonum Plate Boots", "id": 162435, "altIds": [162436] }
+      ]
+    }
+  ],
+
+  "headwear": [
+    { "name": "Special Edition Ofab Soldier Helmet", "effect": "All eight ACs +1600, Max Health +750, Ranged Init +150, Add All Off. +50, Strength +25, Stamina +25. Beats every tier of the normal Ofab helmet on every stat. Soldier only, Lost Eden, Strength 900 / Stamina 1100.", "id": 267379 },
+    { "name": "Penultimate Ofab Soldier Helmet", "effect": "All eight ACs +1418, Max Health +600, Ranged Init +70, Add All Off. +20, Intelligence +15. Top tier of the normal Ofab helmet. NODROP.", "id": 264427 },
+    { "name": "Ofab Soldier Helmet", "effect": "All eight ACs +1418, Max Health +400, Ranged Init +50, Add All Off. +15, Intelligence +11. The VP purchase; upgrade it twice with bio-material.", "id": 264431 },
+    { "name": "Combined Commando's Headwear", "effect": "All eight ACs up to +1425 plus the set's +30 to every weapon skill, Add All Off. +15 and +10 damage modifiers.", "id": 246633 },
+    { "name": "Miy's Ranged Armor Helmet", "effect": "All eight ACs 800-1200 at QL300, Intelligence +22, Assault Rifle +16, Max NCU +16. No profession lock, no expansion gate, no level requirement - just Agility 825 / Strength 765.", "id": 268860 },
+    { "name": "Chosen Soldier Helmet", "effect": "All eight ACs 900-1350 at QL300, Max Health +250, Psychology +40, BiologicalMetamorphosis +16, Intelligence +10. Omni only (Side EqualTo 2); the Clan equivalent is Faithful Soldier Helmet 214834.", "id": 216920 },
+    { "name": "Gunner's Cap", "effect": "All eight ACs 400-900 at QL200, Ranged Init +40, Dodge-Rng +40, Perception +20, Aimed Shot +4, Fling Shot +4. Soldier only (VisualProfession EqualTo 1), Sense 450 / Stamina 550, no expansion gate - a genuinely good mid-level Soldier hat.", "id": 207002 },
+    { "name": "Poetic Stretch-band", "effect": "Melee AC +100, Psychology +40, PsychologicalModification +40, Psychic +30. Soldier only; requires Computer Literacy 600. A tradeskill/utility hat, not a combat one - PsyMod is a cast requirement on 68 of the Soldier's nanos, so it has a twinking use.", "id": 152253 },
+    { "name": "Carbonum Plate Helmet", "effect": "Melee/Chemical AC +900 at QL200, Max Nano +140, Nano C. Init +8, Max NCU +8. Budget levelling helmet.", "id": 162426 }
+  ],
+
+  "ncuAndBelt": [
+    { "name": "Xan's Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +30, Max Health +150, Max Nano +150, and +35 to ALL SIX attributes. Requires Computer Literacy 1500, level 210+, Alien Invasion. The best belt in the data.", "id": 279449 },
+    { "name": "Hadrulf's Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +30, Max Health +150, Max Nano +150, Intelligence/Psychic/Sense/Agility +35 each (no Str/Sta). Computer Literacy 1500, level 210+, Alien Invasion.", "id": 288720, "altIds": [257119] },
+    { "name": "Viral Belt Component Platform", "effect": "6 belt slots, Max NCU +20, Max Health +100, Max Nano +100, all six attributes +5. Computer Literacy 1125, level 151+, Alien Invasion. The step below the Xan/Hadrulf belts.", "id": 288084, "altIds": [288719] },
+    { "name": "Belt Component Platform 6K-X", "effect": "6 belt slots, no other bonus. Computer Literacy 1000, level 215+. The plain 6-slot belt for anyone without an alien one.", "id": 303996, "altIds": [36787, 303997, 303998] },
+    { "name": "Overclocked Belt Component Platform", "effect": "5 belt slots, Max NCU +20, Max Health +50. Computer Literacy 275, Alien Invasion - a very cheap NCU belt for the requirement.", "id": 254372 },
+    { "name": "Belt Component Platform 5000 / 4IX / 300X (levelling ladder)  [id 303995 = Belt Component Platform 5000]", "effect": "5 / 4 / 3 belt slots at Computer Literacy 300 / 200 / 120. The plain shop belts you use while levelling.", "id": 303995, "representativeId": 303995, "representativeName": "Belt Component Platform 5000" },
+    { "name": "Accelerated NCU Memory", "effect": "Max NCU +64 and Nano C. Init +6 at QL200 per chip, in any of the six belt deck slots. Requires Computer Literacy 750 and Intelligence 500. Six of these is +384 NCU.", "id": 164603, "altIds": [164604, 164605, 164606, 164607, 164608] },
+    { "name": "Superior Ring of the Nucleus Basalis", "effect": "Max NCU +75, Nano Resist +30, Computer Literacy +15 at QL250. Requires Treatment 1000 and level 201+. NODROP. Finger slot but listed here because its whole purpose is NCU.", "id": 305028 },
+    { "name": "Ring of the Nucleus Basalis", "effect": "Max NCU +50 at QL200, requires Treatment 1050 only. The classic Abmouth (Condemned Subway) ring - cheap NCU from level ~25 onward and the reason the Subway is worth finishing.", "id": 202717, "altIds": [202718] },
+    { "name": "OFAB Soldier Protective Gear", "effect": "Also a big NCU item: Max NCU +25 on top of +2000 to every AC, +300 Health, +300 Nano, Burst +60 and +5 to every Reflect AC. Back slot, QL300, Soldier only.", "id": 267939 }
+  ],
+
+  "misc": [
+    { "name": "Stellar Soldier Nanodeck", "slot": "HUD / Utility", "effect": "Assault Rifle +30, Full Auto +30, Burst +30, MG/SMG +30, Ranged Energy +30, Heavy Weapons +30, First Aid +30, Strength +30, Run Speed +25, Range Increaser +5, Critical Resistance +2. Soldier only, ToWield Level > 214, NODROP + Unique. Wearing ANY Soldier Nanodeck sets NanoFocusLevel bit 64, which is the gate on six of the Soldier's best nanos.", "id": 280782 },
+    { "name": "Activated Soldier Nanodeck", "slot": "HUD / Utility", "effect": "Run Speed +25, Range Increaser +5, Critical Resistance +2, and the NanoFocusLevel bit. The middle step of the deck chain.", "id": 280768 },
+    { "name": "Soldier Nanodeck", "slot": "HUD / Utility", "effect": "Run Speed +25, Range Increaser +5, Critical Resistance +2, and the NanoFocusLevel bit. The base deck from Dust Brigade 1.", "id": 270768 },
+    { "name": "Star of Fidelity", "slot": "HUD / Utility", "effect": "Assault Rifle +30, Full Auto +30, First Aid +30, Strength +30 at QL250. Soldier only, NODROP + Unique, requires Computer Literacy 1500 and level 200+. The Soldier's Star from the Beast (wiki.aodb.us/wiki/The_Beast lists 'Star of Fidelity' as the Soldier star of the 14).", "id": 244690 },
+    { "name": "Stellar Fidelity", "slot": "HUD / Utility", "effect": "The same +30 Assault Rifle / Full Auto / First Aid / Strength. This is what the Star becomes after it is combined into the Stellar Soldier Nanodeck.", "id": 281045 },
+    { "name": "Dreadloch Damage Amplifier", "slot": "HUD", "effect": "All eight damage modifiers +25, Add All Off. +15, Ranged Init +25 at QL250. Locked to Profession 1 OR 2 (Soldier or Martial Artist) - verified in items.ocp. Lost Eden, Strength 1000, level 201+. NODROP + Unique.", "id": 267260 },
+    { "name": "Dreadloch Stabilising Aid", "slot": "HUD", "effect": "Ranged Init +50, MG/SMG +25, Assault Rifle +25, Burst +15, Add All Off. +10, Critical Increase +1 at QL250. No profession lock; Lost Eden, Strength 1000, level 201+.", "id": 267165 },
+    { "name": "Deflection Amplifier", "slot": "HUD3", "effect": "All eight Reflect ACs +10. Soldier only, Shadowlands, requires Time & Space 743 and Matter Creation 743. Only QL1-10 exists. Small, but reflect is the one stat the Soldier stacks and almost nothing else on an item gives it.", "id": 263256, "altIds": [263257] },
+    { "name": "Soldiers' Ring of Focus", "slot": "Finger", "effect": "Body Dev. +50, Full Auto +25, Add All Off. +20, Burst +20, Heal Delta +10 at QL300. Soldier only, Lost Eden, level 220, Strength 900 / Stamina 1100. The endgame Soldier ring.", "id": 267578, "altIds": [267579] },
+    { "name": "Compagnero", "slot": "Finger", "effect": "Assault Rifle +12, Full Auto +12, Pistol +12, Fling Shot +12, Body Dev. +12, Add All Off. +12 at QL250. Soldier only, Shadowlands, Strength 750 / Stamina 750. Unique.", "id": 246084 },
+    { "name": "Custom-Made Soldier Ring of Attack", "slot": "Finger", "effect": "Max Health +100, Ranged Init +36, and +6/+3 across Ranged Energy, Heavy Weapons, Full Auto, Assault Rifle, Aimed Shot, Rifle, Burst, MG/SMG, Fling Shot and Pistol at QL200. Soldier only, level 200+, NODROP.", "id": 163652, "altIds": [163653] },
+    { "name": "Custom-Made Soldier Ring of Defense", "slot": "Finger", "effect": "Max Health +300, all eight ACs +75, Dodge-Rng +25 at QL200. Soldier only, level 200+, NODROP. The defensive twin of the Ring of Attack.", "id": 163650, "altIds": [163651] },
+    { "name": "Bigot's Ring of Sacrifice", "slot": "Finger", "effect": "Max Health +300, Chemical AC +100, Chemical damage modifier +10, Critical Resistance +1 at QL250. Soldier only (VisualProfession EqualTo 1), Shadowlands, Strength 750 / Stamina 750. Unique.", "id": 245770 },
+    { "name": "Band of Dog Molars", "slot": "Finger", "effect": "Max Nano +112, Treatment +14, First Aid +14, Psychic +14 at QL200. Soldier only, level 130+. NODROP + Unique. A twinking ring (Treatment gates implants), not a combat one.", "id": 165476 },
+    { "name": "Warrior's Signet of The Apocalypse", "slot": "Finger", "effect": "Nano Resist +700, Fire AC +200, Run Speed +100. Soldier only, Shadowlands, Title Level 6+. This is a Shadowlands environment/protection ring in the same family as Hold Hell at Bay (231234) and the De'Valos rings - the Nano Resist 700 is what it is for.", "id": 281207 },
+    { "name": "Hold Hell at Bay", "slot": "Finger", "effect": "Nano Resist +700, Run Speed +100. No profession lock; Shadowlands, Title Level 6, Sense 600 / Psychic 600. The Pandemonium access ring - see soldier-endgame.json, it is what lets you survive the Pandemonium fire DoT.", "id": 231234 },
+    { "name": "Light Omni-Tek Artillery Tank Armor", "slot": "Back", "effect": "Melee/Projectile AC +1200 down to Poison +700 at QL200, Projectile damage modifier +40, but Run Speed -80. Soldier only AND Omni only (Side EqualTo 2), Strength 550 / Stamina 550. The Hacked version (204989-204991, QL100-250) drops the Side requirement, raises the ACs to 1600 and the damage modifier to +50, but costs -200 Run Speed.", "id": 204986, "altIds": [204987] },
+    { "name": "Commander's Ceremonial Chest Plate", "slot": "Body", "effect": "All eight ACs 300-900 at QL150, Max Health +150, Max Nano +150, Max NCU +15, Psychology +15. Soldier only, Shadowlands, Stamina 500. A one-off QL150 body piece - useful in the 150-200 gap before Tier/Ofab.", "id": 245357 },
+    { "name": "Small Ebony Figurine (Assault Rifle variant)  [id 202424 = Small Ebony Figurine]", "representativeId": 202424, "representativeName": "Small Ebony Figurine", "slot": "Utility", "effect": "Assault Rifle +8, Ranged Init +12 at QL200; requires Assault Rifle 550, Title Level 5+ and Profession EqualTo 1. WATCH OUT: nine DIFFERENT items in items.ocp share the name 'Small Ebony Figurine' and each gives a different stat pair - 202424 Assault Rifle/Ranged Init, 202430 MG-SMG/Ranged Init, 202417 Pistol/Ranged Init, 202409 Shotgun/Ranged Init, 202374 Ranged Energy/Ranged Init, 202390 Strength/Stamina, 202350 Multi Melee/Multi Ranged, 202347 Bow/Bow Special, 202300 Nano Programming/Computer Literacy (this last one is the only one with no profession lock). You cannot buy these by name - check the id.", "id": 202424 },
+    { "name": "Notum Splice", "slot": "Left Wrist", "effect": "Max Nano +195, Nano Resist +30 and +1/+2 to each nano school. No profession lock; Treatment 380, Psychic 163. A cheap all-purpose wrist item.", "id": 204649 }
+  ],
+
+  "_unverified": [
+    "Pernicious Armor: wiki.aodb.us/wiki/Armorsets places it under 'Dynaboss Armor', but WHICH Shadowlands dynabosses drop which piece was not established from a page I actually read. A search-engine summary claimed 'drops off dragon mobs in most SL zones'; that claim was NOT confirmed on a real page and is therefore not recorded as fact.",
+    "Notum Infused Kevlar Armor: the item data proves it is Soldier-only, QL1-200, level 180+. Its SOURCE (shop, quest, drop or tradeskill) was not established.",
+    "Omni-Pol Trooper Armor: Soldier-only in the data, base version QL1 and 'Quality' version QL200. Source not established; its stat block was not summarised because the QL1 templates carry almost nothing.",
+    "Miy's Ranged Armor drop camps: the Miy's family is known to drop from Medusae-type mobs, but the specific camps for the RANGED variant (as opposed to the Nano variant) were not confirmed on a page.",
+    "Ofab upgrade economics: 'Ofab -> Improved -> Penultimate with Kyr'Ozch Bio-Material clumps, each clump at least 80% of the item QL' is carried over from soldier-endgame.json, which cites wiki.aodb.us/wiki/Ofab_Armor_Upgrades and the AO-Universe Ofab upgrade guide. Not independently re-read for this file.",
+    "Item DURATIONS, set bonuses and any 'wearing N pieces gives X' mechanic are not in the item pack and are not asserted anywhere in this file.",
+    "Bonus numbers are the TOP-QL template of each model. Mid-QL values scale but the exact scaling curve is not recorded here - read the QL you actually hold.",
+    "The two ids listed per Ofab/Tier piece (e.g. 264431 and 264432) are two templates of the same model in items.ocp (the low-QL and high-QL ends of the QL1-300 range). Which one a vendor/drop actually hands you was not determined.",
+    "This file does NOT claim to be the exhaustive Soldier-equippable catalogue required by CLASS-PROFILE-PLAYBOOK section 9. It is the curated best-in-slot/progression layer. The exhaustive catalogue (61,643 Soldier-usable wearable templates, 166 Soldier-locked models) has not been generated as a profile file yet."
+  ],
+
+  "_sources": [
+    "LOCAL (authoritative): E:/Funcom/OmniCell/OmniCell/Datafiles/items.ocp (OMNICELL-CONTENT v3, 120,842 templates, client 18.8.50_EP1) read with tools/eng-gear-extractor --prof 1 --wield. Every id, QL range, slot, requirement, profession lock, NODROP flag and stat bonus in this file came from that run.",
+    "LOCAL: E:/Funcom/attic/extracted-client-data/itemnames.sql (131,384 rows) - every id/name pair verified.",
+    "LOCAL: sibling profiles soldier-endgame.json (the Ofab / Combined / Nanodeck / Star of Fidelity progression this file must agree with), soldier-build.json (skill cost factors and role), soldier-symbiants.json (Artillery line) and soldier-weapons.json.",
+    "http://wiki.aodb.us/wiki/Armorsets - the armour-set taxonomy used to place each set: Dynaboss Armor (Pernicious), Tier Armors (First/Second/Chosen/Faithful per profession), Alien Armors (Combined Commando's / Sharpshooter's etc.), OFAB Armors (profession-specific, Victory Points).",
+    "http://wiki.aodb.us/wiki/Soldier:Armor - the Soldier armour page: First/Second Tier Soldier Jobe Suit, Chosen Soldier Suit, Faithful Soldier Suit (Shadowlands) and Ofab Soldier Armor (Lost Eden). The page lists nothing for Rubi-Ka or Alien Invasion.",
+    "http://wiki.aodb.us/wiki/Alien_Armor - the six alien armour types and the six Combined recipes (Strong + Supple = Commando's, Observant + Supple = Sharpshooter's).",
+    "http://wiki.aodb.us/wiki/The_Beast - the Beast loot table, confirming Star of Fidelity is the Soldier's Star of the 14 profession Stars.",
+    "https://wiki.aodb.us/wiki/Miy's_Nano_Armor - the Miy's armour family.",
+    "https://www.ao-universe.com/guides/classic-ao/profession-guides/tepaminas-soldier-guide-13 (and 2/3) - Soldier gear priorities and the reflect/Body Dev. reasoning behind the summary.",
+    "NOT USED (block automation, per CLASS-PROFILE-PLAYBOOK section 4): auno.org, aoitems.com, anarchyonline.fandom.com."
+  ]
+}
