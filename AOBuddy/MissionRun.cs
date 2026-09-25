@@ -483,9 +483,11 @@ namespace AOBuddy
                 // to the blitz, which blocks the cells it keeps walking into and gives up after 12 re-plans.
                 // Holding again restarted its walk out (backoutside), which cleared those blocks every time: 19:55-
                 // 20:02 (2026-09-24), ACD building, 18 holds at (53,5,237) re-planning the same 69 m route.
-                if (_mission.Active && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
+                // Inside the building, whichever step (blitz or exit stand): 02:19-02:22 (2026-09-25) the exit
+                // stand set it back each time, and he was held at (35,5,17) over and over.
+                if (_mission.InMission && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
                     return false;
-                _heldAt = _mission.Active ? me.Transform.Position : (Vector3?)null;
+                _heldAt = _mission.InMission ? me.Transform.Position : (Vector3?)null;
                 _heldUntil = _clock + T("held");
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
