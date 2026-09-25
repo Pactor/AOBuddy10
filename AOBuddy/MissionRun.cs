@@ -1211,6 +1211,17 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
+            // Stranded by our own marks: in Wartorn Valley (12:53-12:59, 2026-09-25) the lines to Athen Shire and both
+            // to Aegean each failed once and were marked bad, which left no way out at all. With no route left, forget
+            // the marks (at most every 10 minutes) and plan again.
+            if ((route == null || route.Hops.Count == 0) && (_badExits.Count > 0 || _badBorders.Count > 0) && _clock - _badForgotAt > 600)
+            {
+                _badForgotAt = _clock;
+                _ctx.Log($"MISSIONRUN: no way out of {Zoning.Name(here)} round the {_badExits.Count} exit(s) I marked bad; forgetting the marks and trying them again.");
+                _badExits.Clear(); _badBorders.Clear(); _borderFails.Clear();
+                opt.Filter = plain;
+                try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
+            }
             if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
@@ -1468,6 +1479,7 @@ namespace AOBuddy
         // the route of choice (the Grid needs Computer Literacy, and some Grid exits are over his skill - the
         // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
         private readonly HashSet<string> _badExits = new HashSet<string>();
+        private double _badForgotAt = -9999;
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
         private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
         private void MarkBadExit(ZoneExit e)
