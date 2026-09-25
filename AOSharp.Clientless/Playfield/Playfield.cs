@@ -25,11 +25,34 @@ namespace AOSharp.Clientless
         internal static void Init(PlayfieldAnarchyFMessage playfieldMessage)
         {
             ModelId = (PlayfieldId)playfieldMessage.PlayfieldId1.Instance;
+            _liveIds = playfieldMessage.Dynels;
             _towers.Clear();
             DynelManager.Reset();
             DynelManager.InitStaticDynels(ModelId);
             Inventory.ResetContainers();
             FullUpdateProxy.Reset();
+        }
+
+        // Static objects in an instanced zone (a Fair Trade, flags C77D) get their live ids from the zone-in packet: one
+        // record per run of the zone's object list {type, start, count, first instance}. Our static id numbers each
+        // object within its type ((id >> 16) & 0x3FFF); walking that type's records in order gives its live instance.
+        // Capture 20260924-192208 (the alt, Borealis and Newland Fair Trade): Terminal records 0EE4CB07 x2 then
+        // 0EE4CB09, and the client used the bank terminal (static C00104A2, type index 1) as C73D:0EE4CB08; in Newland
+        // 0EE73631 x2 -> 0EE73632. Terminals never come from the server, so the static id is all we have to go on;
+        // the server refuses a Use on it (GenericCmd echo Verification 2).
+        private static PlayfieldAnarchyFMessage.PlayfieldDynelInfo[] _liveIds;
+
+        public static Identity LiveIdentity(Identity staticId)
+        {
+            if (_liveIds == null || ((uint)staticId.Instance & 0xC0000000) != 0xC0000000) return staticId;
+            int k = (int)(((uint)staticId.Instance >> 16) & 0x3FFF);
+            foreach (var r in _liveIds)
+            {
+                if (r == null || r.IdentityType != staticId.Type) continue;
+                if (k < r.Unknown3) return new Identity(staticId.Type, r.Instance + k);
+                k -= r.Unknown3;
+            }
+            return staticId;
         }
 
         internal static void MakeTower(TowerInfo towerInfo, PlayfieldTowerUpdateType updateReason)

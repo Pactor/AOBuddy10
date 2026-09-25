@@ -460,3 +460,13 @@ missions may be taken in (empty = any zone).
     Separately, the door at (1047,2704) that live travel "searched 1500000 cells without reaching": on the plain
     grid, FindPath from (1283,2891) finds it (26 points, snap 8). So the live failure came from travel's own
     state (extra blocked cells or its snap), not the map. Probe: scratchpad navprobe (OverlandGrid.Build + IsOpen).
+
+20. **Static objects in an instanced zone have live ids (bank fixed, 2026-09-24).** Capture 20260924-192208 (the alt,
+    Borealis and Newland Fair Trade): the zone-in PlayfieldAnarchyF (flags C77D) carries a table of
+    `{type, start, count, first instance}` records over the zone's object list. Vending machines and doors are also
+    sent by the server with those ids, but terminals never are, so the bot used the static id (C00104A3) and the
+    server refused every Use (GenericCmd echo Verification 2; accepted = 1). `Playfield.LiveIdentity` maps a static
+    id (type index = (id >> 16) & 0x3FFF) through the table: bank C00104A2/3 -> 0EE4CB08 (Borealis FT), 0EE73632
+    (Newland FT), both what his client sent. Any other static terminal in an instanced zone needs the same mapping
+    (Zoning/whompa uses in instanced zones, if any). Both captured Fair Trades were model 1186, not 1187.
+

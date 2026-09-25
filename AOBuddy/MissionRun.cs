@@ -1262,20 +1262,21 @@ namespace AOBuddy
         private double _shopStepAt, _shopTriedAt = -9999;
         private const int FairTradePf = 1187;
         private static readonly Vector3 ShopSpot = new Vector3(197.74f, 5.01f, 142.38f);
-        // The bank terminal is looked up live: the id in the owner's capture (C73D:0EE5BBFF) didn't answer on another
-        // game server, where the zone had 'Rubi-Ka Banking Service Terminal' Terminal:C00104A3 at (195.7,144.4)
-        // (08:05, 2026-09-24). The captured id stays as the fallback.
-        private static Identity BankTerminal
+        // The bank terminal is the nearest static 'Rubi-Ka Banking Service Terminal' (where to stand); the id to use
+        // is its live one from the zone-in packet (Playfield.LiveIdentity). Capture 20260924-192208 (the alt): his
+        // client used C73D:0EE4CB08 in Borealis Fair Trade and 0EE73632 in Newland's - the static id (C00104A3) and
+        // the old capture's 0EE5BBFF were refused (GenericCmd echo Verification 2) every time.
+        private static Dynel BankDynel
         {
             get
             {
                 var me = DynelManager.LocalPlayer;
-                var t = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.Terminal && d.Name != null
-                                                          && d.Name.IndexOf("Bank", StringComparison.OrdinalIgnoreCase) >= 0)
-                                              .OrderBy(d => me == null ? 0 : Vector3.Distance(me.Transform.Position, d.Transform.Position)).FirstOrDefault();
-                return t != null ? t.Identity : new Identity(IdentityType.Terminal, 0x0EE5BBFF);
+                return DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.Terminal && d.Name != null
+                                                         && d.Name.IndexOf("Bank", StringComparison.OrdinalIgnoreCase) >= 0)
+                                             .OrderBy(d => me == null ? 0 : Vector3.Distance(me.Transform.Position, d.Transform.Position)).FirstOrDefault();
             }
         }
+        private static Identity BankTerminal { get { var d = BankDynel; return d != null ? Playfield.LiveIdentity(d.Identity) : Identity.None; } }
         private Vector3? _shopArrival;
         private int _bankUses;
         private int _bankPulls;
@@ -1602,8 +1603,9 @@ namespace AOBuddy
                     {
                         // Walk up to it, face it, use it (13:26 and 15:45, 2026-09-24: used from up to 40 m off, where the
                         // last sale left him, and the server never answered; in the owner's capture he stood at it).
+                        var bankDyn = BankDynel;
                         var bankId = BankTerminal;
-                        var bankDyn = DynelManager.AllDynels.FirstOrDefault(d => d != null && d.Identity == bankId);
+                        if (bankDyn == null) { _tell("No bank terminal here; skipping the banking."); return ShopAfterNanos(me); }
                         if (bankDyn != null && me.DistanceFrom(bankDyn) > 3f && t < 20) { _follow.SetManualTarget(bankDyn.Transform.Position); return true; }
                         _follow.ClearMovement();
                         // Not while casting (16:49, 2026-09-24: auto-buff and pet casts landed between every try, and the
@@ -1614,17 +1616,10 @@ namespace AOBuddy
                         if (_clock - _bankQuietAt < 2) return false;
                         if (_bankUses < 3 && _clock - _bankUsedAt > 3)
                         {
-                            // What the owner's client used (capture, MISSION-MODE-PLAN): the static object C73D (51005)
-                            // :0EE5BBFF, not the Terminal dynel standing there. Earlier tries sent the dynel, or the
-                            // captured number with the Terminal type - neither is what the client sends. The dynel
-                            // is only the place to stand; the third try falls back to it.
-                            // The owner's client numbers its uses (Count 1, 2, 3...; the bank open was 2) and sent no
-                            // LookAt before it; ours always sent 1. Each try is a different variant, logged, until the
-                            // server answers: 1) captured id, count 2; 2) live terminal id, count 2; 3) captured id, open flag.
-                            var captured = new Identity((IdentityType)0xC73D, 0x0EE5BBFF);
-                            if (_bankUses == 0) Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId = captured, Count = 2, Temp4 = 1 });
-                            else if (_bankUses == 1) Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId, Count = 2, Temp4 = 1 });
-                            else Client.Send(new GenericCmdMessage { Action = GenericCmdAction.Use, User = me.Identity, Target = bankId = captured, Count = 3, Temp4 = 0 });
+                            // As his client did (capture 20260924-192208 s5 seq 15-16): LookAt the terminal, then Use it
+                            // (Count 1, Temp4 1) by its live id; the server answers BankMessage, then the echo.
+                            Client.Send(new LookAtMessage { Target = bankId, ReturnInfo = 0 });
+                            GameCommands.UseObject(me, bankId);
                             _bankUses++; _bankUsedAt = _clock;
                             _ctx.Log($"MISSIONRUN: shop: using the bank ({bankId}) from {(bankDyn != null ? me.DistanceFrom(bankDyn) : -1):0.0} m (try {_bankUses}).");
                             return false;
