@@ -1125,6 +1125,21 @@ namespace AOBuddy
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
             }
+            // STALLED: not a metre in 30 s on the way to the exit (01:30-01:32, 2026-09-25, Aegean: the grid leg's
+            // last point skipped as blocked 14 m short of the Stret West Bank line, and he stood there - the walk
+            // to an exit may take 15 minutes). That exit is out; plan another.
+            // (reset after any time away from this step - a fight, a hold - so only a stall inside the hike counts)
+            if (!_hikeStillAt.HasValue || Movement.Flat(pos, _hikeStillAt.Value) > 1f || _clock - _hikeStillTick > 2) { _hikeStillAt = pos; _hikeStillSince = _clock; }
+            _hikeStillTick = _clock;
+            if (_clock - _hikeStillSince > 30 && _hikePassStage == 0 && _hikeUses == 0)
+            {
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: stood still 30 s {Movement.Flat(pos, at):0} m from {e}; trying another way.");
+                MarkBadExit(e);
+                _hikeStillAt = null;
+                Enter(_hikeReturn, "hike stalled");
+                return false;
+            }
             if (_follow.ReplayCount > 0) return true;                 // still on the grid leg
             if (_hikeAtExitAt < 0) _hikeAtExitAt = _clock;
 
@@ -1335,6 +1350,8 @@ namespace AOBuddy
         private Vector3? _shopArrival;
         private int _bankUses;
         private int _bankPulls;
+        private Vector3? _hikeStillAt;
+        private double _hikeStillSince, _hikeStillTick = -99;
         private bool? _bankBuffWas;
         private double _bankQuietAt = -99;
         private double _bankPulledAt = -99;
