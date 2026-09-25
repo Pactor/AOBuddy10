@@ -1175,7 +1175,10 @@ namespace AOBuddy
                 if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
-                    _follow.LoadReplay(OnGround(best.Skip(1), pos), false);
+                    // Off every other zone's line on the way (06:12-06:18, 2026-09-25: landed in Aegean at (229,1118),
+                    // 2 m from the Wartorn Valley line; the walk to the Athen Shire line stepped back over it, and he
+                    // went Aegean <-> Wartorn Valley nine times a minute).
+                    _follow.LoadReplay(OnGround(OffZoneLines(best.Skip(1), _hikeFromPf, pos, e.ToPf), pos), false);
                     _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
@@ -1980,10 +1983,11 @@ namespace AOBuddy
         // A walk inside one zone never aims within 8 m of its zone lines (00:51, 2026-09-25: into Holes in the Wall
         // at (1084,1949) by the Stret West Bank line, the walk to the door's first point sat on that line, and 15 s
         // later he was back in Stret West Bank). The last point, the goal, is kept.
-        private static List<Vector3> OffZoneLines(IEnumerable<Vector3> pts, int pf, Vector3? from = null)
+        private static List<Vector3> OffZoneLines(IEnumerable<Vector3> pts, int pf, Vector3? from = null, int headingTo = -1)
         {
             var list = pts.ToList();
-            var lines = Zoning.ExitsFrom(pf).Where(e => e.Kind == ExitKind.ZoneLine).ToList();
+            // The lines into the zone he is heading for are the goal, not in the way.
+            var lines = Zoning.ExitsFrom(pf).Where(e => e.Kind == ExitKind.ZoneLine && e.ToPf != headingTo).ToList();
             if (lines.Count == 0 || list.Count < 2) return list;
             float Dist(Vector3 p, Vector3 a, Vector3 b)
             {
