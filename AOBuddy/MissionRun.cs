@@ -769,8 +769,11 @@ namespace AOBuddy
                     Vector3 pos = me.Transform.Position;
                     if (_doorDir < 0)
                     {
-                        // First side: the one we arrived from.
-                        double ang = Math.Atan2(pos.Z - d.Z, pos.X - d.X);
+                        // First side: the door's FRONT when the zone's walls data can see it (open ground at
+                        // the doorway — walking in from the side doesn't take), else the one we arrived from.
+                        Vector3? front = _overland.FrontOf(d, pos);
+                        double ang = front.HasValue ? Math.Atan2(front.Value.Z, front.Value.X)
+                                                    : Math.Atan2(pos.Z - d.Z, pos.X - d.X);
                         _doorStart = (int)Math.Round(ang / (Math.PI / 4)) & 7;
                         _doorDir = 0; _doorStep = 0; _doorStepTime = 0;
                     }

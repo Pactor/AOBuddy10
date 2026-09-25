@@ -60,6 +60,7 @@ namespace AOBuddy
         private AOBuddyNav _ground;
         private IWalkGrid _grid;
         private Vector3? _padApproach;                // where we stepped onto a pad from, to step off and on again
+        private bool _frontal;                        // this object leg crosses head-on: staging spot, then straight through
         private int _groundPf = -1;
         private readonly HashSet<int> _stuckCells = new HashSet<int>();   // cells we got stuck walking into, this leg
         private int _stuckCount;
@@ -231,7 +232,7 @@ namespace AOBuddy
 
         private void NextLeg(LocalPlayer me)
         {
-            _path.Clear(); _tries = 0; _stuckCells.Clear(); _stuckCount = 0;
+            _path.Clear(); _tries = 0; _stuckCells.Clear(); _stuckCount = 0; _frontal = false;
             if (_legs == null || _legs.Count == 0)
             {
                 // Out of legs: with no coordinates, being in the playfield is the destination.
@@ -275,6 +276,18 @@ namespace AOBuddy
                 goal = _leg.Exit.A;   // with its height: in the Grid the level matters
                 what = IsPad(_leg.Exit) ? (_leg.Exit.ToPf == _leg.Pf ? "the lift beam" : "the exit pad") + (_tries > 0 ? $", try {_tries + 1}" : "")
                                         : "the " + _leg.Exit.Kind.ToString().ToLower();
+                // ENTER HEAD-ON (owner, 2026-09-25): running into a wompa booth or a doorway from the side
+                // doesn't take. The zone's walls data knows which side of the object is open ground — its
+                // front — so route to a spot 3.5 m out on that side and then walk straight through the
+                // centre, the same staged crossing the zone-line legs already use.
+                if ((_leg.Exit.Kind == ExitKind.Teleport || _leg.Exit.Kind == ExitKind.Proxy)
+                    && !IsPad(_leg.Exit) && FrontDir(goal, pos, out Vector3 front))
+                {
+                    goal = new Vector3(_leg.Exit.A.X + front.X * 3.5f, _leg.Exit.A.Y, _leg.Exit.A.Z + front.Z * 3.5f);
+                    across = new Vector3(_leg.Exit.A.X - front.X * 1.2f, _leg.Exit.A.Y, _leg.Exit.A.Z - front.Z * 1.2f);
+                    _frontal = true;
+                    what += ", head-on";
+                }
             }
 
             EnsureNav();
@@ -315,6 +328,35 @@ namespace AOBuddy
             if (across.HasValue) _path.Add(across.Value);
             Enter(Phase.Walk, "walking to " + what);
         }
+
+        // The direction of open ground at a doorway-style object — its front. Sixteen rays out from the
+        // object on this zone's grid; the front is the longest open run, preferring the side we approach
+        // from (it is usually the front too). False when there is no grid or no 3 m of open ground on any
+        // side (an object in a wall pocket): the approach then stays as it was.
+        private bool FrontDir(Vector3 obj, Vector3 from, out Vector3 dir)
+        {
+            dir = Vector3.Zero;
+            if (_grid == null || _grid.Pf != (int)Playfield.ModelId) return false;   // a grid from another zone would ray the wrong walls
+            float fx = from.X - obj.X, fz = from.Z - obj.Z;
+            float fl = (float)Math.Sqrt(fx * fx + fz * fz);
+            if (fl > 0.01f) { fx /= fl; fz /= fl; } else { fx = 1; fz = 0; }
+            bool any = false; float best = float.MinValue;
+            for (int k = 0; k < 16; k++)
+            {
+                double t = k * Math.PI / 8;
+                float dx = (float)Math.Cos(t), dz = (float)Math.Sin(t);
+                float open = 0;
+                for (float d = 1; d <= 4; d += 1f)
+                    if (_grid.OpenAt(new Vector3(obj.X + dx * d, obj.Y, obj.Z + dz * d))) open = d; else break;
+                if (open < 3f) continue;                                   // needs room for the staging spot
+                float score = open + (dx * fx + dz * fz) * 2f;             // open run first, then nearest our approach
+                if (score > best) { best = score; any = true; dir = new Vector3(dx, 0, dz); }
+            }
+            return any;
+        }
+
+        /// <summary>The object's front direction for callers outside (MissionRun's door sweep starts on it); null without a grid.</summary>
+        public Vector3? FrontOf(Vector3 obj, Vector3 from) => FrontDir(obj, from, out Vector3 d) ? d : (Vector3?)null;
 
         // Arriving over a zone line leaves us standing on the line back. Step ClearOfLine metres into this playfield
         // off any line we are on (except the one this leg crosses) before routing, so the first step can't zone us back.
@@ -483,7 +525,7 @@ namespace AOBuddy
             Vector3 wp = _path[_pathIndex];
             float d = Movement.Flat(pos, wp);
             bool last = _pathIndex == _path.Count - 1;
-            float arrive = !last || _leg.Exit?.Kind == ExitKind.ZoneLine || IsPad(_leg.Exit) ? 0.5f : _leg.Exit == null ? GoalRange : ObjectRange;
+            float arrive = !last || _leg.Exit?.Kind == ExitKind.ZoneLine || IsPad(_leg.Exit) || _frontal ? 0.5f : _leg.Exit == null ? GoalRange : ObjectRange;
             if (d <= arrive)
             {
                 _pathIndex++;

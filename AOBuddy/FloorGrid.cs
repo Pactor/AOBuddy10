@@ -162,6 +162,9 @@ namespace AOBuddy
 
         private float Height(long node) => _floors[(int)(node / 8)][(int)(node % 8)];
 
+        /// <summary>Standable ground at p (a floor within 3 m of p.Y) — the front-ray test for doorway exits.</summary>
+        public bool OpenAt(Vector3 p) => FloorAt(Key(p.X, p.Z), p.Y, 3f, null) >= 0;
+
         public HashSet<int> CellsAlong(Vector3 a, Vector3 b, float radius, HashSet<int> into = null)
         {
             into = into ?? new HashSet<int>();
