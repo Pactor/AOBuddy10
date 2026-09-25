@@ -156,7 +156,16 @@ namespace AOBuddy
             _ctx = new BotContext(_config, Log, new Clock());
             _ctx.Vitals = new VitalsTracker(_ctx);
             _ctx.NavGrid = new NavGridCache();
+            // MOVEDBG-OUT (2026-09-25, the Wailing Wastes rubberband): every movement packet we SEND while
+            // an overland walk owns the body — movetype, exact coordinates, and the elapsed-ms field as they
+            // go on the wire (the echo's decoded ms proved unreliable; this is the send-side truth). Diffing
+            // this against a captured real client on the same slope is how the difference gets found.
             _move = new Movement();
+            _move.Sent += m =>
+            {
+                if (_overland != null && _overland.Active)
+                    Log($"MOVEDBG-OUT: mt={(byte)m.MoveType} ({m.Position.X:0.00},{m.Position.Y:0.00},{m.Position.Z:0.00}) +{m.DeltaTime}ms");
+            };
             _follow = new FollowController(_ctx, _move);
             _combat = new CombatController(_ctx);
             _pets = new PetController(_ctx, pluginDir);
@@ -249,7 +258,14 @@ namespace AOBuddy
                                 if (lp != null) _move.Mirror(lp, cm);
                             }
                         }
-                        else { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null && cm.Identity.Instance == lp.Identity.Instance) _diagSelfMoves++; }
+                        else
+                        {
+                            LocalPlayer lp = DynelManager.LocalPlayer;
+                            if (lp != null && cm.Identity.Instance == lp.Identity.Instance)
+                            {
+                                _diagSelfMoves++;
+                            }
+                        }
                     }
 
                     // MISSION DEBUG — how much the server tells us about a mission's location/playfield.

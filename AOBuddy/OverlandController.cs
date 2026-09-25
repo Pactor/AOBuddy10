@@ -578,10 +578,29 @@ namespace AOBuddy
             float step = Movement.CappedStep(speed, dt, _ctx.Config.MaxStep, d);
             float nx = pos.X + dir.X * step, nz = pos.Z + dir.Z * step;
             float floorY2 = FloorY(nx, pos.Y, nz);
+            // UPHILL THE SERVER IS STRICTER THAN ON THE FLAT (capture 20260925-141138, Wailing Wastes:
+            // a 0.1/m rise refused every 1.5 m step — 15 u/s on the wire — while the captured client walks
+            // the same slope in 0.1-0.2 m moves every 10-30 ms, i.e. run speed, accepted without one
+            // correction). Climb in steps small enough to be under run speed per send interval.
+            if (!_inWater && floorY2 > pos.Y)
+            {
+                step = Math.Min(step, Math.Max(0.3f, speed * _ctx.Config.SendIntervalMs / 1000f * 0.6f));
+                nx = pos.X + dir.X * step;
+                nz = pos.Z + dir.Z * step;
+                floorY2 = FloorY(nx, pos.Y, nz);
+            }
             bool floating = _inWater && Now - _wetYAt < 3 && _wetY > floorY2 + 0.4f && _wetY <= plane + 0.3f;
             float nextY = floating ? _wetY                       // the server's own surface Y, while fresh
                 : _inWater && floorY2 < (float)plane - _ctx.Config.SwimWadeMeters ? (float)plane   // swim at the surface
                 : floorY2;                                      // wade the bottom / walk the shore
+            // NEVER BELOW THE TERRAIN (2026-09-25, the Wailing Wastes rubberband, finally understood):
+            // FloorNear sticks to the nearest surface — off a wompah that is the PAD's collision floor
+            // (23.1), and walking into rising ground while claiming the pad's height puts us INSIDE the
+            // hill; the server rejects every step into terrain and pins us at the last valid spot
+            // (downhill worked, uphill did not, diagonals were just the routes that crossed the pad).
+            // The heightfield is solid ground outdoors: the step we claim can never be under it.
+            double terr = _ground?.Ground != null ? _ground.Ground.HeightAt(nx, nz) : double.NaN;
+            if (!double.IsNaN(terr) && terr > nextY) nextY = (float)terr;
             Vector3 next = new Vector3(nx, nextY, nz);
             _ctx.WalkState = $"overland leg {_legNo}/{_legCount} wp {_pathIndex + 1}/{_path.Count} d={d:0}{(_inWater ? (floating ? " float" : nextY == floorY2 ? " wade" : " swim") : "")}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
