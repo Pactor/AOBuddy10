@@ -84,6 +84,19 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a == "avoid" || a.StartsWith("avoid "))
+            {
+                // 'mission run avoid' lists; 'mission run avoid <playfield id>' adds or removes one.
+                var arg = a.Substring(5).Trim();
+                var list = _ctx.Config.MissionAvoidZones ?? (_ctx.Config.MissionAvoidZones = new List<int>());
+                if (int.TryParse(arg, out int apf))
+                {
+                    if (!list.Remove(apf)) list.Add(apf);
+                    SaveConfigValue("MissionAvoidZones", new JArray(list));
+                }
+                reply(list.Count == 0 ? "No zones avoided." : "Avoiding: " + string.Join(", ", list.Select(z => $"{Zoning.Name(z)} ({z})")));
+                return;
+            }
             if (a.StartsWith("tune"))
             {
                 var w = args.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -307,6 +320,16 @@ namespace AOBuddy
             if (!_mission.InMission)
             {
                 int pf = (int)Playfield.ModelId;
+                // Killed on sight: from 90%+ HP to dead within 5 s, no fight (West Athens 21:28, 2026-09-24: 100% at
+                // 21:28:24, dead at 21:28:27 beside a level-200 'Vanguard Watcher'; he is Omni, it is a Clan town).
+                // That zone is avoided for good (config MissionAvoidZones), not for a while.
+                var avoid = _ctx.Config.MissionAvoidZones ?? (_ctx.Config.MissionAvoidZones = new List<int>());
+                if (_clock - _hpHighAt < 5 && !avoid.Contains(pf))
+                {
+                    avoid.Add(pf);
+                    SaveConfigValue("MissionAvoidZones", new JArray(avoid));
+                    _tell($"Killed on sight in {Zoning.Name(pf)}; I won't go there again ('mission run avoid {pf}' to undo).");
+                }
                 MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
                 _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n}).");
@@ -471,6 +494,7 @@ namespace AOBuddy
                 return false;
             }
             int hpTick = _selfHp();
+            if (hpTick >= 90) _hpHighAt = _clock;
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
             if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
@@ -1877,7 +1901,9 @@ namespace AOBuddy
             try { var o = new JObject(); foreach (var kv in _danger) o[kv.Key.ToString()] = new JObject { ["at"] = kv.Value.at, ["n"] = kv.Value.n }; File.WriteAllText(DangerPath, o.ToString()); } catch { }
         }
         private double DangerMinutes(int n) => T("dangermins") * Math.Pow(2, Math.Min(6, Math.Max(0, n - 1)));
-        private bool Dangerous(int pf) => _danger.TryGetValue(pf, out var d) && (DateTime.UtcNow - d.at).TotalMinutes < DangerMinutes(d.n);
+        private bool Dangerous(int pf) => (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false)
+                                          || _danger.TryGetValue(pf, out var d) && (DateTime.UtcNow - d.at).TotalMinutes < DangerMinutes(d.n);
+        private double _hpHighAt = -99;
         private bool _diedOnWay;
         private double _fleeUntil = -99;
         public bool Fleeing => Active && _clock < _fleeUntil;
