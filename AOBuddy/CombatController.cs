@@ -42,6 +42,7 @@ namespace AOBuddy
         // Targets not to fight for a while: a mob our blows don't touch (MissionRun.Attacker, 2026-09-23: 12
         // minutes on a find-person NPC, every blow refused with feedback 110). Stop swinging at it now.
         private readonly Dictionary<Identity, DateTime> _setAside = new Dictionary<Identity, DateTime>();
+        public void ClearAside(Identity id) => _setAside.Remove(id);
         public bool IsSetAside(Identity id) => _setAside.TryGetValue(id, out var until) && DateTime.UtcNow < until;
         public void SetAside(LocalPlayer me, Identity id, double seconds)
         {

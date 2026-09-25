@@ -498,6 +498,22 @@ namespace AOBuddy
             int hpTick = _selfHp();
             if (hpTick >= 90) _hpHighAt = _clock;
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
+            // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
+            // held him at (41,6,87) - rooted - and he stood 11 s not fighting back, 38% -> dead. Not getting away
+            // (under 3 m in 3 s) and still being hit: turn and fight, and no fleeing again for a while.
+            if (Fleeing && _fleeAt.HasValue && _clock - _fleeStartedAt > 3 && _clock - _lastHurt < 3
+                && Movement.Flat(me.Transform.Position, _fleeAt.Value) < 3f)
+            {
+                _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
+                foreach (var id in _fleeFrom) _combat.ClearAside(id);
+                if (_mission.Active) _mission.Stop("pinned");
+                if (_overland.Active) _overland.Stop("pinned");
+                _follow.ClearMovement();
+                _fightStart = _clock; _fightHpMin = 100; _fightReturn = _phase == Phase.Backoff ? _travelReturn : _phase;
+                _ctx.Log($"MISSIONRUN: can't get away (held at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP); fighting back.");
+                Enter(Phase.Fight, "pinned while fleeing");
+                return false;
+            }
             if (moving && _clock >= _fleeUntil && _fighting() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
@@ -521,14 +537,15 @@ namespace AOBuddy
                     // FLEE (09:33, 2026-09-24): crossing Mutant Domain to a mission door, a pack of Hammer Broodlings
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
-                    if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && StartFlee(me)) return true;
+                    if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _noFleeUntil && StartFlee(me)) return true;
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
                     // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
-                    if (_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _fleeUntil)
+                    if (_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _fleeUntil && _clock >= _noFleeUntil)
                     {
                         var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
                         foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
+                        FleeStarted(me, from);
                         if (me.IsAttacking) me.StopAttack();
                         _fleeUntil = _clock + T("fleesecs");
                         _ctx.Log($"MISSIONRUN: fleeing the mission at {hpNow}% HP from {from.Count} mob(s) ({string.Join(", ", from.Select(x => x.Name).Distinct())}): walking out.");
@@ -1942,6 +1959,14 @@ namespace AOBuddy
                                                                        : HostileAt(e.ToPf, float.NaN, float.NaN) != null);   // arrival unknown: whole zones only
         private bool _diedOnWay;
         private double _fleeUntil = -99;
+        private double _fleeStartedAt = -99, _noFleeUntil = -99;
+        private Vector3? _fleeAt;
+        private readonly List<Identity> _fleeFrom = new List<Identity>();
+        private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
+        {
+            _fleeAt = me.Transform.Position; _fleeStartedAt = _clock;
+            _fleeFrom.Clear(); _fleeFrom.AddRange(from.Select(n => n.Identity));
+        }
         public bool Fleeing => Active && _clock < _fleeUntil;
 
         private bool StartFlee(LocalPlayer me)
@@ -1959,6 +1984,7 @@ namespace AOBuddy
             if (back.Count == 0 || got < 15f) return false;  // nowhere to run: keep fighting
             var from = DynelManager.Npcs.Where(n => n != null && n.FightingIdentity.HasValue && n.FightingIdentity.Value == me.Identity).ToList();
             foreach (var n in from) _combat.SetAside(me, n.Identity, T("fleesecs"));
+            FleeStarted(me, from);
             if (me.IsAttacking) me.StopAttack();
             _fleeUntil = _clock + T("fleesecs");
             _travelReturn = _fightReturn == Phase.Hike ? _hikeReturn : _fightReturn;
