@@ -214,6 +214,9 @@ namespace AOBuddy
                 // Tells from anyone else are never obeyed, but they are logged: Scotty answers warp requests by tell,
                 // and those answers were invisible while travel waited on warps that never came (2026-09-23).
                 if (!_owner.IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
+                // The owner's AFK auto-reply ('Veganbacon is AFK (Away from keyboard) since 0 hours and 0 minutes
+                // ago.', 23:33, 2026-09-24) answers every tell we send him; it is not a command (owner, 2026-09-25).
+                if ((msg.Message ?? "").IndexOf(" is AFK (Away from keyboard)", StringComparison.OrdinalIgnoreCase) >= 0) return;
                 Log($"CMD from {msg.SenderName}: '{msg.Message}'");
                 try { HandleCommand(msg.Message, text => Client.SendPrivateMessage(msg.SenderId, text)); }
                 catch (Exception ex) { Logger.Error($"command error: {ex.Message}"); Log($"COMMAND EXCEPTION: {ex}"); }
