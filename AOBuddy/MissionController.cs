@@ -142,16 +142,21 @@ namespace AOBuddy
                     if ((int)ca.Action == MissionChangedAction && IsMe(ca.Identity)) OnCompleted("MissionChanged");
                     break;
 
-                case FormatFeedbackMessage ff:
-                    if (IsMe(ff.Identity) && TryClearPct(ff.FormattedMessage, out float pct))
+                case FormatFeedbackMessage _:
+                {
+                    // Read the text from the raw packet: the SDK's FormattedMessage getter calls into MSVCR100 and
+                    // throws here ('??2@YAPAXI@Z' not found, 21 times in the first clear runs, 2026-09-25), so the
+                    // clear % never got through. The text is plain ASCII from '~&' to the end of the string.
+                    string txt = RawFormatted(m.RawPacket);
+                    if (txt != null && TryClearPct(txt, out float pct))
                     {
                         ClearPct = pct;
                         _ctx.Log($"MISSION: cleared {pct:0.#}% of this mission's mobs.");
                     }
-                    // Clear mode, first runs: every server line inside the building, to check the % message.
-                    else if (ClearMode && _grid != null && IsMe(ff.Identity))
-                        _ctx.Log($"MISSION: server line '{(ff.FormattedMessage ?? "").Replace("\u001b", "\\e")}'");
+                    else if (txt != null && ClearMode && _grid != null)
+                        _ctx.Log($"MISSION: server line '{txt}'");
                     break;
+                }
 
                 case FeedbackMessage fb:
                     // Whatever the server says while we wait on the objective (a refusal would show here).
@@ -691,6 +696,19 @@ namespace AOBuddy
         private int _clearInstance, _clearPasses;
         private bool _clearGaveUp;
         private const int ClearCategory = 110, ClearMessage = 79979934;
+
+        private static string RawFormatted(byte[] b)
+        {
+            if (b == null) return null;
+            for (int i = 16; i + 1 < b.Length; i++)
+                if (b[i] == (byte)'~' && b[i + 1] == (byte)'&')
+                {
+                    int e = i;
+                    while (e < b.Length && b[e] >= 0x20 && b[e] < 0x7F) e++;
+                    return System.Text.Encoding.ASCII.GetString(b, i, e - i);
+                }
+            return null;
+        }
 
         /// <summary>'~&' + category and message id (5 base-85 chars each) + 'f' + a base-85 float.</summary>
         public static bool TryClearPct(string s, out float pct)
