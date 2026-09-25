@@ -430,7 +430,10 @@ namespace AOBuddy
             float gap = Vector3.Distance(local, pos);
 
             // A mission blitz always takes the server's word (MissionController.OnServerCorrection).
-            _run.OnServerCorrection(gap);
+            // Flat: a correction that only fixes our height is not a pull-back (22:06-22:11, 2026-09-24: at a
+            // Stret West Bank mission door our walk put him 8 m up at the door's height, the server kept him at
+            // y 0, and each 8 m 'pull' held him 15 s - 14 holds, 5 minutes at the door).
+            _run.OnServerCorrection(Movement.Flat(local, pos));
             if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
             // ...and so does overland travel: its route is planned on data that can miss a surface the server has.
             if (_overland.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
