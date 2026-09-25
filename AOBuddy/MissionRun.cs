@@ -668,6 +668,9 @@ namespace AOBuddy
                     // keys and rewards (owner, 2026-09-23), and the stash has already filled every bag it could. He
                     // can't go on; buying bags, selling and banking nano crystals come later (MISSION-MODE-PLAN.md).
                     if (Inventory.NumFreeSlots < 4 && StartShop($"only {Inventory.NumFreeSlots} free slot(s)")) return false;
+                    // Low on stims or rechargers he can USE (owner, 2026-09-24: 'Low on stims (5 left)' - the rest a
+                    // QL over his First Aid): off to Fair Trade to buy some, as the owner would if he logged him on.
+                    if (Resupply != null && Resupply.NeedsResupply() && StartShop("low on stims I can use")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -1309,7 +1312,7 @@ namespace AOBuddy
         // (VendingMachine 42685979 at (199,129)) and the bank terminal (C73D:0EE5BBFF) from there. The way out is
         // back the way he came in (owner): where he landed on zoning in, then on through it.
         public ResupplyController Resupply;
-        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Exit }
+        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Stims, Exit }
         private ShopStep _shopStep;
         private double _shopStepAt, _shopTriedAt = -9999;
         private const int FairTradePf = 1187;
@@ -1484,9 +1487,9 @@ namespace AOBuddy
         {
             if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
             _shopTriedAt = _clock;
-            _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear();
+            _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear(); _shopStimsTried = false;
             _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade to sell, bank the keepers and make room.");
-            _tell($"Out of room ({why}); going to Fair Trade to bank my nano crystals and buy a bag. (Test switch: mission run shop on|off.)");
+            _tell($"Going to Fair Trade ({why}): sell, bank my nano crystals, buy what I need. (Test switch: mission run shop on|off.)");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
             Enter(Phase.Shop, "housekeeping");
             return true;
@@ -1757,6 +1760,10 @@ namespace AOBuddy
                     return ShopAfterNanos(me);
                 }
 
+                case ShopStep.Stims:
+                    if (Resupply.Active || t < 1) return false;
+                    return ShopAfterNanos(me);
+
                 case ShopStep.Exit:
                 {
                     if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
@@ -1807,9 +1814,19 @@ namespace AOBuddy
             ShopNext(ShopStep.StoreBag, $"'{bag.Name}' into the bank ({why}).");
         }
 
+        private bool _shopStimsTried;
         private bool ShopAfterNanos(LocalPlayer me)
         {
             if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
+            // Stims and rechargers at the QL his skills can use: ResupplyController picks the fitting QL and the
+            // terminals here (Algorithman's), as the owner would buy them.
+            if (!_shopStimsTried && Resupply.NeedsResupply())
+            {
+                _shopStimsTried = true;
+                Resupply.Start(me, s => _ctx.Log("MISSIONRUN: shop: " + s));
+                ShopNext(ShopStep.Stims, "buying stims/rechargers I can use.");
+                return false;
+            }
             ShopNext(ShopStep.Exit, "leaving the way I came in.");
             return false;
         }
