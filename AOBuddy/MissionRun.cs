@@ -260,7 +260,7 @@ namespace AOBuddy
             {
                 var w = Wants;
                 string rest = a.Length > 4 ? a.Substring(5).Trim() : "";
-                if (rest.StartsWith("add ")) { var e = WantList.Parse(rest.Substring(4)); if (e == null) { reply("want add <exact item name> | want add nano engineer ql 20-30 | want add implant ql 200+"); return; } w.Entries.Add(e); w.Save(); reply($"Wanting {e}{WantCount(e)}."); return; }
+                if (rest.StartsWith("add ")) { var e = WantList.Parse(rest.Substring(4)); if (e == null) { reply("want add <exact item name> | want add nano engineer ql 20-30 | want add implant ql 200+ | want add ncu ql 30-45"); return; } w.Entries.Add(e); w.Save(); reply($"Wanting {e}{WantCount(e)}."); return; }
                 if (rest.StartsWith("remove "))
                 {
                     if (int.TryParse(rest.Substring(7).Trim(), out int k) && k >= 1 && k <= w.Entries.Count) { var e = w.Entries[k - 1]; w.Entries.RemoveAt(k - 1); w.Save(); reply($"Removed {e}."); }

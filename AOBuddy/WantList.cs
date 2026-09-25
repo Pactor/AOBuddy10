@@ -98,10 +98,10 @@ namespace AOBuddy
         {
             { "nano", "nano" }, { "nanos", "nano" }, { "implant", "implant" }, { "implants", "implant" }, { "weapon", "weapon" },
             { "weapons", "weapon" }, { "armor", "armor" }, { "armour", "armor" }, { "gear", "gear" }, { "spirit", "spirit" },
-            { "spirits", "spirit" }, { "any", "any" }
+            { "spirits", "spirit" }, { "ncu", "ncu" }, { "ncus", "ncu" }, { "any", "any" }
         };
 
-        /// <summary>'nano engineer ql 20-30', 'implant ql 200+', 'gear', or an exact item name.</summary>
+        /// <summary>'nano engineer ql 20-30', 'implant ql 200+', 'gear', 'ncu ql 30-45', or an exact item name.</summary>
         public static Entry Parse(string text)
         {
             text = (text ?? "").Trim();
@@ -165,6 +165,9 @@ namespace AOBuddy
                 case "armor": return cls == WantData.Armor;
                 case "gear": return cls == WantData.Weapon || cls == WantData.Armor;
                 case "spirit": return cls == WantData.Spirit;
+                // NCU memory rewards ('4 - 7 NCU Memory', 'NCU Coolant Sink', 2026-09-25 rolls): the name carries the
+                // tier, so match the word NCU on anything that is not a nano crystal ('NanoCrystal (NCU Compressor)').
+                case "ncu": return WantData.NanoOf(low) == 0 && Regex.IsMatch(NameOf(low) ?? "", @"\bNCU\b", RegexOptions.IgnoreCase);
                 default: return cls != WantData.NpcEquip;
             }
         }
