@@ -29,6 +29,12 @@ namespace AOSharp.Clientless
         /// are never deserialized; listeners read the fixed-position fields they need (identity at 20, position
         /// floats at 41) - see NetworkSession.</summary>
         public static event Action<byte[]> ChestFullUpdateRaw;
+        // N3 Action (0x2049527C) has no class in the SDK; handed on raw (a door unlocked by a lock pick is action 115).
+        public static event Action<byte[]> ActionRaw;
+        internal static void RaiseActionRaw(byte[] packet) { try { ActionRaw?.Invoke(packet); } catch { } }
+        // DoorFullUpdate, raw, whether or not the SDK reader copes: the lock flag is read from the bytes.
+        public static event Action<byte[]> DoorFullUpdateRaw;
+        internal static void RaiseDoorFullUpdateRaw(byte[] packet) { try { DoorFullUpdateRaw?.Invoke(packet); } catch { } }
         internal static void RaiseChestFullUpdateRaw(byte[] packet)
         {
             try { Inventory.OnChestItemRaw(packet); } catch { }

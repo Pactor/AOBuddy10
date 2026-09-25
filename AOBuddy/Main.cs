@@ -155,6 +155,8 @@ namespace AOBuddy
             _chewy = new ChewyBuffController(_ctx, _support, _overland, pluginDir,
                 _ctx.TellOwner);
             Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
+            Client.ActionRaw += raw => { try { _mission.OnDoorActionRaw(raw); } catch { } };
+            Client.DoorFullUpdateRaw += raw => { try { _mission.OnDoorRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
             // No condition lambdas anymore (R2.2): MissionRun reads ctx.Status, and its fight-or-run
             // POLICY lives in its own file (FightOrRun) instead of a closure over Main's privates.

@@ -46,7 +46,7 @@ namespace AOBuddy
         private readonly List<string> _rewards = new List<string>();
 
         // ---- blitz state ----------------------------------------------------------------------------------
-        private enum Phase { Off, Plan, Walk, PressButton, AwaitTeleport, Act, AwaitComplete, Exit, PushOut, Done }
+        private enum Phase { Off, Plan, Walk, PressButton, AwaitTeleport, Act, AwaitComplete, Exit, PushOut, Done, PickLock }
         private float _pushed;                   // metres walked through the exit door so far
         private Phase _phase = Phase.Off;
         private bool _completed;                 // the objective is done; the rest is the walk out
@@ -236,6 +236,7 @@ namespace AOBuddy
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
             _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear();
+            _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             try
             {
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
@@ -468,6 +469,10 @@ namespace AOBuddy
                 case Phase.Walk:
                     return WalkTick(me, dt);
 
+                case Phase.PickLock:
+                    PickTick(me);
+                    return true;
+
                 case Phase.PressButton:
                 {
                     _move.Hold(me, _ctx.Config.SendIntervalMs);
@@ -566,6 +571,8 @@ namespace AOBuddy
 
         private void PlanNext(LocalPlayer me)
         {
+            foreach (var id in _unpickable)
+                if (_doors.TryGetValue(id, out var ud) && _grid.CellOf(ud.Pos) is (int, int, int) uc) _blocked.Add(uc);
             var hop = NextHop(me.MovementComponent.Position, out string why);
             if (hop == null)
             {
@@ -679,6 +686,88 @@ namespace AOBuddy
             if (best == null) { why = $"a {KindName(want)} button is on floor {myFloor} but I cannot reach it"; return null; }
             why = $"to the {KindName(_items[best.Value.Button.Value].Template)} button (floor {myFloor} -> {goalFloor})";
             return best;
+        }
+
+        // ---- locked doors -------------------------------------------------------------------------------
+        // Some mission doors are locked (owner, 2026-09-25). Capture 20260925-113057, two of them picked by the
+        // owner with a Lock Pick (95577, QL1, kept after use) from inventory slot 89:
+        //   * DoorFullUpdate (0xC748 identity): position at raw 41/45/49; a flag word 8 bytes after the 00 00 2F 4C
+        //     marker whose low byte has 0x40 = LOCKED (0x43 on both locked doors, 0x03 after) and 0x80 = open
+        //     (0x83/0x03 as people walk through); LockDifficulty 33 on the locked ones, 50 on the rest.
+        //   * the pick: LookAt the door, then GenericCmd UseItemOnItem, source Inventory:89, target the door
+        //     (client seq 202/205). Server: the GenericCmd echoed (Verification 1), DoorStatusUpdate Locked=0
+        //     Open=0, ActionMessage action 115 by the picker on the door. Both opened on the first try; a
+        //     failed try is assumed to be no action 115 (the owner: 'not opening is the fail').
+        // B&E can take 20-30 tries, so: one try every 2.5 s, up to 40, then the door is blocked and we go round.
+        private sealed class DoorInfo { public Vector3 Pos; public bool Locked; public int Difficulty; }
+        private readonly Dictionary<Identity, DoorInfo> _doors = new Dictionary<Identity, DoorInfo>();
+        private readonly HashSet<Identity> _unpickable = new HashSet<Identity>();
+        private Identity? _pickDoor;
+        private int _pickTries;
+        private double _pickAt;
+        private Phase _pickReturn;
+        private bool _noPickTold;
+        public static readonly int[] LockPicks = { 95577, 156639, 216380, 295999, 296000, 296001, 297014 };
+        private const int DoorType = 0xC748, ActionUnlocked = 115, PickTries = 40;
+
+        private static int BE32(byte[] b, int p) => (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3];
+
+        public void OnDoorRaw(byte[] b)
+        {
+            if (b == null || b.Length < 60 || BE32(b, 20) != DoorType) return;
+            var id = new Identity((IdentityType)DoorType, BE32(b, 24));
+            float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
+            var pos = new Vector3(F(41), F(45), F(49));
+            bool locked = false; int diff = 0;
+            for (int i = 53; i + 12 <= b.Length; i++)
+                if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0x2F && b[i + 3] == 0x4C) { locked = (b[i + 11] & 0x40) != 0; break; }
+            _doors[id] = new DoorInfo { Pos = pos, Locked = locked, Difficulty = diff };
+            if (locked) _ctx.Log($"MISSION: locked door {id} at ({pos.X:0},{pos.Y:0},{pos.Z:0}).");
+        }
+
+        public void OnDoorActionRaw(byte[] b)
+        {
+            // ActionMessage raw: identity at 20 (the door), field mask at 29, action at 33, instigator at 37.
+            if (b == null || b.Length < 37 || BE32(b, 20) != DoorType || BE32(b, 33) != ActionUnlocked) return;
+            var id = new Identity((IdentityType)DoorType, BE32(b, 24));
+            if (_doors.TryGetValue(id, out var d)) d.Locked = false;
+            _ctx.Log($"MISSION: door {id} unlocked (action {ActionUnlocked}).");
+        }
+
+        private Identity? LockedDoorNear(Vector3 pos, float r)
+        {
+            foreach (var kv in _doors)
+                if (kv.Value.Locked && !_unpickable.Contains(kv.Key) && Movement.Flat(pos, kv.Value.Pos) < r && Math.Abs(pos.Y - kv.Value.Pos.Y) < 3f)
+                    return kv.Key;
+            return null;
+        }
+
+        private void PickTick(LocalPlayer me)
+        {
+            _move.Hold(me, _ctx.Config.SendIntervalMs);
+            if (!_pickDoor.HasValue || !_doors.TryGetValue(_pickDoor.Value, out var door)) { Enter(_pickReturn, "the door is gone"); return; }
+            if (!door.Locked)
+            {
+                _ctx.Log($"MISSION: picked {_pickDoor} in {_pickTries} tr{(_pickTries == 1 ? "y" : "ies")}.");
+                Enter(_pickReturn, "door unlocked");
+                return;
+            }
+            if (Now - _pickAt < 2.5) return;
+            var pick = Inventory.Items.FirstOrDefault(i => i != null && i.Slot.Type == IdentityType.Inventory && LockPicks.Contains(i.Id));
+            if (pick == null || _pickTries >= PickTries)
+            {
+                if (pick == null && !_noPickTold) { _noPickTold = true; _tell("A locked door and no lock pick in my inventory (Fair Trade tools terminal sells them); going round it."); }
+                _ctx.Log($"MISSION: giving up on {_pickDoor} ({(pick == null ? "no lock pick" : _pickTries + " tries")}); blocking it.");
+                _unpickable.Add(_pickDoor.Value);
+                if (_grid.CellOf(door.Pos) is (int, int, int) c) _blocked.Add(c);
+                Enter(_pickReturn, "round the locked door");
+                return;
+            }
+            _pickAt = Now; _pickTries++;
+            Client.Send(new LookAtMessage { Target = _pickDoor.Value, ReturnInfo = 0 });
+            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.UseItemOnItem, User = me.Identity, Source = pick.Slot, Target = _pickDoor.Value, Count = 1, Temp4 = 1 });
+            _ctx.WalkState = $"mission: picking a lock, try {_pickTries}";
+            if (_pickTries == 1 || _pickTries % 10 == 0) _ctx.Log($"MISSION: picking {_pickDoor} with {pick.Name}, try {_pickTries}.");
         }
 
         // ---- clear mode -----------------------------------------------------------------------------------
@@ -1047,6 +1136,16 @@ namespace AOBuddy
                 _stuck.Reset();
                 if (_pathIndex >= _path.Count) { Arrive(me); return true; }
                 wp = _path[_pathIndex]; d = Movement.Flat(pos, wp);
+            }
+
+            // A LOCKED DOOR ahead (within 3.5 m, same level): stop and pick it.
+            var locked = LockedDoorNear(pos, 3.5f);
+            if (locked.HasValue)
+            {
+                _pickDoor = locked; _pickTries = 0; _pickAt = -9999; _pickReturn = _completed ? Phase.Exit : Phase.Plan;
+                _path = null;
+                Enter(Phase.PickLock, $"locked door {locked.Value} (lock difficulty {_doors[locked.Value].Difficulty})");
+                return true;
             }
 
             // Stuck: no progress on this waypoint for 3 s means something the tiles do not show is in the

@@ -1,4 +1,4 @@
-﻿using AOSharp.Clientless.Common;
+using AOSharp.Clientless.Common;
 using AOSharp.Common;
 using AOSharp.Common.GameData;
 using AOSharp.Common.SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
@@ -194,6 +194,9 @@ namespace AOSharp.Clientless.Net
                         Client.RaiseChestFullUpdateRaw(packet);
                         return;
                     }
+
+                    if (IsN3MessageType(packet, N3MessageType.Action)) Client.RaiseActionRaw(packet);
+                    if (IsN3MessageType(packet, N3MessageType.DoorFullUpdate)) Client.RaiseDoorFullUpdateRaw(packet);
 
                     // SpellList: a nano was uploaded/learned mid-session. The stock serializer leaves this
                     // message empty (its body is undefined), so learned nanos never reached SpellList and the
