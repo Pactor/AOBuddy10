@@ -13,6 +13,9 @@ namespace AOBuddy
         public BuddyConfig Config;
         public Action<string> Log;
 
+        // THE bot clock (R2.1): the one monotonic time base every controller reads. Created in Main.Init.
+        public readonly IClock Clock;
+
         // What the movement arbiter decided this frame (shown in the heartbeat). Written by
         // whichever mover ran; read only by the heartbeat log.
         public string WalkState = "";
@@ -54,10 +57,11 @@ namespace AOBuddy
             if (b != _behavior) { Log($"STATE {_behavior} -> {b}"); _behavior = b; }
         }
 
-        public BotContext(BuddyConfig config, Action<string> log)
+        public BotContext(BuddyConfig config, Action<string> log, IClock clock)
         {
             Config = config;
             Log = log;
+            Clock = clock;
         }
 
         /// <summary>

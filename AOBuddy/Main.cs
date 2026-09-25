@@ -95,8 +95,8 @@ namespace AOBuddy
         private double _zoneCrossAge = 999;  // seconds since that teleport (a nav transition needs one to be recent)
         private int _diagOwnerMoves, _diagSelfMoves;   // DIAG: CharDCMove messages received per heartbeat (owner vs self)
         // Owner-interpolation state: his latest movement keyframe + derived velocity, so we can predict his
-        // position between the server's sparse (~1/s) keyframes (see PredictOwnerPos).
-        private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+        // position between the server's sparse (~1/s) keyframes (see PredictOwnerPos). Keyframe times are
+        // ctx.Clock seconds (the one bot clock, R2.1).
         private Vector3? _ownerKeyPos;
         private double _ownerKeyTime;
         private Vector3 _ownerVel;
@@ -153,7 +153,7 @@ namespace AOBuddy
             ItemValues.Load(pluginDir, Log);
             Zoning.Load(pluginDir, Log);
 
-            _ctx = new BotContext(_config, Log);
+            _ctx = new BotContext(_config, Log, new Clock());
             _ctx.Vitals = new VitalsTracker(_ctx);
             _move = new Movement();
             _follow = new FollowController(_ctx, _move);
@@ -214,7 +214,7 @@ namespace AOBuddy
             // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
             // The handler only ENQUEUES: HandleCommand mutates controller state, so it must run on the
             // update thread (drained at the top of OnUpdate), not on the API listener thread.
-            _api = new BotApi(_config.BotApiPort, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)));
+            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)));
             _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
@@ -253,7 +253,7 @@ namespace AOBuddy
                         {
                             _diagOwnerMoves++;
                             // Capture the owner's movement keyframe and derive his velocity for interpolation.
-                            double now = _clock.Elapsed.TotalSeconds;
+                            double now = _ctx.Clock.Seconds;
                             Vector3 p = cm.Position;
                             // Speed is only measured between two MOVING keyframes: across a stop->start gap the
                             // displacement/time is ~0 and would leave him unpredicted for his whole first second.
@@ -980,7 +980,7 @@ namespace AOBuddy
         private Vector3 PredictOwnerPos(PlayerChar owner)
         {
             if (!_config.OwnerInterp || !_ownerKeyPos.HasValue) return owner.Transform.Position;
-            double dtSince = _clock.Elapsed.TotalSeconds - _ownerKeyTime;
+            double dtSince = _ctx.Clock.Seconds - _ownerKeyTime;
             if (_ownerMovingKey && dtSince > 0)
             {
                 // Past the cap, HOLD at the capped point rather than snapping back to the keyframe — snapping
@@ -1784,12 +1784,12 @@ namespace AOBuddy
             {
                 if (_navData == null || _navData.Playfield != pf)
                 {
-                    var sw = System.Diagnostics.Stopwatch.StartNew();
+                    double loadStart = _ctx.Clock.Milliseconds;
                     _navData = AOBuddyNav.Load(_pluginDir, pf);
                     if (_navData == null && _lastZoneInPacket != null)
                         _navData = AOBuddyNav.LoadMission(_pluginDir, _lastZoneInPacket);   // an instance: compose it from its pool
                     if (_navData == null) return $"No nav data folder for pf {pf} ({AOBuddyNav.FolderFor(_pluginDir, pf)}) and no mission layout in the zone-in packet.";
-                    Log($"NAVDATA: loaded pf {pf} {_navData.Kind} ground={(_navData.Ground != null ? _navData.Ground.SamplesX + "x" + _navData.Ground.SamplesZ : "-")} rooms={(_navData.Dungeon != null ? _navData.Dungeon.Rooms.Count : 0)} collision={(_navData.Collision != null ? _navData.Collision.Triangles : 0)} tris in {sw.ElapsedMilliseconds} ms");
+                    Log($"NAVDATA: loaded pf {pf} {_navData.Kind} ground={(_navData.Ground != null ? _navData.Ground.SamplesX + "x" + _navData.Ground.SamplesZ : "-")} rooms={(_navData.Dungeon != null ? _navData.Dungeon.Rooms.Count : 0)} collision={(_navData.Collision != null ? _navData.Collision.Triangles : 0)} tris in {(long)(_ctx.Clock.Milliseconds - loadStart)} ms");
                 }
                 if (arg == "verify") return _navData.SelfTest(Path.Combine(_pluginDir, "nav", pf + ".json"));
                 LocalPlayer me = DynelManager.LocalPlayer;

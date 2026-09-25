@@ -20,6 +20,7 @@ namespace AOBuddy
     public sealed class BotApi
     {
         private readonly int _port;
+        private readonly IClock _clock;
         private readonly Action<string> _log;
         private readonly Func<JObject> _status;
         private readonly Action<string, Action<string>> _command;
@@ -27,9 +28,9 @@ namespace AOBuddy
         private Thread _thread;
         private volatile bool _running;
 
-        public BotApi(int port, Action<string> log, Func<JObject> status, Action<string, Action<string>> command)
+        public BotApi(int port, IClock clock, Action<string> log, Func<JObject> status, Action<string, Action<string>> command)
         {
-            _port = port; _log = log; _status = status; _command = command;
+            _port = port; _clock = clock; _log = log; _status = status; _command = command;
         }
 
         public void Start()
@@ -108,19 +109,19 @@ namespace AOBuddy
             if (text.Length == 0) return new JObject { ["error"] = "empty command" };
             var replies = new List<string>();
             var gate = new object();
-            DateTime last = DateTime.UtcNow, start = DateTime.UtcNow;
+            double last = _clock.Seconds, start = _clock.Seconds;
             // The command itself is queued by _command and runs on the update thread (R0.1); the
             // "API CMD" log line moves there with it. Replies arrive here through the delegate below.
-            try { _command(text, r => { lock (gate) { replies.Add(r); last = DateTime.UtcNow; } }); }
+            try { _command(text, r => { lock (gate) { replies.Add(r); last = _clock.Seconds; } }); }
             catch (Exception ex) { return new JObject { ["error"] = ex.Message }; }
             while (true)
             {
                 Thread.Sleep(100);
                 lock (gate)
                 {
-                    var now = DateTime.UtcNow;
-                    if ((now - start).TotalSeconds > 2.5) break;
-                    if ((now - last).TotalSeconds > 0.6 && (replies.Count > 0 || (now - start).TotalSeconds > 1.2)) break;
+                    double now = _clock.Seconds;
+                    if (now - start > 2.5) break;
+                    if (now - last > 0.6 && (replies.Count > 0 || now - start > 1.2)) break;
                 }
             }
             lock (gate) return new JObject { ["command"] = text, ["replies"] = new JArray(replies.ToArray()) };

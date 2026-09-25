@@ -44,9 +44,8 @@ namespace AOBuddy
 
         // Is he actually going somewhere? A sample moved => he's moving, and stays "moving" for a short
         // grace (his position reaches us in bursts, so a gap between samples is not a stop).
-        private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
         private double _ownerMovingUntil;
-        private bool OwnerMoving => _clock.Elapsed.TotalSeconds < _ownerMovingUntil;
+        private bool OwnerMoving => _ctx.Clock.Seconds < _ownerMovingUntil;
         private const double OwnerMovingGrace = 0.6;
         private double _lastSampleTime;
         private double _ownerSpeed;      // u/s, smoothed — measured off his own position samples
@@ -152,7 +151,7 @@ namespace AOBuddy
 
             if (!_lastSample.HasValue || Vector3.Distance(op, _lastSample.Value) >= _ctx.Config.BreadcrumbSpacing)
             {
-                double now = _clock.Elapsed.TotalSeconds;
+                double now = _ctx.Clock.Seconds;
                 if (_lastSample.HasValue)
                 {
                     _ownerMovingUntil = now + OwnerMovingGrace;

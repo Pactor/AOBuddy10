@@ -202,22 +202,27 @@ pre-change run (same `hb` fields, same `STATE` transitions, no new `SETPOS APPLI
 
 ## Phase 2 — one clock, a status read-model, one persistence helper
 
-### R2.1 `IClock` on BotContext — [ ]
-**What.** Four incompatible time bases: `Stopwatch` (Main, FollowController, VitalsTracker),
-`Environment.TickCount64` (MissionController.Now≈116, OverlandController.Now≈87), `DateTime.UtcNow`
-(CombatController set-asides≈48), and accumulated `dt` quanta (SupportController.AdvanceClocks≈180,
-advanced in TickMs steps so it drifts from wall time).
-**Move.** One `Clock` class (a Stopwatch wrapper exposing `double Seconds` and `double Milliseconds`),
-created in Main.Init, hung on BotContext (`ctx.Clock`). Migrate each site. For
-`SupportController.AdvanceClocks`: keep the method name if other code calls it, but back it with
-the clock; its `_sessionSeconds` semantic (tick quanta) must stay — make it read the clock
-*relative to a session epoch set at login* rather than accumulating quanta, which is the same
-value without the drift.
-**Careful.** CombatController's DateTime-based set-aside expiry times and Mission/Overland's
-TickCount epochs convert to clock seconds — do the conversion at the field, not at each comparison.
-**DONE WHEN.** `grep -rn "Stopwatch\|TickCount\|DateTime.UtcNow" AOBuddy/*.cs` hits only the Clock
-class; one live session shows heartbeat timestamps and timeout behaviour unchanged (e.g. stim
-interval, rest max, zone-episode give-up still fire at the same wall-clock offsets).
+### R2.1 `IClock` on BotContext — [x] done 2026-09-25
+`Clock.cs`: `IClock` + `Clock` (Stopwatch wrapper, `Seconds`/`Milliseconds`), created in Main.Init,
+`ctx.Clock`. Migrated: Main (owner keyframes, PredictOwnerPos, navdata load-duration log),
+FollowController, VitalsTracker, MissionController/OverlandController `Now` (instance now — was a
+static TickCount64 property), CombatController set-asides (double clock-seconds at the field),
+BotApi's reply-collection windows (takes the clock; the 0.6/1.2/2.5 s windows are unchanged).
+**SCOPE ADJUSTED — SupportController is NOT epoch-based.** The plan's "read the clock relative to a
+session epoch set at login" assumed AdvanceClocks runs every tick; it does not — Decide returns
+early while resupplying, casting, solo or idle, so `_sessionSeconds` is ACT-TICK time, paused in
+those modes, and every stamp on it (`_auraLastCast`, `_ownerLastMovedAt`, `_lockUntil`, ...) is
+compared as a *difference* on the same paused clock. Wall-since-login would un-pause those modes
+and change decisions (e.g. auras would recast on returning from idle). So AdvanceClocks now
+advances by the REAL elapsed between calls (the drift fix the item wanted) but still only when
+called — same cadence, same pauses, no nominal-quanta undercount on frame stalls.
+**KEPT off the clock on purpose** (grep will hit these three, each with a reason): MissionRun's
+`_danger` stays `DateTime.UtcNow` — it round-trips danger.json across restarts and a process-local
+epoch would expire every mark on relaunch (same domain argument as R1.1's double Flat);
+FloorGrid/OverlandGrid keep scope-local `Stopwatch`es — off-thread static builders timing their
+own load for one log line, where the shared clock's identity is irrelevant. `DateTime.Now` filename
+stamps are wall-calendar names, not a time base. Build clean; live smoke run (heartbeat offsets,
+stim interval, rest max, zone give-up) rides the owner's next session.
 
 ### R2.2 `BotStatus` read-model on BotContext — [ ]
 **What.** MissionRun's constructor takes 7 lambdas (`tell, dead, recovering, buffing, fighting,

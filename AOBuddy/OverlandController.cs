@@ -90,7 +90,7 @@ namespace AOBuddy
 
         // The server is carrying us (a lift beam's path): don't plan or walk until it has had time to finish.
         private double _rideUntil;
-        private static double Now => Environment.TickCount64 / 1000.0;
+        private double Now => _ctx.Clock.Seconds;
         public void OnServerMoved(double seconds) { if (Active) _rideUntil = Math.Max(_rideUntil, Now + seconds); }
 
         // How far the server's floor sits above ours here. Our floor data can miss a surface (a collision record the
