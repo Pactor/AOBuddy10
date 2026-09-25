@@ -17,7 +17,7 @@ namespace AOBuddy
     /// </summary>
     public static class GridCache
     {
-        public const int CodeVersion = 2;   // 2: one-way slopes + precomputed centre heights (OverlandGrid)
+        public const int CodeVersion = 5;   // 5: 16 floors per cell (ICC tower stacks) + finer cells
 
         private static readonly byte[] Magic = { (byte)'A', (byte)'O', (byte)'G', (byte)'C' };
 
