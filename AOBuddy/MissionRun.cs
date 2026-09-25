@@ -407,6 +407,7 @@ namespace AOBuddy
             if (_completed) return;
             _completed = true;
             _ctx.Log($"MISSIONRUN: mission complete ({how}).");
+            if (_current != null) RememberDone(_current.Playfield.Instance, _current.Location);
         }
 
         private void OnList(IReadOnlyList<MissionInfo> list)
@@ -504,6 +505,15 @@ namespace AOBuddy
                     if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.ZoneLine
                         && Movement.Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
                         MarkBadExit(_hike.Exit);
+                    // ...and any exit whose way there pulls him back three times, wherever (05:53-06:02, 2026-09-25,
+                    // Wartorn Valley: pulled back ~85 m short of the Aegean line at (980,290), backed off, and planned
+                    // the same line again for nine minutes).
+                    else if (_phase == Phase.Hike && _hike?.Exit != null)
+                    {
+                        string k = ExitKey(_hike.Exit);
+                        _exitPulls[k] = (_exitPulls.TryGetValue(k, out int np) ? np : 0) + 1;
+                        if (_exitPulls[k] >= 3) MarkBadExit(_hike.Exit);
+                    }
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
                     StartBackoff(me, "travel");
@@ -513,9 +523,11 @@ namespace AOBuddy
                 // to the blitz, which blocks the cells it keeps walking into and gives up after 12 re-plans.
                 // Holding again restarted its walk out (backoutside), which cleared those blocks every time: 19:55-
                 // 20:02 (2026-09-24), ACD building, 18 holds at (53,5,237) re-planning the same 69 m route.
-                if (_mission.Active && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
+                // Inside the building, whichever step (blitz or exit stand): 02:19-02:22 (2026-09-25) the exit
+                // stand set it back each time, and he was held at (35,5,17) over and over.
+                if (_mission.InMission && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
                     return false;
-                _heldAt = _mission.Active ? me.Transform.Position : (Vector3?)null;
+                _heldAt = _mission.InMission ? me.Transform.Position : (Vector3?)null;
                 _heldUntil = _clock + T("held");
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -532,17 +544,23 @@ namespace AOBuddy
             // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
             // held him at (41,6,87) - rooted - and he stood 11 s not fighting back, 38% -> dead. Not getting away
             // (under 3 m in 3 s) and still being hit: turn and fight, and no fleeing again for a while.
-            if (Fleeing && _fleeAt.HasValue && _clock - _fleeStartedAt > 3 && _clock - _lastHurt < 3
-                && Movement.Flat(me.Transform.Position, _fleeAt.Value) < 3f)
+            // Any walk away - a flee, or walking out of a building after one (03:24, 2026-09-25, Borealis: leaving,
+            // held at (57,5,164) by pull-backs, 58% -> dead in 10 s with two mobs on him and the flee's time
+            // already up) - measured over the last 3 s.
+            bool away = Fleeing || _phase == Phase.Leaving || _phase == Phase.Backoff;
+            bool pinned = false;
+            if (!away) { _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock; }
+            else if (_clock - _pinSampleAt >= 3)
             {
-                _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
-                foreach (var id in _fleeFrom) _combat.ClearAside(id);
-                if (_mission.Active) _mission.Stop("pinned");
-                if (_overland.Active) _overland.Stop("pinned");
-                _follow.ClearMovement();
-                _fightStart = _clock; _fightHpMin = 100; _fightReturn = _phase == Phase.Backoff ? _travelReturn : _phase;
-                _ctx.Log($"MISSIONRUN: can't get away (held at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP); fighting back.");
-                Enter(Phase.Fight, "pinned while fleeing");
+                pinned = _clock - _lastHurt < 3 && _clock >= _noFleeUntil && Movement.Flat(me.Transform.Position, _pinSamplePos) < 3f;
+                _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock;
+            }
+            // Outrun: 5 s into a flee and still being hit (04:21-04:22, 2026-09-25, Aegean: two Young Scab Hyenas
+            // bit him all along two 81 m flees, 25% -> 0-11% -> dead; running only stopped him hitting back).
+            if (Fleeing && _clock - _fleeStartedAt > 5 && _clock - _lastHurt < 1.5 && _clock >= _noFleeUntil) pinned = true;
+            if (pinned)
+            {
+                StartFightBack(me, $"can't get away (at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP)");
                 return false;
             }
             if (moving && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
@@ -896,6 +914,8 @@ namespace AOBuddy
                         case "blitz": Enter(Phase.AwaitBlitz, "blitz again"); break;
                         case "travel": Enter(_travelReturn, "travel again from a good spot"); break;
                         case "flee":
+                            // Not away while still being bitten: stand and fight what followed (04:22, 2026-09-25).
+                            if (_clock - _lastHurt < 5) { StartFightBack(me, "still hit at the end of the flee"); return false; }
                             if (_travelReturn == Phase.ToDoor && _current != null && !_completed) { Skip("a pack I couldn't beat is on the way to its door"); break; }
                             Enter(_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop ? _travelReturn : Phase.ToTerminal, "got away");
                             break;
@@ -1155,10 +1175,28 @@ namespace AOBuddy
                 if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
-                    _follow.LoadReplay(OnGround(best.Skip(1), pos), false);
+                    // Off every other zone's line on the way (06:12-06:18, 2026-09-25: landed in Aegean at (229,1118),
+                    // 2 m from the Wartorn Valley line; the walk to the Athen Shire line stepped back over it, and he
+                    // went Aegean <-> Wartorn Valley nine times a minute).
+                    _follow.LoadReplay(OnGround(OffZoneLines(best.Skip(1), _hikeFromPf, pos, e.ToPf), pos), false);
                     _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
+            }
+            // STALLED: not a metre in 30 s on the way to the exit (01:30-01:32, 2026-09-25, Aegean: the grid leg's
+            // last point skipped as blocked 14 m short of the Stret West Bank line, and he stood there - the walk
+            // to an exit may take 15 minutes). That exit is out; plan another.
+            // (reset after any time away from this step - a fight, a hold - so only a stall inside the hike counts)
+            if (!_hikeStillAt.HasValue || Movement.Flat(pos, _hikeStillAt.Value) > 1f || _clock - _hikeStillTick > 2) { _hikeStillAt = pos; _hikeStillSince = _clock; }
+            _hikeStillTick = _clock;
+            if (_clock - _hikeStillSince > 30 && _hikePassStage == 0 && _hikeUses == 0)
+            {
+                _follow.ClearMovement();
+                _ctx.Log($"MISSIONRUN: stood still 30 s {Movement.Flat(pos, at):0} m from {e}; trying another way.");
+                MarkBadExit(e);
+                _hikeStillAt = null;
+                Enter(_hikeReturn, "hike stalled");
+                return false;
             }
             if (_follow.ReplayCount > 0) return true;                 // still on the grid leg
             if (_hikeAtExitAt < 0) _hikeAtExitAt = _clock;
@@ -1370,6 +1408,9 @@ namespace AOBuddy
         private Vector3? _shopArrival;
         private int _bankUses;
         private int _bankPulls;
+        private Vector3? _hikeStillAt;
+        private readonly Dictionary<string, int> _exitPulls = new Dictionary<string, int>();
+        private double _hikeStillSince, _hikeStillTick = -99;
         private bool? _bankBuffWas;
         private double _bankQuietAt = -99;
         private double _bankPulledAt = -99;
@@ -1939,6 +1980,41 @@ namespace AOBuddy
         // On the hike's walk grid to the reachable ground nearest the goal, with the ground's height every 3 m, then
         // straight. Same zone only; a far goal only when the grid has a way. The first version only set a target
         // and returned false, which stops the walker: he stood at the whompa for 50 s (08:47-08:48).
+        // A walk inside one zone never aims within 8 m of its zone lines (00:51, 2026-09-25: into Holes in the Wall
+        // at (1084,1949) by the Stret West Bank line, the walk to the door's first point sat on that line, and 15 s
+        // later he was back in Stret West Bank). The last point, the goal, is kept.
+        private static List<Vector3> OffZoneLines(IEnumerable<Vector3> pts, int pf, Vector3? from = null, int headingTo = -1)
+        {
+            var list = pts.ToList();
+            // The lines into the zone he is heading for are the goal, not in the way.
+            var lines = Zoning.ExitsFrom(pf).Where(e => e.Kind == ExitKind.ZoneLine && e.ToPf != headingTo).ToList();
+            if (lines.Count == 0 || list.Count < 2) return list;
+            float Dist(Vector3 p, Vector3 a, Vector3 b)
+            {
+                float dx = b.X - a.X, dz = b.Z - a.Z, l2 = dx * dx + dz * dz;
+                float t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((p.X - a.X) * dx + (p.Z - a.Z) * dz) / l2));
+                float ex = a.X + t * dx - p.X, ez = a.Z + t * dz - p.Z;
+                return (float)Math.Sqrt(ex * ex + ez * ez);
+            }
+            var kept = list.Take(list.Count - 1).Where(p => lines.All(e => Dist(p, e.A, e.B) >= 8f)).ToList();
+            kept.Add(list[list.Count - 1]);
+            // Standing on a line (landed 1.8 m in): first step 10 m straight away from its nearest point.
+            if (from.HasValue)
+            {
+                Vector3 f = from.Value;
+                var near = lines.OrderBy(e => Dist(f, e.A, e.B)).First();
+                float d = Dist(f, near.A, near.B);
+                if (d < 8f)
+                {
+                    float dx = near.B.X - near.A.X, dz = near.B.Z - near.A.Z, l2 = dx * dx + dz * dz;
+                    float t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((f.X - near.A.X) * dx + (f.Z - near.A.Z) * dz) / l2));
+                    float nx = f.X - (near.A.X + t * dx), nz = f.Z - (near.A.Z + t * dz), n = (float)Math.Sqrt(nx * nx + nz * nz);
+                    if (n > 0.1f) kept.Insert(0, new Vector3(f.X + nx / n * 10f, f.Y, f.Z + nz / n * 10f));
+                }
+            }
+            return kept;
+        }
+
         private bool TryWalkMyself(LocalPlayer me, int pf, Vector3 goal, string what, string why)
         {
             if ((int)Playfield.ModelId != pf || _straightTries >= T("walktries")) return false;
@@ -1949,7 +2025,7 @@ namespace AOBuddy
             if (path == null && far >= T("walkto")) return false;   // far and no grid way: no straight walk
             _straightTries++;
             _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
-            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(path.Skip(1), me.Transform.Position), false);
+            if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(OffZoneLines(path.Skip(1), pf, me.Transform.Position), me.Transform.Position), false);
             _ctx.Log($"MISSIONRUN: {why} to {what} {far:0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
             return true;
         }
@@ -2022,7 +2098,20 @@ namespace AOBuddy
         private double _fleeUntil = -99;
         private double _fleeStartedAt = -99, _noFleeUntil = -99;
         private Vector3? _fleeAt;
+        private Vector3 _pinSamplePos;
+        private double _pinSampleAt = -99;
         private readonly List<Identity> _fleeFrom = new List<Identity>();
+        private void StartFightBack(LocalPlayer me, string why)
+        {
+            _fleeUntil = _clock; _fleeAt = null; _noFleeUntil = _clock + 30;
+            foreach (var id in _fleeFrom) _combat.ClearAside(id);
+            if (_mission.Active) _mission.Stop("fighting back");
+            if (_overland.Active) _overland.Stop("fighting back");
+            _follow.ClearMovement();
+            _fightStart = _clock; _fightHpMin = 100; _fightReturn = _phase == Phase.Backoff ? _travelReturn : _phase;
+            _ctx.Log($"MISSIONRUN: {why}; fighting back.");
+            Enter(Phase.Fight, "fighting back");
+        }
         private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
         {
             _fleeAt = me.Transform.Position; _fleeStartedAt = _clock;
@@ -2207,6 +2296,9 @@ namespace AOBuddy
                     }
                     _tell($"I can't get to {what} ({_overland.Status()}); trying again in a minute.");
                     _travelWaitUntil = _clock + 60;
+                    // ...and walking it myself again then: the tries were spent in the backoffs, and at 01:07-01:12
+                    // (2026-09-25) he stood at (720,637) in Borealis 5 minutes while travel said 'walled off' each minute.
+                    _straightTries = 0;
                     return false;
                 }
                 if (there) return false;                  // the phase check picks it up next frame
@@ -2423,6 +2515,35 @@ namespace AOBuddy
         }
         private byte[] _lastQuestLog;
 
+        // Missions finished lately (door pf + spot, UTC), in done.json: the quest log is the zone-in snapshot, and it
+        // still lists a mission finished after it. After a 'mission run' restart he walked back to the finished
+        // one's door, couldn't get in, and deleted it (01:12 Borealis, 01:32 Athen Shire, 2026-09-25).
+        private string DonePath => Path.Combine(_pluginDir, "done.json");
+        private List<(int pf, Vector3 at, DateTime when)> _doneStore;
+        private List<(int pf, Vector3 at, DateTime when)> Done
+        {
+            get
+            {
+                if (_doneStore != null) return _doneStore;
+                _doneStore = new List<(int, Vector3, DateTime)>();
+                try
+                {
+                    if (File.Exists(DonePath))
+                        foreach (JObject o in JArray.Parse(File.ReadAllText(DonePath)))
+                            _doneStore.Add(((int)o["pf"], new Vector3((float)o["x"], 0, (float)o["z"]), (DateTime)o["when"]));
+                }
+                catch { }
+                return _doneStore;
+            }
+        }
+        private void RememberDone(int pf, Vector3 at)
+        {
+            Done.RemoveAll(d => (DateTime.UtcNow - d.when).TotalHours > 1);
+            Done.Add((pf, at, DateTime.UtcNow));
+            try { File.WriteAllText(DonePath, new JArray(Done.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
+        }
+        private bool DoneLately(int pf, Vector3 at) => Done.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 20 && (DateTime.UtcNow - d.when).TotalHours < 1);
+
         // The quest log (QuestFullUpdate, sent at every zone-in) carries each mission's destination the same way
         // the terminal list does: Identity(Playfield2 0x9C50, pf), 8 bytes, then the door's x, y, z as floats.
         // Checked on capture 20260923-201746: mission 55EE1C4C, offered at pf 570 (748,35,1721), sits in the
@@ -2442,7 +2563,7 @@ namespace AOBuddy
                 found.Add((pf, new Vector3(x, y, z)));
             }
             var saved = LoadSaved();
-            var pick = found.Where(f => FitsZone(f.pf))
+            var pick = found.Where(f => FitsZone(f.pf) && !DoneLately(f.pf, f.at))
                             .OrderBy(f => saved != null && saved.Playfield.Instance == f.pf && Movement.Flat(f.at, saved.Location) < 20 ? 0 : 1)
                             .Select(f => ((int, Vector3)?)f).FirstOrDefault();
             if (pick == null) { if (found.Count == 0) ClearSaved(); return null; }

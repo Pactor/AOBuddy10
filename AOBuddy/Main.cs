@@ -953,7 +953,9 @@ namespace AOBuddy
             // instead of being yanked to a stand each tick. (While actively buffing, the recharge-for-a-cast is
             // handled inside TryDrainCast; stims stay combat HP heals.)
             bool combatLull = _combat.SinceCombat < _config.CombatRestCooldownSec || _combat.HostilesEngaged(me, owner);
-            if (_support.RestTick(me, owner, _combat.InCombat, combatLull)) return;
+            // Never sit while running from a pack (03:10, 2026-09-25, The Longest Road: fleeing at 28% with three
+            // mobs behind him, the chasers set aside and HP rising from a stim, he sat to recharge and died).
+            if (_support.RestTick(me, owner, _combat.InCombat || _run.Fleeing, combatLull)) return;
 
             // 4) FOLLOW / IDLE.
             _support.SetIdleState(me);

@@ -596,6 +596,14 @@ namespace AOBuddy
                 {
                     goalFloor = tf; goalPos = tpos;
                 }
+                // Seen, but its position is on no floor: head for it on this floor rather than search rooms. The
+                // walk step counted it 'in sight' and the plan went back to searching, every second, for 12 minutes
+                // (03:30-03:42, 2026-09-25, Borealis Omnilab, target Terminal:EE6AF09).
+                else if (target.HasValue && tpos.HasValue)
+                {
+                    if (_offFloorLogged != target) { _offFloorLogged = target; _ctx.Log($"MISSION: target {target} seen at ({tpos.Value.X:0.0},{tpos.Value.Y:0.0},{tpos.Value.Z:0.0}), on no floor; heading for it on floor {myFloor}."); }
+                    goalFloor = myFloor.Value; goalPos = new Vector3(tpos.Value.X, _grid.HeightAt(tpos.Value, pos.Y) ?? pos.Y, tpos.Value.Z);
+                }
                 else if (_grid.BossFloor.HasValue && myFloor != _grid.BossFloor)
                 {
                     goalFloor = _grid.BossFloor.Value;
@@ -771,7 +779,8 @@ namespace AOBuddy
             return false;
         }
 
-        private double _actStill;                // seconds stood still in Phase.Act
+        private double _actStill;
+        private Identity? _offFloorLogged;                // seconds stood still in Phase.Act
 
         /// <summary>
         /// Find item: the route ends on the open cell nearest the item and arrives within 2.5 m of that, which can
