@@ -488,8 +488,7 @@ namespace AOBuddy
             // Zones that are slow to get into rank lower (owner, 2026-09-25: Athen Shire - its zone lines refused him
             // and he cycled Stret West Bank / Holes in the Wall / Aegean for 11 minutes, 17:06-17:17): their cost goes
             // up by MissionSlowZoneCost, so he takes them only when nothing cheaper is offered.
-            var slow = _ctx.Config.MissionSlowZones ?? new List<int>();
-            var weighed = ok.Select(x => (m: x, cost: TravelCost(me, x) + (slow.Contains(x.Playfield.Instance) ? _ctx.Config.MissionSlowZoneCost : 0))).ToList();
+            var weighed = ok.Select(x => (m: x, cost: TravelCost(me, x))).ToList();
             _ctx.Log($"MISSIONRUN: roll {_rolls} travel weights: {string.Join("; ", weighed.Select(w => $"{Zoning.Name(w.m.Playfield.Instance)} ({w.m.Location.X:0},{w.m.Location.Z:0}) {(w.cost.HasValue ? w.cost.Value.ToString("0") : "no route")}"))}");
             weighed = weighed.Where(w => w.cost.HasValue).ToList();
             if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
@@ -517,7 +516,12 @@ namespace AOBuddy
             try
             {
                 var r = Zoning.FindRoute((int)Playfield.ModelId, me.Transform.Position, m.Playfield.Instance, new Vector3(m.Location.X, 0f, m.Location.Z), opt);
-                return r?.Cost;
+                if (r == null) return null;
+                // A slow zone on the way counts too (18:09-18:18, 2026-09-25: a Holes in the Wall door reached only
+                // through Athen Shire; its line refused him and he went round by Wartorn Valley).
+                var slow = _ctx.Config.MissionSlowZones ?? new List<int>();
+                bool viaSlow = slow.Contains(m.Playfield.Instance) || (r.Hops != null && r.Hops.Any(h => h.Exit != null && slow.Contains(h.Exit.ToPf)));
+                return r.Cost + (viaSlow ? _ctx.Config.MissionSlowZoneCost : 0);
             }
             catch { return null; }
         }
