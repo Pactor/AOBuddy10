@@ -26,12 +26,14 @@ namespace AOBuddy
 
         private Identity? _pendingUseTravel;  // confirmed travel object the bot must go use
         private Vector3? _pendingUsePos;      // where that object is
-        private double _useTravelElapsed;     // time spent trying to reach/use it (timeout guard)
+        private double _useTravelElapsed;
+        private double _arrivedAt = -1, _lastUseAt = -99;
+        private int _useTries;     // time spent trying to reach/use it (timeout guard)
 
         private const double UseTravelWindowSeconds = 5.0;  // owner-use counts as travel if he vanishes within this
         private const double UseTravelGrace = 2.5;          // owner must stay gone this long before we commit (ignores flickers)
         private const float UseTravelRange = 4.0f;          // how close the bot must be to Use() the object
-        private const double UseTravelTimeout = 10.0;       // give up if the object can't be reached in this long
+        private const double UseTravelTimeout = 15.0;       // give up if the object can't be reached in this long
         private const float WalkSpeed = 9.0f;               // WALK (not run) up to the terminal so we don't overshoot it
 
         public bool Active => _pendingUseTravel.HasValue;
@@ -64,7 +66,7 @@ namespace AOBuddy
             {
                 _pendingUseTravel = _ownerUsedTarget;
                 _pendingUsePos = _ownerUsedPos ?? lastOwnerPos;
-                _useTravelElapsed = 0;
+                _useTravelElapsed = 0; _arrivedAt = -1; _lastUseAt = -99; _useTries = 0;
                 _ownerUsedTarget = null;   // consumed
                 _ctx.Log($"OWNER LOST right after using an object — USE-TRAVEL: heading to {_pendingUseTravel.Value} to ride it.");
             }
@@ -99,24 +101,28 @@ namespace AOBuddy
             // Prefer the object's live position if it's still spawned (it may have moved slightly).
             if (DynelManager.Find(_pendingUseTravel.Value, out Dynel found)) _pendingUsePos = found.Transform.Position;
             Vector3 goal = _pendingUsePos ?? pos;
-            float dist = Vector3.Distance(pos, goal);
+            // Flat: the object's own Y is above the floor (the Andromeda terminal at Y 38, the floor at ~36), and
+            // walking at it in 3D lifted him off the ground; the server then refused the Use with 110/184786807,
+            // "You can't do this while you are falling!" (text.mdb), 16:06-16:09 2026-09-25, three times.
+            float dist = Movement.Flat(pos, goal);
 
             if (dist <= UseTravelRange)
             {
                 _move.Stop(me, _ctx.Config.SendIntervalMs);
+                // Stand still a moment first (landed), then Use; again every 2 s, three tries, until we zone.
+                if (_arrivedAt < 0) _arrivedAt = _useTravelElapsed;
+                if (_useTravelElapsed - _arrivedAt < 1.0 || _useTravelElapsed - _lastUseAt < 2.0) return true;
+                if (_useTries >= 3) { _ctx.Log($"USE-TRAVEL: {_pendingUseTravel} didn't take me after 3 tries."); Clear(); return true; }
+                _useTries++; _lastUseAt = _useTravelElapsed;
                 // Send the Use straight to the captured identity. Travel objects (mission floor
                 // buttons/terminals, grid, whompas) aren't tracked as findable dynels, so a
                 // lookup-based Dynel.Use() never fires — we command the exact identity we captured.
-                // ...by its LIVE id: a use on a static statel id (C0xxxxxx, what the owner's use reports) is refused
-                // with feedback 110/184786807 - the Andromeda temple terminal Terminal:C004028F, 16:06-16:07
-                // 2026-09-25, twice. Same fix as the bank (Playfield.LiveIdentity, capture 20260924-192208).
-                GameCommands.UseObject(me, Playfield.LiveIdentity(_pendingUseTravel.Value));
-                _ctx.Log($"USE-TRAVEL: sent Use to {_pendingUseTravel.Value} at ({goal.X:0},{goal.Y:0},{goal.Z:0}) — expecting to zone.");
-                Clear();
+                GameCommands.UseObject(me, _pendingUseTravel.Value);
+                _ctx.Log($"USE-TRAVEL: sent Use to {_pendingUseTravel.Value} at ({goal.X:0},{goal.Y:0},{goal.Z:0}), try {_useTries} — expecting to zone.");
                 return true;
             }
 
-            Vector3 dir = (goal - pos).Normalize();
+            Vector3 dir = new Vector3(goal.X - pos.X, 0, goal.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(WalkSpeed, dt, _ctx.Config.MaxStep, dist);
             _ctx.WalkState = $"use-travel(walk) d={dist:0.0} -> ({goal.X:0},{goal.Y:0},{goal.Z:0}) t={_useTravelElapsed:0.0}";
 
@@ -126,7 +132,7 @@ namespace AOBuddy
 
         private void Clear()
         {
-            _pendingUseTravel = null; _pendingUsePos = null; _useTravelElapsed = 0;
+            _pendingUseTravel = null; _pendingUsePos = null; _useTravelElapsed = 0; _arrivedAt = -1; _lastUseAt = -99; _useTries = 0;
         }
 
         public void Reset()
