@@ -1222,7 +1222,8 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
-            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _hikeNoRoute = true; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
@@ -1480,6 +1481,7 @@ namespace AOBuddy
         // planner checks those Reqs), and its failure is ours to fix, not the whompa's.
         private readonly HashSet<string> _badExits = new HashSet<string>();
         private double _badForgotAt = -9999;
+        private bool _hikeNoRoute;
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
         private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
         private void MarkBadExit(ZoneExit e)
@@ -2660,6 +2662,18 @@ namespace AOBuddy
             _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
             if (_overland.Active)
             {
+                // Travel (Algorithman's) plans without the faction map: at 13:03 (2026-09-25) it sent him from Wartorn
+                // Valley through Old Athen, a Clan city whose guards kill him on sight. Any leg into a hostile whole
+                // zone stops it; the hike (which routes round them) gets the trip.
+                string ost = _overland.Status();
+                foreach (System.Text.RegularExpressions.Match hm in System.Text.RegularExpressions.Regex.Matches(ost ?? "", @"\((\d+)\)"))
+                    if (int.TryParse(hm.Groups[1].Value, out int hpf) && hpf != (int)Playfield.ModelId && HostileAt(hpf, float.NaN, float.NaN) != null)
+                    {
+                        _overland.Stop("route through " + Zoning.Name(hpf));
+                        _ctx.Log($"MISSIONRUN: travel's route goes through {Zoning.Name(hpf)} ({hpf}), the other side's city; not taking it.");
+                        _travelStarted = false; _travelWaitUntil = _clock + 20;
+                        return false;
+                    }
                 if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
                 else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;
@@ -2727,6 +2741,10 @@ namespace AOBuddy
             // doors, which never takes (08:12, 2026-09-24: Stret West Bank's Borealis whompa, 3 tries, then a 5-leg
             // detour); the hike stops on a pad's top and stands on doors, and hands back to travel after the zone.
             if ((int)Playfield.ModelId != pf && StartHike(me, pf, goal, what)) return false;
+            // ...and while the hike is only waiting out its 20 s between attempts, wait with it: travel is for when
+            // the hike has no route at all (13:03, 2026-09-25: a restart landed in that gap and travel took him
+            // toward Old Athen).
+            if ((int)Playfield.ModelId != pf && !_hikeNoRoute) return false;
             var args = new[] { goal.X.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), goal.Z.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), pf.ToString() };
             _ctx.Log($"MISSIONRUN: travelto {string.Join(" ", args)} ({what}).");
             // Pulled back on travel's own walk in this zone already (Deep Artery Valley, 13:45-13:48, 2026-09-24:
