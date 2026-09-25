@@ -768,7 +768,10 @@ namespace AOBuddy
                     if (Inventory.NumFreeSlots < 4 && StartShop($"only {Inventory.NumFreeSlots} free slot(s)")) return false;
                     // Low on stims or rechargers he can USE (owner, 2026-09-24: 'Low on stims (5 left)' - the rest a
                     // QL over his First Aid): off to Fair Trade to buy some, as the owner would if he logged him on.
-                    if (Resupply != null && Resupply.NeedsResupply() && StartShop("low on stims I can use")) return false;
+                    // ...only when resupply would buy: it compares its target (stacks) with stims (finding 23), so it buys
+                    // at fewer than ResupplyStimTarget stims only. Otherwise every 10 minutes a trip that bought
+                    // nothing (09:15, 09:26, 09:42, 2026-09-25). Back to NeedsResupply once that is fixed.
+                    if (Resupply != null && UsableStims() < _ctx.Config.ResupplyStimTarget && StartShop("low on stims I can use")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -2255,7 +2258,7 @@ namespace AOBuddy
             if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
             // Stims and rechargers at the QL his skills can use: ResupplyController picks the fitting QL and the
             // terminals here (Algorithman's), as the owner would buy them.
-            if (!_shopStimsTried && Resupply.NeedsResupply())
+            if (!_shopStimsTried && UsableStims() < _ctx.Config.ResupplyStimTarget)
             {
                 _shopStimsTried = true;
                 Resupply.Start(me, s => _ctx.Log("MISSIONRUN: shop: " + s));
