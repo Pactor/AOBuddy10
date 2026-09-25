@@ -384,6 +384,8 @@ namespace AOBuddy
             var ok = list.Where(Fits).ToList();
             int dangerous = ok.RemoveAll(m => Dangerous(m.Playfield.Instance));
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
+            int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
+            if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
             if (ok.Count == 0) { _ctx.Log($"MISSIONRUN: roll {_rolls}: nothing I can take."); Enter(Phase.Rolling, "nothing suitable"); return; }
             var me = DynelManager.LocalPlayer;
             // The cheapest trip to the door wins: the zone router's cost (metres of walking plus a fixed cost per
@@ -413,7 +415,7 @@ namespace AOBuddy
             var opt = Zoning.RouteOptions(me);
             opt.UseScotty = !NoScotty;   // RubiKa2019 has no Scotty at all (owner): cost the trip as walked
             opt.Filter = e => (e.Kind == ExitKind.ZoneLine || (e.Kind == ExitKind.Scotty && !NoScotty) || e.ObjInstance != 0) && !BadExit(e)
-                              && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance);
+                              && !HostileExit(e) && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance);
             try
             {
                 var r = Zoning.FindRoute((int)Playfield.ModelId, me.Transform.Position, m.Playfield.Instance, new Vector3(m.Location.X, 0f, m.Location.Z), opt);
@@ -1014,7 +1016,8 @@ namespace AOBuddy
             ZoneRoute route;
             // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
             // at 12:14, then walked through again on the way to Athen Shire and killed there).
-            var plain = opt.Filter;
+            var plainOpen = opt.Filter;
+            Func<ZoneExit, bool> plain = e => (plainOpen == null || plainOpen(e)) && !HostileExit(e);
             // Never straight back into the zone this chain just came from (15:39-15:40, 2026-09-24: ten crossings
             // between Stret West Bank and Holes in the Wall - each landing sits by the line, and from there the way
             // back over it looked cheapest). Tried first; dropped only if it leaves no route.
@@ -1904,6 +1907,38 @@ namespace AOBuddy
         private bool Dangerous(int pf) => (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false)
                                           || _danger.TryGetValue(pf, out var d) && (DateTime.UtcNow - d.at).TotalMinutes < DangerMinutes(d.n);
         private double _hpHighAt = -99;
+
+        // THE OTHER SIDE'S GROUND (owner, 2026-09-24: the alt is Omni; West Athens' Vanguard Watcher killed him from
+        // full HP in 3 s). GameData/FactionAreas.json: Clan cities (whole zones) and each side's whompa stations from
+        // the owner's Saavik's map, placed with Zoning.json's whompa positions. His side is his Side stat (1 Clan,
+        // 2 Omni); a neutral avoids none. Missions there are not taken, and no route uses those whompas or zones.
+        private sealed class FactionArea { public int side, pf; public float x, z, r; public string name; }
+        private List<FactionArea> _factionAreas;
+        private List<FactionArea> FactionAreas
+        {
+            get
+            {
+                if (_factionAreas != null) return _factionAreas;
+                _factionAreas = new List<FactionArea>();
+                try { _factionAreas = JObject.Parse(File.ReadAllText(Path.Combine(_pluginDir, "GameData", "FactionAreas.json")))["areas"].ToObject<List<FactionArea>>(); }
+                catch (Exception ex) { _ctx.Log($"MISSIONRUN: no faction areas ({ex.Message})."); }
+                return _factionAreas;
+            }
+        }
+        private int MySide { get { var me = DynelManager.LocalPlayer; return me != null && me.TryGetStat(Stat.Side, out int s) ? s : 0; } }
+        /// <summary>The other side's area at this spot (whole zone or round a station), or null.</summary>
+        private string HostileAt(int pf, float x, float z)
+        {
+            if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) return Zoning.Name(pf);
+            int side = MySide;
+            if (side != 1 && side != 2) return null;
+            foreach (var a in FactionAreas)
+                if (a.side != side && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
+            return null;
+        }
+        private bool HostileExit(ZoneExit e) => HostileAt(e.FromPf, e.A.X, e.A.Z) != null
+                                                || (e.Arrival.HasValue ? HostileAt(e.ToPf, e.Arrival.Value.X, e.Arrival.Value.Z) != null
+                                                                       : HostileAt(e.ToPf, float.NaN, float.NaN) != null);   // arrival unknown: whole zones only
         private bool _diedOnWay;
         private double _fleeUntil = -99;
         public bool Fleeing => Active && _clock < _fleeUntil;

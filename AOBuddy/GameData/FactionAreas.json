@@ -1,0 +1,28 @@
+{
+  "_source": "Owner's Saavik's Map of Rubi-Ka (orange = Clan whompas, blue = Omni, green = neutral) and the whompa positions in Zoning.json; Clan cities: West Athens death 2026-09-24 21:28 (Vanguard Watcher) and the AO wiki (Factions, Old Athen). Side: 1 = Clan, 2 = Omni. r = metres round the spot; r 0 = the whole zone.",
+  "areas": [
+    { "side": 1, "pf": 545, "r": 0,   "name": "West Athens (Clan city)" },
+    { "side": 1, "pf": 540, "r": 0,   "name": "Old Athen (Clan city)" },
+    { "side": 1, "pf": 640, "r": 0,   "name": "Tir (Clan city)" },
+    { "side": 1, "pf": 505, "x": 2169, "z": 3822, "r": 150, "name": "Camelot whompa (Avalon)" },
+    { "side": 1, "pf": 551, "x": 1366, "z": 1735, "r": 150, "name": "Wailing Wastes whompa" },
+    { "side": 1, "pf": 590, "x": 1557, "z": 1420, "r": 150, "name": "Central Artery Valley whompa" },
+    { "side": 1, "pf": 600, "x": 2484, "z": 2100, "r": 150, "name": "Varmint Woods whompa" },
+    { "side": 1, "pf": 605, "x": 2150, "z": 2324, "r": 150, "name": "Wine whompa (Belial Forest)" },
+    { "side": 1, "pf": 665, "x": 999,  "z": 3754, "r": 150, "name": "Broken Shores Clan whompa" },
+    { "side": 1, "pf": 750, "x": 653,  "z": 301,  "r": 150, "name": "The Reck Clan whompa" },
+    { "side": 1, "pf": 760, "x": 1205, "z": 1244, "r": 150, "name": "4 Holes whompa" },
+    { "side": 1, "pf": 795, "x": 3711, "z": 1613, "r": 150, "name": "Bliss whompa (The Longest Road)" },
+    { "side": 2, "pf": 795, "x": 2078, "z": 732,  "r": 150, "name": "Longest Road Omni whompa" },
+    { "side": 2, "pf": 665, "x": 2341, "z": 2243, "r": 150, "name": "Broken Shores Omni whompa" },
+    { "side": 2, "pf": 750, "x": 1805, "z": 3381, "r": 150, "name": "The Reck Omni whompa" },
+    { "side": 2, "pf": 730, "x": 361,  "z": 316,  "r": 150, "name": "Rome whompa (Rome Park)" },
+    { "side": 2, "pf": 685, "x": 2525, "z": 1175, "r": 150, "name": "Galway Castle whompa (Galway County)" },
+    { "side": 2, "pf": 610, "x": 1146, "z": 2342, "r": 150, "name": "Southern Artery Valley whompa" },
+    { "side": 2, "pf": 630, "x": 1256, "z": 2306, "r": 150, "name": "2HO whompa (Pleasant Meadows)" },
+    { "side": 2, "pf": 615, "x": 1594, "z": 2162, "r": 150, "name": "Southern Fouls Hills whompa" },
+    { "side": 2, "pf": 696, "x": 313,  "z": 1310, "r": 150, "name": "Mutant Domain whompa" },
+    { "side": 2, "pf": 705, "x": 906,  "z": 474,  "r": 150, "name": "Omni-1 Entertainment whompa" },
+    { "side": 2, "pf": 710, "x": 368,  "z": 379,  "r": 150, "name": "Omni-1 Trade whompa" }
+  ]
+}
