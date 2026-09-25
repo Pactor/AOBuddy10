@@ -327,7 +327,17 @@ issuing the same sweeps/tells; `ResetOnReacquire()`, `ResetOnZone()` (called fro
 **DONE WHEN.** Losing the owner at a zone line still sweeps at most 3× / 75 s, gives up with the
 same tell, and `zone` re-arms — the exact strings are the regression test.
 
-### R3.3 `PerkBonuses` service — [ ]
+### R3.3 `PerkBonuses` service — [x] done 2026-09-25
+`PerkBonuses.cs` (new): ctor `(pluginDir, config, log)`, `Init()` (was InitPermanentBonuses, same
+spot in Main.Init — after LoadConfig/_logFile, before ItemValues.Load), `Tick(me)` (the
+RefreshPerksFromWire + ApplyPermanentBonuses pair, same OnUpdate spot), `Report(reply)` (the
+`perks`/`perk` command). All six methods and six fields moved verbatim — the wire id-signature
+recompute guard, the `ReferenceEquals(_bonusTarget)` once-per-LocalPlayer-instance re-apply, the
+CWD-fallback path probes (read-only fallback with a logged failure; kept on purpose), and every
+diagnostic string byte-identical. `Truncate` (used by Report + four Main command replies) moved to
+`HelpPages.Truncate` — one definition, no Main back-reference. `_pets` was taken, so the field is
+`_perkBonuses`. Build clean (35 warnings, unchanged); Main.cs 1804 → 1660. The `perks`-command and
+login auto-detect log-line regression rides the owner's next session.
 **What moves.** `InitPermanentBonuses`, `RefreshPerksFromWire`, `RecomputePerkBonuses`,
 `MergeResearch`, `ApplyPermanentBonuses`, `ReportPerks`, and the fields `_perkData,
 _permanentBonuses, _bonusTarget, _perkDiag, _perkOverride, _lastPerkSig` (Main.cs:1834-1969).

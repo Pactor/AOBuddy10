@@ -98,13 +98,8 @@ namespace AOBuddy
         private double _lastUsedObjAge = 999; // seconds since that use (a warp needs a teleport right after)
         private bool _navReplaying;          // we handed FOLLOW a recorded nav route (stop it on reacquire)
 
-        // Permanent stat bonuses (PERK + RESEARCH) computed once at init and folded into GetStat.
-        private readonly PerkData _perkData = new PerkData();
-        private Dictionary<Stat, int> _permanentBonuses = new Dictionary<Stat, int>();
-        private LocalPlayer _bonusTarget;
-        private string _perkDiag = "Permanent bonuses not initialised.";
-        private bool _perkOverride;
-        private string _lastPerkSig = null;
+        // Permanent stat bonuses (PERK + RESEARCH), one wiring line per lifecycle point (R3.3).
+        private PerkBonuses _perkBonuses;
 
         private List<NanoItem> _learnableCache;   // built on demand (heavy DB scan), reused
 
@@ -116,7 +111,8 @@ namespace AOBuddy
             try { Directory.CreateDirectory(_pathsDir); } catch { }
             _logFile = Path.Combine(pluginDir, "aobuddy.log");
             _mode = ParseMode(_config.DefaultMode);
-            InitPermanentBonuses(pluginDir);
+            _perkBonuses = new PerkBonuses(pluginDir, _config, Log);
+            _perkBonuses.Init();
             ItemValues.Load(pluginDir, Log);
             Zoning.Load(pluginDir, Log);
 
@@ -499,8 +495,7 @@ namespace AOBuddy
 
                 // Auto-detect trained perks from the wire and fold the permanent PERK/RESEARCH bonus
                 // map into this LocalPlayer (re-applied when the instance is re-created on a full update).
-                RefreshPerksFromWire(me);
-                ApplyPermanentBonuses(me);
+                _perkBonuses.Tick(me);
 
                 // Decide the stand-up ONCE, from the authoritative LOGIN movement mode. The stand-up
                 // action (CharacterActionType.StandUp) is a sit/stand TOGGLE: firing it blind sits a
@@ -1271,7 +1266,7 @@ namespace AOBuddy
                 case "learnable":
                 case "learn": ReportLearnable(arg, reply); break;
                 case "perks":
-                case "perk": ReportPerks(reply); break;
+                case "perk": _perkBonuses.Report(reply); break;
 
                 case "resupply":
                 {
@@ -1286,7 +1281,7 @@ namespace AOBuddy
                         {
                             List<string> ml = _resupply.DescribeMachines(rp);
                             if (ml.Count == 0) { reply($"No terminals within {_config.ResupplySearchRadius:0}m."); break; }
-                            foreach (string l in ml.Take(15)) reply(Truncate(l, 440));
+                            foreach (string l in ml.Take(15)) reply(HelpPages.Truncate(l, 440));
                             if (ml.Count > 15) reply($"…(+{ml.Count - 15} more, all in the log)");
                             break;
                         }
@@ -1415,7 +1410,7 @@ namespace AOBuddy
             }
             names.Sort(StringComparer.OrdinalIgnoreCase);
             if (names.Count == 0) { reply(filter.Length > 0 ? $"No uploaded nanos match '{filter}'." : "No named nanos resolved."); return; }
-            reply($"Uploaded ({names.Count}): " + Truncate(string.Join(", ", names), 440));
+            reply($"Uploaded ({names.Count}): " + HelpPages.Truncate(string.Join(", ", names), 440));
         }
 
         private void ReportActive(Action<string> reply)
@@ -1432,7 +1427,7 @@ namespace AOBuddy
                 double rem = b.Cooldown?.RemainingTime ?? 0;
                 parts.Add($"{name} [{b.Id}] {FormatTime(rem)}");
             }
-            reply($"Active ({parts.Count}): " + Truncate(string.Join(", ", parts), 440));
+            reply($"Active ({parts.Count}): " + HelpPages.Truncate(string.Join(", ", parts), 440));
         }
 
         /// <summary>
@@ -1510,10 +1505,8 @@ namespace AOBuddy
 
             int cap = 30;
             string head = $"Can learn/cast ({shown.Count}{(arg.Length > 0 ? $" matching '{arg}'" : "")}): ";
-            reply(head + Truncate(string.Join(", ", shown.Take(cap)), 400) + (shown.Count > cap ? $" …(+{shown.Count - cap}, filter with 'learnable <text>')" : ""));
+            reply(head + HelpPages.Truncate(string.Join(", ", shown.Take(cap)), 400) + (shown.Count > cap ? $" …(+{shown.Count - cap}, filter with 'learnable <text>')" : ""));
         }
-
-        private static string Truncate(string s, int max) => s.Length <= max ? s : s.Substring(0, max) + "…";
 
         // ---- Helpers -------------------------------------------------------------
 
@@ -1642,143 +1635,6 @@ namespace AOBuddy
                 return text;
             }
             catch (Exception ex) { return "navdata failed: " + ex.Message; }
-        }
-
-        private void InitPermanentBonuses(string pluginDir)
-        {
-            try
-            {
-                string sqlPath = Path.Combine(pluginDir, "GameData", "perks.sql");
-                if (!File.Exists(sqlPath)) sqlPath = Path.Combine("GameData", "perks.sql");
-                string xmlPath = Path.Combine(pluginDir, "GameData", "Perks.xml");
-                if (!File.Exists(xmlPath)) xmlPath = Path.Combine("GameData", "Perks.xml");
-
-                bool sqlOk = _perkData.Load(sqlPath);
-                bool xmlOk = _perkData.LoadPerkXml(xmlPath);
-
-                if (!sqlOk)
-                {
-                    _perkDiag = $"perks.sql not loaded (looked in {sqlPath}). Perk bonuses OFF.";
-                    Logger.Warning("AOBuddy: " + _perkDiag);
-                    Log(_perkDiag);
-                    return;
-                }
-
-                _perkOverride = _config.PerkLines != null && _config.PerkLines.Count > 0;
-
-                if (_perkOverride)
-                {
-                    RecomputePerkBonuses(_config.PerkLines, "config override");
-                }
-                else
-                {
-                    _permanentBonuses = MergeResearch(new Dictionary<Stat, int>(), out _);
-                    _perkDiag =
-                        $"perks.sql {(sqlOk ? _perkData.PerkCount + " perks" : "FAIL")}, " +
-                        $"Perks.xml {(xmlOk ? _perkData.PerkXmlCount + " ids" : "FAIL — auto-detect OFF")}. " +
-                        $"Auto-detecting trained perks from wire at login.";
-                }
-
-                Logger.Information("AOBuddy: " + _perkDiag);
-                Log(_perkDiag);
-            }
-            catch (Exception ex)
-            {
-                _perkDiag = "Permanent-bonus init failed: " + ex.Message;
-                Logger.Error("AOBuddy: " + _perkDiag);
-                Log(_perkDiag);
-            }
-        }
-
-        private void RefreshPerksFromWire(LocalPlayer me)
-        {
-            if (_perkOverride || !_perkData.PerkXmlLoaded) return;
-
-            var perks = me.Perks;
-            if (perks == null || perks.Length == 0) return;
-
-            var ids = perks.Select(p => p.SkillId).Where(id => id != 0).OrderBy(id => id).ToList();
-            if (ids.Count == 0) return;
-
-            string sig = string.Join(",", ids);
-            if (sig == _lastPerkSig) return;
-            _lastPerkSig = sig;
-
-            var lines = _perkData.DetectPerkLines(ids, out var unresolved);
-            RecomputePerkBonuses(lines, $"wire ({ids.Count} ids, {unresolved.Count} unresolved)");
-        }
-
-        private void RecomputePerkBonuses(IEnumerable<string> perkLines, string source)
-        {
-            var bonuses = _perkData.ComputeBonuses(perkLines, out var unknown, out var unmapped, out var applied);
-            bonuses = MergeResearch(bonuses, out var researchUnknown);
-
-            _permanentBonuses = bonuses;
-            _bonusTarget = null;
-
-            string sumStr = bonuses.Count == 0 ? "(none)" :
-                string.Join(", ", bonuses.OrderBy(b => b.Key.ToString()).Select(b => $"{b.Key}+{b.Value}"));
-            _perkDiag =
-                $"Perks [{source}]: [{(applied.Count > 0 ? string.Join(", ", applied) : "none")}]. " +
-                $"Bonuses: {sumStr}." +
-                (unknown.Count > 0 ? $" UNKNOWN perk names: [{string.Join(", ", unknown)}]." : "") +
-                (unmapped.Count > 0 ? $" UNMAPPED skills: [{string.Join(", ", unmapped)}]." : "") +
-                (researchUnknown.Count > 0 ? $" UNKNOWN research stats: [{string.Join(", ", researchUnknown)}]." : "");
-            Logger.Information("AOBuddy: " + _perkDiag);
-            Log(_perkDiag);
-        }
-
-        private Dictionary<Stat, int> MergeResearch(Dictionary<Stat, int> bonuses, out List<string> researchUnknown)
-        {
-            researchUnknown = new List<string>();
-            if (_config.ResearchBonuses != null)
-            {
-                foreach (var kv in _config.ResearchBonuses)
-                {
-                    if (kv.Value == 0) continue;
-                    if (PerkData.TryResolveStat(kv.Key, out Stat stat))
-                        bonuses[stat] = (bonuses.TryGetValue(stat, out int cur) ? cur : 0) + kv.Value;
-                    else
-                        researchUnknown.Add(kv.Key);
-                }
-            }
-            return bonuses;
-        }
-
-        private void ApplyPermanentBonuses(LocalPlayer me)
-        {
-            if (ReferenceEquals(_bonusTarget, me)) return;
-            me.SetPermanentBonuses(new Dictionary<Stat, int>(_permanentBonuses));
-            _bonusTarget = me;
-            Log($"PERM BONUSES applied to LocalPlayer ({_permanentBonuses.Count} stats).");
-        }
-
-        private void ReportPerks(Action<string> reply)
-        {
-            reply(Truncate(_perkDiag, 440));
-
-            LocalPlayer me = DynelManager.LocalPlayer;
-            if (me != null)
-            {
-                me.TryGetStat(Stat.Strength, out int str);
-                me.TryGetStat((Stat)123, out int fa);
-                int strBonus = me.PermanentBonuses.TryGetValue(Stat.Strength, out int sb) ? sb : 0;
-                reply($"Now: Strength={str} (perm +{strBonus}), FirstAid={fa}. Perm layer holds {me.PermanentBonuses.Count} stats.");
-
-                var perks = me.Perks;
-                if (perks != null && perks.Length > 0)
-                {
-                    var ids = perks.Select(p => p.SkillId).Where(id => id != 0).OrderBy(id => id).ToList();
-                    var lines = _perkData.DetectPerkLines(ids, out var unresolved);
-                    reply(Truncate($"wire perk ids [{ids.Count}] -> detected: [{(lines.Count > 0 ? string.Join(", ", lines) : "none")}]" +
-                        (unresolved.Count > 0 ? $"; {unresolved.Count} unresolved ids (research/unknown): {string.Join(",", unresolved.Take(20))}" : ""), 440));
-                }
-                else
-                {
-                    reply("wire perks: empty (no FullCharacter yet, or none trained). " +
-                        (_perkOverride ? "Manual override active (config PerkLines)." : "Auto-detect waiting."));
-                }
-            }
         }
 
         private void LoadConfig(string pluginDir)
