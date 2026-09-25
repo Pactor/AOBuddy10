@@ -1802,6 +1802,9 @@ namespace AOBuddy
                 if (_unreachable.Contains(r.e) || r.e.Name != null) continue;
                 if (r.e.Kind == "nano")
                 {
+                    // No QL band ('nano', any QL: owner, 2026-09-25): take whatever the owner's difficulty rolls; don't
+                    // steer it toward the middle of every nano there is ('want nano out of reach', 16:50).
+                    if (r.e.QlMin <= 0 && r.e.QlMax >= 1000) continue;
                     if (r.left == null || r.left.Count == 0) continue;
                     var qls = r.left.Select(c => ItemData.Find(c, out DummyItem d) && d != null ? d.Ql : 0).Where(q => q > 0).OrderBy(q => q).ToList();
                     if (qls.Count == 0 || qls.Count <= bestLeft) continue;
