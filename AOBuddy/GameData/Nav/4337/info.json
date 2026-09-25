@@ -3,8 +3,9 @@
  "name": "Albtraum",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 29993,
   "trianglesWalkable": 15464,
   "chunks": 202
+ },
+ "walls": {
+  "triangles": 13965,
+  "chunks": 197,
+  "minHeight": 1
  }
 }

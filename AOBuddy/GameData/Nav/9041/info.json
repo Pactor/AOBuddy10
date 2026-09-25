@@ -3,8 +3,8 @@
  "name": "Phasefront Display",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 69058,
   "trianglesWalkable": 20249,
   "chunks": 14
+ },
+ "walls": {
+  "triangles": 14594,
+  "chunks": 11,
+  "minHeight": 1
  }
 }

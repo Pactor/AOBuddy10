@@ -3,8 +3,8 @@
  "name": "ord_smarket_omni_basic",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14159,
   "trianglesWalkable": 4592,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 3416,
+  "chunks": 7,
+  "minHeight": 1
  }
 }

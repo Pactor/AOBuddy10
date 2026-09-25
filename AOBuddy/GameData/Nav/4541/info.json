@@ -3,8 +3,9 @@
  "name": "West of Elysium",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 288422,
   "trianglesWalkable": 124862,
   "chunks": 2051
+ },
+ "walls": {
+  "triangles": 147877,
+  "chunks": 2097,
+  "minHeight": 1
  }
 }

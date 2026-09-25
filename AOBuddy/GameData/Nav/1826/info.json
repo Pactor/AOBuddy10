@@ -3,8 +3,8 @@
  "name": "Dancing Atrox Bar",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 1256,
   "trianglesWalkable": 416,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 389,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

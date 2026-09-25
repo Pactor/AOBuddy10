@@ -3,8 +3,8 @@
  "name": "Advanced Player Market [dng]",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14407,
   "trianglesWalkable": 4778,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 3079,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

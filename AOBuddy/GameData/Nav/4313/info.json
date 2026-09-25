@@ -3,8 +3,9 @@
  "name": "Nascense Training Ground",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,11 @@
   "heightVerifiable": true,
   "waterPlanes": [
    17.2
+  ],
+  "waterPolygons": [
+   33.14,
+   33.36,
+   17.2
   ]
  },
  "collision": {
@@ -31,5 +37,10 @@
   "trianglesTotal": 97680,
   "trianglesWalkable": 48952,
   "chunks": 313
+ },
+ "walls": {
+  "triangles": 45291,
+  "chunks": 332,
+  "minHeight": 1
  }
 }

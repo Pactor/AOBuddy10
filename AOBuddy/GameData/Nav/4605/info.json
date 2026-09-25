@@ -3,8 +3,9 @@
  "name": "Inferno",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    0.5
+  ],
+  "waterPolygons": [
+   0.52
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 1239667,
   "trianglesWalkable": 709597,
   "chunks": 7764
+ },
+ "walls": {
+  "triangles": 428462,
+  "chunks": 6478,
+  "minHeight": 1
  }
 }

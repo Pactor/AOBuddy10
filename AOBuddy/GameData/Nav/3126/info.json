@@ -3,8 +3,9 @@
  "name": "Old Athen Backyard 7",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    24.3
+  ],
+  "waterPolygons": [
+   24.3
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 5701,
   "trianglesWalkable": 2776,
   "chunks": 42
+ },
+ "walls": {
+  "triangles": 2708,
+  "chunks": 39,
+  "minHeight": 1
  }
 }

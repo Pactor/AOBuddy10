@@ -3,8 +3,8 @@
  "name": "Dng: High Level ToTW",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 60705,
   "trianglesWalkable": 19795,
   "chunks": 13
+ },
+ "walls": {
+  "triangles": 14484,
+  "chunks": 10,
+  "minHeight": 1
  }
 }

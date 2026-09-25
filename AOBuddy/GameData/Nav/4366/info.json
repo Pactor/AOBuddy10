@@ -3,8 +3,9 @@
  "name": "Sector 28",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 32539,
   "trianglesWalkable": 10458,
   "chunks": 213
+ },
+ "walls": {
+  "triangles": 21493,
+  "chunks": 223,
+  "minHeight": 1
  }
 }

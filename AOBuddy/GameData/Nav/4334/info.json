@@ -3,8 +3,8 @@
  "name": "The Ring (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 11714,
   "trianglesWalkable": 4122,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 4780,
+  "chunks": 65,
+  "minHeight": 1
  }
 }

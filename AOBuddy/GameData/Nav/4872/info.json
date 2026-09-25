@@ -3,8 +3,9 @@
  "name": "Adonis City",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    1
+  ],
+  "waterPolygons": [
+   106.01,
+   1
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 1019324,
   "trianglesWalkable": 508164,
   "chunks": 3496
+ },
+ "walls": {
+  "triangles": 469803,
+  "chunks": 3405,
+  "minHeight": 1
  }
 }

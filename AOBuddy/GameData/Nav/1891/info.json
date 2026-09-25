@@ -3,8 +3,8 @@
  "name": "The Happy Rebel Inn",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 8497,
   "trianglesWalkable": 2845,
   "chunks": 11
+ },
+ "walls": {
+  "triangles": 3074,
+  "chunks": 11,
+  "minHeight": 1
  }
 }

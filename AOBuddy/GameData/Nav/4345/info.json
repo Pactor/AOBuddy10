@@ -3,8 +3,8 @@
  "name": "Advanced Clan org hq",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 25723,
   "trianglesWalkable": 9353,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 11670,
+  "chunks": 9,
+  "minHeight": 1
  }
 }

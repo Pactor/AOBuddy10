@@ -3,8 +3,9 @@
  "name": "The Longest Road",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,66 +25,13 @@
   "heightVerifiable": true,
   "waterPlanes": [
    23.81
-  ]
- },
- "verification": {
-  "walkedPoints": 279,
-  "toleranceM": 1,
-  "explainedByFloor": 252,
-  "explainedByCollision": 0,
-  "unexplained": 27,
-  "explainedPct": 90.3,
-  "unexplainedSamples": [
-   [
-    3719.2,
-    51.12,
-    1554.2
-   ],
-   [
-    3720.1,
-    52.65,
-    1552.6
-   ],
-   [
-    3721.6,
-    54.74,
-    1550.6
-   ],
-   [
-    3722.8,
-    55.65,
-    1550.3
-   ],
-   [
-    3724.4,
-    58.21,
-    1547.6
-   ],
-   [
-    3725.8,
-    58.41,
-    1544.8
-   ],
-   [
-    3726.8,
-    58.41,
-    1542.7
-   ],
-   [
-    3728,
-    58.41,
-    1540.2
-   ],
-   [
-    3728.4,
-    58.41,
-    1538.1
-   ],
-   [
-    3728.5,
-    58.41,
-    1535.1
-   ]
+  ],
+  "waterPolygons": [
+   6.1,
+   15,
+   47,
+   34.6,
+   23.81
   ]
  },
  "collision": {
@@ -91,5 +39,10 @@
   "trianglesTotal": 297462,
   "trianglesWalkable": 126134,
   "chunks": 4041
+ },
+ "walls": {
+  "triangles": 159528,
+  "chunks": 4042,
+  "minHeight": 1
  }
 }

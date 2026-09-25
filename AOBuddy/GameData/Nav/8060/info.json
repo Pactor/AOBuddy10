@@ -3,8 +3,8 @@
  "name": "Abandoned Research Facility",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 26759,
   "trianglesWalkable": 8894,
   "chunks": 16
+ },
+ "walls": {
+  "triangles": 8162,
+  "chunks": 16,
+  "minHeight": 1
  }
 }

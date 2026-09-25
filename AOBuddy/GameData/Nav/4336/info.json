@@ -3,8 +3,9 @@
  "name": "Alappaa",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 35555,
   "trianglesWalkable": 18667,
   "chunks": 142
+ },
+ "walls": {
+  "triangles": 15262,
+  "chunks": 140,
+  "minHeight": 1
  }
 }

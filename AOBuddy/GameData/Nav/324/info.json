@@ -3,8 +3,8 @@
  "name": "AutocontentClan(dung)",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 91484,
   "trianglesWalkable": 28771,
   "chunks": 55
+ },
+ "walls": {
+  "triangles": 33461,
+  "chunks": 57,
+  "minHeight": 1
  }
 }

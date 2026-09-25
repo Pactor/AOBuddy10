@@ -3,8 +3,9 @@
  "name": "Pandemonium Caina",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 265533,
   "trianglesWalkable": 124814,
   "chunks": 1121
+ },
+ "walls": {
+  "triangles": 109925,
+  "chunks": 1018,
+  "minHeight": 1
  }
 }

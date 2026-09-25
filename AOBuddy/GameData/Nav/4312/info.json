@@ -3,8 +3,9 @@
  "name": "Nascense Swamp",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    7.1
+  ],
+  "waterPolygons": [
+   7.1
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 270398,
   "trianglesWalkable": 137389,
   "chunks": 1497
+ },
+ "walls": {
+  "triangles": 128674,
+  "chunks": 1460,
+  "minHeight": 1
  }
 }

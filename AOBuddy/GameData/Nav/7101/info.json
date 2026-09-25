@@ -3,8 +3,8 @@
  "name": "Shuttle to ICC (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 6550,
   "trianglesWalkable": 2117,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 1683,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

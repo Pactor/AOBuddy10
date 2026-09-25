@@ -3,8 +3,8 @@
  "name": "Home VP dng 3 small",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 396,
   "trianglesWalkable": 125,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 172,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Omni1 Entertainment",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 129592,
   "trianglesWalkable": 50922,
   "chunks": 470
+ },
+ "walls": {
+  "triangles": 69165,
+  "chunks": 515,
+  "minHeight": 1
  }
 }

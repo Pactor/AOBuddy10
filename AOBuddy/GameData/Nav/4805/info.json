@@ -3,8 +3,8 @@
  "name": "The Crypt of Home",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 109923,
   "trianglesWalkable": 35975,
   "chunks": 27
+ },
+ "walls": {
+  "triangles": 47212,
+  "chunks": 33,
+  "minHeight": 1
  }
 }

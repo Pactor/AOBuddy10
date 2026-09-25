@@ -3,8 +3,9 @@
  "name": "North of Elysium",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 369469,
   "trianglesWalkable": 156388,
   "chunks": 2092
+ },
+ "walls": {
+  "triangles": 188116,
+  "chunks": 2279,
+  "minHeight": 1
  }
 }

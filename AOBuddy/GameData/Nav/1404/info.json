@@ -3,8 +3,8 @@
  "name": "The Temple of Home",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 22346,
   "trianglesWalkable": 7446,
   "chunks": 5
+ },
+ "walls": {
+  "triangles": 6250,
+  "chunks": 29,
+  "minHeight": 1
  }
 }

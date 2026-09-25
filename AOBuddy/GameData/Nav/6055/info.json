@@ -3,8 +3,9 @@
  "name": "Inside The Machine",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 10600,
   "trianglesWalkable": 5085,
   "chunks": 23
+ },
+ "walls": {
+  "triangles": 3295,
+  "chunks": 23,
+  "minHeight": 1
  }
 }

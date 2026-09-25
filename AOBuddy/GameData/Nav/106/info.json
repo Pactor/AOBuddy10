@@ -3,8 +3,9 @@
  "name": "Town template Playfield",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 46770,
   "trianglesWalkable": 23313,
   "chunks": 245
+ },
+ "walls": {
+  "triangles": 19597,
+  "chunks": 244,
+  "minHeight": 1
  }
 }

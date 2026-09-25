@@ -3,8 +3,9 @@
  "name": "Jobe Harbor",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    290.7
+  ],
+  "waterPolygons": [
+   290.7
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 44778,
   "trianglesWalkable": 19289,
   "chunks": 117
+ },
+ "walls": {
+  "triangles": 21184,
+  "chunks": 129,
+  "minHeight": 1
  }
 }

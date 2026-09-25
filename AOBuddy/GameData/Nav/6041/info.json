@@ -3,8 +3,9 @@
  "name": "Inside the Ruin",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 9033,
   "trianglesWalkable": 4317,
   "chunks": 22
+ },
+ "walls": {
+  "triangles": 3756,
+  "chunks": 22,
+  "minHeight": 1
  }
 }

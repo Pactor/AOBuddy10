@@ -3,8 +3,9 @@
  "name": "Andromeda",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -27,66 +28,9 @@
    9.02,
    10.87,
    15.41
-  ]
- },
- "verification": {
-  "walkedPoints": 481,
-  "toleranceM": 1,
-  "explainedByFloor": 426,
-  "explainedByCollision": 0,
-  "unexplained": 55,
-  "explainedPct": 88.6,
-  "unexplainedSamples": [
-   [
-    3178.5,
-    36.17,
-    860.1
-   ],
-   [
-    3161.3,
-    36.17,
-    865.2
-   ],
-   [
-    3159.8,
-    36.35,
-    865.9
-   ],
-   [
-    3156,
-    51.44,
-    866
-   ],
-   [
-    3153.5,
-    51.44,
-    866.4
-   ],
-   [
-    3151.5,
-    51.44,
-    867.6
-   ],
-   [
-    3198,
-    36.48,
-    864.3
-   ],
-   [
-    3199.6,
-    36.35,
-    864.2
-   ],
-   [
-    3199.8,
-    36.21,
-    866.6
-   ],
-   [
-    3197,
-    36.35,
-    866.8
-   ]
+  ],
+  "waterPolygons": [
+   15.41
   ]
  },
  "collision": {
@@ -94,5 +38,10 @@
   "trianglesTotal": 299871,
   "trianglesWalkable": 132599,
   "chunks": 5295
+ },
+ "walls": {
+  "triangles": 122439,
+  "chunks": 4892,
+  "minHeight": 1
  }
 }

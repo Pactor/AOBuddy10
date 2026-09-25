@@ -3,8 +3,9 @@
  "name": "Tir Arena",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    6.5
+  ],
+  "waterPolygons": [
+   6.5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 43769,
   "trianglesWalkable": 18186,
   "chunks": 140
+ },
+ "walls": {
+  "triangles": 24258,
+  "chunks": 173,
+  "minHeight": 1
  }
 }

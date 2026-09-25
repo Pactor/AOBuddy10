@@ -3,8 +3,8 @@
  "name": "Underhalls of Home",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 46848,
   "trianglesWalkable": 17107,
   "chunks": 17
+ },
+ "walls": {
+  "triangles": 13982,
+  "chunks": 15,
+  "minHeight": 1
  }
 }

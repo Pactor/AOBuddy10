@@ -3,8 +3,9 @@
  "name": "Stret West Bank",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 199141,
   "trianglesWalkable": 87845,
   "chunks": 3230
+ },
+ "walls": {
+  "triangles": 78569,
+  "chunks": 2912,
+  "minHeight": 1
  }
 }

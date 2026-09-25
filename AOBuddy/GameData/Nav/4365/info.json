@@ -3,8 +3,9 @@
  "name": "Sector 13",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 58552,
   "trianglesWalkable": 22978,
   "chunks": 217
+ },
+ "walls": {
+  "triangles": 33742,
+  "chunks": 217,
+  "minHeight": 1
  }
 }

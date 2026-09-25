@@ -87,7 +87,10 @@ namespace AONavExtractor
                     }
                     catch (Exception e) { error = e.GetType().Name + ": " + e.Message; }
                     if (ground != null)
+                    {
                         ground.WaterY = Ground.WaterPlanes(blob);
+                        ground.Water.AddRange(Ground.WaterPolygons(blob));
+                    }
                     List<SurfaceRecord> recs = null;
                     string tri = triDir != null ? Path.Combine(triDir, pf + ".tri") : null;
                     if (tri != null && File.Exists(tri)) recs = TriFile.Read(tri, out _);
@@ -119,6 +122,12 @@ namespace AONavExtractor
                         {
                             info.Key("waterPlanes").Arr();
                             foreach (float y in ground.WaterY) info.Num(Math.Round(y, 2));
+                            info.End();
+                        }
+                        if (ground.Water.Count > 0)
+                        {
+                            info.Key("waterPolygons").Arr();
+                            foreach (double[] w in ground.Water) info.Num(Math.Round(w[0], 2));
                             info.End();
                         }
                         info.End();

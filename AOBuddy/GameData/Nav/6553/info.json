@@ -3,8 +3,9 @@
  "name": "Arete Landing",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 159906,
   "trianglesWalkable": 65942,
   "chunks": 507
+ },
+ "walls": {
+  "triangles": 55300,
+  "chunks": 548,
+  "minHeight": 1
  }
 }

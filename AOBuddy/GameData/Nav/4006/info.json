@@ -3,8 +3,9 @@
  "name": "Penumbra",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 780590,
   "trianglesWalkable": 369960,
   "chunks": 3594
+ },
+ "walls": {
+  "triangles": 374827,
+  "chunks": 3604,
+  "minHeight": 1
  }
 }

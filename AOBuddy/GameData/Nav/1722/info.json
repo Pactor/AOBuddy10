@@ -3,8 +3,8 @@
  "name": "LD VP dng 2",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 644,
   "trianglesWalkable": 204,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 188,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

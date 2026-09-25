@@ -3,8 +3,9 @@
  "name": "Unicorn Outpost to sector 7",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 27477,
   "trianglesWalkable": 10736,
   "chunks": 148
+ },
+ "walls": {
+  "triangles": 11237,
+  "chunks": 134,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Deep Artery Forest Glade",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -34,5 +35,10 @@
   "trianglesTotal": 13294,
   "trianglesWalkable": 5651,
   "chunks": 83
+ },
+ "walls": {
+  "triangles": 7611,
+  "chunks": 97,
+  "minHeight": 1
  }
 }

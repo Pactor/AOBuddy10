@@ -3,8 +3,9 @@
  "name": "Three Craters West",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 91130,
   "trianglesWalkable": 40467,
   "chunks": 1499
+ },
+ "walls": {
+  "triangles": 49422,
+  "chunks": 1486,
+  "minHeight": 1
  }
 }

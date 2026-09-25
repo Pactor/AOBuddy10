@@ -3,8 +3,9 @@
  "name": "4 Holes",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 202134,
   "trianglesWalkable": 87515,
   "chunks": 2820
+ },
+ "walls": {
+  "triangles": 101024,
+  "chunks": 2726,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Pandemonium Ptolemea",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    51.1
+  ],
+  "waterPolygons": [
+   16.2,
+   51.1
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 278437,
   "trianglesWalkable": 131233,
   "chunks": 1321
+ },
+ "walls": {
+  "triangles": 115081,
+  "chunks": 1217,
+  "minHeight": 1
  }
 }

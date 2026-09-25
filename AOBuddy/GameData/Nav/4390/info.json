@@ -3,8 +3,9 @@
  "name": "Pandemonium Notum Vein",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    16.2
+  ],
+  "waterPolygons": [
+   16.2
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 260581,
   "trianglesWalkable": 119215,
   "chunks": 1181
+ },
+ "walls": {
+  "triangles": 111131,
+  "chunks": 1134,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Basic Player Market (Dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 7210,
   "trianglesWalkable": 2404,
   "chunks": 2
+ },
+ "walls": {
+  "triangles": 1622,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

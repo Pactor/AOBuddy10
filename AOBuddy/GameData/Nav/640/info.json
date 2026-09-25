@@ -3,8 +3,9 @@
  "name": "Tir",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,21 +25,20 @@
   "heightVerifiable": true,
   "waterPlanes": [
    6.5
+  ],
+  "waterPolygons": [
+   6.5
   ]
- },
- "verification": {
-  "walkedPoints": 19,
-  "toleranceM": 1,
-  "explainedByFloor": 19,
-  "explainedByCollision": 0,
-  "unexplained": 0,
-  "explainedPct": 100,
-  "unexplainedSamples": []
  },
  "collision": {
   "records": 69,
   "trianglesTotal": 43634,
   "trianglesWalkable": 18519,
   "chunks": 171
+ },
+ "walls": {
+  "triangles": 23498,
+  "chunks": 211,
+  "minHeight": 1
  }
 }

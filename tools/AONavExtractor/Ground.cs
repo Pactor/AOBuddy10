@@ -22,8 +22,10 @@ namespace AONavExtractor
         public ushort[] Heights;                 // [z * SamplesX + x]
         public ushort[] Tiles;                   // [(SamplesZ-1) * (SamplesX-1)]
         public byte[] Building;                  // same shape, nibble per cell (order OPEN)
-        public float[] WaterY = Array.Empty<float>();   // candidate water-surface LEVELS (see WaterPlanes) — the region
-                                                        // is NOT playfield-wide: the bot floods it from the tile-12 band
+        public float[] WaterY = Array.Empty<float>();   // the plane table's LEVELS (see WaterPlanes). Superseded by
+                                                        // Water (the client's own liquid polygons) — kept for information
+        public readonly List<double[]> Water = new List<double[]>();   // per liquid: [level, x1,z1, x2,z2, ...] — the
+                                                        // playfield record's own water polygons (see WaterPolygons)
 
         /// <summary>
         /// The playfield record's water-level table: four 12-byte entries ([f32 levelY][f32][f32]),
@@ -55,6 +57,77 @@ namespace AONavExtractor
                 if (!planes.Any(p => Math.Abs(p - y) < 0.05f)) planes.Add(y);   // the table's copies differ in low bits
             }
             return planes.ToArray();
+        }
+
+        /// <summary>
+        /// The playfield record's LIQUID POLYGONS — where water actually is, found 2026-09-25 after the
+        /// owner called it ("the game is from 2000, they wouldn't flood-fill; water has to be a quad or
+        /// a volume") and baited the hunt with a lake he stood in: level 18.3 at (2349,1127) in Newland
+        /// Desert, a level no stored plane has. Each liquid is a flat ring of 3-12 (x,z) points at one
+        /// level, serialized in 12-byte rows just before the arrival table:
+        ///
+        ///   [count][x1][level] [z1][x2][level] ... [z(n-1)][xn][level] [zn][2][flags]
+        ///
+        /// i.e. a flat ring whose consecutive points are (row.slot1, nextRow.slot0), bracketed by rows
+        /// of small flag ints. Walked backwards from the last ring's closer row; the count in the opener
+        /// row names the ring's size, which is what makes the walk unambiguous.
+        ///
+        /// Verified against ground truth on both installs: 565's quad at 18.3 spans (2267..2416,
+        /// 1052..1180) — the owner's lake exactly; 567 Newland's one quad at 32.1 is the captured swim
+        /// (32.09); 656 Coast of Tranquility's ocean is ONE quad spanning its whole map (its fan map is
+        /// 51% water); 696 Wailing Wastes is a whole-map water table at 5.0; 655 ICC's canal at 15.41;
+        /// 695 Lush Fields' "river" is one small 9.4 quad. The acid river/pools of 565 are in here too
+        /// (the 11.9/12.4 rings in the south-east) — the record lists liquids, not just water; a ring's
+        /// level can slope slightly along a river (±0.35 m), and the max is kept.
+        /// </summary>
+        public static List<double[]> WaterPolygons(byte[] playfieldBlob)
+        {
+            var outl = new List<double[]>();
+            int pos = playfieldBlob.Length - 4, k = 0;
+            while (pos >= 4 && BitConverter.ToInt32(playfieldBlob, pos) != k) { k++; pos -= 28; }
+            int e = pos - 58;                                   // the last ring's closer row
+            while (e >= 24)
+            {
+                float closerZ = BitConverter.ToSingle(playfieldBlob, e);
+                if (BitConverter.ToInt32(playfieldBlob, e + 4) != 2
+                    || Math.Abs(BitConverter.ToInt32(playfieldBlob, e + 8)) > 1 << 21
+                    || Math.Abs(closerZ) >= 9000f) break;
+                int op = -1, C = 0;
+                for (int c = 3; c <= 12; c++)
+                {
+                    int at = e - c * 12;
+                    if (at < 12 || BitConverter.ToInt32(playfieldBlob, at) != c) continue;
+                    float ox = BitConverter.ToSingle(playfieldBlob, at + 4), lv = BitConverter.ToSingle(playfieldBlob, at + 8);
+                    if (!(lv > 0.2f && lv < 300f) || Math.Abs(ox) >= 9000f) continue;
+                    bool ok = true;
+                    for (int r = 1; r < c && ok; r++)
+                        if (Math.Abs(BitConverter.ToSingle(playfieldBlob, at + r * 12)) >= 9000f
+                            || Math.Abs(BitConverter.ToSingle(playfieldBlob, at + r * 12 + 4)) >= 9000f) ok = false;
+                    if (ok) { op = at; C = c; break; }
+                }
+                if (op < 0) break;
+                float level = 0;
+                for (int r = 0; r < C; r++) level = Math.Max(level, BitConverter.ToSingle(playfieldBlob, op + r * 12 + 8));
+                var ring = new double[1 + 2 * C];
+                ring[0] = level;
+                ring[1] = BitConverter.ToSingle(playfieldBlob, op + 4);
+                ring[2] = BitConverter.ToSingle(playfieldBlob, op + 12);
+                for (int r = 1; r < C - 1; r++)
+                {
+                    ring[1 + 2 * r] = BitConverter.ToSingle(playfieldBlob, op + r * 12 + 4);
+                    ring[2 + 2 * r] = BitConverter.ToSingle(playfieldBlob, op + (r + 1) * 12);
+                }
+                ring[1 + 2 * (C - 1)] = BitConverter.ToSingle(playfieldBlob, op + (C - 1) * 12 + 4);
+                ring[2 + 2 * (C - 1)] = closerZ;
+                outl.Add(ring);
+                int prev = op - 12;                              // a flag-ints row brackets each liquid
+                if (prev >= 12 && Math.Abs(BitConverter.ToInt32(playfieldBlob, prev)) < 1 << 21
+                    && Math.Abs(BitConverter.ToInt32(playfieldBlob, prev + 4)) < 1 << 21
+                    && Math.Abs(BitConverter.ToInt32(playfieldBlob, prev + 8)) < 1 << 21) prev -= 12;
+                e = prev;
+            }
+            outl.Reverse();
+            return outl;
         }
 
         public static Ground Read(Rdb rdb, int gid)
@@ -169,9 +242,17 @@ namespace AONavExtractor
             using (var f = new BinaryWriter(File.Create(path)))
             {
                 f.Write(new byte[] { (byte)'A', (byte)'O', (byte)'N', (byte)'G' });
-                // v3 = v2 + the water-plane list (WaterY) after SourceBits; readers take v2 or v3.
-                f.Write(3); f.Write(SamplesX); f.Write(SamplesZ); f.Write(Cell); f.Write(HeightScale); f.Write(SourceBits);
+                // v3 = v2 + the water-plane list (WaterY) after SourceBits. v4 = v3 + the client's own
+                // liquid polygons (Water): per liquid the point count, the level, then (x, z) per point.
+                f.Write(4); f.Write(SamplesX); f.Write(SamplesZ); f.Write(Cell); f.Write(HeightScale); f.Write(SourceBits);
                 f.Write(WaterY.Length); foreach (float y in WaterY) f.Write(y);
+                f.Write(Water.Count);
+                foreach (double[] w in Water)
+                {
+                    f.Write((w.Length - 1) / 2);
+                    f.Write((float)w[0]);
+                    for (int i = 1; i < w.Length; i++) f.Write((float)w[i]);
+                }
                 f.Write(raw.Length); f.Write(z.Length); f.Write(z);
             }
         }

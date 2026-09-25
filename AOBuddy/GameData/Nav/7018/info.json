@@ -3,8 +3,8 @@
  "name": "Tax office lobby [dng]",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 906,
   "trianglesWalkable": 334,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 244,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

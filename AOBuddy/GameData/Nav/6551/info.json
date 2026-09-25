@@ -3,8 +3,9 @@
  "name": "Uturn Forest",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 59827,
   "trianglesWalkable": 37417,
   "chunks": 621
+ },
+ "walls": {
+  "triangles": 22342,
+  "chunks": 540,
+  "minHeight": 1
  }
 }

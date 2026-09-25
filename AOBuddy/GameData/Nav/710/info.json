@@ -3,8 +3,9 @@
  "name": "Omni-1 Trade",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 35250,
   "trianglesWalkable": 14644,
   "chunks": 160
+ },
+ "walls": {
+  "triangles": 17829,
+  "chunks": 174,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Serenity Islands",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    3.5
+  ],
+  "waterPolygons": [
+   3.5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 12931,
   "trianglesWalkable": 5240,
   "chunks": 278
+ },
+ "walls": {
+  "triangles": 4322,
+  "chunks": 264,
+  "minHeight": 1
  }
 }

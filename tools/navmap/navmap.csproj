@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>navmap</AssemblyName>
+    <RootNamespace>NavMap</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <!-- Renders one playfield's ground.bin to a PNG the way the bot's own NavGround sees it
+         (2026-09-25, the Newland Desert phantom lake): terrain shading, the tile-12 band, the
+         SwimY water verdict, and the interior basins filled to their rim (candidate lakes).
+         Diagnosis aid; not part of the bot's run. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AOBuddy\AOBuddy.csproj" />
+  </ItemGroup>
+</Project>

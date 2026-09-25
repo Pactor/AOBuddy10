@@ -3,8 +3,9 @@
  "name": "Deep Artery Valley",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    9.7
+  ],
+  "waterPolygons": [
+   20,
+   9.7
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 617183,
   "trianglesWalkable": 279167,
   "chunks": 7977
+ },
+ "walls": {
+  "triangles": 278787,
+  "chunks": 7650,
+  "minHeight": 1
  }
 }

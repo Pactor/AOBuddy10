@@ -3,8 +3,9 @@
  "name": "Newland Backyard 2",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 5867,
   "trianglesWalkable": 2580,
   "chunks": 56
+ },
+ "walls": {
+  "triangles": 2875,
+  "chunks": 62,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "Avalon",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 572560,
   "trianglesWalkable": 243593,
   "chunks": 7722
+ },
+ "walls": {
+  "triangles": 322280,
+  "chunks": 7744,
+  "minHeight": 1
  }
 }

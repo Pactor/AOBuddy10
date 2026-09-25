@@ -3,8 +3,9 @@
  "name": "Greater Omni Forest",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    0.6
+  ],
+  "waterPolygons": [
+   0.6
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 329510,
   "trianglesWalkable": 146870,
   "chunks": 3967
+ },
+ "walls": {
+  "triangles": 168397,
+  "chunks": 4026,
+  "minHeight": 1
  }
 }

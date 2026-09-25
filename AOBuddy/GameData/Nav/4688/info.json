@@ -3,8 +3,9 @@
  "name": "Garden of Redeemed Penumbra",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    1
+  ],
+  "waterPolygons": [
+   1
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 66931,
   "trianglesWalkable": 33712,
   "chunks": 223
+ },
+ "walls": {
+  "triangles": 29512,
+  "chunks": 202,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Penumbra Transit (dng)",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 34013,
   "trianglesWalkable": 11292,
   "chunks": 6
+ },
+ "walls": {
+  "triangles": 5833,
+  "chunks": 3,
+  "minHeight": 1
  }
 }

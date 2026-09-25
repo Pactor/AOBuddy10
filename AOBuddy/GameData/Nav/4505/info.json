@@ -3,8 +3,9 @@
  "name": "South Buggy (DONT DELETE)",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 248102,
   "trianglesWalkable": 115754,
   "chunks": 1953
+ },
+ "walls": {
+  "triangles": 119435,
+  "chunks": 2005,
+  "minHeight": 1
  }
 }

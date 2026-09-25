@@ -3,8 +3,8 @@
  "name": "avalon_building3 dng",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 754,
   "trianglesWalkable": 180,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 342,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

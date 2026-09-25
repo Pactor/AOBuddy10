@@ -3,8 +3,8 @@
  "name": "4holes Fashion",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 792,
   "trianglesWalkable": 278,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 302,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

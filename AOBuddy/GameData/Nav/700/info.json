@@ -3,8 +3,9 @@
  "name": "Omni1-HEADQUARTER",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    13.9
+  ],
+  "waterPolygons": [
+   13.9
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 19072,
   "trianglesWalkable": 7229,
   "chunks": 86
+ },
+ "walls": {
+  "triangles": 9567,
+  "chunks": 90,
+  "minHeight": 1
  }
 }

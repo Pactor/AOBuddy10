@@ -3,8 +3,9 @@
  "name": "Broken Shores AI movie",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    5
+  ],
+  "waterPolygons": [
+   5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 182260,
   "trianglesWalkable": 90507,
   "chunks": 2562
+ },
+ "walls": {
+  "triangles": 51385,
+  "chunks": 2218,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Maze_Styx_ado_unre",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 400183,
   "trianglesWalkable": 135315,
   "chunks": 75
+ },
+ "walls": {
+  "triangles": 144199,
+  "chunks": 79,
+  "minHeight": 1
  }
 }

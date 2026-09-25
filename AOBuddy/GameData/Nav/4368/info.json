@@ -3,8 +3,9 @@
  "name": "Unicorn Outpost - Lower level",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 14940,
   "trianglesWalkable": 5111,
   "chunks": 104
+ },
+ "walls": {
+  "triangles": 9250,
+  "chunks": 123,
+  "minHeight": 1
  }
 }

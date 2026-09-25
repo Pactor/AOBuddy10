@@ -3,8 +3,8 @@
  "name": "Alien ship trap (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 19755,
   "trianglesWalkable": 6966,
   "chunks": 5
+ },
+ "walls": {
+  "triangles": 2015,
+  "chunks": 2,
+  "minHeight": 1
  }
 }

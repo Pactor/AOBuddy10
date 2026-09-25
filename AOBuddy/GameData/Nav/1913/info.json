@@ -3,8 +3,8 @@
  "name": "Reet Retreat (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 27238,
   "trianglesWalkable": 9005,
   "chunks": 11
+ },
+ "walls": {
+  "triangles": 8838,
+  "chunks": 10,
+  "minHeight": 1
  }
 }

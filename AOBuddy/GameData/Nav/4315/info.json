@@ -3,8 +3,8 @@
  "name": "Jobe Market Gateway (dng)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 37093,
   "trianglesWalkable": 11573,
   "chunks": 6
+ },
+ "walls": {
+  "triangles": 6352,
+  "chunks": 4,
+  "minHeight": 1
  }
 }

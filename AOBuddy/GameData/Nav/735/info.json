@@ -3,8 +3,9 @@
  "name": "Rome Blue",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 42033,
   "trianglesWalkable": 15776,
   "chunks": 249
+ },
+ "walls": {
+  "triangles": 20968,
+  "chunks": 261,
+  "minHeight": 1
  }
 }

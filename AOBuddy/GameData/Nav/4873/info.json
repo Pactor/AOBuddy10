@@ -3,8 +3,9 @@
  "name": "Adonis Abyss",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -26,6 +27,9 @@
    80,
    0.02,
    14.5
+  ],
+  "waterPolygons": [
+   80
   ]
  },
  "collision": {
@@ -33,5 +37,10 @@
   "trianglesTotal": 597324,
   "trianglesWalkable": 298557,
   "chunks": 1374
+ },
+ "walls": {
+  "triangles": 260412,
+  "chunks": 1345,
+  "minHeight": 1
  }
 }

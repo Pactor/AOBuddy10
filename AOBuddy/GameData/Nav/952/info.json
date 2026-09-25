@@ -3,8 +3,9 @@
  "name": "Clan Training",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,16 @@
   "heightVerifiable": true,
   "waterPlanes": [
    13.04
+  ],
+  "waterPolygons": [
+   26,
+   26,
+   13.04,
+   13.04,
+   13,
+   13.05,
+   13,
+   13.05
   ]
  },
  "collision": {
@@ -31,5 +42,10 @@
   "trianglesTotal": 12538,
   "trianglesWalkable": 6325,
   "chunks": 99
+ },
+ "walls": {
+  "triangles": 5848,
+  "chunks": 101,
+  "minHeight": 1
  }
 }

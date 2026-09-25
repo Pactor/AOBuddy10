@@ -3,8 +3,8 @@
  "name": "Fixer Grid (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 33210,
   "trianglesWalkable": 13228,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 12448,
+  "chunks": 7,
+  "minHeight": 1
  }
 }

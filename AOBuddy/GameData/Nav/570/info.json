@@ -3,8 +3,9 @@
  "name": "The Perpetual Wastelands ",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    36.9
+  ],
+  "waterPolygons": [
+   36.9
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 256833,
   "trianglesWalkable": 110796,
   "chunks": 5271
+ },
+ "walls": {
+  "triangles": 141217,
+  "chunks": 5380,
+  "minHeight": 1
  }
 }

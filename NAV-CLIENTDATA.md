@@ -1156,23 +1156,42 @@ the assumption with the real message. The same question stands for the exit pads
 
 # Where outdoor water actually is (2026-09-25)
 
-The bot crossed Newland's lake fine and then swam 7 m over Newland **City's** dry pit: the
-"water planes" table below (four 12-byte entries before the arrival table) was applied
-playfield-wide, and the city pit sits lower than the lake. Finding the real region went
-through everything the client offers, so here is the full map of its water machinery:
+SOLVED the same evening, after the band model below broke twice in one day (Newland Desert's
+phantom lake, then its real one going dry). The owner called the shape of the answer - "the
+game is from 2000, they wouldn't flood-fill; water has to be a quad or a volume" - and baited
+the hunt with a lake he stood in: level **18.3** at (2349,1127) in Newland Desert, a level no
+stored plane has. A byte-hunt for that triple found it in the **playfield record (1000001)
+itself**, right before the arrival table that `WaterPlanes` walks back over:
 
-- **The playfield record (1000001) plane table is LEVELS, not regions.** Newland and Newland
-  City both carry 32.1 - the lake's surface (the capture swam 32.09). ICC's four entries
-  (10.5/9.0/10.9/15.4) sit *under* its 17.1 tile-12 basin and are most likely arrival
-  coordinates that happened to sit in the same slots. Hosting `RDBPlayfield_t::ReadBlob`
-  over the framed record (the `--hostwater` probe in `tools/AONavExtractor`) parses the whole
-  thing cleanly: 567 yields 1850 zone objects, every zone's water list empty - the record
-  itself does not place outdoor water anywhere.
-- **RDB 1000008 (39 records, water playfields only) is the renderer's water SIM data, not a
-  region mask.** `01 00 00 00 | u16 w | u16 h | ceil(w/8)-byte rows` parses exactly (567:
-  500x370, ICC 1300x760), and the client's `RDBWater_c`/`WaterDataGenerator_c` names line up
-  - but the set bits form two perfect rectangles over Newland (wave-equation solver domains),
-  80% of them on dry ground in every world alignment that fits. It never describes the lake.
+**Liquids are flat polygons**: per liquid one ring of 3-12 (x,z) points at one level, in
+12-byte rows -
+
+    [count][x1][level] [z1][x2][level] [z2][x3][level] ... [zn][2][flags]
+
+i.e. consecutive ring points are `(row.slot1, nextRow.slot0)`, bracketed by rows of small
+flag ints (the "plane table" `WaterPlanes` scrapes is just the LAST liquid's levels; for 565
+that is the little 49.2 pond at (1572..1611, 1740..1794), which is why the playfield-wide
+plane ever read 49.2). `Ground.WaterPolygons` walks the rings backwards from the arrival
+table; the opener row's count makes the walk unambiguous. ground.bin v4 carries them, and
+`NavGround.SwimY` is a point-in-ring test. Verified against ground truth: 565's lake ring at
+18.3 spans (2267..2416, 1052..1180) - the owner's lake exactly; 567 Newland's one ring at
+32.1 is the captured swim (32.09); 656 Coast of Tranquility's ocean is ONE ring over its
+whole map (its fan map is 51% water); 696 is a whole-map water table at 5.0; 655's canal at
+15.4; 695 Lush Fields' "river" is one small 9.4 ring. The acid river/pools of 565 are in the
+same list (a liquid is a liquid; a ring's level can slope ±0.35 m along a river - the max
+is kept). Render any playfield with `tools/navmap` to see it.
+
+The day's earlier findings, kept because they rule out the rest of the client's water
+machinery:
+
+- **The plane table is LEVELS, not regions** (see above for what those levels really are).
+  Hosting `RDBPlayfield_t::ReadBlob` over the framed record (the `--hostwater` probe in
+  `tools/AONavExtractor`) parses the whole thing cleanly - the water rings are simply not a
+  field of that object; they are a raw table in the record's tail.
+- **RDB 1000008 (39 records) is the renderer's water SIM data, not a region mask.**
+  `01 00 00 00 | u16 w | u16 h | ceil(w/8)-byte rows` parses exactly (567: 500x370), and the
+  client's `RDBWater_c`/`WaterDataGenerator_c` names line up - its bits are wave-solver
+  domains and never describe the lakes. Not the region source.
 - **`n3WaterData_t` triangles** (three Vector3s + int level in 1/320 units, the level's low
   bits doubling as liquid-type flags - read straight out of
   `CheetahLiquidGenerator_c::AddData`/`Create` -> `ClipAndAddTriangle`) are DUNGEON water:
@@ -1180,21 +1199,7 @@ through everything the client offers, so here is the full map of its water machi
   (`(count+1)*1009` tag, then `{flags, n, x/z/y delta triples, m, u16 triangle indices}` per
   polyline - decoded from `n3Room_t::ReadBlob` at N3+0x139B9). Outdoor playfields never run
   that code path.
-- **The tilemap knows the region.** Cells whose tile id's low byte is **12** are the water
-  band the designers paint over the shore (all four rotations `?00C`; the city pit is type
-  11, dry land 7/0x14, the deep lake bottom mixes 135/150/119/86/0 - which is why no single
-  tile type is the answer). Newland's lake tiles cap at 32.0, one decimeter under the 32.1
-  surface; the band deliberately overlaps the shore (strays at 32.4-33.2).
-
-So the water model that works, and what `NavGround.SwimY` now does: **region = flood from
-the tile-12 band through cells whose lowest corner sits under the level; level = the highest
-stored plane above the band's core (p10)**. The shore ring above the level closes the bowl,
-so Newland's dry lowlands (22% of the map is under the plane!) never connect: 567 floods
-22,847 cells, covers 22/25 captured swim points (the rest are wade-fringe, correctly), 566
-has 7 stray type-12 cells on a roof and no qualifying plane - completely dry, pit fixed.
-ICC's basin (169 cells at 17.1, above all four stored levels) comes out dry: a known
-limitation, noted rather than papered over.
-
-What is still OPEN: ICC's canal water (and whether those four plane-table entries are really
-its levels), and the 39-record 1000008 set's exact world mapping (two sim rectangles per
-playfield, purpose unknown).
+- **The tilemap's type-12 band is NOT a water mask either** (Newland Desert paints a desert
+  texture on 47% of its cells with it - the phantom-lake bug, log 2026-09-25 19:01). The
+  flood-from-the-band model that today's earlier fix gated into shape is now only v3
+  ground.bin's fallback, in `NavGround.BuildWater` with its band-size and containment gates.

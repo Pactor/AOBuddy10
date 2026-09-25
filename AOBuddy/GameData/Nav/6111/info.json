@@ -3,8 +3,8 @@
  "name": "Alien Scoutship (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 42061,
   "trianglesWalkable": 15396,
   "chunks": 11
+ },
+ "walls": {
+  "triangles": 11356,
+  "chunks": 10,
+  "minHeight": 1
  }
 }

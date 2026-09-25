@@ -3,8 +3,9 @@
  "name": "Omni-1 Entertainment Backyard 1",
  "playfieldVersion": 8,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    115.3
+  ],
+  "waterPolygons": [
+   114.5,
+   115.3
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 7999,
   "trianglesWalkable": 3375,
   "chunks": 44
+ },
+ "walls": {
+  "triangles": 3635,
+  "chunks": 47,
+  "minHeight": 1
  }
 }

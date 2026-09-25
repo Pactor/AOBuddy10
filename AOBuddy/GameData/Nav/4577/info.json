@@ -3,8 +3,8 @@
  "name": "IPS Interior - Superior",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 12886,
   "trianglesWalkable": 4186,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 1748,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

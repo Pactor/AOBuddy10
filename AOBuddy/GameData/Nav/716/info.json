@@ -3,8 +3,9 @@
  "name": "Omni Forest",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 207899,
   "trianglesWalkable": 92114,
   "chunks": 2248
+ },
+ "walls": {
+  "triangles": 105205,
+  "chunks": 2221,
+  "minHeight": 1
  }
 }

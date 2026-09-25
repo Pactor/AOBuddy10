@@ -3,8 +3,9 @@
  "name": "Jobe Research",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    12.6
+  ],
+  "waterPolygons": [
+   10.71,
+   12.6
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 215059,
   "trianglesWalkable": 117098,
   "chunks": 1559
+ },
+ "walls": {
+  "triangles": 92579,
+  "chunks": 1470,
+  "minHeight": 1
  }
 }

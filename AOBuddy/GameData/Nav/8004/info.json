@@ -3,8 +3,8 @@
  "name": "Clan Office",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 17515,
   "trianglesWalkable": 5781,
   "chunks": 35
+ },
+ "walls": {
+  "triangles": 6947,
+  "chunks": 35,
+  "minHeight": 1
  }
 }

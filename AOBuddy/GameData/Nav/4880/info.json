@@ -3,8 +3,9 @@
  "name": "Upper Scheol",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -26,6 +27,9 @@
    35.05,
    -214.5,
    -211.56
+  ],
+  "waterPolygons": [
+   35.05
   ]
  },
  "collision": {
@@ -33,5 +37,10 @@
   "trianglesTotal": 707082,
   "trianglesWalkable": 391833,
   "chunks": 2592
+ },
+ "walls": {
+  "triangles": 205050,
+  "chunks": 1958,
+  "minHeight": 1
  }
 }

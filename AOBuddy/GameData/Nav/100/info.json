@@ -3,8 +3,9 @@
  "name": "Needed PF-stuff 1",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 644,
   "trianglesWalkable": 292,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 316,
+  "chunks": 8,
+  "minHeight": 1
  }
 }

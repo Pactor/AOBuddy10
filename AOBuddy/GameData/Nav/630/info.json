@@ -3,8 +3,9 @@
  "name": "Pleasant Meadows",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -32,5 +33,10 @@
   "trianglesTotal": 231663,
   "trianglesWalkable": 99733,
   "chunks": 4724
+ },
+ "walls": {
+  "triangles": 102035,
+  "chunks": 4472,
+  "minHeight": 1
  }
 }

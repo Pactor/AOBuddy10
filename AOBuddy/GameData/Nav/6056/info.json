@@ -3,8 +3,8 @@
  "name": "Dust Brigade Research Facility",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 12170,
   "trianglesWalkable": 4315,
   "chunks": 3
+ },
+ "walls": {
+  "triangles": 5018,
+  "chunks": 3,
+  "minHeight": 1
  }
 }

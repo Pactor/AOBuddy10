@@ -3,8 +3,8 @@
  "name": "omnimine_hq_building10",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 2032,
   "trianglesWalkable": 656,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 572,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,9 @@
  "name": "The Reck",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,10 @@
   "heightVerifiable": true,
   "waterPlanes": [
    12
+  ],
+  "waterPolygons": [
+   12,
+   12
   ]
  },
  "collision": {
@@ -31,5 +36,10 @@
   "trianglesTotal": 265148,
   "trianglesWalkable": 127849,
   "chunks": 1623
+ },
+ "walls": {
+  "triangles": 108468,
+  "chunks": 1524,
+  "minHeight": 1
  }
 }

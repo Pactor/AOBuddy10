@@ -3,8 +3,8 @@
  "name": "spec_smarket_neut_basic",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 1136,
   "trianglesWalkable": 356,
   "chunks": 1
+ },
+ "walls": {
+  "triangles": 356,
+  "chunks": 1,
+  "minHeight": 1
  }
 }

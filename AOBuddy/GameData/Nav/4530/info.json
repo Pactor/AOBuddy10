@@ -3,8 +3,9 @@
  "name": "Jobe Platform",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 29366,
   "trianglesWalkable": 13054,
   "chunks": 101
+ },
+ "walls": {
+  "triangles": 14719,
+  "chunks": 100,
+  "minHeight": 1
  }
 }

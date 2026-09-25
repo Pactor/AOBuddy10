@@ -3,8 +3,9 @@
  "name": "Jobe Plaza",
  "playfieldVersion": 9,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -31,5 +32,10 @@
   "trianglesTotal": 40962,
   "trianglesWalkable": 18042,
   "chunks": 106
+ },
+ "walls": {
+  "triangles": 19374,
+  "chunks": 115,
+  "minHeight": 1
  }
 }

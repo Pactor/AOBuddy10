@@ -3,8 +3,8 @@
  "name": "ord_smarket_clan_sup",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 14942,
   "trianglesWalkable": 4956,
   "chunks": 4
+ },
+ "walls": {
+  "triangles": 3323,
+  "chunks": 4,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "The Bull's Arena",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 26300,
   "trianglesWalkable": 8782,
   "chunks": 5
+ },
+ "walls": {
+  "triangles": 2154,
+  "chunks": 33,
+  "minHeight": 1
  }
 }

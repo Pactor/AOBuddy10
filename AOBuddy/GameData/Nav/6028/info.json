@@ -3,8 +3,8 @@
  "name": "Christmas Workshop (dng)",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 21862,
   "trianglesWalkable": 7452,
   "chunks": 8
+ },
+ "walls": {
+  "triangles": 4709,
+  "chunks": 8,
+  "minHeight": 1
  }
 }

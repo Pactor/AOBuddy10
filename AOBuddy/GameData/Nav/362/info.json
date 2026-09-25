@@ -3,8 +3,8 @@
  "name": "SL ACG(dng)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 1050287,
   "trianglesWalkable": 371815,
   "chunks": 214
+ },
+ "walls": {
+  "triangles": 409301,
+  "chunks": 235,
+  "minHeight": 1
  }
 }

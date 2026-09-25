@@ -3,8 +3,9 @@
  "name": "Eastern Fouls Plains",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,11 @@
   "heightVerifiable": true,
   "waterPlanes": [
    10
+  ],
+  "waterPolygons": [
+   6,
+   35.5,
+   10
   ]
  },
  "collision": {
@@ -31,5 +37,10 @@
   "trianglesTotal": 217721,
   "trianglesWalkable": 98632,
   "chunks": 4232
+ },
+ "walls": {
+  "triangles": 104352,
+  "chunks": 3716,
+  "minHeight": 1
  }
 }

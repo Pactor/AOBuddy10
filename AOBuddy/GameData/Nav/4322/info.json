@@ -3,8 +3,9 @@
  "name": "Penumbra Hollows",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    13.5
+  ],
+  "waterPolygons": [
+   13.5
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 108533,
   "trianglesWalkable": 60201,
   "chunks": 675
+ },
+ "walls": {
+  "triangles": 44649,
+  "chunks": 635,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Avalon omni barracks",
  "playfieldVersion": 8,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 5642,
   "trianglesWalkable": 2080,
   "chunks": 7
+ },
+ "walls": {
+  "triangles": 1975,
+  "chunks": 7,
+  "minHeight": 1
  }
 }

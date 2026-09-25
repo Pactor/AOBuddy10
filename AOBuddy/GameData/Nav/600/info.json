@@ -3,8 +3,9 @@
  "name": "Varmint Woods",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,6 +25,9 @@
   "heightVerifiable": true,
   "waterPlanes": [
    32.1
+  ],
+  "waterPolygons": [
+   32.11
   ]
  },
  "collision": {
@@ -31,5 +35,10 @@
   "trianglesTotal": 321802,
   "trianglesWalkable": 158656,
   "chunks": 7078
+ },
+ "walls": {
+  "triangles": 156577,
+  "chunks": 6764,
+  "minHeight": 1
  }
 }

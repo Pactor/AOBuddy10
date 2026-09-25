@@ -3,8 +3,8 @@
  "name": "Smuggler's Rearranged",
  "playfieldVersion": 10,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 165348,
   "trianglesWalkable": 50718,
   "chunks": 60
+ },
+ "walls": {
+  "triangles": 75267,
+  "chunks": 73,
+  "minHeight": 1
  }
 }

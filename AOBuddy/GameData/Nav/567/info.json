@@ -3,8 +3,9 @@
  "name": "Newland",
  "playfieldVersion": 10,
  "files": [
+  "ground.bin",
   "collision.bin",
-  "ground.bin"
+  "walls.bin"
  ],
  "kind": "outdoor",
  "ground": {
@@ -24,21 +25,20 @@
   "heightVerifiable": true,
   "waterPlanes": [
    32.1
+  ],
+  "waterPolygons": [
+   32.1
   ]
- },
- "verification": {
-  "walkedPoints": 54,
-  "toleranceM": 1,
-  "explainedByFloor": 54,
-  "explainedByCollision": 0,
-  "unexplained": 0,
-  "explainedPct": 100,
-  "unexplainedSamples": []
  },
  "collision": {
   "records": 745,
   "trianglesTotal": 45609,
   "trianglesWalkable": 19826,
   "chunks": 773
+ },
+ "walls": {
+  "triangles": 23610,
+  "chunks": 763,
+  "minHeight": 1
  }
 }

@@ -3,8 +3,8 @@
  "name": "Unredeemed Temple (Adonis)",
  "playfieldVersion": 9,
  "files": [
-  "collision.bin",
   "rooms.json",
+  "collision.bin",
   "walls.bin"
  ],
  "kind": "dungeon",
@@ -19,5 +19,10 @@
   "trianglesTotal": 87195,
   "trianglesWalkable": 30261,
   "chunks": 19
+ },
+ "walls": {
+  "triangles": 21544,
+  "chunks": 15,
+  "minHeight": 1
  }
 }
