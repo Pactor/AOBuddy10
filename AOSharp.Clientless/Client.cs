@@ -781,6 +781,14 @@ namespace AOSharp.Clientless
 
         private static void OnCharacterDeath(Identity identity)
         {
+            // Anyone else: the server sends only this CharacterAction Death, then a separate corpse - no Health stat
+            // and no new SimpleCharFullUpdate (owner's capture 20260926-135805 s10 seq 410/417; the mob kept Health=310
+            // and despawned ~95 messages later). Mark it dead so everything that checks Health > 0 lets it go.
+            if (DynelManager.LocalPlayer == null || identity != DynelManager.LocalPlayer.Identity)
+            {
+                if (DynelManager.Find(identity, out SimpleChar dead)) dead.SetStat(Stat.Health, 0);
+                return;
+            }
             if (identity == DynelManager.LocalPlayer.Identity)
             {
                 Logger.Warning($"I'm dead");

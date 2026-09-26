@@ -604,6 +604,15 @@ namespace AOBuddy
             NavSample(me);
             if (!Active || me == null) return false;
             HealMobCheck();
+            // STEP OUT (Algorithman, 2026-09-26): out of a mission building, walk 5 m straight on before anything else,
+            // clear of the door and its frame.
+            if (_wasInside && !_mission.InMission) { _stepOutTo = me.Transform.Position + me.Transform.Heading.Forward * 5f; _stepOutUntil = _clock + 4; _follow.SetManualTarget(_stepOutTo.Value); }
+            _wasInside = _mission.InMission;
+            if (_stepOutTo.HasValue)
+            {
+                if (_clock < _stepOutUntil && Movement.Flat(me.Transform.Position, _stepOutTo.Value) > 1.5f && _clock - _lastHurt > 2) return true;
+                _follow.ClearManual(); _stepOutTo = null;
+            }
             if (_mission.CarriedReturnItem != 0) { _returnTpl = _mission.CarriedReturnItem; _mission.CarriedReturnItem = 0; }
             RecordGood(me);
             UseTokens(me);
@@ -3776,6 +3785,9 @@ namespace AOBuddy
 
         private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
+        private bool _wasInside;
+        private Vector3? _stepOutTo;
+        private double _stepOutUntil;
         /// <summary>The mob the run is fighting or going for (for the monitor's target bar), or null.</summary>
         public Identity? CurrentFoe => Active && (_phase == Phase.Fight || _phase == Phase.Blitz) ? (_defId ?? _pullId) : null;
         private double _defSince;
