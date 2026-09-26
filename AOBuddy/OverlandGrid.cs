@@ -74,7 +74,11 @@ namespace AOBuddy
         // LEARNED (LearnedGround, owner 2026-09-26): the owner's recorded roads cost RoadFactor of normal, the
         // server's remembered snap-back spots add up to SnapWeight x hits within SnapRadius, and a slope costs
         // SlopeWeight per unit of grade over SlopeFree (downhill half) - the hill loses to the longer road.
-        private bool[] _road; private float[] _learn; private bool _anyRoad; private int _learnVer = -1;
+        private bool[] _road, _drop; private float[] _learn; private bool _anyRoad; private int _learnVer = -1;
+        // A recorded stretch dropping faster than DropGrade is a jump off something (the owner jumps off the
+        // Borealis ledge by habit, 13:20 2026-09-26: the bot then tried to walk back UP it and was held). It is
+        // not road, and climbing through it costs DropClimbCost extra.
+        private const float DropGrade = 0.3f, DropClimbCost = 10f;
         private const float RoadFactor = 0.5f, SnapWeight = 2f, SnapRadius = 6f, SlopeWeight = 4f, SlopeFree = 0.15f;
 
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
@@ -332,7 +336,7 @@ namespace AOBuddy
             LearnedGround.RefreshRoads();
             if (_learnVer == LearnedGround.Version) return;
             _learnVer = LearnedGround.Version;
-            _road = new bool[_w * _h]; _learn = new float[_w * _h]; _anyRoad = false;
+            _road = new bool[_w * _h]; _drop = new bool[_w * _h]; _learn = new float[_w * _h]; _anyRoad = false;
             bool OnFloor(Vector3 p)
             {
                 int cx = CellX(p.X), cz = CellZ(p.Z);
@@ -341,15 +345,19 @@ namespace AOBuddy
                 for (int f = 0; f < FloorCount(c); f++) if (Math.Abs(FloorH(c, f) - p.Y) < 3f) return true;
                 return false;
             }
-            var cells = new HashSet<int>();
+            var cells = new HashSet<int>(); var drops = new HashSet<int>();
             foreach (var road in LearnedGround.Roads())
                 for (int i = 0; i + 1 < road.Count; i++)
                 {
                     Vector3 a = road[i], b = road[i + 1];
                     if (Vector3.Distance(a, b) > 40f || !OnFloor(a) || !OnFloor(b)) continue;   // a zone jump, or another zone's walk
+                    float flat = (float)Math.Sqrt((b.X - a.X) * (b.X - a.X) + (b.Z - a.Z) * (b.Z - a.Z));
+                    if (flat > 0.1f && Math.Abs(b.Y - a.Y) / flat > DropGrade) { CellsAlong(a, b, 2.5f, drops); continue; }
                     CellsAlong(a, b, 1.5f, cells);
                 }
+            foreach (int c in drops) cells.Remove(c);
             foreach (int c in cells) { _road[c] = true; _anyRoad = true; }
+            foreach (int c in drops) _drop[c] = true;
             int R = (int)Math.Ceiling(SnapRadius / Cell);
             foreach (var sp in LearnedGround.SnapsIn(Pf))
             {
@@ -580,6 +588,7 @@ namespace AOBuddy
                             if (rise > MaxRise * d) continue;
                             float grade = Math.Abs(rise) / d;
                             float slope = grade > SlopeFree ? SlopeWeight * (grade - SlopeFree) * (rise < 0 ? 0.5f : 1f) : 0f;
+                            if (rise > 0.2f && _drop != null && _drop[ncell]) slope += DropClimbCost;
                             float step = gc + len1 * (baseMul + slope) * roadMul;
                             long nn = ((long)ncell << FloorShift) | j;
                             if (closed.Contains(nn) || !FloorOpen(ncell, j)) continue;

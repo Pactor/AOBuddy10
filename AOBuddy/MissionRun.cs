@@ -1314,7 +1314,9 @@ namespace AOBuddy
         {
             _lastCorrection = _clock;
             // Outdoors, a real pull-back is remembered for the planner across restarts (LearnedGround).
-            if (gap > T("pullgap") && !_mission.InMission) LearnedGround.NoteSnap((int)Playfield.ModelId, server.X, server.Z);
+            // Small ones count too (13:20, 2026-09-26: held at (871,134) by five 2 m corrections in a row); they add
+            // up by spot, so one stray correction costs little.
+            if (gap >= 2f && !_mission.InMission) LearnedGround.NoteSnap((int)Playfield.ModelId, server.X, server.Z);
             lock (_navLock)
             {
                 _snapLog.Add((DateTime.Now, (int)Playfield.ModelId, gap, local, server, _phase.ToString()));
