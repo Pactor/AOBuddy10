@@ -174,7 +174,7 @@ namespace AOBuddy
             // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
             // The handler only ENQUEUES: HandleCommand mutates controller state, so it must run on the
             // update thread (drained at the top of OnUpdate), not on the API listener thread.
-            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)));
+            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)), () => _run.NavJson());
             _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 

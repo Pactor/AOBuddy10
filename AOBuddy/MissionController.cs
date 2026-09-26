@@ -53,6 +53,8 @@ namespace AOBuddy
         private bool _announced;                 // the owner has been told it is done
         private string _why = "";
         private List<Vector3> _path;
+        /// <summary>The walk inside the building being followed now (for the API's /nav), or null.</summary>
+        public Vector3[] CurrentPath { get { var p = _path; return p?.ToArray(); } }
         private int _pathIndex;
         private Identity? _pendingButton;
         private Vector3 _pressedFrom;

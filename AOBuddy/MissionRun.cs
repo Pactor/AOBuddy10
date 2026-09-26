@@ -559,6 +559,7 @@ namespace AOBuddy
         {
             _clock += dt; _phaseTime += dt;
             if (_restSaved != null && ((_phase != Phase.Fight && _phase != Phase.HealOut) || !Active)) RestToFull(false);
+            NavSample(me);
             if (!Active || me == null) return false;
             HealMobCheck();
             RecordGood(me);
@@ -1171,6 +1172,67 @@ namespace AOBuddy
         // GOOD POSITIONS: inside a building, every 1.5 m walked without a server correction in the last 2 s is
         // kept (up to 200). They are ground the server has accepted, so walking them backwards cannot hit a wall.
         private readonly List<Vector3> _good = new List<Vector3>();
+
+        // ---- MONITOR (the API's GET /nav; Algorithman's monitoring app, 2026-09-26) --------------------------
+        // What a map needs to show what he is doing: where he is, the route he is walking (outdoors: the hike's grid
+        // route; inside: the building walk), where the server has held him (every correction, with his own idea of
+        // where he was), and his own trail. Read on the API thread, so the lists are copied under a lock.
+        private readonly object _navLock = new object();
+        private readonly List<(DateTime t, int pf, float gap, Vector3 local, Vector3 server, string phase)> _snapLog = new List<(DateTime, int, float, Vector3, Vector3, string)>();
+        private readonly List<(DateTime t, int pf, bool inside, Vector3 p)> _trailLog = new List<(DateTime, int, bool, Vector3)>();
+        private double _trailAt;
+
+        private void NavSample(LocalPlayer me)
+        {
+            if (me == null || _clock - _trailAt < 1) return;
+            _trailAt = _clock;
+            lock (_navLock)
+            {
+                _trailLog.Add((DateTime.Now, (int)Playfield.ModelId, _mission.InMission, me.Transform.Position));
+                if (_trailLog.Count > 900) _trailLog.RemoveAt(0);
+            }
+        }
+
+        private static JArray V(Vector3 v) => new JArray(Math.Round(v.X, 2), Math.Round(v.Y, 2), Math.Round(v.Z, 2));
+
+        public JObject NavJson()
+        {
+            var o = new JObject { ["time"] = DateTime.Now.ToString("HH:mm:ss"), ["phase"] = _phase.ToString(), ["active"] = Active };
+            try
+            {
+                var me = DynelManager.LocalPlayer;
+                o["pf"] = (int)Playfield.ModelId;
+                o["zone"] = Zoning.Name((int)Playfield.ModelId);
+                o["inMission"] = _mission.InMission;
+                if (me != null) o["pos"] = V(me.Transform.Position);
+                if (_phase == Phase.Hike && _hike != null)
+                {
+                    var e = _hike.Exit;
+                    var route = _hikeRoute;
+                    o["hike"] = new JObject
+                    {
+                        ["fromPf"] = _hikeFromPf, ["targetPf"] = _hikeTargetPf,
+                        ["exit"] = new JObject { ["kind"] = e.Kind.ToString(), ["toPf"] = e.ToPf, ["a"] = V(e.A), ["b"] = V(e.B), ["text"] = e.ToString() },
+                        ["route"] = route == null ? null : new JArray(route.ToArray().Select(V)),
+                    };
+                }
+                var mp = _mission.InMission ? _mission.CurrentPath : null;
+                if (mp != null) o["missionPath"] = new JArray(mp.Select(V));
+                if (_current != null)
+                    o["mission"] = new JObject { ["line"] = CurrentLine, ["pf"] = _current.Playfield.Instance, ["door"] = new JArray(Math.Round(_current.Location.X, 1), Math.Round(_current.Location.Y, 1), Math.Round(_current.Location.Z, 1)) };
+                lock (_navLock)
+                {
+                    o["snaps"] = new JArray(_snapLog.Select(s => new JObject
+                    {
+                        ["t"] = s.t.ToString("HH:mm:ss.f"), ["pf"] = s.pf, ["gap"] = Math.Round(s.gap, 1), ["phase"] = s.phase,
+                        ["local"] = V(s.local), ["server"] = V(s.server),
+                    }));
+                    o["trail"] = new JArray(_trailLog.Select(s => new JObject { ["t"] = s.t.ToString("HH:mm:ss"), ["pf"] = s.pf, ["inside"] = s.inside, ["p"] = V(s.p) }));
+                }
+            }
+            catch (Exception ex) { o["error"] = ex.Message; }
+            return o;
+        }
         private double _lastCorrection = -99;
         private int _backoffs;
 
@@ -1178,6 +1240,11 @@ namespace AOBuddy
         public void OnServerCorrection(float gap, Vector3 local, Vector3 server)
         {
             _lastCorrection = _clock;
+            lock (_navLock)
+            {
+                _snapLog.Add((DateTime.Now, (int)Playfield.ModelId, gap, local, server, _phase.ToString()));
+                if (_snapLog.Count > 200) _snapLog.RemoveAt(0);
+            }
             if (gap > T("pullgap"))
             {
                 _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0);
