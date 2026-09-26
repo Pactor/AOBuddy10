@@ -67,6 +67,10 @@ namespace AOBuddy
         // the cache format is unchanged.
         private byte[] _clear;
         private const float ClearMetres = 5f, ClearWeight = 2f, ClearKeep = 2f;
+        // WATER (Algorithman, 2026-09-26): swimming is no slower, but the server corrects the bot far more there.
+        // Water deeper than WadeDepth costs WaterWeight extra per step, so he swims only when it saves a lot.
+        private bool[] _water;
+        private const float WaterWeight = 2f, WadeDepth = 1.0f;
 
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
         {
@@ -308,6 +312,13 @@ namespace AOBuddy
                 }
             _clear = new byte[d.Length];
             for (int i = 0; i < d.Length; i++) _clear[i] = (byte)Math.Min(cap, d[i] / 3);
+            if (_ground != null)
+            {
+                _water = new bool[_w * _h];
+                for (int z = 0; z < _h; z++)
+                    for (int x = 0; x < _w; x++)
+                        if (!_blocked[z * _w + x]) _water[z * _w + x] = !double.IsNaN(_ground.SwimY((x + 0.5) * Cell, (z + 0.5) * Cell, WadeDepth));
+            }
         }
 
         private float ClearAt(int cell) => _clear == null ? ClearMetres : _clear[cell] * Cell;
@@ -512,7 +523,7 @@ namespace AOBuddy
                         if (dx != 0 && dz != 0 && (!Open(x + dx, z, extra) || !Open(x, z + dz, extra))) continue;   // no squeezing past a corner
                         int ncell = nz * _w + nx;
                         float d = (dx != 0 && dz != 0 ? 1.4142f : 1f) * Cell;
-                        float step = gc + (dx != 0 && dz != 0 ? 1.4142f : 1f) * (1f + WallCost(ncell));
+                        float step = gc + (dx != 0 && dz != 0 ? 1.4142f : 1f) * (1f + WallCost(ncell) + (_water != null && _water[ncell] ? WaterWeight : 0f));
                         for (int j = 0; j < FloorCount(ncell); j++)
                         {
                             // The one-way rule per floor pair: climbing onto the next floor must stay under
