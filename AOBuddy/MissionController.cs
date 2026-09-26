@@ -265,7 +265,7 @@ namespace AOBuddy
                 if (_nav?.Layout == null) { _nav = null; return; }
                 _instance = _nav.Layout.Instance;
                 if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _clearPasses = 0; _clearGaveUp = false; }
-                _grid = MissionGrid.Build(_nav);
+                _grid = MissionGrid.Build(_nav, _doors);
                 ParseRecord();
                 _ctx.Log($"MISSION: in {_nav.Name} instance {_instance}, {_grid.Describe()}");
                 if (_nav.Walls != null) _ctx.Log("MISSION: placement check: " + AOBuddyNav.DoorCheck);
@@ -721,7 +721,7 @@ namespace AOBuddy
         //     Open=0, ActionMessage action 115 by the picker on the door. Both opened on the first try; a
         //     failed try is assumed to be no action 115 (the owner: 'not opening is the fail').
         // B&E can take 20-30 tries, so: one try every 2.5 s, up to 40, then the door is blocked and we go round.
-        private sealed class DoorInfo { public Vector3 Pos; public bool Locked; public int Difficulty; }
+        
         private readonly Dictionary<Identity, DoorInfo> _doors = new Dictionary<Identity, DoorInfo>();
         private readonly HashSet<Identity> _unpickable = new HashSet<Identity>();
         private Identity? _pickDoor;
@@ -1368,9 +1368,10 @@ namespace AOBuddy
         private readonly HashSet<(int, int, int)> _edge = new HashSet<(int, int, int)>();
         private const float EdgeCost = 2f;
 
-        public static MissionGrid Build(AOBuddyNav nav)
+        public static MissionGrid Build(AOBuddyNav nav, Dictionary<Identity, DoorInfo> doors)
         {
             var g = new MissionGrid();
+            g.Doors = doors;
             var d = nav.Dungeon;
             g.Cell = d.Cell;
             var cover = new Dictionary<(int, int, int), List<(int tile, float y, string room)>>();
@@ -1427,6 +1428,8 @@ namespace AOBuddy
             if (nav.Walls != null && nav.Walls.Length >= 9) g.BuildWalls(nav.Walls);
             return g;
         }
+
+        public Dictionary<Identity, DoorInfo> Doors { get; set; }
 
         public sealed class RoomSpot { public int Index; public string Name; public int Floor; public Vector3 Centre; }
         private readonly List<RoomSpot> _spots = new List<RoomSpot>();
@@ -1664,7 +1667,16 @@ namespace AOBuddy
             {
                 int j = i + 1;
                 while (j + 1 < cells.Count && ClearFine(cells[i], cells[j + 1], blocked)) j++;
-                pts.Add(FineCentre(cells[j]));
+                // if cell touches a doorway, use the center of the doorway to go through
+                var door = Doors.Values.FirstOrDefault(x => Vector3.Distance(FineCentre(cells[j]), x.Pos) < 2f);
+                if (door != null)
+                {
+                    pts.Add(door.Pos);
+                }
+                else
+                {
+                    pts.Add(FineCentre(cells[j]));
+                }
                 i = j;
             }
             return pts;
@@ -1847,4 +1859,6 @@ namespace AOBuddy
             return true;
         }
     }
+    
+    public sealed class DoorInfo { public Vector3 Pos; public bool Locked; public int Difficulty; }
 }
