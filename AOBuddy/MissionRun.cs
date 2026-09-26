@@ -1154,6 +1154,12 @@ namespace AOBuddy
             foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
             if (me.IsAttacking) me.StopAttack();
             _fleeUntil = _clock + T("fleesecs");
+            // The 'can't get away' check measures the walk from here, not the fight before it: at 07:35 and 07:57
+            // (2026-09-26) its 3 s sample was from standing to fight, so the walk out was called 'pinned' at once.
+            _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock;
+            // ...and the 'outrun' rule (5 s into a flee and still hit) counts from now: it read the last real flee's
+            // start, long gone, and turned him round in the same tick again (08:44, 2026-09-26, died).
+            _fleeStartedAt = _clock; _fleeAt = me.Transform.Position;
             _healOut = true; _healTrips++;
             _healMob = tgt?.Identity; _healMobHp = tHp; _healMobLogged = tgt == null;
             _healPrevMob = tgt?.Identity; _healPrevHp = tHp;
@@ -3536,6 +3542,23 @@ namespace AOBuddy
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+            // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
+            // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
+            // (owner, 08:40 2026-09-26) - because a turret never shows as fighting him. The server saying he is in
+            // combat (that refusal), or being hurt, with no attacker: take the nearest mob in range as the one.
+            if (a == null && _mission.InMission && (_clock - _serverCombatAt < 10 || _clock - _lastHurt < 3))
+            {
+                a = DynelManager.Npcs
+                    .Where(n => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity) && (!n.TryGetStat(Stat.Health, out int hp2) || hp2 > 0)
+                                && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
+                                && me.DistanceFrom(n) <= 25f && Math.Abs(n.Transform.Position.Y - me.Transform.Position.Y) < 4f)
+                    .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+                if (a != null && _hiddenFoe != a.Identity)
+                {
+                    _hiddenFoe = a.Identity;
+                    _ctx.Log($"MISSIONRUN: {(_clock - _serverCombatAt < 10 ? "the server says I'm in combat" : "being hurt")} and nothing shows as fighting me; going for the nearest, '{a.Name}' ({me.DistanceFrom(a):0} m).");
+                }
+            }
             // Only once the blitz is going: at 03:10 (2026-09-26) he pulled an A-500 at the entrance, 2 s before the
             // door check skipped that building as too tough, and fought it on the way out.
             if (a == null && _mission.Clearing && _mission.InMission && (_phase == Phase.Blitz || _phase == Phase.Fight)) a = PullTarget(me, pets);
@@ -3625,6 +3648,14 @@ namespace AOBuddy
                && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget && IsMob(n, true);
         private Identity? _pullId;
         private double _pullCheckedAt = -9999;
+        private double _serverCombatAt = -999;
+        private Identity? _hiddenFoe;
+
+        /// <summary>Main: every category-110 feedback id. 135453684 = "can't heal while in combat" (owner, 2026-09-26).</summary>
+        public void OnFeedback(int id)
+        {
+            if (id == 135453684) _serverCombatAt = _clock;
+        }
 
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
         /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
