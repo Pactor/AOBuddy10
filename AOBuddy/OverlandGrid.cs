@@ -78,7 +78,7 @@ namespace AOBuddy
         // A recorded stretch dropping faster than DropGrade is a jump off something (the owner jumps off the
         // Borealis ledge by habit, 13:20 2026-09-26: the bot then tried to walk back UP it and was held). It is
         // not road, and climbing through it costs DropClimbCost extra.
-        private const float DropGrade = 0.3f, DropClimbCost = 10f;
+        private const float DropGrade = 1.2f, DropClimbCost = 10f;   // = MaxRise: only what can't be walked up is a jump
         private const float RoadFactor = 0.5f, SnapWeight = 2f, SnapRadius = 6f, SlopeWeight = 4f, SlopeFree = 0.15f;
 
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
