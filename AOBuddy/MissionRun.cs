@@ -36,7 +36,7 @@ namespace AOBuddy
         private readonly FollowController _follow;
         private readonly Action<string> _tell;
         private readonly CombatController _combat;
-        private double _fightStart, _fightIgnoreUntil = -1;
+        private double _fightStart, _fightIgnoreUntil = -1, _fightIgnoreSetAt = -1;
         private int _fightHpMin = 100, _prevHp = -1;
         private double _lastHurt = -999;
         private readonly string _pluginDir;
@@ -711,7 +711,10 @@ namespace AOBuddy
                 StartFightBack(me, $"can't get away (at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP)");
                 return false;
             }
-            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            // The 'nothing hurts me' pause ends the moment something does (owner, 18:27 2026-09-26: "he ran through every
+            // single room with a mob like he had a deathwish" - the pause kept him clearing rooms with eight mobs on him
+            // until 38% HP, and he died).
+            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -770,7 +773,7 @@ namespace AOBuddy
                     // kept him 'fighting' Levi McDannold, a find-person target 34 m off, for 15 minutes at 100% HP.
                     if (_clock - _fightStart > 30 && _clock - _lastHurt > 30 && hpNow >= 90 && _clock >= _heldUntil && _restSaved == null)
                     {
-                        _fightIgnoreUntil = _clock + 60;
+                        _fightIgnoreUntil = _clock + 60; _fightIgnoreSetAt = _clock;
                         if (_pullId.HasValue) { _combat.SetAside(me, _pullId.Value, 120); _pullId = null; }
                         _ctx.Log("MISSIONRUN: 30 s of 'fighting' and nothing hurts me; carrying on.");
                     }
@@ -3709,14 +3712,17 @@ namespace AOBuddy
                     _still.Remove(n.Identity);
                 }
             }
-            var a = DynelManager.Npcs
+            var onUs = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
                             && !_combat.IsSetAside(n.Identity)
                             && !TooStrong(me, n)
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
-                .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+                .OrderBy(n => me.DistanceFrom(n)).ToList();
+            // STAY ON ONE (owner, 18:27 2026-09-26): the nearest attacker every tick switched him between four or five
+            // mobs every second and nothing died. The one he is on is kept while it is still on him or a pet.
+            var a = (_defId.HasValue ? onUs.FirstOrDefault(n => n.Identity == _defId.Value) : null) ?? onUs.FirstOrDefault();
             // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
             // (owner, 08:40 2026-09-26) - because a turret never shows as fighting him. The server saying he is in
