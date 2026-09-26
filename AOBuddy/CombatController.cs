@@ -235,7 +235,7 @@ namespace AOBuddy
             // a pet left him 'out of combat' and the blitz ran on through the room. A live mob (no owner) fighting
             // him or one of his pets counts, with or without an owner.
             if (me == null) return false;
-            var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            var pets = Guarded(me, owner);
             if (pets.Count > 0 || owner == null)
             {
                 bool onUs = DynelManager.Npcs.Any(n => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity)
@@ -305,6 +305,15 @@ namespace AOBuddy
                 .OrderBy(me.DistanceFrom).FirstOrDefault();
             if (onOwner != null) return LogTarget(onOwner, "attacking-owner");
 
+            // ANYTHING attacking a PET - the owner's or the bot's (Algorithman, 2026-09-26: "he stands still while the
+            // droid wails on my healpet"). Pets are the NPCs whose Owner is the owner or the bot.
+            var guarded = Guarded(me, owner);
+            SimpleChar onPet = DynelManager.Characters
+                .Where(c => c.FightingIdentity.HasValue && guarded.Contains(c.FightingIdentity.Value) && !guarded.Contains(c.Identity)
+                            && IsHostile(c, me, owner) && IsAlive(c) && me.DistanceFrom(c) <= _ctx.Config.AssistMaxDistance)
+                .OrderBy(me.DistanceFrom).FirstOrDefault();
+            if (onPet != null) return LogTarget(onPet, "attacking-a-pet");
+
             // Fallback: nearest NPC fighting the OWNER specifically (covers a lagging FightingTarget
             // stat). MUST be scoped to the owner — using IsAttacking (attacking ANYONE) made the bot
             // jump into another player's fight just because a mob near the owner was in combat.
@@ -313,6 +322,15 @@ namespace AOBuddy
                             && IsHostile(n, me, owner) && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(me.DistanceFrom).FirstOrDefault();
             return LogTarget(fb, "fighting-owner-fallback");
+        }
+
+        /// <summary>The pets to defend: the bot's, and the owner's (NPCs whose Owner is him).</summary>
+        private static HashSet<Identity> Guarded(LocalPlayer me, PlayerChar owner)
+        {
+            var g = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            foreach (var n in DynelManager.Npcs)
+                if (n != null && n.Owner.HasValue && (n.Owner.Value == me.Identity || (owner != null && n.Owner.Value == owner.Identity))) g.Add(n.Identity);
+            return g;
         }
 
         // Log the assist target (and WHY) only when it changes, so combat problems are readable.
