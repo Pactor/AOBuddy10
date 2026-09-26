@@ -8,7 +8,7 @@
 
         <!-- TOP: what he is doing + vitals + xp + where he is. One glance, no tabs. -->
         <Border Grid.Row="0" Padding="10,6" BorderBrush="#3a3a3a" BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto">
                 <!-- chip + text as a grid so the text column is genuinely constrained by the * column
                      (a horizontal StackPanel would desire its full text width and run under the bars) -->
                 <Grid Grid.Column="0" ColumnDefinitions="Auto,*" VerticalAlignment="Center">
@@ -34,12 +34,18 @@
                     <ProgressBar x:Name="XpBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#c9a648"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="4" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <!-- the thing he is fighting, when he is fighting (the bot's own target from /status) -->
+                <StackPanel Grid.Column="4" Orientation="Vertical" Margin="0,0,26,0" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="TgtTxt" FontSize="12" Text="no target" Margin="5,0" Foreground="#9a9a9a"/>
+                    <ProgressBar x:Name="TgtBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#c95050"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock x:Name="ZoneTxt" FontSize="12" HorizontalAlignment="Right" Text="—"/>
                     <TextBlock x:Name="PosTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
                     <TextBlock x:Name="MoneyTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
                 </StackPanel>
-                <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="14,0,0,0">
+                <StackPanel Grid.Column="6" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="14,0,0,0">
                     <TextBlock x:Name="ConnTxt" FontSize="12" Foreground="#d65b5b" Text="○ no bot"/>
                     <TextBlock x:Name="FlagsTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
                 </StackPanel>

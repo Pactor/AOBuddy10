@@ -174,6 +174,23 @@ namespace AOBuddyMonitor
                 ? $"Lvl {st.Level} · {st.XpPctNext}% to next" + (double.IsNaN(_xpPerSec) ? "" : $" · +{_xpPerSec:0}/s")
                 : "Lvl ?";
 
+            // the fight he is in: the target's vitals as the bot reads them (its own hpPct when the server
+            // has told us; nano only when the thing has any)
+            if (st.Target != null && st.Target.HpPct >= 0)
+            {
+                TgtTxt.Foreground = new SolidColorBrush(Color.FromRgb(0xe8, 0xb0, 0xb0));
+                TgtTxt.Text = $"→ {st.Target.Name} {st.Target.HpPct}%"
+                    + (st.Target.NanoPct >= 0 ? $" · n{st.Target.NanoPct}%" : "")
+                    + (st.Target.Dist > 0 ? $" · {st.Target.Dist:0} m" : "");
+                TgtBar.Value = Math.Clamp(st.Target.HpPct, 0, 100);
+            }
+            else
+            {
+                TgtTxt.Foreground = new SolidColorBrush(Color.FromRgb(0x9a, 0x9a, 0x9a));
+                TgtTxt.Text = "no target";
+                TgtBar.Value = 0;
+            }
+
             ZoneTxt.Text = st.Pf >= 0 ? $"{st.Zone} ({st.Pf})" : "—";
             if (st.Pos != null) PosTxt.Text = $"{st.Pos[0]:0}, {st.Pos[1]:0.0}, {st.Pos[2]:0}";
             MoneyTxt.Text = (st.Credits >= 0 ? Credits(st.Credits) : "") + (st.FreeSlots >= 0 ? $"  ·  {st.FreeSlots} free" : "");

@@ -40,6 +40,14 @@ namespace AOBuddyMonitor
             public int FreeSlots = -1;
             public bool Dead, Resting, InCombat, Casting, InMission;
             public List<Pet> Pets = new List<Pet>();
+            public TargetInfo Target;                     // present while he is fighting something
+        }
+
+        public sealed class TargetInfo
+        {
+            public string Name = "?";
+            public int HpPct = -1, NanoPct = -1;
+            public float Dist;
         }
 
         public sealed class TaskInfo
@@ -65,7 +73,17 @@ namespace AOBuddyMonitor
             public MissionInfo Mission;
             public List<Snap> Snaps = new List<Snap>();
             public List<TrailPoint> Trail = new List<TrailPoint>();
+            public List<Npc> Npcs = new List<Npc>();       // the SCFUs around him: mobs on the map
             public string Error;
+        }
+
+        public sealed class Npc
+        {
+            public string Name = "?";
+            public float[] Pos;
+            public int HpPct = -1;
+            public bool Fighting;                          // it is on the bot
+            public float Dist;
         }
 
         public sealed class Hike
@@ -253,6 +271,14 @@ namespace AOBuddyMonitor
                         HpPct = (int?)p["hpPct"] ?? -1,
                         Dist = (float?)p["dist"] ?? 0,
                     });
+            if (o["target"] is JObject tg)
+                s.Target = new TargetInfo
+                {
+                    Name = (string)tg["name"] ?? "?",
+                    HpPct = (int?)tg["hpPct"] ?? -1,
+                    NanoPct = (int?)tg["nanoPct"] ?? -1,
+                    Dist = (float?)tg["dist"] ?? 0,
+                };
             return s;
         }
 
@@ -342,6 +368,16 @@ namespace AOBuddyMonitor
                         Pf = (int?)e["pf"] ?? -1,
                         Inside = (bool?)e["inside"] ?? false,
                         P = Vec(e["p"]),
+                    });
+            if (o["npcs"] is JArray npcs)
+                foreach (var e in npcs.OfType<JObject>())
+                    n.Npcs.Add(new Npc
+                    {
+                        Name = (string)e["name"] ?? "?",
+                        Pos = Vec(e["p"]),
+                        HpPct = (int?)e["hpPct"] ?? -1,
+                        Fighting = (bool?)e["fighting"] ?? false,
+                        Dist = (float?)e["dist"] ?? 0,
                     });
             return n;
         }

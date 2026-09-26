@@ -26,6 +26,12 @@ namespace AOBuddyMonitor
         private bool _follow = true, _steps = true;
         private int? _floorOverride;                    // mission: the floor being peeked at (null = follow the bot)
         private int _lastInstance;
+        private bool _inMissionPrev;                    // for the enter/exit zoom switch and the door anchor
+        private double _preMissionScale = 0.02;
+        private bool _anchorPending;
+        private float[] _anchorDoor;                    // the outdoor door's world pos when he entered
+        private Vector2 _anchorCenter;                  // where the view was centred then
+        private double _anchorScale;
         private Vector2 _center = new Vector2(1024, 1024);   // world x,z the view is centred on
         private double _scale = 0.35;                        // DIPs per metre
         private Vector2? _hover;                             // world x,z under the cursor
@@ -41,6 +47,8 @@ namespace AOBuddyMonitor
         private readonly Pen _snapPen = new Pen(new SolidColorBrush(Color.FromArgb(220, 255, 70, 70)), 1.5);
         private readonly Pen _gridPen = new Pen(new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)), 1);
         private readonly Pen _exitRingPen = new Pen(new SolidColorBrush(Color.FromArgb(230, 120, 220, 120)), 2);
+        private readonly IBrush _mobFightBrush = new SolidColorBrush(Color.FromArgb(235, 224, 80, 80));
+        private readonly IBrush _mobBrush = new SolidColorBrush(Color.FromArgb(170, 160, 128, 80));
         private readonly IPen _botPen = new Pen(Brushes.Lime, 2);
 
         public MapView(MapRender render)
@@ -59,6 +67,25 @@ namespace AOBuddyMonitor
         public void SetNav(BotClient.Nav nav)
         {
             int inst = nav?.Mission?.Layout?.Instance ?? 0;
+            bool inMission = nav?.Mission?.Layout != null;
+            if (inMission && !_inMissionPrev)
+            {
+                // entering a building: a ~100 m floor plan against a 4 km outdoor zone, so the view zooms
+                // ×10 (the plan is rendered ×10 supersampled, so it stays crisp at that zoom). Remember
+                // the outdoor door's screen context so the plan can be anchored at the door (Render).
+                _preMissionScale = _scale;
+                _scale = Math.Clamp(_scale * 10, 0.02, 10);
+                _anchorPending = true;
+                _anchorDoor = nav.Mission?.Door;
+                _anchorCenter = _center;
+                _anchorScale = _preMissionScale;
+            }
+            else if (!inMission && _inMissionPrev)
+            {
+                _scale = _preMissionScale;              // leaving: straight back to the outdoor zoom
+                _anchorPending = false;
+            }
+            _inMissionPrev = inMission;
             if (inst != _lastInstance) { _lastInstance = inst; _floorOverride = null; }
             if (_floorOverride != null && nav?.Mission?.Floor != null && _floorOverride.Value == nav.Mission.Floor.Value)
                 _floorOverride = null;                  // caught up with the bot's floor — follow again
@@ -103,12 +130,24 @@ namespace AOBuddyMonitor
             if (mission != null)
             {
                 floor = _floorOverride ?? nav.Mission.Floor ?? (mission.Floors.Length > 0 ? mission.Floors[0] : 0);
+                if (_anchorPending && mission.ExitXZ != null && _anchorDoor != null && _anchorDoor.Length >= 3)
+                {
+                    // anchor: put the mission-space centre where the EXIT lands on the same SCREEN point the
+                    // outdoor door marker had when he walked in — the plan grows out of the door, nothing jumps
+                    double k = _anchorScale / _scale;
+                    _center = new Vector2(
+                        mission.ExitXZ[0] - (_anchorDoor[0] - _anchorCenter.X) * (float)k,
+                        mission.ExitXZ[1] - (_anchorDoor[2] - _anchorCenter.Y) * (float)k);
+                    _anchorPending = false;
+                }
                 if (mission.FloorBgra.TryGetValue(floor, out var fb))
                 {
                     if (!_bitmaps.TryGetValue((mission.Instance, floor), out var mbmp))
                         _bitmaps[(mission.Instance, floor)] = mbmp = MakeBitmap(fb, mission.W, mission.H);
-                    var mtl = ToScreen(mission.MinX, mission.MinZ + mission.H * mission.Cell);
-                    var mbr = ToScreen(mission.MinX + mission.W * mission.Cell, mission.MinZ);
+                    float worldW = mission.W / mission.PxPerCell * mission.Cell;   // pixels → metres
+                    float worldH = mission.H / mission.PxPerCell * mission.Cell;
+                    var mtl = ToScreen(mission.MinX, mission.MinZ + worldH);
+                    var mbr = ToScreen(mission.MinX + worldW, mission.MinZ);
                     ctx.DrawImage(mbmp, new Rect(0, 0, mission.W, mission.H), new Rect(mtl, mbr));
                 }
             }
@@ -233,6 +272,18 @@ namespace AOBuddyMonitor
                     var lc = ToScreen(s.Local[0], s.Local[2]);
                     ctx.DrawLine(_snapPen, sv, lc);
                     ctx.DrawEllipse(null, _snapPen, lc, 2, 2);
+                }
+
+                // the mobs the server has told him about (SCFUs): red and named while the fight is on him,
+                // dim bystanders otherwise; names once the view is close enough to read them
+                foreach (var m in nav.Npcs)
+                {
+                    if (m.Pos == null) continue;
+                    var p = ToScreen(m.Pos[0], m.Pos[2]);
+                    if (m.Fighting) ctx.DrawEllipse(_mobFightBrush, null, p, 4, 4);
+                    else ctx.DrawEllipse(_mobBrush, null, p, 3, 3);
+                    if (_scale >= 0.5)
+                        Label(ctx, p.X + 6, p.Y - 6, m.Name + (m.HpPct >= 0 ? " " + m.HpPct + "%" : ""));
                 }
 
                 // him: a green dot with his facing

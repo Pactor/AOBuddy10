@@ -1031,6 +1031,19 @@ namespace AOBuddy
                         });
                     }
                     o["pets"] = pets;
+                    // who he is fighting, with its vitals — the monitor's red target bar
+                    var tgt = me.FightingTarget;
+                    if (tgt != null)
+                    {
+                        int tmax = tgt.GetStat(Stat.MaxHealth), tnanomax = tgt.GetStat(Stat.MaxNanoEnergy);
+                        o["target"] = new JObject
+                        {
+                            ["name"] = tgt.Name,
+                            ["hpPct"] = tmax > 0 ? (int)Math.Round(100.0 * tgt.GetStat(Stat.Health) / tmax) : -1,
+                            ["nanoPct"] = tnanomax > 0 ? (int)Math.Round(100.0 * tgt.GetStat(Stat.CurrentNano) / tnanomax) : -1,
+                            ["dist"] = Math.Round(me.DistanceFrom(tgt), 1),
+                        };
+                    }
                 }
                 o["freeSlots"] = Inventory.NumFreeSlots;
             }

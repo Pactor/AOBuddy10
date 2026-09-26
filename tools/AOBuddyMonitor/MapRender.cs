@@ -98,7 +98,8 @@ namespace AOBuddyMonitor
             public int Instance;
             public float Cell;
             public float MinX, MinZ;                    // world bounds of the walkable cells (shared by all floors)
-            public int W, H;                            // bitmap pixels (1 px per cell)
+            public int W, H;                            // bitmap pixels
+            public int PxPerCell = 1;                   // supersampling (10): crisp at dungeon zoom, no blur
             public int[] Floors = new int[0];
             public readonly List<RoomLabel> Rooms = new List<RoomLabel>();
             public float[] ExitXZ;                      // world [x, z] of the way out, on ExitFloor
@@ -175,12 +176,18 @@ namespace AOBuddyMonitor
                 foreach (var rm in d.Rooms)
                     Walk(rm, (a, b, x, z) => { if (x < minX) minX = x; if (x > maxX) maxX = x; if (z < minZ) minZ = z; if (z > maxZ) maxZ = z; });
                 if (minX > maxX) return null;
+                // ×10 supersampling: a building is ~100 m against a 4 km outdoor zone, so the view zooms
+                // ~×10 on entry (MapView does that) — one pixel per 2 m cell would blur to mush there.
+                // Back off only if a pathological pool would break the 4096-px bitmap cap.
+                int cw = Math.Max(1, (int)Math.Ceiling((maxX - minX) / cell));
+                int ch = Math.Max(1, (int)Math.Ceiling((maxZ - minZ) / cell));
+                int s = 10;
+                while (s > 1 && Math.Max(cw, ch) * s > 4096) s--;
                 var plan = new MissionPlan
                 {
                     Instance = lay.Instance, Cell = cell, Name = nav.Name,
                     MinX = (float)minX, MinZ = (float)minZ,
-                    W = Math.Max(1, (int)Math.Ceiling((maxX - minX) / cell)),
-                    H = Math.Max(1, (int)Math.Ceiling((maxZ - minZ) / cell)),
+                    W = cw * s, H = ch * s, PxPerCell = s,
                     Floors = d.Rooms.Select(r => r.Floor).Distinct().OrderBy(f => f).ToArray(),
                 };
                 if (nav.Exit != null) { plan.ExitXZ = new[] { (float)nav.Exit.X, (float)nav.Exit.Z }; plan.ExitFloor = nav.Exit.Floor; }
@@ -195,10 +202,15 @@ namespace AOBuddyMonitor
                         int v = 56 + (rm.PoolIndex * 37 % 26);
                         Walk(rm, (a, b, x, z) =>
                         {
-                            int px = (int)((x - minX) / cell), py = (int)((z - minZ) / cell);
-                            if (px < 0 || py < 0 || px >= plan.W || py >= plan.H) return;
-                            int i = (py * plan.W + px) * 4;
-                            img[i] = (byte)v; img[i + 1] = (byte)v; img[i + 2] = (byte)(v + 4); img[i + 3] = 255;
+                            int px = (int)((x - minX) / cell * s), py = (int)((z - minZ) / cell * s);
+                            for (int dz = 0; dz < s; dz++)
+                                for (int dx = 0; dx < s; dx++)
+                                {
+                                    int qx = px + dx, qy = py + dz;
+                                    if (qx < 0 || qy < 0 || qx >= plan.W || qy >= plan.H) continue;
+                                    int i = (qy * plan.W + qx) * 4;
+                                    img[i] = (byte)v; img[i + 1] = (byte)v; img[i + 2] = (byte)(v + 4); img[i + 3] = 255;
+                                }
                         });
                         // the label at the room's walkable centroid, not its pivot — rotated rooms put the pivot oddly
                         double sx = 0, sz = 0; int n = 0;
@@ -213,16 +225,22 @@ namespace AOBuddyMonitor
                         float y0 = onFloor.Min(r => r.Pos[1]) - 1f, y1 = onFloor.Min(r => r.Pos[1]) + Math.Max(3f, lay.WorldHeight * 0.8f);
                         void Line(double ax, double az, double bx, double bz)
                         {
-                            int x0 = (int)Math.Round((ax - minX) / cell), z0 = (int)Math.Round((az - minZ) / cell);
-                            int x1 = (int)Math.Round((bx - minX) / cell), z1 = (int)Math.Round((bz - minZ) / cell);
+                            int x0 = (int)Math.Round((ax - minX) / cell * s), z0 = (int)Math.Round((az - minZ) / cell * s);
+                            int x1 = (int)Math.Round((bx - minX) / cell * s), z1 = (int)Math.Round((bz - minZ) / cell * s);
                             int steps = Math.Max(Math.Abs(x1 - x0), Math.Abs(z1 - z0));
-                            if (steps > 4000) return;
-                            for (int s = 0; s <= steps; s++)
+                            if (steps > 20000) return;
+                            int w = Math.Max(1, s / 4);                       // wall thickness scales with the supersampling
+                            for (int st = 0; st <= steps; st++)
                             {
-                                int px = x0 + (x1 - x0) * s / Math.Max(1, steps), py = z0 + (z1 - z0) * s / Math.Max(1, steps);
-                                if (px < 0 || py < 0 || px >= plan.W || py >= plan.H) continue;
-                                int i = (py * plan.W + px) * 4;
-                                img[i] = 130; img[i + 1] = 130; img[i + 2] = 148; img[i + 3] = 255;
+                                int px = x0 + (x1 - x0) * st / Math.Max(1, steps), py = z0 + (z1 - z0) * st / Math.Max(1, steps);
+                                for (int dz = 0; dz < w; dz++)
+                                    for (int dx = 0; dx < w; dx++)
+                                    {
+                                        int qx = px + dx, qy = py + dz;
+                                        if (qx < 0 || qy < 0 || qx >= plan.W || qy >= plan.H) continue;
+                                        int i = (qy * plan.W + qx) * 4;
+                                        img[i] = 130; img[i + 1] = 130; img[i + 2] = 148; img[i + 3] = 255;
+                                    }
                             }
                         }
                         for (int t = 0; t + 8 < nav.Walls.Length; t += 9)
