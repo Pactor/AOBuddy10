@@ -1481,6 +1481,7 @@ namespace AOBuddy
         private double _hikeBackAt, _hikeOnAt = -1;
         private int _hikePass = -1, _hikePassStage;
         private double _hikePassAt;
+        private Vector3? _hikeLineFrom; private int _lineLeg; private List<Vector3> _lineDirs;
         private bool _hikeUsedHere;
         private int _hikeUses;
         private Vector3 _hikeDir0;
@@ -1615,7 +1616,7 @@ namespace AOBuddy
             }
             _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
-            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
+            _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1; _hikeLineFrom = null;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -1707,20 +1708,40 @@ namespace AOBuddy
 
             if (e.Kind == ExitKind.ZoneLine)
             {
-                // Walk to the line, then on across it: 10 m past it, not 3 (the walker stops 1.5 m short of its
-                // target, so aiming 3 m past from 1.7 m off never moved him: Galway Shire -> Galway County,
-                // 09:50-10:00, 2026-09-24, four 150 s tries standing on the line). Which side is 'past' is a guess
-                // from the line's geometry, so every 12 s the other side is tried.
+                // Walk to the line, then BACK OUT, TURN ROUND AND RUN THROUGH it (owner, 17:18 2026-09-26, SWB -> Holes in
+                // the Wall at (960,2748): "hes going w/e when he should back out N and turn around and run forward"). The
+                // line data is on a 10 m grid and bends at its corners, so its geometry can point the crossing the wrong
+                // way; four directions are tried - the line's two normals and the two along it - the ones facing the
+                // way he walked in first. Each: 15 m back, then 20 m through (the walker stops 1.5 m short), 10 s a leg.
+                if (_hikeLineFrom == null) _hikeLineFrom = pos;
                 if (Movement.Flat(pos, at) > 2f && _hikePassStage == 0) { _follow.SetManualTarget(at); return true; }
-                if (_hikePassStage == 0) { _hikePassStage = 1; _hikePassAt = _clock; }
-                Vector3 c = _hike.CrossTo ?? at;
-                var d = new Vector3(c.X - at.X, 0, c.Z - at.Z);
-                if (d.Magnitude < 0.5f) { var ab = e.B - e.A; d = new Vector3(-ab.Z, 0, ab.X); }
-                if (d.Magnitude < 0.1f) d = new Vector3(at.X - pos.X, 0, at.Z - pos.Z);
-                if (d.Magnitude < 0.1f) d = new Vector3(1, 0, 0);
-                d = d * (1f / d.Magnitude);
-                int side = ((int)((_clock - _hikePassAt) / 12)) % 2 == 0 ? 1 : -1;
-                _follow.SetManualTarget(new Vector3(at.X + d.X * 10f * side, at.Y, at.Z + d.Z * 10f * side));
+                if (_hikePassStage == 0)
+                {
+                    _hikePassStage = 1; _hikePassAt = _clock; _lineLeg = 0;
+                    Vector3 c = _hike.CrossTo ?? at;
+                    var d = new Vector3(c.X - at.X, 0, c.Z - at.Z);
+                    if (d.Magnitude < 0.5f) { var ab = e.B - e.A; d = new Vector3(-ab.Z, 0, ab.X); }
+                    if (d.Magnitude < 0.1f) d = new Vector3(1, 0, 0);
+                    d = d * (1f / d.Magnitude);
+                    var p2 = new Vector3(-d.Z, 0, d.X);
+                    var inward = new Vector3(at.X - _hikeLineFrom.Value.X, 0, at.Z - _hikeLineFrom.Value.Z);
+                    _lineDirs = new List<Vector3> { d, -d, p2, -p2 }
+                        .OrderByDescending(v => inward.Magnitude < 1f ? 0 : v.X * inward.X + v.Z * inward.Z).ToList();
+                }
+                Vector3 runDir = _lineDirs[(_lineLeg / 2) % _lineDirs.Count];
+                Vector3 goal = _lineLeg % 2 == 0 ? new Vector3(at.X - runDir.X * 15f, at.Y, at.Z - runDir.Z * 15f)   // back out
+                                                 : new Vector3(at.X + runDir.X * 20f, at.Y, at.Z + runDir.Z * 20f);  // run through
+                if (Movement.Flat(pos, goal) < 2.5f || _clock - _hikePassAt > 10)
+                {
+                    _lineLeg++; _hikePassAt = _clock;
+                    if (_lineLeg % 2 == 0)
+                    {
+                        var nd = _lineDirs[(_lineLeg / 2) % _lineDirs.Count];
+                        _ctx.Log($"MISSIONRUN: not through {e} running ({runDir.X:0.0},{runDir.Z:0.0}); backing out and trying ({nd.X:0.0},{nd.Z:0.0}).");
+                    }
+                    return true;
+                }
+                _follow.SetManualTarget(goal);
                 return true;
             }
             // An object that is USED (the Grid terminal, a proxy): walk up to it, stand, and use it, the way travel
