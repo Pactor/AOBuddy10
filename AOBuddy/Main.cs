@@ -259,6 +259,7 @@ namespace AOBuddy
             Client.Feedback += (category, messageId) =>
             {
                 if (category != 110) return;
+                _run.OnFeedback(messageId);
                 Log($"SERVER SAYS: feedback {category}/{messageId}"
                     + (_lastActionLabel != null ? $" — right after: {_lastActionLabel}" : ""));
             };
