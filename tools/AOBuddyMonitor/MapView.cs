@@ -32,6 +32,7 @@ namespace AOBuddyMonitor
         private float[] _anchorDoor;                    // the outdoor door's world pos when he entered
         private Vector2 _anchorCenter;                  // where the view was centred then
         private double _anchorScale;
+        private int _lastPf = -1;
         private Vector2 _center = new Vector2(1024, 1024);   // world x,z the view is centred on
         private double _scale = 0.35;                        // DIPs per metre
         private Vector2? _hover;                             // world x,z under the cursor
@@ -62,6 +63,10 @@ namespace AOBuddyMonitor
         public bool ShowSteps { get => _steps; set { _steps = value; InvalidateVisual(); } }
         public double ZoomPct => _scale * 100;
 
+        /// <summary>Raised when the view itself flips Follow (a zone change grabs the leash back), so the
+        /// toolbar checkbox can stay in sync without a binding.</summary>
+        public event Action<bool> FollowToggled;
+
         /// <summary>New /nav snapshot (1 Hz). Keep the last one even when a poll fails, so the map never
         /// blanks out while the bot zones.</summary>
         public void SetNav(BotClient.Nav nav)
@@ -86,6 +91,13 @@ namespace AOBuddyMonitor
                 _anchorPending = false;
             }
             _inMissionPrev = inMission;
+            // a zone change grabs the leash back: whatever the reader panned away from, he arrives
+            // somewhere new and the view follows him there again (the toolbar checkbox follows via event)
+            if (nav != null && nav.Pf != _lastPf)
+            {
+                _lastPf = nav.Pf;
+                if (!Follow) { Follow = true; FollowToggled?.Invoke(true); }
+            }
             if (inst != _lastInstance) { _lastInstance = inst; _floorOverride = null; }
             if (_floorOverride != null && nav?.Mission?.Floor != null && _floorOverride.Value == nav.Mission.Floor.Value)
                 _floorOverride = null;                  // caught up with the bot's floor — follow again

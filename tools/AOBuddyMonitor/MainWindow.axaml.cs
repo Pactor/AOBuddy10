@@ -33,8 +33,10 @@ namespace AOBuddyMonitor
         private readonly List<string> _cmdHistory = new List<string>();
         private int _cmdHistoryAt = -1;
 
-        // xp/s is measured here: the bot reports the level and XP into it, the monitor diffs them
-        private int _xpLevel, _xpInto;
+        // xp/s is measured here: the bot reports the TOTAL XP (Stat.XP is the whole amount), the monitor
+        // diffs it — so the rate survives a ding
+        private int _xpLevel;
+        private long _xpSeen;
         private DateTime _xpAt = DateTime.MinValue;
         private double _xpPerSec = double.NaN;
 
@@ -49,6 +51,7 @@ namespace AOBuddyMonitor
             _render = new MapRender(_cfg.PluginDir);
             _map = new MapView(_render);
             MapHost.Children.Add(_map);
+            _map.FollowToggled += on => CbFollow.IsChecked = on;   // zone change re-grabs follow; keep the box honest
             _render.Rendered += pf => Dispatcher.UIThread.Post(() => _map.InvalidateVisual());
             LogLine("monitor up — " + (_cfg.PluginDir.Length > 0 ? "nav data: " + _cfg.PluginDir : "no plugin dir found; maps will be grids"));
             LogLine("waiting for the bot on " + _cfg.Base);
@@ -157,17 +160,18 @@ namespace AOBuddyMonitor
             NanoBar.Value = Math.Clamp(st.NanoPct < 0 ? 0 : st.NanoPct, 0, 100);
             NanoTxt.Text = st.NanoPct < 0 ? "Nano ?" : $"Nano {st.NanoCur}/{st.NanoMax} · {st.NanoPct}%";
 
-            // xp: into-level progress plus a measured rate (reset on ding)
+            // xp: into-level progress plus a measured rate off the TOTAL (a ding doesn't reset the clock)
             if (st.Level > 0)
             {
                 var now = DateTime.Now;
-                if (_xpAt != DateTime.MinValue && st.Level == _xpLevel && st.XpInto > _xpInto && now > _xpAt)
+                long xpNow = st.XpTotal >= 0 ? st.XpTotal : st.XpInto;
+                if (_xpAt != DateTime.MinValue && xpNow > _xpSeen && now > _xpAt)
                 {
-                    var rate = (st.XpInto - _xpInto) / (now - _xpAt).TotalSeconds;
+                    var rate = (xpNow - _xpSeen) / (now - _xpAt).TotalSeconds;
                     _xpPerSec = double.IsNaN(_xpPerSec) ? rate : _xpPerSec * 0.7 + rate * 0.3;   // smooth it
                 }
                 if (st.Level != _xpLevel || _xpAt == DateTime.MinValue) { _xpLevel = st.Level; _xpPerSec = double.NaN; }
-                _xpInto = st.XpInto; _xpAt = now;
+                _xpSeen = xpNow; _xpAt = now;
             }
             XpBar.Value = Math.Clamp(st.XpPctNext < 0 ? 0 : st.XpPctNext, 0, 100);
             XpTxt.Text = st.Level > 0

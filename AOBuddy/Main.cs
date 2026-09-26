@@ -938,7 +938,7 @@ namespace AOBuddy
         private void BagReadTick(LocalPlayer me)
         {
             if (me == null || _dead) return;
-            if (_bagReadAt == 0) { _bagReadAt = _ctx.Clock.Seconds + 5; return; }
+            if (_bagReadAt == 0) { _bagReadAt = _ctx.Clock.Seconds + 2; return; }   // 2 s: in before the first command
             if (_bagReadAt < 0 || _ctx.Clock.Seconds < _bagReadAt) return;
             var bag = Inventory.Items.FirstOrDefault(i => i != null
                 && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container
@@ -1017,8 +1017,10 @@ namespace AOBuddy
                     if (me.TryGetStat(Stat.Level, out int lvl))
                     {
                         o["level"] = lvl;
-                        int into = me.TryGetStat(Stat.XP, out int xpv) ? xpv : 0;   // XP = progress inside the level
-                        o["xp"] = new JObject { ["level"] = lvl, ["into"] = into, ["pctNext"] = XpTable.PercentToNext(lvl, into) };
+                        // Stat.XP is the TOTAL XP: the table's cumulative sums turn it into the way into
+                        // the next level ("total" rides along so the monitor can rate xp/s across dings)
+                        long total = me.TryGetStat(Stat.XP, out int xpv) ? xpv : 0;
+                        o["xp"] = new JObject { ["level"] = lvl, ["total"] = total, ["into"] = XpTable.IntoLevel(lvl, total), ["pctNext"] = XpTable.PercentToNext(lvl, total) };
                     }
                     var pets = new JArray();
                     foreach (var pet in me.Pets.Where(x => x != null).OrderBy(x => x.Role))
@@ -1032,8 +1034,15 @@ namespace AOBuddy
                         });
                     }
                     o["pets"] = pets;
-                    // who he is fighting, with its vitals — the monitor's red target bar
-                    var tgt = me.FightingTarget;
+                    // who the fight is with, with its vitals — the monitor's red target bar. Pet classes
+                    // swing through their pets: me.FightingTarget reads empty for them, so the target is
+                    // what CombatController engaged (kept through the FightingTarget null-blinks), falling
+                    // back to his own and then the attack pet's.
+                    SimpleChar tgt = null;
+                    if (_combat.AttackedTarget is Identity at)
+                        tgt = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == at);
+                    if (tgt == null) tgt = me.FightingTarget;
+                    if (tgt == null) tgt = PetController.AttackPet(me)?.FightingTarget;
                     if (tgt != null)
                     {
                         int tmax = tgt.GetStat(Stat.MaxHealth), tnanomax = tgt.GetStat(Stat.MaxNanoEnergy);
@@ -1415,7 +1424,7 @@ namespace AOBuddy
             string hp = hpPct == SupportController.Unknown ? "?" : hpPct + "%";
             int level = (me != null && me.TryGetStat(Stat.Level, out int l) && l > 0) ? l : 0;
             string lvl = level > 0 ? level.ToString() : "?";
-            // Stat.XP is the progress inside the current level; the table says what that level costs.
+            // Stat.XP is the TOTAL XP; the table's cumulative sums say how far into the next level that is.
             int xpPct = level > 0 && me != null && me.TryGetStat(Stat.XP, out int xpVal) ? XpTable.PercentToNext(level, xpVal) : -1;
             string xp = xpPct >= 0 ? xpPct + "%" : "?";
             return $"Lvl: {lvl}. XP: {xp}. Mode: {_mode}. Follow: {_config.Follow}. HP: {hp}. Target: {target}. Waypoints: {_follow.TrailCount}.";
