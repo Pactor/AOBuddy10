@@ -1078,6 +1078,20 @@ namespace AOBuddy
                 catch (Exception ex) { reply("Load failed: " + ex.Message); }
             };
             t["paths"] = (reply, p) => reply("Saved paths: " + _paths.List());
+            // 'near [metres]': every dynel the server has sent within that range, players and NPCs included, so the
+            // owner can tell a city prop the server sent (a dynel) from one baked into the zone (not listed).
+            t["near"] = (reply, p) =>
+            {
+                LocalPlayer nm = DynelManager.LocalPlayer;
+                if (nm == null) { reply("Not in play."); return; }
+                float r = float.TryParse(Arg(p), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float rr) ? rr : 15f;
+                var all = DynelManager.AllDynels.Where(d => d != null && d.Identity != nm.Identity && Vector3.Distance(d.Transform.Position, nm.Transform.Position) <= r)
+                                                .OrderBy(d => Vector3.Distance(d.Transform.Position, nm.Transform.Position)).ToList();
+                foreach (var d in all)
+                    Log($"NEAR: {d.Identity.Type} {d.Identity} '{d.Name}' at ({d.Transform.Position.X:0.0},{d.Transform.Position.Y:0.0},{d.Transform.Position.Z:0.0}) {Vector3.Distance(d.Transform.Position, nm.Transform.Position):0.0} m");
+                reply($"{all.Count} dynel(s) within {r:0} m of ({nm.Transform.Position.X:0},{nm.Transform.Position.Z:0}): "
+                      + string.Join("; ", all.Take(15).Select(d => $"{d.Identity.Type} '{d.Name}' {Vector3.Distance(d.Transform.Position, nm.Transform.Position):0} m")) + (all.Count > 15 ? " ... (all in the log)" : ""));
+            };
 
             // -- nav / diagnostics / status --
             t["nav"] = (reply, p) =>
