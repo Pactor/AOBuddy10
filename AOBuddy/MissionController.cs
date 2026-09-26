@@ -1558,6 +1558,11 @@ namespace AOBuddy
         {
             usedFallback = false;
             var s = NearestFine(a, floor, 2.5f, blocked, needSight: false);
+            // Where he stands can be off the open cells or inside the cells snap-backs blocked round him - after a
+            // walk-up to a mob, 20:50 2026-09-25: every room 'unreachable' at once, clear and search gave up in the
+            // same tick and the mission was dropped. The start is only where the walk begins: look wider for it,
+            // blocked cells allowed.
+            if (!s.HasValue) s = NearestFine(a, floor, 6f, null, needSight: false);
             var g = NearestFine(b, floor, 3.0f, blocked);
             if (!s.HasValue || !g.HasValue) return null;
             var cells = FineAStar(s.Value, g.Value, blocked);
