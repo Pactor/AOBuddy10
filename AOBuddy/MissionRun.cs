@@ -1231,7 +1231,18 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
-            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _hikeNoRoute = true; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            if (route == null || route.Hops.Count == 0)
+            {
+                _hikeLastHike = _clock; _hikeNoRoute = true;
+                // Why: every exit out of here and what rules it out (4 Holes corner, 23:49-23:58 2026-09-25: no route
+                // for 9 minutes with three zone lines out of the zone).
+                var why = Zoning.ExitsFrom(here).Select(e => $"{e.Kind} to {Zoning.Name(e.ToPf)} ({e.ToPf})"
+                    + (BadExit(e) ? " bad" : "") + (HostileExit(e) ? " hostile" : "") + (Dangerous(e.ToPf) ? " dangerous" : "")
+                    + (!Zoning.CanUse(e, new ZoneRouteOptions { Stat = Zoning.RouteOptions(me).Stat }) ? " reqs" : "")
+                    + (e.Kind != ExitKind.ZoneLine && e.ObjInstance == 0 ? " not-walkable" : ""));
+                _ctx.Log($"MISSIONRUN: no zone route without Scotty either (from {Zoning.Name(here)} to {Zoning.Name(pf)}); exits here: {string.Join("; ", why.Take(12))}.");
+                return false;
+            }
             _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
