@@ -2540,7 +2540,18 @@ namespace AOBuddy
                 if (a.side != side && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
             return null;
         }
-        private bool HostileExit(ZoneExit e) => HostileAt(e.FromPf, e.A.X, e.A.Z) != null
+        // The exit's start counts only round a station (r > 0): a whole avoided zone must never trap him inside it.
+        // 4 Holes (760) is on the avoid list, and in it every exit read 'hostile' - no way out for 9 minutes
+        // (23:49-00:00, 2026-09-25/26).
+        private bool HostileStart(int pf, float x, float z)
+        {
+            int side = MySide;
+            if (side != 1 && side != 2) return false;
+            foreach (var a in FactionAreas)
+                if (a.side != side && a.pf == pf && a.r > 0 && Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r) return true;
+            return false;
+        }
+        private bool HostileExit(ZoneExit e) => HostileStart(e.FromPf, e.A.X, e.A.Z)
                                                 || (e.Arrival.HasValue ? HostileAt(e.ToPf, e.Arrival.Value.X, e.Arrival.Value.Z) != null
                                                                        : HostileAt(e.ToPf, float.NaN, float.NaN) != null);   // arrival unknown: whole zones only
         private bool _diedOnWay;
