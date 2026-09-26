@@ -8,6 +8,7 @@ using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.Messages;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AOBuddy
 {
@@ -174,7 +175,8 @@ namespace AOBuddy
             // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
             // The handler only ENQUEUES: HandleCommand mutates controller state, so it must run on the
             // update thread (drained at the top of OnUpdate), not on the API listener thread.
-            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)), () => _run.NavJson());
+            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)),
+                () => _run.NavJson(), ApiInventory, ApiLog);
             _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
@@ -702,6 +704,7 @@ namespace AOBuddy
                 _lastFramePos = me.MovementComponent.Position;
 
                 Heartbeat(me, owner, dt);
+                BagReadTick(me);
                 _support.CheckSupplies(owner, dt);
             }
             catch (Exception ex) { Logger.Error($"update error: {ex.Message}"); Log($"UPDATE EXCEPTION: {ex}"); }
@@ -911,7 +914,53 @@ namespace AOBuddy
         private void Log(string line)
         {
             try { File.AppendAllText(_logFile, $"{DateTime.Now:HH:mm:ss.fff} {line}{Environment.NewLine}"); } catch { }
+            // The monitor's /log ring (AOBuddyMonitor, 2026-09-26): every line that reaches the log file also
+            // lands here with a sequence number, so the GUI can follow with GET /log?after=N and never misses one.
+            lock (_logRing)
+            {
+                _logRing.Add((++_logSeq, DateTime.Now.ToString("HH:mm:ss"), line));
+                if (_logRing.Count > 400) _logRing.RemoveRange(0, _logRing.Count - 400);
+            }
         }
+
+        // ---- LOGIN BAG READ (owner, 2026-09-26) -----------------------------------------------------
+        // A bag's contents reach the clientless client only through the container update an OPEN produces;
+        // at login every bag is an empty Handle-0 shell, so /inventory honestly answers "unknown" until
+        // then. A few seconds after login, open each worn bag once — the stash's proven open
+        // (GameCommands.OpenContainer, Use with Temp4 0) — one per 1.5 s so each answer has room, and the
+        // monitor shows real contents and free slots from startup. Once per run: a zone empties the
+        // containers again (ResetContainers), but by then the run's own stash/shop opens cover it.
+        private double _bagReadAt;                      // clock the next open goes out (0 = not yet armed, -1 = done)
+        private bool _bagReadLogged;
+        private readonly HashSet<Identity> _bagReadDone = new HashSet<Identity>();
+
+        private void BagReadTick(LocalPlayer me)
+        {
+            if (me == null || _dead) return;
+            if (_bagReadAt == 0) { _bagReadAt = _ctx.Clock.Seconds + 5; return; }
+            if (_bagReadAt < 0 || _ctx.Clock.Seconds < _bagReadAt) return;
+            var bag = Inventory.Items.FirstOrDefault(i => i != null
+                && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container
+                && !_bagReadDone.Contains(i.UniqueIdentity));
+            if (bag == null)
+            {
+                if (_bagReadLogged) return;
+                _bagReadLogged = true;
+                _bagReadAt = -1;
+                int known = Inventory.Containers.Count(c => c.Handle != 0);
+                Log($"BAGS: login read-through done — opened {_bagReadDone.Count} bag(s), {known} with contents known.");
+                return;
+            }
+            _bagReadDone.Add(bag.UniqueIdentity);
+            _bagReadAt = _ctx.Clock.Seconds + 1.5;
+            GameCommands.OpenContainer(me, bag.Slot);
+        }
+
+        // The ring /log serves: the last 400 lines, (seq, time, text). seq is monotonic; the monitor polls
+        // "after" its highest seen seq. Trimmed from the front on the update thread (Log) and read on the API
+        // thread under the same lock.
+        private readonly List<(int Seq, string Time, string Line)> _logRing = new List<(int, string, string)>();
+        private int _logSeq;
 
         // ---- Commands ------------------------------------------------------------
 
@@ -920,7 +969,10 @@ namespace AOBuddy
         private readonly System.Collections.Concurrent.ConcurrentQueue<(string Text, Action<string> Reply)> _apiCommands
             = new System.Collections.Concurrent.ConcurrentQueue<(string, Action<string>)>();
 
-        // What the MCP server's bot_status returns: the heartbeat line plus the facts worth reading at a glance.
+        // What the MCP server's bot_status and the monitor's 1 Hz poll return: the heartbeat line plus the
+        // facts worth reading at a glance (AOBuddyMonitor, 2026-09-26: behavior/task/vitals/xp/pets added;
+        // the old keys keep their shape so the MCP server needs no change). The heavy itemization lives on
+        // GET /inventory so this stays a few hundred bytes.
         private Newtonsoft.Json.Linq.JObject ApiStatus()
         {
             var o = new Newtonsoft.Json.Linq.JObject();
@@ -929,20 +981,141 @@ namespace AOBuddy
                 var me = DynelManager.LocalPlayer;
                 o["heartbeat"] = StatusLine();
                 o["missionRun"] = _run.Status();
+                o["behavior"] = _ctx.Behavior;
+                o["task"] = ApiTask();
                 o["playfield"] = (int)Playfield.ModelId;
                 o["zone"] = Playfield.TryGetPlayfieldNameFromId((int)Playfield.ModelId, out string zn) ? zn : Playfield.ModelId.ToString();
+                var s = _ctx.Status;
+                o["dead"] = _dead;
+                o["resting"] = s.Resting;
+                o["inCombat"] = s.InCombat;
+                o["casting"] = s.Casting;
+                o["inMission"] = s.InMission;
                 if (me != null)
                 {
                     var p = me.Transform.Position;
                     o["position"] = $"{p.X:0.0} {p.Y:0.0} {p.Z:0.0}";
-                    o["hpPct"] = _support.SelfHpPct(me);
+                    o["pos"] = new JArray(Math.Round(p.X, 2), Math.Round(p.Y, 2), Math.Round(p.Z, 2));
+                    var fwd = me.MovementComponent.Heading.Forward;
+                    o["hdg"] = new JArray(Math.Round(fwd.X, 3), Math.Round(fwd.Z, 3));
+                    // Vitals both ways: the percentage as SupportController judges it (prediction, not just the
+                    // last stat packet), and raw cur/max for the monitor's bars.
+                    o["hp"] = new JObject
+                    {
+                        ["pct"] = _support.SelfHpPct(me),
+                        ["cur"] = me.TryGetStat(Stat.Health, out int hp) ? hp : 0,
+                        ["max"] = me.TryGetStat(Stat.MaxHealth, out int mhp) ? mhp : 0,
+                    };
+                    o["nano"] = new JObject
+                    {
+                        ["pct"] = _support.SelfNanoPct(me),
+                        ["cur"] = me.TryGetStat(Stat.CurrentNano, out int nn) ? nn : 0,
+                        ["max"] = me.TryGetStat(Stat.MaxNanoEnergy, out int mnn) ? mnn : 0,
+                    };
                     if (me.TryGetStat(Stat.Cash, out int cash)) o["credits"] = cash;
-                    if (me.TryGetStat(Stat.Level, out int lvl)) o["level"] = lvl;
+                    if (me.TryGetStat(Stat.Level, out int lvl))
+                    {
+                        o["level"] = lvl;
+                        int into = me.TryGetStat(Stat.XP, out int xpv) ? xpv : 0;   // XP = progress inside the level
+                        o["xp"] = new JObject { ["level"] = lvl, ["into"] = into, ["pctNext"] = XpTable.PercentToNext(lvl, into) };
+                    }
+                    var pets = new JArray();
+                    foreach (var pet in me.Pets.Where(x => x != null).OrderBy(x => x.Role))
+                    {
+                        int max = pet.GetStat(Stat.MaxHealth);
+                        pets.Add(new JObject
+                        {
+                            ["name"] = pet.Name, ["role"] = pet.Role.ToString(),
+                            ["hpPct"] = max > 0 ? (int)Math.Round(100.0 * pet.GetStat(Stat.Health) / max) : -1,
+                            ["dist"] = Math.Round(me.DistanceFrom(pet), 1),
+                        });
+                    }
+                    o["pets"] = pets;
                 }
                 o["freeSlots"] = Inventory.NumFreeSlots;
-                o["dead"] = _dead;
             }
             catch (Exception ex) { o["error"] = ex.Message; }
+            return o;
+        }
+
+        // The unified "what is he doing" the monitor shows big. The first controller that owns the body wins,
+        // in the same precedence Walk() hands the frame to, so the label can never disagree with whose Tick
+        // returned true. "detail" carries the long form (the building walk inside a mission run).
+        private JObject ApiTask()
+        {
+            JObject T(string kind, string phase, string text, string detail = null)
+            {
+                var t = new JObject { ["kind"] = kind };
+                if (phase != null) t["phase"] = phase;
+                t["text"] = text;
+                if (detail != null) t["detail"] = detail;
+                return t;
+            }
+            if (_dead) return T("dead", null, "Dead — at reclaim");
+            if (_run.Active) return T("missionrun", _run.PhaseName, _run.Status(), _mission.Active ? _mission.Status() : null);
+            if (_chewy.Asking) return T("chewy", _chewy.StageName, $"Chewy buffs ({_chewy.StageSeconds:0}s): {_chewy.Summary}");
+            if (_overland.Active) return T("overland", null, _overland.Status());
+            if (_hunt.Active) return T("hunt", null, "Pets hunting");
+            if (_resupply.Active) return T("resupply", null, "Resupplying");
+            if (_travel.Active) return T("travel", null, "Catching the owner's ride");
+            if (_follow.ManualActive || _follow.ReplayCount > 0)
+                return T("walk", null, _follow.ManualActive ? "Manual walk to a mark" : "Replaying a recorded route");
+            return T(_mode.ToString().ToLowerInvariant(), null, _ctx.Behavior);
+        }
+
+        // GET /inventory: every item where it sits — the worn slots (backpacks included, they are items too)
+        // plus each bag's contents. Polled slowly (the monitor asks every ~10 s, or at once when /status's
+        // freeSlots moves); names are the same ItemData templates the bot itself matches wants against.
+        private JObject ApiInventory()
+        {
+            var o = new JObject();
+            try
+            {
+                o["freeSlots"] = Inventory.NumFreeSlots;
+                o["items"] = new JArray(Inventory.Items
+                    .Where(x => x.Slot.Type == IdentityType.Inventory)
+                    .OrderBy(x => x.Slot.Instance)
+                    .Select(ItemJson));
+                var bags = new JArray();
+                foreach (var c in Inventory.Containers)
+                {
+                    // KNOWN vs UNKNOWN: a bag's contents arrive only when it is OPENED. At login every worn
+                    // bag is registered as an empty Handle-0 shell (RegisterItems calls OnContainerUpdate with
+                    // no slots), and ResetContainers empties them again on zone — so NumFreeSlots would say
+                    // "21 free" about a bag the bot has never looked into. Handle != 0 means the server has
+                    // actually told us what is inside; only then is the count a fact.
+                    bool known = c.Handle != 0;
+                    bags.Add(new JObject
+                    {
+                        ["name"] = c.Item?.Name ?? "backpack",
+                        ["known"] = known,
+                        ["free"] = known ? (int?)c.NumFreeSlots : null,
+                        ["items"] = known ? new JArray(c.Items.OrderBy(x => x.Slot.Instance).Select(ItemJson)) : new JArray(),
+                    });
+                }
+                o["bags"] = bags;
+            }
+            catch (Exception ex) { o["error"] = ex.Message; }
+            return o;
+        }
+
+        private static JObject ItemJson(Item it) =>
+            new JObject { ["slot"] = it.Slot.Instance & 0xFF, ["name"] = it.Name, ["ql"] = it.Ql, ["count"] = it.Count };
+
+        // GET /log?after=N: the ring past N plus the current high-water seq. The monitor keeps the highest
+        // seq it has seen and asks again; a seq that went BACKWARDS means the bot restarted (ring empty,
+        // counter at 0) and the monitor should drop its buffer and take everything.
+        private JObject ApiLog(int after)
+        {
+            var o = new JObject();
+            lock (_logRing)
+            {
+                o["seq"] = _logSeq;
+                var lines = new JArray();
+                foreach (var e in _logRing)
+                    if (e.Seq > after) lines.Add(new JObject { ["seq"] = e.Seq, ["t"] = e.Time, ["line"] = e.Line });
+                o["lines"] = lines;
+            }
             return o;
         }
 

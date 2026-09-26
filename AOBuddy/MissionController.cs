@@ -321,7 +321,7 @@ namespace AOBuddy
             }
         }
 
-        private string Status()
+        public string Status()
         {
             var me = DynelManager.LocalPlayer;
             if (_grid == null) return "Not in a mission building.";

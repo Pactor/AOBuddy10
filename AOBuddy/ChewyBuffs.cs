@@ -731,6 +731,12 @@ namespace AOBuddy
 
         public bool Asking => _stage != Stage.Idle && _stage != Stage.Done;
 
+        // The ask's state, for the API's task object: which stage we are waiting out, how long it has run,
+        // and what the last completed plan summed up to.
+        public string StageName => _stage.ToString();
+        public double StageSeconds => _stageTime;
+        public string Summary => _lastSummary;
+
         /// <summary>One-shot startup ask (BuffAskOnStart): after the grace delay, once, not rez-sick.</summary>
         public void StartupTick(LocalPlayer me, double dt)
         {

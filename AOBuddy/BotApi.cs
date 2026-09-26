@@ -16,6 +16,8 @@ namespace AOBuddy
     ///   GET  /status          -> JSON: the heartbeat line, the mission run's status, zone, position, credits, free slots
     ///   POST /command  (body) -> runs the text exactly as an owner tell; JSON: the replies it produced within ~2 s
     ///   GET  /nav             -> JSON for a monitor: position, the route being walked, the server's snap-backs, his trail
+    ///   GET  /inventory       -> JSON for a monitor: worn slots and every backpack with contents (AOBuddyMonitor, 2026-09-26)
+    ///   GET  /log?after=N     -> JSON: the log ring buffer's lines with sequence numbers past N (empty once caught up)
     /// Every command taken this way is logged as "API CMD: ...".
     /// </summary>
     public sealed class BotApi
@@ -26,13 +28,17 @@ namespace AOBuddy
         private readonly Func<JObject> _status;
         private readonly Action<string, Action<string>> _command;
         private readonly Func<JObject> _nav;
+        private readonly Func<JObject> _inventory;
+        private readonly Func<int, JObject> _logAfter;
         private TcpListener _listener;
         private Thread _thread;
         private volatile bool _running;
 
-        public BotApi(int port, IClock clock, Action<string> log, Func<JObject> status, Action<string, Action<string>> command, Func<JObject> nav = null)
+        public BotApi(int port, IClock clock, Action<string> log, Func<JObject> status, Action<string, Action<string>> command,
+                      Func<JObject> nav = null, Func<JObject> inventory = null, Func<int, JObject> logAfter = null)
         {
-            _port = port; _clock = clock; _log = log; _status = status; _command = command; _nav = nav;
+            _port = port; _clock = clock; _log = log; _status = status; _command = command;
+            _nav = nav; _inventory = inventory; _logAfter = logAfter;
         }
 
         public void Start()
@@ -85,6 +91,18 @@ namespace AOBuddy
                     string[] lines = head.ToString().Split(new[] { "\r\n" }, StringSplitOptions.None);
                     string[] req = lines[0].Split(' ');
                     string method = req.Length > 0 ? req[0] : "", path = req.Length > 1 ? req[1] : "/";
+                    // "?after=N" on /log: everything before it is the route, everything after is one query arg.
+                    int q = path.IndexOf('?');
+                    var args = new Dictionary<string, string>();
+                    if (q >= 0)
+                    {
+                        foreach (string kv in path.Substring(q + 1).Split('&'))
+                        {
+                            int eq = kv.IndexOf('=');
+                            if (eq > 0) args[kv.Substring(0, eq)] = Uri.UnescapeDataString(kv.Substring(eq + 1));
+                        }
+                        path = path.Substring(0, q);
+                    }
                     int len = 0;
                     foreach (var l in lines)
                         if (l.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase)) int.TryParse(l.Substring(15).Trim(), out len);
@@ -97,7 +115,10 @@ namespace AOBuddy
                     if (method == "GET" && path.StartsWith("/status")) result = _status();
                     else if (method == "POST" && path.StartsWith("/command")) result = RunCommand(text);
                     else if (method == "GET" && path.StartsWith("/nav") && _nav != null) result = _nav();
-                    else result = new JObject { ["error"] = "GET /status, GET /nav or POST /command" };
+                    else if (method == "GET" && path.StartsWith("/inventory") && _inventory != null) result = _inventory();
+                    else if (method == "GET" && path.StartsWith("/log") && _logAfter != null)
+                        result = _logAfter(args.TryGetValue("after", out string a) && int.TryParse(a, out int after) ? after : -1);
+                    else result = new JObject { ["error"] = "GET /status, GET /nav, GET /inventory, GET /log or POST /command" };
                     Reply(s, result.ToString());
                 }
                 catch (Exception ex) { try { _log($"API: request failed: {ex.Message}"); } catch { } }

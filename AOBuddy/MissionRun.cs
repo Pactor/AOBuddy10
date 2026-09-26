@@ -394,6 +394,9 @@ namespace AOBuddy
         public string Status() => !Active ? "No mission run going." :
             $"{_phase} ({_phaseTime:0}s); {_done} done; {(_current == null ? "no mission in hand" : "on " + MissionRoll.Line(_current))}.";
 
+        /// <summary>The phase name alone, for the API's task chip.</summary>
+        public string PhaseName => _phase.ToString();
+
         public void OnDied()
         {
             if (!Active) return;
@@ -1209,7 +1212,14 @@ namespace AOBuddy
                 o["pf"] = (int)Playfield.ModelId;
                 o["zone"] = Zoning.Name((int)Playfield.ModelId);
                 o["inMission"] = _mission.InMission;
-                if (me != null) o["pos"] = V(me.Transform.Position);
+                if (me != null)
+                {
+                    o["pos"] = V(me.Transform.Position);
+                    // The direction he faces, as a ground-plane forward vector: the map draws the marker
+                    // arrow along (x, z) in the same axes as the position points, no yaw convention to agree on.
+                    var fwd = me.MovementComponent.Heading.Forward;
+                    o["hdg"] = new JArray(Math.Round(fwd.X, 3), Math.Round(fwd.Z, 3));
+                }
                 if (_phase == Phase.Hike && _hike != null)
                 {
                     var e = _hike.Exit;

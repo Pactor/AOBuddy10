@@ -1,0 +1,85 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AOBuddyMonitor.MainWindow"
+        Title="AOBuddyMonitor"
+        Width="1280" Height="840" WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- TOP: what he is doing + vitals + xp + where he is. One glance, no tabs. -->
+        <Border Grid.Row="0" Padding="10,6" BorderBrush="#3a3a3a" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
+                <!-- chip + text as a grid so the text column is genuinely constrained by the * column
+                     (a horizontal StackPanel would desire its full text width and run under the bars) -->
+                <Grid Grid.Column="0" ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+                    <Border Grid.Column="0" x:Name="TaskChip" CornerRadius="3" Padding="7,3" Background="#555555" VerticalAlignment="Center">
+                        <TextBlock x:Name="TaskKind" FontWeight="Bold" FontSize="13" Text="…"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+                        <TextBlock x:Name="TaskText" FontSize="15" Text="waiting for the bot…" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="TaskDetail" FontSize="11" Foreground="#9a9a9a" Text="" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,0,26,0" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="HpTxt" FontSize="12" Text="HP ?" Margin="5,0"/>
+                    <ProgressBar x:Name="HpBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#3fbf4f"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Vertical" Margin="0,0,26,0" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="NanoTxt" FontSize="12" Text="Nano ?" Margin="5,0"/>
+                    <ProgressBar x:Name="NanoBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#5b8dd6"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" Orientation="Vertical" Margin="0,0,26,0"  HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="XpTxt" FontSize="12" Text="Lvl ?" Margin="5,0"/>
+                    <ProgressBar x:Name="XpBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#c9a648"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="4" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="ZoneTxt" FontSize="12" HorizontalAlignment="Right" Text="—"/>
+                    <TextBlock x:Name="PosTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
+                    <TextBlock x:Name="MoneyTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
+                </StackPanel>
+                <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="14,0,0,0">
+                    <TextBlock x:Name="ConnTxt" FontSize="12" Foreground="#d65b5b" Text="○ no bot"/>
+                    <TextBlock x:Name="FlagsTxt" FontSize="11" Foreground="#9a9a9a" HorizontalAlignment="Right" Text=""/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- MIDDLE: the map, and pets+inventory beside it -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,290">
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="14" Margin="8,4">
+                    <CheckBox x:Name="CbFollow" IsChecked="True" Content="follow" Checked="FollowChanged" Unchecked="FollowChanged"/>
+                    <CheckBox x:Name="CbSteps" IsChecked="True" Content="footsteps" Checked="StepsChanged" Unchecked="StepsChanged"/>
+                    <TextBlock VerticalAlignment="Center" Foreground="#9a9a9a" FontSize="11"
+                               Text="drag pans · wheel zooms · red = server snap-back"/>
+                </StackPanel>
+                <Panel Grid.Row="1" x:Name="MapHost"/>
+            </Grid>
+
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,8" Spacing="4">
+                    <TextBlock Text="PETS" FontWeight="Bold" Foreground="#9a9a9a" FontSize="12"/>
+                    <StackPanel x:Name="PetsPanel" Spacing="4"/>
+                    <TextBlock Text="INVENTORY" FontWeight="Bold" Foreground="#9a9a9a" FontSize="12" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="InvFreeTxt" FontSize="12" Text=""/>
+                    <StackPanel x:Name="InvPanel" Spacing="1"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- BOTTOM: the owner-tell box, then the log (bot lines + command traffic, newest at the end) -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,170" Background="#141414">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="8,5">
+                <TextBox x:Name="CmdBox" Width="520" Watermark="owner tell — stop, missionrun, petstatus, travelto …"
+                         KeyDown="CmdKeyDown" IsEnabled="True"/>
+                <Button x:Name="CmdSend" Content="Send" Click="CmdSendClick"/>
+                <TextBlock x:Name="CmdState" VerticalAlignment="Center" Foreground="#9a9a9a" FontSize="11" Text=""/>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" x:Name="LogScroll">
+                <StackPanel x:Name="LogPanel" Margin="8,3"/>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
