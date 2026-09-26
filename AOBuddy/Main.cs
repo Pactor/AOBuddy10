@@ -932,8 +932,7 @@ namespace AOBuddy
         // at login every bag is an empty Handle-0 shell, so /inventory honestly answers "unknown" until
         // then. A few seconds after login, open each worn bag once — the stash's proven open
         // (GameCommands.OpenContainer, Use with Temp4 0) — one per 1.5 s so each answer has room, and the
-        // monitor shows real contents and free slots from startup. Once per run: a zone empties the
-        // containers again (ResetContainers), but by then the run's own stash/shop opens cover it.
+        // monitor shows real contents and free slots from startup. Once per run: zoning keeps what was read.
         private double _bagReadAt;                      // clock the next open goes out (0 = not yet armed, -1 = done)
         private bool _bagReadLogged;
         private readonly HashSet<Identity> _bagReadDone = new HashSet<Identity>();
@@ -1113,7 +1112,7 @@ namespace AOBuddy
                 {
                     // KNOWN vs UNKNOWN: a bag's contents arrive only when it is OPENED. At login every worn
                     // bag is registered as an empty Handle-0 shell (RegisterItems calls OnContainerUpdate with
-                    // no slots), and ResetContainers empties them again on zone — so NumFreeSlots would say
+                    // no slots) — so NumFreeSlots would say
                     // "21 free" about a bag the bot has never looked into. Handle != 0 means the server has
                     // actually told us what is inside; only then is the count a fact.
                     bool known = c.Handle != 0;

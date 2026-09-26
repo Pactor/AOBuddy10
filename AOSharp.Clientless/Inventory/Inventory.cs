@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,14 +117,10 @@ namespace AOSharp.Clientless
             ItemAdded?.Invoke(item);
         }
 
+        // On zoning. A bag's contents don't change by zoning (Algorithman, 2026-09-26: "The bags contents are cleared
+        // when you zone. That's probably not necessary"), so what we know of them is kept; only the bank closes.
         internal static void ResetContainers()
         {
-            foreach (Container container in _containers)
-            {
-                container.Items = new List<Item>();
-                container.Handle = 0;
-            }
-
             Bank.IsOpen = false;
         }
 
