@@ -420,6 +420,10 @@ namespace AOBuddy
         public float[] WaterY = new float[0];   // v3 legacy: the playfield record's plane-table levels (the LAST liquid's
                                                 // levels — see WaterPolygons). Informational only; v4's rings are the truth
 
+        public byte[] TileColors;              // tilecolors.bin beside ground.bin when the extractor wrote one: 256 x [r,g,b]
+                                                // indexed by the tile byte (its ground texture's median colour — the monitor
+                                                // paints terrain with it). null when absent; the renderer greys out instead.
+
         public static NavGround Read(string path)
         {
             using (var r = new BinaryReader(File.OpenRead(path)))
@@ -458,6 +462,11 @@ namespace AOBuddy
                 Buffer.BlockCopy(raw, p, g.Tiles, 0, g.Tiles.Length * 2); p += g.Tiles.Length * 2;
                 g.Building = new byte[(w - 1) * (h - 1)];
                 Buffer.BlockCopy(raw, p, g.Building, 0, g.Building.Length);
+                string tcPath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(path)), "tilecolors.bin");
+                if (File.Exists(tcPath))
+                    using (var tr = new BinaryReader(File.OpenRead(tcPath)))
+                        if (Encoding.ASCII.GetString(tr.ReadBytes(4)) == "AOTC" && tr.ReadInt32() == 1 && tr.ReadInt32() == 256)
+                            g.TileColors = tr.ReadBytes(256 * 3);
                 return g;
             }
         }

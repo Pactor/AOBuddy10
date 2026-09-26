@@ -28,7 +28,28 @@ namespace AONavExtractor
             {
                 if (args.Length >= 1 && args[0] == "--collision-worker") return CollisionWorker(args);
                 if (args.Length >= 3 && args[0] == "--hostwater") return HostWater(args[1], int.Parse(args[2]));
-                if (args.Length >= 4 && args[0] == "--dump") { string db0 = Path.Combine(args[1], "cd_image", "data", "db"); using (var r0 = new Rdb(db0)) { byte[] rec = r0.Read(int.Parse(args[2]), int.Parse(args[3])); Console.WriteLine("// length {0}", rec.Length); Dump(rec, 0, rec.Length, "record"); } return 0; }
+                if (args.Length >= 3 && args[0] == "--grounddump") return HostGround(args[1], int.Parse(args[2]));
+                if (args.Length >= 3 && args[0] == "--tilemapdump") return TileMapDump(args[1], int.Parse(args[2]));
+                if (args.Length >= 4 && args[0] == "--tilecolors") return TileColors.Run(args[1], args[2], args[3], args.Length > 4 && args[4] == "--png");
+                if (args.Length >= 6 && args[0] == "--offsettest") return TileColors.OffsetTest(args[1], args[2], int.Parse(args[3]), int.Parse(args[4]), int.Parse(args[5]));
+                if (args.Length >= 6 && args[0] == "--optest") return TileColors.OpTest(args[1], args[2], int.Parse(args[3]), int.Parse(args[4]), int.Parse(args[5]));
+                if (args.Length >= 5 && args[0] == "--mapwin") return TileColors.MapWin(args[1], args[2], int.Parse(args[3]), int.Parse(args[4]));
+                if (args.Length >= 4 && args[0] == "--dump")
+                {
+                    string db0 = Path.Combine(args[1], "cd_image", "data", "db");
+                    using (var r0 = new Rdb(db0))
+                    {
+                        if (!r0.Has(int.Parse(args[2]), int.Parse(args[3])))
+                        {
+                            Console.WriteLine("// no such record; instances of type {0}: {1}", args[2], string.Join(",", r0.Instances(int.Parse(args[2])).Take(40)));
+                            return 1;
+                        }
+                        byte[] rec = r0.Read(int.Parse(args[2]), int.Parse(args[3]));
+                        Console.WriteLine("// length {0}", rec.Length);
+                        Dump(rec, 0, rec.Length, "record");
+                    }
+                    return 0;
+                }
                 if (args.Length >= 3 && args[0] == "--probe") return Probe(args[1], int.Parse(args[2]));
                 if (args.Length < 2) { Console.Error.WriteLine("usage: AONavExtractor <AO install dir> <out dir> [--nav <dir>] [--only pf,pf] [--no-collision] [--tri <dir>] [--keep-tri]"); return 2; }
                 return Run(args);
@@ -298,6 +319,273 @@ namespace AONavExtractor
         }
 
         static void ZeroMem(IntPtr p, int n) { for (int i = 0; i < n; i += 8) Marshal.WriteInt64(p, i, 0); }
+
+        // ---------------------------------------------------------------- tilemapdump: the client's own tile->texture answer
+
+        /// <summary>
+        /// The end of the tile-colour hunt (2026-09-26): hosts serialize.dll + Anarchy.dll, parses the
+        /// CHGA ground record with the CLIENT'S OWN ObjectArchive, builds AnarchyGroundData_t, and asks
+        /// its exported TileTexture(ushort) what RTexture_t each distinct tile value renders with — then
+        /// matches those pointers against the archive's objects (ReadObject ids = the texture numbering
+        /// the texsheet uses). Whatever mapping the client applies (DecompressTileMap included) is in
+        /// that answer, no guessing left. x86 only.
+        /// </summary>
+        static unsafe int TileMapDump(string client, int pf)
+        {
+            if (IntPtr.Size != 4) { Console.Error.WriteLine("x86 build required"); return 1; }
+            [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)] static extern bool SetDllDirectoryW(string path);
+            [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)] static extern IntPtr LoadLibraryExA(string path, IntPtr file, uint flags);
+            [DllImport("kernel32", CharSet = CharSet.Ansi)] static extern IntPtr GetProcAddress(IntPtr m, string name);
+            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 8;
+            SetDllDirectoryW(client);
+            IntPtr Load(string name) => LoadLibraryExA(Path.Combine(client, name), IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
+            [DllImport("kernel32")] static extern uint GetLastError();
+            Load("msvcr100.dll"); Load("msvcp100.dll");
+            IntPtr ser = IntPtr.Zero, ds = IntPtr.Zero;
+            foreach (string pre in new[] { "Utils.dll", "serialize.dll", "BinaryStream.dll", "InstanceManager.dll",
+                                           "DatabaseController.dll", "ResourceManager.dll", "GameData.dll",
+                                           "Collision.dll", "PathFinder.dll", "DisplaySystem.dll", "TideRandy.dll" })
+            {
+                IntPtr h = Load(pre);
+                if (h == IntPtr.Zero)
+                {
+                    Console.Error.WriteLine($"load {pre} failed (err {GetLastError()})");
+                    if (pre == "serialize.dll" || pre == "Anarchy.dll") return 1;
+                }
+                if (pre == "serialize.dll") ser = h;
+                if (pre == "DisplaySystem.dll") ds = h;
+            }
+            if (ser == IntPtr.Zero || ds == IntPtr.Zero) { Console.Error.WriteLine("serialize/DisplaySystem load failed"); return 1; }
+            IntPtr Sym(IntPtr m, string n) { var p = GetProcAddress(m, n); if (p == IntPtr.Zero) throw new EntryPointNotFoundException(n); return p; }
+
+            delegate* unmanaged[Thiscall]<IntPtr, void*, uint, IntPtr> memCtor = (delegate* unmanaged[Thiscall]<IntPtr, void*, uint, IntPtr>)Sym(ser, "??0MemoryIO_t@fun@@QAE@PBXI@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> memDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(ser, "??1MemoryIO_t@fun@@UAE@XZ");
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, bool, IntPtr> arcCtor = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, bool, IntPtr>)Sym(ser, "??0ObjectArchive_c@fun@@QAE@PAVIO_t@1@_N@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> arcDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(ser, "??1ObjectArchive_c@fun@@UAE@XZ");
+            delegate* unmanaged[Thiscall]<IntPtr, int> arcCurId = (delegate* unmanaged[Thiscall]<IntPtr, int>)Sym(ser, "?GetCurrentObjID@ObjectArchive_c@fun@@QBEHXZ");
+            delegate* unmanaged[Thiscall]<IntPtr, int, IntPtr> arcReadObj = (delegate* unmanaged[Thiscall]<IntPtr, int, IntPtr>)Sym(ser, "?ReadObject@ObjectArchive_c@fun@@QAEPAVSerializable_c@2@H@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr> gdCtor = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr>)Sym(ds, "??0AnarchyGroundData_t@@QAE@PAVObjectArchive_c@fun@@@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> gdDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(ds, "??1AnarchyGroundData_t@@UAE@XZ");
+            delegate* unmanaged[Thiscall]<IntPtr, ushort, IntPtr> tileTex = (delegate* unmanaged[Thiscall]<IntPtr, ushort, IntPtr>)Sym(ds, "?TileTexture@AnarchyGroundData_t@@QBEPBVRTexture_t@@G@Z");
+
+            string db = Path.Combine(client, "cd_image", "data", "db");
+            using (var rdb = new Rdb(db))
+            {
+                byte[] g = rdb.Read(1000009, pf);
+                if (g[0] != 'C' || g[1] != 'H' || g[2] != 'G' || g[3] != 'A') { Console.WriteLine("pf {0}: no CHGA record", pf); return 1; }
+                int at = Util.IndexOf(g, "AnarchyGroundDataDB_t") - 21;   // the reflective block's start
+                Console.WriteLine($"pf {pf}: record {g.Length} bytes, reflective block at 0x{at:X}");
+                IntPtr data = Marshal.AllocHGlobal(g.Length - at);
+                IntPtr io = Marshal.AllocHGlobal(0x100);
+                IntPtr arc = Marshal.AllocHGlobal(0x200);
+                IntPtr gd = Marshal.AllocHGlobal(1 << 24);
+                try
+                {
+                    Marshal.Copy(g, at, data, g.Length - at);
+                    ZeroMem(io, 0x100); ZeroMem(arc, 0x200); ZeroMem(gd, 1 << 24);
+                    memCtor(io, (void*)data, (uint)(g.Length - at));
+                    arcCtor(arc, io, false);
+                    delegate* unmanaged[Thiscall]<IntPtr, IntPtr, void> arcLoad = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, void>)Sym(ser, "?LoadFromStream@ObjectArchive_c@fun@@QAEXPAVIO_t@2@@Z");
+                    arcLoad(arc, io);
+                    int cur = arcCurId(arc);
+                    Console.WriteLine("archive loaded, current obj id " + cur);
+
+                    IntPtr ground = gdCtor(gd, arc);
+                    Console.WriteLine("AnarchyGroundData_t @0x" + ((long)ground).ToString("X"));
+                    int total = arcCurId(arc);
+                    Console.WriteLine("archive objects: " + total);
+
+                    // pointer -> archive object id (0-based; my texsheet numbering = the same order)
+                    var byPtr = new Dictionary<long, int>();
+                    for (int i = 0; i < Math.Min(total, 2000); i++)
+                    {
+                        IntPtr o = arcReadObj(arc, i);
+                        if (o != IntPtr.Zero && !byPtr.ContainsKey((long)o)) byPtr[(long)o] = i;
+                    }
+                    Console.WriteLine(byPtr.Count + " mapped object pointer(s)");
+
+                    // every distinct tile u16 from the shipped ground.bin
+                    string gpath = Path.Combine("F:", "testcellao", "AOBuddy10", "AOBuddy", "GameData", "Nav", pf.ToString(), "ground.bin");
+                    ushort[] tiles = null; int tw = 0, th = 0;
+                    if (File.Exists(gpath))
+                    {
+                        var (t2, w2, h2) = ReadAongTiles(gpath);
+                        tiles = t2; tw = w2; th = h2;
+                        Console.WriteLine($"ground.bin: {tw}x{th} cells");
+                    }
+                    var distinct = new List<ushort>();
+                    if (tiles != null) { var s = new HashSet<ushort>(tiles); distinct = s.OrderBy(v => v).ToList(); }
+                    else for (int v = 0; v < 256; v++) distinct.Add((ushort)v);
+                    Console.WriteLine(distinct.Count + " distinct tile value(s)");
+                    foreach (ushort v in distinct)
+                    {
+                        IntPtr tex = tileTex(gd, v);
+                        int id = tex != IntPtr.Zero && byPtr.TryGetValue((long)tex, out int i) ? i : -1;
+                        Console.WriteLine($"  tile 0x{v:X4} (lo {v & 0xFF,3}, hi {v >> 8,3}) -> {(tex == IntPtr.Zero ? "NULL" : "obj " + id)}");
+                    }
+                    gdDtor(gd);
+                    arcDtor(arc);
+                    memDtor(io);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data); Marshal.FreeHGlobal(io); Marshal.FreeHGlobal(arc); Marshal.FreeHGlobal(gd);
+                }
+            }
+            return 0;
+        }
+
+        /// <summary>ground.bin (AONG v2-4) → just the per-cell tile u16s.</summary>
+        static (ushort[] tiles, int w, int h) ReadAongTiles(string path)
+        {
+            using (var r = new BinaryReader(File.OpenRead(path)))
+            {
+                if (Encoding.ASCII.GetString(r.ReadBytes(4)) != "AONG") throw new InvalidDataException(path + ": not AONG");
+                int ver = r.ReadInt32();
+                int w = r.ReadInt32(), h = r.ReadInt32();
+                r.ReadSingle(); r.ReadSingle(); r.ReadInt32();          // cell, heightScale, sourceBits
+                if (ver >= 3) { int wc = r.ReadInt32(); r.BaseStream.Seek(wc * 4, SeekOrigin.Current); }
+                if (ver >= 4)
+                {
+                    int qc = r.ReadInt32();
+                    for (int q = 0; q < qc; q++)
+                    {
+                        int pts = r.ReadInt32(); r.ReadSingle();
+                        r.BaseStream.Seek(pts * 8, SeekOrigin.Current);
+                    }
+                }
+                int rawLen = r.ReadInt32(), zLen = r.ReadInt32();
+                byte[] raw = Util.ZlibDecompress(r.ReadBytes(zLen));
+                var tiles = new ushort[(w - 1) * (h - 1)];
+                Buffer.BlockCopy(raw, w * h * 2, tiles, 0, tiles.Length * 2);
+                return (tiles, w - 1, h - 1);
+            }
+        }
+
+        // ---------------------------------------------------------------- grounddump: the client's own tilemap decompression
+
+        /// <summary>
+        /// Hosts N3.dll, runs the client's RDBPlayfield_t::ReadBlob over the framed playfield record,
+        /// then scans committed memory for the u16 array DecompressTileMap must have produced: the
+        /// ground's per-cell values, whatever transform the client applies. A run is any sequence of
+        /// u16s whose high bytes stay in the observed flag set; runs over 64 Ki entries get dumped.
+        /// 2026-09-26, the tile-color hunt: the record's own bytes render speckled under every direct
+        /// reading, so the client's decode is the only remaining authority. x86 only.
+        /// </summary>
+        static unsafe int HostGround(string client, int pf)
+        {
+            if (IntPtr.Size != 4) { Console.Error.WriteLine("x86 build required"); return 1; }
+            [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)] static extern bool SetDllDirectoryW(string path);
+            [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)] static extern IntPtr LoadLibraryExA(string path, IntPtr file, uint flags);
+            [DllImport("kernel32", CharSet = CharSet.Ansi)] static extern IntPtr GetProcAddress(IntPtr m, string name);
+            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 8;
+            SetDllDirectoryW(client);
+            IntPtr Load(string name) => LoadLibraryExA(Path.Combine(client, name), IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
+            Load("msvcr100.dll"); Load("msvcp100.dll");
+            IntPtr bs = Load("BinaryStream.dll");
+            Load("InstanceManager.dll"); Load("DatabaseController.dll"); Load("ResourceManager.dll");
+            Load("GameData.dll"); Load("Utils.dll"); Load("Collision.dll"); Load("PathFinder.dll");
+            IntPtr n3 = Load("N3.dll");
+            if (bs == IntPtr.Zero || n3 == IntPtr.Zero) { Console.Error.WriteLine("DLL load failed"); return 1; }
+            IntPtr Sym(IntPtr m, string n) { var p = GetProcAddress(m, n); if (p == IntPtr.Zero) throw new EntryPointNotFoundException(n); return p; }
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr> pfCtor = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, IntPtr>)Sym(n3, "??0RDBPlayfield_t@@IAE@ABVIdentity_t@@@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, IntPtr, byte> pfRead = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, byte>)Sym(n3, "?ReadBlob@RDBPlayfield_t@@UAE_NAAVBinaryStream@@@Z");
+            delegate* unmanaged[Thiscall]<IntPtr, void> pfDtor = (delegate* unmanaged[Thiscall]<IntPtr, void>)Sym(n3, "??1RDBPlayfield_t@@MAE@XZ");
+
+            string db = Path.Combine(client, "cd_image", "data", "db");
+            using (var rdb = new Rdb(db))
+            {
+                byte[] blob = rdb.ReadFramed(1000001, pf);
+                Console.WriteLine($"pf {pf}: framed record {blob.Length} bytes");
+                IntPtr data = Marshal.AllocHGlobal(blob.Length);
+                IntPtr ident = Marshal.AllocHGlobal(8);
+                IntPtr obj = Marshal.AllocHGlobal(0x400);
+                IntPtr strm = Marshal.AllocHGlobal(0x400);
+                try
+                {
+                    Marshal.Copy(blob, 0, data, blob.Length);
+                    Marshal.WriteInt32(ident, 0, 1000001); Marshal.WriteInt32(ident, 4, pf);
+                    ZeroMem(obj, 0x400); ZeroMem(strm, 0x400);
+                    pfCtor(obj, ident);
+                    var lsCtor2 = (delegate* unmanaged[Thiscall]<IntPtr, IntPtr, uint, IntPtr>)Sym(bs, "??0BinaryLStream@@QAE@PAXI@Z");
+                    lsCtor2(strm, data, (uint)blob.Length);
+                    bool ok = (pfRead(obj, strm) & 1) != 0;
+                    Console.WriteLine("ReadBlob -> " + ok);
+                    if (ok) ScanForTileArrays(pf);
+                    pfDtor(obj);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data); Marshal.FreeHGlobal(ident); Marshal.FreeHGlobal(obj); Marshal.FreeHGlobal(strm);
+                }
+            }
+            return 0;
+        }
+
+        [DllImport("kernel32")] static extern IntPtr GetCurrentProcess();
+        [DllImport("kernel32")] static extern int VirtualQueryEx(IntPtr proc, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION info, int len);
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct MEMORY_BASIC_INFORMATION
+        {
+            public IntPtr BaseAddress; public IntPtr AllocationBase; public uint AllocationProtect;
+            public UIntPtr RegionSize; public uint State; public uint Protect; public uint Type;
+        }
+
+        static unsafe void ScanForTileArrays(int pf)
+        {
+            Console.WriteLine("scanning committed memory for tile u16 runs...");
+            var mbi = new MEMORY_BASIC_INFORMATION();
+            IntPtr addr = IntPtr.Zero;
+            var hits = new List<(IntPtr at, int len)>();
+            while (VirtualQueryEx(GetCurrentProcess(), addr, out mbi, sizeof(MEMORY_BASIC_INFORMATION)) == sizeof(MEMORY_BASIC_INFORMATION))
+            {
+                long size = (long)(uint)mbi.RegionSize;
+                if (mbi.State == 0x1000 /* committed */ && (mbi.Protect & 0xFF) >= 0x02 && (mbi.Protect & 0x100) == 0 /* readable, no guard */
+                    && size <= (64 << 20) && (long)mbi.BaseAddress > 0x10000)
+                {
+                    byte* p = (byte*)mbi.BaseAddress;
+                    int n = (int)size / 2;
+                    int run = 0;
+                    for (int i = 0; i < n; i++)
+                    {
+                        ushort v = *(ushort*)(p + i * 2);
+                        int hi = v >> 8;
+                        bool okv = hi == 0 || hi == 1 || hi == 64 || hi == 65 || hi == 128 || hi == 129 || hi == 192 || hi == 193;
+                        if (okv) run++;
+                        else
+                        {
+                            if (run >= 65536) hits.Add(((IntPtr)(p + (i - run) * 2), run));
+                            run = 0;
+                        }
+                    }
+                    if (run >= 65536) hits.Add(((IntPtr)(p + (n - run) * 2), run));
+                }
+                addr = (IntPtr)((long)mbi.BaseAddress + size);
+                if ((long)addr > 0x7FFFFFF0) break;
+            }
+            Console.WriteLine("{0} candidate run(s)", hits.Count);
+            foreach (var (at, len) in hits.OrderByDescending(h => h.len).Take(8))
+            {
+                ushort* u = (ushort*)at;
+                var hiC = new Dictionary<int, int>();
+                var loC = new Dictionary<int, int>();
+                for (int i = 0; i < len; i++) { int h = u[i] >> 8; hiC[h] = hiC.TryGetValue(h, out var a) ? a + 1 : 1; }
+                for (int i = 0; i < Math.Min(len, 200000); i++) { int l = u[i] & 0xFF; loC[l] = loC.TryGetValue(l, out var a2) ? a2 + 1 : 1; }
+                Console.WriteLine("  run @0x{0:X} len {1}  hi: {2}  distinct lo (first 200k): {3}", (long)at, len,
+                    string.Join(" ", hiC.OrderByDescending(k => k.Value).Take(8).Select(k => $"{k.Key}x{k.Value}")),
+                    loC.Count);
+                Console.WriteLine("    first 32: " + string.Join(" ", Enumerable.Range(0, Math.Min(32, len)).Select(i => $"0x{u[i]:X4}")));
+                string file = Path.Combine(Path.GetTempPath(), $"grounddump-{pf}-0x{(long)at:X}.bin");
+                using (var f = File.Create(file))
+                {
+                    var buf = new byte[Math.Min(len, 1_200_000) * 2];
+                    Marshal.Copy(at, buf, 0, buf.Length);
+                    f.Write(buf, 0, buf.Length);
+                }
+                Console.WriteLine("    dumped " + file);
+            }
+        }
 
         static float readF(IntPtr p, int off) { float[] f = new float[1]; Marshal.Copy(p + off, f, 0, 1); return f[0]; }
 

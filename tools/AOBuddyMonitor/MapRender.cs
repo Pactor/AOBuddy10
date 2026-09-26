@@ -10,10 +10,13 @@ namespace AOBuddyMonitor
 {
     /// <summary>
     /// The map background: one pixel per heightfield cell, coloured by the bot's own answers — the same
-    /// ground.bin, the same SwimY verdict tools/navmap renders. Linked against AOBuddy.csproj on purpose
-    /// so this can never drift from what the bot walks on (the RDB-sweep higher-resolution terrain, when
-    /// it comes, lands in the same files and shows up here unchanged). The water sweep is not free, so
-    /// renders happen on a background task and land in the cache when ready.
+    /// ground.bin, the same SwimY verdict tools/navmap renders. When the extractor dropped a tilecolors.bin
+    /// beside ground.bin (per-tile texture medians, pulled from the client's own ground record), the
+    /// terrain paints in the zone's real colours × height shading; without it the height grey ramp stands
+    /// in. Linked against AOBuddy.csproj on purpose so this can never drift from what the bot walks on
+    /// (the RDB-sweep higher-resolution terrain, when it comes, lands in the same files and shows up here
+    /// unchanged). The water sweep is not free, so renders happen on a background task and land in the
+    /// cache when ready.
     /// </summary>
     public sealed class MapRender
     {
@@ -29,6 +32,8 @@ namespace AOBuddyMonitor
         private readonly object _lock = new object();
         private readonly Dictionary<int, Terrain> _done = new Dictionary<int, Terrain>();
         private readonly HashSet<int> _loading = new HashSet<int>();
+        private readonly List<int> _doneOrder = new List<int>();   // eviction order: terrain.png zones are
+                                                                    // 8192x7168 BGRA (~235 MB) — keep few
         private readonly string _pluginDir;
         private DateTime _loadedAt;
         private Dictionary<int, List<List<float[]>>> _steps = new Dictionary<int, List<List<float[]>>>();
@@ -51,7 +56,12 @@ namespace AOBuddyMonitor
                         lock (_lock)
                         {
                             _loading.Remove(pf);
-                            if (rendered != null) _done[pf] = rendered;
+                            if (rendered != null)
+                            {
+                                _done[pf] = rendered;
+                                _doneOrder.Remove(pf); _doneOrder.Add(pf);
+                                while (_doneOrder.Count > 2) { _done.Remove(_doneOrder[0]); _doneOrder.RemoveAt(0); }
+                            }
                         }
                         Rendered?.Invoke(pf);
                     });
@@ -262,6 +272,82 @@ namespace AOBuddyMonitor
             catch { return null; }
         }
 
+        /// <summary>Decodes the extractor's terrain.png (8-bit truecolour, our own writer) to world-ordered
+        /// BGRA — un-flipping the game-oriented rows on the way in. null when anything about it surprises us.</summary>
+        private static (int w, int h, byte[] bgra)? DecodePng(byte[] all)
+        {
+            try
+            {
+                if (all.Length < 8 || all[0] != 0x89 || all[1] != (byte)'P') return null;
+                int p = 8, w = 0, h = 0, bd = 0, ct = 0;
+                var idat = new List<byte[]>();
+                while (p + 12 <= all.Length)
+                {
+                    int len = (all[p] << 24) | (all[p + 1] << 16) | (all[p + 2] << 8) | all[p + 3];
+                    string typ = System.Text.Encoding.ASCII.GetString(all, p + 4, 4);
+                    if (typ == "IHDR") { w = Be32(all, p + 8); h = Be32(all, p + 12); bd = all[p + 16]; ct = all[p + 17]; }
+                    else if (typ == "IDAT") { var c = new byte[len]; Buffer.BlockCopy(all, p + 8, c, 0, len); idat.Add(c); }
+                    else if (typ == "IEND") break;
+                    p += 12 + len;
+                }
+                if (w <= 0 || h <= 0 || bd != 8 || ct != 2 || idat.Count == 0) return null;
+                int zlen = 0; foreach (var c in idat) zlen += c.Length;
+                var z = new byte[zlen]; int zo = 0;
+                foreach (var c in idat) { Buffer.BlockCopy(c, 0, z, zo, c.Length); zo += c.Length; }
+                byte[] raw;
+                using (var ds = new System.IO.Compression.DeflateStream(new MemoryStream(z, 2, zlen - 2), System.IO.Compression.CompressionMode.Decompress))
+                using (var o = new MemoryStream()) { ds.CopyTo(o); raw = o.ToArray(); }
+                int stride = w * 3;
+                if (raw.Length < h * (stride + 1)) return null;
+                // the extractor writes up to 16 K wide (texsheet-exact texels); halve those so the bitmap
+                // stays ~235 MB instead of ~940
+                int step = 1;
+                while (w / step > 8192) step *= 2;
+                int dw = w / step, dh = h / step;
+                var bgra = new byte[dw * dh * 4];
+                var prev = new byte[stride];
+                var cur = new byte[stride];
+                for (int y = 0; y < h; y++)
+                {
+                    int f = raw[y * (stride + 1)];
+                    Buffer.BlockCopy(raw, y * (stride + 1) + 1, cur, 0, stride);
+                    if (f != 0) Unfilter(f, cur, prev, stride);
+                    if (y % step == 0)
+                    {
+                        int worldRow = dh - 1 - y / step;         // the extractor wrote game-oriented rows
+                        for (int x = 0; x < dw; x++)
+                        {
+                            int si = x * step * 3, di = (worldRow * dw + x) * 4;
+                            bgra[di] = cur[si + 2]; bgra[di + 1] = cur[si + 1]; bgra[di + 2] = cur[si]; bgra[di + 3] = 255;
+                        }
+                    }
+                    var t = prev; prev = cur; cur = t;
+                }
+                return (dw, dh, bgra);
+            }
+            catch { return null; }
+        }
+
+        private static int Be32(byte[] b, int at) => (b[at] << 24) | (b[at + 1] << 16) | (b[at + 2] << 8) | b[at + 3];
+
+        private static void Unfilter(int f, byte[] cur, byte[] prev, int n)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                int a = i >= 3 ? cur[i - 3] : 0, b = prev[i], c = i >= 3 ? prev[i - 3] : 0;
+                switch (f)
+                {
+                    case 1: cur[i] = (byte)(cur[i] + a); break;
+                    case 2: cur[i] = (byte)(cur[i] + b); break;
+                    case 3: cur[i] = (byte)(cur[i] + (a + b) / 2); break;
+                    case 4:
+                        int pp = a + b - c, pa = Math.Abs(pp - a), pb = Math.Abs(pp - b), pc = Math.Abs(pp - c);
+                        cur[i] = (byte)(cur[i] + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c));
+                        break;
+                }
+            }
+        }
+
         // ---- the render (navmap's colour logic: terrain grey, water blue, 256 m grid) ---------------------
 
         private Terrain Render(int pf)
@@ -274,6 +360,18 @@ namespace AOBuddyMonitor
                 int w = g.SamplesX - 1, h = g.SamplesZ - 1;
                 if (w <= 0 || h <= 0) return null;
                 float cell = g.Cell;
+
+                // the extractor's terrain.png when it wrote one: the zone's per-patch ground textures
+                // (one 16x16 per 256 m patch), water already baked blue. Its rows are game-oriented;
+                // the decoder un-flips so MakeBitmap's world-order flip lands right.
+                string terPath = Path.Combine(AOBuddyNav.FolderFor(_pluginDir, pf), "terrain.png");
+                if (File.Exists(terPath))
+                {
+                    var dec = DecodePng(File.ReadAllBytes(terPath));
+                    if (dec.HasValue)
+                        return new Terrain { Pf = pf, Name = nav.Name, W = dec.Value.w, H = dec.Value.h,
+                            Cell = w * cell / dec.Value.w, Bgra = dec.Value.bgra };
+                }
                 float Low(int iz, int ix) => g.Heights[iz * g.SamplesX + ix] * g.HeightScale;
                 float CornerMin(int iz, int ix) => Math.Min(Math.Min(Low(iz, ix), Low(iz, ix + 1)), Math.Min(Low(iz + 1, ix), Low(iz + 1, ix + 1)));
 
@@ -284,18 +382,32 @@ namespace AOBuddyMonitor
                 foreach (ushort v in g.Heights) { float hv = v * g.HeightScale; if (hv < hmin) hmin = hv; if (hv > hmax) hmax = hv; }
 
                 var img = new byte[w * h * 4];         // BGRA
+                byte[] tc = g.TileColors;              // the ground's own colours when the extractor wrote tilecolors.bin
                 for (int iz = 0; iz < h; iz++)
                     for (int ix = 0; ix < w; ix++)
                     {
                         int i = iz * w + ix;
                         float t = (CornerMin(iz, ix) - hmin) / Math.Max(0.1f, hmax - hmin);
-                        int v = 38 + (int)(150 * t);   // a shade darker than navmap: it is a background here
-                        int r = v, gr = v, b = v;
+                        int r, gr, b;
+                        if (tc != null)
+                        {
+                            // the tile's texture median, shaded by height — dimmed overall, it is a background
+                            int ti = (g.Tiles[i] & 0xFF) * 3;
+                            double bright = 0.55 + 0.45 * t;
+                            r = (int)Math.Clamp(tc[ti] * bright, 0, 255);
+                            gr = (int)Math.Clamp(tc[ti + 1] * bright, 0, 255);
+                            b = (int)Math.Clamp(tc[ti + 2] * bright, 0, 255);
+                        }
+                        else
+                        {
+                            int v = 38 + (int)(150 * t);   // a shade darker than navmap: it is a background here
+                            r = v; gr = v; b = v;
+                        }
                         double sw = g.SwimY((ix + 0.5f) * cell, (iz + 0.5f) * cell, 0.3);
                         if (!double.IsNaN(sw))
                         {
                             float depth = (float)(sw - g.HeightAt((ix + 0.5f) * cell, (iz + 0.5f) * cell));
-                            int a = Math.Min(200, 80 + (int)(depth * 22));
+                            int a = Math.Min(215, 110 + (int)(depth * 22));
                             r += (50 - r) * a / 255; gr += (100 - gr) * a / 255; b += (230 - b) * a / 255;
                         }
                         img[i * 4] = (byte)b; img[i * 4 + 1] = (byte)gr; img[i * 4 + 2] = (byte)r; img[i * 4 + 3] = 255;
