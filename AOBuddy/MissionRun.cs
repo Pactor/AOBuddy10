@@ -1651,6 +1651,15 @@ namespace AOBuddy
                 var d0 = new Vector3(e.A.X - from.X, 0, e.A.Z - from.Z);
                 if (d0.Magnitude < 0.5f) d0 = new Vector3(1, 0, 0);
                 _hikeDir0 = d0 * (1f / d0.Magnitude);
+                // FROM ITS FRONT: statels carry their real rotation now (Algorithman bba7c52; they all faced north
+                // before). At the Borealis -> SWB gateway (05:41, 2026-09-26) the walk-up from the side stopped him
+                // on the frame, 1.6-1.9 m off the centre, three times. Approach along the object's facing first;
+                // the ladder below still turns 90 degrees every two tries if the front isn't the way in.
+                if (e.ObjInstance != 0 && DynelManager.Find(new Identity((IdentityType)e.ObjType, e.ObjInstance), out Dynel sd))
+                {
+                    var front = FlatFront(sd);
+                    if (front.Magnitude > 0.5f) { _hikeDir0 = new Vector3(-front.X, 0, -front.Z); _ctx.Log($"MISSIONRUN: approaching {e} from its front ({front.X:0.00},{front.Z:0.00})."); }
+                }
                 _hikePass = 0; _hikePassStage = 0; _hikePassAt = _clock;
             }
             if (_hikePass >= T("standtries"))
