@@ -967,6 +967,19 @@ namespace AOBuddy
                         bool noRoute = report != null && report.StartsWith("No route", StringComparison.OrdinalIgnoreCase)
                                        && report.IndexOf("search", StringComparison.OrdinalIgnoreCase) < 0;
                         if (noPath || noRoute) { Skip("I can't do it from the entrance: " + report); return false; }
+                        // A building of mobs far tougher than him: skip it at the door. 01:16 and 01:52 (2026-09-26): two
+                        // buildings of A-500 Soldiers/Elites (levels 35-40, 1878-2309 HP; him level 46, 815 HP) - fled at
+                        // 38%, then died. The server sends the building's mobs within ~90 m at the zone-in.
+                        if (me.TryGetStat(Stat.MaxHealth, out int myMax) && myMax > 0)
+                        {
+                            var tough = DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.Identity != _mission.FindPersonTarget
+                                                                     && n.TryGetStat(Stat.MaxHealth, out int mh) && mh > 2 * myMax).ToList();
+                            if (tough.Count >= 4)
+                            {
+                                Skip($"too tough: {tough.Count} mobs in sight with over twice my HP ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))})");
+                                return false;
+                            }
+                        }
                     }
                     _resumeBlitz = false;
                     _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
