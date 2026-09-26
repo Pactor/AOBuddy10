@@ -36,6 +36,7 @@ namespace AOBuddy
         private const float EndMatch = 6f;      // a start or goal this close to a fixed object counts as it
         private const float SnapDrop = 6f;      // a pull-back this close to a route drops it
         private const int MaxUses = 10;
+        private const float MinLength = 30f;   // metres; shorter routes are not kept
         private const double MaxDays = 3;
 
         public static void Init(string pluginDir, Action<string> log)
@@ -129,6 +130,8 @@ namespace AOBuddy
             lock (Gate)
             {
                 if (_file == null || route == null || route.Count < 2) return;
+                float len = 0; for (int i = 1; i < route.Count; i++) len += Movement.Flat(route[i - 1], route[i]);
+                if (len < MinLength) return;                  // short hops are cheap to plan (the hike probes 20 at once)
                 int ea = EndAt(grid.Pf, a), eb = EndAt(grid.Pf, b);
                 if (ea < 0 || eb < 0 || ea == eb) return;
                 _routes[Key(grid.Pf, ea, eb, reach, goalY)] = new Entry

@@ -158,7 +158,10 @@ namespace AOSharp.Clientless
             if (!SkillTrickleData.SkillTrickle.TryGetValue(stat, out var trickle))
                 return 0;
 
-            return (int)((GetStat(Stat.Strength) * trickle[0] + GetStat(Stat.Agility) * trickle[1] + GetStat(Stat.Stamina) * trickle[2] + GetStat(Stat.Intelligence) * trickle[3] + GetStat(Stat.Sense) * trickle[4] + GetStat(Stat.Psychic) * trickle[5]) / 4);
+            // NPCs come without abilities (Algorithman, 2026-09-26: FollowTarget dropped with "'Strength' was not
+            // present" reading a mob's RunSpeed): a missing ability adds nothing instead of throwing.
+            int A(Stat s) => TryGetStat(s, out int v) ? v : 0;
+            return (int)((A(Stat.Strength) * trickle[0] + A(Stat.Agility) * trickle[1] + A(Stat.Stamina) * trickle[2] + A(Stat.Intelligence) * trickle[3] + A(Stat.Sense) * trickle[4] + A(Stat.Psychic) * trickle[5]) / 4);
         }
 
         internal void RegisterBuff(Buff buff) => _buffs.Add(buff);

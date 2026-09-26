@@ -188,6 +188,7 @@ namespace AOSharp.Clientless
         public static float PathSpeed(Dynel d)
             => d is SimpleChar sc && sc.TryGetStat(Stat.RunSpeed, out int rs) && rs > 0 ? 4.82f + rs * 0.003615f : 4.82f;
 
+        public static int CorpseCount, CorpseMatched; public static string LastCorpse = "";
         public static int PathCount; public static double PathErrSum, PathErrMax;
         public static readonly System.Collections.Generic.Dictionary<int, (int n, double sum)> PathSeen = new System.Collections.Generic.Dictionary<int, (int, double)>();
 
@@ -207,12 +208,25 @@ namespace AOSharp.Clientless
                 double dt = (DateTime.UtcNow - prev.at).TotalSeconds;
                 if (dt > 0.3 && dt < 5 && d.Transform.Moving)
                 {
+                    double v = Vector3.Distance(prev.from, path[0]) / dt;
                     PathSeen.TryGetValue(mode, out var s);
-                    PathSeen[mode] = (s.n + 1, s.sum + Vector3.Distance(prev.from, path[0]) / dt);
+                    PathSeen[mode] = (s.n + 1, s.sum + v);
+                    if (v > 0.5 && v < 20) _speedOf[(identity, mode)] = (float)v;
                 }
             }
             _pathAt[identity] = (DateTime.UtcNow, path[0]);
-            d.Transform.MoveAlong(path[0], path[path.Length - 1], path.Length > 1 ? PathSpeed(d) : 0);
+            d.Transform.MoveAlong(path[0], path[path.Length - 1], path.Length > 1 ? SpeedFor(d, mode) : 0);
+        }
+
+        // Its speed as measured between its own packets in this move mode; else what this mode measures on average
+        // (NPCs carry no RunSpeed stat: the first live check at 4.82 m/s had them 2.7 m behind, moving at ~6.9); else
+        // the RunSpeed formula.
+        private static readonly System.Collections.Generic.Dictionary<(Identity, byte), float> _speedOf = new System.Collections.Generic.Dictionary<(Identity, byte), float>();
+        private static float SpeedFor(Dynel d, byte mode)
+        {
+            if (_speedOf.TryGetValue((d.Identity, mode), out float v)) return v;
+            if (PathSeen.TryGetValue(mode, out var s) && s.n >= 5) return (float)(s.sum / s.n);
+            return PathSpeed(d);
         }
         private static readonly System.Collections.Generic.Dictionary<Identity, (DateTime at, Vector3 from)> _pathAt = new System.Collections.Generic.Dictionary<Identity, (DateTime, Vector3)>();
 
@@ -246,6 +260,7 @@ namespace AOSharp.Clientless
             _dynels.Clear();
             Dead.Clear();
             _pathAt.Clear();
+            _speedOf.Clear();
         }
     }
 }

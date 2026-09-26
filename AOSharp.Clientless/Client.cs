@@ -482,6 +482,24 @@ namespace AOSharp.Clientless
                 DynelManager.OnDynelMovementChanged(moveMessage.Identity, moveMessage.Position, moveMessage.Heading, moveMessage.MoveType);
             });
 
+            // A CORPSE names the mob it was (owner's capture 20260925-113057 s14 seq 383: 'Remains of Important
+            // Techrejecter', owner CanbeAffected:245734440 = the mob that died at seq 377; decoded here as
+            // UnknownIdentity). A bot that zones in or restarts next to the dead never saw them die, and the server
+            // sends those mobs again with their old HP, still 'fighting' (Algorithman, 2026-09-26: 'he still fights his
+            // ghost mobs ... i restarted the bot mid-mission'). The corpse marks its mob dead.
+            _n3MsgCallbacks.Add(N3MessageType.CorpseFullUpdate, (msg) =>
+            {
+                var corpse = (CorpseFullUpdateMessage)msg;
+                if (corpse.UnknownIdentity.Instance == 0) return;
+                DynelManager.CorpseCount++;
+                if (DynelManager.Find(corpse.UnknownIdentity, out SimpleChar was))
+                {
+                    DynelManager.CorpseMatched++;
+                    DynelManager.LastCorpse = $"'{corpse.Name}' = '{was.Name}'";
+                }
+                MarkDead(corpse.UnknownIdentity);
+            });
+
             _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg) =>
             {
                 var ft = (FollowTargetMessage)msg;
@@ -786,6 +804,13 @@ namespace AOSharp.Clientless
             DynelManager.LocalPlayer.SetCastState(true);
         }
 
+        private static void MarkDead(Identity identity)
+        {
+            if (DynelManager.LocalPlayer != null && identity == DynelManager.LocalPlayer.Identity) return;
+            DynelManager.Dead.Add(identity);
+            if (DynelManager.Find(identity, out SimpleChar dead)) { dead.SetStat(Stat.Health, 0); dead.FightingIdentity = null; }
+        }
+
         private static void OnCharacterDeath(Identity identity)
         {
             // Anyone else: the server sends only this CharacterAction Death, then a separate corpse - no Health stat
@@ -793,8 +818,7 @@ namespace AOSharp.Clientless
             // and despawned ~95 messages later). Mark it dead so everything that checks Health > 0 lets it go.
             if (DynelManager.LocalPlayer == null || identity != DynelManager.LocalPlayer.Identity)
             {
-                DynelManager.Dead.Add(identity);
-                if (DynelManager.Find(identity, out SimpleChar dead)) { dead.SetStat(Stat.Health, 0); dead.FightingIdentity = null; }
+                MarkDead(identity);
                 return;
             }
             if (identity == DynelManager.LocalPlayer.Identity)
