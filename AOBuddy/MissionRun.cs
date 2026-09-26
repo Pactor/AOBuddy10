@@ -412,9 +412,18 @@ namespace AOBuddy
                     SaveConfigValue("MissionAvoidZones", new JArray(avoid));
                     _tell($"Killed on sight in {Zoning.Name(pf)}; I won't go there again ('mission run avoid {pf}' to undo).");
                 }
-                MarkDanger(pf);
+                // The SPOT, not the whole zone: at 01:22 (2026-09-26) a Scorpiod/Rollerrat pack by one Stret West Bank door
+                // killed him and the whole zone - most of his missions and his way out of Borealis - went off limits for 8
+                // hours. Missions within 250 m of the spot are left for 6 hours (RememberUnreachable); the whole zone only
+                // on a second death there within 2 hours.
+                var me0 = DynelManager.LocalPlayer;
+                var spot = me0 != null ? new Vector3(me0.Transform.Position.X, 0, me0.Transform.Position.Z) : new Vector3(0, 0, 0);
+                bool again = Unreach.Any(d => d.pf == pf && (DateTime.UtcNow - d.when).TotalHours < 2 && Movement.Flat(d.at, spot) < 600);
+                RememberUnreachable(pf, spot);
+                if (again) MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
-                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n}).");
+                _ctx.Log(again ? $"MISSIONRUN: died out in {Zoning.Name(pf)} again; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n})."
+                               : $"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}); missions near it are left for 6 hours.");
             }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
