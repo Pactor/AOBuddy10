@@ -795,7 +795,7 @@ namespace AOBuddy
                         // minute, in case the rest logic won't sit for a reason of its own.
                         // ...unless something is still hitting him with nothing left to fight (set-aside turrets,
                         // 06:33 2026-09-24): then get moving, stims on the way.
-                        bool beingHit = _clock - _lastHurt < 5;
+                        bool beingHit = _clock - _lastHurt < 5 && _lastHurt - _killAt > 2;   // not the dead mob's last blows
                         // CLEAR MODE: back to full before the next room (owner, 2026-09-25: at 12:19 he walked on from a
                         // fight into a room of six Probes and was at 38% in 3 s). The rest logic sits him down with a
                         // recharger once its thresholds say so; they are raised to full for this wait. At most 150 s.
@@ -3664,12 +3664,19 @@ namespace AOBuddy
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
             // (owner, 08:40 2026-09-26) - because a turret never shows as fighting him. The server saying he is in
             // combat (that refusal), or being hurt, with no attacker: take the nearest mob in range as the one.
-            if (a == null && _mission.InMission && (_clock - _serverCombatAt < 10 || _clock - _lastHurt < 3))
+            // NOT THE LAST BLOW OF A KILL (owner, 16:38 2026-09-26: 'he just pulled a hellhound, then ran on to next
+            // mob'): the dead mob's final hits land as it dies, it stops showing as fighting him, and 'being hurt with
+            // no attacker' then sent him 22 m to the next one. Hurt counts only when it came 2 s after the last kill,
+            // and then only a mob within 12 m (the turret was 4 m off); the server's in-combat refusal keeps 25 m.
+            bool serverSays = _clock - _serverCombatAt < 10;
+            bool hurtAlone = _clock - _lastHurt < 3 && _lastHurt - _killAt > 2;
+            if (a == null && _mission.InMission && (serverSays || hurtAlone))
             {
+                float within = serverSays ? 25f : 12f;
                 a = DynelManager.Npcs
                     .Where(n => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity) && (!n.TryGetStat(Stat.Health, out int hp2) || hp2 > 0)
                                 && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
-                                && me.DistanceFrom(n) <= 25f && Math.Abs(n.Transform.Position.Y - me.Transform.Position.Y) < 4f)
+                                && me.DistanceFrom(n) <= within && Math.Abs(n.Transform.Position.Y - me.Transform.Position.Y) < 4f)
                     .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
                 if (a != null && _hiddenFoe != a.Identity)
                 {
@@ -3773,7 +3780,9 @@ namespace AOBuddy
         public void OnFeedback(int id)
         {
             if (id == 135453684) _serverCombatAt = _clock;
+            if (id == 249817907) _killAt = _clock;   // "You can loot these remains": a kill
         }
+        private double _killAt = -999;
 
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
         /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
