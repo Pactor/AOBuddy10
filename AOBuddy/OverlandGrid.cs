@@ -671,6 +671,8 @@ namespace AOBuddy
             // No closer to a wall than the ends are (up to ClearKeep): the pull would otherwise lay the line back
             // along the wall the search's wall cost kept it off. A narrow gate passes, its ends are narrow too.
             float keep = Math.Min(ClearKeep, Math.Min(ClearAt(c0), ClearAt(c1)));
+            bool onRoad = _road != null && _road[c0] && _road[c1];
+            float learnEnds = _learn == null ? 0f : Math.Max(_learn[c0], _learn[c1]);
             // ...and the chord must TRACK A FLOOR it can be walked on: at each sample, some OPEN floor of
             // the cell lies within 1.5 m of the chord's height. The floors follow a ramp, so a ramp chord
             // passes; a shortcut straight up a wall face passes through heights that have no floor near
@@ -694,7 +696,12 @@ namespace AOBuddy
                 float t = i / (float)n;
                 float x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
                 if (!Open((int)Math.Floor(x), (int)Math.Floor(z), extra)) return false;
-                if (ClearAt((int)Math.Floor(z) * _w + (int)Math.Floor(x)) < keep) return false;
+                int sc = (int)Math.Floor(z) * _w + (int)Math.Floor(x);
+                if (ClearAt(sc) < keep) return false;
+                // Nor off the road it was planned on, nor across a remembered bad spot: at the Borealis -> Holes in the
+                // Wall turn (13:27, 2026-09-26) the pull cut the corner off the road over the spot the server resets.
+                if (onRoad && !_road[sc]) return false;
+                if (_learn != null && _learn[sc] > learnEnds + 1f) return false;
                 if (!Open((int)Math.Floor(x + px), (int)Math.Floor(z + pz), extra) || !Open((int)Math.Floor(x - px), (int)Math.Floor(z - pz), extra)) return false;
             }
             return true;
