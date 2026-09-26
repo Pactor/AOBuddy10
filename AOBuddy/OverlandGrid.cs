@@ -71,6 +71,11 @@ namespace AOBuddy
         // Water deeper than WadeDepth costs WaterWeight extra per step, so he swims only when it saves a lot.
         private bool[] _water;
         private const float WaterWeight = 2f, WadeDepth = 1.0f;
+        // LEARNED (LearnedGround, owner 2026-09-26): the owner's recorded roads cost RoadFactor of normal, the
+        // server's remembered snap-back spots add up to SnapWeight x hits within SnapRadius, and a slope costs
+        // SlopeWeight per unit of grade over SlopeFree (downhill half) - the hill loses to the longer road.
+        private bool[] _road; private float[] _learn; private bool _anyRoad; private int _learnVer = -1;
+        private const float RoadFactor = 0.5f, SnapWeight = 2f, SnapRadius = 6f, SlopeWeight = 4f, SlopeFree = 0.15f;
 
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
         {
@@ -312,12 +317,51 @@ namespace AOBuddy
                 }
             _clear = new byte[d.Length];
             for (int i = 0; i < d.Length; i++) _clear[i] = (byte)Math.Min(cap, d[i] / 3);
+            _learnVer = -1;
             if (_ground != null)
             {
                 _water = new bool[_w * _h];
                 for (int z = 0; z < _h; z++)
                     for (int x = 0; x < _w; x++)
                         if (!_blocked[z * _w + x]) _water[z * _w + x] = !double.IsNaN(_ground.SwimY((x + 0.5) * Cell, (z + 0.5) * Cell, WadeDepth));
+            }
+        }
+
+        private void EnsureLearned()
+        {
+            LearnedGround.RefreshRoads();
+            if (_learnVer == LearnedGround.Version) return;
+            _learnVer = LearnedGround.Version;
+            _road = new bool[_w * _h]; _learn = new float[_w * _h]; _anyRoad = false;
+            bool OnFloor(Vector3 p)
+            {
+                int cx = CellX(p.X), cz = CellZ(p.Z);
+                if (!In(cx, cz)) return false;
+                int c = cz * _w + cx;
+                for (int f = 0; f < FloorCount(c); f++) if (Math.Abs(FloorH(c, f) - p.Y) < 3f) return true;
+                return false;
+            }
+            var cells = new HashSet<int>();
+            foreach (var road in LearnedGround.Roads())
+                for (int i = 0; i + 1 < road.Count; i++)
+                {
+                    Vector3 a = road[i], b = road[i + 1];
+                    if (Vector3.Distance(a, b) > 40f || !OnFloor(a) || !OnFloor(b)) continue;   // a zone jump, or another zone's walk
+                    CellsAlong(a, b, 1.5f, cells);
+                }
+            foreach (int c in cells) { _road[c] = true; _anyRoad = true; }
+            int R = (int)Math.Ceiling(SnapRadius / Cell);
+            foreach (var sp in LearnedGround.SnapsIn(Pf))
+            {
+                int sx = CellX(sp.X), sz = CellZ(sp.Z);
+                for (int dz = -R; dz <= R; dz++)
+                    for (int dx = -R; dx <= R; dx++)
+                    {
+                        if (!In(sx + dx, sz + dz)) continue;
+                        float dist = (float)Math.Sqrt(dx * dx + dz * dz) * Cell;
+                        if (dist > SnapRadius) continue;
+                        _learn[(sz + dz) * _w + sx + dx] += SnapWeight * Math.Min(sp.N, 6) * (1f - dist / SnapRadius);
+                    }
             }
         }
 
@@ -501,7 +545,9 @@ namespace AOBuddy
             var parent = new Dictionary<long, long>();
             var closed = new HashSet<long>();
             var open = new PriorityQueue<long, float>();
-            float H(int x, int z) { int dx = Math.Abs(x - bx), dz = Math.Abs(z - bz); return 1.2f * Math.Max(0f, Math.Max(dx, dz) + 0.4142f * Math.Min(dx, dz) - reachCells); }
+            EnsureLearned();
+            float hScale = _anyRoad ? RoadFactor : 1.2f;   // a road step costs less than its length: keep the estimate under it
+            float H(int x, int z) { int dx = Math.Abs(x - bx), dz = Math.Abs(z - bz); return hScale * Math.Max(0f, Math.Max(dx, dz) + 0.4142f * Math.Min(dx, dz) - reachCells); }
             open.Enqueue(start, H(s.Value.Item1, s.Value.Item2));
             bool found = false;
             while (open.TryDequeue(out long cur, out _))
@@ -523,12 +569,18 @@ namespace AOBuddy
                         if (dx != 0 && dz != 0 && (!Open(x + dx, z, extra) || !Open(x, z + dz, extra))) continue;   // no squeezing past a corner
                         int ncell = nz * _w + nx;
                         float d = (dx != 0 && dz != 0 ? 1.4142f : 1f) * Cell;
-                        float step = gc + (dx != 0 && dz != 0 ? 1.4142f : 1f) * (1f + WallCost(ncell) + (_water != null && _water[ncell] ? WaterWeight : 0f));
+                        float len1 = dx != 0 && dz != 0 ? 1.4142f : 1f;
+                        float baseMul = 1f + WallCost(ncell) + (_water != null && _water[ncell] ? WaterWeight : 0f) + (_learn != null ? _learn[ncell] : 0f);
+                        float roadMul = _road != null && _road[ncell] ? RoadFactor : 1f;
                         for (int j = 0; j < FloorCount(ncell); j++)
                         {
                             // The one-way rule per floor pair: climbing onto the next floor must stay under
                             // MaxRise; dropping onto it is free (no fall damage outdoors, owner 2026-09-25).
-                            if (FloorH(ncell, j) - fh > MaxRise * d) continue;
+                            float rise = FloorH(ncell, j) - fh;
+                            if (rise > MaxRise * d) continue;
+                            float grade = Math.Abs(rise) / d;
+                            float slope = grade > SlopeFree ? SlopeWeight * (grade - SlopeFree) * (rise < 0 ? 0.5f : 1f) : 0f;
+                            float step = gc + len1 * (baseMul + slope) * roadMul;
                             long nn = ((long)ncell << FloorShift) | j;
                             if (closed.Contains(nn) || !FloorOpen(ncell, j)) continue;
                             if (gScore.TryGetValue(nn, out float old) && old <= step) continue;

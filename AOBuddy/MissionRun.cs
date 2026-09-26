@@ -75,6 +75,7 @@ namespace AOBuddy
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
+            LearnedGround.Init(pluginDir);
             _roll.ListArrived += OnList;
         }
 
@@ -1312,6 +1313,8 @@ namespace AOBuddy
         public void OnServerCorrection(float gap, Vector3 local, Vector3 server)
         {
             _lastCorrection = _clock;
+            // Outdoors, a real pull-back is remembered for the planner across restarts (LearnedGround).
+            if (gap > T("pullgap") && !_mission.InMission) LearnedGround.NoteSnap((int)Playfield.ModelId, server.X, server.Z);
             lock (_navLock)
             {
                 _snapLog.Add((DateTime.Now, (int)Playfield.ModelId, gap, local, server, _phase.ToString()));
