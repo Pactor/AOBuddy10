@@ -1157,6 +1157,9 @@ namespace AOBuddy
             // The 'can't get away' check measures the walk from here, not the fight before it: at 07:35 and 07:57
             // (2026-09-26) its 3 s sample was from standing to fight, so the walk out was called 'pinned' at once.
             _pinSamplePos = me.Transform.Position; _pinSampleAt = _clock;
+            // ...and the 'outrun' rule (5 s into a flee and still hit) counts from now: it read the last real flee's
+            // start, long gone, and turned him round in the same tick again (08:44, 2026-09-26, died).
+            _fleeStartedAt = _clock; _fleeAt = me.Transform.Position;
             _healOut = true; _healTrips++;
             _healMob = tgt?.Identity; _healMobHp = tHp; _healMobLogged = tgt == null;
             _healPrevMob = tgt?.Identity; _healPrevHp = tHp;
