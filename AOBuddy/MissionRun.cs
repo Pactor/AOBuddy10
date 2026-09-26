@@ -748,7 +748,11 @@ namespace AOBuddy
                     // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
                     if (_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _fleeUntil && _clock >= _noFleeUntil)
                     {
-                        var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+                        // KEEP THE MISSION (owner, 18:05 2026-09-26: he fled at 37% and dropped a find-person mission):
+                        // losing inside means walk out, heal and come back while heal trips are left; only when they
+                        // are used up (or no headway on the same mob) is the mission dropped.
+                        if (!_completed && !_healOut && StartHealOut(me, hpNow)) return false;
+                        var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity && x.Identity != _mission.FindPersonTarget).ToList();
                         foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
                         FleeStarted(me, from);
                         if (me.IsAttacking) me.StopAttack();
@@ -1198,13 +1202,16 @@ namespace AOBuddy
         private bool StimSoon(LocalPlayer me)
         {
             if (UsableStims() == 0) return false;
-            return !(me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) && cd.RemainingTime > T("healoutstim"));
+            // The support controller's lock timer, not the server's cooldown list: that one can drop a lock early.
+            double left = SupportController.Instance?.LockLeft(Stat.FirstAid)
+                          ?? (me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) ? cd.RemainingTime : 0);
+            return !(left > T("healoutstim"));
         }
 
         private bool StartHealOut(LocalPlayer me, int hpNow)
         {
             if (_healTrips >= T("healtrips")) return false;
-            var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+            var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity && x.Identity != _mission.FindPersonTarget).ToList();
             var tgt = from.FirstOrDefault(x => me.FightingTarget != null && x.Identity == me.FightingTarget.Identity) ?? from.OrderBy(HpPctOf).FirstOrDefault();
             int tHp = HpPctOf(tgt);
             // No headway on the same mob since the last trip: this one resting won't beat.
@@ -1225,7 +1232,7 @@ namespace AOBuddy
             _healOut = true; _healTrips++;
             _healMob = tgt?.Identity; _healMobHp = tHp; _healMobLogged = tgt == null;
             _healPrevMob = tgt?.Identity; _healPrevHp = tHp;
-            _ctx.Log($"MISSIONRUN: {hpNow}% HP and the stim far off; walking out to heal and coming back (trip {_healTrips}). "
+            _ctx.Log($"MISSIONRUN: {hpNow}% HP; walking out to heal and coming back (trip {_healTrips}). "
                      + (tgt != null ? $"'{tgt.Name}' is at {tHp}%." : "") + $" {from.Count} on me.");
             if (_mission.Active) _mission.Stop("healing outside");
             _mission.Command("backoutside", OnOutsideReply);

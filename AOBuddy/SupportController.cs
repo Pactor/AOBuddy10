@@ -173,6 +173,7 @@ namespace AOBuddy
             _move = move;
             _pluginDir = pluginDir;
             _lastClockSec = ctx.Clock.Seconds;
+            Instance = this;
         }
 
         private readonly string _pluginDir;
@@ -836,9 +837,17 @@ namespace AOBuddy
                 if (_lockSeen.Add(s)) _ctx.Log($"HEAL-LOCK: server locked {s} for {cd.RemainingTime:0.#}s");
                 _lockUntil[s] = _sessionSeconds + cd.RemainingTime;
             }
-            else if (_lockSeen.Remove(s)) _lockUntil[s] = _sessionSeconds;
+            // A lock that vanished early is NOT taken as lifted (18:01, 2026-09-26): the server dropped FirstAid 4 s
+            // into its 40 s lock, the bot fired a stim every 3 s for 25 s, none took, and - thinking a stim was always
+            // at hand - never walked out to heal; he fled at 37% and the mission was dropped. The timer we took from
+            // the server's lock runs out on its own.
+            else _lockSeen.Remove(s);
             return !_lockUntil.TryGetValue(s, out double until) || _sessionSeconds >= until;
         }
+
+        /// <summary>Seconds left on the skill lock of a stim (FirstAid) or recharger (Treatment) as the bot keeps it.</summary>
+        public double LockLeft(Stat s) => _lockUntil.TryGetValue(s, out double until) ? Math.Max(0, until - _sessionSeconds) : 0;
+        public static SupportController Instance { get; private set; }
 
         // We have SENT a use. Hold off re-poking for a moment, but do NOT commit the full reuse timer yet -
         // that is only correct if the server accepted it. Committing it unconditionally meant a refused use
