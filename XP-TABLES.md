@@ -4,13 +4,13 @@ Reference for everyone working on AOBuddy. **Source:** OmniCell (from CellAO, BS
 
 ## How AO counts it
 
-- **Levels 1-199:** XP. `Stat.XP` is progress *inside* the current level, so the way to the next level is `XP / needed[level]`.
+- **Levels 1-199:** XP. `Stat.XP` (0x34) is the character's **total** XP (observed live by Algorithman, 2026-09-26 - not the progress inside the level), so the way through the current level is `(XP - total at the start of the level) / needed[level]` - the third column below. A wrong row shifts every total after it, so the level-57 and level-133 disagreements matter for everything above them.
 - **Levels 200-220:** Shadowknowledge (SK), not XP. Each level needs 20% more than the one before, from 80,000 SK (200 -> 201) to 2,555,840 SK (219 -> 220).
 - **Alien levels 1-30:** alien XP, separate from both.
 
 ## Where the bot stands
 
-`AOBuddy/XpTable.cs` holds levels 1-149 only (transcribed from wiki.aodb.us Level_Parameters, which ends at 149), so from level 150 up the bot reports no XP percentage. It disagrees with OmniCell at: level 57 (bot 161,900, OmniCell 159,100), level 133 (bot 6,474,500, OmniCell 6,476,500) - one of the two sources has a typo; the live server settles it.
+`AOBuddy/XpTable.cs` holds levels 1-149 only (transcribed from wiki.aodb.us Level_Parameters, which ends at 149), and turns Stat.XP into progress with a running sum of it (`XpTable.IntoLevel`), so from level 150 up the bot reports no XP percentage. It disagrees with OmniCell at: level 57 (bot 161,900, OmniCell 159,100), level 133 (bot 6,474,500, OmniCell 6,476,500) - one of the two sources has a typo; the live server settles it.
 
 ## Levels 1-199: XP to get through each level
 
