@@ -877,6 +877,7 @@ namespace AOBuddy
                 case Phase.Rolling:
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if (_returnTpl != 0 && _current != null) { TurnInTick(me); return false; }
+                    if (_current == null) DropStaleKeys();
                     if (_afterDeath)
                     {
                         // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
@@ -3390,7 +3391,25 @@ namespace AOBuddy
             }
             _deleted.UnionWith(HeldMissionIds());
             ClearSaved();
+            DropStaleKeys();
             return n;
+        }
+
+        // STALE MISSION KEYS (owner, 18:00 2026-09-26: "the way you are deleting missions is not removing the key"; five
+        // 'Mission Key to' in his pack with one mission held). Deleting a mission removes no key - the owner's own
+        // client sends only the QuestMessage and the server sends no DeleteItem after it (captures 20260910-200346 s2
+        // client 54 / server 16644, 20260925-113057 s23 client 8 / server 105). So with no mission held, every mission
+        // key in the main inventory is one left over: delete it (CharacterAction DeleteItem on its slot).
+        private double _keysCheckedAt = -99;
+        private void DropStaleKeys()
+        {
+            if (_clock - _keysCheckedAt < 30) return;
+            _keysCheckedAt = _clock;
+            if (HeldMissionIds().Count > 0) return;
+            var keys = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory && i.Name != null
+                                                  && i.Name.StartsWith("Mission Key to", StringComparison.OrdinalIgnoreCase)).ToList();
+            foreach (var k in keys) k.Delete();
+            if (keys.Count > 0) _ctx.Log($"MISSIONRUN: no mission held; deleted {keys.Count} left-over mission key(s).");
         }
 
         private readonly HashSet<Identity> _deleted = new HashSet<Identity>();
