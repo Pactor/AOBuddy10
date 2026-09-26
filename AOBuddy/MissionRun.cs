@@ -3672,7 +3672,10 @@ namespace AOBuddy
             if (!Active || me == null) return null;
             if (_clock < _fleeUntil) return null;
             if (!_mission.InMission) return null;   // fighting only inside missions (owner, 17:55 2026-09-26)
-            var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            // Every pet of his: me.Pets can miss one (Algorithman's log 2026-09-27 00:39-00:40: a droid killed the heal
+            // pet Valentyia while the run stood in Fight with no target - 'in combat' saw the mob on the pet through the
+            // NPCs whose Owner is him, this list did not), so the same set the combat check uses.
+            var pets = CombatController.Guarded(me, null);
             // THE PERSON WE CAME TO FIND is never an enemy. The moment the bot selects him and the mission
             // completes, the server shows him 'fighting' the bot (Kirby Schatz 23:38, Levi McDannold 00:22:18,
             // 0.3 s after completion) though he never lands a blow; the bot then swung at him for 12 and 70+

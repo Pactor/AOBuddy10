@@ -325,7 +325,7 @@ namespace AOBuddy
         }
 
         /// <summary>The pets to defend: the bot's, and the owner's (NPCs whose Owner is him).</summary>
-        private static HashSet<Identity> Guarded(LocalPlayer me, PlayerChar owner)
+        public static HashSet<Identity> Guarded(LocalPlayer me, PlayerChar owner)
         {
             var g = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
             foreach (var n in DynelManager.Npcs)
