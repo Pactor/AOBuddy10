@@ -597,7 +597,8 @@ namespace AOBuddy
                     {
                         string k = ExitKey(_hike.Exit);
                         _exitPulls[k] = (_exitPulls.TryGetValue(k, out int np) ? np : 0) + 1;
-                        if (_exitPulls[k] >= 3) MarkBadExit(_hike.Exit);
+                        // Five now: the pulled-back ground is blocked on the walk grid and routed round first.
+                        if (_exitPulls[k] >= 5) MarkBadExit(_hike.Exit);
                     }
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
@@ -1096,11 +1097,30 @@ namespace AOBuddy
         private int _backoffs;
 
         /// <summary>Main: the server corrected our position (SetPos).</summary>
-        public void OnServerCorrection(float gap)
+        public void OnServerCorrection(float gap, Vector3 local, Vector3 server)
         {
             _lastCorrection = _clock;
-            if (gap > T("pullgap")) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
+            if (gap > T("pullgap"))
+            {
+                _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0);
+                // On a hike, the ground between where the server put him and where he was trying to be is what refuses
+                // him: block it on this zone's walk grid, so the next plan goes round it (02:46-02:48, 2026-09-26: pulled
+                // back ~200 m short of the Stret West Bank -> Borealis whompa, and the whompa was blamed).
+                if (_phase == Phase.Hike)
+                {
+                    var g = HikeGrid();
+                    if (g != null)
+                    {
+                        int pf = (int)Playfield.ModelId;
+                        if (!_hikeBlocked.TryGetValue(pf, out var set)) _hikeBlocked[pf] = set = new HashSet<int>();
+                        int before = set.Count;
+                        g.CellsAlong(server, local, 2f, set);
+                        if (set.Count > before) _ctx.Log($"MISSIONRUN: blocked {set.Count - before} grid cell(s) where the server pulled me back ({server.X:0},{server.Z:0}) -> ({local.X:0},{local.Z:0}).");
+                    }
+                }
+            }
         }
+        private readonly Dictionary<int, HashSet<int>> _hikeBlocked = new Dictionary<int, HashSet<int>>();
         private readonly List<double> _bigSnaps = new List<double>();
         private Vector3? _heldAt;
         private double _heldUntil = -1;
@@ -2702,7 +2722,8 @@ namespace AOBuddy
                 {
                     double t = k * Math.PI / 4;
                     var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
-                    var path = grid.FindPath(pos, goal, null, T("snap"), T("reach"), out _);
+                    _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
+                    var path = grid.FindPath(pos, goal, blockedCells, T("snap"), T("reach"), out _);
                     if (path == null) continue;
                     float left = Movement.Flat(path[path.Count - 1], at);
                     if (left < bestLeft) { bestLeft = left; best = path; }
