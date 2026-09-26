@@ -66,6 +66,7 @@ namespace AOBuddy
         private Purpose _purpose;
         private enum Purpose { Button, Target, Entrance, Search, Clear }
         private readonly HashSet<int> _visited = new HashSet<int>();   // rooms searched for an unseen target
+        private readonly HashSet<int> _liftTried = new HashSet<int>();  // elevator rooms walked to for their buttons
         private double _lookAccum;
 
         // Floor button templates, from the client's item table (itemnames 159862-159869, 2026-09-23).
@@ -272,7 +273,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _lastPathFrom = null;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             try
             {
@@ -382,7 +383,7 @@ namespace AOBuddy
 
         private void Start(Action<string> reply)
         {
-            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear(); _lastCorrection = null;
+            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastCorrection = null;
             Enter(Phase.Plan, "starting");
             string target = _record == null ? "no quest record yet" : _record.TypeName;
             reply($"Blitz on: {target}. Floors {string.Join(",", _grid.Floors)}, boss room on floor {(_grid.BossFloor?.ToString() ?? "?")}. Send 'mission stop' to cancel.");
@@ -1019,7 +1020,28 @@ namespace AOBuddy
             }
             if (best == null)
             {
-                why = $"searched every room on floor {floor} and the target never showed ({tw})";
+                // THE ELEVATOR (owner, 17:40 2026-09-26: "if he hits a mission in which he says he cant complete objective,
+                // we need to check for an elevator, he is gaining in levels, and the game will try to make missions
+                // harder"). This floor searched: ride to the nearest floor of the layout with rooms not yet searched.
+                var other = _grid.Floors.Where(f => f != floor && _grid.RoomsOn(f).Any(r => !_visited.Contains(r.Index)))
+                                        .OrderBy(f => Math.Abs(f - floor)).ToList();
+                foreach (int f in other)
+                {
+                    var bh = ButtonHop(pos, floor, f, out string bw);
+                    if (bh.HasValue) { why = $"searched floor {floor}; taking the elevator to floor {f} ({bw})"; return bh; }
+                }
+                // No button sent yet: walk to this floor's elevator room so its buttons come in, once each.
+                var lift = _grid.RoomsOn(floor).FirstOrDefault(r => r.Name != null && r.Name.IndexOf("elevator", StringComparison.OrdinalIgnoreCase) >= 0
+                                                                   && !_liftTried.Contains(r.Index) && Movement.Flat(pos, r.Centre) > 4f);
+                if (other.Count > 0 && lift != null)
+                {
+                    _liftTried.Add(lift.Index);
+                    why = $"searched floor {floor}; no button seen yet, going to the elevator room '{lift.Name}' (floors {string.Join(",", other)} still to search)";
+                    return new Hop { Pos = lift.Centre, Purpose = Purpose.Search };
+                }
+                if (other.Count == 0 && Buttons().Any())
+                    _ctx.Log($"MISSION: elevator buttons here ({string.Join(", ", Buttons().Select(b => KindName(b.Value.Template)))}) but the layout has no other floor to search.");
+                why = $"searched every room on floor {floor}{(other.Count > 0 ? $" and found no way to floor(s) {string.Join(",", other)}" : "")} and the target never showed ({tw})";
                 _ctx.Log($"MISSION: gave up searching; target {(_record?.TargetA?.ToString() ?? "-")}; everything seen ({_items.Count}): "
                          + string.Join(", ", _items.Select(kv => $"{kv.Key} tpl {kv.Value.Template} '{ItemName(kv.Value.Template)}' at ({kv.Value.Pos.X:0},{kv.Value.Pos.Z:0})")));
                 return null;
