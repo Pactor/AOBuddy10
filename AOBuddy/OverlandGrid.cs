@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using AOSharp.Common.GameData;
@@ -346,7 +347,7 @@ namespace AOBuddy
                 return false;
             }
             var cells = new HashSet<int>(); var drops = new HashSet<int>();
-            foreach (var road in LearnedGround.Roads())
+            foreach (var road in LearnedGround.Roads().Concat(LearnedGround.WalksIn(Pf)))
                 for (int i = 0; i + 1 < road.Count; i++)
                 {
                     Vector3 a = road[i], b = road[i + 1];

@@ -27,6 +27,11 @@ namespace AOBuddy
         private static string _dir;
         private static Dictionary<int, List<Snap>> _snaps = new Dictionary<int, List<Snap>>();
         private static List<List<Vector3>> _roads = new List<List<Vector3>>();
+        // WALKED (owner, 2026-09-26: 'can we use this data to fix how he chooses everywhere?'): stretches he walked
+        // with no server correction, and the owner's own steps while followed, saved per zone (walked.json).
+        public sealed class Walk { public int Pf; public List<float[]> P; }
+        private static List<Walk> _walked = new List<Walk>();
+        private const int MaxWalksPerZone = 300;
         private static DateTime _roadsAt = DateTime.MinValue;
         public static int Version { get; private set; }
 
@@ -46,6 +51,12 @@ namespace AOBuddy
                     foreach (var k in _snaps.Keys.ToList()) _snaps[k] = _snaps[k].Where(s => (DateTime.UtcNow - s.Last).TotalDays < Days).ToList();
                 }
                 catch { _snaps = new Dictionary<int, List<Snap>>(); }
+                try
+                {
+                    string w = Path.Combine(_dir, "walked.json");
+                    if (File.Exists(w)) _walked = JsonConvert.DeserializeObject<List<Walk>>(File.ReadAllText(w)) ?? new List<Walk>();
+                }
+                catch { _walked = new List<Walk>(); }
                 LoadRoads();
                 Version++;
             }
@@ -97,6 +108,26 @@ namespace AOBuddy
                 try { File.WriteAllText(Path.Combine(_dir, "snapbacks.json"), JsonConvert.SerializeObject(_snaps, Formatting.Indented)); } catch { }
             }
         }
+
+        /// <summary>A clean stretch walked in zone pf (at least 20 m); becomes road for the planner.</summary>
+        public static void NoteWalk(int pf, List<Vector3> pts)
+        {
+            if (pts == null || pts.Count < 2) return;
+            float len = 0; for (int i = 1; i < pts.Count; i++) len += Vector3.Distance(pts[i - 1], pts[i]);
+            if (len < 20f) return;
+            lock (Gate)
+            {
+                if (_dir == null) return;
+                _walked.Add(new Walk { Pf = pf, P = pts.Select(v => new[] { (float)Math.Round(v.X, 1), (float)Math.Round(v.Y, 1), (float)Math.Round(v.Z, 1) }).ToList() });
+                var mine = _walked.Where(w => w.Pf == pf).ToList();
+                if (mine.Count > MaxWalksPerZone) _walked.Remove(mine[0]);
+                Version++;
+                try { File.WriteAllText(Path.Combine(_dir, "walked.json"), JsonConvert.SerializeObject(_walked)); } catch { }
+            }
+        }
+
+        /// <summary>The walked stretches of one zone.</summary>
+        public static List<List<Vector3>> WalksIn(int pf) { lock (Gate) return _walked.Where(w => w.Pf == pf).Select(w => w.P.Select(a => new Vector3(a[0], a[1], a[2])).ToList()).ToList(); }
 
         public static List<Snap> SnapsIn(int pf) { lock (Gate) return _snaps.TryGetValue(pf, out var l) ? l.ToList() : new List<Snap>(); }
         public static List<List<Vector3>> Roads() { lock (Gate) return _roads.Select(r => r.ToList()).ToList(); }
