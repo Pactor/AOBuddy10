@@ -148,6 +148,8 @@ namespace AOBuddy
         public static ZoneRouteOptions RouteOptions(AOSharp.Clientless.LocalPlayer me) => new ZoneRouteOptions
         {
             Stat = id => me.TryGetStat((Stat)id, out int v) ? v : (int?)null,
+            // RubiKa2019 has no Scotty (owner, 2026-09-26: "no scotywarp on 2019").
+            UseScotty = AOSharp.Clientless.Client.Dimension != AOSharp.Clientless.Common.Dimension.RubiKa2019,
         };
 
         public static IReadOnlyList<ZoneExit> ExitsFrom(int pf) =>
