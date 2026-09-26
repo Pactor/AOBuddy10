@@ -1301,6 +1301,7 @@ namespace AOBuddy
         private void NavSample(LocalPlayer me)
         {
             if (me != null) WalkSample(me);
+            if (me != null && _mission.InMission) _mission.NoteTrail(me.Transform.Position);
             if (me == null || _clock - _trailAt < 1) return;
             _trailAt = _clock;
             lock (_navLock)

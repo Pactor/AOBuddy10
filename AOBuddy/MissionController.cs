@@ -275,6 +275,7 @@ namespace AOBuddy
             if (Active) Stop("zoned");
             _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
+            _trail.Clear(); _trailWhole = true; _retrace = false;
             try
             {
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
@@ -383,7 +384,7 @@ namespace AOBuddy
 
         private void Start(Action<string> reply)
         {
-            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastCorrection = null;
+            _completed = false; _announced = false; _rewards.Clear(); _replans = 0; _presses = 0; _acts = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastCorrection = null; _retrace = false;
             Enter(Phase.Plan, "starting");
             string target = _record == null ? "no quest record yet" : _record.TypeName;
             reply($"Blitz on: {target}. Floors {string.Join(",", _grid.Floors)}, boss room on floor {(_grid.BossFloor?.ToString() ?? "?")}. Send 'mission stop' to cancel.");
@@ -397,6 +398,7 @@ namespace AOBuddy
         private void GoOutside(Action<string> reply)
         {
             if (Active) Stop("owner said back outside");
+            _retrace = true;
             _completed = true; _announced = true; _rewards.Clear(); _replans = 0; _presses = 0; _blocked.Clear(); _lastCorrection = null;
             _path = null; _pendingButton = null;
             Enter(Phase.Exit, "owner said back outside");
@@ -617,8 +619,57 @@ namespace AOBuddy
             public Identity? Target;
         }
 
+        // BACK OUT THE WAY HE CAME (owner, 17:45 2026-09-26: a heal-out with three on him "did not turn away and back
+        // out, he went forward into another room with a mob, if he really ran back the way he came it should have all
+        // been cleared"). Leaving early - a heal-out, a flee, a skip - walks his own trail back to where he came in
+        // (rooms he has been through), loops cut out, instead of the planner's shortest way to the exit door. Only
+        // while the trail runs unbroken from the entrance (an elevator ride or a pull-back jump breaks it).
+        private readonly List<Vector3> _trail = new List<Vector3>();
+        private bool _trailWhole, _retrace;
+        public void NoteTrail(Vector3 p)
+        {
+            if (_grid == null) return;
+            if (_trail.Count == 0) { _trail.Add(p); return; }
+            float d = Vector3.Distance(_trail[_trail.Count - 1], p);
+            if (d > 8f) { _trail.Clear(); _trailWhole = false; _trail.Add(p); return; }   // a ride or a jump
+            if (d >= 1.5f) { _trail.Add(p); if (_trail.Count > 4000) { _trail.RemoveAt(0); _trailWhole = false; } }
+        }
+
+        private List<Vector3> RetracePath(Vector3 pos, Vector3 land)
+        {
+            if (!_trailWhole || _trail.Count < 2 || Movement.Flat(_trail[0], land) > 15f) return null;
+            int i = -1; float bd = 5f;
+            for (int k = _trail.Count - 1; k >= 0; k--) { float d = Vector3.Distance(_trail[k], pos); if (d < bd) { bd = d; i = k; } }
+            if (i < 0) return null;
+            var back = new List<Vector3> { pos };
+            while (i > 0)
+            {
+                back.Add(_trail[i]);
+                int j = 0;   // the earliest point he was at before, here: cut the loop back to it
+                while (j < i - 1 && Vector3.Distance(_trail[j], _trail[i]) >= 2.5f) j++;
+                i = j < i - 1 ? j : i - 1;
+            }
+            back.Add(_trail[0]);
+            back.Add(land);
+            return back;
+        }
+
         private void PlanNext(LocalPlayer me)
         {
+            if (_completed && _retrace && _nav != null)
+            {
+                var ex = _nav.Exit;
+                var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
+                                      : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
+                var back = RetracePath(me.MovementComponent.Position, land);
+                if (back != null)
+                {
+                    _path = back; _pathIndex = 0; _purpose = Purpose.Entrance; _pendingButton = null;
+                    float bl = 0; for (int k = 1; k < back.Count; k++) bl += Vector3.Distance(back[k - 1], back[k]);
+                    Enter(Phase.Walk, $"backing out the way I came: {bl:0} m, {back.Count} points");
+                    return;
+                }
+            }
             foreach (var id in _unpickable)
                 if (_doors.TryGetValue(id, out var ud) && _grid.CellOf(ud.Pos) is (int, int, int) uc) _blocked.Add(uc);
             var hop = NextHop(me.MovementComponent.Position, out string why);
