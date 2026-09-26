@@ -1049,11 +1049,10 @@ namespace AOBuddy
                         {
                             var tough = DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.Name != null && n.Identity != _mission.FindPersonTarget
                                                                      && ToughMobs.TryGetValue(n.Name.ToLowerInvariant(), out int c) && c >= 2).ToList();
+                            // Noted, not skipped (owner, 17:40 2026-09-26: 'lets not do that' - an A-500 elite building in
+                            // Holes in the Wall was dropped at the door).
                             if (tough.Count >= 3)
-                            {
-                                Skip($"too tough: {tough.Count} mobs I've had to run from before ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))})");
-                                return false;
-                            }
+                                _ctx.Log($"MISSIONRUN: {tough.Count} mobs here I've had to run from before ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))}); going in anyway.");
                         }
                     }
                     _resumeBlitz = false;
