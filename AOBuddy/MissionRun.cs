@@ -702,12 +702,16 @@ namespace AOBuddy
             // Outrun: 5 s into a flee and still being hit (04:21-04:22, 2026-09-25, Aegean: two Young Scab Hyenas
             // bit him all along two 81 m flees, 25% -> 0-11% -> dead; running only stopped him hitting back).
             if (Fleeing && _clock - _fleeStartedAt > 5 && _clock - _lastHurt < 1.5 && _clock >= _noFleeUntil) pinned = true;
-            if (pinned)
+            // FIGHT ONLY INSIDE MISSIONS (owner, 17:55 2026-09-26, after a pack of level 50-54 hyenas and nightcrawlers by
+            // a Stret East Bank door killed him: "he should ingore that and go in door, furthermore he should only be
+            // fighting inside missions"). Outdoors nothing turns him round or stands him still to fight: he keeps
+            // walking to the door, the exit or the terminal, and stims carry him.
+            if (pinned && _mission.InMission)
             {
                 StartFightBack(me, $"can't get away (at ({me.Transform.Position.X:0},{me.Transform.Position.Z:0}), {hpTick}% HP)");
                 return false;
             }
-            if (moving && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -730,7 +734,9 @@ namespace AOBuddy
                     // FLEE (09:33, 2026-09-24): crossing Mutant Domain to a mission door, a pack of Hammer Broodlings
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
-                    if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _noFleeUntil && StartFlee(me)) return true;
+                    // Now (owner, 17:55 2026-09-26) he doesn't fight outdoors at all: a fight that finds him outside
+                    // (it followed him out) is dropped and the walk goes on.
+                    if (!_mission.InMission) { _ctx.Log("MISSIONRUN: outside a mission; not fighting, carrying on."); Enter(_fightReturn == Phase.Fight ? Phase.ToTerminal : _fightReturn, "no fighting outdoors"); return false; }
                     // HEAL OUTSIDE AND COME BACK (owner, 2026-09-26, on the A-500s that killed him: "if I am down to 50% hp
                     // and my stims cooldown is large, I turn, I run outside mission door, I sit and heal, I come back in and
                     // finish the mob, as his hp is the same as when I left"). Earlier than the flee below, so there is HP
@@ -1111,7 +1117,7 @@ namespace AOBuddy
                         case "travel": Enter(_travelReturn, "travel again from a good spot"); break;
                         case "flee":
                             // Not away while still being bitten: stand and fight what followed (04:22, 2026-09-25).
-                            if (_clock - _lastHurt < 5) { StartFightBack(me, "still hit at the end of the flee"); return false; }
+                            if (_clock - _lastHurt < 5 && _mission.InMission) { StartFightBack(me, "still hit at the end of the flee"); return false; }
                             if (_travelReturn == Phase.ToDoor && _current != null && !_completed) { Skip("a pack I couldn't beat is on the way to its door"); break; }
                             Enter(_travelReturn == Phase.ToDoor || _travelReturn == Phase.ToTerminal || _travelReturn == Phase.Shop ? _travelReturn : Phase.ToTerminal, "got away");
                             break;
@@ -3639,6 +3645,7 @@ namespace AOBuddy
         {
             if (!Active || me == null) return null;
             if (_clock < _fleeUntil) return null;
+            if (!_mission.InMission) return null;   // fighting only inside missions (owner, 17:55 2026-09-26)
             var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
             // THE PERSON WE CAME TO FIND is never an enemy. The moment the bot selects him and the mission
             // completes, the server shows him 'fighting' the bot (Kirby Schatz 23:38, Levi McDannold 00:22:18,
