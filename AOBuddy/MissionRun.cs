@@ -474,6 +474,8 @@ namespace AOBuddy
             var ok = list.Where(Fits).ToList();
             int dangerous = ok.RemoveAll(m => Dangerous(m.Playfield.Instance));
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
+            int far = ok.RemoveAll(m => Unreachable(m.Playfield.Instance, new Vector3(m.Location.X, 0, m.Location.Z)));
+            if (far > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {far} mission(s) by doors I couldn't reach lately.");
             int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
             if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
             int? rollQl = QlObserve(list);
@@ -2979,6 +2981,8 @@ namespace AOBuddy
         /// <summary>Give up on the mission in hand: delete it, walk out if inside, and carry on rolling.</summary>
         private void Skip(string why)
         {
+            // Dropped before getting inside: that door is hard to reach from here - remember it (see Unreachable).
+            if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
             _tell($"Skipping this mission ({why}); deleted {n}.");
             _current = null; _completed = false;
@@ -3034,6 +3038,37 @@ namespace AOBuddy
             Done.Add((pf, at, DateTime.UtcNow));
             try { File.WriteAllText(DonePath, new JArray(Done.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
         }
+        // DOORS HE COULDN'T REACH (unreach.json): a mission dropped before he got inside marks its door; missions within
+        // 250 m of it are left for 6 hours. The zone map sees Holes in the Wall as one area, but its west part is only
+        // reached by way of Athen Shire - (479,1218) cost 1088 on paper and he circled The Longest Road / Broken
+        // Shores / Jobe for 10 minutes (00:57-01:08, 2026-09-26); (109,1012) the same at 18:09.
+        private string UnreachPath => Path.Combine(_pluginDir, "unreach.json");
+        private List<(int pf, Vector3 at, DateTime when)> _unreachStore;
+        private List<(int pf, Vector3 at, DateTime when)> Unreach
+        {
+            get
+            {
+                if (_unreachStore != null) return _unreachStore;
+                _unreachStore = new List<(int, Vector3, DateTime)>();
+                try
+                {
+                    if (File.Exists(UnreachPath))
+                        foreach (JObject o in JArray.Parse(File.ReadAllText(UnreachPath)))
+                            _unreachStore.Add(((int)o["pf"], new Vector3((float)o["x"], 0, (float)o["z"]), (DateTime)o["when"]));
+                }
+                catch { }
+                return _unreachStore;
+            }
+        }
+        private void RememberUnreachable(int pf, Vector3 at)
+        {
+            Unreach.RemoveAll(d => (DateTime.UtcNow - d.when).TotalHours > 6);
+            Unreach.Add((pf, at, DateTime.UtcNow));
+            _ctx.Log($"MISSIONRUN: remembering the door at ({at.X:0},{at.Z:0}) in {Zoning.Name(pf)} as hard to reach; nothing within 250 m for 6 hours.");
+            try { File.WriteAllText(UnreachPath, new JArray(Unreach.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
+        }
+        private bool Unreachable(int pf, Vector3 at) => Unreach.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 250 && (DateTime.UtcNow - d.when).TotalHours < 6);
+
         private bool DoneLately(int pf, Vector3 at) => Done.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 20 && (DateTime.UtcNow - d.when).TotalHours < 1);
 
         // The quest log (QuestFullUpdate, sent at every zone-in) carries each mission's destination the same way
