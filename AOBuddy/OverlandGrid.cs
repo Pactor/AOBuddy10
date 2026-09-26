@@ -60,6 +60,14 @@ namespace AOBuddy
                                                      // cell and its door-sill wall samples seal the tower shut.
         private const int MaxExpand = 1_500_000;
 
+        // WALL CLEARANCE (owner, 2026-09-26: "the fastest route is hugging the walls, the safest route is to run the
+        // middle, as most times that is where the road is"). _clear = cells to the nearest blocked cell, capped;
+        // a step near a wall costs more (fading to nothing at ClearMetres), and the string-pull may not bring the
+        // route closer to a wall than the search had it. Built from _blocked after a build or a cache read, so
+        // the cache format is unchanged.
+        private byte[] _clear;
+        private const float ClearMetres = 5f, ClearWeight = 2f, ClearKeep = 2f;
+
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
         {
             Pf = pf; Cell = cell; _w = w; _h = h; _ground = g;
@@ -83,6 +91,7 @@ namespace AOBuddy
             string wp = Path.Combine(AOBuddyNav.FolderFor(pluginDir, pf), "walls.bin");
             if (File.Exists(wp)) { grid.StampWalls(NavCollision.Read(wp)); grid.HasWalls = true; }
             grid.StampHeadroom();
+            grid.StampClearance();
             for (int i = 0; i < grid._blocked.Length; i++) if (grid._blocked[i]) grid.BlockedCells++;
             log?.Invoke($"OVERLAND: grid for pf {pf}: {grid._w}x{grid._h} cells of {cell:0} m, {grid.BlockedCells} blocked, {grid._extra?.Count ?? 0} multi-floor, walls {(grid.HasWalls ? "yes" : "NONE (walls.bin missing: routing sees only cliffs)")}, {sw.ElapsedMilliseconds} ms");
             return grid;
@@ -176,6 +185,7 @@ namespace AOBuddy
             }
             int nb = br.ReadInt32();
             for (int b = 0; b < nb; b++) grid._blockedFl.Add(br.ReadInt64());
+            grid.StampClearance();
             return grid;
         }
 
@@ -259,6 +269,56 @@ namespace AOBuddy
                         }
                 }
             }
+        }
+
+        // Two-pass chamfer distance (3 straight, 4 diagonal) from every blocked cell, in cells, capped.
+        private void StampClearance()
+        {
+            int cap = Math.Min(250, (int)Math.Ceiling(ClearMetres / Cell) + 1);
+            var d = new int[_w * _h];
+            int inf = cap * 3;
+            for (int i = 0; i < d.Length; i++) d[i] = _blocked[i] ? 0 : inf;
+            for (int z = 0; z < _h; z++)
+                for (int x = 0; x < _w; x++)
+                {
+                    int i = z * _w + x, v = d[i];
+                    if (v == 0) continue;
+                    if (x > 0) v = Math.Min(v, d[i - 1] + 3);
+                    if (z > 0)
+                    {
+                        v = Math.Min(v, d[i - _w] + 3);
+                        if (x > 0) v = Math.Min(v, d[i - _w - 1] + 4);
+                        if (x < _w - 1) v = Math.Min(v, d[i - _w + 1] + 4);
+                    }
+                    d[i] = v;
+                }
+            for (int z = _h - 1; z >= 0; z--)
+                for (int x = _w - 1; x >= 0; x--)
+                {
+                    int i = z * _w + x, v = d[i];
+                    if (v == 0) continue;
+                    if (x < _w - 1) v = Math.Min(v, d[i + 1] + 3);
+                    if (z < _h - 1)
+                    {
+                        v = Math.Min(v, d[i + _w] + 3);
+                        if (x < _w - 1) v = Math.Min(v, d[i + _w + 1] + 4);
+                        if (x > 0) v = Math.Min(v, d[i + _w - 1] + 4);
+                    }
+                    d[i] = v;
+                }
+            _clear = new byte[d.Length];
+            for (int i = 0; i < d.Length; i++) _clear[i] = (byte)Math.Min(cap, d[i] / 3);
+        }
+
+        private float ClearAt(int cell) => _clear == null ? ClearMetres : _clear[cell] * Cell;
+
+        // 1 + ClearWeight right against a wall, falling off to 1 at ClearMetres.
+        private float WallCost(int cell)
+        {
+            float d = ClearAt(cell);
+            if (d >= ClearMetres) return 0f;
+            float t = 1f - d / ClearMetres;
+            return ClearWeight * t * t;
         }
 
         // A floor with another one just above it (under a deck, inside a slab — FloorGrid's rule) is no
@@ -452,7 +512,7 @@ namespace AOBuddy
                         if (dx != 0 && dz != 0 && (!Open(x + dx, z, extra) || !Open(x, z + dz, extra))) continue;   // no squeezing past a corner
                         int ncell = nz * _w + nx;
                         float d = (dx != 0 && dz != 0 ? 1.4142f : 1f) * Cell;
-                        float step = gc + (dx != 0 && dz != 0 ? 1.4142f : 1f);
+                        float step = gc + (dx != 0 && dz != 0 ? 1.4142f : 1f) * (1f + WallCost(ncell));
                         for (int j = 0; j < FloorCount(ncell); j++)
                         {
                             // The one-way rule per floor pair: climbing onto the next floor must stay under
@@ -536,6 +596,9 @@ namespace AOBuddy
             int n = Math.Max(1, (int)Math.Ceiling(len * 3));
             // Test a body's width, not a line: a third of a cell either side, across the direction of travel.
             float px = len > 0 ? -(z1 - z0) / len * 0.35f : 0, pz = len > 0 ? (x1 - x0) / len * 0.35f : 0;
+            // No closer to a wall than the ends are (up to ClearKeep): the pull would otherwise lay the line back
+            // along the wall the search's wall cost kept it off. A narrow gate passes, its ends are narrow too.
+            float keep = Math.Min(ClearKeep, Math.Min(ClearAt(c0), ClearAt(c1)));
             // ...and the chord must TRACK A FLOOR it can be walked on: at each sample, some OPEN floor of
             // the cell lies within 1.5 m of the chord's height. The floors follow a ramp, so a ramp chord
             // passes; a shortcut straight up a wall face passes through heights that have no floor near
@@ -559,6 +622,7 @@ namespace AOBuddy
                 float t = i / (float)n;
                 float x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
                 if (!Open((int)Math.Floor(x), (int)Math.Floor(z), extra)) return false;
+                if (ClearAt((int)Math.Floor(z) * _w + (int)Math.Floor(x)) < keep) return false;
                 if (!Open((int)Math.Floor(x + px), (int)Math.Floor(z + pz), extra) || !Open((int)Math.Floor(x - px), (int)Math.Floor(z - pz), extra)) return false;
             }
             return true;
