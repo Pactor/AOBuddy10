@@ -72,6 +72,10 @@ public class PluginLoader
         foreach (string plugin in plugins)
             Console.WriteLine($"Plugin: {plugin}");
 
+        // The window is named after the character(s) it runs (owner, 2026-09-26: "name the console the bots name,
+        // we may run a few at a time").
+        try { Console.Title = string.Join(", ", config.Accounts.Select(a => a.Character).Where(c => !string.IsNullOrEmpty(c))) + " - AOBuddy"; } catch { }
+
         foreach (AccountInfo acc in config.Accounts)
             CreateBot(acc, plugins);
 
