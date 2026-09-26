@@ -35,7 +35,10 @@ namespace AOBuddy
         // GridCache so later entries load instead of rebuilding.
         public NavGridCache NavGrid;
 
-        // RUN SPEED, the game client's exact formula: velocity (u/s) = 5.5 + RunSpeed / 230, capped at 15.5
+        // RUN SPEED (measured 2026-09-26, owner's captures 20260926-135805 and -144005, straight flat runs):
+        //   Run Speed 165 -> 5.45 m/s, 325 -> 6.07 m/s; velocity = 4.82 + 0.003615 x RunSpeed (patch 18.7 formula the
+        //   owner found) is within 1% at both, a hair slow. The old 5.5 + RunSpeed/230 was 12-14% too fast.
+        //   Capped at 15.5 as before.
         // (RunSpeed = Stat 156). The stat is not always readable: after a mission floor-button ride it read
         // -1 for the rest of the session (log 2026-09-23 22:14:43), and falling back to Config.FollowSpeed
         // (19 u/s) there made the server reject every step and snap the bot back to where it started. So
@@ -48,8 +51,8 @@ namespace AOBuddy
             // is a real reading, and ignoring it kept the walker at full speed and the server snapped him back
             // every 3 s for minutes. Only -1 means unreadable. Floor 1.5 u/s (the formula below 0 is unverified).
             if (me != null && me.TryGetStat(AOSharp.Common.GameData.Stat.RunSpeed, out int rs) && rs != -1) { LastRunSpeed = rs; _runRead = true; }
-            if (!_runRead) return 5.5f;
-            return Math.Max(1.5f, Math.Min(15.5f, 5.5f + LastRunSpeed / 230f));
+            if (!_runRead) return 4.82f;
+            return Math.Max(1.5f, Math.Min(15.5f, 4.82f + LastRunSpeed * 0.003615f));
         }
 
         // SWIM: patch 18.7 derives swim speed from the run-speed stat (the owner's factor: 50%). Same
