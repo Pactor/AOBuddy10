@@ -98,6 +98,21 @@ namespace AOBuddy
         public string BuildingName => _nav?.Name;
         public string RecordTypeName => _record?.TypeName;
         public bool Completed => _completed;
+
+        /// <summary>RETURN ITEM: the template of the item picked up in the building, to hand in at the terminal; 0 = none.</summary>
+        public int CarriedReturnItem { get; set; }
+        private int ReturnItemTemplate() => _record?.TargetA.HasValue == true && (int)_record.TargetA.Value.Type == 0xC74E ? _record.TargetA.Value.Instance : 0;
+        private Item ReturnItemInInventory() => FindReturnItem(ReturnItemTemplate(), _record?.Text);
+        /// <summary>The item to return, in the main inventory: by template (low or high id), else by its name in the mission text.</summary>
+        public static Item FindReturnItem(int template, string text)
+        {
+            var inv = Inventory.Items.Where(i => i != null && i.Slot.Type == IdentityType.Inventory).ToList();
+            var it = template != 0 ? inv.FirstOrDefault(i => i.Id == template || i.HighId == template) : null;
+            if (it == null && !string.IsNullOrEmpty(text))
+                it = inv.Where(i => !string.IsNullOrEmpty(i.Name) && i.Name.Length >= 6 && text.IndexOf(i.Name, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .OrderByDescending(i => i.Name.Length).FirstOrDefault();
+            return it;
+        }
         public string RoomAt(Vector3 p) => _grid?.RoomAt(p);
         public int? FloorAt(Vector3 p) => _grid?.FloorAt(p);
         public Newtonsoft.Json.Linq.JArray DoorsJson() => new Newtonsoft.Json.Linq.JArray(_doors.Select(kv => new Newtonsoft.Json.Linq.JObject
@@ -558,7 +573,7 @@ namespace AOBuddy
                 }
 
                 case Phase.Act:
-                    if (_record?.Type == TypeFindItem && ApproachItem(me, dt)) return true;
+                    if ((_record?.Type == TypeFindItem || _record?.Type == TypeReturnItem) && ApproachItem(me, dt)) return true;
                     _move.Hold(me, _ctx.Config.SendIntervalMs);
                     // Stand still a moment first so the server has our stop (the button lesson, 2026-09-23
                     // 22:31:20: acting the instant we arrived was judged from where the server still had us).
@@ -569,6 +584,16 @@ namespace AOBuddy
                 case Phase.AwaitComplete:
                     _move.Hold(me, _ctx.Config.SendIntervalMs);
                     if (_completed) return true;
+                    // RETURN ITEM: picked up = the item is in the inventory; the mission completes at the terminal, so
+                    // the building is done - out with it (the run takes it to the terminal).
+                    if (_record?.Type == TypeReturnItem && ReturnItemInInventory() != null)
+                    {
+                        CarriedReturnItem = ReturnItemTemplate();
+                        _ctx.Log($"MISSION: picked up the item to return ({ReturnItemInInventory().Name}); taking it back to the terminal.");
+                        _announced = true;
+                        OnCompleted("carrying the return item");
+                        return true;
+                    }
                     if (_phaseTime > 5)
                     {
                         if (_acts >= 3) { Fail("the objective did not complete after 3 tries"); return true; }
@@ -992,7 +1017,7 @@ namespace AOBuddy
             if (_record == null) { how = "no quest record for this building"; return null; }
             int type = _record.Type;
             if (type == TypeRepair) { var t = _record.TargetB; how = "the repair object"; return Locate(t, out pos) ? t : null; }
-            if (type != TypeFindPerson && type != TypeFindItem) { how = _record.TypeName + " is not supported yet"; return null; }
+            if (type != TypeFindPerson && type != TypeFindItem && type != TypeReturnItem) { how = _record.TypeName + " is not supported yet"; return null; }
 
             if (_record.TargetA.HasValue)
             {
@@ -1104,6 +1129,15 @@ namespace AOBuddy
                     Client.InfoRequest(target.Value);
                     Client.Send(new LookAtMessage { Target = target.Value, ReturnInfo = 1 });
                     _ctx.Log($"MISSION: selected {target.Value} ({how}).");
+                    break;
+                case TypeReturnItem:
+                    // Picked up with a double click: LookAt, then GenericCmd Use on the item (owner, capture
+                    // 20260926-135805 s10 seq 436/437, 14:10:01; the server answered ContainerAddItem from the item into
+                    // the inventory). A container holding it is opened first, as for find item.
+                    if ((int)target.Value.Type == (int)IdentityType.Container) GameCommands.OpenContainer(me, target.Value);
+                    Client.Send(new LookAtMessage { Target = target.Value, ReturnInfo = 0 });
+                    GameCommands.UseObject(me, target.Value);
+                    _ctx.Log($"MISSION: picking up item {target.Value} to return ({how}).");
                     break;
                 case TypeFindItem:
                     // One LookAt with ReturnInfo=0 on the floor item (capture 20260923-125821 s4 13:04:11.152;

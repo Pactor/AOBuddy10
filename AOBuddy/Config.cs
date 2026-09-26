@@ -232,7 +232,7 @@ namespace AOBuddy
         public List<string> KeepItems = new List<string> { "Health and Nano Stim", "Health and Nano Recharger" };   // never sold by housekeeping (exact names)                   // credits never spent on bags: kept for running missions
         // Mission types the run takes (any of "find person", "repair", "find item"). Find item left out for now:
         // in the solo buildings the item never showed up as a loose item (2026-09-23).
-        public List<string> MissionTypes = new List<string> { "find person", "repair", "find item" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any
+        public List<string> MissionTypes = new List<string> { "find person", "repair", "find item", "return item" };                    // mission run: "blitz" (run, stim, fight only in an emergency) or "fight" (stop and fight anything that attacks)   // zone names or ids missions may be taken in; empty = any
         public float AttackRange = 8f;             // close to within this before attacking
         public float CombatLeashMeters = 18f;      // only assist mobs within this range of the OWNER (don't bolt after distant fights)
         public float CombatRestCooldownSec = 6f;   // don't sit to rest until combat has been over this long (multi-mob lull guard)

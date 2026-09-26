@@ -464,11 +464,47 @@ namespace AOBuddy
             // Completion, as MissionController reads it: CharacterAction MissionChanged (0x3B) for the holder,
             // or the quest removal.
             if (m.Body is CharacterActionMessage ca && (int)ca.Action == 0x3B && ca.Identity.Instance == me.Identity.Instance && _current != null
-                && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz))
+                && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz || (_returnTpl != 0 && _phase == Phase.Rolling)))
                 MarkDone("MissionChanged");
             else if (m.Body is QuestMessage qm && qm.Identity.Instance == me.Identity.Instance && _current != null
                      && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz))
                 MarkDone("quest removed");
+        }
+
+        // RETURN ITEM (owner, 2026-09-26: 'item on cursor and right click on terminal to turn it in'): the picked-up
+        // item, used on the mission terminal - GenericCmd UseItemOnItem, source the item's inventory slot, target the
+        // terminal (capture 20260926-135805 s12 seq 32, 14:12; the server paid out, TemplateAction 87 put the reward
+        // in the overflow window, then MissionChanged). Up to 3 tries, 6 s apart.
+        private int _returnTpl, _turnInTries;
+        private double _turnInAt = -99;
+        private void TurnInTick(LocalPlayer me)
+        {
+            if (_completed)
+            {
+                _ctx.Log("MISSIONRUN: item returned; mission done.");
+                _returnTpl = 0; _turnInTries = 0;
+                _done++;
+                _tell($"Mission {_done} done.");
+                _current = null;
+                ClearSaved();
+                StartStash();
+                return;
+            }
+            if (_clock - _turnInAt < 6) return;
+            var item = MissionController.FindReturnItem(_returnTpl, _current == null ? null : MissionRoll.Line(_current));
+            var term = DynelManager.AllDynels.Where(d => d != null && d.Identity.Type == IdentityType.MissionTerminal)
+                                             .OrderBy(d => me.DistanceFrom(d)).FirstOrDefault();
+            if (item == null || term == null || _turnInTries >= 3)
+            {
+                _ctx.Log($"MISSIONRUN: can't turn the item in ({(item == null ? "it's not in my inventory" : term == null ? "no terminal in sight" : "3 tries")}).");
+                _returnTpl = 0; _turnInTries = 0;
+                Skip("couldn't hand the item in");
+                return;
+            }
+            _turnInAt = _clock; _turnInTries++;
+            Client.Send(new LookAtMessage { Target = term.Identity, ReturnInfo = 0 });
+            Client.Send(new GenericCmdMessage { Action = GenericCmdAction.UseItemOnItem, User = me.Identity, Source = item.Slot, Target = term.Identity, Count = 1, Temp4 = 1 });
+            _ctx.Log($"MISSIONRUN: handing '{item.Name}' in at {term.Identity} (try {_turnInTries}).");
         }
 
         private void MarkDone(string how)
@@ -514,7 +550,7 @@ namespace AOBuddy
             if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
             var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
-            _healOut = false; _healTrips = 0; _healMob = null; _healPrevMob = null;
+            _healOut = false; _healTrips = 0; _healMob = null; _healPrevMob = null; _returnTpl = 0; _turnInTries = 0;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) { _rewardIds.Add((r.LowId, r.HighId)); RememberReward(r.LowId, r.HighId); }
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
@@ -568,6 +604,7 @@ namespace AOBuddy
             NavSample(me);
             if (!Active || me == null) return false;
             HealMobCheck();
+            if (_mission.CarriedReturnItem != 0) { _returnTpl = _mission.CarriedReturnItem; _mission.CarriedReturnItem = 0; }
             RecordGood(me);
             UseTokens(me);
             _mission.ClearMode = _ctx.Config.MissionClear;
@@ -823,6 +860,7 @@ namespace AOBuddy
 
                 case Phase.Rolling:
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
+                    if (_returnTpl != 0 && _current != null) { TurnInTick(me); return false; }
                     if (_afterDeath)
                     {
                         // At the terminal after a death: sit out the sickness and let the rebuffs go on first.
@@ -1016,7 +1054,7 @@ namespace AOBuddy
                     }
                     if (_mission.InMission)
                     {
-                        if (_completed) { if (!StartExitStand(me, Phase.Blitz)) StartBackoff(me, "walk out"); return false; }
+                        if (_completed || _returnTpl != 0) { if (!StartExitStand(me, Phase.Blitz)) StartBackoff(me, "walk out"); return false; }
                         // A fresh blitz clears the cells a run of server snap-backs blocked (2026-09-23 21:31: two
                         // snaps at the start blocked the only way and it gave up), so try again before giving up.
                         if (++_blitzTries <= 1 && _phaseTime > 3)
@@ -1029,6 +1067,7 @@ namespace AOBuddy
                         Skip("blitz failed twice - check my log (MISSION: lines)");
                         return false;
                     }
+                    if (!_completed && _returnTpl != 0) { Enter(Phase.ToTerminal, "taking the item back to the terminal"); return false; }
                     if (!_completed) { Skip("I ended up outside without completing it"); return false; }
                     _done++;
                     _tell($"Mission {_done} done.");
@@ -3360,7 +3399,7 @@ namespace AOBuddy
             if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
             _tell($"Skipping this mission ({why}); deleted {n}.");
-            _current = null; _completed = false; _healOut = false;
+            _current = null; _completed = false; _healOut = false; _returnTpl = 0;
             if (_mission.Active) _mission.Stop("skipping the mission");
             if (_mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out to skip it"); }
             else Enter(Phase.ToTerminal, "skipped");
