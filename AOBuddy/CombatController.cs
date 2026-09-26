@@ -230,6 +230,19 @@ namespace AOBuddy
         // rest). Covers the lull where owner.FightingTarget is momentarily null but mobs are still on us.
         public bool HostilesEngaged(LocalPlayer me, PlayerChar owner)
         {
+            // SOLO (no owner - the mission run) and THE PETS (Algorithman, 2026-09-26: "bot doesn't react if mobs
+            // attack the pets"): this returned false with no owner and never looked at the pets, so a mob chewing on
+            // a pet left him 'out of combat' and the blitz ran on through the room. A live mob (no owner) fighting
+            // him or one of his pets counts, with or without an owner.
+            if (me == null) return false;
+            var pets = new HashSet<Identity>(me.Pets.Select(p => p.Identity));
+            if (pets.Count > 0 || owner == null)
+            {
+                bool onUs = DynelManager.Npcs.Any(n => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity)
+                    && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
+                    && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0) && !IsSetAside(n.Identity));
+                if (onUs) return true;
+            }
             if (owner == null) return false;
             return DynelManager.Characters.Any(c => IsHostile(c, me, owner)
                 && ((c.FightingIdentity.HasValue && (c.FightingIdentity.Value == owner.Identity || c.FightingIdentity.Value == me.Identity))
