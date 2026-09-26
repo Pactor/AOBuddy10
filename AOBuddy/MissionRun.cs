@@ -50,6 +50,7 @@ namespace AOBuddy
         private int _termPf;
         private Identity _termId;
         private Vector3 _termPos;
+        private Vector3 _termFront = Vector3.Zero;   // where its screen faces (flat unit vector); saved with the rest
 
         // The mission in hand.
         private MissionInfo _current;
@@ -331,6 +332,7 @@ namespace AOBuddy
             {
                 // Standing at one: this is the terminal from now on (remembered across restarts).
                 _termPf = (int)Playfield.ModelId; _termId = term.Identity; _termPos = term.Transform.Position;
+                _termFront = FlatFront(term);
                 SaveTerminal();
             }
             else if (!LoadTerminal())
@@ -344,7 +346,7 @@ namespace AOBuddy
             var saved = fresh || !held ? null : FromQuestLog() ?? LoadSaved();
             string termZone = Playfield.TryGetPlayfieldNameFromId(_termPf, out string tz) ? tz : _termPf.ToString();
             string zones = _ctx.Config.MissionZones != null && _ctx.Config.MissionZones.Count > 0 ? string.Join(", ", _ctx.Config.MissionZones) : "any zone";
-            _ctx.Log($"MISSIONRUN: start; terminal {_termId} in {termZone} ({_termPos.X:0},{_termPos.Z:0}); zones: {zones}.");
+            _ctx.Log($"MISSIONRUN: start; terminal {_termId} in {termZone} ({_termPos.X:0},{_termPos.Z:0}), faces ({_termFront.X:0.00},{_termFront.Z:0.00}); zones: {zones}.");
             reply($"Running missions from the terminal in {termZone} ({zones}), {_ctx.Config.MissionStyle} style. 'mission run stop' to stop, 'mission run status' for where I am.");
             if (_mission.InMission && !held && !fresh)
             {
@@ -770,20 +772,23 @@ namespace AOBuddy
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     if ((int)Playfield.ModelId == _termPf && !_overland.Active)
                     {
-                        // Travel stops a few metres short and the terminal's own body keeps us ~5 m from its centre
-                        // (2026-09-23 21:29: 'Arrived' at 5.4 m, over and over). So finish on foot, straight at it,
-                        // and roll from wherever that ends within the roll's 6 m.
-                        float dT = Movement.Flat(me.Transform.Position, _termPos);
-                        if (dT <= T("termnear"))
+                        // Travel stops a few metres short and the terminal's own body keeps anyone ~5 m from
+                        // its centre (2026-09-23 21:29: 'Arrived' at 5.4 m, over and over). So finish on foot
+                        // at the STAND POINT — the terminal's coordinates + 2 m along its facing, the screen's
+                        // side, never the sides or the back (owner, 2026-09-26) — and roll from wherever that
+                        // ends within the roll's 6 m.
+                        Vector3 goal = TerminalApproach();
+                        float dG = Movement.Flat(me.Transform.Position, goal);
+                        if (dG <= T("termnear"))
                         {
                             _approach += dt;
-                            if (dT <= T("termstop") || _approach > 5)
+                            if (dG <= T("termstop") || _approach > 5)
                             {
                                 _follow.ClearManual();
-                                if (dT <= T("termroll")) { Enter(Phase.Rolling, "at the terminal"); return false; }
+                                if (Movement.Flat(me.Transform.Position, _termPos) <= T("termroll")) { Enter(Phase.Rolling, "at the terminal"); return false; }
                                 _approach = 0;   // couldn't close in: travel again
                             }
-                            else { _follow.SetManualTarget(_termPos); return true; }   // from the approach spot: clear of pads
+                            else { _follow.SetManualTarget(goal); return true; }   // onto the stand point in front of the screen
                         }
                     }
                     return Travel(me, _termPf, TerminalApproach(), "the terminal");
@@ -1458,11 +1463,17 @@ namespace AOBuddy
             return true;
         }
 
-        // The spot 4 m from the terminal to travel to: the side farthest from any pad or zone line, and whose last
-        // few metres to the terminal pass no closer than 3 m to one. Borealis Backyard 5's entry pad sits 10 m from
-        // the terminal on the straight way in, and the bot walked onto it (2026-09-23 22:45).
+        // Where to head for the terminal: the stand point IN FRONT of it — its coordinates moved 2 m along its
+        // facing, the screen's side (owner, 2026-09-26: stand there to use it, never the sides or the back).
+        // Without a facing (no live dynel and none saved) the old fallback: the side of a 4 m ring farthest
+        // from any pad or zone line, and whose last few metres to the terminal pass no closer than 3 m to one.
+        // Borealis Backyard 5's entry pad sits 10 m from the terminal on the straight way in, and the bot
+        // walked onto it (2026-09-23 22:45).
         private Vector3 TerminalApproach()
         {
+            var front = TerminalFront();
+            if (front.Magnitude > 0.5f)
+                return new Vector3(_termPos.X + front.X * 2f, _termPos.Y, _termPos.Z + front.Z * 2f);
             var lines = Zoning.ExitsFrom(_termPf).Where(e => e.Kind == ExitKind.Line || e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Teleport).ToList();
             if (lines.Count == 0) return _termPos;
             Vector3 best = _termPos; float bestScore = float.MinValue;
@@ -1482,6 +1493,25 @@ namespace AOBuddy
                 if (near > bestScore) { bestScore = near; best = c; }
             }
             return best;
+        }
+
+        // The terminal's facing, flattened to a unit vector: live from the dynel's rotation when it stands in
+        // view, else the one saved in missionterminal.json. The rotation is real since the v2
+        // StaticDynelData.bin (RDB statel record +36, stored (w,x,y,z)) — the v1 bin had none and every
+        // terminal "faced" identity/north (2026-09-26). Ground truth, Newland City: the pair at (632,546)
+        // faces east (yaw 90), the pair at (745,700) south-west (yaw 224).
+        private static Vector3 FlatFront(Dynel d)
+        {
+            if (d == null || d.Transform == null) return Vector3.Zero;
+            var f = d.Transform.Heading.Forward;
+            var flat = new Vector3(f.X, 0, f.Z);
+            return flat.Magnitude > 0.5f ? flat.Normalize() : Vector3.Zero;
+        }
+
+        private Vector3 TerminalFront()
+        {
+            Vector3 live = DynelManager.Find(_termId, out Dynel d) ? FlatFront(d) : Vector3.Zero;
+            return live.Magnitude > 0.5f ? live : _termFront;
         }
 
         // Exits that failed him this session (a whompa walked across from all four sides without a zone: ICC
@@ -2600,7 +2630,7 @@ namespace AOBuddy
             ["standtries"]= (4f,    "times I stand on a whompa/line before leaving it"),
             ["usetries"]  = (3f,    "times I use a terminal/teleporter before leaving it"),
             ["termnear"]  = (12f,   "metres from the terminal I finish on foot, straight at it"),
-            ["termstop"]  = (3.5f,  "metres from the terminal I stop"),
+            ["termstop"]  = (0.5f,  "metres from the stand spot in front of the terminal I stop"),
             ["termroll"]  = (6f,    "metres from the terminal I may roll"),
             ["pullgap"]   = (5f,    "metres a server snap-back must move me to count"),
             ["pulls"]     = (2f,    "snap-backs within pullsecs that mean 'pulled back'"),
@@ -2968,7 +2998,7 @@ namespace AOBuddy
 
         private void SaveTerminal()
         {
-            JsonStore.Save(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z }.ToString(), _ctx.Log);
+            JsonStore.Save(TerminalPath, new JObject { ["pf"] = _termPf, ["type"] = (int)_termId.Type, ["id"] = _termId.Instance, ["x"] = _termPos.X, ["y"] = _termPos.Y, ["z"] = _termPos.Z, ["fx"] = _termFront.X, ["fz"] = _termFront.Z }.ToString(), _ctx.Log);
         }
 
         private bool LoadTerminal()
@@ -2979,6 +3009,7 @@ namespace AOBuddy
                 if (o == null) return false;
                 _termPf = (int)o["pf"]; _termId = new Identity((IdentityType)(int)o["type"], (int)o["id"]);
                 _termPos = new Vector3((float)o["x"], (float)o["y"], (float)o["z"]);
+                _termFront = o["fx"] != null && o["fz"] != null ? new Vector3((float)o["fx"], 0, (float)o["fz"]) : Vector3.Zero;
                 return true;
             }
             catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read the saved terminal: " + ex.Message); return false; }
@@ -3073,7 +3104,7 @@ namespace AOBuddy
             if (other != null)
             {
                 _ctx.Log($"MISSIONRUN: {(team ? "in" : "not in")} a team: switching from '{cur?.Name}' {_termId} to '{other.Name}' {other.Identity}.");
-                _termId = other.Identity; _termPos = other.Transform.Position; SaveTerminal();
+                _termId = other.Identity; _termPos = other.Transform.Position; _termFront = FlatFront(other); SaveTerminal();
                 _termKindWarned = false;
                 Enter(Phase.ToTerminal, "to the " + (team ? "team" : "solo") + " terminal");
                 return false;

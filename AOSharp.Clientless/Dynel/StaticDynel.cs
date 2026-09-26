@@ -8,7 +8,9 @@ namespace AOSharp.Clientless
 
         public DummyItem DummyItem;
 
-        public StaticDynel(int templateId, Identity identity, Vector3 position) : base(identity, position, Quaternion.Identity)
+        /// <param name="rotation">The placement's rotation from the statel record (v2 bin); facing identity
+        /// in the old v1 bin, which stored none.</param>
+        public StaticDynel(int templateId, Identity identity, Vector3 position, Quaternion rotation) : base(identity, position, rotation)
         {
             if (ItemData.Find(templateId, out DummyItem item))
             {
