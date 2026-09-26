@@ -819,6 +819,20 @@ namespace AOBuddy
                         }
                         RestToFull(false);
                         if (!beingHit && (_ctx.Status.Resting || _ctx.Status.NeedsRecovery) && _phaseTime < 60) return false;
+                        // Still hit, and it is a mob he set aside that is on him: take it back up once (the turret it was
+                        // made for gets its minute again, then is left for good) instead of walking on with it biting.
+                        if (beingHit)
+                        {
+                            var back = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity
+                                                                    && _combat.IsSetAside(x.Identity) && !_retaken.Contains(x.Identity)
+                                                                    && (!x.TryGetStat(Stat.Health, out int xh) || xh > 0)).ToList();
+                            if (back.Count > 0)
+                            {
+                                foreach (var x in back) { _combat.ClearAside(x.Identity); _retaken.Add(x.Identity); }
+                                _ctx.Log($"MISSIONRUN: still being hit by {string.Join(", ", back.Select(x => x.Name).Distinct())} I'd set aside; fighting it after all.");
+                                _phaseTime = 0; return false;
+                            }
+                        }
                         if (beingHit) _ctx.Log("MISSIONRUN: still being hit with nothing I can fight; moving on.");
                         _ctx.Log("MISSIONRUN: fight over; carrying on.");
                     }
@@ -3777,7 +3791,9 @@ namespace AOBuddy
                 // ...and one we can't hurt while it hurts us: a Guard Turret 12.6 m off, the bot standing with a
                 // melee weapon for 4 minutes until it died (00:08-00:12, 2026-09-24), the mission already done.
                 // 20 s of fighting it without its HP dropping at all: leave it.
-                else if (readable && _clock - _defSince > 20)
+                // A mob that is ON him or a pet gets a minute, not 20 s (owner, 18:43 2026-09-26: "find a mob STOP kill it,
+                // then move on" - a Young Scab Hyena on him was dropped after 20 s and he walked on with it biting).
+                else if (readable && _clock - _defSince > (a.FightingIdentity.HasValue && (a.FightingIdentity.Value == me.Identity || pets.Contains(a.FightingIdentity.Value)) ? 60 : 20))
                 {
                     _ctx.Log($"MISSIONRUN: {(_clock - _defSince):0} s on '{a.Name}' and its HP hasn't moved ({ahp}); leaving it alone for 5 minutes.");
                     _combat.SetAside(me, a.Identity, 300);
@@ -3851,6 +3867,7 @@ namespace AOBuddy
             if (id == 249817907) _killAt = _clock;   // "You can loot these remains": a kill
         }
         private double _killAt = -999;
+        private readonly HashSet<Identity> _retaken = new HashSet<Identity>();
 
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
         /// vendor/talk/pet flags - the hunt command's rule from 33 captures (HuntController.IsHuntable). NPCs are
