@@ -3272,7 +3272,9 @@ namespace AOBuddy
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
-            if (a == null && _mission.Clearing && _mission.InMission) a = PullTarget(me, pets);
+            // Only once the blitz is going: at 03:10 (2026-09-26) he pulled an A-500 at the entrance, 2 s before the
+            // door check skipped that building as too tough, and fought it on the way out.
+            if (a == null && _mission.Clearing && _mission.InMission && (_phase == Phase.Blitz || _phase == Phase.Fight)) a = PullTarget(me, pets);
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
