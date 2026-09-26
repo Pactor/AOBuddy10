@@ -22,6 +22,10 @@ namespace AOBuddy
         private readonly BotContext _ctx;
 
         private Identity? _attackedTarget;   // the target we've already issued Attack on
+
+        /// <summary>The target the fight is with (what we issued Attack on, kept through the FightingTarget
+        /// null-blinks), for the API's /status target bar. Null when nothing is engaged.</summary>
+        public Identity? AttackedTarget => _attackedTarget;
         private double _notSwinging;         // seconds we've been on this target without the server swinging
         private bool _inCombat;
 

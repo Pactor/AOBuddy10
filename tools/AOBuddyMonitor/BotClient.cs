@@ -36,6 +36,7 @@ namespace AOBuddyMonitor
             public float[] Hdg;                       // ground-plane forward [x,z]
             public int HpPct = -1, HpCur, HpMax, NanoPct = -1, NanoCur, NanoMax;
             public int Level, XpInto, XpPctNext = -1;
+            public long XpTotal = -1;                     // raw Stat.XP (the whole amount) — rates survive dings
             public long Credits = -1;
             public int FreeSlots = -1;
             public bool Dead, Resting, InCombat, Casting, InMission;
@@ -261,6 +262,7 @@ namespace AOBuddyMonitor
                 s.Level = (int?)xp["level"] ?? 0;
                 s.XpInto = (int?)xp["into"] ?? 0;
                 s.XpPctNext = (int?)xp["pctNext"] ?? -1;
+                s.XpTotal = (long?)xp["total"] ?? -1;
             }
             if (o["pets"] is JArray pets)
                 foreach (var p in pets.OfType<JObject>())
