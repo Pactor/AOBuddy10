@@ -41,7 +41,7 @@ namespace AOBuddy
         private double _lastHurt = -999;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -508,6 +508,7 @@ namespace AOBuddy
             if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
             var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
+            _healOut = false; _healTrips = 0; _healMob = null; _healPrevMob = null;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) { _rewardIds.Add((r.LowId, r.HighId)); RememberReward(r.LowId, r.HighId); }
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
@@ -557,8 +558,9 @@ namespace AOBuddy
         public bool Tick(LocalPlayer me, double dt)
         {
             _clock += dt; _phaseTime += dt;
-            if (_restSaved != null && (_phase != Phase.Fight || !Active)) RestToFull(false);
+            if (_restSaved != null && ((_phase != Phase.Fight && _phase != Phase.HealOut) || !Active)) RestToFull(false);
             if (!Active || me == null) return false;
+            HealMobCheck();
             RecordGood(me);
             UseTokens(me);
             _mission.ClearMode = _ctx.Config.MissionClear;
@@ -675,6 +677,12 @@ namespace AOBuddy
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
                     if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _noFleeUntil && StartFlee(me)) return true;
+                    // HEAL OUTSIDE AND COME BACK (owner, 2026-09-26, on the A-500s that killed him: "if I am down to 50% hp
+                    // and my stims cooldown is large, I turn, I run outside mission door, I sit and heal, I come back in and
+                    // finish the mob, as his hp is the same as when I left"). Earlier than the flee below, so there is HP
+                    // left for the walk out, and the mission is kept.
+                    if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < T("healouthp") && _clock - _lastHurt < 3
+                        && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && StartHealOut(me, hpNow)) return false;
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
                     // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
@@ -958,6 +966,7 @@ namespace AOBuddy
                 case Phase.AwaitBlitz:
                 {
                     if (_phaseTime < 2.5) return false;       // the quest update arrives just after the zone-in
+                    if (_healOut) { _healOut = false; _resumeBlitz = true; }
                     // The owner's rule: judge the mission at the entrance, where leaving is one step away. Blitz's own
                     // planner says whether it has a walkable path to the target; none, or no way to look for it, and
                     // the mission is dropped right here instead of being fought over deep inside.
@@ -1026,7 +1035,7 @@ namespace AOBuddy
                 {
                     // The owner's way out of a spot the server keeps stopping you at: turn round, run back to the
                     // edge of the room, turn again and go. Up to 6 m back along our own facing, then retry.
-                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel" && _backoffNext != "flee") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
+                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel" && _backoffNext != "flee") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? OutsidePhase : Phase.Blitz, "out"); return false; }
                     bool replaying = _follow.ReplayCount > 0 && !_follow.ManualActive;
                     bool done = _phaseTime > (replaying ? 25 : 4) || (_backoffTo.HasValue && Movement.Flat(me.Transform.Position, _backoffTo.Value) <= 1.2f);
                     if (!done && replaying) return true;
@@ -1056,7 +1065,7 @@ namespace AOBuddy
 
                 case Phase.ExitStand:
                 {
-                    if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? Phase.ToTerminal : Phase.Blitz, "out through the exit"); return false; }
+                    if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? OutsidePhase : Phase.Blitz, "out through the exit"); return false; }
                     if (_exitStep == 0) { _follow.SetManualTarget(_exitAim); _exitStep = 1; }
                     if (_phaseTime > 7)
                     {
@@ -1068,8 +1077,21 @@ namespace AOBuddy
                     return _follow.ManualActive;
                 }
 
+                case Phase.HealOut:
+                {
+                    if (_mission.InMission) { Enter(Phase.AwaitBlitz, "inside"); return false; }
+                    int hpH = _ctx.Status.SelfHpPct, npH = NanoPct(me);
+                    bool full = (hpH < 0 || hpH >= 99) && (npH < 0 || npH >= 95);
+                    if (!full && _phaseTime < T("healoutsecs")) { RestToFull(true); return false; }
+                    RestToFull(false);
+                    _ctx.Log($"MISSIONRUN: healed outside to {hpH}% HP, {npH}% nano{(full ? "" : " (time up)")}; back in to finish it (trip {_healTrips}).");
+                    _resumeBlitz = true;
+                    Enter(Phase.ToDoor, "back in to finish it");
+                    return false;
+                }
+
                 case Phase.Leaving:
-                    if (!_mission.InMission) { Enter(Phase.ToTerminal, "outside"); return false; }
+                    if (!_mission.InMission) { Enter(OutsidePhase, "outside"); return false; }
                     if (!_mission.Active)
                     {
                         if (_phaseTime > 60 && !_leaveWarned) { _leaveWarned = true; _tell("I'm having trouble walking out of the mission building; still trying."); }
@@ -1088,6 +1110,61 @@ namespace AOBuddy
         private Phase _travelReturn;
         private Phase _fightReturn;
         private bool _resumeBlitz;
+
+        // HEAL OUTSIDE (see the Fight phase). _healOut runs from the walk out to the next entrance.
+        private bool _healOut;
+        private int _healTrips, _healPrevHp = -1, _healMobHp = -1;
+        private Identity? _healMob, _healPrevMob;
+        private bool _healMobLogged = true;
+        /// <summary>Out of the building to heal, going back in: the recorder keeps the building's file open.</summary>
+        public bool HealingOut => Active && _healOut;
+        private Phase OutsidePhase => _healOut ? Phase.HealOut : Phase.ToTerminal;
+
+        private static int HpPctOf(SimpleChar n)
+            => n != null && n.TryGetStat(Stat.MaxHealth, out int max) && max > 0 && n.TryGetStat(Stat.Health, out int hp) ? (int)(100.0 * hp / max) : -1;
+
+        // A stim coming soon: he has one he can use and First Aid's lock (on the wire, me.Cooldowns) is nearly up.
+        private bool StimSoon(LocalPlayer me)
+        {
+            if (UsableStims() == 0) return false;
+            return !(me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) && cd.RemainingTime > T("healoutstim"));
+        }
+
+        private bool StartHealOut(LocalPlayer me, int hpNow)
+        {
+            if (_healTrips >= T("healtrips")) return false;
+            var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+            var tgt = from.FirstOrDefault(x => me.FightingTarget != null && x.Identity == me.FightingTarget.Identity) ?? from.OrderBy(HpPctOf).FirstOrDefault();
+            int tHp = HpPctOf(tgt);
+            // No headway on the same mob since the last trip: this one resting won't beat.
+            if (tgt != null && _healPrevMob.HasValue && tgt.Identity == _healPrevMob.Value && tHp >= 0 && _healPrevHp >= 0 && tHp >= _healPrevHp - 2)
+            {
+                _ctx.Log($"MISSIONRUN: '{tgt.Name}' is at {tHp}% again, {_healPrevHp}% when I last went out to heal; no headway.");
+                return false;   // the flee below drops the mission
+            }
+            foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
+            if (me.IsAttacking) me.StopAttack();
+            _fleeUntil = _clock + T("fleesecs");
+            _healOut = true; _healTrips++;
+            _healMob = tgt?.Identity; _healMobHp = tHp; _healMobLogged = tgt == null;
+            _healPrevMob = tgt?.Identity; _healPrevHp = tHp;
+            _ctx.Log($"MISSIONRUN: {hpNow}% HP and the stim far off; walking out to heal and coming back (trip {_healTrips}). "
+                     + (tgt != null ? $"'{tgt.Name}' is at {tHp}%." : "") + $" {from.Count} on me.");
+            if (_mission.Active) _mission.Stop("healing outside");
+            _mission.Command("backoutside", OnOutsideReply);
+            Enter(Phase.Leaving, "out to heal");
+            return true;
+        }
+
+        // Back in: how the mob I left looks now (the owner says its HP stays where it was).
+        private void HealMobCheck()
+        {
+            if (_healMobLogged || _healOut || !_healMob.HasValue || !_mission.InMission) return;
+            var n = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == _healMob.Value);
+            if (n == null) return;
+            _healMobLogged = true;
+            _ctx.Log($"MISSIONRUN: back in: '{n.Name}' was at {_healMobHp}% when I went out, {HpPctOf(n)}% now.");
+        }
         private Vector3? _backoffTo;
         private string _backoffNext;
 
@@ -2703,6 +2780,10 @@ namespace AOBuddy
             ["walkto"]    = (120f,  "metres within which I walk to a goal myself when travel finds no way"),
             ["walktries"] = (2f,    "walk-to-it tries per arrival"),
             ["chain"]     = (10f,   "zone crossings I hike in a row before travel takes over"),
+            ["healouthp"] = (50f,   "HP % under which, inside and with the stim far off, I walk out, heal to full and come back (0 = never)"),
+            ["healoutstim"] = (10f, "seconds of stim lock left that count as 'far off' for healing outside"),
+            ["healtrips"] = (4f,    "heal-outside trips per mission"),
+            ["healoutsecs"] = (300f, "most seconds I rest outside before going back in"),
             ["fleehp"]    = (40f,   "HP % under which, still being hit outside a mission, I break off and run back the way I came (0 = never)"),
             ["fleedist"]  = (80f,   "metres of my trail I run back when fleeing"),
             ["fleesecs"]  = (30f,   "seconds the mobs I flee from are left alone"),
@@ -3053,7 +3134,7 @@ namespace AOBuddy
             if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
             _tell($"Skipping this mission ({why}); deleted {n}.");
-            _current = null; _completed = false;
+            _current = null; _completed = false; _healOut = false;
             if (_mission.Active) _mission.Stop("skipping the mission");
             if (_mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out to skip it"); }
             else Enter(Phase.ToTerminal, "skipped");
@@ -3417,6 +3498,7 @@ namespace AOBuddy
             // 'there'), so without this the count stayed at 2 and the next trip had none (09:23-09:28, 2026-09-24).
             if (p == Phase.Rolling || p == Phase.EnterDoor || p == Phase.Hike) _straightTries = 0;
             if (p == Phase.Leaving) _leaveWarned = false;
+            if (p == Phase.Dead || p == Phase.Rolling || p == Phase.Stash || p == Phase.ToTerminal) _healOut = false;
             if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
             _approach = 0;
         }

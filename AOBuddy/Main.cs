@@ -165,7 +165,7 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
-            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty);
+            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             BuildCommands();
 
