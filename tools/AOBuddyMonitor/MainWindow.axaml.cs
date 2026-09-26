@@ -254,6 +254,7 @@ namespace AOBuddyMonitor
                 InvPanel.Children.Add(new TextBlock
                 {
                     Text = bag.Known ? $"{bag.Name}  ({bag.Free} free)" : $"{bag.Name}  (not opened — contents unknown)",
+                    TextWrapping = TextWrapping.Wrap,
                     Foreground = new SolidColorBrush(Color.FromRgb(0x9a, 0x9a, 0x9a)),
                     Margin = new Avalonia.Thickness(0, 6, 0, 0),
                 });
@@ -280,7 +281,7 @@ namespace AOBuddyMonitor
             // autoscroll only while the reader is at the bottom; scrolling up to read pauses it
             bool atBottom = LogScroll.Offset.Y + LogScroll.Viewport.Height >= LogScroll.Extent.Height - 16;
             LogPanel.Children.Add(new TextBlock { Text = text, FontSize = 11, Foreground = brush ?? Server(), TextWrapping = TextWrapping.Wrap });
-            while (LogPanel.Children.Count > 1200) LogPanel.Children.RemoveAt(0);
+            while (LogPanel.Children.Count > 200) LogPanel.Children.RemoveAt(0);
             if (atBottom) LogScroll.ScrollToEnd();
         }
 
