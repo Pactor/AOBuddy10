@@ -148,10 +148,14 @@ namespace AOBuddy
 
         public static string NameOf(int template) => ItemData.Find(template, out DummyItem d) && d?.Name != null ? d.Name : null;
 
+        private static bool NameHas(string name, string part) => name != null && part != null && name.IndexOf(part, StringComparison.OrdinalIgnoreCase) >= 0;
+
         /// <summary>Does this reward (template, QL) fit the entry?</summary>
         public static bool Fits(Entry e, int low, int ql)
         {
-            if (e.Name != null) return string.Equals(NameOf(low), e.Name, StringComparison.OrdinalIgnoreCase);
+            // A name matches as a part of the item name too: 'Obtru Steel-Ribbed' takes every piece of that set, Worn
+            // and High-Quality (owner, 2026-09-25). A full exact name still matches only itself (and longer names).
+            if (e.Name != null) return NameHas(NameOf(low), e.Name);
             if (ql < e.QlMin || ql > e.QlMax) return false;
             int cls = WantData.ClassOf(low);
             switch (e.Kind)
@@ -239,8 +243,7 @@ namespace AOBuddy
                 if (e.Kind == "nano" && e.Name == null) r.Add((e, NanosFor(e).Where(c => !HaveNano(WantData.NanoOf(c), held)).ToList()));
                 else if (e.Name != null)
                 {
-                    bool have = Got.Any(g => string.Equals(NameOf(g), e.Name, StringComparison.OrdinalIgnoreCase))
-                                || held.Any(h => string.Equals(NameOf(h), e.Name, StringComparison.OrdinalIgnoreCase));
+                    bool have = Got.Any(g => NameHas(NameOf(g), e.Name)) || held.Any(h => NameHas(NameOf(h), e.Name));
                     r.Add((e, have ? new List<int>() : new List<int> { -1 }));
                 }
                 else r.Add((e, null));
