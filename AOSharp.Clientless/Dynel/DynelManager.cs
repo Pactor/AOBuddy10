@@ -176,7 +176,45 @@ namespace AOSharp.Clientless
             LocalPlayer local = LocalPlayer;
             if (local != null && identity == local.Identity)
                 LocalPlayerCorrected?.Invoke(null, pos);   // observe only — does NOT move the bot
+            else if (_dynels.TryGetValue(identity, out Dynel d))
+                d.Transform.Position = pos;                // mobs and pets are server-authoritative (Algorithman, 2026-09-26)
         }
+
+        // FOLLOWTARGET (Algorithman, 2026-09-26: "positions are not set in the dynelmanager. the packets arrive, but
+        // dynelmanager doesn't get the update"). NPCs move by FollowTarget, which was never handled, so a mob stayed
+        // where it was first seen. NpcPath = [where it is now, where it is going]; Target = following a dynel,
+        // the path to it in Coordinates. The dynel is moved along from the first point to the last at its speed.
+        // Checked live: each new packet's start is compared with where we had it (PathStats).
+        public static float PathSpeed(Dynel d)
+            => d is SimpleChar sc && sc.TryGetStat(Stat.RunSpeed, out int rs) && rs > 0 ? 4.82f + rs * 0.003615f : 4.82f;
+
+        public static int PathCount; public static double PathErrSum, PathErrMax;
+        public static readonly System.Collections.Generic.Dictionary<int, (int n, double sum)> PathSeen = new System.Collections.Generic.Dictionary<int, (int, double)>();
+
+        internal static void OnFollowTarget(Identity identity, Vector3[] path, byte mode)
+        {
+            LocalPlayer local = LocalPlayer;
+            if (path == null || path.Length == 0 || (local != null && identity == local.Identity)) return;
+            if (!_dynels.TryGetValue(identity, out Dynel d)) return;
+            if (d.Transform.Moving)
+            {
+                double err = Vector3.Distance(d.Transform.Position, path[0]);
+                PathCount++; PathErrSum += err; if (err > PathErrMax) PathErrMax = err;
+            }
+            if (d.Transform.Destination.HasValue && _pathAt.TryGetValue(identity, out var prev))
+            {
+                // Observed speed: how far its start moved since the last packet, while that path had not ended.
+                double dt = (DateTime.UtcNow - prev.at).TotalSeconds;
+                if (dt > 0.3 && dt < 5 && d.Transform.Moving)
+                {
+                    PathSeen.TryGetValue(mode, out var s);
+                    PathSeen[mode] = (s.n + 1, s.sum + Vector3.Distance(prev.from, path[0]) / dt);
+                }
+            }
+            _pathAt[identity] = (DateTime.UtcNow, path[0]);
+            d.Transform.MoveAlong(path[0], path[path.Length - 1], path.Length > 1 ? PathSpeed(d) : 0);
+        }
+        private static readonly System.Collections.Generic.Dictionary<Identity, (DateTime at, Vector3 from)> _pathAt = new System.Collections.Generic.Dictionary<Identity, (DateTime, Vector3)>();
 
         internal static void OnOrgInfoPacket(OrgInfoPacketMessage orgInfoPacketMsg)
         {
@@ -207,6 +245,7 @@ namespace AOSharp.Clientless
         {
             _dynels.Clear();
             Dead.Clear();
+            _pathAt.Clear();
         }
     }
 }

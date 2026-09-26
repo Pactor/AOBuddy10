@@ -482,6 +482,13 @@ namespace AOSharp.Clientless
                 DynelManager.OnDynelMovementChanged(moveMessage.Identity, moveMessage.Position, moveMessage.Heading, moveMessage.MoveType);
             });
 
+            _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg) =>
+            {
+                var ft = (FollowTargetMessage)msg;
+                if (ft.Info is FollowTargetMessage.PathInfo pi) DynelManager.OnFollowTarget(ft.Identity, pi.Waypoints, ft.MoveMode);
+                else if (ft.Info is FollowTargetMessage.TargetInfo ti && ti.Coordinates?.Length > 0) DynelManager.OnFollowTarget(ft.Identity, ti.Coordinates, ft.MoveMode);
+            });
+
             _n3MsgCallbacks.Add(N3MessageType.CharacterAction, (msg) =>
             {
                 CharacterActionMessage charActionMessage = (CharacterActionMessage)msg;

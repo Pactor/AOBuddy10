@@ -33,6 +33,7 @@ namespace AOBuddy
         private int _pf = -1;
         private DateTime _scanAt = DateTime.MinValue;
         private int _written;
+        private DateTime _pathLogAt = DateTime.UtcNow;
         private const int MaxTrack = 600;
         private const float PopInRange = 60f;
 
@@ -48,6 +49,13 @@ namespace AOBuddy
             var now = DateTime.UtcNow;
             if ((now - _scanAt).TotalSeconds < 1) return;
             _scanAt = now;
+            if ((now - _pathLogAt).TotalSeconds >= 120 && DynelManager.PathCount > 0)
+            {
+                // Live check of the FollowTarget movement: where we had each mob vs where the next packet put it.
+                _pathLogAt = now;
+                string speeds = string.Join(", ", DynelManager.PathSeen.Select(kv => $"mode {kv.Key}: {kv.Value.sum / kv.Value.n:0.00} m/s ({kv.Value.n})"));
+                _log($"POSITIONS: {DynelManager.PathCount} paths checked, off by {DynelManager.PathErrSum / DynelManager.PathCount:0.00} m on average, {DynelManager.PathErrMax:0.0} m worst; seen speeds {speeds}.");
+            }
             int pf = (int)Playfield.ModelId;
             if (pf != _pf || inMission || pf >= 100000) { FlushAll(); if (pf != _pf) _zoneAt = now; _pf = pf; if (inMission || pf >= 100000) return; }
 
