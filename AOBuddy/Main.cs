@@ -165,7 +165,7 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
-            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty);
+            _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             BuildCommands();
 
@@ -174,7 +174,7 @@ namespace AOBuddy
             // Local control API for the aobuddy MCP server (127.0.0.1 only; BotApiPort 0 turns it off).
             // The handler only ENQUEUES: HandleCommand mutates controller state, so it must run on the
             // update thread (drained at the top of OnUpdate), not on the API listener thread.
-            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)));
+            _api = new BotApi(_config.BotApiPort, _ctx.Clock, Log, ApiStatus, (text, reply) => _apiCommands.Enqueue((text, reply)), () => _run.NavJson());
             _api.Start();
             Logger.Information($"AOBuddy::Init owner='{_config.Owner}' mode={_mode}");
 
@@ -364,7 +364,7 @@ namespace AOBuddy
             // Flat: a correction that only fixes our height is not a pull-back (22:06-22:11, 2026-09-24: at a
             // Stret West Bank mission door our walk put him 8 m up at the door's height, the server kept him at
             // y 0, and each 8 m 'pull' held him 15 s - 14 holds, 5 minutes at the door).
-            _run.OnServerCorrection(Movement.Flat(local, pos));
+            _run.OnServerCorrection(Movement.Flat(local, pos), local, pos);
             if (_mission.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
             // ...and so does overland travel: its route is planned on data that can miss a surface the server has.
             if (_overland.OnServerCorrection(me, pos)) { _follow.BreakMirror(); return; }
@@ -1078,6 +1078,20 @@ namespace AOBuddy
                 catch (Exception ex) { reply("Load failed: " + ex.Message); }
             };
             t["paths"] = (reply, p) => reply("Saved paths: " + _paths.List());
+            // 'near [metres]': every dynel the server has sent within that range, players and NPCs included, so the
+            // owner can tell a city prop the server sent (a dynel) from one baked into the zone (not listed).
+            t["near"] = (reply, p) =>
+            {
+                LocalPlayer nm = DynelManager.LocalPlayer;
+                if (nm == null) { reply("Not in play."); return; }
+                float r = float.TryParse(Arg(p), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float rr) ? rr : 15f;
+                var all = DynelManager.AllDynels.Where(d => d != null && d.Identity != nm.Identity && Vector3.Distance(d.Transform.Position, nm.Transform.Position) <= r)
+                                                .OrderBy(d => Vector3.Distance(d.Transform.Position, nm.Transform.Position)).ToList();
+                foreach (var d in all)
+                    Log($"NEAR: {d.Identity.Type} {d.Identity} '{d.Name}' at ({d.Transform.Position.X:0.0},{d.Transform.Position.Y:0.0},{d.Transform.Position.Z:0.0}) {Vector3.Distance(d.Transform.Position, nm.Transform.Position):0.0} m");
+                reply($"{all.Count} dynel(s) within {r:0} m of ({nm.Transform.Position.X:0},{nm.Transform.Position.Z:0}): "
+                      + string.Join("; ", all.Take(15).Select(d => $"{d.Identity.Type} '{d.Name}' {Vector3.Distance(d.Transform.Position, nm.Transform.Position):0} m")) + (all.Count > 15 ? " ... (all in the log)" : ""));
+            };
 
             // -- nav / diagnostics / status --
             t["nav"] = (reply, p) =>

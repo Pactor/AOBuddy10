@@ -41,7 +41,7 @@ namespace AOBuddy
         private double _lastHurt = -999;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -308,8 +308,9 @@ namespace AOBuddy
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
-                // A skipped mission's zone is left alone for a while, so the next roll doesn't send him straight back.
-                if (_current != null && !_completed) MarkDanger(_current.Playfield.Instance);
+                // A skipped mission's door is left alone for a while (Skip -> RememberUnreachable), so the next roll doesn't
+                // send him straight back - its door, not its whole zone: two skips at 00:27 and 01:09 (2026-09-26) shut
+                // Aegean and Holes in the Wall for hours.
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
@@ -396,6 +397,8 @@ namespace AOBuddy
         public void OnDied()
         {
             if (!Active) return;
+            var meD = DynelManager.LocalPlayer;
+            if (meD != null) NoteTough(DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == meD.Identity));
             if (_current != null && !_completed) _deathsHere++;
             // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
             // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
@@ -414,9 +417,18 @@ namespace AOBuddy
                     SaveConfigValue("MissionAvoidZones", new JArray(avoid));
                     _tell($"Killed on sight in {Zoning.Name(pf)}; I won't go there again ('mission run avoid {pf}' to undo).");
                 }
-                MarkDanger(pf);
+                // The SPOT, not the whole zone: at 01:22 (2026-09-26) a Scorpiod/Rollerrat pack by one Stret West Bank door
+                // killed him and the whole zone - most of his missions and his way out of Borealis - went off limits for 8
+                // hours. Missions within 250 m of the spot are left for 6 hours (RememberUnreachable); the whole zone only
+                // on a second death there within 2 hours.
+                var me0 = DynelManager.LocalPlayer;
+                var spot = me0 != null ? new Vector3(me0.Transform.Position.X, 0, me0.Transform.Position.Z) : new Vector3(0, 0, 0);
+                bool again = Unreach.Any(d => d.pf == pf && (DateTime.UtcNow - d.when).TotalHours < 2 && Movement.Flat(d.at, spot) < 600);
+                RememberUnreachable(pf, spot);
+                if (again) MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
-                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)}; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n}).");
+                _ctx.Log(again ? $"MISSIONRUN: died out in {Zoning.Name(pf)} again; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n})."
+                               : $"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}); missions near it are left for 6 hours.");
             }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
@@ -476,6 +488,8 @@ namespace AOBuddy
             var ok = list.Where(Fits).ToList();
             int dangerous = ok.RemoveAll(m => Dangerous(m.Playfield.Instance));
             if (dangerous > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {dangerous} mission(s) in zones I died in lately.");
+            int far = ok.RemoveAll(m => Unreachable(m.Playfield.Instance, new Vector3(m.Location.X, 0, m.Location.Z)));
+            if (far > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {far} mission(s) by doors I couldn't reach lately.");
             int hostile = ok.RemoveAll(m => HostileAt(m.Playfield.Instance, m.Location.X, m.Location.Z) != null);
             if (hostile > 0) _ctx.Log($"MISSIONRUN: roll {_rolls}: left {hostile} mission(s) by the other side's guards.");
             int? rollQl = QlObserve(list);
@@ -496,6 +510,7 @@ namespace AOBuddy
             if (weighed.Count == 0) { Enter(Phase.Rolling, "no route to any door offered"); return; }
             var pick = weighed.OrderBy(w => w.cost.Value).First().m;
             _current = pick; _completed = false; _travelTries = 0; _travelBacks = 0; _deathsHere = 0; _doorTries = 0; _door = null;
+            _healOut = false; _healTrips = 0; _healMob = null; _healPrevMob = null;
             _rewardIds.Clear();
             foreach (var r in pick.MissionItemData ?? new MissionItemReward[0]) { _rewardIds.Add((r.LowId, r.HighId)); RememberReward(r.LowId, r.HighId); }
             _roll.Accept(pick, s => _ctx.Log("MISSIONRUN: " + s));
@@ -545,8 +560,10 @@ namespace AOBuddy
         public bool Tick(LocalPlayer me, double dt)
         {
             _clock += dt; _phaseTime += dt;
-            if (_restSaved != null && (_phase != Phase.Fight || !Active)) RestToFull(false);
+            if (_restSaved != null && ((_phase != Phase.Fight && _phase != Phase.HealOut) || !Active)) RestToFull(false);
+            NavSample(me);
             if (!Active || me == null) return false;
+            HealMobCheck();
             RecordGood(me);
             UseTokens(me);
             _mission.ClearMode = _ctx.Config.MissionClear;
@@ -587,7 +604,8 @@ namespace AOBuddy
                     {
                         string k = ExitKey(_hike.Exit);
                         _exitPulls[k] = (_exitPulls.TryGetValue(k, out int np) ? np : 0) + 1;
-                        if (_exitPulls[k] >= 3) MarkBadExit(_hike.Exit);
+                        // Five now: the pulled-back ground is blocked on the walk grid and routed round first.
+                        if (_exitPulls[k] >= 5) MarkBadExit(_hike.Exit);
                     }
                     _travelReturn = _phase == Phase.Hike ? _hikeReturn : _phase;   // Shop keeps its step (Travel)
                     _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase}; back to my last good spot and planning again.");
@@ -662,6 +680,12 @@ namespace AOBuddy
                     // (26-29) and Minibulls (30) caught him; he stood and fought, 100% -> 8% in 23 s with one stim,
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
                     if (!_mission.InMission && hpNow >= 0 && hpNow < T("fleehp") && _clock - _lastHurt < 3 && _clock >= _noFleeUntil && StartFlee(me)) return true;
+                    // HEAL OUTSIDE AND COME BACK (owner, 2026-09-26, on the A-500s that killed him: "if I am down to 50% hp
+                    // and my stims cooldown is large, I turn, I run outside mission door, I sit and heal, I come back in and
+                    // finish the mob, as his hp is the same as when I left"). Earlier than the flee below, so there is HP
+                    // left for the walk out, and the mission is kept.
+                    if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < T("healouthp") && _clock - _lastHurt < 3
+                        && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && StartHealOut(me, hpNow)) return false;
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
                     // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
@@ -948,6 +972,7 @@ namespace AOBuddy
                 case Phase.AwaitBlitz:
                 {
                     if (_phaseTime < 2.5) return false;       // the quest update arrives just after the zone-in
+                    if (_healOut) { _healOut = false; _resumeBlitz = true; }
                     // The owner's rule: judge the mission at the entrance, where leaving is one step away. Blitz's own
                     // planner says whether it has a walkable path to the target; none, or no way to look for it, and
                     // the mission is dropped right here instead of being fought over deep inside.
@@ -960,6 +985,18 @@ namespace AOBuddy
                         bool noRoute = report != null && report.StartsWith("No route", StringComparison.OrdinalIgnoreCase)
                                        && report.IndexOf("search", StringComparison.OrdinalIgnoreCase) < 0;
                         if (noPath || noRoute) { Skip("I can't do it from the entrance: " + report); return false; }
+                        // A building of mobs he has fled from or died to in a mission before (tough_mobs.json, learned): skip
+                        // it at the door. Not by HP - at level 46 most mobs have twice his, and he clears those; the A-500
+                        // Soldiers/Elites made him flee or die in all four of their buildings (01:16-02:18, 2026-09-26).
+                        {
+                            var tough = DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.Name != null && n.Identity != _mission.FindPersonTarget
+                                                                     && ToughMobs.TryGetValue(n.Name.ToLowerInvariant(), out int c) && c >= 2).ToList();
+                            if (tough.Count >= 3)
+                            {
+                                Skip($"too tough: {tough.Count} mobs I've had to run from before ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))})");
+                                return false;
+                            }
+                        }
                     }
                     _resumeBlitz = false;
                     _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
@@ -1004,7 +1041,7 @@ namespace AOBuddy
                 {
                     // The owner's way out of a spot the server keeps stopping you at: turn round, run back to the
                     // edge of the room, turn again and go. Up to 6 m back along our own facing, then retry.
-                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel" && _backoffNext != "flee") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? Phase.ToTerminal : Phase.Blitz, "out"); return false; }
+                    if (!_mission.InMission && _backoffNext != "blitz" && _backoffNext != "travel" && _backoffNext != "flee") { _follow.ClearManual(); Enter(_backoffNext == "leave" ? OutsidePhase : Phase.Blitz, "out"); return false; }
                     bool replaying = _follow.ReplayCount > 0 && !_follow.ManualActive;
                     bool done = _phaseTime > (replaying ? 25 : 4) || (_backoffTo.HasValue && Movement.Flat(me.Transform.Position, _backoffTo.Value) <= 1.2f);
                     if (!done && replaying) return true;
@@ -1034,7 +1071,7 @@ namespace AOBuddy
 
                 case Phase.ExitStand:
                 {
-                    if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? Phase.ToTerminal : Phase.Blitz, "out through the exit"); return false; }
+                    if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? OutsidePhase : Phase.Blitz, "out through the exit"); return false; }
                     if (_exitStep == 0) { _follow.SetManualTarget(_exitAim); _exitStep = 1; }
                     if (_phaseTime > 7)
                     {
@@ -1046,8 +1083,21 @@ namespace AOBuddy
                     return _follow.ManualActive;
                 }
 
+                case Phase.HealOut:
+                {
+                    if (_mission.InMission) { Enter(Phase.AwaitBlitz, "inside"); return false; }
+                    int hpH = _ctx.Status.SelfHpPct, npH = NanoPct(me);
+                    bool full = (hpH < 0 || hpH >= 99) && (npH < 0 || npH >= 95);
+                    if (!full && _phaseTime < T("healoutsecs")) { RestToFull(true); return false; }
+                    RestToFull(false);
+                    _ctx.Log($"MISSIONRUN: healed outside to {hpH}% HP, {npH}% nano{(full ? "" : " (time up)")}; back in to finish it (trip {_healTrips}).");
+                    _resumeBlitz = true;
+                    Enter(Phase.ToDoor, "back in to finish it");
+                    return false;
+                }
+
                 case Phase.Leaving:
-                    if (!_mission.InMission) { Enter(Phase.ToTerminal, "outside"); return false; }
+                    if (!_mission.InMission) { Enter(OutsidePhase, "outside"); return false; }
                     if (!_mission.Active)
                     {
                         if (_phaseTime > 60 && !_leaveWarned) { _leaveWarned = true; _tell("I'm having trouble walking out of the mission building; still trying."); }
@@ -1066,21 +1116,161 @@ namespace AOBuddy
         private Phase _travelReturn;
         private Phase _fightReturn;
         private bool _resumeBlitz;
+
+        // HEAL OUTSIDE (see the Fight phase). _healOut runs from the walk out to the next entrance.
+        private bool _healOut;
+        private int _healTrips, _healPrevHp = -1, _healMobHp = -1;
+        private Identity? _healMob, _healPrevMob;
+        private bool _healMobLogged = true;
+        /// <summary>Out of the building to heal, going back in: the recorder keeps the building's file open.</summary>
+        public bool HealingOut => Active && _healOut;
+        private Phase OutsidePhase => _healOut ? Phase.HealOut : Phase.ToTerminal;
+
+        private static int HpPctOf(SimpleChar n)
+            => n != null && n.TryGetStat(Stat.MaxHealth, out int max) && max > 0 && n.TryGetStat(Stat.Health, out int hp) ? (int)(100.0 * hp / max) : -1;
+
+        // A stim coming soon: he has one he can use and First Aid's lock (on the wire, me.Cooldowns) is nearly up.
+        private bool StimSoon(LocalPlayer me)
+        {
+            if (UsableStims() == 0) return false;
+            return !(me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) && cd.RemainingTime > T("healoutstim"));
+        }
+
+        private bool StartHealOut(LocalPlayer me, int hpNow)
+        {
+            if (_healTrips >= T("healtrips")) return false;
+            var from = DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+            var tgt = from.FirstOrDefault(x => me.FightingTarget != null && x.Identity == me.FightingTarget.Identity) ?? from.OrderBy(HpPctOf).FirstOrDefault();
+            int tHp = HpPctOf(tgt);
+            // No headway on the same mob since the last trip: this one resting won't beat.
+            if (tgt != null && _healPrevMob.HasValue && tgt.Identity == _healPrevMob.Value && tHp >= 0 && _healPrevHp >= 0 && tHp >= _healPrevHp - 2)
+            {
+                _ctx.Log($"MISSIONRUN: '{tgt.Name}' is at {tHp}% again, {_healPrevHp}% when I last went out to heal; no headway.");
+                return false;   // the flee below drops the mission
+            }
+            foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
+            if (me.IsAttacking) me.StopAttack();
+            _fleeUntil = _clock + T("fleesecs");
+            _healOut = true; _healTrips++;
+            _healMob = tgt?.Identity; _healMobHp = tHp; _healMobLogged = tgt == null;
+            _healPrevMob = tgt?.Identity; _healPrevHp = tHp;
+            _ctx.Log($"MISSIONRUN: {hpNow}% HP and the stim far off; walking out to heal and coming back (trip {_healTrips}). "
+                     + (tgt != null ? $"'{tgt.Name}' is at {tHp}%." : "") + $" {from.Count} on me.");
+            if (_mission.Active) _mission.Stop("healing outside");
+            _mission.Command("backoutside", OnOutsideReply);
+            Enter(Phase.Leaving, "out to heal");
+            return true;
+        }
+
+        // Back in: how the mob I left looks now (the owner says its HP stays where it was).
+        private void HealMobCheck()
+        {
+            if (_healMobLogged || _healOut || !_healMob.HasValue || !_mission.InMission) return;
+            var n = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == _healMob.Value);
+            if (n == null) return;
+            _healMobLogged = true;
+            _ctx.Log($"MISSIONRUN: back in: '{n.Name}' was at {_healMobHp}% when I went out, {HpPctOf(n)}% now.");
+        }
         private Vector3? _backoffTo;
         private string _backoffNext;
 
         // GOOD POSITIONS: inside a building, every 1.5 m walked without a server correction in the last 2 s is
         // kept (up to 200). They are ground the server has accepted, so walking them backwards cannot hit a wall.
         private readonly List<Vector3> _good = new List<Vector3>();
+
+        // ---- MONITOR (the API's GET /nav; Algorithman's monitoring app, 2026-09-26) --------------------------
+        // What a map needs to show what he is doing: where he is, the route he is walking (outdoors: the hike's grid
+        // route; inside: the building walk), where the server has held him (every correction, with his own idea of
+        // where he was), and his own trail. Read on the API thread, so the lists are copied under a lock.
+        private readonly object _navLock = new object();
+        private readonly List<(DateTime t, int pf, float gap, Vector3 local, Vector3 server, string phase)> _snapLog = new List<(DateTime, int, float, Vector3, Vector3, string)>();
+        private readonly List<(DateTime t, int pf, bool inside, Vector3 p)> _trailLog = new List<(DateTime, int, bool, Vector3)>();
+        private double _trailAt;
+
+        private void NavSample(LocalPlayer me)
+        {
+            if (me == null || _clock - _trailAt < 1) return;
+            _trailAt = _clock;
+            lock (_navLock)
+            {
+                _trailLog.Add((DateTime.Now, (int)Playfield.ModelId, _mission.InMission, me.Transform.Position));
+                if (_trailLog.Count > 900) _trailLog.RemoveAt(0);
+            }
+        }
+
+        private static JArray V(Vector3 v) => new JArray(Math.Round(v.X, 2), Math.Round(v.Y, 2), Math.Round(v.Z, 2));
+
+        public JObject NavJson()
+        {
+            var o = new JObject { ["time"] = DateTime.Now.ToString("HH:mm:ss"), ["phase"] = _phase.ToString(), ["active"] = Active };
+            try
+            {
+                var me = DynelManager.LocalPlayer;
+                o["pf"] = (int)Playfield.ModelId;
+                o["zone"] = Zoning.Name((int)Playfield.ModelId);
+                o["inMission"] = _mission.InMission;
+                if (me != null) o["pos"] = V(me.Transform.Position);
+                if (_phase == Phase.Hike && _hike != null)
+                {
+                    var e = _hike.Exit;
+                    var route = _hikeRoute;
+                    o["hike"] = new JObject
+                    {
+                        ["fromPf"] = _hikeFromPf, ["targetPf"] = _hikeTargetPf,
+                        ["exit"] = new JObject { ["kind"] = e.Kind.ToString(), ["toPf"] = e.ToPf, ["a"] = V(e.A), ["b"] = V(e.B), ["text"] = e.ToString() },
+                        ["route"] = route == null ? null : new JArray(route.ToArray().Select(V)),
+                    };
+                }
+                var mp = _mission.InMission ? _mission.CurrentPath : null;
+                if (mp != null) o["missionPath"] = new JArray(mp.Select(V));
+                if (_current != null)
+                    o["mission"] = new JObject { ["line"] = CurrentLine, ["pf"] = _current.Playfield.Instance, ["door"] = new JArray(Math.Round(_current.Location.X, 1), Math.Round(_current.Location.Y, 1), Math.Round(_current.Location.Z, 1)) };
+                lock (_navLock)
+                {
+                    o["snaps"] = new JArray(_snapLog.Select(s => new JObject
+                    {
+                        ["t"] = s.t.ToString("HH:mm:ss.f"), ["pf"] = s.pf, ["gap"] = Math.Round(s.gap, 1), ["phase"] = s.phase,
+                        ["local"] = V(s.local), ["server"] = V(s.server),
+                    }));
+                    o["trail"] = new JArray(_trailLog.Select(s => new JObject { ["t"] = s.t.ToString("HH:mm:ss"), ["pf"] = s.pf, ["inside"] = s.inside, ["p"] = V(s.p) }));
+                }
+            }
+            catch (Exception ex) { o["error"] = ex.Message; }
+            return o;
+        }
         private double _lastCorrection = -99;
         private int _backoffs;
 
         /// <summary>Main: the server corrected our position (SetPos).</summary>
-        public void OnServerCorrection(float gap)
+        public void OnServerCorrection(float gap, Vector3 local, Vector3 server)
         {
             _lastCorrection = _clock;
-            if (gap > T("pullgap")) { _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0); }
+            lock (_navLock)
+            {
+                _snapLog.Add((DateTime.Now, (int)Playfield.ModelId, gap, local, server, _phase.ToString()));
+                if (_snapLog.Count > 200) _snapLog.RemoveAt(0);
+            }
+            if (gap > T("pullgap"))
+            {
+                _bigSnaps.Add(_clock); if (_bigSnaps.Count > 20) _bigSnaps.RemoveAt(0);
+                // On a hike, the ground between where the server put him and where he was trying to be is what refuses
+                // him: block it on this zone's walk grid, so the next plan goes round it (02:46-02:48, 2026-09-26: pulled
+                // back ~200 m short of the Stret West Bank -> Borealis whompa, and the whompa was blamed).
+                if (_phase == Phase.Hike)
+                {
+                    var g = HikeGrid();
+                    if (g != null)
+                    {
+                        int pf = (int)Playfield.ModelId;
+                        if (!_hikeBlocked.TryGetValue(pf, out var set)) _hikeBlocked[pf] = set = new HashSet<int>();
+                        int before = set.Count;
+                        g.CellsAlong(server, local, 2f, set);
+                        if (set.Count > before) _ctx.Log($"MISSIONRUN: blocked {set.Count - before} grid cell(s) where the server pulled me back ({server.X:0},{server.Z:0}) -> ({local.X:0},{local.Z:0}).");
+                    }
+                }
+            }
         }
+        private readonly Dictionary<int, HashSet<int>> _hikeBlocked = new Dictionary<int, HashSet<int>>();
         private readonly List<double> _bigSnaps = new List<double>();
         private Vector3? _heldAt;
         private double _heldUntil = -1;
@@ -1236,7 +1426,18 @@ namespace AOBuddy
                 opt.Filter = plain;
                 try { route = Zoning.FindRoute(here, me.Transform.Position, pf, goal, opt); } catch { route = null; }
             }
-            if (route == null || route.Hops.Count == 0) { _hikeLastHike = _clock; _hikeNoRoute = true; _ctx.Log("MISSIONRUN: no zone route without Scotty either."); return false; }
+            if (route == null || route.Hops.Count == 0)
+            {
+                _hikeLastHike = _clock; _hikeNoRoute = true;
+                // Why: every exit out of here and what rules it out (4 Holes corner, 23:49-23:58 2026-09-25: no route
+                // for 9 minutes with three zone lines out of the zone).
+                var why = Zoning.ExitsFrom(here).Select(e => $"{e.Kind} to {Zoning.Name(e.ToPf)} ({e.ToPf})"
+                    + (BadExit(e) ? " bad" : "") + (HostileExit(e) ? " hostile" : "") + (Dangerous(e.ToPf) ? " dangerous" : "")
+                    + (!Zoning.CanUse(e, new ZoneRouteOptions { Stat = Zoning.RouteOptions(me).Stat }) ? " reqs" : "")
+                    + (e.Kind != ExitKind.ZoneLine && e.ObjInstance == 0 ? " not-walkable" : ""));
+                _ctx.Log($"MISSIONRUN: no zone route without Scotty either (from {Zoning.Name(here)} to {Zoning.Name(pf)}); exits here: {string.Join("; ", why.Take(12))}.");
+                return false;
+            }
             _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1;
@@ -2559,7 +2760,18 @@ namespace AOBuddy
                 if (a.side != side && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
             return null;
         }
-        private bool HostileExit(ZoneExit e) => HostileAt(e.FromPf, e.A.X, e.A.Z) != null
+        // The exit's start counts only round a station (r > 0): a whole avoided zone must never trap him inside it.
+        // 4 Holes (760) is on the avoid list, and in it every exit read 'hostile' - no way out for 9 minutes
+        // (23:49-00:00, 2026-09-25/26).
+        private bool HostileStart(int pf, float x, float z)
+        {
+            int side = MySide;
+            if (side != 1 && side != 2) return false;
+            foreach (var a in FactionAreas)
+                if (a.side != side && a.pf == pf && a.r > 0 && Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r) return true;
+            return false;
+        }
+        private bool HostileExit(ZoneExit e) => HostileStart(e.FromPf, e.A.X, e.A.Z)
                                                 || (e.Arrival.HasValue ? HostileAt(e.ToPf, e.Arrival.Value.X, e.Arrival.Value.Z) != null
                                                                        : HostileAt(e.ToPf, float.NaN, float.NaN) != null);   // arrival unknown: whole zones only
         private bool _diedOnWay;
@@ -2580,8 +2792,31 @@ namespace AOBuddy
             _ctx.Log($"MISSIONRUN: {why}; fighting back.");
             Enter(Phase.Fight, "fighting back");
         }
+        // Mob names he fled from or died to inside a mission, counted (tough_mobs.json): the door check reads them.
+        private string ToughPath => Path.Combine(_pluginDir, "tough_mobs.json");
+        private Dictionary<string, int> _tough;
+        private Dictionary<string, int> ToughMobs
+        {
+            get
+            {
+                if (_tough != null) return _tough;
+                _tough = new Dictionary<string, int>();
+                try { if (File.Exists(ToughPath)) foreach (var kv in JObject.Parse(File.ReadAllText(ToughPath))) _tough[kv.Key] = (int)kv.Value; } catch { }
+                return _tough;
+            }
+        }
+        private void NoteTough(IEnumerable<SimpleChar> from)
+        {
+            if (!_mission.InMission || from == null) return;
+            foreach (var name in from.Where(x => x?.Name != null).Select(x => x.Name.ToLowerInvariant()).Distinct())
+                ToughMobs[name] = (ToughMobs.TryGetValue(name, out int c) ? c : 0) + 1;
+            var o = new JObject(); foreach (var kv in ToughMobs) o[kv.Key] = kv.Value;
+            try { File.WriteAllText(ToughPath, o.ToString()); } catch { }
+        }
+
         private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
         {
+            NoteTough(from);
             _fleeAt = me.Transform.Position; _fleeStartedAt = _clock;
             _fleeFrom.Clear(); _fleeFrom.AddRange(from.Select(n => n.Identity));
         }
@@ -2642,6 +2877,10 @@ namespace AOBuddy
             ["walkto"]    = (120f,  "metres within which I walk to a goal myself when travel finds no way"),
             ["walktries"] = (2f,    "walk-to-it tries per arrival"),
             ["chain"]     = (10f,   "zone crossings I hike in a row before travel takes over"),
+            ["healouthp"] = (50f,   "HP % under which, inside and with the stim far off, I walk out, heal to full and come back (0 = never)"),
+            ["healoutstim"] = (10f, "seconds of stim lock left that count as 'far off' for healing outside"),
+            ["healtrips"] = (4f,    "heal-outside trips per mission"),
+            ["healoutsecs"] = (300f, "most seconds I rest outside before going back in"),
             ["fleehp"]    = (40f,   "HP % under which, still being hit outside a mission, I break off and run back the way I came (0 = never)"),
             ["fleedist"]  = (80f,   "metres of my trail I run back when fleeing"),
             ["fleesecs"]  = (30f,   "seconds the mobs I flee from are left alone"),
@@ -2685,7 +2924,8 @@ namespace AOBuddy
                 {
                     double t = k * Math.PI / 4;
                     var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
-                    var path = grid.FindPath(pos, goal, null, T("snap"), T("reach"), out _);
+                    _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
+                    var path = grid.FindPath(pos, goal, blockedCells, T("snap"), T("reach"), out _);
                     if (path == null) continue;
                     float left = Movement.Flat(path[path.Count - 1], at);
                     if (left < bestLeft) { bestLeft = left; best = path; }
@@ -2987,9 +3227,11 @@ namespace AOBuddy
         /// <summary>Give up on the mission in hand: delete it, walk out if inside, and carry on rolling.</summary>
         private void Skip(string why)
         {
+            // Dropped before getting inside: that door is hard to reach from here - remember it (see Unreachable).
+            if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
             _tell($"Skipping this mission ({why}); deleted {n}.");
-            _current = null; _completed = false;
+            _current = null; _completed = false; _healOut = false;
             if (_mission.Active) _mission.Stop("skipping the mission");
             if (_mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "walking out to skip it"); }
             else Enter(Phase.ToTerminal, "skipped");
@@ -3043,6 +3285,37 @@ namespace AOBuddy
             Done.Add((pf, at, DateTime.UtcNow));
             try { File.WriteAllText(DonePath, new JArray(Done.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
         }
+        // DOORS HE COULDN'T REACH (unreach.json): a mission dropped before he got inside marks its door; missions within
+        // 250 m of it are left for 6 hours. The zone map sees Holes in the Wall as one area, but its west part is only
+        // reached by way of Athen Shire - (479,1218) cost 1088 on paper and he circled The Longest Road / Broken
+        // Shores / Jobe for 10 minutes (00:57-01:08, 2026-09-26); (109,1012) the same at 18:09.
+        private string UnreachPath => Path.Combine(_pluginDir, "unreach.json");
+        private List<(int pf, Vector3 at, DateTime when)> _unreachStore;
+        private List<(int pf, Vector3 at, DateTime when)> Unreach
+        {
+            get
+            {
+                if (_unreachStore != null) return _unreachStore;
+                _unreachStore = new List<(int, Vector3, DateTime)>();
+                try
+                {
+                    if (File.Exists(UnreachPath))
+                        foreach (JObject o in JArray.Parse(File.ReadAllText(UnreachPath)))
+                            _unreachStore.Add(((int)o["pf"], new Vector3((float)o["x"], 0, (float)o["z"]), (DateTime)o["when"]));
+                }
+                catch { }
+                return _unreachStore;
+            }
+        }
+        private void RememberUnreachable(int pf, Vector3 at)
+        {
+            Unreach.RemoveAll(d => (DateTime.UtcNow - d.when).TotalHours > 6);
+            Unreach.Add((pf, at, DateTime.UtcNow));
+            _ctx.Log($"MISSIONRUN: remembering the door at ({at.X:0},{at.Z:0}) in {Zoning.Name(pf)} as hard to reach; nothing within 250 m for 6 hours.");
+            try { File.WriteAllText(UnreachPath, new JArray(Unreach.Select(d => new JObject { ["pf"] = d.pf, ["x"] = d.at.X, ["z"] = d.at.Z, ["when"] = d.when })).ToString()); } catch { }
+        }
+        private bool Unreachable(int pf, Vector3 at) => Unreach.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 250 && (DateTime.UtcNow - d.when).TotalHours < 6);
+
         private bool DoneLately(int pf, Vector3 at) => Done.Any(d => d.pf == pf && Movement.Flat(d.at, at) < 20 && (DateTime.UtcNow - d.when).TotalHours < 1);
 
         // The quest log (QuestFullUpdate, sent at every zone-in) carries each mission's destination the same way
@@ -3202,7 +3475,9 @@ namespace AOBuddy
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
-            if (a == null && _mission.Clearing && _mission.InMission) a = PullTarget(me, pets);
+            // Only once the blitz is going: at 03:10 (2026-09-26) he pulled an A-500 at the entrance, 2 s before the
+            // door check skipped that building as too tough, and fought it on the way out.
+            if (a == null && _mission.Clearing && _mission.InMission && (_phase == Phase.Blitz || _phase == Phase.Fight)) a = PullTarget(me, pets);
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
@@ -3321,6 +3596,7 @@ namespace AOBuddy
             // 'there'), so without this the count stayed at 2 and the next trip had none (09:23-09:28, 2026-09-24).
             if (p == Phase.Rolling || p == Phase.EnterDoor || p == Phase.Hike) _straightTries = 0;
             if (p == Phase.Leaving) _leaveWarned = false;
+            if (p == Phase.Dead || p == Phase.Rolling || p == Phase.Stash || p == Phase.ToTerminal) _healOut = false;
             if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
             _approach = 0;
         }

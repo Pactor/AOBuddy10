@@ -53,6 +53,8 @@ namespace AOBuddy
         private bool _announced;                 // the owner has been told it is done
         private string _why = "";
         private List<Vector3> _path;
+        /// <summary>The walk inside the building being followed now (for the API's /nav), or null.</summary>
+        public Vector3[] CurrentPath { get { var p = _path; return p?.ToArray(); } }
         private int _pathIndex;
         private Identity? _pendingButton;
         private Vector3 _pressedFrom;
@@ -248,7 +250,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear();
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _lastPathFrom = null;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             try
             {
@@ -344,7 +346,7 @@ namespace AOBuddy
             if (_grid == null || me == null) return "Not in a mission building.";
             var hop = NextHop(me.MovementComponent.Position, out string why);
             if (hop == null) return "No route: " + why;
-            var path = _grid.FindPath(me.MovementComponent.Position, hop.Value.Pos, _blocked, out bool usedFallback);
+            var path = PathFrom(me.MovementComponent.Position, hop.Value.Pos, out bool usedFallback);
             if (path == null) return $"Next: {why}, but no walkable path to it.";
             var rooms = new List<string>();
             foreach (var p in path) { string r = _grid.RoomAt(p); if (r != null && (rooms.Count == 0 || rooms[rooms.Count - 1] != r)) rooms.Add(r); }
@@ -595,7 +597,7 @@ namespace AOBuddy
                 return;
             }
             var h = hop.Value;
-            _path = _grid.FindPath(me.MovementComponent.Position, h.Pos, _blocked, out bool fb);
+            _path = PathFrom(me.MovementComponent.Position, h.Pos, out bool fb);
             if (_path == null)
             {
                 if (_phaseTime < 6) return;
@@ -691,7 +693,7 @@ namespace AOBuddy
             Hop? best = null; float bestLen = float.MaxValue;
             foreach (var b in choices)
             {
-                var p = _grid.FindPath(pos, b.Value.Pos, _blocked, out _);
+                var p = PathFrom(pos, b.Value.Pos, out _);
                 if (p == null) continue;
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
                 if (len < bestLen) { bestLen = len; best = new Hop { Pos = b.Value.Pos, Purpose = Purpose.Button, Button = b.Key }; }
@@ -744,6 +746,13 @@ namespace AOBuddy
             if (b == null || b.Length < 37 || BE32(b, 20) != DoorType || BE32(b, 33) != ActionUnlocked) return;
             var id = new Identity((IdentityType)DoorType, BE32(b, 24));
             if (_doors.TryGetValue(id, out var d)) { if (d.Locked) _pickedDoors.Add(id); d.Locked = false; }
+            // A picked door opens rooms the clear could not reach: at 21:39-21:40 (2026-09-25) clear gave up at 40%,
+            // then the walk to the objective picked a locked door and the rooms behind it were never cleared.
+            if (ClearMode && _clearGaveUp && !_completed)
+            {
+                _clearGaveUp = false; _clearPasses = 0; _clearVisited.Clear();
+                _ctx.Log("MISSION: a door opened; back to clearing.");
+            }
             _ctx.Log($"MISSION: door {id} unlocked (action {ActionUnlocked}).");
         }
 
@@ -832,17 +841,43 @@ namespace AOBuddy
         public Vector3? StepToward(Vector3 a, Vector3 b)
         {
             if (_grid == null) return null;
-            var p = _grid.FindPath(a, b, _blocked, out _);
+            var p = PathFrom(a, b, out _);
             if (p == null || p.Count == 0) return null;
             foreach (var q in p) if (Movement.Flat(a, q) > 1.5f) return q;
             return b;
         }
 
+        // Where he stands after a walk-up to a mob can be somewhere no path starts from (01:35, 2026-09-26, and 20:50
+        // the night before: after a fight every room, the target and even the exit had 'no walkable path', and the
+        // mission was dropped). Then plan from the last spot a path did start from, within 25 m, and walk back to it.
+        private Vector3? _lastPathFrom;
+        private List<Vector3> PathFrom(Vector3 a, Vector3 b, out bool usedFallback)
+        {
+            var p = _grid.FindPath(a, b, _blocked, out usedFallback);
+            if (p != null) { _lastPathFrom = a; return p; }
+            if (_lastPathFrom.HasValue)
+            {
+                float back = Movement.Flat(a, _lastPathFrom.Value);
+                if (back > 0.5f && back < 25f)
+                {
+                    var q = _grid.FindPath(_lastPathFrom.Value, b, _blocked, out usedFallback);
+                    if (q != null)
+                    {
+                        if (Now - _pathFromLogged > 10) { _pathFromLogged = Now; _ctx.Log($"MISSION: no path from where I stand; going back {back:0} m to ({_lastPathFrom.Value.X:0},{_lastPathFrom.Value.Z:0}) and on from there."); }
+                        q.Insert(0, _lastPathFrom.Value); q.Insert(0, a);
+                        return q;
+                    }
+                }
+            }
+            return null;
+        }
+        private double _pathFromLogged = -99;
+
         /// <summary>A path length through the building, or null (no building, no path).</summary>
         public float? PathLen(Vector3 a, Vector3 b)
         {
             if (_grid == null) return null;
-            var p = _grid.FindPath(a, b, _blocked, out _);
+            var p = PathFrom(a, b, out _);
             if (p == null) return null;
             float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
             return len;
@@ -858,7 +893,7 @@ namespace AOBuddy
             foreach (var r in _grid.RoomsOn(floor))
             {
                 if (_clearVisited.Contains(r.Index)) continue;
-                var p = _grid.FindPath(pos, r.Centre, _blocked, out _);
+                var p = PathFrom(pos, r.Centre, out _);
                 if (p == null) { _clearVisited.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
                 if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Clear }; }
@@ -902,7 +937,7 @@ namespace AOBuddy
             foreach (var r in _grid.RoomsOn(floor))
             {
                 if (_visited.Contains(r.Index)) continue;
-                var p = _grid.FindPath(pos, r.Centre, _blocked, out _);
+                var p = PathFrom(pos, r.Centre, out _);
                 if (p == null) { _visited.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
                 if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Search }; }
@@ -1558,6 +1593,11 @@ namespace AOBuddy
         {
             usedFallback = false;
             var s = NearestFine(a, floor, 2.5f, blocked, needSight: false);
+            // Where he stands can be off the open cells or inside the cells snap-backs blocked round him - after a
+            // walk-up to a mob, 20:50 2026-09-25: every room 'unreachable' at once, clear and search gave up in the
+            // same tick and the mission was dropped. The start is only where the walk begins: look wider for it,
+            // blocked cells allowed.
+            if (!s.HasValue) s = NearestFine(a, floor, 6f, null, needSight: false);
             var g = NearestFine(b, floor, 3.0f, blocked);
             if (!s.HasValue || !g.HasValue) return null;
             var cells = FineAStar(s.Value, g.Value, blocked);

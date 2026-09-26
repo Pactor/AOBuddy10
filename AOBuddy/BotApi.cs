@@ -15,6 +15,7 @@ namespace AOBuddy
     /// (0 = off). A plain TcpListener with a minimal HTTP reader, so no URL reservation or admin rights are needed.
     ///   GET  /status          -> JSON: the heartbeat line, the mission run's status, zone, position, credits, free slots
     ///   POST /command  (body) -> runs the text exactly as an owner tell; JSON: the replies it produced within ~2 s
+    ///   GET  /nav             -> JSON for a monitor: position, the route being walked, the server's snap-backs, his trail
     /// Every command taken this way is logged as "API CMD: ...".
     /// </summary>
     public sealed class BotApi
@@ -24,13 +25,14 @@ namespace AOBuddy
         private readonly Action<string> _log;
         private readonly Func<JObject> _status;
         private readonly Action<string, Action<string>> _command;
+        private readonly Func<JObject> _nav;
         private TcpListener _listener;
         private Thread _thread;
         private volatile bool _running;
 
-        public BotApi(int port, IClock clock, Action<string> log, Func<JObject> status, Action<string, Action<string>> command)
+        public BotApi(int port, IClock clock, Action<string> log, Func<JObject> status, Action<string, Action<string>> command, Func<JObject> nav = null)
         {
-            _port = port; _clock = clock; _log = log; _status = status; _command = command;
+            _port = port; _clock = clock; _log = log; _status = status; _command = command; _nav = nav;
         }
 
         public void Start()
@@ -94,7 +96,8 @@ namespace AOBuddy
                     JObject result;
                     if (method == "GET" && path.StartsWith("/status")) result = _status();
                     else if (method == "POST" && path.StartsWith("/command")) result = RunCommand(text);
-                    else result = new JObject { ["error"] = "GET /status or POST /command" };
+                    else if (method == "GET" && path.StartsWith("/nav") && _nav != null) result = _nav();
+                    else result = new JObject { ["error"] = "GET /status, GET /nav or POST /command" };
                     Reply(s, result.ToString());
                 }
                 catch (Exception ex) { try { _log($"API: request failed: {ex.Message}"); } catch { } }

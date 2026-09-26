@@ -30,6 +30,12 @@ namespace AOBuddy
         private readonly string _dir;
         private readonly Func<string> _missionLine;
         private readonly Func<int> _rollDifficulty;
+        private readonly Func<bool> _keepOpen;
+        // Out of the building to heal and coming back (MissionRun.HealingOut): the file stays open, outdoor packets
+        // are not written, and on the way back in the packets since that zone-in follow on, times still counted
+        // from the first zone-in.
+        private bool _paused;
+        private long _offMs;
         private readonly object _lock = new object();
 
         // Everything since the last zone-in, so the zone-in and the first burst are in the file even though the
@@ -52,9 +58,9 @@ namespace AOBuddy
         private JArray _doors = new JArray();
         private double _scanAt;
 
-        public MissionRecorder(BotContext ctx, MissionController mission, string pluginDir, Func<string> missionLine, Func<int> rollDifficulty)
+        public MissionRecorder(BotContext ctx, MissionController mission, string pluginDir, Func<string> missionLine, Func<int> rollDifficulty, Func<bool> keepOpen = null)
         {
-            _ctx = ctx; _mission = mission; _missionLine = missionLine; _rollDifficulty = rollDifficulty;
+            _ctx = ctx; _mission = mission; _missionLine = missionLine; _rollDifficulty = rollDifficulty; _keepOpen = keepOpen;
             _dir = Path.Combine(pluginDir, "missions", "records");
         }
 
@@ -73,7 +79,7 @@ namespace AOBuddy
                     _zoneAt = DateTime.UtcNow;
                 }
                 long ms = (long)(DateTime.UtcNow - _zoneAt).TotalMilliseconds;
-                if (_fs != null && !zoneIn) { Write(server, ms, p); return; }
+                if (_fs != null && !_paused && !zoneIn) { Write(server, ms + _offMs, p); return; }
                 if (_pre.Count < PreCap) _pre.Add((server, ms, (byte[])p.Clone()));
             }
         }
@@ -97,8 +103,13 @@ namespace AOBuddy
         {
             bool inside = _mission.InMission && _ctx.Config.MissionRecord;
             if (inside && _fs != null && _mission.Instance != _instance) Close();   // straight into another building
+            if (inside && _fs != null && _paused) Resume();
             if (inside && _fs == null) Open();
-            if (!inside && _fs != null) { Close(); return; }
+            if (!inside && _fs != null)
+            {
+                if (_keepOpen != null && _keepOpen()) { if (!_paused) { _paused = true; _ctx.Log("MISSIONREC: out to heal; keeping the file open."); } return; }
+                Close(); return;
+            }
             if (_fs == null || me == null) return;
             if (_mission.ClearPct >= 0) _lastPct = _mission.ClearPct;
             _building = _mission.BuildingName ?? _building; _type = _mission.RecordTypeName ?? _type; _completed |= _mission.Completed;
@@ -154,8 +165,21 @@ namespace AOBuddy
             }
         }
 
+        private void Resume()
+        {
+            lock (_lock)
+            {
+                _offMs = (long)(_zoneAt - _openedAt).TotalMilliseconds;
+                foreach (var e in _pre) Write(e.server, e.ms + _offMs, e.p);
+                _pre.Clear();
+                _paused = false;
+                _ctx.Log($"MISSIONREC: back in; carrying on in {Path.GetFileName(_base)}.pkt.");
+            }
+        }
+
         private void Close()
         {
+            _paused = false; _offMs = 0;
             string line = null;
             try { line = _missionLine?.Invoke(); } catch { }
             var c = _ctx.Config;
