@@ -72,6 +72,7 @@ namespace AOBuddy
         private MissionRoll _roll;
         private MissionRun _run;
         private MissionRecorder _recorder;
+        private MobAtlas _atlas;
         private bool _missionWasActive;
         private OverlandController _overland;
         private bool _overlandWasActive;
@@ -166,6 +167,7 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
+            _atlas = new MobAtlas(pluginDir, Log);
             _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             BuildCommands();
@@ -744,6 +746,7 @@ namespace AOBuddy
         private void Walk(LocalPlayer me, PlayerChar owner, double dt)
         {
             try { _recorder?.Tick(me); } catch (Exception ex) { Log("MISSIONREC: " + ex.Message); }
+            try { _atlas?.Tick(me, _mission.InMission); } catch (Exception ex) { Log("MOBATLAS: " + ex.Message); }
             if (me.IsCasting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_support.Resting) { _follow.BreakMirror(); _move.Stop(me, _config.SendIntervalMs); return; }
             if (_resupply.Tick(me, dt)) { _follow.BreakMirror(); return; }
