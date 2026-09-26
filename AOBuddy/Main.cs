@@ -1046,6 +1046,9 @@ namespace AOBuddy
                         tgt = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == at);
                     if (tgt == null) tgt = me.FightingTarget;
                     if (tgt == null) tgt = PetController.AttackPet(me)?.FightingTarget;
+                    // The mission run's own foe: in its fights the server's fighting flag often never shows, and the
+                    // engaged target is cleared with it (owner, 14:48 2026-09-26: 'target does not show in the monitor').
+                    if (tgt == null && _run.CurrentFoe is Identity rf) tgt = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == rf);
                     if (tgt != null)
                     {
                         int tmax = tgt.GetStat(Stat.MaxHealth), tnanomax = tgt.GetStat(Stat.MaxNanoEnergy);

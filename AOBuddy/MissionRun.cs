@@ -3776,6 +3776,8 @@ namespace AOBuddy
 
         private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
+        /// <summary>The mob the run is fighting or going for (for the monitor's target bar), or null.</summary>
+        public Identity? CurrentFoe => Active && (_phase == Phase.Fight || _phase == Phase.Blitz) ? (_defId ?? _pullId) : null;
         private double _defSince;
         private int _defHp, _defMyMin = 100;
 
