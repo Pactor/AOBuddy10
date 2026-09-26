@@ -75,6 +75,7 @@ namespace AOBuddy
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
+            LearnedGround.Init(pluginDir);
             _roll.ListArrived += OnList;
         }
 
@@ -1196,8 +1197,56 @@ namespace AOBuddy
         private readonly List<(DateTime t, int pf, bool inside, Vector3 p)> _trailLog = new List<(DateTime, int, bool, Vector3)>();
         private double _trailAt;
 
+        // Clean walking, learned as road (LearnedGround.NoteWalk): his own steps outdoors, 2 m apart, cut at every
+        // server correction (the last 12 m before it dropped - that ground is the problem), and the owner's steps
+        // while he is in view, which are clean by definition.
+        private readonly List<Vector3> _walkBuf = new List<Vector3>(), _ownerBuf = new List<Vector3>();
+        private int _walkPf = -1;
+        private void WalkSample(LocalPlayer me)
+        {
+            int pf = (int)Playfield.ModelId;
+            bool outdoors = !_mission.InMission && pf < 100000;
+            if (pf != _walkPf || !outdoors) { FlushWalks(); _walkPf = pf; if (!outdoors) return; }
+            var p = me.Transform.Position;
+            if (_walkBuf.Count == 0 || Movement.Flat(_walkBuf[_walkBuf.Count - 1], p) >= 2f)
+            {
+                if (_walkBuf.Count > 0 && Movement.Flat(_walkBuf[_walkBuf.Count - 1], p) > 30f) FlushWalks();   // a teleport
+                _walkBuf.Add(p);
+                if (_walkBuf.Count >= 150) FlushWalks();
+            }
+            var owner = DynelManager.Players.FirstOrDefault(x => x != null && string.Equals(x.Name, _ctx.Config.Owner, StringComparison.OrdinalIgnoreCase));
+            if (owner != null)
+            {
+                var o = owner.Transform.Position;
+                if (_ownerBuf.Count == 0 || Movement.Flat(_ownerBuf[_ownerBuf.Count - 1], o) >= 2f)
+                {
+                    if (_ownerBuf.Count > 0 && Movement.Flat(_ownerBuf[_ownerBuf.Count - 1], o) > 30f) { LearnedGround.NoteWalk(pf, new List<Vector3>(_ownerBuf)); _ownerBuf.Clear(); }
+                    _ownerBuf.Add(o);
+                    if (_ownerBuf.Count >= 150) { LearnedGround.NoteWalk(pf, new List<Vector3>(_ownerBuf)); _ownerBuf.Clear(); _ownerBuf.Add(o); }
+                }
+            }
+        }
+        private void FlushWalks()
+        {
+            if (_walkPf >= 0 && _walkPf < 100000)
+            {
+                LearnedGround.NoteWalk(_walkPf, new List<Vector3>(_walkBuf));
+                LearnedGround.NoteWalk(_walkPf, new List<Vector3>(_ownerBuf));
+            }
+            _walkBuf.Clear(); _ownerBuf.Clear();
+        }
+        private void CutWalkAtCorrection()
+        {
+            // Keep what came before the last 12 m; that part was clean.
+            float back = 0; int keep = _walkBuf.Count;
+            while (keep > 1 && back < 12f) { back += Movement.Flat(_walkBuf[keep - 1], _walkBuf[keep - 2]); keep--; }
+            if (keep > 1) LearnedGround.NoteWalk(_walkPf, _walkBuf.GetRange(0, keep));
+            _walkBuf.Clear();
+        }
+
         private void NavSample(LocalPlayer me)
         {
+            if (me != null) WalkSample(me);
             if (me == null || _clock - _trailAt < 1) return;
             _trailAt = _clock;
             lock (_navLock)
@@ -1312,6 +1361,10 @@ namespace AOBuddy
         public void OnServerCorrection(float gap, Vector3 local, Vector3 server)
         {
             _lastCorrection = _clock;
+            // Outdoors, a real pull-back is remembered for the planner across restarts (LearnedGround).
+            // Small ones count too (13:20, 2026-09-26: held at (871,134) by five 2 m corrections in a row); they add
+            // up by spot, so one stray correction costs little.
+            if (gap >= 2f && !_mission.InMission) { LearnedGround.NoteSnap((int)Playfield.ModelId, server.X, server.Z); CutWalkAtCorrection(); }
             lock (_navLock)
             {
                 _snapLog.Add((DateTime.Now, (int)Playfield.ModelId, gap, local, server, _phase.ToString()));
