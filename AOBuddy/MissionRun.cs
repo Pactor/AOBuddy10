@@ -395,6 +395,8 @@ namespace AOBuddy
         public void OnDied()
         {
             if (!Active) return;
+            var meD = DynelManager.LocalPlayer;
+            if (meD != null) NoteTough(DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == meD.Identity));
             if (_current != null && !_completed) _deathsHere++;
             // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
             // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
@@ -968,16 +970,15 @@ namespace AOBuddy
                         bool noRoute = report != null && report.StartsWith("No route", StringComparison.OrdinalIgnoreCase)
                                        && report.IndexOf("search", StringComparison.OrdinalIgnoreCase) < 0;
                         if (noPath || noRoute) { Skip("I can't do it from the entrance: " + report); return false; }
-                        // A building of mobs far tougher than him: skip it at the door. 01:16 and 01:52 (2026-09-26): two
-                        // buildings of A-500 Soldiers/Elites (levels 35-40, 1878-2309 HP; him level 46, 815 HP) - fled at
-                        // 38%, then died. The server sends the building's mobs within ~90 m at the zone-in.
-                        if (me.TryGetStat(Stat.MaxHealth, out int myMax) && myMax > 0)
+                        // A building of mobs he has fled from or died to in a mission before (tough_mobs.json, learned): skip
+                        // it at the door. Not by HP - at level 46 most mobs have twice his, and he clears those; the A-500
+                        // Soldiers/Elites made him flee or die in all four of their buildings (01:16-02:18, 2026-09-26).
                         {
-                            var tough = DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.Identity != _mission.FindPersonTarget
-                                                                     && n.TryGetStat(Stat.MaxHealth, out int mh) && mh > 2 * myMax).ToList();
-                            if (tough.Count >= 4)
+                            var tough = DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.Name != null && n.Identity != _mission.FindPersonTarget
+                                                                     && ToughMobs.TryGetValue(n.Name.ToLowerInvariant(), out int c) && c >= 2).ToList();
+                            if (tough.Count >= 3)
                             {
-                                Skip($"too tough: {tough.Count} mobs in sight with over twice my HP ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))})");
+                                Skip($"too tough: {tough.Count} mobs I've had to run from before ({string.Join(", ", tough.Select(t => t.Name).Distinct().Take(3))})");
                                 return false;
                             }
                         }
@@ -2617,8 +2618,31 @@ namespace AOBuddy
             _ctx.Log($"MISSIONRUN: {why}; fighting back.");
             Enter(Phase.Fight, "fighting back");
         }
+        // Mob names he fled from or died to inside a mission, counted (tough_mobs.json): the door check reads them.
+        private string ToughPath => Path.Combine(_pluginDir, "tough_mobs.json");
+        private Dictionary<string, int> _tough;
+        private Dictionary<string, int> ToughMobs
+        {
+            get
+            {
+                if (_tough != null) return _tough;
+                _tough = new Dictionary<string, int>();
+                try { if (File.Exists(ToughPath)) foreach (var kv in JObject.Parse(File.ReadAllText(ToughPath))) _tough[kv.Key] = (int)kv.Value; } catch { }
+                return _tough;
+            }
+        }
+        private void NoteTough(IEnumerable<SimpleChar> from)
+        {
+            if (!_mission.InMission || from == null) return;
+            foreach (var name in from.Where(x => x?.Name != null).Select(x => x.Name.ToLowerInvariant()).Distinct())
+                ToughMobs[name] = (ToughMobs.TryGetValue(name, out int c) ? c : 0) + 1;
+            var o = new JObject(); foreach (var kv in ToughMobs) o[kv.Key] = kv.Value;
+            try { File.WriteAllText(ToughPath, o.ToString()); } catch { }
+        }
+
         private void FleeStarted(LocalPlayer me, IEnumerable<SimpleChar> from)
         {
+            NoteTough(from);
             _fleeAt = me.Transform.Position; _fleeStartedAt = _clock;
             _fleeFrom.Clear(); _fleeFrom.AddRange(from.Select(n => n.Identity));
         }
