@@ -1051,12 +1051,15 @@ namespace AOBuddy
                     if (tgt == null && _run.CurrentFoe is Identity rf) tgt = DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == rf);
                     if (tgt != null)
                     {
-                        int tmax = tgt.GetStat(Stat.MaxHealth), tnanomax = tgt.GetStat(Stat.MaxNanoEnergy);
+                        // TryGetStat: most mobs carry no nano stats, and GetStat threw on them - which dropped the whole
+                        // target (and everything after it) from /status (15:00, 2026-09-26: 'MaxNanoEnergy' not present).
+                        int tmax = tgt.TryGetStat(Stat.MaxHealth, out int tm) ? tm : 0, tnanomax = tgt.TryGetStat(Stat.MaxNanoEnergy, out int tn) ? tn : 0;
+                        int thp = tgt.TryGetStat(Stat.Health, out int th) ? th : 0, tnano = tgt.TryGetStat(Stat.CurrentNano, out int tc) ? tc : 0;
                         o["target"] = new JObject
                         {
                             ["name"] = tgt.Name,
-                            ["hpPct"] = tmax > 0 ? (int)Math.Round(100.0 * tgt.GetStat(Stat.Health) / tmax) : -1,
-                            ["nanoPct"] = tnanomax > 0 ? (int)Math.Round(100.0 * tgt.GetStat(Stat.CurrentNano) / tnanomax) : -1,
+                            ["hpPct"] = tmax > 0 ? (int)Math.Round(100.0 * thp / tmax) : -1,
+                            ["nanoPct"] = tnanomax > 0 ? (int)Math.Round(100.0 * tnano / tnanomax) : -1,
                             ["dist"] = Math.Round(me.DistanceFrom(tgt), 1),
                         };
                     }
