@@ -279,7 +279,7 @@ namespace AOBuddy
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
                 if (_nav?.Layout == null) { _nav = null; return; }
                 _instance = _nav.Layout.Instance;
-                if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _clearPasses = 0; _clearGaveUp = false; }
+                if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _mobRoom.Clear(); _clearPasses = 0; _clearGaveUp = false; }
                 _grid = MissionGrid.Build(_nav, _doors);
                 ParseRecord();
                 _ctx.Log($"MISSION: in {_nav.Name} instance {_instance}, {_grid.Describe()}");
@@ -836,6 +836,45 @@ namespace AOBuddy
         public Func<NpcChar, bool> Fightable = _ => true;
         public bool Clearing => ClearMode && _grid != null && _record != null && !_completed && !_clearGaveUp && ClearPct < 99.9f;
         private readonly HashSet<int> _clearVisited = new HashSet<int>();
+        // Where each live mob was last seen (room index), for the second round: only those rooms get walked again
+        // (Algorithman, 2026-09-26: 'he often visits already cleared rooms, as if there still was a mob').
+        private readonly Dictionary<Identity, int> _mobRoom = new Dictionary<Identity, int>();
+        private double _clearScanAt;
+
+        private int? RoomIndexAt(Vector3 p, int floor)
+        {
+            string name = _grid.RoomAt(p);
+            if (name == null) return null;
+            var r = _grid.RoomsOn(floor).Where(x => x.Name == name).OrderBy(x => Movement.Flat(p, x.Centre)).FirstOrDefault();
+            return r?.Index;
+        }
+
+        // Every half second while clearing: the room he is in counts as walked (passing through it is enough, not
+        // only reaching its centre), and every mob in sight is placed in its room - dead ones dropped.
+        private void ClearScan(Vector3 pos)
+        {
+            if (!ClearMode || _grid == null || Now - _clearScanAt < 0.5) return;
+            _clearScanAt = Now;
+            int? floor = _grid.FloorAt(pos);
+            if (!floor.HasValue) return;
+            var here = RoomIndexAt(pos, floor.Value);
+            if (here.HasValue)
+            {
+                _clearVisited.Add(here.Value);
+                // In the room and a mob last seen here isn't in sight any more: it is gone.
+                foreach (var k in _mobRoom.Where(kv => kv.Value == here.Value).Select(kv => kv.Key).ToList())
+                    if (!DynelManager.Npcs.Any(n => n != null && n.Identity == k)) _mobRoom.Remove(k);
+            }
+            foreach (var n in DynelManager.Npcs)
+            {
+                if (n == null || n.Owner.HasValue || n.Identity == FindPersonTarget) continue;
+                if (n.TryGetStat(Stat.Health, out int h) && h <= 0) { _mobRoom.Remove(n.Identity); continue; }
+                var nf = _grid.FloorAt(n.Transform.Position);
+                if (!nf.HasValue) continue;
+                var ri = RoomIndexAt(n.Transform.Position, nf.Value);
+                if (ri.HasValue) _mobRoom[n.Identity] = ri.Value;
+            }
+        }
         private int _clearInstance, _clearPasses;
         private bool _clearGaveUp;
         private const int ClearCategory = 110, ClearMessage = 79979934;
@@ -920,6 +959,7 @@ namespace AOBuddy
         private Hop? ClearHop(Vector3 pos, int floor, out string why)
         {
             foreach (var r in _grid.RoomsOn(floor)) if (Movement.Flat(pos, r.Centre) < 6f) _clearVisited.Add(r.Index);
+            _clearScanAt = -99; ClearScan(pos);
             // 1) the nearest room on this floor not walked yet
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
             foreach (var r in _grid.RoomsOn(floor))
@@ -949,10 +989,13 @@ namespace AOBuddy
                 if (bh.HasValue) { why = $"clearing ({ClearText}): floor {f} has rooms left; {bw}"; return bh; }
             }
             // 4) all walked and still short of 100%: once more round (mobs wander into walked rooms), then give up.
-            if (_clearPasses == 0)
+            if (_clearPasses == 0 && _mobRoom.Count > 0)
             {
-                _clearPasses = 1; _clearVisited.Clear();
-                _ctx.Log($"MISSION: walked every room I can reach, {ClearText}; one more round.");
+                // The second round: only the rooms a live mob was last seen in.
+                var again = new HashSet<int>(_mobRoom.Values);
+                _clearPasses = 1;
+                foreach (var r in _grid.Floors.SelectMany(f => _grid.RoomsOn(f))) if (!again.Contains(r.Index)) _clearVisited.Add(r.Index); else _clearVisited.Remove(r.Index);
+                _ctx.Log($"MISSION: walked every room I can reach, {ClearText}; back to the {again.Count} room(s) where mobs were last seen.");
                 return ClearHop(pos, floor, out why);
             }
             _clearGaveUp = true;
@@ -1192,6 +1235,7 @@ namespace AOBuddy
 
         private bool WalkTick(LocalPlayer me, double dt)
         {
+            ClearScan(me.MovementComponent.Position);
             if (_path == null || _pathIndex >= _path.Count) { Arrive(me); return true; }
             Vector3 pos = me.MovementComponent.Position;
 
