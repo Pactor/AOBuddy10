@@ -962,6 +962,11 @@ namespace AOBuddy
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     int pf = _current.Playfield.Instance;
                     Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
+                    // Within 10 m the door approach takes over at once, travel or not (owner, 18:37 2026-09-26: "he should just
+                    // run into mission door now" - at a Galway County door up on a structure, travel walked at it and was
+                    // pulled back 5 m short 28 times over 25 s; the door approach took him in within 2 s when travel gave up).
+                    bool closeIn = (int)Playfield.ModelId == pf && Movement.Flat(me.Transform.Position, goal) <= 10f;
+                    if (closeIn && _overland.Active) _overland.Stop("at the mission door");
                     if (!_overland.Active && (int)Playfield.ModelId == pf && Movement.Flat(me.Transform.Position, goal) <= 12f)
                     { _door = FindDoor(pf, goal); _follow.ClearMovement(); _doorDir = -1; Enter(Phase.EnterDoor, "at the door"); return false; }
                     return Travel(me, pf, goal, "the mission door");
