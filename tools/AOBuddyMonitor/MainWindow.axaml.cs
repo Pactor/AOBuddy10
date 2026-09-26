@@ -152,7 +152,11 @@ namespace AOBuddyMonitor
             TaskChip.Background = new SolidColorBrush(KindColor.TryGetValue(st.Task.Kind, out var c) ? c : Color.FromRgb(0x55, 0x55, 0x55));
             TaskText.Text = st.Task.Text.Length > 0 ? st.Task.Text : st.Behavior;
             TaskDetail.Text = st.Task.Detail ?? st.Behavior;
-            ToolTip.SetTip(this, st.Task.Detail ?? "");
+            // The full detail on the task lines (they trim with an ellipsis); none when there is none - an empty tip on
+            // the window popped an empty box wherever the mouse rested.
+            object tip = string.IsNullOrEmpty(st.Task.Detail) ? null : st.Task.Detail;
+            ToolTip.SetTip(TaskText, tip);
+            ToolTip.SetTip(TaskDetail, tip);
 
             // vitals: the bar takes the percentage, the label keeps the raw numbers
             HpBar.Value = Math.Clamp(st.HpPct < 0 ? 0 : st.HpPct, 0, 100);
