@@ -756,6 +756,17 @@ namespace AOBuddy
         // a standing stim is a quick top-up. If neither is available, drop the cast so we don't hang.
         private void NanoRefillForCast(LocalPlayer me, CastRequest req, bool inCombat)
         {
+            // Rez sick: rechargers can't be used (the rest path already knows this). Sitting for one here held him
+            // still after a death - the recharger refused, 'HEAL-REFUSED' 19:02:59 2026-09-25, and he sat at 46-50%
+            // nano ignoring follow while the owner walked off. Skip the cast; it re-queues once the sickness is gone.
+            if (!inCombat && IsRezSick(me))
+            {
+                _castQueue.Dequeue();
+                _resting = false;
+                StandIfSitting(me);
+                _ctx.Log($"AUTO-BUFF: can't afford {req.Label} [{req.NanoId}] and rez sick (no rechargers) - skipping for now.");
+                return;
+            }
             if (!inCombat)
             {
                 Item recharger = BestRestHeal(false, true);   // RK recharger first, else SL Coil-of-Nano/Vet-Lab
