@@ -744,6 +744,13 @@ namespace AOBuddy
             if (b == null || b.Length < 37 || BE32(b, 20) != DoorType || BE32(b, 33) != ActionUnlocked) return;
             var id = new Identity((IdentityType)DoorType, BE32(b, 24));
             if (_doors.TryGetValue(id, out var d)) { if (d.Locked) _pickedDoors.Add(id); d.Locked = false; }
+            // A picked door opens rooms the clear could not reach: at 21:39-21:40 (2026-09-25) clear gave up at 40%,
+            // then the walk to the objective picked a locked door and the rooms behind it were never cleared.
+            if (ClearMode && _clearGaveUp && !_completed)
+            {
+                _clearGaveUp = false; _clearPasses = 0; _clearVisited.Clear();
+                _ctx.Log("MISSION: a door opened; back to clearing.");
+            }
             _ctx.Log($"MISSION: door {id} unlocked (action {ActionUnlocked}).");
         }
 
