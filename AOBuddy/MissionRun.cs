@@ -307,8 +307,9 @@ namespace AOBuddy
             if (a == "skip")
             {
                 if (!Active) { int n = DeleteHeldMissions(); reply($"Deleted {n} mission(s)."); return; }
-                // A skipped mission's zone is left alone for a while, so the next roll doesn't send him straight back.
-                if (_current != null && !_completed) MarkDanger(_current.Playfield.Instance);
+                // A skipped mission's door is left alone for a while (Skip -> RememberUnreachable), so the next roll doesn't
+                // send him straight back - its door, not its whole zone: two skips at 00:27 and 01:09 (2026-09-26) shut
+                // Aegean and Holes in the Wall for hours.
                 Skip("owner said skip"); reply("Skipping the mission I'm on."); return;
             }
             bool fresh = a == "new";
