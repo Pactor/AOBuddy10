@@ -714,7 +714,7 @@ namespace AOBuddy
             // The 'nothing hurts me' pause ends the moment something does (owner, 18:27 2026-09-26: "he ran through every
             // single room with a mob like he had a deathwish" - the pause kept him clearing rooms with eight mobs on him
             // until 38% HP, and he died).
-            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || _pullId.HasValue || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -3768,7 +3768,9 @@ namespace AOBuddy
             }
             // Only once the blitz is going: at 03:10 (2026-09-26) he pulled an A-500 at the entrance, 2 s before the
             // door check skipped that building as too tough, and fought it on the way out.
-            if (a == null && _mission.Clearing && _mission.InMission && (_phase == Phase.Blitz || _phase == Phase.Fight)) a = PullTarget(me, pets);
+            // FIND A MOB, STOP, KILL IT, MOVE ON (owner, 18:44 2026-09-26): in fight style too, not only clear mode.
+            bool fightStyle = string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase);
+            if (a == null && (_mission.Clearing || fightStyle) && _mission.InMission && (_phase == Phase.Blitz || _phase == Phase.Fight)) a = PullTarget(me, pets);
             if (a == null) { _defId = null; return null; }
             // A 'fight' that goes nowhere: Kirby Schatz, the person a find-person mission sent him to, 'fought'
             // him for 12 minutes (23:38-23:51, 2026-09-23): his HP never moved, ours never moved, and every blow
@@ -3839,13 +3841,18 @@ namespace AOBuddy
             // after a fight that went nowhere, HP 70%+, not resting. The first clear run (11:25, 2026-09-25) pulled
             // while walking on after such a fight, dragged five mobs and fled at 29%.
             int hpNow = _ctx.Status.SelfHpPct;
-            if (_clock < _fightIgnoreUntil || Fleeing || (hpNow >= 0 && hpNow < 70) || _ctx.Status.Resting || _ctx.Status.NeedsRecovery) return null;
+            // The minute after a fight that went nowhere no longer blocks this (owner, 18:45 2026-09-26: "you run in, aggro
+            // the mob, run out, then do it again and again until he has too many mobs") - the mob that went nowhere is
+            // set aside on its own; the next one in reach is fought before another room is walked into.
+            if (Fleeing || (hpNow >= 0 && hpNow < 70) || _ctx.Status.Resting || _ctx.Status.NeedsRecovery) return null;
             var pos = me.Transform.Position;
-            foreach (var n in DynelManager.Npcs.Where(n => Pullable(me, n, pets) && me.DistanceFrom(n) <= 15f && Math.Abs(n.Transform.Position.Y - pos.Y) < 3f)
+            // Reach: the mob in the next room is seen from its doorway ("you know the mob is in that room kill it first",
+            // owner 18:46 2026-09-26) - 20 m in sight, 30 m to walk, before walking into the room past it.
+            foreach (var n in DynelManager.Npcs.Where(n => Pullable(me, n, pets) && me.DistanceFrom(n) <= 20f && Math.Abs(n.Transform.Position.Y - pos.Y) < 3f)
                                                .OrderBy(n => me.DistanceFrom(n)).Take(3))
             {
                 var len = _mission.PathLen(pos, n.Transform.Position);
-                if (!len.HasValue || len.Value > 22f) continue;
+                if (!len.HasValue || len.Value > 30f) continue;
                 _pullId = n.Identity;
                 _ctx.Log($"MISSIONRUN: clearing: going for '{n.Name}' ({me.DistanceFrom(n):0} m, {len.Value:0} m to walk).");
                 return n;
