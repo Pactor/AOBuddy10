@@ -76,6 +76,7 @@ namespace AOBuddy
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             LearnedGround.Init(pluginDir);
+            RouteCache.Init(pluginDir, _ctx.Log);
             _roll.ListArrived += OnList;
         }
 

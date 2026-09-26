@@ -105,6 +105,7 @@ namespace AOBuddy
                 if (s == null) list.Add(s = new Snap { X = x, Z = z });
                 s.N++; s.Last = DateTime.UtcNow;
                 Version++;
+                RouteCache.DropNear(pf, x, z);
                 try { File.WriteAllText(Path.Combine(_dir, "snapbacks.json"), JsonConvert.SerializeObject(_snaps, Formatting.Indented)); } catch { }
             }
         }

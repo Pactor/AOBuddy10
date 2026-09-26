@@ -519,8 +519,14 @@ namespace AOBuddy
         /// a walkway) instead of on whichever level touches the goal cell first. NaN goalY = any level.</summary>
         public List<Vector3> FindPath(Vector3 a, Vector3 b, HashSet<int> extra, float snap, float reach, out string why, float goalY)
         {
+            // Between two fixed objects (whompahs, grids, doors) the route is planned once and kept (RouteCache).
+            why = "";
+            var saved = RouteCache.Get(this, a, b, reach, goalY, extra, (p, q) => Search(p, q, extra, snap, 1.5f, false, out _, float.NaN));
+            if (saved != null) return saved;
             // In sight of b first; if that walks nowhere (b's pocket is closed off), on distance alone.
-            return Search(a, b, extra, snap, reach, true, out why, goalY) ?? Search(a, b, extra, snap, reach, false, out _, goalY);
+            var route = Search(a, b, extra, snap, reach, true, out why, goalY) ?? Search(a, b, extra, snap, reach, false, out _, goalY);
+            if (route != null) RouteCache.Put(this, a, b, reach, goalY, route);
+            return route;
         }
 
         private List<Vector3> Search(Vector3 a, Vector3 b, HashSet<int> extra, float snap, float reach, bool sight, out string why, float goalY)
