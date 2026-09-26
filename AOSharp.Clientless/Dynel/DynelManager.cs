@@ -198,9 +198,15 @@ namespace AOSharp.Clientless
             }
         }
 
+        // Characters the server announced dead in this zone (CharacterAction Death). Coming back in range the
+        // server re-sends a dead mob as a SimpleCharFullUpdate with its old HP and still 'fighting' us (Algorithman,
+        // 2026-09-26: 'whenever he gets to the position again, he goes into fight mode'); those stay dead.
+        internal static readonly HashSet<Identity> Dead = new HashSet<Identity>();
+
         internal static void Reset()
         {
             _dynels.Clear();
+            Dead.Clear();
         }
     }
 }

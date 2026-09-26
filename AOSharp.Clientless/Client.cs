@@ -786,7 +786,8 @@ namespace AOSharp.Clientless
             // and despawned ~95 messages later). Mark it dead so everything that checks Health > 0 lets it go.
             if (DynelManager.LocalPlayer == null || identity != DynelManager.LocalPlayer.Identity)
             {
-                if (DynelManager.Find(identity, out SimpleChar dead)) dead.SetStat(Stat.Health, 0);
+                DynelManager.Dead.Add(identity);
+                if (DynelManager.Find(identity, out SimpleChar dead)) { dead.SetStat(Stat.Health, 0); dead.FightingIdentity = null; }
                 return;
             }
             if (identity == DynelManager.LocalPlayer.Identity)

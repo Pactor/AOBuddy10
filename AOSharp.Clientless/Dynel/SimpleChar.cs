@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
@@ -77,6 +77,7 @@ namespace AOSharp.Clientless
             IsNpc = simpleCharMsg.Flags.HasFlag(SimpleCharFullUpdateFlags.IsNpc);
 
             FightingIdentity = simpleCharMsg.FightingTarget;
+            if (DynelManager.Dead.Contains(simpleCharMsg.Identity)) { SetStat(Stat.Health, 0); FightingIdentity = null; }
 
             Appearance = new Appearance
             {

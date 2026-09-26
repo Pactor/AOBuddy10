@@ -954,7 +954,13 @@ namespace AOBuddy
 
                 case Phase.EnterDoor:
                 {
-                    if (_mission.InMission) { Enter(Phase.AwaitBlitz, "inside"); _follow.ClearMovement(); return false; }
+                    if (_mission.InMission)
+                    {
+                        // The door approach runs on travel; inside, it must stop - it replanned from the building and
+                        // tried '/tell scty' (15:35, 2026-09-26).
+                        if (_overland.Active) _overland.Stop("inside the mission");
+                        Enter(Phase.AwaitBlitz, "inside"); _follow.ClearMovement(); return false;
+                    }
                     // The data gives the door's position but not which way it faces, so walking at its centre can
                     // run into the frame (2026-09-23 21:03: stuck 2 m off its side). Try it from each side in turn:
                     // travel to a spot 5 m out on a real route, then walk straight through the centre to the far
@@ -3407,6 +3413,7 @@ namespace AOBuddy
             // Dropped before getting inside: that door is hard to reach from here - remember it (see Unreachable).
             if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
+            _ctx.Log($"MISSIONRUN: skipping the mission: {why}.");
             _tell($"Skipping this mission ({why}); deleted {n}.");
             _current = null; _completed = false; _healOut = false; _returnTpl = 0;
             if (_mission.Active) _mission.Stop("skipping the mission");
