@@ -86,6 +86,13 @@ namespace AOBuddy
         /// 20260924-074524 s9 08:01:45.575); the bot on a team run stood at the item and failed three tries.</summary>
         public bool HoldsSelection => (_phase == Phase.Act || _phase == Phase.AwaitComplete) && !_completed;
         public bool InMission => _grid != null;
+
+        /// <summary>The composed mission's placement (zone-in packet), for the API's /nav — AOBuddyMonitor
+        /// recomposes the identical floor plan from it via AOBuddyNav.ComposeMission. Null outside a mission.</summary>
+        public AOBuddyNav.MissionLayout Layout => _nav?.Layout;
+
+        /// <summary>The composed mission's placed rooms (floor numbering as the server sent it), for /nav's floors list.</summary>
+        public List<NavDungeon.Room> NavDungeonRooms => _nav?.Dungeon?.Rooms;
         // For the recorder (MissionRecorder).
         public int Instance => _instance;
         public string BuildingName => _nav?.Name;

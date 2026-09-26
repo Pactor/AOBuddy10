@@ -1233,8 +1233,38 @@ namespace AOBuddy
                 }
                 var mp = _mission.InMission ? _mission.CurrentPath : null;
                 if (mp != null) o["missionPath"] = new JArray(mp.Select(V));
-                if (_current != null)
-                    o["mission"] = new JObject { ["line"] = CurrentLine, ["pf"] = _current.Playfield.Instance, ["door"] = new JArray(Math.Round(_current.Location.X, 1), Math.Round(_current.Location.Y, 1), Math.Round(_current.Location.Z, 1)) };
+                var lay = _mission.Layout;
+                if (_current != null || lay != null)
+                {
+                    var mj = new JObject();
+                    if (_current != null)
+                    {
+                        mj["line"] = CurrentLine;
+                        mj["pf"] = _current.Playfield.Instance;
+                        mj["door"] = new JArray(Math.Round(_current.Location.X, 1), Math.Round(_current.Location.Y, 1), Math.Round(_current.Location.Z, 1));
+                    }
+                    if (lay != null)
+                    {
+                        // The building's placement, verbatim: the monitor recomposes the identical floor plan
+                        // from its own GameData via AOBuddyNav.ComposeMission (pool rooms are too heavy to ship
+                        // per poll; the placement is a handful of ints per room and changes never).
+                        mj["layout"] = new JObject
+                        {
+                            ["instance"] = lay.Instance, ["poolPf"] = lay.TemplatePlayfield,
+                            ["width"] = lay.Width, ["height"] = lay.Height, ["worldHeight"] = lay.WorldHeight,
+                            ["land"] = new JArray(lay.LandX, lay.LandY, lay.LandZ),
+                            ["rooms"] = new JArray(lay.Rooms.Select(r => new JArray(r[0], r[1], r[2], r[3], r[4]))),
+                        };
+                        var rooms = _mission.NavDungeonRooms;
+                        if (rooms != null) mj["floors"] = new JArray(rooms.Select(r => r.Floor).Distinct().OrderBy(f => f));
+                        if (me != null && _mission.InMission)
+                        {
+                            var f = _mission.FloorAt(me.Transform.Position);
+                            if (f.HasValue) mj["floor"] = f.Value;
+                        }
+                    }
+                    o["mission"] = mj;
+                }
                 lock (_navLock)
                 {
                     o["snaps"] = new JArray(_snapLog.Select(s => new JObject

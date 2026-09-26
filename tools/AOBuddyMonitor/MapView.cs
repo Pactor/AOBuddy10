@@ -21,9 +21,11 @@ namespace AOBuddyMonitor
     public sealed class MapView : Control
     {
         private readonly MapRender _render;
-        private readonly Dictionary<int, WriteableBitmap> _bitmaps = new Dictionary<int, WriteableBitmap>();
+        private readonly Dictionary<(int Pf, int Floor), WriteableBitmap> _bitmaps = new Dictionary<(int, int), WriteableBitmap>();
         private BotClient.Nav _nav;
         private bool _follow = true, _steps = true;
+        private int? _floorOverride;                    // mission: the floor being peeked at (null = follow the bot)
+        private int _lastInstance;
         private Vector2 _center = new Vector2(1024, 1024);   // world x,z the view is centred on
         private double _scale = 0.35;                        // DIPs per metre
         private Vector2? _hover;                             // world x,z under the cursor
@@ -38,6 +40,7 @@ namespace AOBuddyMonitor
         private readonly Pen _exitPen = new Pen(new SolidColorBrush(Color.FromArgb(230, 255, 170, 60)), 2.5) { DashStyle = new DashStyle(new[] { 5.0, 4.0 }, 0) };
         private readonly Pen _snapPen = new Pen(new SolidColorBrush(Color.FromArgb(220, 255, 70, 70)), 1.5);
         private readonly Pen _gridPen = new Pen(new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)), 1);
+        private readonly Pen _exitRingPen = new Pen(new SolidColorBrush(Color.FromArgb(230, 120, 220, 120)), 2);
         private readonly IPen _botPen = new Pen(Brushes.Lime, 2);
 
         public MapView(MapRender render)
@@ -55,8 +58,25 @@ namespace AOBuddyMonitor
         /// blanks out while the bot zones.</summary>
         public void SetNav(BotClient.Nav nav)
         {
+            int inst = nav?.Mission?.Layout?.Instance ?? 0;
+            if (inst != _lastInstance) { _lastInstance = inst; _floorOverride = null; }
+            if (_floorOverride != null && nav?.Mission?.Floor != null && _floorOverride.Value == nav.Mission.Floor.Value)
+                _floorOverride = null;                  // caught up with the bot's floor — follow again
             _nav = nav;
             InvalidateVisual();
+        }
+
+        // world-order BGRA → a bitmap with row 0 at the TOP (heightfield row 0 is world z=0, and north is up)
+        private static WriteableBitmap MakeBitmap(byte[] bgra, int w, int h)
+        {
+            var bmp = new WriteableBitmap(new PixelSize(w, h), new Vector(96, 96), Avalonia.Platform.PixelFormat.Bgra8888);
+            using (var fb = bmp.Lock())
+            {
+                int stride = w * 4;
+                for (int row = 0; row < h; row++)
+                    Marshal.Copy(bgra, (h - 1 - row) * stride, IntPtr.Add(fb.Address, row * stride), stride);
+            }
+            return bmp;
         }
 
         // world ⇄ screen: the view is centred on _center at _scale DIPs per metre. Screen Y is INVERTED
@@ -74,36 +94,63 @@ namespace AOBuddyMonitor
             int pf = nav?.Pf ?? -1;
             if (_follow && nav?.Pos != null && nav.Pos.Length >= 3) _center = new Vector2(nav.Pos[0], nav.Pos[2]);
 
-            // background: the terrain when this playfield has one (it renders in the background and pops
-            // in a moment after a zone change), otherwise a coordinate grid so the overlays still read.
-            var terrain = pf >= 0 ? _render.Get(pf) : null;
-            if (terrain != null)
+            // background: a mission building's floor plan when the bot is inside one (composed from the
+            // zone-in placement by the same AOBuddyNav.ComposeMission the bot used), else the outdoor
+            // terrain when this playfield has one, else a coordinate grid — the overlays read on all three.
+            var mission = nav?.Mission?.Layout != null ? _render.GetMission(nav.Mission.Layout) : null;
+            MapRender.Terrain terrain = null;
+            int floor = 0;
+            if (mission != null)
             {
-                if (!_bitmaps.TryGetValue(pf, out var bmp))
+                floor = _floorOverride ?? nav.Mission.Floor ?? (mission.Floors.Length > 0 ? mission.Floors[0] : 0);
+                if (mission.FloorBgra.TryGetValue(floor, out var fb))
                 {
-                    bmp = new WriteableBitmap(new PixelSize(terrain.W, terrain.H), new Vector(96, 96), Avalonia.Platform.PixelFormat.Bgra8888);
-                    using (var fb = bmp.Lock())
-                    {
-                        // row-reversed: heightfield row 0 is world z=0 (south), and south is the BOTTOM here
-                        int stride = terrain.W * 4;
-                        for (int row = 0; row < terrain.H; row++)
-                            Marshal.Copy(terrain.Bgra, (terrain.H - 1 - row) * stride, IntPtr.Add(fb.Address, row * stride), stride);
-                    }
-                    _bitmaps[pf] = bmp;
+                    if (!_bitmaps.TryGetValue((mission.Instance, floor), out var mbmp))
+                        _bitmaps[(mission.Instance, floor)] = mbmp = MakeBitmap(fb, mission.W, mission.H);
+                    var mtl = ToScreen(mission.MinX, mission.MinZ + mission.H * mission.Cell);
+                    var mbr = ToScreen(mission.MinX + mission.W * mission.Cell, mission.MinZ);
+                    ctx.DrawImage(mbmp, new Rect(0, 0, mission.W, mission.H), new Rect(mtl, mbr));
                 }
-                // the bitmap covers world [0..W*cell]×[0..H*cell]; z-max is the TOP edge here, and the
-                // bitmap was copied row-reversed so its row 0 already is z-max
-                var tl = ToScreen(0, terrain.H * terrain.Cell);
-                var br = ToScreen(terrain.W * terrain.Cell, 0);
-                ctx.DrawImage(bmp, new Rect(0, 0, terrain.W, terrain.H), new Rect(tl, br));
             }
             else
             {
-                double grid = 100 * _scale;                  // 100 m
-                if (grid > 8)
-                    for (double gx = b.Width / 2 % grid; gx < b.Width; gx += grid) ctx.DrawLine(_gridPen, new Point(gx, 0), new Point(gx, b.Height));
-                if (grid > 8)
-                    for (double gy = b.Height / 2 % grid; gy < b.Height; gy += grid) ctx.DrawLine(_gridPen, new Point(0, gy), new Point(b.Width, gy));
+                terrain = pf >= 0 ? _render.Get(pf) : null;
+                if (terrain != null)
+                {
+                    if (!_bitmaps.TryGetValue((pf, 0), out var bmp))
+                        _bitmaps[(pf, 0)] = bmp = MakeBitmap(terrain.Bgra, terrain.W, terrain.H);
+                    // the bitmap covers world [0..W*cell]×[0..H*cell]; z-max is the TOP edge here, and the
+                    // bitmap was copied row-reversed so its row 0 already is z-max
+                    var tl = ToScreen(0, terrain.H * terrain.Cell);
+                    var br = ToScreen(terrain.W * terrain.Cell, 0);
+                    ctx.DrawImage(bmp, new Rect(0, 0, terrain.W, terrain.H), new Rect(tl, br));
+                }
+                else
+                {
+                    double grid = 100 * _scale;                  // 100 m
+                    if (grid > 8)
+                        for (double gx = b.Width / 2 % grid; gx < b.Width; gx += grid) ctx.DrawLine(_gridPen, new Point(gx, 0), new Point(gx, b.Height));
+                    if (grid > 8)
+                        for (double gy = b.Height / 2 % grid; gy < b.Height; gy += grid) ctx.DrawLine(_gridPen, new Point(0, gy), new Point(b.Width, gy));
+                }
+            }
+
+            // mission dressing: room names (zoomed in enough to read) and the way out, on the shown floor
+            if (mission != null)
+            {
+                if (_scale >= 0.12)
+                    foreach (var r in mission.Rooms)
+                        if (r.Floor == floor)
+                        {
+                            var p = ToScreen(r.X, r.Z);
+                            Label(ctx, p.X + 3, p.Y - 6, r.Name);
+                        }
+                if (mission.ExitXZ != null && mission.ExitFloor == floor)
+                {
+                    var ex = ToScreen(mission.ExitXZ[0], mission.ExitXZ[1]);
+                    ctx.DrawEllipse(null, _exitRingPen, ex, 6, 6);
+                    Label(ctx, ex.X + 9, ex.Y - 7, "exit");
+                }
             }
 
             if (nav != null)
@@ -201,9 +248,12 @@ namespace AOBuddyMonitor
                 }
             }
 
-            // corner text: zone, zoom, hover coordinates
+            // corner text: zone, floor when inside, zoom, hover coordinates
             string hoverTxt = _hover == null ? "" : $"  @ {_hover.Value.X:0}, {_hover.Value.Y:0}";
-            Label(ctx, 8, 6, $"{(pf < 0 ? "no bot" : nav?.Zone ?? "?")}{(terrain == null ? " — no terrain (grid)" : "")}  ·  {_scale * 100:0}%{hoverTxt}", alignTop: true);
+            string floorTxt = mission == null ? ""
+                : $"  ·  floor {floor}" + (nav.Mission.Floor != null && floor != nav.Mission.Floor ? $" (bot on {nav.Mission.Floor})" : "")
+                  + (mission.Floors.Length > 1 ? "  ·  PgUp/PgDn" : "");
+            Label(ctx, 8, 6, $"{(pf < 0 ? "no bot" : nav?.Zone ?? "?")}{(terrain == null && mission == null ? " — no terrain (grid)" : "")}{floorTxt}  ·  {_scale * 100:0}%{hoverTxt}", alignTop: true);
         }
 
         private static void Cross(DrawingContext ctx, Point c, double r, IPen pen)
@@ -265,6 +315,26 @@ namespace AOBuddyMonitor
                 _center = new Vector2(
                     (float)(w.X - (p.X - Bounds.Width / 2) / _scale),
                     (float)(w.Y + (p.Y - Bounds.Height / 2) / _scale));   // + : screen Y inverted
+            InvalidateVisual();
+            e.Handled = true;
+        }
+
+        // PgUp/PgDn peek at other floors of the building the bot is in; picking the bot's own floor
+        // drops the override and it follows him again. Needs keyboard focus — click the map first.
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            var lay = _nav?.Mission?.Layout;
+            if (lay == null) return;
+            var plan = _render.GetMission(lay);
+            int[] floors = plan?.Floors ?? _nav.Mission.Floors;
+            if (floors.Length < 2) return;
+            int cur = _floorOverride ?? _nav.Mission.Floor ?? floors[0];
+            int idx = Array.IndexOf(floors, cur);
+            if (e.Key == Key.PageUp && idx >= 0 && idx < floors.Length - 1) _floorOverride = floors[idx + 1];
+            else if (e.Key == Key.PageDown && idx > 0) _floorOverride = floors[idx - 1];
+            else return;
+            if (_nav.Mission.Floor != null && _floorOverride == _nav.Mission.Floor) _floorOverride = null;
             InvalidateVisual();
             e.Handled = true;
         }

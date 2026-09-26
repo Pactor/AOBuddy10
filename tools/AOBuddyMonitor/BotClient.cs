@@ -87,6 +87,19 @@ namespace AOBuddyMonitor
             public string Line;
             public int Pf = -1;
             public float[] Door;
+            public MissionLayout Layout;       // present while inside a mission building
+            public int? Floor;                 // the floor the bot is on (server numbering, can be negative)
+            public int[] Floors = new int[0];  // every floor the building has
+        }
+
+        /// <summary>The zone-in placement verbatim (mirrors AOBuddyNav.MissionLayout): which pool room went
+        /// to which floor/slot/rotation. The monitor recomposes the identical floor plan from its own
+        /// GameData with AOBuddyNav.ComposeMission — no geometry travels the API.</summary>
+        public sealed class MissionLayout
+        {
+            public int Instance, PoolPf, Width, Height, WorldHeight;
+            public float LandX, LandY, LandZ;
+            public List<int[]> Rooms = new List<int[]>();   // [roomIdx, floor, x, z, rot]
         }
 
         public sealed class Snap
@@ -279,12 +292,37 @@ namespace AOBuddyMonitor
             }
             n.MissionPath = VecList(o["missionPath"]);
             if (o["mission"] is JObject m)
+            {
                 n.Mission = new MissionInfo
                 {
                     Line = (string)m["line"] ?? "",
                     Pf = (int?)m["pf"] ?? -1,
                     Door = Vec(m["door"]),
+                    Floor = (int?)m["floor"],
                 };
+                if (m["floors"] is JArray fl) n.Mission.Floors = fl.Select(x => (int?)x ?? 0).ToArray();
+                if (m["layout"] is JObject l)
+                {
+                    var lay = new MissionLayout
+                    {
+                        Instance = (int?)l["instance"] ?? 0,
+                        PoolPf = (int?)l["poolPf"] ?? 0,
+                        Width = (int?)l["width"] ?? 0,
+                        Height = (int?)l["height"] ?? 0,
+                        WorldHeight = (int?)l["worldHeight"] ?? 0,
+                    };
+                    var land = Vec(l["land"]);
+                    if (land != null) { lay.LandX = land[0]; lay.LandY = land[1]; lay.LandZ = land[2]; }
+                    if (l["rooms"] is JArray ra)
+                        foreach (var r in ra.OfType<JArray>())
+                        {
+                            var five = new int[5];
+                            for (int i = 0; i < 5 && i < r.Count; i++) five[i] = (int?)r[i] ?? 0;
+                            lay.Rooms.Add(five);
+                        }
+                    n.Mission.Layout = lay;
+                }
+            }
             if (o["snaps"] is JArray snaps)
                 foreach (var e in snaps.OfType<JObject>())
                     n.Snaps.Add(new Snap

@@ -86,6 +86,164 @@ namespace AOBuddyMonitor
 
         private sealed class WalkedFile { public List<List<float[]>> Segments; }
 
+        // ---- mission floor plans (2026-09-26) ------------------------------------------------------------
+        // A mission building is not in the client data: the bot composes it from the zone-in placement and
+        // the pool's rooms.json (AOBuddyNav.ComposeMission), and /nav carries just that placement. Here the
+        // SAME composition runs against this machine's GameData, then each floor becomes a bitmap: one pixel
+        // per walkable room cell, walls baked in as brighter lines (nav.Walls, world triangles filtered to
+        // the floor's height band). All floors render on a background task; the plan pops in when ready.
+
+        public sealed class MissionPlan
+        {
+            public int Instance;
+            public float Cell;
+            public float MinX, MinZ;                    // world bounds of the walkable cells (shared by all floors)
+            public int W, H;                            // bitmap pixels (1 px per cell)
+            public int[] Floors = new int[0];
+            public readonly List<RoomLabel> Rooms = new List<RoomLabel>();
+            public float[] ExitXZ;                      // world [x, z] of the way out, on ExitFloor
+            public int ExitFloor;
+            public string Name = "";
+            internal readonly Dictionary<int, byte[]> FloorBgra = new Dictionary<int, byte[]>();
+        }
+
+        public sealed class RoomLabel { public readonly string Name; public readonly int Floor; public readonly float X, Z; public RoomLabel(string n, int f, float x, float z) { Name = n; Floor = f; X = x; Z = z; } }
+
+        private readonly object _mLock = new object();
+        private readonly Dictionary<int, MissionPlan> _missions = new Dictionary<int, MissionPlan>();
+        private readonly HashSet<int> _missionLoading = new HashSet<int>();
+
+        /// <summary>The composed plan for a mission layout, or null while it builds / when composition fails.
+        /// Fires <see cref="Rendered"/> (on the background thread) when a plan lands.</summary>
+        public MissionPlan GetMission(BotClient.MissionLayout lay)
+        {
+            if (lay == null || _pluginDir.Length == 0) return null;
+            lock (_mLock)
+            {
+                if (_missions.TryGetValue(lay.Instance, out var p)) return p;
+                if (_missionLoading.Contains(lay.Instance)) return null;
+                _missionLoading.Add(lay.Instance);
+            }
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                var plan = BuildMission(lay);
+                lock (_mLock)
+                {
+                    _missionLoading.Remove(lay.Instance);
+                    if (plan != null) _missions[lay.Instance] = plan;
+                }
+                if (plan != null) Rendered?.Invoke(lay.Instance);
+            });
+            return null;
+        }
+
+        private MissionPlan BuildMission(BotClient.MissionLayout lay)
+        {
+            try
+            {
+                var ml = new AOBuddyNav.MissionLayout
+                {
+                    Instance = lay.Instance, TemplatePlayfield = lay.PoolPf,
+                    Width = lay.Width, Height = lay.Height, WorldHeight = lay.WorldHeight,
+                    LandX = lay.LandX, LandY = lay.LandY, LandZ = lay.LandZ,
+                };
+                foreach (var r in lay.Rooms) ml.Rooms.Add(r);
+                var nav = AOBuddyNav.ComposeMission(_pluginDir, ml);
+                var d = nav?.Dungeon;
+                if (d == null || d.Rooms.Count == 0) return null;
+
+                // cell → world, the exact inverse of NavDungeon.CellOf: local offset from the rect's centre,
+                // turned back by the room's rotation (CellOf un-rotates world→local; this re-rotates local→world)
+                float cell = d.Cell;
+                void Walk(NavDungeon.Room rm, Action<int, int, double, double> cellAt)
+                {
+                    int turns = ((-rm.Rot) % 4 + 4) % 4;
+                    double ccx = (rm.Rect[0] + rm.Rect[2] + 1) / 2.0, ccz = (rm.Rect[1] + rm.Rect[3] + 1) / 2.0;
+                    for (int row = 0; row < rm.Tile.Length; row++)
+                        for (int col = 0; col < rm.Tile[row].Length; col++)
+                        {
+                            if (rm.Tile[row][col] == 0) continue;
+                            int a = rm.Rect[0] + col, b = rm.Rect[1] + row;
+                            double dx = (a + 0.5 - ccx) * cell, dz = (b + 0.5 - ccz) * cell;
+                            for (int i = 0; i < turns; i++) { double t = dx; dx = -dz; dz = t; }
+                            cellAt(a, b, rm.Pos[0] + dx, rm.Pos[2] + dz);
+                        }
+                }
+
+                // pass 1: world bounds over every walkable cell (all floors share the grid, so floors align)
+                double minX = double.MaxValue, minZ = double.MaxValue, maxX = double.MinValue, maxZ = double.MinValue;
+                foreach (var rm in d.Rooms)
+                    Walk(rm, (a, b, x, z) => { if (x < minX) minX = x; if (x > maxX) maxX = x; if (z < minZ) minZ = z; if (z > maxZ) maxZ = z; });
+                if (minX > maxX) return null;
+                var plan = new MissionPlan
+                {
+                    Instance = lay.Instance, Cell = cell, Name = nav.Name,
+                    MinX = (float)minX, MinZ = (float)minZ,
+                    W = Math.Max(1, (int)Math.Ceiling((maxX - minX) / cell)),
+                    H = Math.Max(1, (int)Math.Ceiling((maxZ - minZ) / cell)),
+                    Floors = d.Rooms.Select(r => r.Floor).Distinct().OrderBy(f => f).ToArray(),
+                };
+                if (nav.Exit != null) { plan.ExitXZ = new[] { (float)nav.Exit.X, (float)nav.Exit.Z }; plan.ExitFloor = nav.Exit.Floor; }
+
+                // per floor: paint the walkable cells (a shade per room, so rooms read as rooms)…
+                foreach (int floor in plan.Floors)
+                {
+                    var img = new byte[plan.W * plan.H * 4];
+                    foreach (var rm in d.Rooms)
+                    {
+                        if (rm.Floor != floor) continue;
+                        int v = 56 + (rm.PoolIndex * 37 % 26);
+                        Walk(rm, (a, b, x, z) =>
+                        {
+                            int px = (int)((x - minX) / cell), py = (int)((z - minZ) / cell);
+                            if (px < 0 || py < 0 || px >= plan.W || py >= plan.H) return;
+                            int i = (py * plan.W + px) * 4;
+                            img[i] = (byte)v; img[i + 1] = (byte)v; img[i + 2] = (byte)(v + 4); img[i + 3] = 255;
+                        });
+                        // the label at the room's walkable centroid, not its pivot — rotated rooms put the pivot oddly
+                        double sx = 0, sz = 0; int n = 0;
+                        Walk(rm, (a, b, x, z) => { sx += x; sz += z; n++; });
+                        if (n > 0) plan.Rooms.Add(new RoomLabel(rm.PoolName, floor, (float)(sx / n), (float)(sz / n)));
+                    }
+
+                    // …then bake the walls: nav.Walls' triangles whose height sits in this floor's band
+                    var onFloor = d.Rooms.Where(r => r.Floor == floor).ToList();
+                    if (onFloor.Count > 0 && nav.Walls != null)
+                    {
+                        float y0 = onFloor.Min(r => r.Pos[1]) - 1f, y1 = onFloor.Min(r => r.Pos[1]) + Math.Max(3f, lay.WorldHeight * 0.8f);
+                        void Line(double ax, double az, double bx, double bz)
+                        {
+                            int x0 = (int)Math.Round((ax - minX) / cell), z0 = (int)Math.Round((az - minZ) / cell);
+                            int x1 = (int)Math.Round((bx - minX) / cell), z1 = (int)Math.Round((bz - minZ) / cell);
+                            int steps = Math.Max(Math.Abs(x1 - x0), Math.Abs(z1 - z0));
+                            if (steps > 4000) return;
+                            for (int s = 0; s <= steps; s++)
+                            {
+                                int px = x0 + (x1 - x0) * s / Math.Max(1, steps), py = z0 + (z1 - z0) * s / Math.Max(1, steps);
+                                if (px < 0 || py < 0 || px >= plan.W || py >= plan.H) continue;
+                                int i = (py * plan.W + px) * 4;
+                                img[i] = 130; img[i + 1] = 130; img[i + 2] = 148; img[i + 3] = 255;
+                            }
+                        }
+                        for (int t = 0; t + 8 < nav.Walls.Length; t += 9)
+                        {
+                            bool inBand = true;
+                            for (int k = 0; k < 3; k++) if (nav.Walls[t + k * 3 + 1] < y0 || nav.Walls[t + k * 3 + 1] > y1) { inBand = false; break; }
+                            if (!inBand) continue;
+                            for (int k = 0; k < 3; k++)
+                            {
+                                int a0 = t + k * 3, a1 = t + ((k + 1) % 3) * 3;
+                                Line(nav.Walls[a0], nav.Walls[a0 + 2], nav.Walls[a1], nav.Walls[a1 + 2]);
+                            }
+                        }
+                    }
+                    lock (plan.FloorBgra) plan.FloorBgra[floor] = img;
+                }
+                return plan;
+            }
+            catch { return null; }
+        }
+
         // ---- the render (navmap's colour logic: terrain grey, water blue, 256 m grid) ---------------------
 
         private Terrain Render(int pf)

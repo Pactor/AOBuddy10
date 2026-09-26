@@ -187,7 +187,15 @@ namespace AOBuddy
         public static AOBuddyNav LoadMission(string pluginDir, byte[] zoneInPacket)
         {
             var m = DecodeZoneIn(zoneInPacket);
-            if (m == null) return null;
+            return m == null ? null : ComposeMission(pluginDir, m);
+        }
+
+        /// <summary>Compose the placed rooms from a decoded layout and the pool's rooms.json. Split out of
+        /// LoadMission (2026-09-26) so AOBuddyMonitor can compose the very same plan from the layout the
+        /// API's /nav carries — one composition, so the floor plan on screen cannot drift from the one the
+        /// bot walks. Returns null when the pool has no rooms.json.</summary>
+        public static AOBuddyNav ComposeMission(string pluginDir, MissionLayout m)
+        {
             string poolPath = Path.Combine(FolderFor(pluginDir, m.TemplatePlayfield), "rooms.json");
             if (!File.Exists(poolPath)) return null;
             NavDungeon pool = NavDungeon.Read(poolPath);
