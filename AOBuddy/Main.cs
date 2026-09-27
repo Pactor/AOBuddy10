@@ -481,6 +481,7 @@ namespace AOBuddy
             if (!onMe && !onPet) return;
             string who = onMe ? "me" : (DynelManager.Find(target, out SimpleChar pt) ? $"my pet {pt.Name}" : "my pet");
             string name = ItemData.Find(nano, out NanoItem ni) && ni != null ? ni.Name : "nano";
+            if (secs < 0 && caster == me.Identity) return;   // his own casts (auras every few seconds) are known already
             if (secs < 0)
             {
                 string by = caster == me.Identity ? "I" : DynelManager.Find(caster, out SimpleChar c) ? $"'{c.Name}'{(c is NpcChar ? $" (lvl {(c.TryGetStat(Stat.Level, out int cl) ? cl : 0)})" : "")}" : caster.ToString();
