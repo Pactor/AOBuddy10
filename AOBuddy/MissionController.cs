@@ -273,7 +273,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personCells = null;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailWhole = true; _retrace = false;
             try
@@ -911,6 +911,12 @@ namespace AOBuddy
         // (Algorithman, 2026-09-26: 'he often visits already cleared rooms, as if there still was a mob').
         private readonly Dictionary<Identity, int> _mobRoom = new Dictionary<Identity, int>();
         private double _clearScanAt;
+        // THE PERSON'S ROOM LAST (owner, 2026-09-27): clearing walked into the room Jeffery Joor stood in first (10:05:51,
+        // Athen Shire, 'Subway_MediumC4'); he fought the bot and followed it 4-10 m behind through every room after.
+        // Once the person is seen, his room is left out of the clearing, and paths to other rooms go round it when
+        // they can; the objective walks there once the rest is cleared.
+        private int? _personRoom;
+        private HashSet<(int, int, int)> _personCells;
 
         private int? RoomIndexAt(Vector3 p, int floor)
         {
@@ -935,6 +941,14 @@ namespace AOBuddy
                 // In the room and a mob last seen here isn't in sight any more: it is gone.
                 foreach (var k in _mobRoom.Where(kv => kv.Value == here.Value).Select(kv => kv.Key).ToList())
                     if (!DynelManager.Npcs.Any(n => n != null && n.Identity == k)) _mobRoom.Remove(k);
+            }
+            if (FindPersonTarget is Identity who && _personRoom == null
+                && DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == who) is SimpleChar person
+                && _grid.FloorAt(person.Transform.Position) is int pfl && RoomIndexAt(person.Transform.Position, pfl) is int pri)
+            {
+                var spot = _grid.RoomsOn(pfl).First(r => r.Index == pri);
+                _personRoom = pri; _personCells = _grid.CellsOf(spot);
+                _ctx.Log($"MISSION: '{person.Name}', the person to find, is in room '{spot.Name}' on floor {pfl}; clearing the other rooms first and going round it.");
             }
             foreach (var n in DynelManager.Npcs)
             {
@@ -995,6 +1009,13 @@ namespace AOBuddy
         private Vector3? _lastPathFrom;
         private List<Vector3> PathFrom(Vector3 a, Vector3 b, out bool usedFallback)
         {
+            if (Clearing && _personCells != null && _personCells.Count > 0
+                && !(_grid.CellOf(b) is (int, int, int) bc && _personCells.Contains(bc)))
+            {
+                var round = new HashSet<(int, int, int)>(_blocked); round.UnionWith(_personCells);
+                var r = _grid.FindPath(a, b, round, out usedFallback);
+                if (r != null) { _lastPathFrom = a; return r; }
+            }
             var p = _grid.FindPath(a, b, _blocked, out usedFallback);
             if (p != null) { _lastPathFrom = a; return p; }
             if (_lastPathFrom.HasValue)
@@ -1035,7 +1056,7 @@ namespace AOBuddy
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
             foreach (var r in _grid.RoomsOn(floor))
             {
-                if (_clearVisited.Contains(r.Index)) continue;
+                if (_clearVisited.Contains(r.Index) || r.Index == _personRoom) continue;
                 var p = PathFrom(pos, r.Centre, out _);
                 if (p == null) { _clearVisited.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
@@ -1046,7 +1067,8 @@ namespace AOBuddy
             var me = DynelManager.LocalPlayer;
             foreach (var n in DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && (me == null || !me.Pets.Any(pp => pp.Identity == n.Identity))
                                                           && (!n.TryGetStat(Stat.Health, out int h) || h > 0) && n.Identity != FindPersonTarget
-                                                          && _grid.FloorAt(n.Transform.Position) == floor && Fightable(n))
+                                                          && _grid.FloorAt(n.Transform.Position) == floor && Fightable(n)
+                                                          && (_personCells == null || !(_grid.CellOf(n.Transform.Position) is (int, int, int) nc && _personCells.Contains(nc))))
                                               .OrderBy(n => Movement.Flat(pos, n.Transform.Position)).Take(3))
             {
                 var len = PathLen(pos, n.Transform.Position);
@@ -1055,7 +1077,7 @@ namespace AOBuddy
             // 3) another floor with rooms left, by a button seen here
             foreach (int f in _grid.Floors.OrderBy(f => Math.Abs(f - floor)))
             {
-                if (f == floor || _grid.RoomsOn(f).All(r => _clearVisited.Contains(r.Index))) continue;
+                if (f == floor || _grid.RoomsOn(f).All(r => _clearVisited.Contains(r.Index) || r.Index == _personRoom)) continue;
                 var bh = ButtonHop(pos, floor, f, out string bw);
                 if (bh.HasValue) { why = $"clearing ({ClearText}): floor {f} has rooms left; {bw}"; return bh; }
             }
@@ -1604,6 +1626,20 @@ namespace AOBuddy
         public sealed class RoomSpot { public int Index; public string Name; public int Floor; public Vector3 Centre; }
         private readonly List<RoomSpot> _spots = new List<RoomSpot>();
         public IEnumerable<RoomSpot> RoomsOn(int floor) => _spots.Where(r => r.Floor == floor);
+
+        /// <summary>The grid cells of one room: cells named like it whose nearest room of that name on its floor is this one.</summary>
+        public HashSet<(int, int, int)> CellsOf(RoomSpot spot)
+        {
+            var same = _spots.Where(r => r.Floor == spot.Floor && r.Name == spot.Name).ToList();
+            var cells = new HashSet<(int, int, int)>();
+            foreach (var kv in _room)
+            {
+                if (kv.Value != spot.Name || kv.Key.Item1 != spot.Floor) continue;
+                var c = Centre(kv.Key);
+                if (same.OrderBy(r => Movement.Flat(c, r.Centre)).First() == spot) cells.Add(kv.Key);
+            }
+            return cells;
+        }
 
         private static float kv0(List<(int tile, float y, string room)> l) { foreach (var c in l) if (c.tile != 0) return c.y; return l[0].y; }
 
