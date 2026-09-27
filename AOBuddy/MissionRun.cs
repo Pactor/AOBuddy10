@@ -633,7 +633,17 @@ namespace AOBuddy
             // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
             // And never while overland is SWIMMING: afloat the server corrects often (the surface trues our
             // float Y) — that is the mode working, not a pull (Newland lake, 2026-09-24).
-            if (moving && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls") && _clock - _lastHurt > 5)
+            // CHASED (owner, 2026-09-27: "we should know if something hostile is following us ... just keep running until
+            // you reach a zone so you can live"): outdoors, with a mob that is fighting him or a pet within 40 m, a pull-back
+            // is not a wall to back off from - he keeps going (06:32, Wailing Wastes: two Watchers, 132 and 114, 5-15 m
+            // behind him for 30 s; pulled back at 06:32:50, he stopped to back off and was one-shot 2 s later).
+            var chaser = Chaser(me);
+            if (chaser != null && moving && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls"))
+            {
+                _bigSnaps.Clear();
+                if (_clock - _chaseLoggedAt > 10) { _chaseLoggedAt = _clock; _ctx.Log($"MISSIONRUN: pulled back while '{chaser.Name}' (lvl {LevelOf(chaser)}) chases me, {me.DistanceFrom(chaser):0} m off; keeping going."); }
+            }
+            if (moving && chaser == null && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls") && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
@@ -3879,6 +3889,17 @@ namespace AOBuddy
             if (id == 249817907) _killAt = _clock;   // "You can loot these remains": a kill
         }
         private double _killAt = -999;
+        private double _chaseLoggedAt = -99;
+        private static int LevelOf(SimpleChar c) => c.TryGetStat(Stat.Level, out int l) ? l : 0;
+        /// <summary>Outdoors: the nearest live mob fighting him or a pet within 40 m (every blow marks who it is on).</summary>
+        private SimpleChar Chaser(LocalPlayer me)
+        {
+            if (me == null || _mission.InMission) return null;
+            var guard = CombatController.Guarded(me, null); guard.Add(me.Identity);
+            return DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.FightingIdentity.HasValue && guard.Contains(n.FightingIdentity.Value)
+                                                && (!n.TryGetStat(Stat.Health, out int h) || h > 0) && me.DistanceFrom(n) <= 40f)
+                                    .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+        }
         private readonly HashSet<Identity> _retaken = new HashSet<Identity>();
 
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
