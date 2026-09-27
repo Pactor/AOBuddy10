@@ -572,8 +572,8 @@ namespace AOBuddy
                     // door's own coordinates and stop there; only if 3 s standing on it don't zone us, a metre on.
                     var dir = new Vector3((float)ex.Nx, 0, (float)ex.Nz);
                     var door = new Vector3((float)ex.X, (float)ex.Y, (float)ex.Z);
-                    // 'On' = out of the building = -N (the normal points in; Algorithman's 171591c).
-                    var goal = _phaseTime > 3 ? new Vector3(door.X - dir.X, door.Y, door.Z - dir.Z) : door;
+                    // 'On' = out of the building = +N (inside is -N).
+                    var goal = _phaseTime > 3 ? new Vector3(door.X + dir.X, door.Y, door.Z + dir.Z) : door;
                     float left = Movement.Flat(pos, goal);
                     if (left < 0.15f) { _move.Hold(me, _ctx.Config.SendIntervalMs); _ctx.WalkState = "mission: standing on the exit door"; return true; }
                     float step = Math.Min(Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep), left);
@@ -668,8 +668,8 @@ namespace AOBuddy
             if (_completed && _retrace && _nav != null)
             {
                 var ex = _nav.Exit;
-                // Inside is +N (Algorithman's 171591c: the exit door's normal points into the building).
-                var land = ex != null ? new Vector3((float)(ex.X + ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z + ex.Nz * 1.5))
+                // 1.5 m inside the exit door is -N (Algorithman, 2026-09-27: "+" caused a server snapback every time, "-" worked).
+                var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
                                       : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
                 var back = RetracePath(me.MovementComponent.Position, land);
                 if (back != null)
@@ -716,7 +716,7 @@ namespace AOBuddy
                 // The building's own exit door (AOBuddyNav.Exit), approached from 1.5 m inside it; the landing
                 // point only when the exit is unknown - it is the entrance only if we came in from outside.
                 var ex = _nav.Exit;
-                var land = ex != null ? new Vector3((float)(ex.X + ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z + ex.Nz * 1.5))
+                var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
                                       : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
                 int? lf = _grid.FloorAt(land);
                 if (!lf.HasValue) { why = "the entrance is not on any floor"; return null; }
