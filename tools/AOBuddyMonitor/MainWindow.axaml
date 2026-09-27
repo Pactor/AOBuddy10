@@ -39,6 +39,8 @@
                 <StackPanel Grid.Column="4" Orientation="Vertical" Margin="0,0,26,0" HorizontalAlignment="Stretch">
                     <TextBlock x:Name="TgtTxt" FontSize="12" Text="no target" Margin="5,0" Foreground="#9a9a9a"/>
                     <ProgressBar x:Name="TgtBar" Minimum="0" Maximum="100" Height="10" Margin="5" Foreground="#c95050"/>
+                    <!-- what is round him: on him/his pets, following him, near (the bot's Awareness, /status 'aware') -->
+                    <TextBlock x:Name="AwareTxt" FontSize="11" Text="" Margin="5,0" Foreground="#9a9a9a"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center">
