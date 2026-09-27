@@ -1060,6 +1060,7 @@ namespace AOBuddy
                         pets.Add(new JObject
                         {
                             ["name"] = pet.Name, ["role"] = pet.Role.ToString(),
+                            ["level"] = pet.TryGetStat(Stat.Level, out int plv) ? plv : -1,
                             ["hpPct"] = max > 0 ? (int)Math.Round(100.0 * pet.GetStat(Stat.Health) / max) : -1,
                             ["dist"] = Math.Round(me.DistanceFrom(pet), 1),
                         });

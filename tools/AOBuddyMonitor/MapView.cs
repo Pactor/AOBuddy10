@@ -50,6 +50,7 @@ namespace AOBuddyMonitor
         private readonly Pen _exitRingPen = new Pen(new SolidColorBrush(Color.FromArgb(230, 120, 220, 120)), 2);
         private readonly IBrush _mobFightBrush = new SolidColorBrush(Color.FromArgb(235, 224, 80, 80));
         private readonly IBrush _mobBrush = new SolidColorBrush(Color.FromArgb(170, 160, 128, 80));
+        private readonly IBrush _petBrush = new SolidColorBrush(Color.FromArgb(235, 80, 150, 235));
         private readonly IPen _botPen = new Pen(Brushes.Lime, 2);
 
         public MapView(MapRender render)
@@ -292,7 +293,8 @@ namespace AOBuddyMonitor
                 {
                     if (m.Pos == null) continue;
                     var p = ToScreen(m.Pos[0], m.Pos[2]);
-                    if (m.Fighting) ctx.DrawEllipse(_mobFightBrush, null, p, 4, 4);
+                    if (m.Pet) ctx.DrawEllipse(_petBrush, null, p, 4, 4);          // his own pets: blue
+                    else if (m.Fighting) ctx.DrawEllipse(_mobFightBrush, null, p, 4, 4);
                     else ctx.DrawEllipse(_mobBrush, null, p, 3, 3);
                     if (_scale >= 0.5)
                         Label(ctx, p.X + 6, p.Y - 6, m.Name + (m.HpPct >= 0 ? " " + m.HpPct + "%" : ""));

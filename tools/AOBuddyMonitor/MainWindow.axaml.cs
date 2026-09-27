@@ -219,10 +219,10 @@ namespace AOBuddyMonitor
             if (st.Pets.Count == 0) PetsPanel.Children.Add(new TextBlock { Text = "none", Foreground = new SolidColorBrush(Color.FromRgb(0x77, 0x77, 0x77)) });
             foreach (var p in st.Pets)
             {
-                // one line per pet, sized to the 270 px sidebar: name(80) + role(32) + bar(40) + "92% · 4 m"
+                // one line per pet, sized to the 270 px sidebar: name(70) + role and level(46) + bar + "92% · 4 m"
                 var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Avalonia.Thickness(0, 0, 8, 0) };
-                row.Children.Add(new TextBlock { Text = p.Name, FontWeight = FontWeight.Bold, Width = 80, FontSize = 12, TextTrimming = TextTrimming.CharacterEllipsis });
-                row.Children.Add(new TextBlock { Text = RoleShort(p.Role), Foreground = new SolidColorBrush(Color.FromRgb(0x9a, 0x9a, 0x9a)), Width = 32, FontSize = 12 });
+                row.Children.Add(new TextBlock { Text = p.Name, FontWeight = FontWeight.Bold, Width = 70, FontSize = 12, TextTrimming = TextTrimming.CharacterEllipsis });
+                row.Children.Add(new TextBlock { Text = RoleShort(p.Role) + (p.Level > 0 ? " " + p.Level : ""), Foreground = new SolidColorBrush(Color.FromRgb(0x9a, 0x9a, 0x9a)), Width = 46, FontSize = 12 });
                 var bar = new ProgressBar { Minimum = 0, Maximum = 100, Height = 8, Value = Math.Clamp(p.HpPct < 0 ? 0 : p.HpPct, 0, 100), Margin=new Thickness(5), HorizontalAlignment = HorizontalAlignment.Stretch};
                 if (p.HpPct >= 0 && p.HpPct < 35) bar.Foreground = new SolidColorBrush(Color.FromRgb(0xc9, 0x50, 0x50));
                 row.Children.Add(bar);

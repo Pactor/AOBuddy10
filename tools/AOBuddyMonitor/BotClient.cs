@@ -59,7 +59,7 @@ namespace AOBuddyMonitor
         public sealed class Pet
         {
             public string Name, Role;
-            public int HpPct = -1;
+            public int HpPct = -1, Level = -1;
             public float Dist;
         }
 
@@ -83,7 +83,7 @@ namespace AOBuddyMonitor
             public string Name = "?";
             public float[] Pos;
             public int HpPct = -1;
-            public bool Fighting;                          // it is on the bot
+            public bool Fighting, Pet;                          // it is on the bot
             public float Dist;
         }
 
@@ -272,6 +272,7 @@ namespace AOBuddyMonitor
                         Name = (string)p["name"] ?? "?",
                         Role = (string)p["role"] ?? "?",
                         HpPct = (int?)p["hpPct"] ?? -1,
+                        Level = (int?)p["level"] ?? -1,
                         Dist = (float?)p["dist"] ?? 0,
                     });
             if (o["target"] is JObject tg)
@@ -380,6 +381,7 @@ namespace AOBuddyMonitor
                         Pos = Vec(e["p"]),
                         HpPct = (int?)e["hpPct"] ?? -1,
                         Fighting = (bool?)e["fighting"] ?? false,
+                        Pet = (bool?)e["pet"] ?? false,
                         Dist = (float?)e["dist"] ?? 0,
                     });
             return n;

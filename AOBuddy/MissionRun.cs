@@ -1444,12 +1444,12 @@ namespace AOBuddy
                     o["trail"] = new JArray(_trailLog.Select(s => new JObject { ["t"] = s.t.ToString("HH:mm:ss"), ["pf"] = s.pf, ["inside"] = s.inside, ["p"] = V(s.p) }));
                 }
                 // The mobs around him (the SCFUs the server sent): name, where, how hurt, and whether it is
-                // on us — red dots for the fight, dim for the bystanders. Nearest 40 inside 120 m.
+                // on us — red dots for the fight, dim for the bystanders, blue for his own pets. Nearest 40 inside 120 m.
                 if (me != null)
                 {
                     var npcs = new JArray();
-                    foreach (var n in DynelManager.Npcs.Where(x => x != null && !(x.Owner.HasValue && x.Owner.Value == me.Identity))
-                                                       .OrderBy(me.DistanceFrom).Take(40))
+                    var mine = CombatController.Guarded(me, null);
+                    foreach (var n in DynelManager.Npcs.Where(x => x != null).OrderBy(me.DistanceFrom).Take(40))
                     {
                         float d = me.DistanceFrom(n);
                         if (d > 120) break;
@@ -1459,6 +1459,7 @@ namespace AOBuddy
                             ["name"] = n.Name, ["p"] = V(n.Transform.Position),
                             ["hpPct"] = max > 0 ? (int)Math.Round(100.0 * n.GetStat(Stat.Health) / max) : -1,
                             ["fighting"] = n.FightingIdentity == me.Identity,
+                            ["pet"] = mine.Contains(n.Identity),
                             ["dist"] = Math.Round(d, 1),
                         });
                     }
