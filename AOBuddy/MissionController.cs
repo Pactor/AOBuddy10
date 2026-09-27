@@ -275,7 +275,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0; _blockClearTried = false;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _roomGoal.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0; _blockClearTried = false;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailWhole = true; _retrace = false;
             try
@@ -772,7 +772,16 @@ namespace AOBuddy
                 {
                     var ch = ClearHop(pos, myFloor.Value, out why);
                     if (ch.HasValue) return ch;
-                    if (_clearStuck) return null;   // no path from where he stands: fail, back off, try again
+                    // No path to any room left. Where he stands is the cause only when the objective can't be reached
+                    // either: 2224807 (14:44:26-14:44:45, 2026-09-27, Subway Ventil) had its last 4 rooms sealed off behind
+                    // Subway_ramp_2 while the terminal (41.3,217.1) was 10 path points away, and the mission was dropped.
+                    if (_clearStuck)
+                    {
+                        if (!ClearSealedOff(pos, myFloor.Value, out string wayOn)) return null;   // fail, back off, try again
+                        _clearGaveUp = true;
+                        _ctx.Log($"MISSION: none of the rooms left has a path from ({pos.X:0},{pos.Z:0}) but {wayOn} does; they are sealed off, not me - giving up clearing them at {ClearText} and going on.");
+                        _tell($"Couldn't reach the last rooms ({ClearText}); doing the objective.");
+                    }
                 }
                 target = FindTarget(out Vector3? tpos, out string tw);
                 if (target.HasValue && tpos.HasValue && _grid.FloorAt(tpos.Value) is int tf)
@@ -967,6 +976,44 @@ namespace AOBuddy
         private bool _clearStuck;
         private HashSet<(int, int, int)> _personCells;
 
+        /// <summary>Clearing found no path to any room left: true when other work still has a path from pos - the objective
+        /// when its position is known (unreachable objective = it is where he stands), else a room already walked on this
+        /// floor - so the rooms are sealed off and clearing can give them up.</summary>
+        private bool ClearSealedOff(Vector3 pos, int floor, out string wayOn)
+        {
+            wayOn = null;
+            var target = FindTarget(out Vector3? tpos, out _);
+            if (target.HasValue && tpos.HasValue && _grid.FloorAt(tpos.Value).HasValue)
+            {
+                if (PathFrom(pos, tpos.Value, out _) == null) return false;
+                wayOn = $"the objective {target}";
+                return true;
+            }
+            var reach = _grid.ReachFrom(pos, _blocked);
+            foreach (var r in _grid.RoomsOn(floor))
+            {
+                var g = RoomGoalFor(r, reach);
+                if (Movement.Flat(pos, g) > 8f && PathFrom(pos, g, out _) != null) { wayOn = $"room '{r.Name}'"; return true; }
+            }
+            return false;
+        }
+
+        // ROOM GOALS (owner, 2026-09-27): a room is walked to the open cell of it that a walk from where he stands reaches,
+        // nearest its spot - not the spot itself. The spot is the tile nearest the room's centre, and in Checkpoint1 (2224652),
+        // Checkpoint3 (2224672, 2224321), Vent2 (2224672, 2224806) and MediumB3 (2224372) it lies in a closed-off pocket
+        // while 92-100% of the room is reachable. No reachable cell: the spot, as before.
+        private readonly Dictionary<int, Vector3> _roomGoal = new Dictionary<int, Vector3>();
+        private Vector3 RoomGoalFor(MissionGrid.RoomSpot r, HashSet<(int, int, int)> reach)
+        {
+            var g = _grid.RoomGoal(r, reach);
+            if (!g.HasValue) return r.Centre;
+            _roomGoal[r.Index] = g.Value;
+            return g.Value;
+        }
+        /// <summary>Within 6 m of a room's spot or of the goal last chosen in it (a room reached counts as walked).</summary>
+        private bool AtRoom(Vector3 pos, MissionGrid.RoomSpot r) =>
+            Movement.Flat(pos, r.Centre) < 6f || (_roomGoal.TryGetValue(r.Index, out var g) && Movement.Flat(pos, g) < 6f);
+
         private int? RoomIndexAt(Vector3 p, int floor)
         {
             string name = _grid.RoomAt(p);
@@ -1103,8 +1150,9 @@ namespace AOBuddy
 
         private Hop? ClearHop(Vector3 pos, int floor, out string why)
         {
-            foreach (var r in _grid.RoomsOn(floor)) if (Movement.Flat(pos, r.Centre) < 6f) _clearVisited.Add(r.Index);
+            foreach (var r in _grid.RoomsOn(floor)) if (AtRoom(pos, r)) _clearVisited.Add(r.Index);
             _clearScanAt = -99; ClearScan(pos);
+            var reach = _grid.ReachFrom(pos, _blocked);
             // 1) the nearest room on this floor not walked yet
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
             var noPath = new List<int>(); int tried = 0; _clearStuck = false;
@@ -1112,10 +1160,11 @@ namespace AOBuddy
             {
                 if (_clearVisited.Contains(r.Index) || IsPersonRoom(r)) continue;
                 tried++;
-                var p = PathFrom(pos, r.Centre, out _);
+                var goal = RoomGoalFor(r, reach);
+                var p = PathFrom(pos, goal, out _);
                 if (p == null) { noPath.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
-                if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Clear }; }
+                if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = goal, Purpose = Purpose.Clear }; }
             }
             // EVERY room unreachable at once is where he stands, not the rooms (Dadbod 11:10:25, 2026-09-27: after a fight
             // no path started from his spot, all rooms were marked unreachable in one go and clearing gave up after 2 of
@@ -1174,15 +1223,17 @@ namespace AOBuddy
 
         private Hop? SearchHop(Vector3 pos, int floor, string tw, out string why)
         {
-            foreach (var r in _grid.RoomsOn(floor)) if (Movement.Flat(pos, r.Centre) < 6f) _visited.Add(r.Index);
+            foreach (var r in _grid.RoomsOn(floor)) if (AtRoom(pos, r)) _visited.Add(r.Index);
+            var reach = _grid.ReachFrom(pos, _blocked);
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
             foreach (var r in _grid.RoomsOn(floor))
             {
                 if (_visited.Contains(r.Index)) continue;
-                var p = PathFrom(pos, r.Centre, out _);
+                var goal = RoomGoalFor(r, reach);
+                var p = PathFrom(pos, goal, out _);
                 if (p == null) { _visited.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
-                if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Search }; }
+                if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = goal, Purpose = Purpose.Search }; }
             }
             if (best == null)
             {
@@ -1737,6 +1788,53 @@ namespace AOBuddy
                 if (same.OrderBy(r => Movement.Flat(c, r.Centre)).First() == spot) cells.Add(kv.Key);
             }
             return cells;
+        }
+
+        /// <summary>Every open 0.5 m cell a walk from a reaches (FineAStar's moves and start), or null with no wall data or
+        /// no start cell.</summary>
+        public HashSet<(int, int, int)> ReachFrom(Vector3 a, HashSet<(int, int, int)> blocked)
+        {
+            if (_fine == null) return null;
+            var sc = Snap(a, 3f, 2, true);
+            if (!sc.HasValue) return null;
+            int floor = sc.Value.Item1;
+            var s = NearestFine(a, floor, 2.5f, blocked, needSight: false) ?? NearestFine(a, floor, 6f, null, needSight: false);
+            if (!s.HasValue) return null;
+            var seen = new HashSet<(int, int, int)> { s.Value };
+            var q = new Queue<(int, int, int)>(); q.Enqueue(s.Value);
+            while (q.Count > 0)
+            {
+                var k = q.Dequeue(); float y0 = FineY(k);
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                    {
+                        if (dx == 0 && dz == 0) continue;
+                        var n = (k.Item1, k.Item2 + dx, k.Item3 + dz);
+                        if (seen.Contains(n) || !FineOpen(n, blocked)) continue;
+                        if (Math.Abs(FineY(n) - y0) > MaxStepUp) continue;
+                        if (dx != 0 && dz != 0 && (!FineOpen((k.Item1, k.Item2 + dx, k.Item3), blocked) || !FineOpen((k.Item1, k.Item2, k.Item3 + dz), blocked))) continue;
+                        seen.Add(n); q.Enqueue(n);
+                    }
+            }
+            return seen;
+        }
+
+        /// <summary>The open cell of a room in 'reach' (ReachFrom) nearest the room's spot, or null when none is.</summary>
+        public Vector3? RoomGoal(RoomSpot spot, HashSet<(int, int, int)> reach)
+        {
+            if (reach == null) return null;
+            int per = FinePer; Vector3? best = null; float bd = float.MaxValue;
+            foreach (var c in CellsOf(spot))
+                for (int sx = 0; sx < per; sx++)
+                    for (int sz = 0; sz < per; sz++)
+                    {
+                        var f = (c.Item1, c.Item2 * per + sx, c.Item3 * per + sz);
+                        if (!reach.Contains(f)) continue;
+                        var p = FineCentre(f);
+                        float d = Movement.Flat(p, spot.Centre);
+                        if (d < bd) { bd = d; best = p; }
+                    }
+            return best;
         }
 
         private static float kv0(List<(int tile, float y, string room)> l) { foreach (var c in l) if (c.tile != 0) return c.y; return l[0].y; }
