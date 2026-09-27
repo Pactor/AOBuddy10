@@ -990,7 +990,7 @@ namespace AOBuddy
                 case Phase.ToDoor:
                 {
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
-                    int pf = _current?.Playfield.Instance ?? 0;
+                    int pf = _current.Playfield.Instance;
                     // Its zone went on the avoid list (killed on sight there): drop it. Travel refuses every route into an
                     // avoided zone, and the run asked again for 20 minutes (06:41-07:02, 2026-09-27, Wailing Wastes).
                     if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) { Skip($"{Zoning.Name(pf)} is on my avoid list"); return false; }
