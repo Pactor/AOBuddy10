@@ -193,9 +193,12 @@ namespace AOBuddy
                         && Vector3.Distance(new Vector3(m.X, m.Y, m.Z), p) < 20f) { known = true; break; }
                 if (known) continue;
                 int lvl = 0; npc.TryGetStat(Stat.Level, out lvl);
-                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl });
+                // The model too (owner, 2026-09-27): MonsterData 359, Mesh 12, MonsterTexture 344 when the server sent them.
+                int? St(Stat st) => npc.TryGetStat(st, out int v) ? v : (int?)null;
+                int? mon = St(Stat.MonsterData), mesh = St(Stat.Mesh), tex = St(Stat.MonsterTexture);
+                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl, MonsterData = mon, Mesh = mesh, MonsterTexture = tex });
                 _dirty = true;
-                _ctx.Log($"NAV: mob spawn '{npc.Name}' (lvl {lvl}) at ({p.X:0},{p.Y:0},{p.Z:0}).");
+                _ctx.Log($"NAV: mob spawn '{npc.Name}' (lvl {lvl}) at ({p.X:0},{p.Y:0},{p.Z:0}) model monsterData={mon?.ToString() ?? "-"} mesh={mesh?.ToString() ?? "-"} texture={tex?.ToString() ?? "-"}.");
             }
         }
 
@@ -376,6 +379,7 @@ namespace AOBuddy
         public float X, Y, Z;
         public string Name;
         public int Level;
+        public int? MonsterData, Mesh, MonsterTexture;
     }
 
     // A logged interactable world object: its position, its identity type, and its NAME (which is what tells

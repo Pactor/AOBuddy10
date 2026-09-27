@@ -593,6 +593,11 @@ namespace AOBuddy
                             // MaxRise; dropping onto it is free (no fall damage outdoors, owner 2026-09-25).
                             float rise = FloorH(ncell, j) - fh;
                             if (rise > MaxRise * d) continue;
+                            // NO JUMPING OFF (owner, 2026-09-27: "no more trying to drop off from the top of mountain" -
+                            // The Longest Road town: coming down off the ridge (server Y 42-51) onto the whompa (Y 15)
+                            // glitched him; the town has one way in and out, recorded as paths/longroad_*). A drop he could
+                            // not walk back up is taken only where the owner walked it (a recorded road or jump).
+                            if (-rise > MaxRise * d && !(_road != null && _road[ncell]) && !(_drop != null && _drop[ncell])) continue;
                             float grade = Math.Abs(rise) / d;
                             float slope = grade > SlopeFree ? SlopeWeight * (grade - SlopeFree) * (rise < 0 ? 0.5f : 1f) : 0f;
                             if (rise > 0.2f && _drop != null && _drop[ncell]) slope += DropClimbCost;
