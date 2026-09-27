@@ -649,6 +649,7 @@ namespace AOSharp.Clientless
             {
                 CastNanoSpellMessage castNanoSpellMsg = (CastNanoSpellMessage)msg;
                 OnCastNanoSpell(castNanoSpellMsg.Identity, castNanoSpellMsg.TargetPresent);
+                NanoSeen?.Invoke(castNanoSpellMsg.Caster, castNanoSpellMsg.Target, castNanoSpellMsg.NanoId, -1);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Trade, (msg) =>
@@ -895,8 +896,18 @@ namespace AOSharp.Clientless
             simpleChar.RemoveBuff(nanoId);
         }
 
+        /// <summary>
+        /// WHAT IS CAST ON WHOM (owner, 2026-09-27: "he should always know what is casted on him"). Fired for every
+        /// CastNanoSpell the server shows (caster, target, nano; seconds = -1) and for every nano that lands with a
+        /// timer - CharacterAction SetNanoDuration, Identity = the one it is on, Target = NanoProgram:id, Parameter2 =
+        /// duration in 1/100 s (codedoc capture 20260926-202941 s5: BuffMessage then SetNanoDuration for each buff;
+        /// caster unknown there, so Identity.None).
+        /// </summary>
+        public static event Action<Identity, Identity, int, float> NanoSeen;
+
         private static void SetNanoDurationCharAction(Identity identity, int nanoId, int param2)
         {
+            NanoSeen?.Invoke(Identity.None, identity, nanoId, param2 / 100f);
             if (!DynelManager.Find(identity, out SimpleChar simpleChar))
                 return;
 
