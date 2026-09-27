@@ -68,8 +68,12 @@ namespace AOSharp.Clientless
             if (inventorySlots == null)
                 return;
 
+            // A zone sends a FullCharacter too, and a bag's contents don't change by zoning (Algorithman, 2026-09-27:
+            // the bags lost their contents on every zone). Keep what we know of each bag still in the inventory; only
+            // bags no longer there are dropped.
+            var bags = new HashSet<Identity>(inventorySlots.Where(x => x.Identity.Type == IdentityType.Container).Select(x => x.Identity));
+            _containers = _containers.Where(c => bags.Contains(c.Identity)).ToList();
             _items = new List<Item>();
-            _containers = new List<Container>();
             RegisterItems(_items, inventorySlots);
         }
 
@@ -240,7 +244,8 @@ namespace AOSharp.Clientless
                 Item item = new Item(new Identity(GetSlotType(invSlot.Placement), invSlot.Placement), invSlot.Identity, invSlot.ItemLowId, invSlot.ItemHighId, invSlot.Quality);
                 item.Count = invSlot.Count;   // stack size (for accurate supply counts)
 
-                if (invSlot.Identity.Type == IdentityType.Container)
+                // An empty container only for a bag we know nothing of yet; one already read keeps its contents.
+                if (invSlot.Identity.Type == IdentityType.Container && !_containers.Find(invSlot.Identity, out Container _))
                     OnContainerUpdate(invSlot.Identity, new InventorySlot[0], 0);
 
                 items.Add(item);
