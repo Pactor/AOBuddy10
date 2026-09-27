@@ -2812,7 +2812,10 @@ namespace AOBuddy
         }
         private bool ShopAfterNanos(LocalPlayer me)
         {
-            if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
+            // One more bag to carry - or the first one: with no bag at all the stash has nowhere to put a reward, and a
+            // bagless level 10 (the MA, 2026-09-26) went to Fair Trade after every mission and came back without one.
+            bool noBag = !Inventory.Items.Any(i => i != null && i.UniqueIdentity.Type == IdentityType.Container);
+            if ((Inventory.NumFreeSlots < 4 || noBag) && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);
             // Stims and rechargers at the QL his skills can use: ResupplyController picks the fitting QL and the
             // terminals here (Algorithman's), as the owner would buy them.
             if (!_shopStimsTried && UsableStims() < _ctx.Config.ResupplyStimTarget)
