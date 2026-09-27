@@ -693,6 +693,22 @@ namespace AOSharp.Clientless
                     attacker.FightingIdentity = attackMessage.Target;
             });
 
+            // EVERY BLOW names who struck whom (capture 20260925-113057 s14: AttackInfo Identity = the attacker, Target = the
+            // one hit; MissedAttackInfo Attacker/Defender). A mob can hit without its Attack message reaching us (it
+            // started before we were in range, or on a pet), and then nothing showed as fighting the bot while it bit
+            // him (owner, 19:21 2026-09-26: "rollerrat chasing him around"). The blow says who it is fighting.
+            _n3MsgCallbacks.Add(N3MessageType.AttackInfo, (msg) =>
+            {
+                var ai = (AttackInfoMessage)msg;
+                NoteBlow(ai.Identity, ai.Target);
+            });
+
+            _n3MsgCallbacks.Add(N3MessageType.MissedAttackInfo, (msg) =>
+            {
+                var mi = (MissedAttackInfoMessage)msg;
+                NoteBlow(mi.Attacker, mi.Defender);
+            });
+
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg) =>
             {
                 StopFightMessage stopFightMessage = (StopFightMessage)msg;
@@ -802,6 +818,12 @@ namespace AOSharp.Clientless
                 return;
 
             DynelManager.LocalPlayer.SetCastState(true);
+        }
+
+        private static void NoteBlow(Identity attacker, Identity target)
+        {
+            if (attacker.Instance == 0 || target.Instance == 0 || DynelManager.Dead.Contains(attacker)) return;
+            if (DynelManager.Find(attacker, out SimpleChar a) && !(a is LocalPlayer)) a.FightingIdentity = target;
         }
 
         private static void MarkDead(Identity identity)
