@@ -46,7 +46,7 @@ namespace AOBuddy
             if (me == null || clock - _at < 0.5) return;
             _at = clock;
             int pf = (int)Playfield.ModelId;
-            if (pf != _pf) { _pf = pf; _foes.Clear(); _trail.Clear(); _myTrail.Clear(); }
+            if (pf != _pf) { _pf = pf; _foes.Clear(); _trail.Clear(); _myTrail.Clear(); _shadow.Clear(); }
 
             var mine = me.Transform.Position;
             _myTrail.Enqueue((clock, mine));
@@ -72,11 +72,13 @@ namespace AOBuddy
                 q.Enqueue((clock, n.Transform.Position, d));
                 while (q.Count > 0 && clock - q.Peek().t > Window + 0.6) q.Dequeue();
                 var then = q.Peek();
-                bool following = iMoved && clock - then.t >= Window - 0.6 && Movement.Flat(then.p, n.Transform.Position) >= 3f && d <= then.d + 1f && d <= 30f;
+                bool keptUp = iMoved && clock - then.t >= Window - 0.6 && Movement.Flat(then.p, n.Transform.Position) >= 3f && d <= then.d + 1f && d <= 30f;
+                bool following = Shadow(n.Identity, clock, mine, d, keptUp);
                 n.TryGetStat(Stat.Level, out int lvl);
                 near.Add(new Seen { Mob = n, Dist = d, Level = lvl, OnUs = onUs, Following = following });
             }
             foreach (var id in _trail.Keys.ToList()) if (!here.Contains(id)) _trail.Remove(id);
+            foreach (var id in _shadow.Keys.ToList()) if (clock - _shadow[id].seen > Forget) _shadow.Remove(id);
             Near = near.OrderBy(s => s.Dist).ToList();
 
             string now = Summary();
@@ -87,6 +89,33 @@ namespace AOBuddy
                     .Select(s => $"'{s.Mob.Name}' lvl {s.Level} {s.Dist:0} m{(s.OnUs ? " on us" : "")}{(s.Following ? " following" : "")}{(s.Level > myLvl + 5 ? " (too strong)" : "")}"));
                 _log($"AWARE: {now}{(who.Length > 0 ? " - " + who : "")}.");
             }
+        }
+
+        // SHADOWING (owner, 2026-09-27: "IF a mob stays within, or returns to a certain area around him, he is AWARE of
+        // it"). Jeffery Joor stayed 4-10 m behind him for a minute, in and out of the building, and the 4-s rule above
+        // flickered on and off. A mob is following once, over the last 20 s while he walked 10 m or more, it spent
+        // 60% of the time within 15 m of him, or came back within 15 m twice; or the 4-s rule saw it keep up. It stays
+        // following until it has been out of 40 m (or unseen) for 20 s.
+        private const float Close = 15f;
+        private const double Span = 20.0, Forget = 20.0;
+        private sealed class Track { public Queue<(double t, Vector3 me, bool close)> S = new Queue<(double, Vector3, bool)>(); public double seen, until = -1; public int returns; public bool wasClose; }
+        private readonly Dictionary<Identity, Track> _shadow = new Dictionary<Identity, Track>();
+
+        private bool Shadow(Identity id, double clock, Vector3 mine, float d, bool keptUp)
+        {
+            if (!_shadow.TryGetValue(id, out var tr)) _shadow[id] = tr = new Track();
+            tr.seen = clock;
+            bool close = d <= Close;
+            tr.S.Enqueue((clock, mine, close));
+            while (tr.S.Count > 0 && clock - tr.S.Peek().t > Span) tr.S.Dequeue();
+            if (close && !tr.wasClose && tr.S.Count > 1) tr.returns++;
+            tr.wasClose = close;
+            var first = tr.S.Peek();
+            float walked = Movement.Flat(first.me, mine);
+            double share = tr.S.Count(x => x.close) / (double)tr.S.Count;
+            bool shadowing = walked >= 10f && clock - first.t >= Span * 0.5 && (share >= 0.6 || tr.returns >= 2);
+            if (keptUp || shadowing) tr.until = clock + Forget;
+            return clock < tr.until;
         }
 
         public string Summary() => $"{OnUsCount} on us, {FollowingCount} following, {Near.Count} near";
