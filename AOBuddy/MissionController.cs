@@ -273,7 +273,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailWhole = true; _retrace = false;
             try
@@ -431,6 +431,13 @@ namespace AOBuddy
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
             _move.Reset();
             _ctx.Log($"MISSION: server put me at ({serverPos.X:0},{serverPos.Y:0},{serverPos.Z:0}), {gap:0.0} m from where I thought I was; planning from there.");
+            // A tile path through walls the server enforces: 14:06 (2026-09-27, HiTech 2224805) pinned at (59,6,161)
+            // dozens of times a minute. After 5 pull-backs on it the walls were right - no more tile paths to this target.
+            if (_onTilePath && ++_tilePulls >= 5)
+            {
+                _onTilePath = false; _tileRefused = true; _path = null;
+                _ctx.Log($"MISSION: the server held me {_tilePulls} times on the tile path - the walls are solid there; not trying it again for this target.");
+            }
             if (_phase == Phase.Walk && gap > 2f)
             {
                 // Snapped back to the same spot again: that is a wall the grid does not show, right ahead of
@@ -702,10 +709,11 @@ namespace AOBuddy
             }
             _path = PathFrom(me.MovementComponent.Position, h.Pos, out bool fb);
             // The walls seal the target off: try the tiles alone (MissionGrid.FindPathTiles).
-            if (_path == null && h.Purpose == Purpose.Target && _phaseTime >= 6)
+            _onTilePath = false;
+            if (_path == null && h.Purpose == Purpose.Target && _phaseTime >= 6 && !_tileRefused)
             {
                 _path = _grid.FindPathTiles(me.MovementComponent.Position, h.Pos, _blocked, out fb);
-                if (_path != null) _ctx.Log($"MISSION: the walls seal the target off; taking the tile path through them ({_path.Count} points) - a solid spot will pull me back.");
+                if (_path != null) { _onTilePath = true; _ctx.Log($"MISSION: the walls seal the target off; taking the tile path through them ({_path.Count} points) - a solid spot will pull me back."); }
             }
             if (_path == null)
             {
@@ -922,6 +930,8 @@ namespace AOBuddy
         // Athen Shire, 'Subway_MediumC4'); he fought the bot and followed it 4-10 m behind through every room after.
         // Once the person is seen, his room is left out of the clearing, and paths to other rooms go round it when
         // they can; the objective walks there once the rest is cleared.
+        private bool _onTilePath, _tileRefused;
+        private int _tilePulls;
         private int? _personRoom;
         private string _personRoomName;
         private bool IsPersonRoom(MissionGrid.RoomSpot r) => r.Index == _personRoom || (_personRoomName != null && r.Name == _personRoomName);
