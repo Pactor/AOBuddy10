@@ -23,7 +23,7 @@ namespace AOBuddy
     {
         private sealed class Seen
         {
-            public string Name; public int Lvl, Side; public int? Monster, Mesh, Texture; public Vector3 First; public DateTime FirstAt, LastAt;
+            public string Name; public int Lvl, Side; public MobModels.Model Model; public Vector3 First; public DateTime FirstAt, LastAt;
             public bool PopIn, Died; public Vector3 Last; public JArray Track = new JArray();
         }
 
@@ -71,12 +71,10 @@ namespace AOBuddy
                 {
                     n.TryGetStat(Stat.Level, out int lvl);
                     n.TryGetStat(Stat.Side, out int side);
-                    // The mob's model, always (owner, 2026-09-27: "we need that model data always"): MonsterData 359,
-                    // Mesh 12, MonsterTexture 344 - whichever the server sent; null when it didn't.
-                    int? St(Stat st) => n.TryGetStat(st, out int v) ? v : (int?)null;
+                    // The mob's model, always (owner, 2026-09-27): from its spawn packet (MobModels).
                     _seen[n.Identity] = s = new Seen
                     {
-                        Name = n.Name, Lvl = lvl, Side = side, Monster = St(Stat.MonsterData), Mesh = St(Stat.Mesh), Texture = St(Stat.MonsterTexture), First = p, Last = p, FirstAt = now, LastAt = now,
+                        Name = n.Name, Lvl = lvl, Side = side, Model = MobModels.Get(n.Identity), First = p, Last = p, FirstAt = now, LastAt = now,
                         PopIn = Vector3.Distance(mine, p) < PopInRange && _pf == pf && (now - _zoneAt).TotalSeconds > 5,
                     };
                     s.Track.Add(Pt(0, p));
@@ -108,7 +106,7 @@ namespace AOBuddy
             if (_pf < 0 || _pf >= 100000) return;
             var o = new JObject
             {
-                ["t"] = s.FirstAt.ToString("o"), ["pf"] = _pf, ["id"] = id.ToString(), ["name"] = s.Name, ["lvl"] = s.Lvl, ["side"] = s.Side, ["monsterData"] = s.Monster, ["mesh"] = s.Mesh, ["monsterTexture"] = s.Texture,
+                ["t"] = s.FirstAt.ToString("o"), ["pf"] = _pf, ["id"] = id.ToString(), ["name"] = s.Name, ["lvl"] = s.Lvl, ["side"] = s.Side, ["monsterData"] = s.Model?.MonsterData, ["monsterScale"] = s.Model?.MonsterScale, ["headMesh"] = s.Model?.HeadMesh, ["meshes"] = s.Model?.Meshes != null ? new JArray(s.Model.Meshes) : null, ["textures"] = s.Model?.Textures != null ? new JArray(s.Model.Textures) : null,
                 ["first"] = new JArray(Math.Round(s.First.X, 1), Math.Round(s.First.Y, 1), Math.Round(s.First.Z, 1)),
                 ["popIn"] = s.PopIn, ["died"] = s.Died, ["secs"] = Math.Round((s.LastAt - s.FirstAt).TotalSeconds),
                 ["track"] = s.Track,

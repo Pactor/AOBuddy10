@@ -198,6 +198,7 @@ namespace AOBuddy
             // keep matching; DCMOVE/ZONEIN/WIRECAPTURE are new tags for feeds that used to be
             // silent. Subscription order = run order per message.
             ClientEvents.SafeSubscribe(m => _ctx.Vitals.OnMessage(m), "VITALS feed error", Log);
+            ClientEvents.SafeSubscribe(MobModels.OnMessage, "MOBMODEL", Log);
             ClientEvents.SafeSubscribe(m => _resupply.OnMessage(m), "RESUPPLY feed error", Log);
             ClientEvents.SafeSubscribe(m => _roll.OnMessage(m), "MISSIONROLL", Log);
             ClientEvents.SafeSubscribe(m => _run.OnMessage(m), "MISSIONRUN", Log);

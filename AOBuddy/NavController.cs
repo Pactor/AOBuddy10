@@ -190,15 +190,25 @@ namespace AOBuddy
                 bool known = false;
                 foreach (var m in _zone.Mobs)
                     if (string.Equals(m.Name, npc.Name, StringComparison.OrdinalIgnoreCase)
-                        && Vector3.Distance(new Vector3(m.X, m.Y, m.Z), p) < 20f) { known = true; break; }
+                        && Vector3.Distance(new Vector3(m.X, m.Y, m.Z), p) < 20f)
+                    {
+                        known = true;
+                        // Saved before models were logged: fill it in now that we see it (owner, 2026-09-27).
+                        if (m.MonsterData == null && MobModels.Get(npc.Identity) is MobModels.Model fm)
+                        {
+                            m.MonsterData = (int)fm.MonsterData; m.Mesh = fm.HeadMesh; m.MonsterTexture = fm.Textures?.FirstOrDefault();
+                            _dirty = true;
+                            _ctx.Log($"NAV: mob model filled in for '{npc.Name}' at ({m.X:0},{m.Z:0}): {fm}.");
+                        }
+                        break;
+                    }
                 if (known) continue;
                 int lvl = 0; npc.TryGetStat(Stat.Level, out lvl);
-                // The model too (owner, 2026-09-27): MonsterData 359, Mesh 12, MonsterTexture 344 when the server sent them.
-                int? St(Stat st) => npc.TryGetStat(st, out int v) ? v : (int?)null;
-                int? mon = St(Stat.MonsterData), mesh = St(Stat.Mesh), tex = St(Stat.MonsterTexture);
-                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl, MonsterData = mon, Mesh = mesh, MonsterTexture = tex });
+                // The model too (owner, 2026-09-27): from the spawn packet (MobModels), not stats - those read empty.
+                var md = MobModels.Get(npc.Identity);
+                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl, MonsterData = (int?)md?.MonsterData, Mesh = md?.HeadMesh, MonsterTexture = md?.Textures?.FirstOrDefault() });
                 _dirty = true;
-                _ctx.Log($"NAV: mob spawn '{npc.Name}' (lvl {lvl}) at ({p.X:0},{p.Y:0},{p.Z:0}) model monsterData={mon?.ToString() ?? "-"} mesh={mesh?.ToString() ?? "-"} texture={tex?.ToString() ?? "-"}.");
+                _ctx.Log($"NAV: mob spawn '{npc.Name}' (lvl {lvl}) at ({p.X:0},{p.Y:0},{p.Z:0}) model {(md != null ? md.ToString() : "not seen")}.");
             }
         }
 
