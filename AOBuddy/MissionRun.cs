@@ -75,7 +75,7 @@ namespace AOBuddy
                           FollowController follow, string pluginDir, Action<string> tell, CombatController combat)
         {
             _ctx = ctx; _roll = roll; _mission = mission; _overland = overland; _follow = follow;
-            _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
+            _mission.Fightable = n => !_combat.IsSetAside(n.Identity);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             LearnedGround.Init(pluginDir);
             _aware = new Awareness(_ctx.Log);
@@ -3773,7 +3773,6 @@ namespace AOBuddy
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
                             && !_combat.IsSetAside(n.Identity)
-                            && !TooStrong(me, n)
                             && IsMob(n, _mission.InMission)
                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance)
                 .OrderBy(n => me.DistanceFrom(n)).ToList();
@@ -3782,7 +3781,7 @@ namespace AOBuddy
             var a = (_defId.HasValue ? onUs.FirstOrDefault(n => n.Identity == _defId.Value) : null) ?? onUs.FirstOrDefault();
             // Nothing hitting yet, but something following him inside: that one next, before it brings friends.
             if (a == null && _mission.InMission)
-                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
+                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && n.Identity != _mission.FindPersonTarget
                                                                              && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance);
             // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
@@ -3799,7 +3798,7 @@ namespace AOBuddy
                 float within = serverSays ? 25f : 12f;
                 a = DynelManager.Npcs
                     .Where(n => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity) && (!n.TryGetStat(Stat.Health, out int hp2) || hp2 > 0)
-                                && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
+                                && !_combat.IsSetAside(n.Identity) && n.Identity != _mission.FindPersonTarget
                                 && me.DistanceFrom(n) <= within && Math.Abs(n.Transform.Position.Y - me.Transform.Position.Y) < 4f)
                     .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
                 if (a != null && _hiddenFoe != a.Identity)
@@ -3903,7 +3902,7 @@ namespace AOBuddy
         }
         private bool Pullable(LocalPlayer me, NpcChar n, HashSet<Identity> pets)
             => n != null && !n.Owner.HasValue && !pets.Contains(n.Identity) && (!n.TryGetStat(Stat.Health, out int h) || h > 0)
-               && !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget && IsMob(n, true);
+               && !_combat.IsSetAside(n.Identity) && n.Identity != _mission.FindPersonTarget && IsMob(n, true);
         private Identity? _pullId;
         private double _pullCheckedAt = -9999;
         private double _serverCombatAt = -999;
@@ -3945,8 +3944,9 @@ namespace AOBuddy
         }
 
         // A mob far above his level is never fought: run (a level 50 Male Watcher killed him at 36, 06:51).
-        // Measured against his strongest side: his level or his highest pet's (Algorithman, 2026-09-27, max mission: a
-        // lvl 58 Rookie Clan Hunter on him and his lvl 107 pet was 'too strong' for the MP and never fought back).
+        // Inside a mission he fights whatever is there, whatever its level: the mission he took is the one he wants
+        // (owner, 2026-09-27, after a lvl 58 Rookie Clan Hunter hit Algorithman's MP and his lvl 107 pet unanswered).
+        // Level still judges outdoors (the guard nest check) and the aware tag, against his strongest side.
         private static bool TooStrong(LocalPlayer me, SimpleChar n)
             => n.TryGetStat(Stat.Level, out int theirs) && theirs > Strength(me) + 5;
 
