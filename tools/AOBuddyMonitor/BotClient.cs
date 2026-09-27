@@ -83,7 +83,9 @@ namespace AOBuddyMonitor
             public string Name = "?";
             public float[] Pos;
             public int HpPct = -1;
-            public bool Fighting, Pet;                          // it is on the bot
+            public bool Fighting, Pet;                          // it is on the bot / it is one of his pets
+            public string Role;                                 // a pet's role (Attack, Heal, Support)
+            public int Level = -1;
             public float Dist;
         }
 
@@ -382,6 +384,8 @@ namespace AOBuddyMonitor
                         HpPct = (int?)e["hpPct"] ?? -1,
                         Fighting = (bool?)e["fighting"] ?? false,
                         Pet = (bool?)e["pet"] ?? false,
+                        Role = (string)e["role"],
+                        Level = (int?)e["level"] ?? -1,
                         Dist = (float?)e["dist"] ?? 0,
                     });
             return n;

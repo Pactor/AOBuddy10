@@ -1460,6 +1460,8 @@ namespace AOBuddy
                             ["hpPct"] = max > 0 ? (int)Math.Round(100.0 * n.GetStat(Stat.Health) / max) : -1,
                             ["fighting"] = n.FightingIdentity == me.Identity,
                             ["pet"] = mine.Contains(n.Identity),
+                            ["role"] = mine.Contains(n.Identity) && n is NpcChar pc ? pc.Role.ToString() : null,
+                            ["level"] = n.TryGetStat(Stat.Level, out int nlv) ? nlv : -1,
                             ["dist"] = Math.Round(d, 1),
                         });
                     }

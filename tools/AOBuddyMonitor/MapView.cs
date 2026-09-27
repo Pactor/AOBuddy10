@@ -36,6 +36,7 @@ namespace AOBuddyMonitor
         private Vector2 _center = new Vector2(1024, 1024);   // world x,z the view is centred on
         private double _scale = 0.35;                        // DIPs per metre
         private Vector2? _hover;                             // world x,z under the cursor
+        private Point? _hoverPx;                             // the cursor on screen, for the hover label on a dot
         private bool _dragging;
         private Vector2 _dragPoint;                          // screen point the drag started at
         private Vector2 _dragCenter;
@@ -296,7 +297,13 @@ namespace AOBuddyMonitor
                     if (m.Pet) ctx.DrawEllipse(_petBrush, null, p, 4, 4);          // his own pets: blue
                     else if (m.Fighting) ctx.DrawEllipse(_mobFightBrush, null, p, 4, 4);
                     else ctx.DrawEllipse(_mobBrush, null, p, 3, 3);
-                    if (_scale >= 0.5)
+                    // HOVER (owner, 2026-09-27: "so we know if the heal pet is stuck in another room"): the dot under
+                    // the cursor is named at any zoom, a pet with its role and level, a mob with its level.
+                    bool hovered = _hoverPx.HasValue && Math.Abs(_hoverPx.Value.X - p.X) <= 6 && Math.Abs(_hoverPx.Value.Y - p.Y) <= 6;
+                    if (hovered)
+                        Label(ctx, p.X + 6, p.Y - 6, (m.Pet ? $"{m.Role ?? "pet"} pet: " : "") + m.Name + (m.Level > 0 ? $" lvl {m.Level}" : "")
+                                                     + (m.HpPct >= 0 ? " " + m.HpPct + "%" : "") + (m.Dist > 0 ? $" · {m.Dist:0} m" : ""));
+                    else if (_scale >= 0.5)
                         Label(ctx, p.X + 6, p.Y - 6, m.Name + (m.HpPct >= 0 ? " " + m.HpPct + "%" : ""));
                 }
 
@@ -352,7 +359,7 @@ namespace AOBuddyMonitor
         {
             base.OnPointerMoved(e);
             var p = e.GetPosition(this);
-            _hover = ToWorld(p);
+            _hover = ToWorld(p); _hoverPx = p;
             if (_dragging)
             {
                 _center = new Vector2(
@@ -407,7 +414,7 @@ namespace AOBuddyMonitor
         protected override void OnPointerExited(PointerEventArgs e)
         {
             base.OnPointerExited(e);
-            _hover = null;
+            _hover = null; _hoverPx = null;
             InvalidateVisual();
         }
 
