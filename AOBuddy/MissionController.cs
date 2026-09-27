@@ -691,6 +691,15 @@ namespace AOBuddy
                 return;
             }
             var h = hop.Value;
+            // The person stands next to us: select him, no path needed. Jeffery Joor followed him 4-10 m behind
+            // for a minute, and the plan gave up twice on 'no walkable path' to where he stood (10:12, 2026-09-27,
+            // Athen Shire) - selecting is all the objective takes (InfoRequest + LookAt, capture 20260923-114223).
+            if (h.Purpose == Purpose.Target && _record?.Type == TypeFindPerson && Movement.Flat(me.MovementComponent.Position, h.Pos) <= 10f)
+            {
+                _path = null; _purpose = Purpose.Target; _pendingButton = null;
+                Enter(Phase.Act, $"the person is {Movement.Flat(me.MovementComponent.Position, h.Pos):0.0} m away, selecting him");
+                return;
+            }
             _path = PathFrom(me.MovementComponent.Position, h.Pos, out bool fb);
             if (_path == null)
             {
