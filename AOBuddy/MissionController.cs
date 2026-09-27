@@ -459,11 +459,11 @@ namespace AOBuddy
                 // Snapped back to the same spot again: that is a wall the grid does not show, right ahead of
                 // where the server holds us. Block the cells we kept trying to walk into, so the next route
                 // takes another line instead of the same one (the first time can be plain lag, so not then).
+                var added = new List<string>();
                 if (repeat && !settling && gap > 0.5f)
                 {
                     var here = _grid.CellOf(serverPos);
                     float dx = (local.X - serverPos.X) / gap, dz = (local.Z - serverPos.Z) / gap;
-                    var added = new List<string>();
                     for (float s = 1f; s <= 3f; s += 1f)
                     {
                         var c = _grid.CellOf(new Vector3(serverPos.X + dx * s, serverPos.Y, serverPos.Z + dz * s));
@@ -474,8 +474,18 @@ namespace AOBuddy
                     }
                     if (added.Count > 0) _ctx.Log($"MISSION: snapped back to the same spot again, blocking cell(s) {string.Join(" ", added)} ahead of it.");
                 }
+                // The same refusal with nothing new to steer round (no cell could be blocked): planning again gives the
+                // same route, so stay on it; the stuck watch in WalkTick blocks the waypoint's cell after 3 s.
+                if (repeat && added.Count == 0 && gap <= 2f && _path != null && RewindOnto(serverPos))
+                {
+                    _lastCorrection = serverPos;
+                    return true;
+                }
                 _lastCorrection = serverPos;
-                _correctionReplanAt = Now;
+                // Only a new spot, or a change of course (cells blocked), opens a new settle window. When every
+                // replan re-opened it, the second refusal at the same spot was never counted: 2224812, 15:13:52-15:14:04,
+                // 25 replans at (72,5,80), no block, then 'the server kept stopping me short'.
+                if (!repeat || added.Count > 0) _correctionReplanAt = Now;
                 _replans++;
                 if (_replans > 12) { Fail("the server kept stopping me short"); return true; }
                 _path = null;
@@ -1592,10 +1602,17 @@ namespace AOBuddy
         private bool RewindOnto(Vector3 p)
         {
             const float OnLeg = 0.4f;
+            // A spot the walls close (pinned inside a wall slab, 2224812 15:13:52: z 79.94 in a slab at z 79.8-80.2)
+            // has no open cell within 0.4 m, so a route planned from it starts farther off (0.70 m there) and the
+            // spot never lay on its first leg - every pull-back replanned the same route. There the first leg is
+            // the planner's own step from the spot to the route's first point: measure from that point.
+            float firstTol = OnLeg;
+            if (!_grid.OpenAt(p) && _lastPathFrom.HasValue && Movement.Flat(p, _lastPathFrom.Value) <= OnLeg)
+                firstTol = Movement.Flat(_lastPathFrom.Value, _path[0]) + OnLeg;
             for (int i = 0; i <= Math.Min(_pathIndex, _path.Count - 1); i++)
             {
                 Vector3 a = _path[Math.Max(0, i - 1)], b = _path[i];
-                if (FlatToSegment(p, a, b) > OnLeg || Math.Abs(p.Y - b.Y) > MaxLegDy) continue;
+                if (FlatToSegment(p, a, b) > (i == 0 ? firstTol : OnLeg) || Math.Abs(p.Y - b.Y) > MaxLegDy) continue;
                 if (i != _pathIndex) { _ctx.Log($"MISSION: pulled back onto leg {i + 1}/{_path.Count} of the route; walking it again."); _stuck.Reset(); }
                 _pathIndex = i;
                 return true;
@@ -2118,6 +2135,13 @@ namespace AOBuddy
 
         public string Describe() => $"{Floors.Count} floor(s) {string.Join(",", Floors)}, {_walk.Count} floor cells, boss room {(BossFloor.HasValue ? $"'{BossRoomName}' on floor {BossFloor}" : "none")}, "
             + (_fine != null ? $"walls: {_wallTris.Length / 9} triangles, {_fine.Count} open {Fine} m cells" : "no wall data (routing on the tile grid alone)");
+
+        /// <summary>False when the walls close the 0.5 m cell under p (true with no wall data, or off every floor).</summary>
+        public bool OpenAt(Vector3 p)
+        {
+            if (_fine == null || !(FloorAt(p) is int f)) return true;
+            return _fine.Contains((f, (int)Math.Floor(p.X / Fine), (int)Math.Floor(p.Z / Fine)));
+        }
 
         /// <summary>The floor under a point: the cell whose height is nearest, within 3 m.</summary>
         public int? FloorAt(Vector3 p)
