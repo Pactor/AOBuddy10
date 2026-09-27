@@ -537,7 +537,9 @@ namespace AOBuddy
             int reserve = MovementReserve(me);
             foreach (var st in Order)
             {
-                int r = st == Stage.Movement || st == Stage.Ncu ? 0 : reserve;
+                // Helpers (a pet nano he can't cast yet, e.g. the better heal pet) come before run speed (owner,
+                // 2026-09-27: "better heal" - 13:37:11 the run-speed reserve left Calling of Salvinous 1 NCU short).
+                int r = st == Stage.Movement || st == Stage.Ncu || st == Stage.Helpers ? 0 : reserve;
                 foreach (var d in StagePicks(me, st, notes, ref budget, r))
                 {
                     if (!seen.Add(d.LineKey)) continue;
@@ -616,7 +618,7 @@ namespace AOBuddy
                 var notes = new List<string>();
                 PrepareWeapons(me);
                 int budget = ChewyBuffController.FreeNcu(me);
-                int reserve = st == Stage.Profession || st == Stage.Helpers || st == Stage.Regen || st == Stage.Fill ? MovementReserve(me) : 0;
+                int reserve = st == Stage.Profession || st == Stage.Regen || st == Stage.Fill ? MovementReserve(me) : 0;   // not Helpers: better pets first (owner)
                 var picks = StagePicks(me, st, notes, ref budget, reserve);
                 _ctx.Log($"CODEDOC: stage {st}: {(picks.Count > 0 ? string.Join(", ", picks.Select(p => $"{p.Code} ({p.Name}, {NcuCost(me, p)} NCU)")) : "nothing")} — free NCU {ChewyBuffController.FreeNcu(me)}{(reserve > 0 ? $", {reserve} kept for run speed" : "")}.");
                 foreach (var n in notes.Take(10)) _ctx.Log("CODEDOC:   " + n);
