@@ -567,11 +567,19 @@ namespace AOBuddy
                         Fail($"walked {_pushed:0} m through the exit door at ({ex.X:0},{ex.Z:0}) and did not leave the building");
                         return true;
                     }
+                    // ONTO THE DOOR, NOT PAST IT (Algorithman, 2026-09-26: "Don't overshoot there. Just use the exact
+                    // coordinates of the exit door. otherwise the server will set you back multiple times"). Walk to the
+                    // door's own coordinates and stop there; only if 3 s standing on it don't zone us, a metre on.
                     var dir = new Vector3((float)ex.Nx, 0, (float)ex.Nz);
-                    float step = Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep);
+                    var door = new Vector3((float)ex.X, (float)ex.Y, (float)ex.Z);
+                    var goal = _phaseTime > 3 ? new Vector3(door.X + dir.X, door.Y, door.Z + dir.Z) : door;
+                    float left = Movement.Flat(pos, goal);
+                    if (left < 0.15f) { _move.Hold(me, _ctx.Config.SendIntervalMs); _ctx.WalkState = "mission: standing on the exit door"; return true; }
+                    float step = Math.Min(Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep), left);
                     _pushed += step;
-                    _ctx.WalkState = $"mission: out through the door {_pushed:0.0} m";
-                    _move.Advance(me, new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step), Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
+                    _ctx.WalkState = $"mission: onto the exit door, {left:0.0} m";
+                    var toward = new Vector3((goal.X - pos.X) / left, 0, (goal.Z - pos.Z) / left);
+                    _move.Advance(me, new Vector3(pos.X + toward.X * step, pos.Y, pos.Z + toward.Z * step), Movement.SafeLook(toward, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
                     return true;
                 }
 
