@@ -14,7 +14,7 @@ namespace AOBuddy
     /// us), its level, and its track - a point each time it has moved 1 m. When it dies or is gone for 10 s the
     /// sighting is appended, one JSON line, to Plugins/AOBuddy/mobs/&lt;pf&gt;.jsonl:
     ///   {"t":"2026-09-26T15:02:11Z","pf":790,"id":"SimpleChar:EA7200D","name":"Swift Claw","lvl":41,"side":3,
-    ///    "first":[x,y,z],"firstSeenAt":"...","popIn":true,"died":false,"secs":42,"track":[[s,x,y,z],...]}
+    ///    "first":[x,y,z],"firstSeenAt":"...","popIn":true,"died":false,"secs":42,"track":[[s,x,y,z,heading],...]}
     /// popIn = it appeared within 60 m of us (a spawn point, not a mob we walked up to). Many sightings of the
     /// same mob name in a zone give its spawn points and patrol routes; aggregation is for the tools.
     /// Mission buildings are left to the mission recorder (their ids and coordinates are per instance).
@@ -24,7 +24,7 @@ namespace AOBuddy
         private sealed class Seen
         {
             public string Name; public int Lvl, Side; public MobModels.Model Model; public Vector3 First; public DateTime FirstAt, LastAt;
-            public bool PopIn, Died; public Vector3 Last; public JArray Track = new JArray();
+            public bool PopIn, Died; public Vector3 Last; public double LastHdg; public JArray Track = new JArray();
         }
 
         private readonly string _dir;
@@ -77,14 +77,16 @@ namespace AOBuddy
                         Name = n.Name, Lvl = lvl, Side = side, Model = MobModels.Get(n.Identity), First = p, Last = p, FirstAt = now, LastAt = now,
                         PopIn = Vector3.Distance(mine, p) < PopInRange && _pf == pf && (now - _zoneAt).TotalSeconds > 5,
                     };
-                    s.Track.Add(Pt(0, p));
+                    s.Track.Add(Pt(0, p, s.LastHdg = Hdg(n)));
                 }
                 s.LastAt = now;
                 if (n.TryGetStat(Stat.Health, out int hp) && hp <= 0) { s.Died = true; Flush(n.Identity); continue; }
-                if (Vector3.Distance(s.Last, p) >= 1f && s.Track.Count < MaxTrack)
+                double h = Hdg(n);
+                // A point when it has moved 1 m, or turned 15 degrees standing (a guard looking round).
+                if ((Vector3.Distance(s.Last, p) >= 1f || Turn(h, s.LastHdg) >= 15) && s.Track.Count < MaxTrack)
                 {
-                    s.Last = p;
-                    s.Track.Add(Pt((now - s.FirstAt).TotalSeconds, p));
+                    s.Last = p; s.LastHdg = h;
+                    s.Track.Add(Pt((now - s.FirstAt).TotalSeconds, p, h));
                 }
             }
             foreach (var id in _seen.Keys.ToList())
@@ -95,7 +97,16 @@ namespace AOBuddy
         /// <summary>A zone change: everything seen so far is written out, and pop-ins wait out the first burst.</summary>
         public void OnZone() { FlushAll(); _zoneAt = DateTime.UtcNow; }
 
-        private static JArray Pt(double secs, Vector3 p) => new JArray(Math.Round(secs, 1), Math.Round(p.X, 1), Math.Round(p.Y, 1), Math.Round(p.Z, 1));
+        // HEADING (owner, 2026-09-27: "add headings"): the way it faces, degrees 0-360 from +Z toward +X (atan2 of the
+        // heading's forward x, z), as the 5th value of every track point: [secs, x, y, z, heading].
+        private static double Hdg(SimpleChar n)
+        {
+            var f = n.Transform.Heading.Forward;
+            double d = Math.Atan2(f.X, f.Z) * 180.0 / Math.PI;
+            return Math.Round(d < 0 ? d + 360 : d, 0);
+        }
+        private static JArray Pt(double secs, Vector3 p, double hdg) => new JArray(Math.Round(secs, 1), Math.Round(p.X, 1), Math.Round(p.Y, 1), Math.Round(p.Z, 1), hdg);
+        private static double Turn(double a, double b) { double d = Math.Abs(a - b) % 360; return d > 180 ? 360 - d : d; }
 
         private void FlushAll() { foreach (var id in _seen.Keys.ToList()) Flush(id); }
 
