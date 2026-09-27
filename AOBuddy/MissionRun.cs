@@ -76,6 +76,7 @@ namespace AOBuddy
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             LearnedGround.Init(pluginDir);
+            _aware = new Awareness(_ctx.Log);
             RouteCache.Init(pluginDir, _ctx.Log);
             _roll.ListArrived += OnList;
         }
@@ -588,6 +589,7 @@ namespace AOBuddy
             _clock += dt; _phaseTime += dt;
             if (_restSaved != null && ((_phase != Phase.Fight && _phase != Phase.HealOut) || !Active)) RestToFull(false);
             NavSample(me);
+            _aware.Tick(me, _clock, _mission.InMission);
             if (!Active || me == null) return false;
             HealMobCheck();
             // STEP OUT (Algorithman, 2026-09-26): out of a mission building, walk 5 m straight on before anything else,
@@ -709,7 +711,7 @@ namespace AOBuddy
             // The 'nothing hurts me' pause ends the moment something does (owner, 18:27 2026-09-26: "he ran through every
             // single room with a mob like he had a deathwish" - the pause kept him clearing rooms with eight mobs on him
             // until 38% HP, and he died).
-            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || _pullId.HasValue || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _mission.InMission && _clock >= _fleeUntil && (FightOrRun() || AwareStop()) && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || _pullId.HasValue || AwareStop() || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -3759,6 +3761,10 @@ namespace AOBuddy
             // STAY ON ONE (owner, 18:27 2026-09-26): the nearest attacker every tick switched him between four or five
             // mobs every second and nothing died. The one he is on is kept while it is still on him or a pet.
             var a = (_defId.HasValue ? onUs.FirstOrDefault(n => n.Identity == _defId.Value) : null) ?? onUs.FirstOrDefault();
+            // Nothing hitting yet, but something following him inside: that one next, before it brings friends.
+            if (a == null && _mission.InMission)
+                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
+                                                                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance);
             // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
             // (owner, 08:40 2026-09-26) - because a turret never shows as fighting him. The server saying he is in
@@ -3892,15 +3898,18 @@ namespace AOBuddy
         }
         private double _killAt = -999;
         private double _chaseLoggedAt = -99;
+        private readonly Awareness _aware;
+        /// <summary>What is round him now: on him/his pets, following him, near (see Awareness).</summary>
+        public string AwareSummary => _aware?.Summary() ?? "";
+        /// <summary>Inside, fight style: something is on him or following him - he stops walking and deals with it.</summary>
+        private bool AwareStop() => _mission.InMission && string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+                                    && _aware.Near.Any(x => (x.OnUs || x.Following) && !_combat.IsSetAside(x.Mob.Identity) && x.Mob.Identity != _mission.FindPersonTarget);
         private static int LevelOf(SimpleChar c) => c.TryGetStat(Stat.Level, out int l) ? l : 0;
         /// <summary>Outdoors: the nearest live mob fighting him or a pet within 40 m (every blow marks who it is on).</summary>
         private SimpleChar Chaser(LocalPlayer me)
         {
             if (me == null || _mission.InMission) return null;
-            var guard = CombatController.Guarded(me, null); guard.Add(me.Identity);
-            return DynelManager.Npcs.Where(n => n != null && !n.Owner.HasValue && n.FightingIdentity.HasValue && guard.Contains(n.FightingIdentity.Value)
-                                                && (!n.TryGetStat(Stat.Health, out int h) || h > 0) && me.DistanceFrom(n) <= 40f)
-                                    .OrderBy(n => me.DistanceFrom(n)).FirstOrDefault();
+            return _aware.Chaser();   // on him or a pet, or following him, within 40 m
         }
         private readonly HashSet<Identity> _retaken = new HashSet<Identity>();
 

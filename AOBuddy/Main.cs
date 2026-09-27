@@ -1012,6 +1012,7 @@ namespace AOBuddy
                 var me = DynelManager.LocalPlayer;
                 o["heartbeat"] = StatusLine();
                 o["missionRun"] = _run.Status();
+                o["aware"] = _run.AwareSummary;
                 o["behavior"] = _ctx.Behavior;
                 o["task"] = ApiTask();
                 o["playfield"] = (int)Playfield.ModelId;
