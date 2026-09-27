@@ -273,7 +273,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personCells = null;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailWhole = true; _retrace = false;
             try
@@ -701,6 +701,12 @@ namespace AOBuddy
                 return;
             }
             _path = PathFrom(me.MovementComponent.Position, h.Pos, out bool fb);
+            // The walls seal the target off: try the tiles alone (MissionGrid.FindPathTiles).
+            if (_path == null && h.Purpose == Purpose.Target && _phaseTime >= 6)
+            {
+                _path = _grid.FindPathTiles(me.MovementComponent.Position, h.Pos, _blocked, out fb);
+                if (_path != null) _ctx.Log($"MISSION: the walls seal the target off; taking the tile path through them ({_path.Count} points) - a solid spot will pull me back.");
+            }
             if (_path == null)
             {
                 if (_phaseTime < 6) return;
@@ -917,6 +923,8 @@ namespace AOBuddy
         // Once the person is seen, his room is left out of the clearing, and paths to other rooms go round it when
         // they can; the objective walks there once the rest is cleared.
         private int? _personRoom;
+        private string _personRoomName;
+        private bool IsPersonRoom(MissionGrid.RoomSpot r) => r.Index == _personRoom || (_personRoomName != null && r.Name == _personRoomName);
         private bool _clearStuck;
         private HashSet<(int, int, int)> _personCells;
 
@@ -949,7 +957,11 @@ namespace AOBuddy
                 && _grid.FloorAt(person.Transform.Position) is int pfl && RoomIndexAt(person.Transform.Position, pfl) is int pri)
             {
                 var spot = _grid.RoomsOn(pfl).First(r => r.Index == pri);
-                _personRoom = pri; _personCells = _grid.CellsOf(spot);
+                // A room name can stand for several entries (Quinn Woolley, 12:47:58 2026-09-27: his 'Mine_Medium8_1' was
+                // left out and the very next hop was 'Mine_Medium8_1' again - he aggroed and chased the bot). Every entry
+                // with that name is his room.
+                _personRoom = pri; _personRoomName = spot.Name; _personCells = new HashSet<(int, int, int)>();
+                foreach (var part in _grid.RoomsOn(pfl).Where(r => r.Name == spot.Name)) _personCells.UnionWith(_grid.CellsOf(part));
                 _ctx.Log($"MISSION: '{person.Name}', the person to find, is in room '{spot.Name}' on floor {pfl}; clearing the other rooms first and going round it.");
             }
             foreach (var n in DynelManager.Npcs)
@@ -1059,7 +1071,7 @@ namespace AOBuddy
             var noPath = new List<int>(); int tried = 0; _clearStuck = false;
             foreach (var r in _grid.RoomsOn(floor))
             {
-                if (_clearVisited.Contains(r.Index) || r.Index == _personRoom) continue;
+                if (_clearVisited.Contains(r.Index) || IsPersonRoom(r)) continue;
                 tried++;
                 var p = PathFrom(pos, r.Centre, out _);
                 if (p == null) { noPath.Add(r.Index); continue; }
@@ -1092,7 +1104,7 @@ namespace AOBuddy
             // 3) another floor with rooms left, by a button seen here
             foreach (int f in _grid.Floors.OrderBy(f => Math.Abs(f - floor)))
             {
-                if (f == floor || _grid.RoomsOn(f).All(r => _clearVisited.Contains(r.Index) || r.Index == _personRoom)) continue;
+                if (f == floor || _grid.RoomsOn(f).All(r => _clearVisited.Contains(r.Index) || IsPersonRoom(r))) continue;
                 var bh = ButtonHop(pos, floor, f, out string bw);
                 if (bh.HasValue) { why = $"clearing ({ClearText}): floor {f} has rooms left; {bw}"; return bh; }
             }
@@ -1979,6 +1991,18 @@ namespace AOBuddy
             var s = Snap(a, 3f, 2, true); var g = Snap(b, 3f, 3, true);
             if (!s.HasValue || !g.HasValue || s.Value.Item1 != g.Value.Item1) return null;
             if (_fine != null) return FindPathWalls(a, b, s.Value.Item1, blocked, out usedFallback);
+            return FindPathTiles(a, b, blocked, out usedFallback);
+        }
+
+        /// <summary>The tile model alone, walls ignored. For a target the walls seal off only (owner, 2026-09-27): in
+        /// Subway_Vent1 (building 2224785, target Terminal:EEABD38) closed 4 m boxes fill both bridge arches, the tiles
+        /// under them are floor, and the client data has no flag to tell them from crates. If they are solid, the
+        /// server's pull-backs stop the walk.</summary>
+        public List<Vector3> FindPathTiles(Vector3 a, Vector3 b, HashSet<(int, int, int)> blocked, out bool usedFallback)
+        {
+            usedFallback = false;
+            var s = Snap(a, 3f, 2, true); var g = Snap(b, 3f, 3, true);
+            if (!s.HasValue || !g.HasValue || s.Value.Item1 != g.Value.Item1) return null;
             var cells = AStar(s.Value, g.Value, blocked, false) ?? AStar(s.Value, g.Value, blocked, true);
             if (cells == null) return null;
             usedFallback = cells.Any(c => !_walk.ContainsKey(c));

@@ -23,6 +23,7 @@ import http.server
 import socketserver
 import json
 import os
+import re
 import sys
 import urllib.parse
 
@@ -76,6 +77,36 @@ def load_json(path):
         return None
 
 
+# NANO ICONS (owner, 2026-09-27: "the nano page for each should have the same icons as the rollable page"): the same
+# item -> icon map tools/rolldata reads (itemnames.sql), so every nano on the Nanos tab gets its icon, not only the
+# rollable ones. The PNGs themselves come from tools/aodb-icons (which now also exports the ids in *-nanos.json).
+ITEMNAMES = os.environ.get("AODB_ITEMNAMES", r"E:\Funcom\attic\extracted-client-data\itemnames.sql")
+_item_icons = None
+
+
+def item_icons():
+    global _item_icons
+    if _item_icons is None:
+        _item_icons = {}
+        try:
+            with open(ITEMNAMES, encoding="latin-1") as f:
+                for m in re.finditer(r"\(\s*(\d+)\s*,\s*'(?:[^']|'')*'\s*,\s*'(?:[^']|'')*'\s*,\s*'(\d+)'", f.read()):
+                    _item_icons[int(m.group(1))] = int(m.group(2))
+        except OSError:
+            pass
+    return _item_icons
+
+
+def add_nano_icons(nanos):
+    icons = item_icons()
+    cats = (nanos or {}).get("categories") if isinstance(nanos, dict) else None
+    groups = cats.values() if isinstance(cats, dict) else (cats or [])
+    for arr in groups:
+        for x in (arr.get("nanos") or arr.get("items") or []) if isinstance(arr, dict) else (arr or []):
+            if isinstance(x, dict) and x.get("id") is not None and not x.get("icon"):
+                x["icon"] = icons.get(int(x["id"])) or None
+
+
 def profile_for(slug):
     """Merge the per-profession data files: nanos, weapons, their acquisition-source
     companions, and the class-specific recommended implant build."""
@@ -97,6 +128,7 @@ def profile_for(slug):
     )
     for key, suffix in parts:
         out[key] = load_json(os.path.join(BASE, slug + suffix))
+    add_nano_icons(out.get("nanos"))
     return out
 
 
@@ -802,8 +834,8 @@ function renderNanos(){
     const arr = g.nanos||g.items||[];
     if(!Array.isArray(arr)||!arr.length) return;
     h+=`<div class="grp">${g.group||g.name} <span class="pill">(${arr.length})</span></div>`;
-    h+='<div class="card" style="padding:0"><table><tr><th>Nano</th><th>Line</th><th>Lvl</th><th>Where to get</th><th>Effect</th><th>id</th></tr>';
-    arr.forEach(x=>{ h+=`<tr class="nrow"><td>${x.name}</td><td class="muted">${x.nanoLine||x.line||''}</td><td>${x.minLevel??x.ql??x.level??''}</td><td>${srcText(nsrc(x.id))||'<span class=muted>&mdash;</span>'}</td><td class="muted">${x.effectSummary||x.effect||''}</td><td class="muted">${x.id??''}</td></tr>`; });
+    h+='<div class="card" style="padding:0"><table><tr><th></th><th>Nano</th><th>Line</th><th>Lvl</th><th>Where to get</th><th>Effect</th><th>id</th></tr>';
+    arr.forEach(x=>{ const ic=x.icon?`<img src="/icons/${x.icon}.png" width="24" height="24" style="vertical-align:middle" onerror="this.style.display='none'">`:''; h+=`<tr class="nrow"><td>${ic}</td><td>${x.name}</td><td class="muted">${x.nanoLine||x.line||''}</td><td>${x.minLevel??x.ql??x.level??''}</td><td>${srcText(nsrc(x.id))||'<span class=muted>&mdash;</span>'}</td><td class="muted">${x.effectSummary||x.effect||''}</td><td class="muted">${x.id??''}</td></tr>`; });
     h+='</table></div>';
   });
   return h;

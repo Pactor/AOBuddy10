@@ -190,6 +190,16 @@ namespace AOBuddy
         public bool BuffAskOnStart = true;        // run the ask once, shortly after login
         public double BuffStartupDelaySec = 25;   // grace after login: buff timers sync, item data loads
         public int BuffSkipRemainingPct = 50;     // don't re-ask a buff with more than this % of its duration left
+        // --- CODEDOC (RubiKa 2019 ONLY — regular Rubi-Ka keeps the Chewy flow above) -------------------------
+        // RK2019 has no Chewy; its buff bot is 'Codedoc' with helper toons by the Borealis grid entrance (sniff
+        // marked-20260927-104345: tell Codedoc 'cast <code>'; list in GameData/CodedocBuffs.json). The mission run
+        // walks there at start and after a death/reclaim when buffs are missing (CodedocBuffs.cs).
+        public bool CodedocBuffs = true;
+        public string CodedocName = "Codedoc";
+        // Where the sniffed character stood while every Codedoc buff landed: (632.6, 66.8, 723.9) in Borealis (800),
+        // 5 m from Codedoc himself at (631.2, 729.1) with the other buff toons in a row at z ~729.
+        public int CodedocPlayfield = 800;
+        public float CodedocX = 632.6f, CodedocY = 66.81f, CodedocZ = 723.9f;
         // Learned nanos to self-cast while a wrangle is borrowed (the wrangle is asked for, these cast,
         // the wrangle removed again to give its NCU back) — e.g. an MA self-buff whose skill requirement
         // sits above what he has unbuffed. Checked against live requirements before each cast.

@@ -1,0 +1,3434 @@
+{
+ "_about": "Codedoc buff list (RubiKa 2019 only). Parsed from the owner's sniff marked-20260927-104345 (tell Codedoc 'help' and 'buffs 1'..'buffs 9'; E:/Funcom/sniffs/codedoc-buffs-20260927.tsv): code = what follows 'cast ' in the tell, team = listed [Team]. 'ids' = nano ids with that exact name (OmniCell itemnames.sql, type Nano); several ids = the name is shared and the bot picks at runtime the one whose cast gate names the section's profession, or leaves it out. idSource 'sniff' = the id seen landing on the wire (ct 220331 cast by Codesmp; hgvt 162583 cast by Fixyourcode); 'chewy' = client name differs, id taken from ChewysBuffs.json where the same name was resolved; 'log' = client name differs, id from the bot's AUTO-BUFF log (compmoch1h = 'Composite Mochams (1 hour)' [220337]). Empty ids = unresolved, never asked.",
+ "buffs": [
+  {
+   "code": "catt",
+   "section": "Generic",
+   "name": "Composite Attribute Boost",
+   "team": false,
+   "effect": "+12 Attributes",
+   "ncu": 4,
+   "ids": [
+    223372
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cnano",
+   "section": "Generic",
+   "name": "Composite Nano Expertise",
+   "team": false,
+   "effect": "+20 Nano Skills",
+   "ncu": 4,
+   "ids": [
+    223380
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cutil",
+   "section": "Generic",
+   "name": "Composite Utility Expertise",
+   "team": false,
+   "effect": "+20 Conc., Perc., B&E, Comp. Lit, Treat., First A., Psy.",
+   "ncu": 4,
+   "ids": [
+    287046
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ctrade",
+   "section": "Generic",
+   "name": "Composite Tradeskill Expertise",
+   "team": false,
+   "effect": "+20 Mec. E., Ele E., QFT, Weap. Sm., Pharm., Chem., Nano P.",
+   "ncu": 4,
+   "ids": [
+    287040
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cmart",
+   "section": "Generic",
+   "name": "Composite Martial Prowess Expertise",
+   "team": false,
+   "effect": "+20 Riposte, Deflect, HD, ND, Sharp Obj., RS",
+   "ncu": 4,
+   "ids": [
+    302158
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "crang",
+   "section": "Generic",
+   "name": "Composite Ranged Expertise",
+   "team": false,
+   "effect": "+20 Ranged Weapon Skills",
+   "ncu": 4,
+   "ids": [
+    223348
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "crangs",
+   "section": "Generic",
+   "name": "Composite Ranged Special Expertise",
+   "team": false,
+   "effect": "+20 Ranged Weapon Skills",
+   "ncu": 4,
+   "ids": [
+    223364
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cmelee",
+   "section": "Generic",
+   "name": "Composite Melee Expertise",
+   "team": false,
+   "effect": "+20 1HB, 2HB, 1HE, 2HE, Piercing, Melee E.",
+   "ncu": 4,
+   "ids": [
+    223360
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cmelees",
+   "section": "Generic",
+   "name": "Composite Physical Special Expertise",
+   "team": false,
+   "effect": "+20 Fast At., Sneak At., Brawl, Dimach, Mult M., Mart. A.",
+   "ncu": 4,
+   "ids": [
+    215264
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ag",
+   "section": "Agent",
+   "name": "Assassin's Grin",
+   "team": false,
+   "effect": "+45 Damage",
+   "ncu": 27,
+   "ids": [
+    81856
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ganat",
+   "section": "Agent",
+   "name": "Greater Anatomy Lesson",
+   "team": false,
+   "effect": "+24 Damage",
+   "ncu": 22,
+   "ids": [
+    81851
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mna",
+   "section": "Agent",
+   "name": "Major Nano Augmentation",
+   "team": false,
+   "effect": "+14 Damage",
+   "ncu": 25,
+   "ids": [
+    81852
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "anat",
+   "section": "Agent",
+   "name": "Anatomy Lesson",
+   "team": false,
+   "effect": "+9 Damage",
+   "ncu": 13,
+   "ids": [
+    81853
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ua",
+   "section": "Agent",
+   "name": "Unexpected Attack",
+   "team": false,
+   "effect": "+120 Rifle",
+   "ncu": 42,
+   "ids": [
+    32067
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bliss",
+   "section": "Agent",
+   "name": "Sniper's Bliss",
+   "team": false,
+   "effect": "+50 Rifle",
+   "ncu": 14,
+   "ids": [
+    32064
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fg",
+   "section": "Agent",
+   "name": "Feline Grace",
+   "team": false,
+   "effect": "+25 Agility",
+   "ncu": 17,
+   "ids": [
+    25989
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "es",
+   "section": "Agent",
+   "name": "Enhanced Senses",
+   "team": false,
+   "effect": "+15 Sense",
+   "ncu": 9,
+   "ids": [
+    25988
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ess",
+   "section": "Agent",
+   "name": "Enhanced Sureshot",
+   "team": false,
+   "effect": "+11 crit inc",
+   "ncu": 49,
+   "ids": [
+    160791
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sureshot",
+   "section": "Agent",
+   "name": "Sureshot",
+   "team": false,
+   "effect": "+6 crit inc",
+   "ncu": 18,
+   "ids": [
+    160787
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tts",
+   "section": "Agent",
+   "name": "Take the Shot",
+   "team": false,
+   "effect": "+165 Aimed Shot",
+   "ncu": 47,
+   "ids": [
+    32065
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "meldwb",
+   "section": "Agent",
+   "name": "Meld with Background",
+   "team": true,
+   "effect": "+224 Concealment",
+   "ncu": 21,
+   "ids": []
+  },
+  {
+   "code": "fitc",
+   "section": "Agent",
+   "name": "Face in the Crowd",
+   "team": false,
+   "effect": "+86 Concealment",
+   "ncu": 18,
+   "ids": [
+    30074
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "scrown",
+   "section": "Agent",
+   "name": "Shadow Crown",
+   "team": false,
+   "effect": "+63 Concealment",
+   "ncu": 7,
+   "ids": [
+    32062
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "combar",
+   "section": "Agent/Engineer Buffs",
+   "name": "Combat Barrier",
+   "team": false,
+   "effect": "+154 AC's",
+   "ncu": 16,
+   "ids": [
+    75409
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ep",
+   "section": "Agent/Engineer Buffs",
+   "name": "Extreme Prejudice",
+   "team": false,
+   "effect": "+120 Grenade, +120 Heavy Weapons, +120 Pistol",
+   "ncu": 43,
+   "ids": [
+    29762
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pm",
+   "section": "Agent/Engineer Buffs",
+   "name": "Pistol Mastery",
+   "team": false,
+   "effect": "+40 Pistol",
+   "ncu": 8,
+   "ids": [
+    29246
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "perds",
+   "section": "Agent/Engineer Buffs",
+   "name": "Perfected Defensive Screen",
+   "team": false,
+   "effect": "+472 AC's'",
+   "ncu": 46,
+   "ids": [
+    70535
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cos",
+   "section": "Agent/Engineer Buffs",
+   "name": "Citadel of Spikes",
+   "team": false,
+   "effect": "+39 Shield 240 Melee AC's'",
+   "ncu": 46,
+   "ids": [
+    55769
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "harco",
+   "section": "Agent/Engineer Buffs",
+   "name": "Harmonic Cocoon",
+   "team": false,
+   "effect": "+19 Reflect",
+   "ncu": 43,
+   "ids": [
+    70296
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "aegis",
+   "section": "Agent/Engineer Buffs",
+   "name": "Aegis Barrier",
+   "team": false,
+   "effect": "+720 AC's",
+   "ncu": 58,
+   "ids": [
+    29789
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fpengi",
+   "section": "Agent/Engineer Buffs",
+   "name": "Mimic Profession: Engineer",
+   "team": false,
+   "effect": "Make Agent an Engi for buffs",
+   "ncu": 100,
+   "ids": [
+    117213
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "omni-med",
+   "section": "Doctor",
+   "name": "Superior Omni-Med Enhancement",
+   "team": true,
+   "effect": "+770 Health",
+   "ncu": 45,
+   "ids": [
+    95673,
+    95709
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "iwl",
+   "section": "Doctor",
+   "name": "Infuse with Life",
+   "team": true,
+   "effect": "+678 Health",
+   "ncu": 40,
+   "ids": [
+    95720
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "smb",
+   "section": "Doctor",
+   "name": "Superior Metabolism Booster",
+   "team": true,
+   "effect": "+662 Health",
+   "ncu": 40,
+   "ids": [
+    95685,
+    95712
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bome",
+   "section": "Doctor",
+   "name": "Basic Omni-Med Enhancement",
+   "team": true,
+   "effect": "+637 Health",
+   "ncu": 38,
+   "ids": [
+    95684,
+    95710
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "colh",
+   "section": "Doctor",
+   "name": "Colossal Health",
+   "team": true,
+   "effect": "+503 Health",
+   "ncu": 31,
+   "ids": [
+    28649,
+    95682
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mhg",
+   "section": "Doctor",
+   "name": "Major Health Graft",
+   "team": true,
+   "effect": "+413 Health",
+   "ncu": 26,
+   "ids": [
+    95680,
+    95713
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "exagh",
+   "section": "Doctor",
+   "name": "Exaggerated Health",
+   "team": true,
+   "effect": "+336 Health",
+   "ncu": 22,
+   "ids": [
+    28660,
+    95681
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sbr",
+   "section": "Doctor",
+   "name": "Superior Bodily Reinforcement",
+   "team": true,
+   "effect": "+247 Health",
+   "ncu": 16,
+   "ids": [
+    95679,
+    95715
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mr",
+   "section": "Doctor",
+   "name": "Medic's Respite",
+   "team": true,
+   "effect": "+208 Health",
+   "ncu": 14,
+   "ids": [
+    95678,
+    95714
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mb",
+   "section": "Doctor",
+   "name": "Metabolism Booster",
+   "team": true,
+   "effect": "+151 Health",
+   "ncu": 10,
+   "ids": [
+    95677,
+    95718
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ec",
+   "section": "Doctor",
+   "name": "Enhance Constitution",
+   "team": true,
+   "effect": "+117 Health",
+   "ncu": 8,
+   "ids": [
+    95676,
+    95716
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "eth",
+   "section": "Doctor",
+   "name": "Enhance Team Health",
+   "team": true,
+   "effect": "+17 Health",
+   "ncu": 1,
+   "ids": [
+    42050,
+    42397
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "iic",
+   "section": "Doctor",
+   "name": "Improved Instinctive Control",
+   "team": false,
+   "effect": "+350 Initiative, +75 Nano Resist, +300 Max Nano",
+   "ncu": 56,
+   "ids": [
+    222856
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "instcon",
+   "section": "Doctor",
+   "name": "Instinctive Control",
+   "team": false,
+   "effect": "+200 Initiative, +25 Nano Resist, +150 Max Nano",
+   "ncu": 35,
+   "ids": [
+    28669
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "inr",
+   "section": "Doctor",
+   "name": "Improved Nano Repulsor",
+   "team": false,
+   "effect": "+99 Nano Resist",
+   "ncu": 31,
+   "ids": [
+    222823
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "nr",
+   "section": "Doctor",
+   "name": "Nano Repulsor",
+   "team": false,
+   "effect": "+92 NR",
+   "ncu": 21,
+   "ids": [
+    28671
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lc",
+   "section": "Doctor",
+   "name": "Life Channeler",
+   "team": false,
+   "effect": "+1344 Max Health, +1344 Heal",
+   "ncu": 56,
+   "ids": [
+    96247,
+    144660
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "heal",
+   "section": "Doctor",
+   "name": "Bodily Invigoration",
+   "team": false,
+   "effect": "+Big Heal",
+   "ncu": 55,
+   "ids": [
+    223299
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sfa",
+   "section": "Doctor",
+   "name": "Superior First Aid",
+   "team": false,
+   "effect": "+80 FA/Treat",
+   "ncu": 37,
+   "ids": [
+    28675
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "st",
+   "section": "Doctor",
+   "name": "Specialist Treatment",
+   "team": false,
+   "effect": "+33 First Aid/Treatment",
+   "ncu": 11,
+   "ids": [
+    28674
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "efa",
+   "section": "Doctor",
+   "name": "Enhanced First Aid",
+   "team": false,
+   "effect": "+14 First Aid/Treatment",
+   "ncu": 5,
+   "ids": [
+    28657
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cr",
+   "section": "Doctor",
+   "name": "Continuous Reconstruction",
+   "team": false,
+   "effect": "+146 Heal Delta",
+   "ncu": 45,
+   "ids": [
+    222824
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "nh",
+   "section": "Doctor",
+   "name": "Natural Healing",
+   "team": false,
+   "effect": "+76 Heal Delta",
+   "ncu": 10,
+   "ids": [
+    28663
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ic",
+   "section": "Doctor",
+   "name": "Iron Circle",
+   "team": false,
+   "effect": "+20 Str/Stam",
+   "ncu": 26,
+   "ids": [
+    42052,
+    42400
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "enlarge",
+   "section": "Doctor",
+   "name": "Enlarge",
+   "team": false,
+   "effect": "+10 Str/Stam",
+   "ncu": 12,
+   "ids": [
+    28658
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "insight",
+   "section": "Doctor",
+   "name": "Insight into the Shadowlands",
+   "team": false,
+   "effect": "SL Maps",
+   "ncu": 1,
+   "ids": [
+    268610
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gf",
+   "section": "Enforcer",
+   "name": "Greater Fortify",
+   "team": false,
+   "effect": "+857 Absorbs",
+   "ncu": 49,
+   "ids": [
+    270350
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fi",
+   "section": "Enforcer",
+   "name": "Failing Impregnability",
+   "team": false,
+   "effect": "+384 Absorbs",
+   "ncu": 46,
+   "ids": [
+    117686
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ap",
+   "section": "Enforcer",
+   "name": "Absorb Punishment",
+   "team": false,
+   "effect": "+361 Absorbs",
+   "ncu": 43,
+   "ids": [
+    117688
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gfp",
+   "section": "Enforcer",
+   "name": "Gird for Punishment",
+   "team": false,
+   "effect": "+220 Absorbs",
+   "ncu": 28,
+   "ids": [
+    117684
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sa",
+   "section": "Enforcer",
+   "name": "Shock Absorber",
+   "team": false,
+   "effect": "+179 Absorbs",
+   "ncu": 22,
+   "ids": [
+    117683
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "wfh",
+   "section": "Enforcer",
+   "name": "Ward from Harm",
+   "team": false,
+   "effect": "+138 Absorbs",
+   "ncu": 17,
+   "ids": [
+    117680
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ts",
+   "section": "Enforcer",
+   "name": "Thicken Skin",
+   "team": false,
+   "effect": "+100 Absorbs",
+   "ncu": 12,
+   "ids": [
+    117681
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cs",
+   "section": "Enforcer",
+   "name": "Coruscating Screen",
+   "team": false,
+   "effect": "+479 Max Health, +60 Shield AC",
+   "ncu": 45,
+   "ids": [
+    55751
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "glacial",
+   "section": "Enforcer",
+   "name": "Glacial Cloak",
+   "team": false,
+   "effect": "+381 Damage Shield",
+   "ncu": 41,
+   "ids": [
+    55748
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ls",
+   "section": "Enforcer",
+   "name": "Lightning Shield",
+   "team": false,
+   "effect": "+310 Damage Shield",
+   "ncu": 33,
+   "ids": [
+    55749
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bb",
+   "section": "Enforcer",
+   "name": "Barbaric Blades",
+   "team": false,
+   "effect": "+256 Damage Shield",
+   "ncu": 26,
+   "ids": [
+    55747
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bg",
+   "section": "Enforcer",
+   "name": "Bristling Guard",
+   "team": false,
+   "effect": "+228 Damage Shield",
+   "ncu": 23,
+   "ids": [
+    55745
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "is",
+   "section": "Enforcer",
+   "name": "Immolation Shield",
+   "team": false,
+   "effect": "+201 Damage Shield",
+   "ncu": 20,
+   "ids": [
+    29645
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ps",
+   "section": "Enforcer",
+   "name": "Poison Stingers",
+   "team": false,
+   "effect": "+161 Damage Shield",
+   "ncu": 15,
+   "ids": [
+    55746
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ac",
+   "section": "Enforcer",
+   "name": "Arctic Cloak",
+   "team": false,
+   "effect": "+128 Damage Shield",
+   "ncu": 12,
+   "ids": [
+    55743
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fos",
+   "section": "Enforcer",
+   "name": "Field of Sparks",
+   "team": false,
+   "effect": "+73 Damage Shield",
+   "ncu": 7,
+   "ids": [
+    55744
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "as",
+   "section": "Enforcer",
+   "name": "Avenging Shield",
+   "team": false,
+   "effect": "+18 Damage Shield",
+   "ncu": 2,
+   "ids": [
+    55741
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fotdev",
+   "section": "Enforcer",
+   "name": "Fervor of the Devotee",
+   "team": false,
+   "effect": "+57 Fast Attack",
+   "ncu": 14,
+   "ids": [
+    210323
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "foth",
+   "section": "Enforcer",
+   "name": "Fervor of the Henchman",
+   "team": false,
+   "effect": "+14 Fast Attack",
+   "ncu": 4,
+   "ids": [
+    210321
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ibehe",
+   "section": "Enforcer",
+   "name": "Improved Essence of Behemoth",
+   "team": false,
+   "effect": "+1998 Max Health, +54 Str/Stam",
+   "ncu": 56,
+   "ids": [
+    273629
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "behe",
+   "section": "Enforcer",
+   "name": "Essence of Behemoth",
+   "team": false,
+   "effect": "+996 Max Health, +27 Str/Stam",
+   "ncu": 47,
+   "ids": [
+    95708
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "garg",
+   "section": "Enforcer",
+   "name": "Essence of Gargantua",
+   "team": false,
+   "effect": "+707 Max Health, +22 Str/Stam",
+   "ncu": 38,
+   "ids": [
+    95701
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cyc",
+   "section": "Enforcer",
+   "name": "Essence of Cyclops",
+   "team": false,
+   "effect": "+401 Max Health, +17 Str/Stam",
+   "ncu": 18,
+   "ids": [
+    95702
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ebh",
+   "section": "Enforcer",
+   "name": "Essence of Boundless Health",
+   "team": false,
+   "effect": "+240 Max Health, +11 Str/Stam",
+   "ncu": 11,
+   "ids": [
+    95704
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "em",
+   "section": "Enforcer",
+   "name": "Essence of Might",
+   "team": false,
+   "effect": "+171 Max Health, +8 Str/Stam",
+   "ncu": 8,
+   "ids": [
+    95706
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ev",
+   "section": "Enforcer",
+   "name": "Essence of Vitality",
+   "team": false,
+   "effect": "+112 Max Health, +5 Str/Stam",
+   "ncu": 5,
+   "ids": [
+    95707
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pd",
+   "section": "Enforcer",
+   "name": "Physical Dominance",
+   "team": false,
+   "effect": "+107 melee/phys init",
+   "ncu": 35,
+   "ids": [
+    29649
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "foc",
+   "section": "Enforcer",
+   "name": "Focused Anger",
+   "team": false,
+   "effect": "+72 init",
+   "ncu": 19,
+   "ids": [
+    29641
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bt",
+   "section": "Enforcer",
+   "name": "Brutal Thug",
+   "team": false,
+   "effect": "+87 1HB/2HB",
+   "ncu": 24,
+   "ids": [
+    29630
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hc",
+   "section": "Enforcer",
+   "name": "Headcracker",
+   "team": false,
+   "effect": "+30 1HB/2HB",
+   "ncu": 10,
+   "ids": [
+    29644
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "prod",
+   "section": "Enforcer",
+   "name": "Prodigious Strength",
+   "team": false,
+   "effect": "+40 Str",
+   "ncu": 42,
+   "ids": [
+    29652
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "kh",
+   "section": "Fixer",
+   "name": "Karma Harvest",
+   "team": false,
+   "effect": "+130 B&E/Trap Disarm",
+   "ncu": 47,
+   "ids": [
+    31390
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sto",
+   "section": "Fixer",
+   "name": "Stack the Odds",
+   "team": false,
+   "effect": "+79 B&E/Trap Disarm",
+   "ncu": 22,
+   "ids": [
+    31406
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cl",
+   "section": "Fixer",
+   "name": "Cracker's Luck",
+   "team": false,
+   "effect": "+23 B&E/Trap Disarm",
+   "ncu": 5,
+   "ids": [
+    31385
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hastyc",
+   "section": "Fixer",
+   "name": "Hasty Augmentation Cloud",
+   "team": false,
+   "effect": "+10 Damage",
+   "ncu": 14,
+   "ids": [
+    81886
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "215ncu",
+   "section": "Fixer",
+   "name": "Firewalled Sync Compressor",
+   "team": true,
+   "effect": "+500 NCU",
+   "ncu": 1,
+   "ids": [
+    275043,
+    275135
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "185ncu",
+   "section": "Fixer",
+   "name": "Sentient Viral Recoder",
+   "team": true,
+   "effect": "+250 NCU",
+   "ncu": 1,
+   "ids": [
+    163057,
+    163095
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "175ncu",
+   "section": "Fixer",
+   "name": "Active Viral Compressor",
+   "team": true,
+   "effect": "+195 NCU",
+   "ncu": 1,
+   "ids": [
+    163015,
+    163094
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "150ncu",
+   "section": "Fixer",
+   "name": "QuarkStor NCU Core",
+   "team": true,
+   "effect": "+150 NCU",
+   "ncu": 1,
+   "ids": [
+    163012,
+    163087
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "110ncu",
+   "section": "Fixer",
+   "name": "Recompiling Memory Analyzer",
+   "team": true,
+   "effect": "+110 NCU",
+   "ncu": 1,
+   "ids": [
+    163010,
+    163085
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "85ncu",
+   "section": "Fixer",
+   "name": "Deck Recoder",
+   "team": true,
+   "effect": "+85 NCU",
+   "ncu": 1,
+   "ids": [
+    163008,
+    163083
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "60ncu",
+   "section": "Fixer",
+   "name": "Jury-rigged NCU Analyzer",
+   "team": true,
+   "effect": "+60 NCU",
+   "ncu": 1,
+   "ids": [
+    163006,
+    163081
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "40ncu",
+   "section": "Fixer",
+   "name": "Retool NCU",
+   "team": true,
+   "effect": "+40 NCU",
+   "ncu": 1,
+   "ids": [
+    163005,
+    163079
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gsfteam",
+   "section": "Fixer",
+   "name": "Gridspace Freedom (Team)",
+   "team": true,
+   "effect": "+680 RS Team",
+   "ncu": 44,
+   "ids": [
+    162588,
+    162595
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gpateam",
+   "section": "Fixer",
+   "name": "Grid Phase Accelerator (Team)",
+   "team": true,
+   "effect": "+590 RS Team",
+   "ncu": 38,
+   "ids": [
+    162581,
+    162589
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pgjteam",
+   "section": "Fixer",
+   "name": "Partial Grid Jump (Team)",
+   "team": true,
+   "effect": "+520 RS Team",
+   "ncu": 31,
+   "ids": [
+    162587,
+    162603
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lgvteam",
+   "section": "Fixer",
+   "name": "Leech Grid Vector (Team)",
+   "team": true,
+   "effect": "+320 RS Team",
+   "ncu": 17,
+   "ids": [
+    162585,
+    162599
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "shtrail",
+   "section": "Fixer",
+   "name": "Shadow Trail",
+   "team": true,
+   "effect": "+400 SL run speed",
+   "ncu": 30,
+   "ids": [
+    215718,
+    215719,
+    272413
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "shstep",
+   "section": "Fixer",
+   "name": "Shadow Step",
+   "team": true,
+   "effect": "+250 SL run speed",
+   "ncu": 13,
+   "ids": [
+    215717,
+    223127,
+    272412
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "grteam",
+   "section": "Fixer",
+   "name": "Grid Runner (Team)",
+   "team": true,
+   "effect": "+230 RS Team",
+   "ncu": 12,
+   "ids": [
+    162584,
+    162591
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hgvt",
+   "section": "Fixer",
+   "name": "Hack Grid Vector (Team)",
+   "team": true,
+   "effect": "+160 run speed",
+   "ncu": 9,
+   "ids": [
+    162583
+   ],
+   "idSource": "sniff"
+  },
+  {
+   "code": "lastult",
+   "section": "Fixer",
+   "name": "Lasting Ultimatum",
+   "team": false,
+   "effect": "+466-502 Long HoT",
+   "ncu": 25,
+   "ids": [
+    252050
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lastlife",
+   "section": "Fixer",
+   "name": "Lasting Life",
+   "team": false,
+   "effect": "+406-439 Long HoT",
+   "ncu": 25,
+   "ids": [
+    252046
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "biorej",
+   "section": "Fixer",
+   "name": "Biosign Rejuvenator",
+   "team": false,
+   "effect": "+154-162 Long HoT",
+   "ncu": 15,
+   "ids": [
+    162724
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bmp",
+   "section": "Fixer",
+   "name": "Blackmarket Prescription",
+   "team": false,
+   "effect": "+111-119 Long HoT",
+   "ncu": 12,
+   "ids": [
+    162722
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "kss",
+   "section": "Fixer",
+   "name": "Kitchen-sink Surgery",
+   "team": false,
+   "effect": "+87-92 Long HoT",
+   "ncu": 9,
+   "ids": [
+    162720
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hnq",
+   "section": "Fixer",
+   "name": "Dr Hack 'n Quack",
+   "team": false,
+   "effect": "+362-370 Short HoT",
+   "ncu": 25,
+   "ids": [
+    162734
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cellcart",
+   "section": "Fixer",
+   "name": "Cellular Crashcart",
+   "team": false,
+   "effect": "+326-335 Short HoT",
+   "ncu": 24,
+   "ids": [
+    162732
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "backrev",
+   "section": "Fixer",
+   "name": "Backyard Revitalization",
+   "team": false,
+   "effect": "+276-283 Short HoT",
+   "ncu": 22,
+   "ids": [
+    162730
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sysequ",
+   "section": "Fixer",
+   "name": "Systolic Equalizer",
+   "team": false,
+   "effect": "+235-243 Short HoT",
+   "ncu": 20,
+   "ids": [
+    162728
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "nanocaut",
+   "section": "Fixer",
+   "name": "Nano Cauterization",
+   "team": false,
+   "effect": "+194-201 Short HoT",
+   "ncu": 18,
+   "ids": [
+    162726
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hd",
+   "section": "Fixer",
+   "name": "Hacked Diagnosis",
+   "team": false,
+   "effect": "+58-64 Long HoT",
+   "ncu": 6,
+   "ids": [
+    162718
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rs",
+   "section": "Fixer",
+   "name": "Rebinding Sutures",
+   "team": false,
+   "effect": "+35-41 Long HoT",
+   "ncu": 4,
+   "ids": [
+    162716
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "relsalve",
+   "section": "Fixer",
+   "name": "Relieving Salve",
+   "team": false,
+   "effect": "+15-18 Long HoT",
+   "ncu": 2,
+   "ids": [
+    162714
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gsf",
+   "section": "Fixer",
+   "name": "Gridspace Freedom",
+   "team": false,
+   "effect": "+720 RS, +79 Evades",
+   "ncu": 48,
+   "ids": [
+    93132
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gpa",
+   "section": "Fixer",
+   "name": "Grid Phase Accelerator",
+   "team": false,
+   "effect": "+620 RS, +70 Evades",
+   "ncu": 42,
+   "ids": [
+    93126
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pgj",
+   "section": "Fixer",
+   "name": "Partial Grid Jump",
+   "team": false,
+   "effect": "+520 RS, +61 Evades",
+   "ncu": 35,
+   "ids": [
+    93127
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gs",
+   "section": "Fixer",
+   "name": "Grid Surfer",
+   "team": false,
+   "effect": "+390 RS, +52 Evades",
+   "ncu": 26,
+   "ids": [
+    93128
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lgv",
+   "section": "Fixer",
+   "name": "Leech Grid Vector",
+   "team": false,
+   "effect": "+320 RS, +43 Evades",
+   "ncu": 20,
+   "ids": [
+    93129
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gridrun",
+   "section": "Fixer",
+   "name": "Grid Runner",
+   "team": false,
+   "effect": "+220 RS, +34 Evades",
+   "ncu": 14,
+   "ids": [
+    93130
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "hgv",
+   "section": "Fixer",
+   "name": "Hack Grid Vector",
+   "team": false,
+   "effect": "+180 RS, +25 Evades",
+   "ncu": 10,
+   "ids": [
+    93131
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lgj",
+   "section": "Fixer",
+   "name": "Limited Grid Jump",
+   "team": false,
+   "effect": "+140 RS, +2 Evades",
+   "ncu": 6,
+   "ids": [
+    93125
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bmn",
+   "section": "Fixer",
+   "name": "Blood Makes Noise",
+   "team": false,
+   "effect": "+240 Perception",
+   "ncu": 48,
+   "ids": [
+    31380
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bp",
+   "section": "Fixer",
+   "name": "Back Pain",
+   "team": false,
+   "effect": "+70 Sneak Attack",
+   "ncu": 17,
+   "ids": [
+    31409
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fgrid",
+   "section": "Fixer",
+   "name": "Hack Grid Data Stream (Team)",
+   "team": false,
+   "effect": "Fgrid Here!",
+   "ncu": 27,
+   "ids": [
+    160982
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "issac",
+   "section": "Fixer",
+   "name": "Improved Semi-Sentient Augmentation Cloud",
+   "team": false,
+   "effect": "+40 Damage",
+   "ncu": 40,
+   "ids": [
+    222838
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tsp",
+   "section": "MartialArtist",
+   "name": "Transcendent Shen Protection",
+   "team": false,
+   "effect": "+538 Ac's'",
+   "ncu": 49,
+   "ids": [
+    75351
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "df",
+   "section": "MartialArtist",
+   "name": "Dirty Fighter",
+   "team": false,
+   "effect": "+45 Brawling",
+   "ncu": 11,
+   "ids": [
+    28870
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "velo",
+   "section": "MartialArtist",
+   "name": "Velocity",
+   "team": false,
+   "effect": "+70 Runspeed",
+   "ncu": 19,
+   "ids": [
+    28862
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "horde",
+   "section": "MartialArtist",
+   "name": "Horde",
+   "team": true,
+   "effect": "+12 Add All Dmg, +6 MA",
+   "ncu": 5,
+   "ids": [
+    28890,
+    162359
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lcr",
+   "section": "MartialArtist",
+   "name": "Lesser Controlled Rage",
+   "team": false,
+   "effect": "+12 MA, +8 Physic. Init",
+   "ncu": 1,
+   "ids": [
+    43369
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lm",
+   "section": "MartialArtist",
+   "name": "Limbo Mastery",
+   "team": false,
+   "effect": "+30 Duck-Exp",
+   "ncu": 6,
+   "ids": [
+    28894
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fleet",
+   "section": "MartialArtist",
+   "name": "Fleet Foot",
+   "team": false,
+   "effect": "+85 Evades",
+   "ncu": 26,
+   "ids": [
+    28878
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mop",
+   "section": "MartialArtist",
+   "name": "Mark of Peril",
+   "team": false,
+   "effect": "+11 Crit Inc",
+   "ncu": 49,
+   "ids": [
+    160574
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mod",
+   "section": "MartialArtist",
+   "name": "Mark of Danger",
+   "team": false,
+   "effect": "+8 Crit Inc",
+   "ncu": 39,
+   "ids": [
+    160575
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mamastery",
+   "section": "MartialArtist",
+   "name": "Martial Arts Mastery",
+   "team": false,
+   "effect": "+60 MA, +30 SharpObj",
+   "ncu": 16,
+   "ids": [
+    28895
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ri",
+   "section": "MartialArtist",
+   "name": "Reduce Inertia",
+   "team": false,
+   "effect": "+120 Evades",
+   "ncu": 42,
+   "ids": [
+    28903
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ra",
+   "section": "MartialArtist",
+   "name": "Return Attack",
+   "team": false,
+   "effect": "+80 Riposte, +80 Deflect",
+   "ncu": 45,
+   "ids": [
+    28904
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fosh",
+   "section": "MartialArtist",
+   "name": "Fists of Stellar Harmony",
+   "team": false,
+   "effect": "+26 Melee Dmg, +36 Fire Dmg, Change Dmg Type to Fire",
+   "ncu": 51,
+   "ids": [
+    81827
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fost",
+   "section": "MartialArtist",
+   "name": "Fist of Shocking Touch",
+   "team": false,
+   "effect": "+11 Energy Damage",
+   "ncu": 15,
+   "ids": []
+  },
+  {
+   "code": "corrfi",
+   "section": "MartialArtist",
+   "name": "Corrosive Fist",
+   "team": false,
+   "effect": "+9 Chemical Damage",
+   "ncu": 12,
+   "ids": []
+  },
+  {
+   "code": "fif",
+   "section": "MartialArtist",
+   "name": "Fists of Fire",
+   "team": false,
+   "effect": "+13 fire damage, sets damage to Fire",
+   "ncu": 21,
+   "ids": [
+    28876
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fotm",
+   "section": "MartialArtist",
+   "name": "Fists of the Maelstrom",
+   "team": false,
+   "effect": "+15 Energy Damage, sets damage to Energy",
+   "ncu": 27,
+   "ids": [
+    81823
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fotps",
+   "section": "MartialArtist",
+   "name": "Fists of the Polar Star",
+   "team": false,
+   "effect": "+17 Fire damage, sets damage to Fire",
+   "ncu": 33,
+   "ids": [
+    81824
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fotst",
+   "section": "MartialArtist",
+   "name": "Fists of the Sorrowful Toad",
+   "team": false,
+   "effect": "+19 Chemical Damage, sets damage to Chemical",
+   "ncu": 39,
+   "ids": [
+    81822
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fotlc",
+   "section": "MartialArtist",
+   "name": "Fists of the Lightning Crane",
+   "team": false,
+   "effect": "+23 Energy Damage, sets damage to Energy",
+   "ncu": 45,
+   "ids": [
+    81825
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "dot",
+   "section": "Metaphysicist",
+   "name": "Dedication of Thought",
+   "team": false,
+   "effect": "51% Nano Interupt",
+   "ncu": 45,
+   "ids": [
+    95525
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "iee",
+   "section": "Metaphysicist",
+   "name": "Ignore External Events",
+   "team": false,
+   "effect": "40% Nano Interupt",
+   "ncu": 28,
+   "ids": [
+    95524
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "compmoch8h",
+   "section": "Metaphysicist",
+   "name": "Composite Mochams (8 hours)",
+   "team": false,
+   "effect": "+140 nano skill for 8 hours",
+   "ncu": 55,
+   "ids": [
+    220343
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "compmoch4h",
+   "section": "Metaphysicist",
+   "name": "Composite Mochams (4 hours)",
+   "team": false,
+   "effect": "+140 nano skill for 4 hours",
+   "ncu": 54,
+   "ids": [
+    220341
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "compmoch2h",
+   "section": "Metaphysicist",
+   "name": "Composite Mochams (2 hours)",
+   "team": false,
+   "effect": "+140 nano skill for 2 hours",
+   "ncu": 51,
+   "ids": [
+    220339
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "compmoch1h",
+   "section": "Metaphysicist",
+   "name": "Composite Mochams (1 hours)",
+   "team": false,
+   "effect": "+140 nano skill for 1 hour",
+   "ncu": 48,
+   "ids": [
+    220337
+   ],
+   "idSource": "log"
+  },
+  {
+   "code": "ci",
+   "section": "Metaphysicist",
+   "name": "Composite Infuse With Knowledge",
+   "team": false,
+   "effect": "Increases all nano skills of the target by 90 points",
+   "ncu": 25,
+   "ids": [
+    220335
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cm",
+   "section": "Metaphysicist",
+   "name": "Composite Mastery",
+   "team": false,
+   "effect": "Increases all nano skills of the target by 50 points",
+   "ncu": 13,
+   "ids": [
+    220333
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ct",
+   "section": "Metaphysicist",
+   "name": "Composite Teachings",
+   "team": false,
+   "effect": "Increases all nano skills of the target by 25 points",
+   "ncu": 6,
+   "ids": [
+    220331
+   ],
+   "idSource": "sniff"
+  },
+  {
+   "code": "ns",
+   "section": "Metaphysicist",
+   "name": "Neuronal Stimulator",
+   "team": false,
+   "effect": "+23 Int/Psychic",
+   "ncu": 7,
+   "ids": [
+    220345
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "aor",
+   "section": "Metaphysicist",
+   "name": "Anticipation of Retaliation",
+   "team": false,
+   "effect": "+60 Evades",
+   "ncu": 16,
+   "ids": [
+    29272
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bmmo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: BioMet",
+   "team": false,
+   "effect": "+140 BioMet for 4 hours",
+   "ncu": 51,
+   "ids": [
+    29299
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mmmo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: MatMet",
+   "team": false,
+   "effect": "+140 MatMet for 4 hours",
+   "ncu": 50,
+   "ids": [
+    29302
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mcmo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: MatCrea",
+   "team": false,
+   "effect": "+140 MatCreation for 4 hours",
+   "ncu": 51,
+   "ids": [
+    29300
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "stmo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: SpaceTime",
+   "team": false,
+   "effect": "+140 SpaceTime for 4 hours",
+   "ncu": 50,
+   "ids": [
+    29301
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pmmo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: PsyMod",
+   "team": false,
+   "effect": "+140 PsyMod for 4 hours",
+   "ncu": 52,
+   "ids": [
+    29303
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "simo",
+   "section": "Metaphysicist",
+   "name": "Mocham's Gift: SenseImp",
+   "team": false,
+   "effect": "+140 SenseImp for 4 hours",
+   "ncu": 51,
+   "ids": [
+    29304
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bminf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Biological Metamorphose",
+   "team": false,
+   "effect": "+90 BioMet for 4 hours",
+   "ncu": 38,
+   "ids": [
+    151761
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mcinf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Material Creation",
+   "team": false,
+   "effect": "+90 MatCre for 4 hours",
+   "ncu": 40,
+   "ids": [
+    151762
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tsinf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Time and Space",
+   "team": false,
+   "effect": "+90 SpaceTime for 4 hours",
+   "ncu": 40,
+   "ids": [
+    151758
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mminf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Material Metamorphose",
+   "team": false,
+   "effect": "+90 MatMet for 4 hours",
+   "ncu": 39,
+   "ids": [
+    151759
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pminf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Psychological Modification",
+   "team": false,
+   "effect": "+90 PsyMod for 4 hours",
+   "ncu": 42,
+   "ids": [
+    151760
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "siinf",
+   "section": "Metaphysicist",
+   "name": "Infuse With Knowledge: Sensory Improvement",
+   "team": false,
+   "effect": "+90 SenImp for 4 hours",
+   "ncu": 41,
+   "ids": [
+    151757
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bmma",
+   "section": "Metaphysicist",
+   "name": "Mastery: Biological Metamorphose",
+   "team": false,
+   "effect": "+50 BioMet for 4 hours",
+   "ncu": 12,
+   "ids": [
+    29275
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "mcma",
+   "section": "Metaphysicist",
+   "name": "Mastery: Material Creation",
+   "team": false,
+   "effect": "+50 MatCrea for 4 hours",
+   "ncu": 14,
+   "ids": [
+    29294
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "stma",
+   "section": "Metaphysicist",
+   "name": "Mastery: Time and Space",
+   "team": false,
+   "effect": "+50 SpaceTime for 4 hours",
+   "ncu": 13,
+   "ids": [
+    29295
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "mmma",
+   "section": "Metaphysicist",
+   "name": "Mastery: Material Metamorphose",
+   "team": false,
+   "effect": "+50 MatMet for 4 hours",
+   "ncu": 16,
+   "ids": [
+    29296
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "pmma",
+   "section": "Metaphysicist",
+   "name": "Mastery: Psychological Modification",
+   "team": false,
+   "effect": "+50 PsyMod for 4 hours",
+   "ncu": 15,
+   "ids": [
+    29312
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "sima",
+   "section": "Metaphysicist",
+   "name": "Mastery: Sensory Improvement",
+   "team": false,
+   "effect": "+50 Sense Imp for 4 hours",
+   "ncu": 14,
+   "ids": [
+    29315
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "bmteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Biological Metamorphose",
+   "team": false,
+   "effect": "+25 BioMet for 4 hours",
+   "ncu": 6,
+   "ids": [
+    151768
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "mcteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Material Creation",
+   "team": false,
+   "effect": "+25 MatCrea for 4 hours",
+   "ncu": 7,
+   "ids": [
+    151765
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "stteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Time and Space",
+   "team": false,
+   "effect": "+25 SpaceTime for 4 hours",
+   "ncu": 7,
+   "ids": [
+    151766
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "mmteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Material Metamorphose",
+   "team": false,
+   "effect": "+25 MatMet for 4 hours",
+   "ncu": 6,
+   "ids": [
+    151767
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "pmteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Psychological Modification",
+   "team": false,
+   "effect": "+25 PsyMod for 4 hours",
+   "ncu": 8,
+   "ids": [
+    151763
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "siteach",
+   "section": "Metaphysicist",
+   "name": "Teachings: Sensory Improvement",
+   "team": false,
+   "effect": "+25 Sense Imp for 4 hours",
+   "ncu": 7,
+   "ids": [
+    151764
+   ],
+   "idSource": "chewy"
+  },
+  {
+   "code": "onemind",
+   "section": "Metaphysicist",
+   "name": "One Mind, One Purpose",
+   "team": false,
+   "effect": "-%57 Nano Intrupt",
+   "ncu": 50,
+   "ids": [
+    95522
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mniw",
+   "section": "Metaphysicist",
+   "name": "Mocham's Neural Interface-Web",
+   "team": false,
+   "effect": "Nano Cost -24%",
+   "ncu": 49,
+   "ids": [
+    95409
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cohweb",
+   "section": "Metaphysicist",
+   "name": "Coherent Notum Web",
+   "team": false,
+   "effect": "Nano Cost -15%",
+   "ncu": 28,
+   "ids": [
+    95411
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "np",
+   "section": "Metaphysicist",
+   "name": "Advanced Symbol Manipulation",
+   "team": false,
+   "effect": "+92 Nano Programing",
+   "ncu": 29,
+   "ids": [
+    29327
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "symhelp",
+   "section": "Metaphysicist",
+   "name": "Symbol Helper",
+   "team": false,
+   "effect": "+25 Nano Programming",
+   "ncu": 4,
+   "ids": [
+    29113
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "afi",
+   "section": "NanoTechnician",
+   "name": "Advanced Fleeting Immunity",
+   "team": false,
+   "effect": "+834 Absorb",
+   "ncu": 62,
+   "ids": [
+    270356
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cost",
+   "section": "NanoTechnician",
+   "name": "Izgimmer's Obfuscated Recompiler",
+   "team": false,
+   "effect": "Nano Cost -28%",
+   "ncu": 55,
+   "ids": [
+    95417
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "jobenano",
+   "section": "NanoTechnician",
+   "name": "Jobe Nano Libraries",
+   "team": false,
+   "effect": "Nano Cost -22%",
+   "ncu": 47,
+   "ids": [
+    95413
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "otfc",
+   "section": "NanoTechnician",
+   "name": "On-The-Fly Compression",
+   "team": false,
+   "effect": "Nano Cost -15%",
+   "ncu": 23,
+   "ids": [
+    95414
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ccnc",
+   "section": "NanoTechnician",
+   "name": "CrunchCom Nano Compressor",
+   "team": false,
+   "effect": "Nano Cost -12%",
+   "ncu": 15,
+   "ids": [
+    95415
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rtrc",
+   "section": "NanoTechnician",
+   "name": "Run-Time Recompiler",
+   "team": false,
+   "effect": "Nano Cost -8%",
+   "ncu": 11,
+   "ids": [
+    95416
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ccncp",
+   "section": "NanoTechnician",
+   "name": "CrunchCom Nano Compressor Pro",
+   "team": false,
+   "effect": "Nano Cost -18%, Modify RangeInc. NF 20",
+   "ncu": 38,
+   "ids": [
+    95412
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "notover",
+   "section": "NanoTechnician",
+   "name": "Notum Overload",
+   "team": false,
+   "effect": "Nano Cost +4%, RangeInc. NF 104",
+   "ncu": 54,
+   "ids": [
+    95443
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ncs",
+   "section": "NanoTechnician",
+   "name": "Nano Cloud Supplement",
+   "team": false,
+   "effect": "RangeInc. NF 74",
+   "ncu": 46,
+   "ids": [
+    95442
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "snc",
+   "section": "NanoTechnician",
+   "name": "Superior Nano Command",
+   "team": false,
+   "effect": "RangeInc. NF 46",
+   "ncu": 29,
+   "ids": [
+    95446
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cnp",
+   "section": "NanoTechnician",
+   "name": "Coherent Nano Pathway",
+   "team": false,
+   "effect": "RangeInc. NF 20",
+   "ncu": 13,
+   "ids": [
+    95444
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "enc",
+   "section": "NanoTechnician",
+   "name": "Enhance Nano Cohesion",
+   "team": false,
+   "effect": "RangeInc. NF 10",
+   "ncu": 7,
+   "ids": [
+    95447
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "darkmove",
+   "section": "NanoTechnician",
+   "name": "Dark Movement",
+   "team": false,
+   "effect": "+80 Evades",
+   "ncu": 28,
+   "ids": [
+    28603
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pnh",
+   "section": "NanoTechnician",
+   "name": "Personal Notum Harvester",
+   "team": false,
+   "effect": "+235 Nano HoT",
+   "ncu": 52,
+   "ids": [
+    90406
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bhe",
+   "section": "NanoTechnician",
+   "name": "Boundless Humidity Extractor",
+   "team": false,
+   "effect": "+170 Nano HoT",
+   "ncu": 46,
+   "ids": [
+    90401
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "she",
+   "section": "NanoTechnician",
+   "name": "Superior Humidity Extractor",
+   "team": false,
+   "effect": "+136 Nano HoT",
+   "ncu": 31,
+   "ids": [
+    90402
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ehe",
+   "section": "NanoTechnician",
+   "name": "Efficient Humidity Extractor",
+   "team": false,
+   "effect": "+102 Nano HoT",
+   "ncu": 25,
+   "ids": [
+    90403
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "he",
+   "section": "NanoTechnician",
+   "name": "Humidity Extractor",
+   "team": false,
+   "effect": "+68 Nano HoT",
+   "ncu": 13,
+   "ids": [
+    90404
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "bhe2",
+   "section": "NanoTechnician",
+   "name": "Basic Humidity Extractor",
+   "team": false,
+   "effect": "+34 Nano HoT",
+   "ncu": 6,
+   "ids": [
+    90405
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "fat",
+   "section": "Soldier",
+   "name": "Full Automatic Targeting",
+   "team": false,
+   "effect": "+74 AAO",
+   "ncu": 37,
+   "ids": [
+    270248
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "at",
+   "section": "Soldier",
+   "name": "Automatic Targeting",
+   "team": false,
+   "effect": "+30 AAO",
+   "ncu": 20,
+   "ids": [
+    29222
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "os",
+   "section": "Soldier",
+   "name": "Offensive Steamroller",
+   "team": false,
+   "effect": "+30 Fling Shot, +133 Inits",
+   "ncu": 48,
+   "ids": [
+    29240
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "cha",
+   "section": "Soldier",
+   "name": "Composite Heavy Artillery",
+   "team": false,
+   "effect": "+100 Grenade-HW-Rifle-SMG-AR-Ranged Energy",
+   "ncu": 58,
+   "ids": [
+    269482
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rc",
+   "section": "Soldier",
+   "name": "Riot Control",
+   "team": false,
+   "effect": "+110 Burst",
+   "ncu": 39,
+   "ids": [
+    29251
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rrfe",
+   "section": "Soldier",
+   "name": "Reactive Reflective Field (Extended)",
+   "team": false,
+   "effect": "+30 Reflect AC, +49 Reflect Dmg",
+   "ncu": 44,
+   "ids": [
+    70311
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mrfe",
+   "section": "Soldier",
+   "name": "Major Reflective Field (Extended)",
+   "team": false,
+   "effect": "+28 Reflect AC, +46 Reflect Dmg",
+   "ncu": 43,
+   "ids": [
+    70325
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "grfe",
+   "section": "Soldier",
+   "name": "Greater Reflective Field (Extended)",
+   "team": false,
+   "effect": "+26 Reflect AC, +42 Reflect Dmg",
+   "ncu": 41,
+   "ids": [
+    70333
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "prfe",
+   "section": "Soldier",
+   "name": "Partial Reflective Field (Extended)",
+   "team": false,
+   "effect": "+21 Reflect AC, +25 Reflect Dmg",
+   "ncu": 31,
+   "ids": [
+    70315
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "mdse",
+   "section": "Soldier",
+   "name": "Major Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+17 Deflect AC, +18 Deflect Dmg",
+   "ncu": 22,
+   "ids": [
+    70327
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "gdse",
+   "section": "Soldier",
+   "name": "Greater Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+15 Deflect AC, +14 Deflect Dmg",
+   "ncu": 18,
+   "ids": [
+    70335
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "dse",
+   "section": "Soldier",
+   "name": "Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+14 Deflect AC, +10 Deflect Dmg",
+   "ncu": 12,
+   "ids": [
+    70336
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ldse",
+   "section": "Soldier",
+   "name": "Lesser Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+13 Deflect AC, +7 Deflect Dmg",
+   "ncu": 10,
+   "ids": [
+    70331
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "midse",
+   "section": "Soldier",
+   "name": "Minor Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+12 Deflect AC, +4 Deflect Dmg",
+   "ncu": 6,
+   "ids": [
+    70321
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pdse",
+   "section": "Soldier",
+   "name": "Partial Deflection Shield (Extended)",
+   "team": false,
+   "effect": "+10 Deflect AC, +2 Deflect Dmg",
+   "ncu": 3,
+   "ids": [
+    70317
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rewm",
+   "section": "Soldier",
+   "name": "Ranged Energy Weapon Mastery",
+   "team": false,
+   "effect": "+70 Ranged Energy",
+   "ncu": 20,
+   "ids": [
+    29230
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "arm",
+   "section": "Soldier",
+   "name": "Assault Rifle Mastery",
+   "team": false,
+   "effect": "+60 Assault Rifle",
+   "ncu": 16,
+   "ids": [
+    29220
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "rm",
+   "section": "Soldier",
+   "name": "Rifle Mastery",
+   "team": false,
+   "effect": "+50 Rifle",
+   "ncu": 12,
+   "ids": [
+    29250
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "pre",
+   "section": "Soldier",
+   "name": "Precognition",
+   "team": false,
+   "effect": "+55 Evades",
+   "ncu": 14,
+   "ids": [
+    29247
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tan",
+   "section": "Soldier",
+   "name": "Tough as Nails",
+   "team": false,
+   "effect": "+176 Life",
+   "ncu": 20,
+   "ids": [
+    95694
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "attboo",
+   "section": "Soldier",
+   "name": "Attack Booster",
+   "team": false,
+   "effect": "+43 Inits",
+   "ncu": 9,
+   "ids": [
+    29221
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "qs",
+   "section": "Soldier",
+   "name": "Quickshot",
+   "team": false,
+   "effect": "+28 Ranged Inits",
+   "ncu": 6,
+   "ids": [
+    29248
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "qu",
+   "section": "Trader",
+   "name": "Quantum Uncertainty",
+   "team": false,
+   "effect": "+110 Evades SL Friendly",
+   "ncu": 43,
+   "ids": [
+    30745
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swprem",
+   "section": "Trader",
+   "name": "Skill Wrangler (Premium)",
+   "team": false,
+   "effect": "+131 Weap/Nano skills",
+   "ncu": 58,
+   "ids": [
+    121247,
+    121335
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swe",
+   "section": "Trader",
+   "name": "Skill Wrangler (Exceptional)",
+   "team": false,
+   "effect": "+121 Weap/Nano skills",
+   "ncu": 54,
+   "ids": [
+    121255,
+    121343
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sws",
+   "section": "Trader",
+   "name": "Skill Wrangler (Superb)",
+   "team": false,
+   "effect": "+112 Weap/Nano skills",
+   "ncu": 50,
+   "ids": [
+    121245,
+    121333
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swsoph",
+   "section": "Trader",
+   "name": "Skill Wrangler (Sophisticated)",
+   "team": false,
+   "effect": "+106 Weap/Nano skills",
+   "ncu": 48,
+   "ids": [
+    121246,
+    121334
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swgr",
+   "section": "Trader",
+   "name": "Skill Wrangler (Greater)",
+   "team": false,
+   "effect": "+99 Weap/Nano skills",
+   "ncu": 46,
+   "ids": [
+    121254,
+    121342
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swsup",
+   "section": "Trader",
+   "name": "Skill Wrangler (Superior)",
+   "team": false,
+   "effect": "+85 Weap/Nano skills",
+   "ncu": 39,
+   "ids": [
+    121244,
+    121332
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swadv",
+   "section": "Trader",
+   "name": "Skill Wrangler (Advanced)",
+   "team": false,
+   "effect": "+74 Weap/Nano skills",
+   "ncu": 35,
+   "ids": [
+    121257,
+    121345
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swmaj",
+   "section": "Trader",
+   "name": "Skill Wrangler (Major)",
+   "team": false,
+   "effect": "+65 Weap/Nano skills",
+   "ncu": 30,
+   "ids": [
+    121250,
+    121338
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "sw",
+   "section": "Trader",
+   "name": "Skill Wrangler",
+   "team": false,
+   "effect": "+56 Weap/Nano skills",
+   "ncu": 26,
+   "ids": [
+    121258,
+    121346
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swinf",
+   "section": "Trader",
+   "name": "Skill Wrangler (Inferior)",
+   "team": false,
+   "effect": "+46 Weap/Nano skills",
+   "ncu": 22,
+   "ids": [
+    121253,
+    121341
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swless",
+   "section": "Trader",
+   "name": "Skill Wrangler Lesser",
+   "team": false,
+   "effect": "+37 Weap/Nano skills",
+   "ncu": 17,
+   "ids": [
+    121340
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swlossy",
+   "section": "Trader",
+   "name": "Skill Wrangler (Lossy)",
+   "team": false,
+   "effect": "+27 Weap/Nano skills",
+   "ncu": 13,
+   "ids": [
+    121251,
+    121339
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swcom",
+   "section": "Trader",
+   "name": "Skill Wrangler (Commonplace)",
+   "team": false,
+   "effect": "+22 Weap/Nano skills",
+   "ncu": 11,
+   "ids": [
+    121256,
+    121344
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swmin",
+   "section": "Trader",
+   "name": "Skill Wrangler (Minor)",
+   "team": false,
+   "effect": "+13 Weap/Nano skills",
+   "ncu": 7,
+   "ids": [
+    121249,
+    121337
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swpat",
+   "section": "Trader",
+   "name": "Skill Wrangler (Patchy)",
+   "team": false,
+   "effect": "+9 Weap/Nano skills",
+   "ncu": 5,
+   "ids": [
+    121248,
+    121336
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "swweak",
+   "section": "Trader",
+   "name": "Skill Wrangler (Weak)",
+   "team": false,
+   "effect": "+3 Weap/Nano skills",
+   "ncu": 3,
+   "ids": [
+    121243,
+    121330
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswprem",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Premium)",
+   "team": true,
+   "effect": "+132 team Weap/Nano skills",
+   "ncu": 58,
+   "ids": [
+    121215,
+    121232,
+    121320
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswexc",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Exceptional)",
+   "team": true,
+   "effect": "+118 team Weap/Nano skills",
+   "ncu": 52,
+   "ids": [
+    121216,
+    121239,
+    121328
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswsoph",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Sophisticated)",
+   "team": true,
+   "effect": "+109 team Weap/Nano skills",
+   "ncu": 49,
+   "ids": [
+    121217,
+    121231,
+    121318
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswgr",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Greater)",
+   "team": true,
+   "effect": "+102 team Weap/Nano skills",
+   "ncu": 47,
+   "ids": [
+    121225,
+    121238,
+    121326
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswadv",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Advanced)",
+   "team": true,
+   "effect": "+82 team Weap/Nano skills",
+   "ncu": 38,
+   "ids": [
+    121227,
+    121241,
+    121329
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswmaj",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Major)",
+   "team": true,
+   "effect": "+71 team Weap/Nano skills",
+   "ncu": 33,
+   "ids": [
+    121222,
+    121235,
+    121323
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswless",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Lesser)",
+   "team": true,
+   "effect": "+50 team Weap/Nano skills",
+   "ncu": 24,
+   "ids": [
+    121224,
+    121237,
+    121324
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswlossy",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Lossy)",
+   "team": true,
+   "effect": "+40 team Weap/Nano skills",
+   "ncu": 19,
+   "ids": [
+    121223,
+    121236,
+    121325
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswmin",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Minor)",
+   "team": true,
+   "effect": "+24 team Weap/Nano skills",
+   "ncu": 12,
+   "ids": [
+    121221,
+    121234,
+    121321
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswpat",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Patchy)",
+   "team": true,
+   "effect": "+18 team Weap/Nano skills",
+   "ncu": 9,
+   "ids": [
+    121220,
+    121233,
+    121322
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "tswweak",
+   "section": "Trader",
+   "name": "Team Skill Wrangler (Weak)",
+   "team": true,
+   "effect": "+10 team Weap/Nano skills",
+   "ncu": 6,
+   "ids": [
+    121218,
+    121229,
+    121317
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "maestroee",
+   "section": "Trader",
+   "name": "Maestro: Electrical Engineering",
+   "team": false,
+   "effect": "+125 EE",
+   "ncu": 47,
+   "ids": [
+    30734
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "maestrofqp",
+   "section": "Trader",
+   "name": "Maestro: Field Quantum Physics",
+   "team": false,
+   "effect": "+125 FQP",
+   "ncu": 47,
+   "ids": [
+    30735
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "maestrome",
+   "section": "Trader",
+   "name": "Maestro: Mechanical Engineering",
+   "team": false,
+   "effect": "+125 ME",
+   "ncu": 47,
+   "ids": [
+    30736
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "maestropt",
+   "section": "Trader",
+   "name": "Maestro: Pharmaceutical",
+   "team": false,
+   "effect": "+125 Pharm",
+   "ncu": 48,
+   "ids": [
+    30737
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "maestrows",
+   "section": "Trader",
+   "name": "Maestro: Weapon Smithing",
+   "team": false,
+   "effect": "+125 WS",
+   "ncu": 48,
+   "ids": [
+    30738
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lend500",
+   "section": "Trader",
+   "name": "Lend Nano: 500",
+   "team": false,
+   "effect": "+500 Max Nano",
+   "ncu": 36,
+   "ids": [
+    30731,
+    41929
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lend250",
+   "section": "Trader",
+   "name": "Lend Nano: 250",
+   "team": false,
+   "effect": "+250 Max Nano",
+   "ncu": 17,
+   "ids": [
+    30729,
+    41931
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lend100",
+   "section": "Trader",
+   "name": "Lend Nano: 100",
+   "team": false,
+   "effect": "+100 Max Nano",
+   "ncu": 8,
+   "ids": [
+    30244,
+    30265
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "lend50",
+   "section": "Trader",
+   "name": "Lend Nano: 50",
+   "team": false,
+   "effect": "+50 Max Nano",
+   "ncu": 4,
+   "ids": [
+    30730,
+    41932
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "jee",
+   "section": "Trader",
+   "name": "Journeyman: Electrical Engineering",
+   "team": false,
+   "effect": "+100 EE",
+   "ncu": 25,
+   "ids": [
+    30724
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "jme",
+   "section": "Trader",
+   "name": "Journeyman: Mechanical Engineering",
+   "team": false,
+   "effect": "+100 ME",
+   "ncu": 26,
+   "ids": []
+  },
+  {
+   "code": "jws",
+   "section": "Trader",
+   "name": "Journeyman: Weapon Smithing",
+   "team": false,
+   "effect": "+100 WS",
+   "ncu": 27,
+   "ids": [
+    30728
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "jpharm",
+   "section": "Trader",
+   "name": "Journeyman: Pharmaceutical",
+   "team": false,
+   "effect": "+100 Pharm",
+   "ncu": 27,
+   "ids": [
+    30727
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "jfqp",
+   "section": "Trader",
+   "name": "Journeyman: Field Quantum Physics",
+   "team": false,
+   "effect": "+100 FQP",
+   "ncu": 25,
+   "ids": [
+    30725
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "aee",
+   "section": "Trader",
+   "name": "Apprentice: Electrical Engineering",
+   "team": false,
+   "effect": "+75 EE",
+   "ncu": 8,
+   "ids": [
+    30753
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "ame",
+   "section": "Trader",
+   "name": "Apprentice: Mechanical Engineering",
+   "team": false,
+   "effect": "+75 ME",
+   "ncu": 10,
+   "ids": [
+    30708
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "aws",
+   "section": "Trader",
+   "name": "Apprentice: Weapon Smithing",
+   "team": false,
+   "effect": "+75 WS",
+   "ncu": 11,
+   "ids": [
+    29100
+   ],
+   "idSource": "itemnames"
+  },
+  {
+   "code": "apharm",
+   "section": "Trader",
+   "name": "Apprentice: Pharmaceutical",
+   "team": false,
+   "effect": "+75 Pharm",
+   "ncu": 11,
+   "ids": []
+  },
+  {
+   "code": "afqp",
+   "section": "Trader",
+   "name": "Apprentice: Field Quantum Physics",
+   "team": false,
+   "effect": "+75 FQP",
+   "ncu": 9,
+   "ids": [
+    30707
+   ],
+   "idSource": "itemnames"
+  }
+ ]
+}

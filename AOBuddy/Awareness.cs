@@ -89,6 +89,7 @@ namespace AOBuddy
                 n.TryGetStat(Stat.Level, out int lvl);
                 near.Add(new Seen { Mob = n, Dist = d, Level = lvl, OnUs = onUs, Following = following });
             }
+            LogEngagements(me, guard);
             foreach (var id in _trail.Keys.ToList()) if (!here.Contains(id)) _trail.Remove(id);
             foreach (var id in _shadow.Keys.ToList()) if (clock - _shadow[id].seen > Forget) _shadow.Remove(id);
             Near = near.OrderBy(s => s.Dist).ToList();
@@ -133,6 +134,33 @@ namespace AOBuddy
         /// <summary>Where each mob he knows is after him was last seen, including ones out of sight (gone under 20 s).</summary>
         public IEnumerable<(Identity id, Vector3 pos, double ago)> Trackers(double clock) =>
             _shadow.Where(kv => clock < kv.Value.until).Select(kv => (kv.Key, kv.Value.pos, clock - kv.Value.seen));
+
+        // WHO STARTED IT (owner, 2026-09-27): Longest Road mobs never aggro an Omni first, yet a Hammer Bull train built up
+        // on him at 11:45 with no Attack from the bot; the pets' own swings never reached the log. Every change of fighting
+        // target is logged for him and each pet (ENGAGE) and for each mob turning onto one of us (AGGRO), so the order
+        // of the lines shows who opened.
+        private readonly Dictionary<Identity, Identity?> _fighting = new Dictionary<Identity, Identity?>();
+
+        private void LogEngagements(LocalPlayer me, HashSet<Identity> guard)
+        {
+            string Who(Identity id) => id == me.Identity ? "me" : (DynelManager.Characters.FirstOrDefault(c => c.Identity == id)?.Name ?? id.ToString());
+            string Dist(Identity id) { var c = DynelManager.Characters.FirstOrDefault(x => x.Identity == id); return c != null ? $"{me.DistanceFrom(c):0} m" : "?"; }
+            var seen = new HashSet<Identity>();
+            foreach (var c in DynelManager.Characters)
+            {
+                if (c == null) continue;
+                bool ours = guard.Contains(c.Identity);
+                var ft = c.FightingIdentity;
+                if (!ours && !(ft.HasValue && guard.Contains(ft.Value)) && !_fighting.ContainsKey(c.Identity)) continue;
+                seen.Add(c.Identity);
+                _fighting.TryGetValue(c.Identity, out var was);
+                if (Nullable.Equals(was, ft)) continue;
+                _fighting[c.Identity] = ft;
+                if (ours && ft.HasValue) _log($"ENGAGE: {Who(c.Identity)} ({Dist(c.Identity)}) -> '{Who(ft.Value)}' ({Dist(ft.Value)}).");
+                else if (!ours && ft.HasValue && guard.Contains(ft.Value)) _log($"AGGRO: '{c.Name}' ({Dist(c.Identity)}) on {Who(ft.Value)}.");
+            }
+            foreach (var id in _fighting.Keys.ToList()) if (!seen.Contains(id)) _fighting.Remove(id);
+        }
 
         public string Summary() => $"{OnUsCount} on us, {FollowingCount} following, {Near.Count} near";
 

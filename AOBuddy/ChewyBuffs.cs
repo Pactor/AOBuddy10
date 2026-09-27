@@ -244,7 +244,7 @@ namespace AOBuddy
         /// are always skipped: no buff ever needs the RECEIVER to be of a class. Returns null when the
         /// buff fits us, else a short human reason.
         /// </summary>
-        private static string ReceiverBlockReason(LocalPlayer me, int[] nanoIds, bool landed)
+        internal static string ReceiverBlockReason(LocalPlayer me, int[] nanoIds, bool landed)
         {
             if (nanoIds == null) return null;
             foreach (int id in nanoIds)
@@ -344,7 +344,7 @@ namespace AOBuddy
         /// recognize sets UnknownWeapon instead: the filter then stands down rather than guess, because
         /// such a weapon's skills are real but unreadable. No weapon at all + pet profession = empty
         /// (pets); no weapon otherwise = fists (Martial Arts).</summary>
-        private static HashSet<int> EquippedWeaponStats(LocalPlayer me, out bool unknownWeapon, out string weaponNames)
+        internal static HashSet<int> EquippedWeaponStats(LocalPlayer me, out bool unknownWeapon, out string weaponNames)
         {
             var stats = new HashSet<int>();
             var weapons = CombatController.EquippedWeapons().ToList();
@@ -381,6 +381,25 @@ namespace AOBuddy
             return weaponish.Any(weaponStats.Contains) ? null
                 : $"boosts {string.Join("/", weaponish.Select(s => ((Stat)s).ToString()))} — no such weapon equipped";
         }
+
+        // CODEDOC reuse (RubiKa 2019's buff bot, CodedocBuffs.cs): the same category / magnitude / weapon-relevance
+        // rules applied to a Codedoc code, without exposing BuffDef. No behavior change for Chewy.
+        internal static (string Cat, double Magnitude, HashSet<int> OffenseStatIds, bool Movement) Classify(string effect, string tell, NanoItem ni)
+        {
+            var b = new BuffDef { Effect = effect ?? "", Tell = tell ?? "" };
+            string cat = CategoryOf(b, ni);
+            HashSet<int> off = null;
+            bool move = false;
+            if (ni?.Modifiers != null && ni.Modifiers.TryGetValue(SpellListType.Use, out var use) && use != null)
+            {
+                off = new HashSet<int>(use.Where(kv => OffenseStats.Contains((int)kv.Key)).Select(kv => (int)kv.Key));
+                move = use.Keys.Any(k => (int)k == StatRunSpeed);
+            }
+            return (cat, MagnitudeOf(b, ni, cat), off, move);
+        }
+
+        internal static string WeaponBlockReasonFor(HashSet<int> weaponStats, bool unknownWeapon, string cat, HashSet<int> offenseStatIds)
+            => WeaponBlockReason(weaponStats, unknownWeapon, new BuffDef { Cat = cat, OffenseStatIds = offenseStatIds });
 
         private static string CategoryOf(BuffDef b, NanoItem ni)
         {
@@ -518,7 +537,7 @@ namespace AOBuddy
             return best;
         }
 
-        private static int FreeNcu(LocalPlayer me)
+        internal static int FreeNcu(LocalPlayer me)
         {
             me.TryGetStat(Stat.MaxNCU, out int max);
             me.TryGetStat(Stat.CurrentNCU, out int cur);
@@ -682,7 +701,7 @@ namespace AOBuddy
         // Wrangle-gap analysis: which GreaterThan skill/ability criteria of the nano aren't met yet.
         // Only the UseCriteria list (the same one MeetsUseReqs evaluates), so wield/other gates don't
         // pollute the shortfall with stats no buff can raise.
-        private static List<(Stat Stat, int Need)> ShortfallsOf(LocalPlayer me, int nanoId)
+        internal static List<(Stat Stat, int Need)> ShortfallsOf(LocalPlayer me, int nanoId)
         {
             var result = new List<(Stat, int)>();
             if (!ItemData.Find(nanoId, out NanoItem ni) || ni?.Criteria == null) return result;

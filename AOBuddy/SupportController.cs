@@ -314,6 +314,15 @@ namespace AOBuddy
             // back on (2026-09-23 22:16: Vengeance of the Loyal and Impartiality of the Blade). Wait it out,
             // and when it ends forget what was 'cast' during it.
             if (IsRezSick(me)) { _wasRezSick = true; return; }
+            // RK2019 CODEDOC (owner, 2026-09-27): the buff bot's buffs go on FIRST, then his own self-buffs — only
+            // those whose line no Codedoc buff already covers (FindActiveBuff/HasBetterSameLine: same line, equal or
+            // higher StackingOrder = up) and only if they fit his free NCU (NcuFits). Held while the step is pending.
+            if (_ctx.Status.CodedocHold)
+            {
+                if (!_codedocHoldLogged) { _codedocHoldLogged = true; _ctx.Log("AUTO-BUFF: holding own self-buffs until the Codedoc buffs are in (CODEDOC step pending)."); }
+                return;
+            }
+            if (_codedocHoldLogged) { _codedocHoldLogged = false; _ctx.Log("AUTO-BUFF: Codedoc step over — own self-buffs resume (lines Codedoc covers are skipped, NCU permitting)."); }
             if (_wasRezSick) { _wasRezSick = false; _lastBuffCastAt.Clear(); _castQueue.Clear(); _ctx.Log("AUTO-BUFF: rez sickness over - rebuffing everything missing."); }
 
             // Startup/zone grace: right after login (or a zone) the server hasn't sent our ActiveNanos yet,
@@ -540,6 +549,7 @@ namespace AOBuddy
 
         public void OnDeathResetBuffs() { _lastBuffCastAt.Clear(); _castQueue.Clear(); }   // buffs drop on death — allow rebuff after reclaim
         private bool _wasRezSick;
+        private bool _codedocHoldLogged;
 
         // ---- Owner-land learning (which buffs actually apply to the owner) -------
         private void EnsureNoLandLoaded()
@@ -615,7 +625,18 @@ namespace AOBuddy
         {
             if (!target.TryGetStat(Stat.MaxNCU, out int maxNcu) || maxNcu <= 0) return true;   // unknown -> let server decide
             target.TryGetStat(Stat.CurrentNCU, out int usedNcu);
-            return usedNcu + plan.Ncu <= maxNcu;
+            // CurrentNCU reads 0 when the stat never arrives in the clientless payload (owner report 2026-09-24, the
+            // same fix as ChewyBuffController.FreeNcu): the running buffs' own NCU costs are the truth then. A lower
+            // buff of the same line is replaced by this one, so its NCU comes back.
+            int running = 0, replaced = 0;
+            if (target.Buffs != null)
+                foreach (Buff b in target.Buffs)
+                {
+                    if (b.NanoItem == null) continue;
+                    running += b.NanoItem.NCU;
+                    if (plan.Line != NanoLine.NOSTACKING && b.NanoItem.NanoLine == plan.Line) replaced = Math.Max(replaced, b.NanoItem.NCU);
+                }
+            return Math.Max(usedNcu, running) - replaced + plan.Ncu <= maxNcu;
         }
 
         // Sum of the nano's Use-stat modifiers (its effect). int.MinValue = no Use modifiers at all.

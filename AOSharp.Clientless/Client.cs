@@ -649,7 +649,11 @@ namespace AOSharp.Clientless
             {
                 CastNanoSpellMessage castNanoSpellMsg = (CastNanoSpellMessage)msg;
                 OnCastNanoSpell(castNanoSpellMsg.Identity, castNanoSpellMsg.TargetPresent);
-                NanoSeen?.Invoke(castNanoSpellMsg.Caster, castNanoSpellMsg.Target, castNanoSpellMsg.NanoId, -1);
+                // A pet's cast arrives with Caster = None (aobuddy.log 2026-09-27: "(None:0000) cast Touch of Salvinous
+                // on me", 42 times); the message's own Identity is who sent it (player casts: Identity == Caster,
+                // capture 20260911-163012 s18). Without this the heal pet's cycle was never measured.
+                var caster = castNanoSpellMsg.Caster == Identity.None ? castNanoSpellMsg.Identity : castNanoSpellMsg.Caster;
+                NanoSeen?.Invoke(caster, castNanoSpellMsg.Target, castNanoSpellMsg.NanoId, -1);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.Trade, (msg) =>

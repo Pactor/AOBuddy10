@@ -69,6 +69,7 @@ namespace AOBuddy
         private MissionController _mission;
         private HuntController _hunt;
         private ChewyBuffController _chewy;
+        private CodedocBuffController _codedoc;   // RubiKa 2019's buff bot (Chewy stays for Rubi-Ka)
         private MissionRoll _roll;
         private MissionRun _run;
         private MissionRecorder _recorder;
@@ -117,6 +118,9 @@ namespace AOBuddy
             _pathsDir = Path.Combine(pluginDir, "paths");
             try { Directory.CreateDirectory(_pathsDir); } catch { }
             _logFile = Path.Combine(pluginDir, "aobuddy.log");
+            // Fresh log each start (owner, 2026-09-27): the log never carried dates, so days ran together and old
+            // runs read as a second bot. The run before is kept as aobuddy.prev.log.
+            try { if (File.Exists(_logFile)) File.Copy(_logFile, Path.Combine(pluginDir, "aobuddy.prev.log"), true); File.WriteAllText(_logFile, ""); } catch { }
             _mode = ParseMode(_config.DefaultMode);
             _perkBonuses = new PerkBonuses(pluginDir, _config, Log);
             _perkBonuses.Init();
@@ -167,6 +171,8 @@ namespace AOBuddy
                 _ctx.TellOwner,
                 _combat);
             _run.Resupply = _resupply;
+            _codedoc = new CodedocBuffController(_ctx, pluginDir);
+            _run.Codedoc = _codedoc;
             _atlas = new MobAtlas(pluginDir, Log);
             _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
@@ -229,6 +235,8 @@ namespace AOBuddy
 
             Team.TeamRequest += (s, e) =>
             {
+                // RK2019 Codedoc team code out: its invites are Codedoc's to answer (one accept, as the sniff).
+                if (_codedoc != null && _codedoc.OnTeamInvite(e)) return;
                 if (_config.AutoAcceptOwnerTeamInvite) { e.Accept(); Logger.Information("Accepted team invite."); }
             };
 
@@ -722,6 +730,7 @@ namespace AOBuddy
                 _roll.Tick(dt);
                 _chewy.StartupTick(me, dt);
                 _chewy.Tick(me, dt, _combat.InCombat);
+                _codedoc.Tick(me, dt);
                 RefreshStatus(me, owner);
                 Walk(me, owner, dt);
 
@@ -755,6 +764,7 @@ namespace AOBuddy
             s.SecondsSinceCast = _support.SecondsSinceCast;
             s.InCombat = _combat.InCombat || _combat.HostilesEngaged(me, owner);
             s.NeedsRecovery = _support.NeedsRecovery(me);
+            s.CodedocHold = _codedoc != null && _codedoc.Hold;
             s.SelfHpPct = _support.SelfHpPct(me);
             s.Casting = me.IsCasting;
             s.InMission = _mission.InMission;
@@ -847,7 +857,12 @@ namespace AOBuddy
             // 2) PETS ATTACK THE SAME MOB, at the same moment he does — once per target, and only the
             //    attack/mezz pets, so the heal pet is left healing.
             bool retargeted = false;
-            if (fighting) retargeted |= _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
+            // OUTSIDE A MISSION THE PETS DON'T FIGHT (owner, 2026-09-27: "make the pets not engage mobs outside
+            // missions"). He runs to the door; a pet on a mob out there pulled the Hammer train in Longest Road that
+            // killed him at 11:46. No Attack order outside, and any pet that picks a fight on its own is called off.
+            bool outside = _run.Active && !_mission.InMission;
+            if (outside) _pets.CallOffOutside(me);
+            else if (fighting) retargeted |= _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
             else if (petHunt != null) _pets.EngageTarget(me, petHunt, _config.TickMs / 1000.0);
 
             // 3) HEAL — stims work in combat and do NOT interrupt it: Item.Use is a GenericCmd, it never
@@ -1376,6 +1391,7 @@ namespace AOBuddy
                 else _know.ReportActive(reply);
             };
             t["autobuff"] = t["keepup"] = (reply, p) => _know.ReportBuffPlans(reply);
+            t["codedoc"] = (reply, p) => _codedoc.Command(DynelManager.LocalPlayer, p.Skip(1).ToArray(), reply);   // RK2019 buff bot
             t["supplies"] = t["stims"] = (reply, p) => _know.ReportSupplies(reply);
             t["learnable"] = t["learn"] = (reply, p) => _know.ReportLearnable(Arg(p), reply);
             t["perks"] = t["perk"] = (reply, p) => _perkBonuses.Report(reply);

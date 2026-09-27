@@ -58,6 +58,15 @@ namespace AOBuddy
         {
             if (_owned.Add(pet.Instance))
                 _ctx.Log($"PET: server added #{pet.Instance} (now {_owned.Count} owned).");
+            // WHICH NANO MADE IT: the summon we queued last. Summons are serialized (one cast in flight, the next only
+            // after it finished and ~1 s passed), so an AddPet within SummonRecastSec of a queued summon is that
+            // summon's pet; the pet's server Role is checked against the nano's line once it is in view (UpgradePets).
+            if (_lastSummonQueued.nano != 0 && _petClock - _lastSummonQueued.at <= SummonRecastSec && !_petNano.ContainsKey(pet.Instance))
+            {
+                _petNano[pet.Instance] = _lastSummonQueued.nano;
+                _lastSummonQueued = (0, -99);
+                _ctx.Log($"PET: #{pet.Instance} is from summon nano {_petNano[pet.Instance]}.");
+            }
         }
 
         /// <summary>Server told us a pet is no longer ours - dead, dismissed, or left behind (RemovePetMessage).</summary>
@@ -66,6 +75,7 @@ namespace AOBuddy
             if (_owned.Remove(pet.Instance))
                 _ctx.Log($"PET: server removed #{pet.Instance} (now {_owned.Count} owned).");
             _lastSeen.Remove(pet.Instance);
+            _petNano.Remove(pet.Instance);
         }
 
         /// <summary>How many pets the SERVER says we have. Falls back to the dynel scan before the first
@@ -367,6 +377,7 @@ namespace AOBuddy
             // pass. Buffing must NOT hang off the summon list: when that list came back empty (every summon
             // read uncastable) or AutoResummon was off, the pets standing right there were never buffed.
             if (_ctx.Config.AutoResummon && TrySummon(me, queueCast)) return;
+            if (_ctx.Config.AutoResummon && UpgradePets(me)) return;
             if (_ctx.Config.BuffPets) BuffPets(me, queueCast);
         }
 
@@ -412,8 +423,66 @@ namespace AOBuddy
                 if (_summonAt.TryGetValue(nanoId, out double last) && _petClock - last < SummonRecastSec)
                     continue;
                 _summonAt[nanoId] = _petClock;
+                _lastSummonQueued = (nanoId, _petClock);
                 queueCast(new CastRequest { OnSelf = true, NanoId = nanoId, Label = "summon pet" });   // serialized with buffs by the shared cast queue
                 _ctx.Log($"PET: summon — queued nano {nanoId} (have {have}/{summons.Count}).");
+                return true;
+            }
+            return false;
+        }
+
+        // ---- Pet upgrade ---------------------------------------------------------------------
+        // A pet he could now summon better (owner, 2026-09-27: after the RK2019 Codedoc buffs lift his nano skills,
+        // e.g. MP support pet Distracting Sphere 156117 -> Lesser Deranged Mindreaver 156127 once MM > 166): dismiss it
+        // and summon the better one. Its summon nano is known from the AddPet that followed our summon (OnPetAdded);
+        // a pet summoned before the bot logged in has no known nano and is left alone (logged once). One pet at a
+        // time, never while fighting (the bot's or the pet's), and only with every owned pet in view. The dismiss
+        // is PetCommand.Terminate to that one pet - the same PetCommandMessage LocalPlayer.CommandPets sends for
+        // every pet command (Dismiss sends it for all pets). TrySummon then summons the line's best: the other
+        // lines' summons are held for SummonRecastSec so it can't re-cast a pet that is still up.
+        private readonly Dictionary<int, int> _petNano = new Dictionary<int, int>();   // pet instance -> summon nano
+        private (int nano, double at) _lastSummonQueued = (0, -99);
+        private double _upgradeAt = -99;
+        private readonly HashSet<int> _unknownPetLogged = new HashSet<int>();
+        private readonly HashSet<int> _upgradeTried = new HashSet<int>();
+
+        private static NanoLine? LineOfRole(PetType r)
+            => r == PetType.Attack ? NanoLine.AttackPets : r == PetType.Heal ? NanoLine.HealPets : r == PetType.Support ? NanoLine.SupportPets : (NanoLine?)null;
+
+        private bool UpgradePets(LocalPlayer me)
+        {
+            if (_ctx.Status.InCombat || me.IsCasting) return false;
+            if (_petClock - _upgradeAt < 20) return false;                       // one at a time: let the last swap land
+            var pets = Pets(me).ToList();
+            if (pets.Count == 0 || (_owned.Count > 0 && pets.Count < _owned.Count)) return false;
+            var bestByLine = new Dictionary<NanoLine, NanoItem>();
+            foreach (int id in AutoSummons(me))
+                if (ItemData.Find(id, out NanoItem bn) && bn != null) bestByLine[bn.NanoLine] = bn;
+            foreach (NpcChar p in pets)
+            {
+                if (!_petNano.TryGetValue(p.Identity.Instance, out int cur))
+                {
+                    if (_unknownPetLogged.Add(p.Identity.Instance)) _ctx.Log($"PET: '{p.Name}'#{p.Identity.Instance} was not summoned by me this session - its nano is unknown, not upgrading it.");
+                    continue;
+                }
+                if (!ItemData.Find(cur, out NanoItem cn) || cn == null) continue;
+                var roleLine = LineOfRole(p.Role);
+                if (roleLine.HasValue && roleLine.Value != cn.NanoLine)
+                {
+                    _ctx.Log($"PET: '{p.Name}' is a {p.Role} pet but nano {cur} is {cn.NanoLine} - dropping that pairing.");
+                    _petNano.Remove(p.Identity.Instance);
+                    continue;
+                }
+                if (!bestByLine.TryGetValue(cn.NanoLine, out NanoItem best) || best.Id == cur) continue;
+                if ((best.StackingOrder & 0xFFFFF) <= (cn.StackingOrder & 0xFFFFF)) continue;
+                if (p.FightingTarget != null) continue;
+                if (!_upgradeTried.Add(p.Identity.Instance)) continue;   // once per pet: a dismiss the server ignored isn't re-sent
+                me.CommandPets(PetCommand.Terminate, new[] { p.Identity });
+                foreach (int k in _summonAt.Keys.ToList()) if (k != best.Id) _summonAt[k] = _petClock;
+                foreach (int id in AutoSummons(me)) if (id != best.Id) _summonAt[id] = _petClock;
+                _summonAt.Remove(best.Id);
+                _upgradeAt = _petClock;
+                _ctx.Log($"PET: upgrading '{p.Name}'#{p.Identity.Instance} ({cn.Name} [{cur}]) -> {best.Name} [{best.Id}]: dismissed it, the better one is summoned next.");
                 return true;
             }
             return false;
@@ -704,6 +773,28 @@ namespace AOBuddy
         /// even mid-fight. Issued once per episode, because re-sending Follow every tick would cancel the
         /// pet's own pathing each time.
         /// </summary>
+        /// <summary>Outside a mission: any attack/support pet with a fighting target is sent back to Follow (a Follow
+        /// replaces its Attack - see the 20:28 note in RecallStragglers). Once per pet and target; the heal pet keeps
+        /// its Heal order.</summary>
+        public void CallOffOutside(LocalPlayer me)
+        {
+            if (me == null || !_ctx.Config.UsePets) return;
+            var off = new List<Identity>(); var names = new List<string>();
+            foreach (NpcChar p in Pets(me))
+            {
+                if (p.Role == PetType.Heal) continue;
+                var ft = p.FightingTarget;
+                if (ft == null) { _calledOff.Remove(p.Identity); continue; }
+                if (_calledOff.TryGetValue(p.Identity, out var was) && was.t == ft.Identity && Now - was.at < 3) continue;
+                _calledOff[p.Identity] = (ft.Identity, Now);
+                off.Add(p.Identity); names.Add($"{p.Name} off '{ft.Name}'");
+            }
+            if (off.Count == 0) return;
+            me.CommandPets(PetCommand.Follow, off);
+            _ctx.Log($"PET: outside a mission - calling {string.Join(", ", names)}.");
+        }
+        private readonly Dictionary<Identity, (Identity t, double at)> _calledOff = new Dictionary<Identity, (Identity, double)>();
+
         public void RecallStragglers(LocalPlayer me, bool fighting)
         {
             if (me == null || !_ctx.Config.UsePets) return;
@@ -853,6 +944,7 @@ namespace AOBuddy
         public void Dismiss(LocalPlayer me)
         {
             if (me != null && me.Pets.Any()) { me.CommandPets(PetCommand.Terminate); _ctx.Log("PET: terminate all."); }
+            _petNano.Clear();
             // The server will send RemovePet for each, but clear our own view now so nothing tries to
             // command a pet we just dismissed in the gap before those arrive.
             _owned.Clear();

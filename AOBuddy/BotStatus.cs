@@ -22,5 +22,6 @@ namespace AOBuddy
         public bool InMission;            // MissionController.InMission — blitz is walking a mission floor
         public bool OwnerVisible;         // owner dynel found this tick
         public float OwnerDistance;       // metres to him while visible (0 when not)
+        public bool CodedocHold;          // RK2019 Codedoc step pending/asking: own self-buffs wait so Codedoc's land first
     }
 }

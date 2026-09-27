@@ -42,7 +42,7 @@ namespace AOBuddy
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut,
-            WaitForWarp
+            WaitForWarp, Codedoc
         }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
@@ -392,6 +392,8 @@ namespace AOBuddy
             if (_phase == Phase.Blitz && _mission.Active) _mission.Stop("mission run stopped");
             if (_overland.Active) _overland.Stop("mission run stopped");
             _follow.ClearManual();
+            if (Codedoc?.Busy == true) Codedoc.Abort("mission run stopped");
+            Codedoc?.Disarm("mission run stopped");
             _ctx.Log($"MISSIONRUN: stopped ({why}) after {_done} mission(s).");
             _phase = Phase.Off;
         }
@@ -427,6 +429,8 @@ namespace AOBuddy
             if (_overland.Active) _overland.Stop("died");
             _follow.ClearManual();
             Enter(Phase.Dead, "died");
+            if (Codedoc?.Busy == true) Codedoc.Abort("died");
+            Codedoc?.Arm("died");   // RK2019: a death strips buffs — Codedoc again once back at the terminal
         }
 
         // ---- Wire --------------------------------------------------------------------------------------
@@ -922,6 +926,7 @@ namespace AOBuddy
                         // at a time, refilling nano between them) - not just a fixed pause after the sickness.
                         if (SupportController.IsRezSick(me) || me.IsCasting || Buffing) { _phaseTime = 0; return false; }
                         if (_phaseTime < 3) return false;
+                        if (StartCodedoc(me)) return false;   // RK2019: Codedoc's buffs before going back to work
                         _afterDeath = false;
                         _tell("Rez sickness is over and my buffs are back up; back to work.");
                         // Twice dead in the same mission (23:14 and 23:20, 2026-09-23: the same pack in the same corner
@@ -931,6 +936,7 @@ namespace AOBuddy
                         if (_current != null && !_completed) { _travelTries = 0; _doorTries = 0; Enter(Phase.ToDoor, "back to the open mission"); return false; }
                     }
                     if (_phaseTime < 1.5) return false;
+                    if (StartCodedoc(me)) return false;   // RK2019: Codedoc's buffs at the run's start (armed in Enter)
                     // Out of room: he always needs 4 free inventory slots (not bags, not items) to pull the mission
                     // keys and rewards (owner, 2026-09-23), and the stash has already filled every bag it could. He
                     // can't go on; buying bags, selling and banking nano crystals come later (MISSION-MODE-PLAN.md).
@@ -968,6 +974,9 @@ namespace AOBuddy
                     _roll.Roll(s => { });
                     Enter(Phase.AwaitList, "rolled");
                     return false;
+
+                case Phase.Codedoc:
+                    return CodedocTick(me);
 
                 case Phase.AwaitList:
                     if (_phaseTime > ListTimeout) { _ctx.Log("MISSIONRUN: no list came back; rolling again."); Enter(Phase.Rolling, "no answer"); }
@@ -1701,6 +1710,7 @@ namespace AOBuddy
             {
                 _follow.ClearMovement();
                 int now = (int)Playfield.ModelId;
+                if (now != _hikeFromPf && now != _hike.Exit.ToPf) BlockWrongExit(_hikeFromPf, now);
                 // EVERY crossing on foot, not just the first (08:25-08:30, 2026-09-24): handed to travel in the ICC
                 // (Andromeda 655), it tried the Jobe, Tir and Omni-1 Trade whompas at ground height, three tries
                 // each, detoured through the Grid and came back to the same whompas. Chain the next hike at once
@@ -1733,6 +1743,7 @@ namespace AOBuddy
             var e = _hike.Exit;
             Vector3 pos = me.Transform.Position;
             Vector3 at = _hike.WalkTo ?? e.A;
+            _hikePrevPos = pos;
 
             // First leg on the zone's walk grid: to the reachable ground nearest the exit. ICC (pf 655): the
             // whompa stands in a pocket whose opening is narrower than the grid's 4 m cells, so the exit itself is
@@ -1742,7 +1753,7 @@ namespace AOBuddy
                 var grid = HikeGrid();
                 if (grid == null) return false;                       // still building (a few seconds)
                 _hikeRoute = new List<Vector3>();
-                var best = NearestPath(grid, pos, at, out float bestLeft);
+                var best = NearestPath(grid, pos, at, out float bestLeft, OtherPads(grid, _hikeFromPf, e));
                 if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
@@ -2035,6 +2046,57 @@ namespace AOBuddy
         // (VendingMachine 42685979 at (199,129)) and the bank terminal (C73D:0EE5BBFF) from there. The way out is
         // back the way he came in (owner): where he landed on zoning in, then on through it.
         public ResupplyController Resupply;
+
+        // ---- CODEDOC (RubiKa 2019 only; CodedocBuffs.cs) ---------------------------------------------------
+        // Armed when the run starts (Enter from Off) and on a death (OnDied); checked in Rolling when he is back at
+        // the terminal (after the rez-sickness wait on a death). Only in the Codedoc zone (Borealis): walk to the spot
+        // the sniffed character stood at, ask, come back to the terminal. Bounded: 180 s to get there, 300 s asking;
+        // either way the run goes on (ToTerminal).
+        public CodedocBuffController Codedoc;
+        private bool _codedocAsked;
+        private const double CodedocReachSec = 180, CodedocAskSec = 300;
+
+        private bool StartCodedoc(LocalPlayer me)
+        {
+            if (Codedoc == null || !Codedoc.Wants(me)) return false;
+            _codedocAsked = false;
+            Enter(Phase.Codedoc, "Codedoc buffs missing");
+            return true;
+        }
+
+        private bool CodedocTick(LocalPlayer me)
+        {
+            if (Codedoc == null) { Enter(Phase.ToTerminal, "no Codedoc controller"); return false; }
+            if (_codedocAsked)
+            {
+                if (Codedoc.Busy)
+                {
+                    if (_phaseTime > CodedocAskSec) { Codedoc.Abort($"asking took over {CodedocAskSec:0} s"); Enter(Phase.ToTerminal, "Codedoc step timed out"); }
+                    return false;
+                }
+                Enter(Phase.ToTerminal, "Codedoc step done");
+                return false;
+            }
+            if ((int)Playfield.ModelId != Codedoc.SpotPf) { Codedoc.Abort("not in the Codedoc zone"); Enter(Phase.ToTerminal, "left the Codedoc zone"); return false; }
+            float d = Movement.Flat(me.Transform.Position, Codedoc.Spot);
+            if (d <= 3f)
+            {
+                _follow.ClearManual();
+                if (_overland.Active) _overland.Stop("at the Codedoc spot");
+                if (!Codedoc.Begin(me, "mission run")) { Codedoc.Disarm("nothing to ask at the spot"); Enter(Phase.ToTerminal, "nothing for Codedoc"); return false; }
+                _codedocAsked = true; _phaseTime = 0;
+                return false;
+            }
+            if (_phaseTime > CodedocReachSec)
+            {
+                _follow.ClearManual();
+                Codedoc.Abort($"could not reach the Codedoc spot in {CodedocReachSec:0} s ({d:0} m off)");
+                Enter(Phase.ToTerminal, "Codedoc spot not reached");
+                return false;
+            }
+            if (d <= 15f && !_overland.Active) { _follow.SetManualTarget(Codedoc.Spot); return true; }   // the last metres on foot
+            return Travel(me, Codedoc.SpotPf, Codedoc.Spot, "the Codedoc buffers");
+        }
         private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Stims, Exit }
         private ShopStep _shopStep;
         private double _shopStepAt, _shopTriedAt = -9999;
@@ -3203,10 +3265,44 @@ namespace AOBuddy
         // exit, each a full grid search of up to 1.5M cells, and froze the bot for minutes in Holes in the Wall (05:06,
         // the Athen Shire line unreachable on the grid - no log, no commands answered). Now: to the exit itself, else to
         // the first reachable ground within 'ring' metres of it (the search's own reach), then straight on from there.
-        private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft)
+        // WHOMPA CLUSTERS (owner, 2026-09-27): Omni-1 Trade has four booths 7-10 m apart round one spot - Entertainment
+        // (373,379), pf 685 (368,374), Andromeda/ICC (363,379), The Reck (368,384) (Zoning.json, kind 'line'). Walking
+        // to the ICC booth he stepped on the Reck one at (365,383), 12:53:09, three times over. On the way to a booth,
+        // every other booth in the zone is ground he must not step on.
+        private const float PadKeepOff = 3f;
+        private static HashSet<int> OtherPads(IWalkGrid grid, int pf, ZoneExit target)
+        {
+            var set = new HashSet<int>();
+            foreach (var x in Zoning.ExitsFrom(pf))
+                if (x.Kind == ExitKind.Line && Movement.Flat(x.A, target.A) > 1.5f) grid.CellsAlong(x.A, x.A, PadKeepOff, set);
+            return set;
+        }
+
+        // A crossing into a zone the hike did not aim for: the exit behind him that leads there, nearest where he last
+        // stood, is blocked on that zone's walk grid for the rest of the session, so the next plan goes round it. The
+        // route from here brings him back the way he came (Reck -> Omni-1 Trade worked each time, 12:53).
+        private Vector3? _hikePrevPos;
+        private void BlockWrongExit(int fromPf, int landedPf)
+        {
+            if (!_hikePrevPos.HasValue) return;
+            var p = _hikePrevPos.Value;
+            var wrong = Zoning.ExitsFrom(fromPf).Where(x => x.ToPf == landedPf && (x.Kind == ExitKind.Line || x.Kind == ExitKind.ZoneLine))
+                                                .OrderBy(x => x.Kind == ExitKind.ZoneLine ? Movement.Flat(p, Zoning.CrossLine(x, p).at) : Movement.Flat(p, x.A))
+                                                .FirstOrDefault();
+            var grid = _hikeGridPf == fromPf ? _hikeGrid : null;   // still the zone he just left: the grid switches on the next HikeGrid()
+            if (wrong == null || grid == null) { _ctx.Log($"MISSIONRUN: took a wrong way into {Zoning.Name(landedPf)} from {Zoning.Name(fromPf)} near ({p.X:0},{p.Z:0}); no known exit there to block."); return; }
+            if (!_hikeBlocked.TryGetValue(fromPf, out var set)) _hikeBlocked[fromPf] = set = new HashSet<int>();
+            int before = set.Count;
+            if (wrong.Kind == ExitKind.Line) grid.CellsAlong(wrong.A, wrong.A, PadKeepOff + 0.5f, set);
+            else grid.CellsAlong(wrong.A, wrong.B, PadKeepOff, set);
+            _ctx.Log($"MISSIONRUN: took the wrong way - {wrong} at ({wrong.A.X:0},{wrong.A.Z:0}) from ({p.X:0},{p.Z:0}); blocked {set.Count - before} cell(s) round it in {Zoning.Name(fromPf)}, going back.");
+        }
+
+        private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft, HashSet<int> extra = null)
         {
             bestLeft = float.MaxValue;
             _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
+            if (extra != null && extra.Count > 0) { extra.UnionWith(blockedCells ?? new HashSet<int>()); blockedCells = extra; }
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var path = grid.FindPath(pos, at, blockedCells, T("snap"), T("reach"), out string why);
             // The second only when the first ended short of its search limit: a search that ran out of cells (a 2 km
@@ -4021,6 +4117,7 @@ namespace AOBuddy
         private void Enter(Phase p, string why)
         {
             if (p != _phase) _ctx.Log($"MISSIONRUN: {_phase} -> {p} ({why})");
+            if (_phase == Phase.Off && p != Phase.Off) Codedoc?.Arm("mission run started");
             _phase = p; _phaseTime = 0;
             if (p == Phase.ToDoor || p == Phase.Rolling) { _blitzTries = 0; _exitStands = 0; _exitDoor = null; }
             if (p == Phase.Rolling) _rollWarned = false;
@@ -4029,7 +4126,7 @@ namespace AOBuddy
             if (p == Phase.Rolling || p == Phase.EnterDoor || p == Phase.Hike) _straightTries = 0;
             if (p == Phase.Leaving) _leaveWarned = false;
             if (p == Phase.Dead || p == Phase.Rolling || p == Phase.Stash || p == Phase.ToTerminal) _healOut = false;
-            if (p == Phase.ToTerminal || p == Phase.ToDoor) { _travelStarted = false; _travelTries = 0; }
+            if (p == Phase.ToTerminal || p == Phase.ToDoor || p == Phase.Codedoc) { _travelStarted = false; _travelTries = 0; }
             _approach = 0;
         }
 
