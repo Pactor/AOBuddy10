@@ -3159,22 +3159,24 @@ namespace AOBuddy
         private Vector3 _straightGoal;
 
         // A walk-grid path to the reachable ground nearest 'at' (rings out to 24 m round it).
+        // Two searches at most (owner, 2026-09-27: "fix that bug"): the old loop tried 49 goals in rings round a blocked
+        // exit, each a full grid search of up to 1.5M cells, and froze the bot for minutes in Holes in the Wall (05:06,
+        // the Athen Shire line unreachable on the grid - no log, no commands answered). Now: to the exit itself, else to
+        // the first reachable ground within 'ring' metres of it (the search's own reach), then straight on from there.
         private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft)
         {
-            List<Vector3> best = null; bestLeft = float.MaxValue;
-            float step = Math.Max(0.5f, T("ringstep")), max = Math.Max(0f, T("ring"));
-            for (float r = 0; r <= max + 0.01f; r += step)
-                for (int k = 0; k < (r == 0 ? 1 : 8); k++)
-                {
-                    double t = k * Math.PI / 4;
-                    var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
-                    _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
-                    var path = grid.FindPath(pos, goal, blockedCells, T("snap"), T("reach"), out _);
-                    if (path == null) continue;
-                    float left = Movement.Flat(path[path.Count - 1], at);
-                    if (left < bestLeft) { bestLeft = left; best = path; }
-                }
-            return best;
+            bestLeft = float.MaxValue;
+            _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var path = grid.FindPath(pos, at, blockedCells, T("snap"), T("reach"), out string why);
+            // The second only when the first ended short of its search limit: a search that ran out of cells (a 2 km
+            // walk across Holes in the Wall does, ~3 s) runs out again with a wider goal.
+            if (path == null && (why == null || why.IndexOf("searched", StringComparison.OrdinalIgnoreCase) < 0))
+                path = grid.FindPath(pos, at, blockedCells, T("snap"), Math.Max(T("reach"), T("ring")), out _);
+            if (sw.ElapsedMilliseconds > 1000) _ctx.Log($"MISSIONRUN: the grid search toward the exit took {sw.ElapsedMilliseconds} ms.");
+            if (path == null) return null;
+            bestLeft = Movement.Flat(path[path.Count - 1], at);
+            return path;
         }
         private int _blitzTries;
         private double _doorStepTime;
