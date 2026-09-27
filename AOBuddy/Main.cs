@@ -489,7 +489,8 @@ namespace AOBuddy
                 return;
             }
             var now = DateTime.UtcNow;
-            if (_nanoOn.TryGetValue((target, nano), out var until) && until > now) { _nanoOn[(target, nano)] = now.AddSeconds(secs); return; }
+            // Still on, or re-applied within 10 s of running out (a 6 s aura renewed every 8 s): the same buff, not news.
+            if (_nanoOn.TryGetValue((target, nano), out var until) && until.AddSeconds(10) > now) { _nanoOn[(target, nano)] = now.AddSeconds(secs); return; }
             _nanoOn[(target, nano)] = now.AddSeconds(secs);
             Log($"NANO: {name} ({nano}) is on {who} for {secs:0.#} s.");
         }
