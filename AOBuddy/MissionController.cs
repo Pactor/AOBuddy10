@@ -706,7 +706,7 @@ namespace AOBuddy
                 // The building's own exit door (AOBuddyNav.Exit), approached from 1.5 m inside it; the landing
                 // point only when the exit is unknown - it is the entrance only if we came in from outside.
                 var ex = _nav.Exit;
-                var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
+                var land = ex != null ? new Vector3((float)(ex.X + ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z + ex.Nz * 1.5))
                                       : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
                 int? lf = _grid.FloorAt(land);
                 if (!lf.HasValue) { why = "the entrance is not on any floor"; return null; }
