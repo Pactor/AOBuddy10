@@ -990,7 +990,8 @@ namespace AOBuddy
                 case Phase.ToDoor:
                 {
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
-                    int pf = _current.Playfield.Instance;
+                    if (_current == null) { Enter(Phase.ToTerminal, "no mission held"); return false; }
+                    int pf = _current?.Playfield.Instance ?? 0;
                     // Its zone went on the avoid list (killed on sight there): drop it. Travel refuses every route into an
                     // avoided zone, and the run asked again for 20 minutes (06:41-07:02, 2026-09-27, Wailing Wastes).
                     if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) { Skip($"{Zoning.Name(pf)} is on my avoid list"); return false; }
@@ -1081,7 +1082,9 @@ namespace AOBuddy
                 case Phase.WaitForWarp:
                 {
                     if (_phaseTime < 45) return false;
-                    Enter(Phase.ToDoor, "Next leg after Scotty warp");
+                    // Back to what the hike was for: the door, or the terminal with no mission held (ToDoor with no
+                    // mission threw at _current.Playfield, Algorithman 18:18, 2026-09-27).
+                    Enter(_hikeReturn == Phase.ToDoor && _current != null ? Phase.ToDoor : Phase.ToTerminal, "Next leg after Scotty warp");
                     break;
                 }
                 case Phase.AwaitBlitz:
@@ -1632,7 +1635,7 @@ namespace AOBuddy
             // opt.UseScotty = false;   // the hike crosses on foot: doors stood on, not Scotty
             // Not through the Grid: its lifts and exits are gated by Computer Literacy and none took him
             // (four Grid lines stood on 4 times each, 08:33-08:36, 2026-09-24). The owner: the whompa is the best bet.
-            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) || (!NoScotty && e.Kind==ExitKind.Scotty) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152;
+            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0 || (!NoScotty && e.Kind == ExitKind.Scotty)) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152;
             ZoneRoute route;
             // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
             // at 12:14, then walked through again on the way to Athen Shire and killed there).
@@ -1874,6 +1877,16 @@ namespace AOBuddy
             // the booth's ROOF, 0.3 m from the centre in flat distance but 4.7 m above it, and this ladder
             // burned its tries aiming at a pad it could never step onto. A door's recorded centre is ~1.4 m
             // above the ground its stander stands on, so only a storey counts.
+            // Judged only once he is at it (Dadbod, The Longest Road 11:16, 2026-09-27: 110 m off the Broken Shores line,
+            // 5 m above its centre on the slope down to it, the hike failed at once, twenty times over). Until then
+            // he walks to the approach point, and the stand tries don't start counting.
+            var approach = new Vector3(e.A.X - dir.X * 5f, pos.Y, e.A.Z - dir.Z * 5f);
+            if (Movement.Flat(pos, approach) > 10f)
+            {
+                _hikePassAt = _clock;
+                _follow.SetManualTarget(approach);
+                return true;
+            }
             if (Math.Abs(padY - pos.Y) > 2.5f)
             {
                 MarkBadExit(e);
