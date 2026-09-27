@@ -109,11 +109,11 @@ namespace AOBuddyMonitor
                 _logSeq = -1;
                 Dispatcher.UIThread.Post(() => LogLine("[bot restarted — log ring reset]", Local()));
                 var (seq2, lines2) = _bot.GetLog(-1);
-                if (seq2 >= 0) { _logSeq = seq2; Post(lines2); }
+                if (seq2 >= 0) { _logSeq = seq2; Post(lines2.Where(x=>!x.Line.StartsWith("hb ")).ToList()); }
                 return;
             }
             _logSeq = seq;
-            Post(lines);
+            Post(lines.Where(x=>!x.Line.StartsWith("hb ")).ToList());
             void Post(List<(int Seq, string T, string Line)> ls)
             {
                 if (ls.Count > 0) Dispatcher.UIThread.Post(() =>
