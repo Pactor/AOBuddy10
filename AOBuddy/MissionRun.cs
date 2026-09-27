@@ -3274,7 +3274,10 @@ namespace AOBuddy
         {
             var set = new HashSet<int>();
             foreach (var x in Zoning.ExitsFrom(pf))
-                if (x.Kind == ExitKind.Line && Movement.Flat(x.A, target.A) > 1.5f) grid.CellsAlong(x.A, x.A, PadKeepOff, set);
+                // Booths, and the proxies/teleporters that take you on contact too (13:54:32: Rome Park's Jobe Platform
+                // proxy at (368,316), 5 m from the Broken Shores line, took him the wrong way).
+                if ((x.Kind == ExitKind.Line || x.Kind == ExitKind.Proxy || x.Kind == ExitKind.Teleport) && Movement.Flat(x.A, target.A) > 1.5f)
+                    grid.CellsAlong(x.A, x.A, PadKeepOff, set);
             return set;
         }
 
@@ -3286,15 +3289,15 @@ namespace AOBuddy
         {
             if (!_hikePrevPos.HasValue) return;
             var p = _hikePrevPos.Value;
-            var wrong = Zoning.ExitsFrom(fromPf).Where(x => x.ToPf == landedPf && (x.Kind == ExitKind.Line || x.Kind == ExitKind.ZoneLine))
+            var wrong = Zoning.ExitsFrom(fromPf).Where(x => x.ToPf == landedPf && x.Kind != ExitKind.Scotty)
                                                 .OrderBy(x => x.Kind == ExitKind.ZoneLine ? Movement.Flat(p, Zoning.CrossLine(x, p).at) : Movement.Flat(p, x.A))
                                                 .FirstOrDefault();
             var grid = _hikeGridPf == fromPf ? _hikeGrid : null;   // still the zone he just left: the grid switches on the next HikeGrid()
             if (wrong == null || grid == null) { _ctx.Log($"MISSIONRUN: took a wrong way into {Zoning.Name(landedPf)} from {Zoning.Name(fromPf)} near ({p.X:0},{p.Z:0}); no known exit there to block."); return; }
             if (!_hikeBlocked.TryGetValue(fromPf, out var set)) _hikeBlocked[fromPf] = set = new HashSet<int>();
             int before = set.Count;
-            if (wrong.Kind == ExitKind.Line) grid.CellsAlong(wrong.A, wrong.A, PadKeepOff + 0.5f, set);
-            else grid.CellsAlong(wrong.A, wrong.B, PadKeepOff, set);
+            if (wrong.Kind == ExitKind.ZoneLine) grid.CellsAlong(wrong.A, wrong.B, PadKeepOff, set);
+            else grid.CellsAlong(wrong.A, wrong.A, PadKeepOff + 0.5f, set);
             _ctx.Log($"MISSIONRUN: took the wrong way - {wrong} at ({wrong.A.X:0},{wrong.A.Z:0}) from ({p.X:0},{p.Z:0}); blocked {set.Count - before} cell(s) round it in {Zoning.Name(fromPf)}, going back.");
         }
 
