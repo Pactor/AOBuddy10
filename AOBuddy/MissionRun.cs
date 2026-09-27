@@ -985,6 +985,9 @@ namespace AOBuddy
                 {
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     int pf = _current.Playfield.Instance;
+                    // Its zone went on the avoid list (killed on sight there): drop it. Travel refuses every route into an
+                    // avoided zone, and the run asked again for 20 minutes (06:41-07:02, 2026-09-27, Wailing Wastes).
+                    if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) { Skip($"{Zoning.Name(pf)} is on my avoid list"); return false; }
                     Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
                     // Within 10 m the door approach takes over at once, travel or not (owner, 18:37 2026-09-26: "he should just
                     // run into mission door now" - at a Galway County door up on a structure, travel walked at it and was
