@@ -1539,6 +1539,9 @@ namespace AOBuddy
                 return true;
             }
 
+            // Standing exactly on the waypoint (15:14:03, 2026-09-27: a snap-back rewind put the next point under his
+            // feet and Normalize threw): nothing to walk this tick.
+            if (Movement.Flat(wp, pos) < 0.01f) return true;
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
