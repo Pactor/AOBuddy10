@@ -446,6 +446,32 @@ namespace AOBuddy
         private readonly HashSet<int> _unknownPetLogged = new HashSet<int>();
         private readonly HashSet<int> _upgradeTried = new HashSet<int>();
 
+        /// <summary>The summon nano behind a pet: ours from its AddPet, else the best-stacking nano he knows in its line
+        /// whose name holds the pet's name; null when neither.</summary>
+        private NanoItem NanoOfPet(LocalPlayer me, NpcChar p)
+        {
+            if (_petNano.TryGetValue(p.Identity.Instance, out int id) && ItemData.Find(id, out NanoItem known) && known != null) return known;
+            var rl = LineOfRole(p.Role);
+            NanoItem match = null;
+            if (rl.HasValue && !string.IsNullOrEmpty(p.Name) && me.SpellList != null)
+                foreach (int sid in me.SpellList)
+                    if (ItemData.Find(sid, out NanoItem kn) && kn != null && kn.NanoLine == rl.Value && kn.Name != null
+                        && kn.Name.IndexOf(p.Name, StringComparison.OrdinalIgnoreCase) >= 0
+                        && (match == null || (kn.StackingOrder & 0xFFFFF) > (match.StackingOrder & 0xFFFFF)))
+                        match = kn;
+            return match;
+        }
+
+        private bool ResummonNoWorse(LocalPlayer me, NpcChar p)
+        {
+            var cur = NanoOfPet(me, p);
+            if (cur == null) return true;   // unknown: a fresh one of the line's best is the only way to know
+            foreach (int id in AutoSummons(me))
+                if (ItemData.Find(id, out NanoItem b) && b != null && b.NanoLine == cur.NanoLine)
+                    return (b.StackingOrder & 0xFFFFF) >= (cur.StackingOrder & 0xFFFFF);
+            return false;                    // nothing castable in that line
+        }
+
         private static NanoLine? LineOfRole(PetType r)
             => r == PetType.Attack ? NanoLine.AttackPets : r == PetType.Heal ? NanoLine.HealPets : r == PetType.Support ? NanoLine.SupportPets : (NanoLine?)null;
 
@@ -462,8 +488,26 @@ namespace AOBuddy
             {
                 if (!_petNano.TryGetValue(p.Identity.Instance, out int cur))
                 {
-                    if (_unknownPetLogged.Add(p.Identity.Instance)) _ctx.Log($"PET: '{p.Name}'#{p.Identity.Instance} was not summoned by me this session - its nano is unknown, not upgrading it.");
-                    continue;
+                    // BY NAME (owner, 2026-09-27: "better mindreaver"): a pet up from before the bot logged in has no
+                    // AddPet of ours, but its name is in its summon nano's name ('Distracting Sphere' <- 'Supreme
+                    // Distracting Sphere' 156117). Take the best-stacking nano he knows in the pet's line whose name
+                    // holds the pet's name; upgrade only if the line's best castable is higher than that. Salvinous
+                    // (from Calling of Salvinous, 125745) is then never swapped down to a castable Calling of Medinos.
+                    var rl = LineOfRole(p.Role);
+                    NanoItem match = null;
+                    if (rl.HasValue && !string.IsNullOrEmpty(p.Name) && me.SpellList != null)
+                        foreach (int sid in me.SpellList)
+                            if (ItemData.Find(sid, out NanoItem kn) && kn != null && kn.NanoLine == rl.Value && kn.Name != null
+                                && kn.Name.IndexOf(p.Name, StringComparison.OrdinalIgnoreCase) >= 0
+                                && (match == null || (kn.StackingOrder & 0xFFFFF) > (match.StackingOrder & 0xFFFFF)))
+                                match = kn;
+                    if (match == null)
+                    {
+                        if (_unknownPetLogged.Add(p.Identity.Instance)) _ctx.Log($"PET: '{p.Name}'#{p.Identity.Instance} was not summoned by me this session and no nano I know carries its name - not upgrading it.");
+                        continue;
+                    }
+                    cur = match.Id;
+                    if (_unknownPetLogged.Add(p.Identity.Instance)) _ctx.Log($"PET: '{p.Name}'#{p.Identity.Instance} (up from before) read as {match.Name} [{cur}] by its name.");
                 }
                 if (!ItemData.Find(cur, out NanoItem cn) || cn == null) continue;
                 var roleLine = LineOfRole(p.Role);
@@ -754,7 +798,14 @@ namespace AOBuddy
                 // STILL QUIET AFTER TWO RE-TASKS: terminate it and let the summon step bring a fresh one (owner,
                 // 2026-09-27: "terminate and resummon the heal pet when it stays quiet"). 13:32:32-13:33:26: three
                 // Heal orders, no cast from Salvinous for 179 s, Dadbod down to 66% and saved by his own stim.
-                if (_healRetasks >= 2)
+                // ...but only when what he can summon now is at least as good: a Salvinous up from Calling of Salvinous
+                // (125745, needs buffs he may have lost) must not be swapped for a castable Calling of Medinos.
+                if (_healRetasks >= 2 && !ResummonNoWorse(me, healer))
+                {
+                    if (_healRetasks == 2) _ctx.Log($"PET: heal pet '{healer.Name}' quiet, but I can only summon a weaker heal pet now - keeping it and re-tasking.");
+                    _healRetasks++;
+                }
+                else if (_healRetasks >= 2)
                 {
                     _healRetasks = 0; _healTaskedRoster = null;
                     Targeting.SetTarget(healer.Identity);   // target it first: untargeted, Terminate ends ALL pets (owner)
