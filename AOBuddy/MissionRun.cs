@@ -405,35 +405,20 @@ namespace AOBuddy
             var meD = DynelManager.LocalPlayer;
             if (meD != null) NoteTough(DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == meD.Identity));
             if (_current != null && !_completed) _deathsHere++;
-            // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
-            // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
-            // third time. A death out in the open marks the zone: no missions there for 'dangermins', and the
-            // mission he was walking to is dropped.
+            // A death out in the open drops the mission he was walking to (Mutant Domain, 09:33 and 09:39, 2026-09-24:
+            // killed twice by the same pack on the way to one door).
             if (!_mission.InMission)
             {
                 int pf = (int)Playfield.ModelId;
-                // Killed on sight: from 90%+ HP to dead within 5 s, no fight (West Athens 21:28, 2026-09-24: 100% at
-                // 21:28:24, dead at 21:28:27 beside a level-200 'Vanguard Watcher'; he is Omni, it is a Clan town).
-                // That zone is avoided for good (config MissionAvoidZones), not for a while.
-                var avoid = _ctx.Config.MissionAvoidZones ?? (_ctx.Config.MissionAvoidZones = new List<int>());
-                if (_clock - _hpHighAt < 5 && !avoid.Contains(pf))
-                {
-                    avoid.Add(pf);
-                    SaveConfigValue("MissionAvoidZones", new JArray(avoid));
-                    _tell($"Killed on sight in {Zoning.Name(pf)}; I won't go there again ('mission run avoid {pf}' to undo).");
-                }
-                // The SPOT, not the whole zone: at 01:22 (2026-09-26) a Scorpiod/Rollerrat pack by one Stret West Bank door
-                // killed him and the whole zone - most of his missions and his way out of Borealis - went off limits for 8
-                // hours. Missions within 250 m of the spot are left for 6 hours (RememberUnreachable); the whole zone only
-                // on a second death there within 2 hours.
+                // NO BLACKLISTING ON A DEATH (owner with Algorithman, 2026-09-27: "blacklisting missions areas should be a config
+                // thing, and honestly, if he just kept running to mission door, he would escape most of those guards"). A death
+                // out in the open used to put the whole zone on the avoid list for good (killed on sight), leave missions near
+                // the spot for 6 hours, and mark the zone dangerous on a second death; now only the owner's list
+                // (config MissionAvoidZones / 'mission run avoid') keeps him out, and a chaser no longer stops him.
                 var me0 = DynelManager.LocalPlayer;
                 var spot = me0 != null ? new Vector3(me0.Transform.Position.X, 0, me0.Transform.Position.Z) : new Vector3(0, 0, 0);
-                bool again = Unreach.Any(d => d.pf == pf && (DateTime.UtcNow - d.when).TotalHours < 2 && Movement.Flat(d.at, spot) < 600);
-                RememberUnreachable(pf, spot);
-                if (again) MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
-                _ctx.Log(again ? $"MISSIONRUN: died out in {Zoning.Name(pf)} again; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n})."
-                               : $"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}); missions near it are left for 6 hours.");
+                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}).");
             }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
