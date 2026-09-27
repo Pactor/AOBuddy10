@@ -738,6 +738,7 @@ namespace AOBuddy
                 {
                     var ch = ClearHop(pos, myFloor.Value, out why);
                     if (ch.HasValue) return ch;
+                    if (_clearStuck) return null;   // no path from where he stands: fail, back off, try again
                 }
                 target = FindTarget(out Vector3? tpos, out string tw);
                 if (target.HasValue && tpos.HasValue && _grid.FloorAt(tpos.Value) is int tf)
@@ -916,6 +917,7 @@ namespace AOBuddy
         // Once the person is seen, his room is left out of the clearing, and paths to other rooms go round it when
         // they can; the objective walks there once the rest is cleared.
         private int? _personRoom;
+        private bool _clearStuck;
         private HashSet<(int, int, int)> _personCells;
 
         private int? RoomIndexAt(Vector3 p, int floor)
@@ -1054,14 +1056,27 @@ namespace AOBuddy
             _clearScanAt = -99; ClearScan(pos);
             // 1) the nearest room on this floor not walked yet
             Hop? best = null; float bestLen = float.MaxValue; string bestName = null;
+            var noPath = new List<int>(); int tried = 0; _clearStuck = false;
             foreach (var r in _grid.RoomsOn(floor))
             {
                 if (_clearVisited.Contains(r.Index) || r.Index == _personRoom) continue;
+                tried++;
                 var p = PathFrom(pos, r.Centre, out _);
-                if (p == null) { _clearVisited.Add(r.Index); continue; }
+                if (p == null) { noPath.Add(r.Index); continue; }
                 float len = 0; for (int i = 1; i < p.Count; i++) len += Vector3.Distance(p[i - 1], p[i]);
                 if (len < bestLen) { bestLen = len; bestName = r.Name; best = new Hop { Pos = r.Centre, Purpose = Purpose.Clear }; }
             }
+            // EVERY room unreachable at once is where he stands, not the rooms (Dadbod 11:10:25, 2026-09-27: after a fight
+            // no path started from his spot, all rooms were marked unreachable in one go and clearing gave up after 2 of
+            // them). Mark nothing; the objective's path fails the same way and the run backs off 6 m and tries again.
+            if (best == null && tried > 1 && noPath.Count == tried)
+            {
+                why = "no walkable path from where I stand";
+                _ctx.Log($"MISSION: none of the {tried} rooms left has a path from ({pos.X:0},{pos.Z:0}); it is where I stand, not the rooms - keeping them.");
+                _clearStuck = true;
+                return null;
+            }
+            foreach (int i in noPath) _clearVisited.Add(i);
             if (best != null) { why = $"clearing ({ClearText}): room '{bestName}' on floor {floor}"; return best; }
             // 2) a live mob in sight on this floor (a patrol, or one standing between rooms)
             var me = DynelManager.LocalPlayer;
