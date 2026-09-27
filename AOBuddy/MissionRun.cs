@@ -786,7 +786,11 @@ namespace AOBuddy
                             // nothing too strong for him within 30 m of the foe, or he stays where he is.
                             bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
                                             && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
-                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing))
+                            // ...and always up to the one he is PULLING (owner, 07:13 2026-09-27: "he just aggroed 2 mobs then
+                            // went to fight a third" - a pull target 15 m off was swung at from where he stood, its HP never
+                            // moved, it was dropped after 20 s and the next one pulled, the first now on its way to him).
+                            bool pulling = _pullId.HasValue && foe != null && foe.Identity == _pullId.Value;
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
                             {
                                 // Inside, along the building's path: straight at a mob round a corner the server pulled
                                 // him back at the wall and the mob's HP never moved (11:24, 2026-09-25, first clear run).
