@@ -864,6 +864,13 @@ namespace AOBuddy
                             // not to the terminal - he had a mission in hand and went to roll another.
                             Enter(_travelReturn, "back to travel");
                             break;
+                        // Skipped (mission deleted) and held on the way out: back to leaving, never back into a blitz of a
+                        // mission that no longer exists (14:13:33-14:16:38, 2026-09-27: deleted, held at the exit, then 3 tries
+                        // at selecting the person of the deleted mission and a second 'skip').
+                        case Phase.ExitStand when _current == null && _mission.InMission:
+                        case Phase.Blitz when _current == null && _mission.InMission:
+                            _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Leaving, "skipped; back to leaving");
+                            break;
                         case Phase.Blitz: case Phase.Backoff: case Phase.ExitStand:
                             if (_completed && _mission.InMission) { _mission.Command("backoutside", OnOutsideReply); Enter(Phase.Blitz, "back to walking out"); }
                             else if (_mission.InMission) { _resumeBlitz = true; Enter(Phase.AwaitBlitz, "back to the blitz"); }

@@ -273,7 +273,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.PushOut) { _tell("Outside the mission. Mission mode off."); _ctx.Log("MISSION: walked out of the building."); }
             if (Active) Stop("zoned");
-            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0;
+            _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0; _blockClearTried = false;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailWhole = true; _retrace = false;
             try
@@ -930,6 +930,15 @@ namespace AOBuddy
         // Athen Shire, 'Subway_MediumC4'); he fought the bot and followed it 4-10 m behind through every room after.
         // Once the person is seen, his room is left out of the clearing, and paths to other rooms go round it when
         // they can; the objective walks there once the rest is cleared.
+        private bool _blockClearTried;
+        /// <summary>A path still leads from pos to some room on his floor (the blocked set as it stands).</summary>
+        private bool StillGetsOut(Vector3 pos)
+        {
+            if (!(_grid.FloorAt(pos) is int f)) return true;
+            foreach (var r in _grid.RoomsOn(f))
+                if (Movement.Flat(pos, r.Centre) > 8f && PathFrom(pos, r.Centre, out _) != null) return true;
+            return false;
+        }
         private bool _onTilePath, _tileRefused;
         private int _tilePulls;
         private int? _personRoom;
@@ -1091,6 +1100,14 @@ namespace AOBuddy
             // EVERY room unreachable at once is where he stands, not the rooms (Dadbod 11:10:25, 2026-09-27: after a fight
             // no path started from his spot, all rooms were marked unreachable in one go and clearing gave up after 2 of
             // them). Mark nothing; the objective's path fails the same way and the run backs off 6 m and tries again.
+            // Blocks from this blitz can be what cuts every room off: clear them once and look again before giving up.
+            if (best == null && tried > 1 && noPath.Count == tried && _blocked.Count > 0 && !_blockClearTried)
+            {
+                _blockClearTried = true;
+                _ctx.Log($"MISSION: no room reachable from ({pos.X:0},{pos.Z:0}) with {_blocked.Count} blocked cell(s); clearing them and looking again.");
+                _blocked.Clear();
+                return ClearHop(pos, floor, out why);
+            }
             if (best == null && tried > 1 && noPath.Count == tried)
             {
                 why = "no walkable path from where I stand";
@@ -1438,8 +1455,13 @@ namespace AOBuddy
             {
                 _replans++;
                 var cell = _grid.CellOf(wp);
-                if (cell.HasValue) _blocked.Add(cell.Value);
-                _ctx.Log($"MISSION: no progress toward ({wp.X:0},{wp.Y:0},{wp.Z:0}) for 3 s, blocking that cell (replan {_replans}).");
+                // Never a block that seals him in (14:12:50 and 14:13:27, 2026-09-27, Subway Ventil 2224806: stalled 4.6 m
+                // short, the waypoint's 2 m cell was the room's only doorway, and 9 of 11 rooms were cut off - the mission
+                // was skipped). Keep the block only if somewhere still has a path from where he stands.
+                bool sealsIn = false;
+                if (cell.HasValue && _blocked.Add(cell.Value) && !StillGetsOut(pos)) { _blocked.Remove(cell.Value); sealsIn = true; }
+                _ctx.Log(sealsIn ? $"MISSION: no progress toward ({wp.X:0},{wp.Y:0},{wp.Z:0}) for 3 s; blocking that cell would seal me in, so not blocking it (replan {_replans})."
+                                : $"MISSION: no progress toward ({wp.X:0},{wp.Y:0},{wp.Z:0}) for 3 s, blocking that cell (replan {_replans}).");
                 if (_replans > 6) { Fail("kept getting stuck"); return true; }
                 _path = null;
                 Enter(_completed ? Phase.Exit : Phase.Plan, "stuck, planning around it");
