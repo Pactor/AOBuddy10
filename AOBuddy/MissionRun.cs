@@ -3738,6 +3738,16 @@ namespace AOBuddy
                     _still.Remove(n.Identity);
                 }
             }
+            // Set aside because he couldn't reach or hurt it - but now it is on him or a pet and within 5 m: it is in reach, and
+            // it is following him (owner, 07:15 2026-09-27: "and what about the 2 mobs following him everywhere?").
+            foreach (var near in DynelManager.Npcs.Where(x => x != null && _combat.IsSetAside(x.Identity) && x.FightingIdentity.HasValue
+                                                             && (x.FightingIdentity.Value == me.Identity || pets.Contains(x.FightingIdentity.Value))
+                                                             && me.DistanceFrom(x) <= 5f && (!x.TryGetStat(Stat.Health, out int xh) || xh > 0)
+                                                             && x.Identity != _mission.FindPersonTarget))
+            {
+                _combat.ClearAside(near.Identity);
+                _ctx.Log($"MISSIONRUN: '{near.Name}', set aside, followed me in to {me.DistanceFrom(near):0} m; fighting it.");
+            }
             var onUs = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
