@@ -608,6 +608,7 @@ namespace AOBuddy
             RecordGood(me);
             UseTokens(me);
             _mission.ClearMode = _ctx.Config.MissionClear;
+            if (PetLeash(me)) return true;
 
             if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.Scotty)
             {
@@ -3950,6 +3951,38 @@ namespace AOBuddy
         // Inside a mission he fights whatever is there, whatever its level: the mission he took is the one he wants
         // (owner, 2026-09-27, after a lvl 58 Rookie Clan Hunter hit Algorithman's MP and his lvl 107 pet unanswered).
         // Level still judges outdoors (the guard nest check) and the aware tag, against his strongest side.
+        // THE PET LEASH (owner, 2026-09-27: "the pets have a leash so to speak, they may only be so far from player before
+        // they return, abandoning any task they were doing, this normally drags aggro mobs back to the player, so we
+        // always try to stay in range"). Dadbod 11:10:49: his attack pet fought at (258,211) while he walked on to
+        // (218,244), ~52 m; the server warned 'Your pet is out of range, if you dont get closer to the pet it will abort
+        // the fight and return to you', and 10 s later 'its aborting fight to return to you'. Inside a mission, while a
+        // pet of his is fighting, he stays within 30 m of it: past that he walks back to 15 m of it before anything else.
+        private const float LeashMax = 30f, LeashBack = 15f;
+        private Identity? _leashPet;
+        private bool PetLeash(LocalPlayer me)
+        {
+            if (!_mission.InMission) { if (_leashPet.HasValue) { _follow.ClearManual(); _leashPet = null; } return false; }
+            var pets = CombatController.Guarded(me, null);
+            NpcChar far = null; float farD = 0;
+            foreach (var n in DynelManager.Npcs.OfType<NpcChar>())
+            {
+                if (n == null || !pets.Contains(n.Identity) || !n.FightingIdentity.HasValue) continue;
+                float d = me.DistanceFrom(n);
+                bool held = _leashPet == n.Identity && d > LeashBack;   // walking back to it: until within 15 m
+                if ((d > LeashMax || held) && d > farD) { far = n; farD = d; }
+            }
+            if (far == null)
+            {
+                if (_leashPet.HasValue) { _follow.ClearManual(); _leashPet = null; }
+                return false;
+            }
+            if (_leashPet != far.Identity)
+                _ctx.Log($"MISSIONRUN: my pet '{far.Name}' is fighting {farD:0} m away; going back to it before it gives up the fight.");
+            _leashPet = far.Identity;
+            _follow.SetManualTarget(far.Transform.Position);
+            return true;
+        }
+
         private static bool TooStrong(LocalPlayer me, SimpleChar n)
             => n.TryGetStat(Stat.Level, out int theirs) && theirs > Strength(me) + 5;
 
