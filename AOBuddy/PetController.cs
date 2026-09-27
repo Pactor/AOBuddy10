@@ -749,7 +749,20 @@ namespace AOBuddy
             int pf = (int)Playfield.ModelId;
             if (pf != _healPf) { _healPf = pf; _healTaskedRoster = null; _healHurtSince = -1; }
             if (rosterSig == _healTaskedRoster && DynelManager.Find(healTarget.Value, out SimpleChar patient) && HealPetQuiet(patient))
+            {
+                // STILL QUIET AFTER TWO RE-TASKS: terminate it and let the summon step bring a fresh one (owner,
+                // 2026-09-27: "terminate and resummon the heal pet when it stays quiet"). 13:32:32-13:33:26: three
+                // Heal orders, no cast from Salvinous for 179 s, Dadbod down to 66% and saved by his own stim.
+                if (_healRetasks >= 2)
+                {
+                    _healRetasks = 0; _healTaskedRoster = null;
+                    me.CommandPets(PetCommand.Terminate, new[] { healer.Identity });
+                    _ctx.Log($"PET: heal pet '{healer.Name}' stayed quiet through 2 re-tasks; terminating it to summon it again.");
+                    return false;
+                }
+                _healRetasks++;
                 _healTaskedRoster = null;
+            }
             if (rosterSig == _healTaskedRoster) return false;
             if (_healGapsFor != healer.Identity.Instance) { _healGapsFor = healer.Identity.Instance; _healGaps.Clear(); _healCastAt = -1; }   // a new pet: its own cycle
             _healTaskedRoster = rosterSig;
@@ -875,7 +888,9 @@ namespace AOBuddy
             double now = Now;
             if (_healCastAt > 0 && now - _healCastAt < 30) { _healGaps.Add(now - _healCastAt); if (_healGaps.Count > 8) _healGaps.RemoveAt(0); }
             _healCastAt = now;
+            _healRetasks = 0;
         }
+        private int _healRetasks;
 
         private static double Now => System.Diagnostics.Stopwatch.GetTimestamp() / (double)System.Diagnostics.Stopwatch.Frequency;
 
