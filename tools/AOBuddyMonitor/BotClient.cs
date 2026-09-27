@@ -29,7 +29,7 @@ namespace AOBuddyMonitor
 
         public sealed class Status
         {
-            public string Behavior, Heartbeat, Zone;
+            public string Behavior, Heartbeat, Zone, Aware = "";
             public int Pf = -1;
             public TaskInfo Task = new TaskInfo();
             public float[] Pos;                       // [x,y,z]
@@ -226,6 +226,7 @@ namespace AOBuddyMonitor
             {
                 Behavior = (string)o["behavior"] ?? (string)o["heartbeat"] ?? "",
                 Heartbeat = (string)o["heartbeat"] ?? "",
+                Aware = (string)o["aware"] ?? "",
                 Zone = (string)o["zone"] ?? "",
                 Pf = (int?)o["playfield"] ?? -1,
                 Pos = Vec(o["pos"]),

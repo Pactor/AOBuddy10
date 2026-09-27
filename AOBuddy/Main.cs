@@ -170,6 +170,7 @@ namespace AOBuddy
             _atlas = new MobAtlas(pluginDir, Log);
             _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
+            Client.NanoSeen += (caster, target, nano, secs) => { try { OnNanoSeen(caster, target, nano, secs); } catch { } };
             BuildCommands();
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
@@ -465,6 +466,33 @@ namespace AOBuddy
                 _lastUsedObj = target; _lastUsedObjPos = pos; _lastUsedObjAge = 0;   // for NAV warp learning
             }
             catch (Exception ex) { Log("OnDynelUsed error: " + ex.Message); }
+        }
+
+        // EVERY NANO ON HIM OR HIS PETS, in the log (owner, 2026-09-27: "he should always know what is casted on him" -
+        // after a death by two Watchers no one could say whether he had been snared). A cast names its caster; a nano
+        // that lands names its duration. A buff he already carries is logged again only once it had run out.
+        private readonly Dictionary<(Identity, int), DateTime> _nanoOn = new Dictionary<(Identity, int), DateTime>();
+        private void OnNanoSeen(Identity caster, Identity target, int nano, float secs)
+        {
+            var me = DynelManager.LocalPlayer;
+            if (me == null || target.Instance == 0) return;
+            bool onMe = target == me.Identity;
+            bool onPet = !onMe && CombatController.Guarded(me, null).Contains(target);
+            if (!onMe && !onPet) return;
+            string who = onMe ? "me" : (DynelManager.Find(target, out SimpleChar pt) ? $"my pet {pt.Name}" : "my pet");
+            string name = ItemData.Find(nano, out NanoItem ni) && ni != null ? ni.Name : "nano";
+            if (secs < 0 && caster == me.Identity) return;   // his own casts (auras every few seconds) are known already
+            if (secs < 0)
+            {
+                string by = caster == me.Identity ? "I" : DynelManager.Find(caster, out SimpleChar c) ? $"'{c.Name}'{(c is NpcChar ? $" (lvl {(c.TryGetStat(Stat.Level, out int cl) ? cl : 0)})" : "")}" : caster.ToString();
+                Log($"NANO: {by} cast {name} ({nano}) on {who}.");
+                return;
+            }
+            var now = DateTime.UtcNow;
+            // Still on, or re-applied within 10 s of running out (a 6 s aura renewed every 8 s): the same buff, not news.
+            if (_nanoOn.TryGetValue((target, nano), out var until) && until.AddSeconds(10) > now) { _nanoOn[(target, nano)] = now.AddSeconds(secs); return; }
+            _nanoOn[(target, nano)] = now.AddSeconds(secs);
+            Log($"NANO: {name} ({nano}) is on {who} for {secs:0.#} s.");
         }
 
         private void OnUpdate(object _, double dt)
@@ -984,6 +1012,7 @@ namespace AOBuddy
                 var me = DynelManager.LocalPlayer;
                 o["heartbeat"] = StatusLine();
                 o["missionRun"] = _run.Status();
+                o["aware"] = _run.AwareSummary;
                 o["behavior"] = _ctx.Behavior;
                 o["task"] = ApiTask();
                 o["playfield"] = (int)Playfield.ModelId;

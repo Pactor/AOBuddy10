@@ -156,6 +156,10 @@ namespace AOBuddyMonitor
             // the window popped an empty box wherever the mouse rested.
             object tip = string.IsNullOrEmpty(st.Task.Detail) ? null : st.Task.Detail;
             ToolTip.SetTip(TaskText, tip);
+            // Awareness: red while anything is on him or following him.
+            AwareTxt.Text = st.Aware;
+            bool threat = st.Aware.Length > 0 && !(st.Aware.StartsWith("0 on us, 0 following"));
+            AwareTxt.Foreground = new SolidColorBrush(threat ? Color.FromRgb(0xd6, 0x5b, 0x5b) : Color.FromRgb(0x9a, 0x9a, 0x9a));
             ToolTip.SetTip(TaskDetail, tip);
 
             // vitals: the bar takes the percentage, the label keeps the raw numbers

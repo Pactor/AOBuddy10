@@ -76,6 +76,7 @@ namespace AOBuddy
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity) && !TooStrong(DynelManager.LocalPlayer, n);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             LearnedGround.Init(pluginDir);
+            _aware = new Awareness(_ctx.Log);
             RouteCache.Init(pluginDir, _ctx.Log);
             _roll.ListArrived += OnList;
         }
@@ -405,35 +406,20 @@ namespace AOBuddy
             var meD = DynelManager.LocalPlayer;
             if (meD != null) NoteTough(DynelManager.Npcs.Where(x => x != null && x.FightingIdentity.HasValue && x.FightingIdentity.Value == meD.Identity));
             if (_current != null && !_completed) _deathsHere++;
-            // DANGER ZONES (09:33 and 09:39, 2026-09-24): twice killed by the same Hammer Broodling pack in Mutant
-            // Domain on the way to one mission's door; the death count was lost on a restart and he went back a
-            // third time. A death out in the open marks the zone: no missions there for 'dangermins', and the
-            // mission he was walking to is dropped.
+            // A death out in the open drops the mission he was walking to (Mutant Domain, 09:33 and 09:39, 2026-09-24:
+            // killed twice by the same pack on the way to one door).
             if (!_mission.InMission)
             {
                 int pf = (int)Playfield.ModelId;
-                // Killed on sight: from 90%+ HP to dead within 5 s, no fight (West Athens 21:28, 2026-09-24: 100% at
-                // 21:28:24, dead at 21:28:27 beside a level-200 'Vanguard Watcher'; he is Omni, it is a Clan town).
-                // That zone is avoided for good (config MissionAvoidZones), not for a while.
-                var avoid = _ctx.Config.MissionAvoidZones ?? (_ctx.Config.MissionAvoidZones = new List<int>());
-                if (_clock - _hpHighAt < 5 && !avoid.Contains(pf))
-                {
-                    avoid.Add(pf);
-                    SaveConfigValue("MissionAvoidZones", new JArray(avoid));
-                    _tell($"Killed on sight in {Zoning.Name(pf)}; I won't go there again ('mission run avoid {pf}' to undo).");
-                }
-                // The SPOT, not the whole zone: at 01:22 (2026-09-26) a Scorpiod/Rollerrat pack by one Stret West Bank door
-                // killed him and the whole zone - most of his missions and his way out of Borealis - went off limits for 8
-                // hours. Missions within 250 m of the spot are left for 6 hours (RememberUnreachable); the whole zone only
-                // on a second death there within 2 hours.
+                // NO BLACKLISTING ON A DEATH (owner with Algorithman, 2026-09-27: "blacklisting missions areas should be a config
+                // thing, and honestly, if he just kept running to mission door, he would escape most of those guards"). A death
+                // out in the open used to put the whole zone on the avoid list for good (killed on sight), leave missions near
+                // the spot for 6 hours, and mark the zone dangerous on a second death; now only the owner's list
+                // (config MissionAvoidZones / 'mission run avoid') keeps him out, and a chaser no longer stops him.
                 var me0 = DynelManager.LocalPlayer;
                 var spot = me0 != null ? new Vector3(me0.Transform.Position.X, 0, me0.Transform.Position.Z) : new Vector3(0, 0, 0);
-                bool again = Unreach.Any(d => d.pf == pf && (DateTime.UtcNow - d.when).TotalHours < 2 && Movement.Flat(d.at, spot) < 600);
-                RememberUnreachable(pf, spot);
-                if (again) MarkDanger(pf);
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
-                _ctx.Log(again ? $"MISSIONRUN: died out in {Zoning.Name(pf)} again; no missions or routes there for {DangerMinutes(_danger[pf].n):0} minutes (mark {_danger[pf].n})."
-                               : $"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}); missions near it are left for 6 hours.");
+                _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}).");
             }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
@@ -603,6 +589,7 @@ namespace AOBuddy
             _clock += dt; _phaseTime += dt;
             if (_restSaved != null && ((_phase != Phase.Fight && _phase != Phase.HealOut) || !Active)) RestToFull(false);
             NavSample(me);
+            _aware.Tick(me, _clock, _mission.InMission);
             if (!Active || me == null) return false;
             HealMobCheck();
             // STEP OUT (Algorithman, 2026-09-26): out of a mission building, walk 5 m straight on before anything else,
@@ -633,7 +620,17 @@ namespace AOBuddy
             // 'held' while mobs beat him from 100% to 71%, then died 4 s after moving on.
             // And never while overland is SWIMMING: afloat the server corrects often (the surface trues our
             // float Y) — that is the mode working, not a pull (Newland lake, 2026-09-24).
-            if (moving && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls") && _clock - _lastHurt > 5)
+            // CHASED (owner, 2026-09-27: "we should know if something hostile is following us ... just keep running until
+            // you reach a zone so you can live"): outdoors, with a mob that is fighting him or a pet within 40 m, a pull-back
+            // is not a wall to back off from - he keeps going (06:32, Wailing Wastes: two Watchers, 132 and 114, 5-15 m
+            // behind him for 30 s; pulled back at 06:32:50, he stopped to back off and was one-shot 2 s later).
+            var chaser = Chaser(me);
+            if (chaser != null && moving && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls"))
+            {
+                _bigSnaps.Clear();
+                if (_clock - _chaseLoggedAt > 10) { _chaseLoggedAt = _clock; _ctx.Log($"MISSIONRUN: pulled back while '{chaser.Name}' (lvl {LevelOf(chaser)}) chases me, {me.DistanceFrom(chaser):0} m off; keeping going."); }
+            }
+            if (moving && chaser == null && _phase != Phase.Fight && !_overland.Swimming && _bigSnaps.Count(t => _clock - t < T("pullsecs")) >= T("pulls") && _clock - _lastHurt > 5)
             {
                 _bigSnaps.Clear();
                 // On the way somewhere it is a wall far more often than a root: ICC 07:02 (2026-09-24), pulled back
@@ -714,7 +711,7 @@ namespace AOBuddy
             // The 'nothing hurts me' pause ends the moment something does (owner, 18:27 2026-09-26: "he ran through every
             // single room with a mob like he had a deathwish" - the pause kept him clearing rooms with eight mobs on him
             // until 38% HP, and he died).
-            if (moving && _mission.InMission && _clock >= _fleeUntil && FightOrRun() && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || _pullId.HasValue || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
+            if (moving && _mission.InMission && _clock >= _fleeUntil && (FightOrRun() || AwareStop()) && (_clock >= _fightIgnoreUntil || _lastHurt > _fightIgnoreSetAt || _pullId.HasValue || AwareStop() || (hpTick >= 0 && hpTick < _ctx.Config.MissionFightBelowPercent)))
             {
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
@@ -791,7 +788,11 @@ namespace AOBuddy
                             // nothing too strong for him within 30 m of the foe, or he stays where he is.
                             bool nest = !_mission.InMission && DynelManager.Npcs.Any(n => n != null && n.Identity != foe?.Identity && TooStrong(me, n)
                                             && (!n.TryGetStat(Stat.Health, out int nh) || nh > 0) && foe != null && Vector3.Distance(n.Transform.Position, foe.Transform.Position) < 30f);
-                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing))
+                            // ...and always up to the one he is PULLING (owner, 07:13 2026-09-27: "he just aggroed 2 mobs then
+                            // went to fight a third" - a pull target 15 m off was swung at from where he stood, its HP never
+                            // moved, it was dropped after 20 s and the next one pulled, the first now on its way to him).
+                            bool pulling = _pullId.HasValue && foe != null && foe.Identity == _pullId.Value;
+                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
                             {
                                 // Inside, along the building's path: straight at a mob round a corner the server pulled
                                 // him back at the wall and the mob's HP never moved (11:24, 2026-09-25, first clear run).
@@ -975,6 +976,9 @@ namespace AOBuddy
                 {
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
                     int pf = _current.Playfield.Instance;
+                    // Its zone went on the avoid list (killed on sight there): drop it. Travel refuses every route into an
+                    // avoided zone, and the run asked again for 20 minutes (06:41-07:02, 2026-09-27, Wailing Wastes).
+                    if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) { Skip($"{Zoning.Name(pf)} is on my avoid list"); return false; }
                     Vector3 goal = new Vector3(_current.Location.X, _current.Location.Y, _current.Location.Z);
                     // Within 10 m the door approach takes over at once, travel or not (owner, 18:37 2026-09-26: "he should just
                     // run into mission door now" - at a Galway County door up on a structure, travel walked at it and was
@@ -2812,7 +2816,10 @@ namespace AOBuddy
         }
         private bool ShopAfterNanos(LocalPlayer me)
         {
-            if (Inventory.NumFreeSlots < 4 && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);   // one more bag to carry
+            // One more bag to carry - or the first one: with no bag at all the stash has nowhere to put a reward, and a
+            // bagless level 10 (the MA, 2026-09-26) went to Fair Trade after every mission and came back without one.
+            bool noBag = !Inventory.Items.Any(i => i != null && i.UniqueIdentity.Type == IdentityType.Container);
+            if ((Inventory.NumFreeSlots < 4 || noBag) && !_shopBoughtForRoom) return ShopBuy(me, forNanos: false);
             // Stims and rechargers at the QL his skills can use: ResupplyController picks the fitting QL and the
             // terminals here (Algorithman's), as the owner would buy them.
             if (!_shopStimsTried && UsableStims() < _ctx.Config.ResupplyStimTarget)
@@ -3156,22 +3163,24 @@ namespace AOBuddy
         private Vector3 _straightGoal;
 
         // A walk-grid path to the reachable ground nearest 'at' (rings out to 24 m round it).
+        // Two searches at most (owner, 2026-09-27: "fix that bug"): the old loop tried 49 goals in rings round a blocked
+        // exit, each a full grid search of up to 1.5M cells, and froze the bot for minutes in Holes in the Wall (05:06,
+        // the Athen Shire line unreachable on the grid - no log, no commands answered). Now: to the exit itself, else to
+        // the first reachable ground within 'ring' metres of it (the search's own reach), then straight on from there.
         private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft)
         {
-            List<Vector3> best = null; bestLeft = float.MaxValue;
-            float step = Math.Max(0.5f, T("ringstep")), max = Math.Max(0f, T("ring"));
-            for (float r = 0; r <= max + 0.01f; r += step)
-                for (int k = 0; k < (r == 0 ? 1 : 8); k++)
-                {
-                    double t = k * Math.PI / 4;
-                    var goal = new Vector3(at.X + (float)Math.Cos(t) * r, at.Y, at.Z + (float)Math.Sin(t) * r);
-                    _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
-                    var path = grid.FindPath(pos, goal, blockedCells, T("snap"), T("reach"), out _);
-                    if (path == null) continue;
-                    float left = Movement.Flat(path[path.Count - 1], at);
-                    if (left < bestLeft) { bestLeft = left; best = path; }
-                }
-            return best;
+            bestLeft = float.MaxValue;
+            _hikeBlocked.TryGetValue(grid.Pf, out var blockedCells);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var path = grid.FindPath(pos, at, blockedCells, T("snap"), T("reach"), out string why);
+            // The second only when the first ended short of its search limit: a search that ran out of cells (a 2 km
+            // walk across Holes in the Wall does, ~3 s) runs out again with a wider goal.
+            if (path == null && (why == null || why.IndexOf("searched", StringComparison.OrdinalIgnoreCase) < 0))
+                path = grid.FindPath(pos, at, blockedCells, T("snap"), Math.Max(T("reach"), T("ring")), out _);
+            if (sw.ElapsedMilliseconds > 1000) _ctx.Log($"MISSIONRUN: the grid search toward the exit took {sw.ElapsedMilliseconds} ms.");
+            if (path == null) return null;
+            bestLeft = Movement.Flat(path[path.Count - 1], at);
+            return path;
         }
         private int _blitzTries;
         private double _doorStepTime;
@@ -3731,6 +3740,16 @@ namespace AOBuddy
                     _still.Remove(n.Identity);
                 }
             }
+            // Set aside because he couldn't reach or hurt it - but now it is on him or a pet and within 5 m: it is in reach, and
+            // it is following him (owner, 07:15 2026-09-27: "and what about the 2 mobs following him everywhere?").
+            foreach (var near in DynelManager.Npcs.Where(x => x != null && _combat.IsSetAside(x.Identity) && x.FightingIdentity.HasValue
+                                                             && (x.FightingIdentity.Value == me.Identity || pets.Contains(x.FightingIdentity.Value))
+                                                             && me.DistanceFrom(x) <= 5f && (!x.TryGetStat(Stat.Health, out int xh) || xh > 0)
+                                                             && x.Identity != _mission.FindPersonTarget))
+            {
+                _combat.ClearAside(near.Identity);
+                _ctx.Log($"MISSIONRUN: '{near.Name}', set aside, followed me in to {me.DistanceFrom(near):0} m; fighting it.");
+            }
             var onUs = DynelManager.Npcs
                 .Where(n => n != null && n.FightingIdentity.HasValue && (n.FightingIdentity.Value == me.Identity || pets.Contains(n.FightingIdentity.Value))
                             && !n.Owner.HasValue && (!n.TryGetStat(Stat.Health, out int hp) || hp > 0)
@@ -3742,6 +3761,10 @@ namespace AOBuddy
             // STAY ON ONE (owner, 18:27 2026-09-26): the nearest attacker every tick switched him between four or five
             // mobs every second and nothing died. The one he is on is kept while it is still on him or a pet.
             var a = (_defId.HasValue ? onUs.FirstOrDefault(n => n.Identity == _defId.Value) : null) ?? onUs.FirstOrDefault();
+            // Nothing hitting yet, but something following him inside: that one next, before it brings friends.
+            if (a == null && _mission.InMission)
+                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && !TooStrong(me, n) && n.Identity != _mission.FindPersonTarget
+                                                                             && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance);
             // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
             // (owner, 08:40 2026-09-26) - because a turret never shows as fighting him. The server saying he is in
@@ -3874,6 +3897,20 @@ namespace AOBuddy
             if (id == 249817907) _killAt = _clock;   // "You can loot these remains": a kill
         }
         private double _killAt = -999;
+        private double _chaseLoggedAt = -99;
+        private readonly Awareness _aware;
+        /// <summary>What is round him now: on him/his pets, following him, near (see Awareness).</summary>
+        public string AwareSummary => _aware?.Summary() ?? "";
+        /// <summary>Inside, fight style: something is on him or following him - he stops walking and deals with it.</summary>
+        private bool AwareStop() => _mission.InMission && string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
+                                    && _aware.Near.Any(x => (x.OnUs || x.Following) && !_combat.IsSetAside(x.Mob.Identity) && x.Mob.Identity != _mission.FindPersonTarget);
+        private static int LevelOf(SimpleChar c) => c.TryGetStat(Stat.Level, out int l) ? l : 0;
+        /// <summary>Outdoors: the nearest live mob fighting him or a pet within 40 m (every blow marks who it is on).</summary>
+        private SimpleChar Chaser(LocalPlayer me)
+        {
+            if (me == null || _mission.InMission) return null;
+            return _aware.Chaser();   // on him or a pet, or following him, within 40 m
+        }
         private readonly HashSet<Identity> _retaken = new HashSet<Identity>();
 
         /// <summary>What the run may fight. Outside a mission building only a real mob: Side 3 (Monster) and no
