@@ -477,6 +477,7 @@ namespace AOBuddy
                 if ((best.StackingOrder & 0xFFFFF) <= (cn.StackingOrder & 0xFFFFF)) continue;
                 if (p.FightingTarget != null) continue;
                 if (!_upgradeTried.Add(p.Identity.Instance)) continue;   // once per pet: a dismiss the server ignored isn't re-sent
+                Targeting.SetTarget(p.Identity);   // owner, 2026-09-27: terminate acts on the targeted pet; untargeted it ends ALL pets
                 me.CommandPets(PetCommand.Terminate, new[] { p.Identity });
                 foreach (int k in _summonAt.Keys.ToList()) if (k != best.Id) _summonAt[k] = _petClock;
                 foreach (int id in AutoSummons(me)) if (id != best.Id) _summonAt[id] = _petClock;
@@ -756,6 +757,7 @@ namespace AOBuddy
                 if (_healRetasks >= 2)
                 {
                     _healRetasks = 0; _healTaskedRoster = null;
+                    Targeting.SetTarget(healer.Identity);   // target it first: untargeted, Terminate ends ALL pets (owner)
                     me.CommandPets(PetCommand.Terminate, new[] { healer.Identity });
                     _ctx.Log($"PET: heal pet '{healer.Name}' stayed quiet through 2 re-tasks; terminating it to summon it again.");
                     return false;
