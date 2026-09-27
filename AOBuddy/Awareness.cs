@@ -55,7 +55,7 @@ namespace AOBuddy
             bool iMoved = clock - myThen.t >= Window - 0.6 && Movement.Flat(myThen.me, mine) >= 4f;
 
             var guard = CombatController.Guarded(me, null); guard.Add(me.Identity);
-            me.TryGetStat(Stat.Level, out int myLvl);
+            int myLvl = MissionRun.Strength(me);   // his level or his strongest pet's
             var near = new List<Seen>();
             var here = new HashSet<Identity>();
             foreach (var n in DynelManager.Npcs)

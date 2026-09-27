@@ -3945,8 +3945,19 @@ namespace AOBuddy
         }
 
         // A mob far above his level is never fought: run (a level 50 Male Watcher killed him at 36, 06:51).
+        // Measured against his strongest side: his level or his highest pet's (Algorithman, 2026-09-27, max mission: a
+        // lvl 58 Rookie Clan Hunter on him and his lvl 107 pet was 'too strong' for the MP and never fought back).
         private static bool TooStrong(LocalPlayer me, SimpleChar n)
-            => me.TryGetStat(Stat.Level, out int mine) && n.TryGetStat(Stat.Level, out int theirs) && theirs > mine + 5;
+            => n.TryGetStat(Stat.Level, out int theirs) && theirs > Strength(me) + 5;
+
+        public static int Strength(LocalPlayer me)
+        {
+            int best = me != null && me.TryGetStat(Stat.Level, out int mine) ? mine : 0;
+            if (me == null) return best;
+            foreach (var id in CombatController.Guarded(me, null))
+                if (DynelManager.Find(id, out SimpleChar pet) && pet.TryGetStat(Stat.Level, out int pl) && pl > best) best = pl;
+            return best;
+        }
 
         private readonly Dictionary<Identity, (Vector3 pos, double since)> _still = new Dictionary<Identity, (Vector3 pos, double since)>();
         private Identity? _defId;
