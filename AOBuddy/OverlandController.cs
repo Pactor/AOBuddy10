@@ -322,7 +322,7 @@ namespace AOBuddy
                 // no ramp to it and the walk goes over rooftops and thin air — say so and fail the leg;
                 // the replan then takes a route that works (this morning's grid refusal of the same exit
                 // was right; 16:15's bypass walked over the wompah instead).
-                if (!float.IsNaN(goal.Y) && Math.Abs(goal.Y - from.Y) > StraightMaxDrop)
+                if (!float.IsNaN(goal.Y) && goal.Y - from.Y > StraightMaxDrop)
                 {
                     string drop = $"the {what} is {Math.Abs(goal.Y - from.Y):0.0} m {(goal.Y < from.Y ? "below" : "above")} me and the ground data has no way {(goal.Y < from.Y ? "down" : "up")} to it";
                     if (_leg.Exit == null) Fail($"no way on foot to ({goal.X:0},{goal.Z:0}): {drop}");

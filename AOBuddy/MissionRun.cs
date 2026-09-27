@@ -41,7 +41,9 @@ namespace AOBuddy
         private double _lastHurt = -999;
         private readonly string _pluginDir;
 
-        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut }
+        private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut,
+            WaitForWarp
+        }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
@@ -555,6 +557,7 @@ namespace AOBuddy
             if (me == null) return null;
             var opt = Zoning.RouteOptions(me);
             opt.UseScotty = !NoScotty;   // RubiKa2019 has no Scotty at all (owner): cost the trip as walked
+            Console.WriteLine("NoScotty: "+NoScotty);
             opt.Filter = e => (e.Kind == ExitKind.ZoneLine || (e.Kind == ExitKind.Scotty && !NoScotty) || e.ObjInstance != 0) && !BadExit(e)
                               && !HostileExit(e) && !(Dangerous(e.ToPf) && e.ToPf != m.Playfield.Instance);
             try
@@ -592,6 +595,7 @@ namespace AOBuddy
             _aware.Tick(me, _clock, _mission.InMission);
             if (!Active || me == null) return false;
             HealMobCheck();
+            
             // STEP OUT (Algorithman, 2026-09-26): out of a mission building, walk 5 m straight on before anything else,
             // clear of the door and its frame.
             if (_wasInside && !_mission.InMission) { _stepOutTo = me.Transform.Position + me.Transform.Heading.Forward * 5f; _stepOutUntil = _clock + 4; _follow.SetManualTarget(_stepOutTo.Value); }
@@ -606,6 +610,17 @@ namespace AOBuddy
             UseTokens(me);
             _mission.ClearMode = _ctx.Config.MissionClear;
 
+            if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.Scotty)
+            {
+                string tell = _hike.Exit.Tell ?? "";
+                int sp = tell.IndexOf(' ');
+                string to = sp > 0 ? tell.Substring(0, sp) : "scty", text = sp > 0 ? tell.Substring(sp + 1) : tell;
+                try { Client.Chat.SendPrivateMessage(to, text, false); } catch (Exception ex) { _ctx.Log("OVERLAND: tell failed: " + ex.Message); }
+
+                Enter(Phase.WaitForWarp, "Waiting for Scotty's warp");
+                return true;
+            }
+            
             // FIGHT FIRST. Walking on while mobs hit him is what killed him twice (21:56, 22:11): blitz marched
             // from room to room with two mobs on his back, melee weapon swinging at nothing. Anything moving him
             // stops; he stands and fights (combat + stims + pets as usual), and picks up where he was 3 s after.
@@ -643,7 +658,7 @@ namespace AOBuddy
                     // Pulled back AT a zone line is that line refusing him: Galway Shire's border, 10:35-10:37
                     // (2026-09-24), three pull-backs within 60 m of the line and the same line planned each time.
                     if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.ZoneLine
-                        && Movement.Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
+                             && Movement.Flat(me.Transform.Position, _hike.WalkTo ?? _hike.Exit.A) < 60f)
                         MarkBadExit(_hike.Exit);
                     // ...and any exit whose way there pulls him back three times, wherever (05:53-06:02, 2026-09-25,
                     // Wartorn Valley: pulled back ~85 m short of the Aegean line at (980,290), backed off, and planned
@@ -1063,7 +1078,12 @@ namespace AOBuddy
                     }
                     return _follow.ManualActive;   // walking onto it, then standing on it
                 }
-
+                case Phase.WaitForWarp:
+                {
+                    if (_phaseTime < 45) return false;
+                    Enter(Phase.ToDoor, "Next leg after Scotty warp");
+                    break;
+                }
                 case Phase.AwaitBlitz:
                 {
                     if (_phaseTime < 2.5) return false;       // the quest update arrives just after the zone-in
@@ -1609,7 +1629,7 @@ namespace AOBuddy
             // opt.UseScotty = false;   // the hike crosses on foot: doors stood on, not Scotty
             // Not through the Grid: its lifts and exits are gated by Computer Literacy and none took him
             // (four Grid lines stood on 4 times each, 08:33-08:36, 2026-09-24). The owner: the whompa is the best bet.
-            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152;
+            opt.Filter = e => (e.Kind == ExitKind.ZoneLine || e.ObjInstance != 0) || (!NoScotty && e.Kind==ExitKind.Scotty) && !BadExit(e) && e.ToPf != 152 && e.FromPf != 152;
             ZoneRoute route;
             // Round zones he died in lately when there is another way (The Longest Road, 12:33, 2026-09-24: marked
             // at 12:14, then walked through again on the way to Athen Shire and killed there).
@@ -3005,7 +3025,7 @@ namespace AOBuddy
             int side = MySide;
             if (side != 1 && side != 2) return null;
             foreach (var a in FactionAreas)
-                if (a.side != side && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
+                if (a.side != side && a.side > 0 && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
             return null;
         }
         // The exit's start counts only round a station (r > 0): a whole avoided zone must never trap him inside it.

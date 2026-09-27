@@ -95,7 +95,7 @@ namespace AOBuddy
         // Costs are in metres of walking.
         public double ZoneLineCost = 20;
         public double TeleportCost = 30;
-        public double ScottyCost = 1000;
+        public double ScottyCost = 400;
         public double UnknownWalk = 250; // walking from a point we don't know
         public bool UseScotty = true;
 
@@ -343,7 +343,7 @@ namespace AOBuddy
                     foreach (var e in _scotty)
                     {
                         int v = index[e];
-                        if (!done[v] && Usable(v)) Relax(u, v, d + opt.ScottyCost, e.Arrival, null, null);
+                        if (!done[v] && Usable(v)) Relax(start, v, opt.ScottyCost + (goal.HasValue?Walk(e.Arrival,goal.Value):250), e.Arrival, null, null);
                     }
             }
 
@@ -400,6 +400,10 @@ namespace AOBuddy
             foreach (var h in r.Hops)
             {
                 Vector3? at = h.CrossTo ?? h.WalkTo ?? here; // Scotty: tell from where we stand
+                if (at == here)
+                {
+                    q.Clear();
+                }
                 q.Enqueue(new ZoneWaypoint(at?.X ?? float.NaN, at?.Z ?? float.NaN, h.FromPf, h.Exit));
                 here = h.ArriveAt;
             }
