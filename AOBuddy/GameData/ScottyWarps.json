@@ -1009,16 +1009,6 @@
    }
   },
   {
-   "tell": "scty wtf",
-   "label": "Will to Fight",
-   "playfield": "Stret West Bank",
-   "playfieldId": 790,
-   "pos": {
-    "x": 2247,
-    "z": 3128
-   }
-  },
-  {
    "tell": "scty coh",
    "label": "Crypt of Home",
    "playfield": "The Crypt of Home",
