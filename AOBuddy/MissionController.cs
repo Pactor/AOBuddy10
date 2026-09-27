@@ -62,6 +62,8 @@ namespace AOBuddy
         private Movement.StuckWatch _stuck;
         private int _replans, _presses, _acts;
         private Vector3? _lastCorrection;        // where the server last snapped us to during a walk
+        private double _correctionReplanAt = -9999;   // when a pull-back last made us plan again
+        private const double CorrectionSettleSec = 1.0;
         private readonly HashSet<(int, int, int)> _blocked = new HashSet<(int, int, int)>();
         private Purpose _purpose;
         private enum Purpose { Button, Target, Entrance, Search, Clear }
@@ -438,12 +440,26 @@ namespace AOBuddy
                 _onTilePath = false; _tileRefused = true; _path = null;
                 _ctx.Log($"MISSION: the server held me {_tilePulls} times on the tile path - the walls are solid there; not trying it again for this target.");
             }
-            if (_phase == Phase.Walk && gap > 2f)
+            if (_phase == Phase.Walk)
             {
+                // Small pull-backs count too. 2026-09-27 13:43 (mission 2224801) the server pulled him back 0.5-1.4 m
+                // to the same spot 51 times; below the old 2 m gate nothing replanned, so each time he walked a
+                // straight line from that spot to the waypoint ahead - a line the planner never checked, through a
+                // cell it had closed. Now: if the spot lies on a leg of the route he has walked, go back to that leg
+                // (the rest of the route is checked); otherwise plan again from the spot.
+                bool repeat = _lastCorrection.HasValue && Movement.Flat(_lastCorrection.Value, serverPos) < 1.5f;
+                // Moves sent before the last replan are still coming back as pull-backs to the same spot for a
+                // moment (they arrived 60-300 ms apart in rec-2224801-20260927-133851); they are not a new refusal.
+                bool settling = Now - _correctionReplanAt < CorrectionSettleSec;
+                if (gap <= 2f && _path != null && (!repeat || settling) && RewindOnto(serverPos))
+                {
+                    _lastCorrection = serverPos;
+                    return true;
+                }
                 // Snapped back to the same spot again: that is a wall the grid does not show, right ahead of
                 // where the server holds us. Block the cells we kept trying to walk into, so the next route
                 // takes another line instead of the same one (the first time can be plain lag, so not then).
-                if (_lastCorrection.HasValue && Movement.Flat(_lastCorrection.Value, serverPos) < 1.5f && gap > 0.5f)
+                if (repeat && !settling && gap > 0.5f)
                 {
                     var here = _grid.CellOf(serverPos);
                     float dx = (local.X - serverPos.X) / gap, dz = (local.Z - serverPos.Z) / gap;
@@ -451,11 +467,15 @@ namespace AOBuddy
                     for (float s = 1f; s <= 3f; s += 1f)
                     {
                         var c = _grid.CellOf(new Vector3(serverPos.X + dx * s, serverPos.Y, serverPos.Z + dz * s));
-                        if (c.HasValue && !c.Equals(here) && _blocked.Add(c.Value)) added.Add($"{c.Value.Item2},{c.Value.Item3}");
+                        if (!c.HasValue || c.Equals(here) || !_blocked.Add(c.Value)) continue;
+                        // Never a block that seals him in (same rule as the stuck block in WalkTick).
+                        if (!StillGetsOut(serverPos)) { _blocked.Remove(c.Value); continue; }
+                        added.Add($"{c.Value.Item2},{c.Value.Item3}");
                     }
                     if (added.Count > 0) _ctx.Log($"MISSION: snapped back to the same spot again, blocking cell(s) {string.Join(" ", added)} ahead of it.");
                 }
                 _lastCorrection = serverPos;
+                _correctionReplanAt = Now;
                 _replans++;
                 if (_replans > 12) { Fail("the server kept stopping me short"); return true; }
                 _path = null;
@@ -1511,6 +1531,25 @@ namespace AOBuddy
             return Movement.Flat(p, new Vector3(a.X + abx * t, a.Y, a.Z + abz * t));
         }
 
+        /// <summary>After a pull-back to p: the first leg of the route, up to the one being walked, that p lies on
+        /// (within 0.4 m - a route starts on the centre of the nearest 0.5 m cell, up to 0.35 m from where the walk
+        /// began). The walk goes on to that leg's end, so the line walked is one the planner checked. False when p
+        /// is on none of them: then the route must be planned again from p.</summary>
+        private bool RewindOnto(Vector3 p)
+        {
+            const float OnLeg = 0.4f;
+            for (int i = 0; i <= Math.Min(_pathIndex, _path.Count - 1); i++)
+            {
+                Vector3 a = _path[Math.Max(0, i - 1)], b = _path[i];
+                if (FlatToSegment(p, a, b) > OnLeg || Math.Abs(p.Y - b.Y) > MaxLegDy) continue;
+                if (i != _pathIndex) { _ctx.Log($"MISSION: pulled back onto leg {i + 1}/{_path.Count} of the route; walking it again."); _stuck.Reset(); }
+                _pathIndex = i;
+                return true;
+            }
+            return false;
+        }
+        private const float MaxLegDy = 2f;
+
         private static string ItemName(int template)
         {
             try { if (template > 0 && ItemData.Find(template, out DummyItem it) && !string.IsNullOrEmpty(it.Name)) return it.Name; }
@@ -1711,7 +1750,14 @@ namespace AOBuddy
         // wall, sliced 1 m above that floor, comes within the body's radius of the cell's centre. A doorway
         // is simply where the wall has no triangles (1.6 m wide in that pool; the lintel at 3 m is above
         // the slice), and the radius keeps the route off the frames the server collides with.
+        // One slice is not enough: in mission 2224801 (high_mh4, 2026-09-27 13:43) a wedge about 1 m tall
+        // peaked exactly at the 1 m slice, so the slice saw a point, left the cells over it open, and the route
+        // ran through it - 0.56 m clear at 1 m but 0.00-0.16 m at 0.1-0.5 m above the floor. The server pulled
+        // the bot back 51 times. So a cell must be clear at every height in SliceAbove. The lowest is 0.5 m:
+        // the server let him pass 0.20 m from that wedge's toe 0.1 m above the floor (recording
+        // rec-2224801-20260927-133851, the route that got through).
         private const float Fine = 0.5f, BodyRadius = 0.35f, CutAbove = 1.0f;
+        private static readonly float[] SliceAbove = { 0.5f, 1.0f, 1.5f };
         private HashSet<(int, int, int)> _fine;                  // open 0.5 m cells: (floor, fx, fz)
         private float[] _wallTris;
         private Dictionary<(int, int), List<int>> _wallHash;     // 2 m column -> wall triangle indices
@@ -1760,7 +1806,8 @@ namespace AOBuddy
             foreach (var k in _fineY.Keys)
             {
                 float y = _fineY[k];
-                var segs = WallSegments(k.Item2 - 1, k.Item3 - 1, k.Item2 + 1, k.Item3 + 1, y + CutAbove);
+                var segs = new List<float[]>();
+                foreach (float above in SliceAbove) segs.AddRange(WallSegments(k.Item2 - 1, k.Item3 - 1, k.Item2 + 1, k.Item3 + 1, y + above));
                 for (int sx = 0; sx < per; sx++)
                     for (int sz = 0; sz < per; sz++)
                     {
