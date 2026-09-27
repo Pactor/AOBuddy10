@@ -66,14 +66,26 @@ namespace AOBuddy
                 if (onUs) _foes.Add(n.Identity);
                 if (!onUs && !_foes.Contains(n.Identity) && !MissionRun.IsMob(n, inMission)) continue;
                 float d = me.DistanceFrom(n);
-                if (d > NearRange) { _trail.Remove(n.Identity); continue; }
+                if (d > NearRange)
+                {
+                    _trail.Remove(n.Identity);
+                    // One he knows is after him stays known past 40 m: its position keeps updating from the server's
+                    // paths and set-positions (DynelManager), and it stays on the list until it has been gone 20 s.
+                    if (_shadow.TryGetValue(n.Identity, out var far) && clock < far.until)
+                    {
+                        far.seen = clock; far.pos = n.Transform.Position; here.Add(n.Identity);
+                        n.TryGetStat(Stat.Level, out int fl);
+                        near.Add(new Seen { Mob = n, Dist = d, Level = fl, OnUs = onUs, Following = true });
+                    }
+                    continue;
+                }
                 here.Add(n.Identity);
                 if (!_trail.TryGetValue(n.Identity, out var q)) _trail[n.Identity] = q = new Queue<(double, Vector3, float)>();
                 q.Enqueue((clock, n.Transform.Position, d));
                 while (q.Count > 0 && clock - q.Peek().t > Window + 0.6) q.Dequeue();
                 var then = q.Peek();
                 bool keptUp = iMoved && clock - then.t >= Window - 0.6 && Movement.Flat(then.p, n.Transform.Position) >= 3f && d <= then.d + 1f && d <= 30f;
-                bool following = Shadow(n.Identity, clock, mine, d, keptUp);
+                bool following = Shadow(n.Identity, clock, mine, n.Transform.Position, d, keptUp);
                 n.TryGetStat(Stat.Level, out int lvl);
                 near.Add(new Seen { Mob = n, Dist = d, Level = lvl, OnUs = onUs, Following = following });
             }
@@ -98,13 +110,13 @@ namespace AOBuddy
         // following until it has been out of 40 m (or unseen) for 20 s.
         private const float Close = 15f;
         private const double Span = 20.0, Forget = 20.0;
-        private sealed class Track { public Queue<(double t, Vector3 me, bool close)> S = new Queue<(double, Vector3, bool)>(); public double seen, until = -1; public int returns; public bool wasClose; }
+        private sealed class Track { public Queue<(double t, Vector3 me, bool close)> S = new Queue<(double, Vector3, bool)>(); public double seen, until = -1; public Vector3 pos; public int returns; public bool wasClose; }
         private readonly Dictionary<Identity, Track> _shadow = new Dictionary<Identity, Track>();
 
-        private bool Shadow(Identity id, double clock, Vector3 mine, float d, bool keptUp)
+        private bool Shadow(Identity id, double clock, Vector3 mine, Vector3 pos, float d, bool keptUp)
         {
             if (!_shadow.TryGetValue(id, out var tr)) _shadow[id] = tr = new Track();
-            tr.seen = clock;
+            tr.seen = clock; tr.pos = pos;
             bool close = d <= Close;
             tr.S.Enqueue((clock, mine, close));
             while (tr.S.Count > 0 && clock - tr.S.Peek().t > Span) tr.S.Dequeue();
@@ -117,6 +129,10 @@ namespace AOBuddy
             if (keptUp || shadowing) tr.until = clock + Forget;
             return clock < tr.until;
         }
+
+        /// <summary>Where each mob he knows is after him was last seen, including ones out of sight (gone under 20 s).</summary>
+        public IEnumerable<(Identity id, Vector3 pos, double ago)> Trackers(double clock) =>
+            _shadow.Where(kv => clock < kv.Value.until).Select(kv => (kv.Key, kv.Value.pos, clock - kv.Value.seen));
 
         public string Summary() => $"{OnUsCount} on us, {FollowingCount} following, {Near.Count} near";
 
