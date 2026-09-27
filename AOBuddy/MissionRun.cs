@@ -990,6 +990,7 @@ namespace AOBuddy
                 case Phase.ToDoor:
                 {
                     if (_ctx.Status.Resting) { _phaseTime = 0; return false; }
+                    if (_current == null) { Enter(Phase.ToTerminal, "no mission held"); return false; }
                     int pf = _current?.Playfield.Instance ?? 0;
                     // Its zone went on the avoid list (killed on sight there): drop it. Travel refuses every route into an
                     // avoided zone, and the run asked again for 20 minutes (06:41-07:02, 2026-09-27, Wailing Wastes).
@@ -1081,7 +1082,9 @@ namespace AOBuddy
                 case Phase.WaitForWarp:
                 {
                     if (_phaseTime < 45) return false;
-                    Enter(Phase.ToDoor, "Next leg after Scotty warp");
+                    // Back to what the hike was for: the door, or the terminal with no mission held (ToDoor with no
+                    // mission threw at _current.Playfield, Algorithman 18:18, 2026-09-27).
+                    Enter(_hikeReturn == Phase.ToDoor && _current != null ? Phase.ToDoor : Phase.ToTerminal, "Next leg after Scotty warp");
                     break;
                 }
                 case Phase.AwaitBlitz:
