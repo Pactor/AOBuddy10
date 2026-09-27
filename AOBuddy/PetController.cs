@@ -91,6 +91,7 @@ namespace AOBuddy
 
         public PetController(BotContext ctx, string pluginDir, OwnerTracker owner)
         {
+            Client.NanoSeen += (caster, target, nano, secs) => { if (secs < 0) OnPetCast(caster, target); };
             _ctx = ctx;
             _owner = owner;
             LoadShellNanos(pluginDir);
@@ -675,7 +676,13 @@ namespace AOBuddy
             // re-task only when the healer itself changes (died / was resummoned) or the heal TARGET changes
             // (a melee<->ranged weapon swap, or the attack pet was replaced), never on a timer.
             string rosterSig = healer.Identity.Instance + ">" + healTarget.Value.Instance;
+            // A zone keeps the pet's id but not always its order: re-task after every playfield change.
+            int pf = (int)Playfield.ModelId;
+            if (pf != _healPf) { _healPf = pf; _healTaskedRoster = null; _healHurtSince = -1; }
+            if (rosterSig == _healTaskedRoster && DynelManager.Find(healTarget.Value, out SimpleChar patient) && HealPetQuiet(patient))
+                _healTaskedRoster = null;
             if (rosterSig == _healTaskedRoster) return false;
+            if (_healGapsFor != healer.Identity.Instance) { _healGapsFor = healer.Identity.Instance; _healGaps.Clear(); _healCastAt = -1; }   // a new pet: its own cycle
             _healTaskedRoster = rosterSig;
             _lastHealTarget = healTarget;
 
@@ -758,6 +765,48 @@ namespace AOBuddy
         /// standing right next to the person it is supposed to be keeping alive.
         /// </summary>
         private void InvalidateHealTask() => _healTaskedRoster = null;
+
+        // A QUIET HEAL PET (owner, 2026-09-27: "often, even if just left to the game's normal mechanics, the pet will stop
+        // healing, and you need to reissue that command"). Every heal it casts is a CastNanoSpell with the pet as caster
+        // and its patient as target, so the bot times them: the gaps give that pet's own cycle (median of the last 8
+        // under 30 s), and when the patient has been under 90% HP for two cycles (15 s until one is measured) with no
+        // heal from it, the Heal order is given again - at most once per such window.
+        private double _healCastAt = -1, _healHurtSince = -1, _healRetaskAt = -99;
+        private readonly List<double> _healGaps = new List<double>();
+        private int _healPf = -1, _healGapsFor;
+
+        private void OnPetCast(Identity caster, Identity target)
+        {
+            var me = DynelManager.LocalPlayer;
+            if (me == null || !_lastHealTarget.HasValue || target != _lastHealTarget.Value) return;
+            var healer = HealPet(me);
+            if (healer == null || caster != healer.Identity) return;
+            double now = Now;
+            if (_healCastAt > 0 && now - _healCastAt < 30) { _healGaps.Add(now - _healCastAt); if (_healGaps.Count > 8) _healGaps.RemoveAt(0); }
+            _healCastAt = now;
+        }
+
+        private static double Now => System.Diagnostics.Stopwatch.GetTimestamp() / (double)System.Diagnostics.Stopwatch.Frequency;
+
+        /// <summary>The heal pet's measured cycle in seconds, or 0 if not measured yet.</summary>
+        public double HealCycle
+        {
+            get { if (_healGaps.Count < 2) return 0; var g = _healGaps.OrderBy(x => x).ToList(); return g[g.Count / 2]; }
+        }
+
+        private bool HealPetQuiet(SimpleChar patient)
+        {
+            double now = Now;
+            int hp = 0, max = 0;
+            bool hurt = patient != null && patient.TryGetStat(Stat.Health, out hp) && patient.TryGetStat(Stat.MaxHealth, out max) && max > 0 && hp < max * 0.9;
+            if (!hurt) { _healHurtSince = -1; return false; }
+            if (_healHurtSince < 0) _healHurtSince = now;
+            double window = HealCycle > 0 ? Math.Max(2 * HealCycle, 8) : 15;
+            if (now - _healHurtSince < window || now - Math.Max(_healCastAt, _healRetaskAt) < window) return false;
+            _healRetaskAt = now;
+            _ctx.Log($"PET: heal pet quiet {(_healCastAt < 0 ? "since it was tasked" : $"{now - _healCastAt:0} s")} with '{patient.Name}' at {100.0 * hp / max:0}% (cycle {(HealCycle > 0 ? $"{HealCycle:0.0} s" : "not measured")}); re-tasking it.");
+            return true;
+        }
 
         private bool _wasFighting;
         private bool _recallSent;
