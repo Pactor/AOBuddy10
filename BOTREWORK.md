@@ -195,3 +195,188 @@ public sealed class FightingBrainHolder
     }
 }
 ````
+
+
+Proposal for priority-based async gate system:
+
+````
+// ─── Priority levels ─────────────────────────────────────────────────
+public enum ControlPriority
+{
+    None        = 0,
+    Travel      = 1,
+    Mission     = 2,
+    Combat      = 3,   // interrupts everything below it
+    Emergency   = 4,   // e.g. player dying, disconnect
+}
+
+// ─── ControlArbiter ──────────────────────────────────────────────────
+public sealed class ControlArbiter
+{
+    private int _activePriority = (int)ControlPriority.None;
+    private TaskCompletionSource _resume;
+
+    /// <summary>
+    /// Runs a step. If a higher-priority system is active (or becomes active),
+    /// the step suspends until control is released back down.
+    /// </summary>
+    public async Task RunStepAsync(ControlPriority priority, Func<Task> step, CancellationToken ct)
+    {
+        await YieldUntilAvailableAsync(priority, ct);
+        await step();
+    }
+
+    /// <summary>
+    /// For long-running steps that tick (e.g. "clear mission" over many heartbeats).
+    /// Each tick checks if control is still available.
+    /// </summary>
+    public async Task RunTicksAsync(ControlPriority priority, Func<Task> tick,
+                                    Func<bool> shouldContinue, CancellationToken ct)
+    {
+        while (shouldContinue() && !ct.IsCancellationRequested)
+        {
+            await YieldUntilAvailableAsync(priority, ct);
+            await tick();
+        }
+    }
+
+    private async Task YieldUntilAvailableAsync(ControlPriority priority, CancellationToken ct)
+    {
+        while (Volatile.Read(ref _activePriority) >= (int)priority)
+        {
+            var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            _resume = tcs;
+            // re-check after registering (avoid missed signal)
+            if (Volatile.Read(ref _activePriority) < (int)priority)
+                return;
+            await tcs.Task.WaitAsync(ct);
+        }
+    }
+
+    // ── called by interrupting systems ──
+    public void TakeControl(ControlPriority priority)
+    {
+        Volatile.Write(ref _activePriority, (int)priority);
+    }
+
+    public void ReleaseControl()
+    {
+        Volatile.Write(ref _activePriority, (int)ControlPriority.None);
+        _resume?.TrySetResult();
+    }
+
+    public bool HasControl(ControlPriority priority)
+        => Volatile.Read(ref _activePriority) < (int)priority;
+}
+````
+
+The sequence — a mission run (an example, more steps like resupply, buff up would be needed):
+
+````
+public sealed class MissionSequence
+{
+    private readonly ControlArbiter _arbiter;
+    private readonly MissionController _missions;
+    private readonly TravelController _travel;
+    private readonly GameQueries _queries;
+
+    public MissionSequence(ControlArbiter arbiter, MissionController missions,
+                           TravelController travel, GameQueries queries)
+    { /* … */ }
+
+    public async Task RunAsync(CancellationToken ct)
+    {
+        // 1. Roll
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _missions.RollMissionAsync(ct), ct);
+
+        // 2. Take
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _missions.AcceptMissionAsync(ct), ct);
+
+        // 3. Travel to entrance
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _travel.TravelTo(_entrance, ct), ct);
+
+        // 4. Enter
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _missions.EnterAsync(ct), ct);
+
+        // 5. Clear — long-running, ticks per heartbeat
+        await _arbiter.RunTicksAsync(
+            ControlPriority.Mission,
+            tick: () => _missions.MissionTickAsync(ct),
+            shouldContinue: () => _queries.MissionActive,
+            ct);
+
+        // 6. Exit
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _missions.ExitAsync(ct), ct);
+
+        // 7. Return
+        await _arbiter.RunStepAsync(ControlPriority.Mission,
+            () => _travel.TravelTo(_terminal, ct), ct);
+    }
+}
+````
+
+Combat brain takes an releases control:
+
+````
+public sealed class MetaphysicistBrain : IFightingBrain
+{
+    private readonly ControlArbiter _arbiter;
+    private bool _inCombat;
+
+    public bool IsInCombat => _inCombat;
+
+    public void StartCombat()
+    {
+        _inCombat = true;
+        _arbiter.TakeControl(ControlPriority.Combat);  // ← suspends mission step
+    }
+
+    public void StopCombat()
+    {
+        _inCombat = false;
+        _arbiter.ReleaseControl();  // ← mission step resumes where it left off
+    }
+
+    // … nano logic, etc.
+}   
+````
+
+What actually happens during "Clear Mission" when an enemy spawns:
+````Time →
+
+MissionSequence.ClearMission tick 1  ──┐
+                                       │  enemy spawns
+                                       │  brain.StartCombat()
+                                       │  arbiter.TakeControl(Combat)
+                                       │
+                                       │  ← tick 2 sees priority >= Mission, yields
+                                       │  ← tick 3 yields
+                                       │  ← tick 4 yields
+                                       │
+                                       │  brain.StopCombat()
+                                       │  arbiter.ReleaseControl()
+                                       │
+MissionSequence.ClearMission tick 5  ──┘  resumes, continues clearing   
+````
+
+Travel can also be interrupted (aggro mid-travel for example) - very simplified travelto
+````
+// Inside TravelController.TravelTo:
+public async Task TravelTo(Vector2 target, CancellationToken ct)
+{
+    while (DistanceTo(target) > threshold && !ct.IsCancellationRequested)
+    {
+        // travel operates at Travel priority — combat (3) > travel (1)
+        // so if combat starts mid-travel, this loop yields
+        await _arbiter.YieldUntilAvailableAsync(ControlPriority.Travel, ct);
+        SendMovePacket(target);
+        await Task.Delay(HeartbeatMs, ct);
+    }
+}   
+````
+
