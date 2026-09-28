@@ -160,6 +160,9 @@ namespace AOBuddy
 
         public static IEnumerable<ZoneExit> ExitsInto(int pf) => _all.Where(e => e.ToPf == pf);
 
+        private static readonly Dictionary<int, Func<float, float, bool>> _wet = new Dictionary<int, Func<float, float, bool>>();
+        public static void SetWet(int pf, Func<float, float, bool> wet) { lock (_wet) _wet[pf] = wet; }
+
         public static void Load(string pluginDir, Action<string> log)
         {
             var names = new Dictionary<int, string>();
@@ -433,6 +436,29 @@ namespace AOBuddy
                 t = ((p.Value.X - e.A.X) * dx + (p.Value.Z - e.A.Z) * dz) / (len * len);
                 float margin = Math.Min(0.5f, 2f / len);
                 t = Math.Max(margin, Math.Min(1 - margin, t));
+            }
+
+            // Never swim to a zone line (owner, 2026-09-27: Stret East Bank's line to Andromeda runs the whole south
+            // border; its nearest point (782,201) was open water and never took him). Where the ground of the zone is
+            // loaded, a wet point moves along the line to the nearest dry one.
+            Func<float, float, bool> wet = null;
+            lock (_wet) _wet.TryGetValue(e.FromPf, out wet);
+            if (p.HasValue && len > 0.01f && wet != null)
+            {
+                float margin = Math.Min(0.5f, 2f / len);
+                Vector3 c = Lerp(e.A, e.B, t);
+                if (wet(c.X, c.Z))
+                {
+                    float step = 2f / len;
+                    for (float k = step; k <= 1f; k += step)
+                    {
+                        float lo = t - k, hi = t + k;
+                        Vector3 q;
+                        if (hi <= 1 - margin && !wet((q = Lerp(e.A, e.B, hi)).X, q.Z)) { t = hi; break; }
+                        if (lo >= margin && !wet((q = Lerp(e.A, e.B, lo)).X, q.Z)) { t = lo; break; }
+                        if (hi > 1 - margin && lo < margin) break;
+                    }
+                }
             }
 
             Vector3 at = Lerp(e.A, e.B, t);

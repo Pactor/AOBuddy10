@@ -329,7 +329,15 @@ namespace AOBuddy
                 for (int z = 0; z < _h; z++)
                     for (int x = 0; x < _w; x++)
                         if (!_blocked[z * _w + x]) _water[z * _w + x] = !double.IsNaN(_ground.SwimY((x + 0.5) * Cell, (z + 0.5) * Cell, WadeDepth));
+                Zoning.SetWet(Pf, Wet);   // zone lines are crossed on dry land (Zoning.CrossLine)
             }
+        }
+
+        /// <summary>Swimming water at (x, z) (the client's liquid polygons, deeper than wading).</summary>
+        public bool Wet(float x, float z)
+        {
+            int cx = CellX(x), cz = CellZ(z);
+            return _water != null && cx >= 0 && cz >= 0 && cx < _w && cz < _h && _water[cz * _w + cx];
         }
 
         private void EnsureLearned()
