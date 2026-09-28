@@ -552,16 +552,17 @@ namespace AOBuddy
         // =====================================================================================================
         private bool _tour;
         private readonly List<(string Name, Vector3 Pos)> _tourStops = new List<(string, Vector3)>();
+        private readonly List<MissionGrid.RoomSpot> _tourSpots = new List<MissionGrid.RoomSpot>();
         private int _tourIdx, _tourLap, _tourPulls, _tourOk, _tourFail;
         private double _tourLegAt;
 
         private void StartTour(Action<string> reply)
         {
             if (Active) Stop("tour");
-            _tourStops.Clear();
-            foreach (int f in _grid.Floors) foreach (var r in _grid.RoomsOn(f)) _tourStops.Add((r.Name, r.Centre));
+            _tourStops.Clear(); _tourSpots.Clear();
+            foreach (int f in _grid.Floors) foreach (var r in _grid.RoomsOn(f)) { _tourStops.Add((r.Name, r.Centre)); _tourSpots.Add(r); }
             var ex = _nav.Exit;
-            if (ex != null) _tourStops.Add(("near the exit", new Vector3((float)(ex.X - ex.Nx * 6), (float)ex.Y, (float)(ex.Z - ex.Nz * 6))));
+            if (ex != null) { _tourStops.Add(("near the exit", new Vector3((float)(ex.X - ex.Nx * 6), (float)ex.Y, (float)(ex.Z - ex.Nz * 6)))); _tourSpots.Add(null); }
             _tour = true; _tourIdx = 0; _tourLap = 1; _tourOk = 0; _tourFail = 0;
             _completed = false; _replans = 0; _blocked.Clear(); _lastCorrection = null; _retrace = false;
             TourLegStart();
@@ -571,11 +572,14 @@ namespace AOBuddy
 
         private void TourLegStart() { _tourLegAt = Now; _tourPulls = 0; _replans = 0; }
 
-        private Hop? TourHop(out string why)
+        private Hop? TourHop(Vector3 pos, out string why)
         {
             var st = _tourStops[_tourIdx];
             why = $"tour lap {_tourLap} stop {_tourIdx + 1}/{_tourStops.Count} '{st.Name}'";
-            return new Hop { Pos = st.Pos, Purpose = Purpose.Tour };
+            // A room: where clear mode would go in it (RoomGoal: its reachable ground nearest the centre).
+            var spot = _tourSpots[_tourIdx];
+            var goal = spot != null ? _grid.RoomGoal(spot, _grid.ReachFrom(pos, _blocked)) ?? st.Pos : st.Pos;
+            return new Hop { Pos = goal, Purpose = Purpose.Tour };
         }
 
         private void TourNext(bool ok, string how)
@@ -888,7 +892,7 @@ namespace AOBuddy
         {
             int? myFloor = _grid.FloorAt(pos);
             if (!myFloor.HasValue) { why = "I am not on any floor of this building"; return null; }
-            if (_tour) return TourHop(out why);
+            if (_tour) return TourHop(pos, out why);
 
             int goalFloor;
             Vector3? goalPos = null;
