@@ -13,8 +13,8 @@ namespace AOBuddy
     /// <summary>Settings for the key hand-off, kept in keyhand.json in the plugin folder ('keyhand ...' commands).</summary>
     public sealed class KeyHandSettings
     {
-        public bool Enabled;
-        /// <summary>Who gets the key copy. Empty = the bot's configured Owner.</summary>
+        public bool Enabled = true;   // owner, 2026-09-28: "we want to leave this in"
+        /// <summary>Who gets the key copy. Empty = the bot's configured Owner (config.json Owner - the owner, not the bot).</summary>
         public string Owner = "";
         /// <summary>Mission rooms the bot can't walk (owner, 2026-09-27). A pool room matches by its exact name or by
         /// ending in '_' + the entry: the Subway - Ventil pool (351) names them Subway_ramp_2 and Subway_Vent1.</summary>
