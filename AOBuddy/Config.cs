@@ -19,7 +19,8 @@ namespace AOBuddy
     }
 
     /// <summary>
-    /// Per-bot settings, loaded from config.json next to the plugin DLL.
+    /// Per-bot settings, loaded from config.json next to the plugin DLL (or the file named by the host's --config,
+    /// when that file exists in the plugin folder - see ConfigFile).
     /// </summary>
     public class BuddyConfig
     {
@@ -367,5 +368,21 @@ namespace AOBuddy
         public float MoveLeashMeters = 8f;
         public float MoveLeashWindowSec = 1.5f;
         public float ZoneJumpThreshold = 40f;      // a position jump bigger than this = we zoned/teleported → reset nav
+    }
+
+    public static class ConfigFile
+    {
+        /// <summary>The plugin's settings file: the name the host got with --config (AOBUDDY_CONFIG) when it exists in
+        /// the plugin folder, else config.json.</summary>
+        public static string Path(string pluginDir)
+        {
+            string name = System.Environment.GetEnvironmentVariable("AOBUDDY_CONFIG");
+            if (!string.IsNullOrWhiteSpace(name) && !System.IO.Path.IsPathRooted(name))
+            {
+                string p = System.IO.Path.Combine(pluginDir, System.IO.Path.GetFileName(name));
+                if (System.IO.File.Exists(p)) return p;
+            }
+            return System.IO.Path.Combine(pluginDir, "config.json");
+        }
     }
 }

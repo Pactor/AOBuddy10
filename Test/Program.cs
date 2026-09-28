@@ -38,7 +38,13 @@ public class PluginLoader
     static void Main(string[] args)
     {
         string configFile;
-        string configPath = AppDomain.CurrentDomain.BaseDirectory + "config.json";
+        // --config <file> (owner, 2026-09-28): one config per character, e.g. --config dadbod.json. Relative to Build\.
+        // The same name is handed to plugins (AOBUDDY_CONFIG) so Plugins\<name>\dadbod.json is read if it exists.
+        string configName = "config.json";
+        for (int i = 0; i + 1 < args.Length; i++)
+            if (string.Equals(args[i], "--config", StringComparison.OrdinalIgnoreCase)) configName = args[i + 1];
+        Environment.SetEnvironmentVariable("AOBUDDY_CONFIG", configName);
+        string configPath = Path.IsPathRooted(configName) ? configName : AppDomain.CurrentDomain.BaseDirectory + configName;
 
         try
         {

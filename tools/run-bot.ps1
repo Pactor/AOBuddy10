@@ -16,6 +16,7 @@
 param(
     [string]$BuildDir = (Join-Path (Split-Path -Parent $PSScriptRoot) 'Build'),
     [int]$Port = 5591,
+    [string]$Config = '',   # e.g. dadbod.json: Build\dadbod.json (+ Plugins\AOBuddy\dadbod.json if present) instead of config.json
     [switch]$RestartOnCrash,
     [string[]]$ResumeCommands = @('mission run shop on', 'mission run'),
     [int]$WatchdogExitCode = 75
@@ -38,7 +39,8 @@ function Find-Running {
 }
 
 function Start-Bot {
-    $p = Start-Process -FilePath $exe -WorkingDirectory $BuildDir -WindowStyle Minimized -PassThru
+    $p = if ($Config) { Start-Process -FilePath $exe -WorkingDirectory $BuildDir -WindowStyle Minimized -PassThru -ArgumentList '--config', $Config }
+         else { Start-Process -FilePath $exe -WorkingDirectory $BuildDir -WindowStyle Minimized -PassThru }
     $null = $p.Handle   # keep a handle so ExitCode is readable after exit (PowerShell 5.1 quirk)
     Say "started Test.exe pid $($p.Id)"
     return $p

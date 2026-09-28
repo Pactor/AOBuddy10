@@ -3371,7 +3371,7 @@ namespace AOBuddy
         // the plugin's config.json, key by key, leaving the rest of the file as it is.
         private void SaveConfigValue(string key, JToken value)
         {
-            string path = Path.Combine(_pluginDir, "config.json");
+            string path = ConfigFile.Path(_pluginDir);
             var o = JsonStore.Load<JObject>(path, _ctx.Log) ?? new JObject();
             o[key] = value;
             JsonStore.Save(path, o.ToString(), _ctx.Log);

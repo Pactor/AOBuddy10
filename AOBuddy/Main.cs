@@ -1564,8 +1564,9 @@ namespace AOBuddy
 
         private void LoadConfig(string pluginDir)
         {
-            string path = Path.Combine(pluginDir, "config.json");
+            string path = ConfigFile.Path(pluginDir);
             if (!File.Exists(path)) path = Path.Combine(pluginDir, "config.example.json");
+            Logger.Information($"Settings from {Path.GetFileName(path)}.");
             if (File.Exists(path))
             {
                 try
