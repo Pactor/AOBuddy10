@@ -1396,7 +1396,7 @@ namespace AOBuddy
                 string arg = Arg(p);
                 if (arg == "run") { if (_mode != Mode.Assist) _mode = Mode.Assist; _run.Command(p.Length > 2 ? string.Join(" ", p.Skip(2)) : "", reply); }   // all of it: "style fight" was cut to "style"
                 else if (!_roll.Command(arg, p.Length > 2 ? p[2] : "", reply))
-                    _mission.Command(p.Length > 1 ? p[1] : "", reply);
+                    _mission.Command(p.Length > 1 ? string.Join(" ", p.Skip(1)) : "", reply);
             };
             t["travelto"] = (reply, p) => _overland.Command(p.Skip(1).Where(x => x.Length > 0).ToArray(), reply);
             t["stat"] = (reply, p) => reply(KnowledgeReports.StatCommand(p.Length > 1 ? p[1] : ""));
