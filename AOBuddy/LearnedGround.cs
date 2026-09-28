@@ -131,6 +131,61 @@ namespace AOBuddy
         public static List<List<Vector3>> WalksIn(int pf) { lock (Gate) return _walked.Where(w => w.Pf == pf).Select(w => w.P.Select(a => new Vector3(a[0], a[1], a[2])).ToList()).ToList(); }
 
         public static List<Snap> SnapsIn(int pf) { lock (Gate) return _snaps.TryGetValue(pf, out var l) ? l.ToList() : new List<Snap>(); }
+
+        /// <summary>
+        /// How many times the server pulled him back within 'radius' metres of this path (the hits of every remembered
+        /// snap-back spot of zone pf the path passes). A grid route out of the Longest Road Omni town climbs the ridge at
+        /// (1971,877)-(2013,911), exactly where snapbacks.json holds 20+ pull-backs (16:21-19:19, 2026-09-27): the grid
+        /// calls it walkable, the server does not.
+        /// </summary>
+        public static int SnapHitsAlong(int pf, List<Vector3> path, float radius = 6f)
+        {
+            if (path == null || path.Count == 0) return 0;
+            int hits = 0;
+            foreach (var s in SnapsIn(pf))
+            {
+                float best = float.MaxValue;
+                for (int i = 0; i < path.Count; i++)
+                {
+                    Vector3 a = path[i], b = i + 1 < path.Count ? path[i + 1] : path[i];
+                    float dx = b.X - a.X, dz = b.Z - a.Z, l2 = dx * dx + dz * dz;
+                    float t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((s.X - a.X) * dx + (s.Z - a.Z) * dz) / l2));
+                    float ex = a.X + t * dx - s.X, ez = a.Z + t * dz - s.Z;
+                    best = Math.Min(best, (float)Math.Sqrt(ex * ex + ez * ez));
+                }
+                if (best < radius) hits += s.N;
+            }
+            return hits;
+        }
         public static List<List<Vector3>> Roads() { lock (Gate) return _roads.Select(r => r.ToList()).ToList(); }
+
+        /// <summary>
+        /// THE WAY OUT OF A WALLED PLACE (owner, 2026-09-27: "walk out the entrance"): a recorded road that starts
+        /// within 'near' metres (and 5 m of height) of pos, oriented start -> far end, whose far end lies at least
+        /// 20 m further from pos than its start does (it leads away, not back). The nearest start wins. 'onZone'
+        /// (optional) must accept the far end - the files carry no zone, so the caller checks it sits on this
+        /// zone's ground. Null when no road starts here. The Longest Road Omni town: paths/longroad_whomphaout.json
+        /// runs from the booths (2076,15,714) out through the entrance to (1880,16,1004); the walk grid finds no way
+        /// out of the town (20:14:35: 'searched 1500000 cells' to a pad 7 m away).
+        /// </summary>
+        public static List<Vector3> RoadOut(Vector3 pos, float near = 30f, Func<Vector3, bool> onZone = null)
+        {
+            List<Vector3> best = null; float bestStart = near;
+            foreach (var r0 in Roads())
+            {
+                if (r0 == null || r0.Count < 2) continue;
+                foreach (var r in new[] { r0, Enumerable.Reverse(r0).ToList() })
+                {
+                    float dx = r[0].X - pos.X, dz = r[0].Z - pos.Z;
+                    float d = (float)Math.Sqrt(dx * dx + dz * dz);
+                    var end = r[r.Count - 1];
+                    float ex = end.X - pos.X, ez = end.Z - pos.Z;
+                    if (d < bestStart && Math.Abs(r[0].Y - pos.Y) < 5f && (float)Math.Sqrt(ex * ex + ez * ez) > d + 20f
+                        && (onZone == null || onZone(end)))
+                    { bestStart = d; best = r; }
+                }
+            }
+            return best;
+        }
     }
 }

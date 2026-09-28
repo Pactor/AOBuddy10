@@ -1771,6 +1771,17 @@ namespace AOBuddy
                     _follow.LoadReplay(OnGround(viaRoad.Skip(1), pos), false);
                     _ctx.Log($"MISSIONRUN: no clean grid route to {e}; going in by the recorded road ({viaRoad.Count} points).");
                 }
+                // OUT BY THE ENTRANCE (owner, 2026-09-27): standing in a walled place (the Longest Road Omni town) whose
+                // only way out on foot is a recorded road starting here - no clean grid way, or the grid's way runs over
+                // the server's pull-backs (the town's ridge: 20+ in snapbacks.json) - walk it out, then the grid from its end.
+                else if ((best == null || best.Count <= 1 || bestLeft > 15f || LearnedGround.SnapHitsAlong(_hikeFromPf, best) >= 2)
+                         && Movement.Flat(pos, at) > 40f
+                         && RoadOutPath(grid, pos, at, OtherPads(grid, _hikeFromPf, e), e.ToPf) is List<Vector3> outRoad)
+                {
+                    _hikeRoute = outRoad;
+                    _follow.LoadReplay(OnGround(outRoad.Skip(1), pos), false);
+                    _ctx.Log($"MISSIONRUN: no clean grid route to {e} from here; walking out by the recorded road first ({outRoad.Count} points).");
+                }
                 else if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
@@ -3054,9 +3065,20 @@ namespace AOBuddy
             var grid = HikeGrid();
             if (far >= T("walkto") && grid == null) return false;
             var path = grid == null ? null : NearestPath(grid, me.Transform.Position, goal, out float left);
+            // Out of a walled place by its recorded road first (owner, 2026-09-27), when the grid has no way from here.
+            if (grid != null && far >= 40f && (path == null || path.Count <= 1 || Movement.Flat(path[path.Count - 1], goal) > 15f
+                                              || LearnedGround.SnapHitsAlong(pf, path) >= 2)
+                && RoadOutPath(grid, me.Transform.Position, goal, null, -1) is List<Vector3> outRoad)
+            {
+                path = outRoad;
+                _ctx.Log($"MISSIONRUN: no grid way to {what} from here; walking out by the recorded road first ({outRoad.Count} points).");
+            }
             if (path == null && far >= T("walkto")) return false;   // far and no grid way: no straight walk
             _straightTries++;
-            _straightGoal = goal; _straightUntil = _clock + Math.Max(30, far / 5f + 20);
+            // Time by the walk's own length (a road out first makes it longer than the straight line).
+            float walkLen = far;
+            if (path != null && path.Count > 1) { walkLen = 0; for (int i = 1; i < path.Count; i++) walkLen += Movement.Flat(path[i - 1], path[i]); walkLen = Math.Max(walkLen, far); }
+            _straightGoal = goal; _straightUntil = _clock + Math.Max(30, walkLen / 5f + 20);
             if (path != null && path.Count > 1) _follow.LoadReplay(OnGround(OffZoneLines(path.Skip(1), pf, me.Transform.Position), me.Transform.Position), false);
             _ctx.Log($"MISSIONRUN: {why} to {what} {far:0} m off; walking to it myself ({(path != null ? $"grid, {path.Count} points" : "straight")}, try {_straightTries}).");
             return true;
@@ -3096,47 +3118,16 @@ namespace AOBuddy
         private double _hpHighAt = -99;
 
         // THE OTHER SIDE'S GROUND (owner, 2026-09-24: the alt is Omni; West Athens' Vanguard Watcher killed him from
-        // full HP in 3 s). GameData/FactionAreas.json: Clan cities (whole zones) and each side's whompa stations from
-        // the owner's Saavik's map, placed with Zoning.json's whompa positions. His side is his Side stat (1 Clan,
-        // 2 Omni); a neutral avoids none. Missions there are not taken, and no route uses those whompas or zones.
-        private sealed class FactionArea { public int side, pf; public float x, z, r; public string name; }
-        private List<FactionArea> _factionAreas;
-        private List<FactionArea> FactionAreas
-        {
-            get
-            {
-                if (_factionAreas != null) return _factionAreas;
-                _factionAreas = new List<FactionArea>();
-                try { _factionAreas = JObject.Parse(File.ReadAllText(Path.Combine(_pluginDir, "GameData", "FactionAreas.json")))["areas"].ToObject<List<FactionArea>>(); }
-                catch (Exception ex) { _ctx.Log($"MISSIONRUN: no faction areas ({ex.Message})."); }
-                return _factionAreas;
-            }
-        }
+        // full HP in 3 s). The map (GameData/FactionAreas.json) now lives in FactionMap, shared with travel
+        // (OverlandController), which planned through Old Athen without it (20:11-20:14, 2026-09-27). His side is his
+        // Side stat (1 Clan, 2 Omni); a neutral avoids none. Missions there are not taken, and no route uses those
+        // whompas or zones. The avoid list ('mission run avoid') counts as hostile ground here too.
         private int MySide { get { var me = DynelManager.LocalPlayer; return me != null && me.TryGetStat(Stat.Side, out int s) ? s : 0; } }
+        private bool Avoided(int pf) => _ctx.Config.MissionAvoidZones?.Contains(pf) ?? false;
         /// <summary>The other side's area at this spot (whole zone or round a station), or null.</summary>
         private string HostileAt(int pf, float x, float z)
-        {
-            if (_ctx.Config.MissionAvoidZones?.Contains(pf) ?? false) return Zoning.Name(pf);
-            int side = MySide;
-            if (side != 1 && side != 2) return null;
-            foreach (var a in FactionAreas)
-                if (a.side != side && a.side > 0 && a.pf == pf && (a.r <= 0 || Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r)) return a.name;
-            return null;
-        }
-        // The exit's start counts only round a station (r > 0): a whole avoided zone must never trap him inside it.
-        // 4 Holes (760) is on the avoid list, and in it every exit read 'hostile' - no way out for 9 minutes
-        // (23:49-00:00, 2026-09-25/26).
-        private bool HostileStart(int pf, float x, float z)
-        {
-            int side = MySide;
-            if (side != 1 && side != 2) return false;
-            foreach (var a in FactionAreas)
-                if (a.side != side && a.pf == pf && a.r > 0 && Math.Sqrt((a.x - x) * (a.x - x) + (a.z - z) * (a.z - z)) < a.r) return true;
-            return false;
-        }
-        private bool HostileExit(ZoneExit e) => HostileStart(e.FromPf, e.A.X, e.A.Z)
-                                                || (e.Arrival.HasValue ? HostileAt(e.ToPf, e.Arrival.Value.X, e.Arrival.Value.Z) != null
-                                                                       : HostileAt(e.ToPf, float.NaN, float.NaN) != null);   // arrival unknown: whole zones only
+            => Avoided(pf) ? Zoning.Name(pf) : FactionMap.HostileAt(_pluginDir, _ctx.Log, MySide, pf, x, z);
+        private bool HostileExit(ZoneExit e) => FactionMap.HostileExit(_pluginDir, _ctx.Log, MySide, e, Avoided);
         private bool _diedOnWay;
         private double _fleeUntil = -99;
         private double _fleeStartedAt = -99, _noFleeUntil = -99;
@@ -3345,6 +3336,26 @@ namespace AOBuddy
             return route;
         }
 
+        /// <summary>A way out along a recorded road that STARTS within 30 m of pos (LearnedGround.RoadOut; its far end on
+        /// this zone's ground), then the grid from the road's far end toward 'at' when it has one. Null when no road
+        /// starts here. The Longest Road Omni town: paths/longroad_whomphaout.json, booths (2076,714) -> outside
+        /// (1880,1004); the grid has no way out of the town (OVERLAND 20:14:35: 'searched 1500000 cells').</summary>
+        private List<Vector3> RoadOutPath(IWalkGrid grid, Vector3 pos, Vector3 at, HashSet<int> extra, int headingTo)
+        {
+            var g = _hikeGroundPf == grid.Pf ? _hikeGround : null;
+            var road = LearnedGround.RoadOut(pos, 30f, end =>
+                g == null || double.IsNaN(g.HeightAt(end.X, end.Z)) || Math.Abs(g.HeightAt(end.X, end.Z) - end.Y) < 3);
+            if (road == null) return null;
+            var route = new List<Vector3> { pos };
+            route.AddRange(road);
+            var end0 = road[road.Count - 1];
+            var on = NearestPath(grid, end0, at, out float left, extra);
+            if (on != null && on.Count > 1) route.AddRange(OffZoneLines(on.Skip(1), grid.Pf, null, headingTo));
+            _ctx.Log($"MISSIONRUN: recorded road out from ({road[0].X:0},{road[0].Z:0}) to ({end0.X:0},{end0.Z:0}); "
+                     + (on != null && on.Count > 1 ? $"then the grid, {on.Count} points, to {left:0} m from the goal." : "no grid way on from its end; walking on straight from there."));
+            return route;
+        }
+
         private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft, HashSet<int> extra = null)
         {
             bestLeft = float.MaxValue;
@@ -3375,6 +3386,22 @@ namespace AOBuddy
                 return false;
             }
             _hikeChain = 0;   // a chain of hikes never passes through here; any other trip starts its count afresh
+            // NO REPEATING (owner, 2026-09-27: "does not repeat the same attempt again and again, if he does pick a safe
+            // destination and replan"). 20:11-20:14 the trip to the door at (3596,1500) in The Longest Road failed the same
+            // way three times (travel planned out through Old Athen, stopped, the hike brought him back, again). Failed
+            // travel attempts are kept across restarts (OverlandController.Failures, travelfails.json, 6 h); after
+            // GiveUpAfter at this door, drop the mission and go back to the terminal - the known safe spot - to plan anew.
+            if (_phase == Phase.ToDoor && _current != null)
+            {
+                int fails = _overland.Failures.Count(pf, goal);
+                if (fails >= TravelFailures.GiveUpAfter)
+                {
+                    if (_overland.Active) _overland.Stop("giving up on the door");
+                    _ctx.Log($"MISSIONRUN: travel to the door at ({goal.X:0},{goal.Z:0}) in {Zoning.Name(pf)} failed {fails} time(s) in the last {TravelFailures.KeepHours:0} h; skipping the mission and going back to the terminal in {Zoning.Name(_termPf)} to plan from there.");
+                    Skip($"travel to its door failed {fails} times");
+                    return false;
+                }
+            }
             if (_overland.Active)
             {
                 // Travel (Algorithman's) plans without the faction map: at 13:03 (2026-09-25) it sent him from Wartorn
@@ -3384,12 +3411,13 @@ namespace AOBuddy
                 foreach (System.Text.RegularExpressions.Match hm in System.Text.RegularExpressions.Regex.Matches(ost ?? "", @"\((\d+)\)"))
                     if (int.TryParse(hm.Groups[1].Value, out int hpf) && hpf != (int)Playfield.ModelId && HostileAt(hpf, float.NaN, float.NaN) != null)
                     {
+                        _overland.RecordFailure("route through " + Zoning.Name(hpf));
                         _overland.Stop("route through " + Zoning.Name(hpf));
                         _ctx.Log($"MISSIONRUN: travel's route goes through {Zoning.Name(hpf)} ({hpf}), the other side's city; not taking it.");
                         _travelStarted = false; _travelWaitUntil = _clock + 20;
                         return false;
                     }
-                if (_phaseTime > TravelTimeout) { _overland.Stop("mission run: too long"); }
+                if (_phaseTime > TravelTimeout) { _overland.RecordFailure("mission run: too long"); _overland.Stop("mission run: too long"); }
                 // Waiting on Scotty: it has never warped this bot. Walk the planner's own route instead.
                 else if (_overland.Status().Contains("scty") && _phaseTime > (NoScotty ? 1 : 40) && StartHike(me, pf, goal, what)) return false;
                 // Same zone on RubiKa2019: no Scotty and no crossing for the hike, so walk it myself (Athen Shire,

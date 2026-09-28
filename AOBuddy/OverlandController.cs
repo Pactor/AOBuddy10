@@ -47,6 +47,22 @@ namespace AOBuddy
         private readonly HashSet<ZoneExit> _failed = new HashSet<ZoneExit>();
         private int _tries, _replans;
 
+        // FAILED TRIPS, REMEMBERED (TravelFailures, travelfails.json): one attempt = one Start(). The first step the
+        // latest plan took from the start zone is what gets recorded when the attempt fails, and a new attempt at the
+        // same goal leaves out the first steps that failed before (20:11-20:14, 2026-09-27: the same six legs three times).
+        public TravelFailures Failures { get; }
+        private int _attemptFromPf;
+        private string _attemptFirst, _attemptFirstText;
+        private bool _attemptRecorded, _ignoreRecord;
+        private HashSet<string> _recordedFails = new HashSet<string>();
+
+        // SAME ZONE, ON FOOT FIRST (owner, 2026-09-27): _walkFirst = this plan is the walk tried before any exit;
+        // _noWalk = it had no way on foot, plan through the exits. _roadOut = the path is a recorded road out of a
+        // walled place; at its far end the leg is planned again from there. _roadOutFrom: where each road out began,
+        // so the road back in is never taken as the next way "out".
+        private bool _walkFirst, _noWalk, _roadOut;
+        private readonly List<Vector3> _roadOutFrom = new List<Vector3>();
+
         // walking
         private readonly List<Vector3> _path = new List<Vector3>();
         private int _pathIndex;
@@ -131,6 +147,7 @@ namespace AOBuddy
         public OverlandController(BotContext ctx, Movement move, string pluginDir, Action<string> tell)
         {
             _ctx = ctx; _move = move; _pluginDir = pluginDir; _tell = tell;
+            Failures = new TravelFailures(pluginDir, ctx.Log);
         }
 
         // =====================================================================================================
@@ -174,10 +191,28 @@ namespace AOBuddy
             if (Active) Stop("new destination");
             _destPf = pf; _destX = x; _destY = y;
             _failed.Clear(); _replans = 0;
+            _attemptFromPf = (int)Playfield.ModelId; _attemptFirst = null; _attemptFirstText = null; _attemptRecorded = false; _ignoreRecord = false;
+            _noWalk = false; _walkFirst = false; _roadOut = false; _roadOutFrom.Clear();
+            _recordedFails = Failures.FailedFirsts(pf, DestGoal);
+            if (_recordedFails.Count > 0)
+                _ctx.Log($"OVERLAND: {Failures.Count(pf, DestGoal)} failed trip(s) to this goal in the last {TravelFailures.KeepHours:0} h; leaving out their first step(s): {string.Join(", ", _recordedFails)}.");
             if (!Plan(me, out string summary)) { reply($"No way to {Zoning.Name(pf)} from here."); _phase = Phase.Off; return; }
             if (!Active) return;   // already there; Done() has said so
             string where = x.HasValue ? $"({x:0},{y:0}) in {Zoning.Name(pf)}" : Zoning.Name(pf);
             reply($"Travelling to {where}: {summary}. 'travelto stop' cancels.");
+        }
+
+        private Vector3? DestGoal => _destX.HasValue && _destY.HasValue ? new Vector3(_destX.Value, 0f, _destY.Value) : (Vector3?)null;
+
+        /// <summary>
+        /// This attempt failed (called by Fail, and by the mission run when it stops travel for a reason that is the
+        /// plan's fault: a route through the other side's city, too long). Recorded once per attempt.
+        /// </summary>
+        public void RecordFailure(string why)
+        {
+            if (_phase == Phase.Off || _attemptRecorded) return;
+            _attemptRecorded = true;
+            Failures.Record(_attemptFromPf, _destPf, DestGoal, _attemptFirst ?? TravelFailures.Walk, _attemptFirstText, why);
         }
 
         public void Stop(string why)
@@ -206,10 +241,20 @@ namespace AOBuddy
         // =====================================================================================================
 
         // An object exit we cannot name can't be used; one that failed three times this trip is not tried again.
+        // NOTHING ONTO THE OTHER SIDE'S GROUND (FactionMap, the map the mission run's own routes use): 20:11-20:14
+        // (2026-09-27) this planned Jobe Platform -> Old Athen (540, Clan city) -> the Bliss (Clan) whompa for an Omni.
+        // The avoid list ('mission run avoid') is left out too, except as the destination itself.
+        // First steps that failed toward this goal before (TravelFailures) are left out unless nothing else goes.
         private ZoneRouteOptions Options(LocalPlayer me)
         {
             var o = Zoning.RouteOptions(me);
-            o.Filter = e => !_failed.Contains(e) && (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0);
+            int side = me.TryGetStat(Stat.Side, out int sd) ? sd : 0;
+            var avoid = _ctx.Config.MissionAvoidZones;
+            int dest = _destPf;
+            var recorded = _ignoreRecord ? null : _recordedFails;
+            o.Filter = e => !_failed.Contains(e) && (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0)
+                            && (recorded == null || !recorded.Contains(TravelFailures.Key(e)))
+                            && !FactionMap.HostileExit(_pluginDir, _ctx.Log, side, e, z => z != dest && avoid != null && avoid.Contains(z));
             return o;
         }
 
@@ -218,8 +263,34 @@ namespace AOBuddy
             summary = "";
             int pf = (int)Playfield.ModelId;
             Vector3 pos = me.MovementComponent.Position;
-            var legs = Zoning.Waypoints(pf, pos, _destPf, _destX, _destY, Options(me));
-            if (legs == null) { _ctx.Log($"OVERLAND: no route from {Zoning.Name(pf)} ({pos.X:0},{pos.Z:0}) to {Zoning.Name(_destPf)}."); return false; }
+            Queue<ZoneWaypoint> legs = null;
+            _walkFirst = false;
+            // SAME ZONE: WALK IT when the ground allows (owner, 2026-09-27: "prefer walking within the same playfield").
+            // Zoning.FindRoute prices a walk as straight-line metres and a crossing as 20-30, so from the Longest Road
+            // town to a door 1.7 km away in the same zone it planned five crossings out through the booths (cost 357).
+            // BeginLeg finds the way on foot (by the recorded road out when the grid has none); only when there is no
+            // way on foot does the plan fall back to the exits (_noWalk). Not in the Grid: its decks join only by lifts.
+            if (pf == _destPf && _destX.HasValue && pf != 152 && !_noWalk && (_ignoreRecord || !_recordedFails.Contains(TravelFailures.Walk)))
+            {
+                legs = new Queue<ZoneWaypoint>();
+                legs.Enqueue(new ZoneWaypoint(_destX.Value, _destY.Value, pf, null));
+                _walkFirst = true;
+                _ctx.Log($"OVERLAND: same playfield, {Movement.Flat(pos, new Vector3(_destX.Value, 0f, _destY.Value)):0} m: walking it; the exits only if there is no way on foot.");
+            }
+            if (legs == null) legs = Zoning.Waypoints(pf, pos, _destPf, _destX, _destY, Options(me));
+            if (legs == null && !_ignoreRecord && _recordedFails.Count > 0)
+            {
+                _ctx.Log($"OVERLAND: no route without the first step(s) that failed before ({string.Join(", ", _recordedFails)}); planning with them.");
+                _ignoreRecord = true;
+                legs = Zoning.Waypoints(pf, pos, _destPf, _destX, _destY, Options(me));
+            }
+            if (legs == null) { _ctx.Log($"OVERLAND: no route from {Zoning.Name(pf)} ({pos.X:0},{pos.Z:0}) to {Zoning.Name(_destPf)} (the other side's ground and the avoid list left out)."); return false; }
+            if (pf == _attemptFromPf && legs.Count > 0)
+            {
+                var first = legs.Peek();
+                _attemptFirst = TravelFailures.Key(first.Exit);
+                _attemptFirstText = LegText(first);
+            }
             _legs = legs;
             _legCount = legs.Count; _legNo = 0;
             summary = legs.Count == 0 ? "already there" : $"{legs.Count} leg(s): " + string.Join("; ", legs.Select(LegText));
@@ -258,7 +329,7 @@ namespace AOBuddy
         private void BeginLeg(LocalPlayer me)
         {
             Vector3 pos = me.MovementComponent.Position;
-            _path.Clear(); _pathIndex = 0;
+            _path.Clear(); _pathIndex = 0; _roadOut = false;
             if (_leg.Exit?.Kind == ExitKind.Scotty) { Enter(Phase.Use, "telling Scotty"); return; }
             if (!EnsureNav()) { _move.Hold(me, _ctx.Config.SendIntervalMs); Enter(Phase.Loading, "loading this playfield's floor data"); return; }
 
@@ -266,6 +337,13 @@ namespace AOBuddy
             Vector3 goal;
             Vector3? across = null;
             string what;
+            if (_leg.Exit == null && _walkFirst && !(_grid is OverlandGrid))
+            {
+                // The on-foot-first plan is for outdoor ground; indoors (lifts, levels) the exits plan is the way.
+                _walkFirst = false; _noWalk = true;
+                Replan(me, "no outdoor walk grid here for the walk; planning through the exits");
+                return;
+            }
             if (_leg.Exit == null) { goal = new Vector3(_leg.X, _grid is FloorGrid ? float.NaN : pos.Y, _leg.Y); what = "the destination"; }
             else if (_leg.Exit.Kind == ExitKind.ZoneLine)
             {
@@ -314,6 +392,8 @@ namespace AOBuddy
             // a structure with no surfaces in our data): the grid doesn't describe where we are, so walk straight.
             double groundHere = _ground?.Ground?.HeightAt(from.X, from.Z) ?? double.NaN;
             bool offGrid = _grid is OverlandGrid && !double.IsNaN(groundHere) && Math.Abs(from.Y - groundHere) > 2;
+            // Off the ground data and the goal is far: a recorded road out, when one starts here, before a straight walk.
+            if (offGrid && Movement.Flat(from, goal) > 40f && TryRoadOut(from, what, "off the ground data here")) return;
             if (offGrid)
             {
                 _ctx.Log($"OVERLAND: I'm {from.Y - groundHere:0.0} m off the ground data here (on a structure it lacks); walking straight to {what}.");
@@ -346,11 +426,30 @@ namespace AOBuddy
                 }
                 float reach = _leg.Exit == null ? GoalRange : _leg.Exit.Kind == ExitKind.ZoneLine ? 1.5f : IsPad(_leg.Exit) ? PadReach : UseReach;
                 var route = _grid.FindPath(from, goal, extra, 8f, reach, out string why);
+                // WALK OUT BY THE ENTRANCE (owner, 2026-09-27): no way on the grid from where he stands - or the grid's way
+                // runs where the server has pulled him back (the Longest Road town: the grid climbs the ridge at
+                // (1971,877)-(2013,911), 20+ snap-backs in snapbacks.json) - and a recorded road starts within 30 m: walk it
+                // to its far end, then plan this leg again from there.
+                if (Movement.Flat(from, goal) > 40f)
+                {
+                    int snaps = route != null ? LearnedGround.SnapHitsAlong(_grid.Pf, route) : 0;
+                    if ((route == null || snaps >= RoadOutSnaps)
+                        && TryRoadOut(from, what, route == null ? $"no route to {what} on the data ({why})" : $"the grid's way to {what} runs over {snaps} server pull-back(s)"))
+                        return;
+                    if (route == null) _ctx.Log($"OVERLAND: no route to {what} on the data ({why}).");
+                }
                 if (route == null && Movement.Flat(from, goal) <= 40f)
                 {
                     // Close by, the data is more likely wrong than the way blocked (a gap in its walls, a missing surface).
                     _ctx.Log($"OVERLAND: no route to {what} on the data ({why}); it's {Movement.Flat(from, goal):0} m, walking straight.");
                     route = new List<Vector3> { from, goal };
+                }
+                if (route == null && _leg.Exit == null && _walkFirst)
+                {
+                    // The same-zone walk has no way on foot from here: plan through the exits, from here.
+                    _walkFirst = false; _noWalk = true;
+                    Replan(me, $"no way on foot to ({goal.X:0},{goal.Z:0}) ({why}); planning through the exits");
+                    return;
                 }
                 if (route == null)
                 {
@@ -415,6 +514,28 @@ namespace AOBuddy
             return null;
         }
 
+        // A recorded road out of where we stand (LearnedGround.RoadOut: starts within 30 m, leads away, far end on this
+        // zone's ground), never one that ends where an earlier road out of this attempt began (that is the road back in).
+        // Loads it as the path: a straight step to its start, then the road. True when taken.
+        private const int RoadOutSnaps = 2;   // a grid way over this many remembered pull-backs is no way out when a road is
+
+        private bool TryRoadOut(Vector3 from, string what, string reason)
+        {
+            if (_grid == null) return false;
+            var ground = _ground?.Ground;
+            var road = LearnedGround.RoadOut(from, 30f, end =>
+                (ground == null || double.IsNaN(ground.HeightAt(end.X, end.Z)) || Math.Abs(ground.HeightAt(end.X, end.Z) - end.Y) < 3)
+                && _roadOutFrom.All(b => Movement.Flat(b, end) > 30f));
+            if (road == null) return false;
+            _roadOutFrom.Add(from);
+            _path.AddRange(road);
+            _roadOut = true;
+            var end0 = road[road.Count - 1];
+            _ctx.Log($"OVERLAND: {reason}; walking out by the recorded road: {road.Count} points, {Length(road):0} m, from ({road[0].X:0},{road[0].Z:0}) {Movement.Flat(from, road[0]):0} m away to ({end0.X:0},{end0.Z:0}); then on to {what} from there.");
+            Enter(Phase.Walk, "walking out by the recorded road");
+            return true;
+        }
+
         private static float Length(List<Vector3> pts)
         {
             float l = 0;
@@ -439,6 +560,7 @@ namespace AOBuddy
         private void Fail(string why)
         {
             _ctx.Log("OVERLAND: giving up - " + why);
+            RecordFailure(why);
             _tell("Travel stopped: " + why);
             Stop(why);
         }
@@ -464,6 +586,7 @@ namespace AOBuddy
 
             // Any zone or teleport, whichever phase we were in: let it settle, then see where we are.
             bool zoned = pf != _lastPf || Vector3.Distance(pos, _lastPos) > JumpMeters;   // 3D: a lift beam moves us straight up
+            if (pf != _lastPf) { _noWalk = false; _roadOutFrom.Clear(); }   // 'no way on foot' was about the zone we left
             _lastPf = pf; _lastPos = pos;
             if (zoned && _phase != Phase.Arrived)
             {
@@ -652,6 +775,14 @@ namespace AOBuddy
         private void ArriveWalk(LocalPlayer me)
         {
             _move.Hold(me, _ctx.Config.SendIntervalMs);
+            if (_roadOut)
+            {
+                // Out by the road: the same leg again from its far end (the grid sees open ground from here).
+                _roadOut = false;
+                _ctx.Log("OVERLAND: at the end of the recorded road; planning the leg again from here.");
+                BeginLeg(me);
+                return;
+            }
             if (_leg.Exit == null) { Done(me); return; }
             if (_leg.Exit.Kind == ExitKind.ZoneLine)
             {
