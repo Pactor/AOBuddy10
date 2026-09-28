@@ -3402,6 +3402,10 @@ namespace AOBuddy
             // walk across Holes in the Wall does, ~3 s) runs out again with a wider goal.
             if (path == null && (why == null || why.IndexOf("searched", StringComparison.OrdinalIgnoreCase) < 0))
                 path = grid.FindPath(pos, at, blockedCells, T("snap"), Math.Max(T("reach"), T("ring")), out _);
+            // Ran out of cells: the goal may sit in a wall with no open ground within reach (a shop door, a mission door:
+            // Pleasant Meadows 21:27 and Stret West Bank 21:00, 2026-09-27 - the wider search ends in 0.1-0.2 s there).
+            else if (path == null)
+                path = grid.FindPath(pos, at, blockedCells, T("snap"), Math.Max(T("reach"), 8f), out _);
             if (sw.ElapsedMilliseconds > 1000) _ctx.Log($"MISSIONRUN: the grid search toward the exit took {sw.ElapsedMilliseconds} ms.");
             if (path == null) return null;
             bestLeft = Movement.Flat(path[path.Count - 1], at);
