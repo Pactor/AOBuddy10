@@ -729,7 +729,9 @@ namespace AOBuddy
                 // interruption), and only when nothing else is queued/casting.
                 // Outside a mission, pets wait for the Codedoc step and the own self-buffs (better pets after buffs).
                 // Capped at 3 minutes so a self-buff that never lands can't keep him petless.
-                bool petsWait = !_mission.InMission && ((_codedoc != null && _codedoc.PetsWait) || _support.SelfBuffsPending);
+                // Only with no pet up: a self-buff coming due later must not hold the pets he already has.
+                bool petsWait = !_mission.InMission && _pets.OwnedCount(me) == 0
+                                && ((_codedoc != null && _codedoc.PetsWait) || _support.SelfBuffsPending);
                 _petsWaitFor = petsWait ? _petsWaitFor + dt : 0;
                 if (_petsWaitFor > 180) petsWait = false;
                 if (petsWait != _petsWaitLogged) { _petsWaitLogged = petsWait; Log(petsWait ? "PET: summons wait for the buffs (Codedoc, then own self-buffs)." : $"PET: summons resume ({(_petsWaitFor > 180 ? "waited 3 min for buffs" : "buffs done")})."); }
