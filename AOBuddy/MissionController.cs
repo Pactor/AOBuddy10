@@ -753,7 +753,7 @@ namespace AOBuddy
             }
             _pathIndex = 0; _purpose = h.Purpose; _pendingButton = h.Button;
             float len = 0; for (int i = 1; i < _path.Count; i++) len += Vector3.Distance(_path[i - 1], _path[i]);
-            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}{ClearText}");
+            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}{_grid?.RouteWallText}");
         }
 
         private Hop? NextHop(Vector3 pos, out string why)
@@ -1877,6 +1877,8 @@ namespace AOBuddy
         private const float Fine = 0.5f, BodyRadius = 0.35f, CutAbove = 1.0f;
         private static readonly float[] SliceAbove = { 0.5f, 1.0f, 1.5f };
         private HashSet<(int, int, int)> _fine;                  // open 0.5 m cells: (floor, fx, fz)
+        private const float WalkableCos = 0.7071f;   // cos 45 degrees
+        public int SlopeTris { get; private set; }
         private float[] _wallTris;
         private Dictionary<(int, int), List<int>> _wallHash;     // 2 m column -> wall triangle indices
         private int FinePer => (int)Math.Round(Cell / Fine);
@@ -1885,8 +1887,17 @@ namespace AOBuddy
         {
             _wallTris = tris;
             _wallHash = new Dictionary<(int, int), List<int>>();
+            int slopes = 0;
             for (int t = 0; t + 9 <= tris.Length; t += 9)
             {
+                // A surface you walk on is not a wall (owner, 2026-09-27, mission 2224863: the ramp he came down "is indeed
+                // a good route" but the planner thought going back up it was not - its sloped face crossed the slices at
+                // 0.5-1.5 m above the floor and closed it). Facing up at under 45 degrees = floor, ramp or step top.
+                float ux = tris[t + 3] - tris[t], uy = tris[t + 4] - tris[t + 1], uz = tris[t + 5] - tris[t + 2];
+                float vx = tris[t + 6] - tris[t], vy = tris[t + 7] - tris[t + 1], vz = tris[t + 8] - tris[t + 2];
+                float nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+                float nl = (float)Math.Sqrt(nx * nx + ny * ny + nz * nz);
+                if (nl > 1e-6f && Math.Abs(ny) / nl > WalkableCos) { slopes++; continue; }
                 int x0 = (int)Math.Floor(Math.Min(tris[t], Math.Min(tris[t + 3], tris[t + 6])) / Cell), x1 = (int)Math.Floor(Math.Max(tris[t], Math.Max(tris[t + 3], tris[t + 6])) / Cell);
                 int z0 = (int)Math.Floor(Math.Min(tris[t + 2], Math.Min(tris[t + 5], tris[t + 8])) / Cell), z1 = (int)Math.Floor(Math.Max(tris[t + 2], Math.Max(tris[t + 5], tris[t + 8])) / Cell);
                 for (int x = x0; x <= x1; x++)
@@ -1896,6 +1907,7 @@ namespace AOBuddy
                         l.Add(t);
                     }
             }
+            SlopeTris = slopes;
             // Floor for the fine layer: the tile model grown by one 2 m cell. The shared column of a doorway
             // often has no tile on either side (Ventil mission: the doorway between SmallB5 and BigB4 was
             // sealed that way), and a tile model 2 m coarse leaves floor near the walls uncovered. Growing
@@ -2108,7 +2120,7 @@ namespace AOBuddy
             }
             return min;
         }
-        private string ClearText => _routeMinClear < 0 ? "" : _routeMinClear >= WantClear ? ", 2 m or more off every wall"
+        public string RouteWallText => _routeMinClear < 0 ? "" : _routeMinClear >= WantClear ? ", 2 m or more off every wall"
             : $", closest to a wall {BodyRadius + (_routeMinClear - 0.5f) * Fine:0.0} m";
 
         private List<(int, int, int)> FineAStar((int, int, int) s, (int, int, int) g, HashSet<(int, int, int)> blocked)
@@ -2200,7 +2212,7 @@ namespace AOBuddy
         }
 
         public string Describe() => $"{Floors.Count} floor(s) {string.Join(",", Floors)}, {_walk.Count} floor cells, boss room {(BossFloor.HasValue ? $"'{BossRoomName}' on floor {BossFloor}" : "none")}, "
-            + (_fine != null ? $"walls: {_wallTris.Length / 9} triangles, {_fine.Count} open {Fine} m cells" : "no wall data (routing on the tile grid alone)");
+            + (_fine != null ? $"walls: {_wallTris.Length / 9} triangles ({SlopeTris} walkable slopes left out), {_fine.Count} open {Fine} m cells" : "no wall data (routing on the tile grid alone)");
 
         /// <summary>False when the walls close the 0.5 m cell under p (true with no wall data, or off every floor).</summary>
         public bool OpenAt(Vector3 p)
