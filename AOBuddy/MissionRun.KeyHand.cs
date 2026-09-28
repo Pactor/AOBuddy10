@@ -520,27 +520,52 @@ namespace AOBuddy
             _dupShopAt = _clock;
             _shopTriedAt = _clock;
             _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear(); _shopStimsTried = false;
-            _shopToolOnly = true; _shopToolTried = false;
-            KLog($"off to Fair Trade: {why}.");
+            _shopToolOnly = true; _shopToolTried = false; _toolsTried.Clear();
+            _ctx.Log($"MISSIONRUN: off to Fair Trade for tools: {why}.");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
-            Enter(Phase.Shop, "buying a Mission Key Duplicator");
+            Enter(Phase.Shop, "buying tools");
             return true;
         }
 
+        // TOOLS from the Fair Trade tools terminal: the key hand-off's duplicator, and a Lock Pick when he has none (owner,
+        // 2026-09-27: lock picks are sold at the Fair Trade tool terminal; 22:40 HiTech 2224865: "giving up on (Door:2CDA7BE)
+        // (no lock pick)" - the stair room behind it was never reached). Lock Pick = template 95577 (itemnames.sql), the
+        // first of MissionController.LockPicks.
+        private const int LockPickId = 95577;
+        private readonly HashSet<int> _toolsTried = new HashSet<int>();
+        private int _toolBuying;
+        private static bool HaveItem(Func<Item, bool> f)
+            => Inventory.Items.Any(i => i != null && i.Slot.Type == IdentityType.Inventory && f(i))
+               || Inventory.Containers.Where(c => c?.Items != null).SelectMany(c => c.Items).Any(i => i != null && f(i));
+        private bool NeedsLockPick() => Resupply != null && !HaveItem(i => MissionController.LockPicks.Contains(i.Id));
+        private bool HaveTool(int id) => id == LockPickId ? !NeedsLockPick() : Duplicator() != null;
+        private int NextToolWanted()
+        {
+            if (KeyHandNeedsDuplicator() && !_toolsTried.Contains(KH.DuplicatorItemId)) return KH.DuplicatorItemId;
+            if (NeedsLockPick() && !_toolsTried.Contains(LockPickId)) return LockPickId;
+            return 0;
+        }
+        private bool ToolsWanted() => KeyHandNeedsDuplicator() || NeedsLockPick();
+
         private bool ShopBuyTool(LocalPlayer me)
         {
-            _shopToolTried = true;
-            if (Duplicator() != null) { ShopNext(ShopStep.Exit, "have a duplicator already; leaving."); return false; }
-            Resupply.StartTool(me, KH.DuplicatorItemId, 1, KH.ShopKeyword, s => _ctx.Log("MISSIONRUN: shop: " + s));
-            ShopNext(ShopStep.Tool, "buying a Mission Key Duplicator (key hand-off).");
+            int id = NextToolWanted();
+            if (id == 0) { _shopToolTried = true; ShopNext(ShopStep.Exit, "no tools left to buy; leaving."); return false; }
+            _toolsTried.Add(id); _toolBuying = id;
+            string name = id == LockPickId ? "Lock Pick" : "Mission Key Duplicator";
+            Resupply.StartTool(me, id, 1, KH.ShopKeyword, s => _ctx.Log("MISSIONRUN: shop: " + s));
+            ShopNext(ShopStep.Tool, $"buying a {name}.");
             return false;
         }
 
         private bool ShopToolTick(LocalPlayer me, double t)
         {
             if (Resupply.Active || t < 1) return false;
-            if (Duplicator() == null && t < 15) return false;   // the item lands after the trade (21:28, 2026-09-27: over 5 s)
-            KLog(Duplicator() != null ? "bought a Mission Key Duplicator." : "couldn't buy a Mission Key Duplicator here (see the RESUPPLY lines).");
+            if (!HaveTool(_toolBuying) && t < 15) return false;   // the item lands after the trade (21:28, 2026-09-27: over 5 s)
+            string name = _toolBuying == LockPickId ? "Lock Pick" : "Mission Key Duplicator";
+            _ctx.Log(HaveTool(_toolBuying) ? $"MISSIONRUN: shop: bought a {name}." : $"MISSIONRUN: shop: couldn't buy a {name} here (see the RESUPPLY lines).");
+            if (NextToolWanted() != 0) return ShopBuyTool(me);
+            _shopToolTried = true;
             if (_shopToolOnly) { ShopNext(ShopStep.Exit, "leaving the way I came in."); return false; }
             return ShopAfterNanos(me);
         }

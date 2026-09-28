@@ -967,7 +967,8 @@ namespace AOBuddy
                     // nothing (09:15, 09:26, 09:42, 2026-09-25). Back to NeedsResupply once that is fixed.
                     if (Resupply != null && UsableStims() < _ctx.Config.ResupplyStimTarget && StartShop("low on stims I can use")) return false;
                     // KEY HAND-OFF: no Mission Key Duplicator - buy one at Fair Trade first (at most every 30 minutes).
-                    if (_current == null && KeyHandNeedsDuplicator() && _clock - _dupShopAt > 1800 && StartToolShop("no Mission Key Duplicator for the key hand-off")) return false;
+                    if (_current == null && ToolsWanted() && _clock - _dupShopAt > 1800
+                        && StartToolShop(KeyHandNeedsDuplicator() ? "no Mission Key Duplicator for the key hand-off" : "no lock pick for locked doors")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -2650,7 +2651,7 @@ namespace AOBuddy
             if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
             _shopTriedAt = _clock;
             _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear(); _shopStimsTried = false;
-            _shopToolOnly = false; _shopToolTried = false;
+            _shopToolOnly = false; _shopToolTried = false; _toolsTried.Clear();
             _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade to sell, bank the keepers and make room.");
             _tell($"Going to Fair Trade ({why}): sell, bank my nano crystals, buy what I need. (Test switch: mission run shop on|off.)");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
@@ -3018,7 +3019,7 @@ namespace AOBuddy
                 ShopNext(ShopStep.Stims, "buying stims/rechargers I can use.");
                 return false;
             }
-            if (!_shopToolTried && KeyHandNeedsDuplicator()) return ShopBuyTool(me);   // key hand-off
+            if (!_shopToolTried && NextToolWanted() != 0) return ShopBuyTool(me);   // duplicator (key hand-off), lock pick
             ShopNext(ShopStep.Exit, "leaving the way I came in.");
             return false;
         }
