@@ -1184,7 +1184,7 @@ namespace AOBuddy
                 foreach (var k in _mobRoom.Where(kv => kv.Value == here.Value).Select(kv => kv.Key).ToList())
                     if (!DynelManager.Npcs.Any(n => n != null && n.Identity == k)) _mobRoom.Remove(k);
             }
-            if (FindPersonTarget is Identity who && _personRoom == null
+            if (ObjectiveNpc is Identity who && _personRoom == null
                 && DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == who) is SimpleChar person
                 && _grid.FloorAt(person.Transform.Position) is int pfl && RoomIndexAt(person.Transform.Position, pfl) is int pri)
             {
@@ -1194,7 +1194,7 @@ namespace AOBuddy
                 // with that name is his room.
                 _personRoom = pri; _personRoomName = spot.Name; _personCells = new HashSet<(int, int, int)>();
                 foreach (var part in _grid.RoomsOn(pfl).Where(r => r.Name == spot.Name)) _personCells.UnionWith(_grid.CellsOf(part));
-                _ctx.Log($"MISSION: '{person.Name}', the person to find, is in room '{spot.Name}' on floor {pfl}; clearing the other rooms first and going round it.");
+                _ctx.Log($"MISSION: '{person.Name}', the mission's target ({_record.TypeName}), is in room '{spot.Name}' on floor {pfl}; clearing the other rooms first and going round it.");
             }
             foreach (var n in DynelManager.Npcs)
             {
@@ -1433,6 +1433,21 @@ namespace AOBuddy
 
         // ---- offline test hooks (the harness replays captures through the planner; nothing calls these live)
         /// <summary>The person a find-person mission sends us to, if this building's record names one.</summary>
+        // THE MISSION'S OWN NPC - the person to find or to kill (owner, 2026-09-28: "stop going into the room with the find
+        // target/kill target until very last"). Its room is left for last, and fights don't chase mobs next to it.
+        public Identity? ObjectiveNpc => _record != null && (_record.Type == TypeFindPerson || _record.Type == TypeKillPerson) ? _record.TargetA : null;
+
+        /// <summary>True while rooms are left to clear and p is in the target's room or within 15 m of the target: a fight
+        /// must not chase a mob there (05:24:48, 2026-09-28, 2224902: chasing a flea took him to 15 m of Roberto Dinnen, who
+        /// aggroed and followed him round).</summary>
+        public bool NearObjective(Vector3 p)
+        {
+            if (!Clearing || _grid == null) return false;
+            if (_personCells != null && _grid.CellOf(p) is (int, int, int) c && _personCells.Contains(c)) return true;
+            return ObjectiveNpc is Identity who && DynelManager.Npcs.FirstOrDefault(x => x != null && x.Identity == who) is SimpleChar t
+                   && Movement.Flat(t.Transform.Position, p) < 15f;
+        }
+
         public Identity? FindPersonTarget => _record != null && _record.TypeName == "find person" ? _record.TargetA : null;
 
         public void TestLoad(byte[] zoneIn, MissionRecord record) { OnZoneIn(zoneIn); _record = record; }
