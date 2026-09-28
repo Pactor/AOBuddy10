@@ -2266,10 +2266,16 @@ namespace AOBuddy
             while (i < cells.Count - 1)
             {
                 int j = i + 1;
-                while (j + 1 < cells.Count && ClearFine(cells[i], cells[j + 1], blocked)) j++;
+                // The leg walked starts at the last point placed (a door centre after a snap), not at cells[i]: check that too.
+                while (j + 1 < cells.Count && ClearFine(cells[i], cells[j + 1], blocked)
+                       && OpenLine(pts[pts.Count - 1], FineCentre(cells[j + 1]), cells[j + 1].Item1, blocked)) j++;
                 // if cell touches a doorway, use the center of the doorway to go through
                 var door = Doors.Values.FirstOrDefault(x => Vector3.Distance(FineCentre(cells[j]), x.Pos) < 2f);
-                if (door != null)
+                // Only when both legs through the door's centre stay on open cells (mission 2224863, 2026-09-27: the snap
+                // made a 15 m leg through the slab beside the (225,50) tunnel and the server refused it every time; see
+                // docs/finding-door-snap-inside-wall.md). Otherwise the cell the search chose.
+                if (door != null && OpenLine(pts[pts.Count - 1], door.Pos, cells[j].Item1, blocked)
+                    && (j + 1 >= cells.Count || OpenLine(door.Pos, FineCentre(cells[Math.Min(cells.Count - 1, j + 1)]), cells[j].Item1, blocked)))
                 {
                     pts.Add(door.Pos);
                 }
@@ -2280,6 +2286,20 @@ namespace AOBuddy
                 i = j;
             }
             return pts;
+        }
+
+        // Every 0.5 m cell under the straight line a-b is open.
+        private bool OpenLine(Vector3 a, Vector3 b, int floor, HashSet<(int, int, int)> blocked)
+        {
+            float d = Movement.Flat(a, b);
+            int n = Math.Max(1, (int)Math.Ceiling(d / (Fine * 0.25f)));
+            for (int s = 0; s <= n; s++)
+            {
+                float t = s / (float)n;
+                var k = (floor, (int)Math.Floor((a.X + (b.X - a.X) * t) / Fine), (int)Math.Floor((a.Z + (b.Z - a.Z) * t) / Fine));
+                if (!FineOpen(k, blocked)) return false;
+            }
+            return true;
         }
 
         private bool ClearFine((int, int, int) a, (int, int, int) b, HashSet<(int, int, int)> blocked)
