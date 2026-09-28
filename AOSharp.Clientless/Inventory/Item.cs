@@ -60,7 +60,15 @@ namespace AOSharp.Clientless
             foreach (var criteria in lowTemplate.Criteria)
             {
                 var lowCriteria = criteria.Value;
-                var highCriteria = highTemplate.Criteria[criteria.Key];
+                // The high template can carry a different requirement list than the low one (fewer entries, or
+                // none for this action). Interpolating index by index then threw, and one such item in the bags
+                // dropped the whole FullCharacter - no login at all (Algorithman, 2026-09-28). Where the two lists
+                // don't line up, keep the low template's requirements as they are.
+                if (!highTemplate.Criteria.TryGetValue(criteria.Key, out var highCriteria) || highCriteria.Count != lowCriteria.Count)
+                {
+                    Criteria[criteria.Key] = lowCriteria;
+                    continue;
+                }
                 List<RequirementCriterion> interpolatedCriteria = new List<RequirementCriterion>();
 
                 for (int i = 0; i < lowCriteria.Count; i++)
@@ -89,7 +97,12 @@ namespace AOSharp.Clientless
             foreach (var modifier in lowTemplate.Modifiers)
             {
                 var lowMod = modifier.Value;
-                var highMod = highTemplate.Modifiers[modifier.Key];
+                // Same mismatch as the criteria above: a stat the high template lacks threw here too.
+                if (!highTemplate.Modifiers.TryGetValue(modifier.Key, out var highMod) || !lowMod.Keys.All(highMod.ContainsKey))
+                {
+                    Modifiers[modifier.Key] = lowMod;
+                    continue;
+                }
                 Dictionary<Stat, int> interpolatedStats = new Dictionary<Stat, int>();
 
                 foreach (var stat in lowMod)
