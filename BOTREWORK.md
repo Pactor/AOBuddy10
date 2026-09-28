@@ -380,3 +380,45 @@ public async Task TravelTo(Vector2 target, CancellationToken ct)
 }   
 ````
 
+Main bot loop:
+````
+public sealed class BotLoop
+{
+    private readonly MissionSequence _mission;
+    private readonly ControlArbiter _arbiter;
+
+    public async Task RunAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            try
+            {
+                switch (CurrentTask)
+                {
+                    case Tasks.Mission: await _mission.RunAsync(ct); break;
+                    case Tasks.Resupply: await _resupplier.RunAsync(ct); break;
+                    case Tasks.Buffup: await _buffing.RunAsync(ct); break;
+                    // no current task? Just do nothing 
+                    case default: await Task.Delay(TimeSpan.FromMilliseconds(50)); break;
+                }
+            }
+            catch (OperationCanceledException) { break; }
+            catch (Exception ex)
+            {
+                // log, back off, retry
+                await Task.Delay(TimeSpan.FromSeconds(1), ct);
+            }
+        }
+    }
+}
+````
+
+| Concern | How it's handled |
+|---|---|
+| Combat interrupts any step | `TakeControl(Combat)` suspends whatever is running below priority 3 |
+| Step resumes exactly where it was | The `await` in `YieldUntilAvailableAsync` is the suspension point — the `while` loop in `RunTicksAsync` or the `TravelTo` loop just continues |
+| Multiple interrupts (combat → emergency) | Priority stack: `TakeControl(Emergency)` suspends combat too; `ReleaseControl` brings everything back |
+| No busy-waiting | `TaskCompletionSource` — the suspended step is truly parked, not polling |
+| Cancellation propagates | `ct` is threaded through every `await` |
+| Adding a new interrupting system | Just call `_arbiter.TakeControl(priority)` / `ReleaseControl()` — zero changes to sequences |
+
