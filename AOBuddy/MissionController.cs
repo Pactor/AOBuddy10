@@ -429,11 +429,21 @@ namespace AOBuddy
         /// everything after that was planned from a position the server never agreed to. So take the
         /// server's position and plan again from there. Returns true when handled.
         /// </summary>
+        private double _heightLogAt = -99;
         public bool OnServerCorrection(LocalPlayer me, Vector3 serverPos)
         {
             if (!Active || me == null) return false;
             Vector3 local = me.MovementComponent.Position;
             float gap = Movement.Flat(local, serverPos);
+            // HEIGHT ONLY (2026-09-27 21:59, mission 2224863: on the ramp the server sent SetPos at the same spot several
+            // times a second, 0.0 m off in the flat - it fixes his height, it does not refuse the step). Take the server's
+            // height, keep the course; no replan. Main's handler already treats flat-zero corrections this way.
+            if (gap < 0.3f)
+            {
+                Movement.SetPose(me, new Vector3(local.X, serverPos.Y, local.Z), me.MovementComponent.Heading);
+                if (Now - _heightLogAt > 5) { _heightLogAt = Now; _ctx.Log($"MISSION: server set my height to {serverPos.Y:0.0} at ({serverPos.X:0},{serverPos.Z:0}) (I had {local.Y:0.0}); walking on."); }
+                return true;
+            }
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
             _move.Reset();
             _ctx.Log($"MISSION: server put me at ({serverPos.X:0},{serverPos.Y:0},{serverPos.Z:0}), {gap:0.0} m from where I thought I was; planning from there.");
