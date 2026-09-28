@@ -443,7 +443,7 @@ namespace AOBuddy
         /// everything after that was planned from a position the server never agreed to. So take the
         /// server's position and plan again from there. Returns true when handled.
         /// </summary>
-        private double _heightLogAt = -99;
+        private double _heightLogAt = -99, _gaveUpLogAt = -99;
         private bool _lineTest;
         public bool OnServerCorrection(LocalPlayer me, Vector3 serverPos)
         {
@@ -551,6 +551,8 @@ namespace AOBuddy
         // 6 m inside the exit door (never onto it), round and round. Each leg is logged: reached or not, time, pull-backs.
         // =====================================================================================================
         private bool _tour;
+        public bool Touring => _tour && Active;
+        public int TourLap => _tourLap;
         private readonly List<(string Name, Vector3 Pos)> _tourStops = new List<(string, Vector3)>();
         private readonly List<MissionGrid.RoomSpot> _tourSpots = new List<MissionGrid.RoomSpot>();
         private int _tourIdx, _tourLap, _tourPulls, _tourOk, _tourFail;
@@ -1418,8 +1420,10 @@ namespace AOBuddy
                 if (other.Count == 0 && Buttons().Any())
                     _ctx.Log($"MISSION: elevator buttons here ({string.Join(", ", Buttons().Select(b => KindName(b.Value.Template)))}) but the layout has no other floor to search.");
                 why = $"searched every room on floor {floor}{(other.Count > 0 ? $" and found no way to floor(s) {string.Join(",", other)}" : "")} and the target never showed ({tw})";
+                // Once per 10 s: NextHop is asked every tick while the no-path wait runs (01:29, 2026-09-28: ~200 lines in 6 s).
+                if (Now - _gaveUpLogAt > 10) { _gaveUpLogAt = Now;
                 _ctx.Log($"MISSION: gave up searching; target {(_record?.TargetA?.ToString() ?? "-")}; everything seen ({_items.Count}): "
-                         + string.Join(", ", _items.Select(kv => $"{kv.Key} tpl {kv.Value.Template} '{ItemName(kv.Value.Template)}' at ({kv.Value.Pos.X:0},{kv.Value.Pos.Z:0})")));
+                         + string.Join(", ", _items.Select(kv => $"{kv.Key} tpl {kv.Value.Template} '{ItemName(kv.Value.Template)}' at ({kv.Value.Pos.X:0},{kv.Value.Pos.Z:0})"))); }
                 return null;
             }
             why = $"searching: target not in sight yet ({tw}), trying room '{bestName}'";
