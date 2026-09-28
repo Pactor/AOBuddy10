@@ -873,7 +873,7 @@ namespace AOBuddy
             _onTilePath = false;
             if (_path == null && h.Purpose == Purpose.Target && _phaseTime >= 6 && !_tileRefused)
             {
-                _path = _grid.FindPathTiles(me.MovementComponent.Position, h.Pos, _blocked, out fb);
+                _path = _grid.FindPathTiles(me.MovementComponent.Position, h.Pos, WithExitClosed(_blocked, h.Pos), out fb);
                 if (_path != null) { _onTilePath = true; _ctx.Log($"MISSION: the walls seal the target off; taking the tile path through them ({_path.Count} points) - a solid spot will pull me back."); }
             }
             if (_path == null)
@@ -1250,23 +1250,39 @@ namespace AOBuddy
         // the night before: after a fight every room, the target and even the exit had 'no walkable path', and the
         // mission was dropped). Then plan from the last spot a path did start from, within 25 m, and walk back to it.
         private Vector3? _lastPathFrom;
+        // NEVER THROUGH THE EXIT DOOR unless going out (2026-09-27 22:15, mission 2224863 tour: with nearer ways blocked, a
+        // 225 m route 'through an unmarked doorway' ran over the exit door (300,35) and out - he zoned out of the mission).
+        // Unless the goal is at the exit, the door's cell and the one outside it are closed to the search.
+        private HashSet<(int, int, int)> WithExitClosed(HashSet<(int, int, int)> blocked, Vector3 goal)
+        {
+            var ex = _nav?.Exit;
+            if (ex == null) return blocked;
+            var door = new Vector3((float)ex.X, (float)ex.Y, (float)ex.Z);
+            if (Movement.Flat(goal, door) < 4f) return blocked;
+            var set = new HashSet<(int, int, int)>(blocked);
+            foreach (float k in new[] { 0f, 1f, 2f, 3f })
+                if (_grid.CellOf(new Vector3(door.X + (float)ex.Nx * k, door.Y, door.Z + (float)ex.Nz * k)) is (int, int, int) c) set.Add(c);
+            return set;
+        }
+
         private List<Vector3> PathFrom(Vector3 a, Vector3 b, out bool usedFallback)
         {
+            var blockedHere = WithExitClosed(_blocked, b);
             if (Clearing && _personCells != null && _personCells.Count > 0
                 && !(_grid.CellOf(b) is (int, int, int) bc && _personCells.Contains(bc)))
             {
-                var round = new HashSet<(int, int, int)>(_blocked); round.UnionWith(_personCells);
+                var round = new HashSet<(int, int, int)>(blockedHere); round.UnionWith(_personCells);
                 var r = _grid.FindPath(a, b, round, out usedFallback);
                 if (r != null) { _lastPathFrom = a; return r; }
             }
-            var p = _grid.FindPath(a, b, _blocked, out usedFallback);
+            var p = _grid.FindPath(a, b, blockedHere, out usedFallback);
             if (p != null) { _lastPathFrom = a; return p; }
             if (_lastPathFrom.HasValue)
             {
                 float back = Movement.Flat(a, _lastPathFrom.Value);
                 if (back > 0.5f && back < 25f)
                 {
-                    var q = _grid.FindPath(_lastPathFrom.Value, b, _blocked, out usedFallback);
+                    var q = _grid.FindPath(_lastPathFrom.Value, b, blockedHere, out usedFallback);
                     if (q != null)
                     {
                         if (Now - _pathFromLogged > 10) { _pathFromLogged = Now; _ctx.Log($"MISSION: no path from where I stand; going back {back:0} m to ({_lastPathFrom.Value.X:0},{_lastPathFrom.Value.Z:0}) and on from there."); }
