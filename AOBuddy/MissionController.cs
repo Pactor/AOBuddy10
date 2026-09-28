@@ -511,15 +511,6 @@ namespace AOBuddy
                         var ahead = new Vector3(serverPos.X + dx * s, serverPos.Y, serverPos.Z + dz * s);
                         var c = _grid.CellOf(ahead);
                         if (!c.HasValue || c.Equals(here)) continue;
-                        // Never block a slope (owner, 2026-09-27, mission 2224863: the ramp he came down was blocked
-                        // cell by cell after pull-backs at its foot, and he could not go back up it). A floor height
-                        // ahead that differs from where the server holds him is a ramp or step, not a wall.
-                        float? hy = _grid.HeightAt(ahead, serverPos.Y);
-                        if (hy.HasValue && Math.Abs(hy.Value - serverPos.Y) > 0.5f)
-                        {
-                            _ctx.Log($"MISSION: pulled back at the foot of a slope (floor {serverPos.Y:0.0} -> {hy.Value:0.0} m at {c.Value.Item2},{c.Value.Item3}); not blocking it.");
-                            continue;
-                        }
                         if (!_blocked.Add(c.Value)) continue;
                         // Never a block that seals him in (same rule as the stuck block in WalkTick).
                         if (!StillGetsOut(serverPos)) { _blocked.Remove(c.Value); continue; }
