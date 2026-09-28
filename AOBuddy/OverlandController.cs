@@ -334,7 +334,16 @@ namespace AOBuddy
             {
                 var extra = new HashSet<int>(_stuckCells);
                 foreach (var e in Zoning.ExitsFrom(_grid.Pf))
+                {
                     if (e.Kind == ExitKind.ZoneLine && e != _leg.Exit) _grid.CellsAlong(e.A, e.B, 2f, extra);
+                    // Whompa booths, proxies and teleporters take you on contact: keep 3 m off every one but the leg's own
+                    // (owner, 2026-09-27: 20:11:53 travelto to a Longest Road mission door stepped onto the Broken Shores
+                    // booth 4 m from the whompa landing, then Rome Park's Jobe proxy - a loop through three zones).
+                    // Not one he stands in already (the first step must be able to leave it).
+                    else if ((e.Kind == ExitKind.Line || e.Kind == ExitKind.Proxy || e.Kind == ExitKind.Teleport) && e != _leg.Exit
+                             && Movement.Flat(e.A, goal) > 1.5f && Movement.Flat(e.A, from) > 3.5f)
+                        _grid.CellsAlong(e.A, e.A, 3f, extra);
+                }
                 float reach = _leg.Exit == null ? GoalRange : _leg.Exit.Kind == ExitKind.ZoneLine ? 1.5f : IsPad(_leg.Exit) ? PadReach : UseReach;
                 var route = _grid.FindPath(from, goal, extra, 8f, reach, out string why);
                 if (route == null && Movement.Flat(from, goal) <= 40f)
