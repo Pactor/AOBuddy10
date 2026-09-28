@@ -219,6 +219,9 @@ namespace AOBuddy
             // Player trades: the owner handing us credits when we asked for them (see ResupplyController).
             Trade.TradeStatusChanged += (who, status) =>
             {
+                // The key hand-off trades its own copy of a mission key to the owner (MissionRun.KeyHand): resupply's owner-trade
+                // answers (Accept + Confirm naming him) must stay out of that trade.
+                if (_run != null && _run.KeyHandTrading) return;
                 try { _resupply.OnTradeStatus(who, status); }
                 catch (Exception ex) { Log("RESUPPLY trade error: " + ex.Message); }
             };
@@ -227,6 +230,8 @@ namespace AOBuddy
             {
                 // Tells from anyone else are never obeyed, but they are logged: Scotty answers warp requests by tell,
                 // and those answers were invisible while travel waited on warps that never came (2026-09-23).
+                // KEY HAND-OFF: 'here' / 'done' from the key owner while a hand-off waits for it (he need not be the bot's owner).
+                if (_run != null && _run.KeyHandTell(msg.SenderName, msg.Message)) { Log($"KEYHAND: tell from {msg.SenderName}: '{msg.Message}'"); try { Client.SendPrivateMessage(msg.SenderId, "OK."); } catch { } return; }
                 if (!_owner.IsOwnerSender(msg.SenderName, msg.SenderId)) { Log($"TELL (not obeyed) from {msg.SenderName} (id={msg.SenderId}): {msg.Message}"); return; }
                 // The owner's AFK auto-reply ('Veganbacon is AFK (Away from keyboard) since 0 hours and 0 minutes
                 // ago.', 23:33, 2026-09-24) answers every tell we send him; it is not a command (owner, 2026-09-25).
@@ -1401,6 +1406,7 @@ namespace AOBuddy
                 else _know.ReportActive(reply);
             };
             t["autobuff"] = t["keepup"] = (reply, p) => _know.ReportBuffPlans(reply);
+            t["keyhand"] = (reply, p) => _run.KeyHandCommand(p.Skip(1).ToArray(), reply);   // mission key hand-off (MissionRun.KeyHand.cs)
             t["codedoc"] = (reply, p) => _codedoc.Command(DynelManager.LocalPlayer, p.Skip(1).ToArray(), reply);   // RK2019 buff bot
             t["supplies"] = t["stims"] = (reply, p) => _know.ReportSupplies(reply);
             t["learnable"] = t["learn"] = (reply, p) => _know.ReportLearnable(Arg(p), reply);

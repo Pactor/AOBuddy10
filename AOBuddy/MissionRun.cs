@@ -27,7 +27,7 @@ namespace AOBuddy
     /// Death: after the reclaim, back to the terminal, wait out rez sickness and rebuff there, then go back to
     /// the mission it was on (still in the quest log) and finish it; with none open, roll a new one.
     /// </summary>
-    public class MissionRun
+    public partial class MissionRun
     {
         private readonly BotContext _ctx;
         private readonly MissionRoll _roll;
@@ -42,7 +42,7 @@ namespace AOBuddy
         private readonly string _pluginDir;
 
         private enum Phase { Off, ToTerminal, Rolling, AwaitList, Accepting, ToDoor, EnterDoor, AwaitBlitz, Blitz, Stash, Dead, Leaving, Backoff, Hike, ExitStand, Fight, Shop, HealOut,
-            WaitForWarp, Codedoc
+            WaitForWarp, Codedoc, KeyHand
         }
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
@@ -394,6 +394,7 @@ namespace AOBuddy
             _follow.ClearManual();
             if (Codedoc?.Busy == true) Codedoc.Abort("mission run stopped");
             Codedoc?.Disarm("mission run stopped");
+            KeyReset();
             _ctx.Log($"MISSIONRUN: stopped ({why}) after {_done} mission(s).");
             _phase = Phase.Off;
         }
@@ -425,6 +426,7 @@ namespace AOBuddy
                 if (_current != null && !_completed && (_phase == Phase.ToDoor || _phase == Phase.Hike || _phase == Phase.Backoff || _phase == Phase.Fight)) _diedOnWay = true;
                 _ctx.Log($"MISSIONRUN: died out in {Zoning.Name(pf)} at ({spot.X:0},{spot.Z:0}).");
             }
+            if (_key != KeyStep.None) { KLog($"died during the hand-off ({_key}); dropping it for this mission."); KeyReset(); }
             _ctx.Log($"MISSIONRUN: died{(_deathsHere > 1 ? $" ({_deathsHere} times in this mission)" : "")}; waiting for the reclaim, rez sickness and buffs, then back to it.");
             if (_overland.Active) _overland.Stop("died");
             _follow.ClearManual();
@@ -454,13 +456,14 @@ namespace AOBuddy
             if (!Active || m?.Body == null) return;
             var me = DynelManager.LocalPlayer;
             if (me == null) return;
+            if (m.Body is TradeMessage keyTrade) KeyTradeMessage(keyTrade, me);
             // Completion, as MissionController reads it: CharacterAction MissionChanged (0x3B) for the holder,
             // or the quest removal.
             if (m.Body is CharacterActionMessage ca && (int)ca.Action == 0x3B && ca.Identity.Instance == me.Identity.Instance && _current != null
-                && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz || (_returnTpl != 0 && _phase == Phase.Rolling)))
+                && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz || _phase == Phase.KeyHand || (_returnTpl != 0 && _phase == Phase.Rolling)))
                 MarkDone("MissionChanged");
             else if (m.Body is QuestMessage qm && qm.Identity.Instance == me.Identity.Instance && _current != null
-                     && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz))
+                     && (_phase == Phase.Blitz || _phase == Phase.AwaitBlitz || _phase == Phase.KeyHand))
                 MarkDone("quest removed");
         }
 
@@ -611,7 +614,7 @@ namespace AOBuddy
             if (_mission.CarriedReturnItem != 0) { _returnTpl = _mission.CarriedReturnItem; _mission.CarriedReturnItem = 0; }
             RecordGood(me);
             UseTokens(me);
-            _mission.ClearMode = _ctx.Config.MissionClear;
+            _mission.ClearMode = _ctx.Config.MissionClear || _key == KeyStep.Clearing;   // key hand-off: clear while the owner hides
             if (PetLeash(me)) return true;
 
             if (_phase == Phase.Hike && _hike?.Exit != null && _hike.Exit.Kind == ExitKind.Scotty)
@@ -630,7 +633,8 @@ namespace AOBuddy
             // stops; he stands and fights (combat + stims + pets as usual), and picks up where he was 3 s after.
             bool moving = _phase == Phase.Blitz || _phase == Phase.ToDoor || _phase == Phase.ToTerminal || _phase == Phase.Hike
                           || _phase == Phase.EnterDoor || _phase == Phase.Leaving || _phase == Phase.Backoff || _phase == Phase.ExitStand
-                          || _phase == Phase.Stash || (_phase == Phase.Shop && (_shopStep == ShopStep.Travel || _shopStep == ShopStep.Exit));
+                          || _phase == Phase.Stash || (_phase == Phase.Shop && (_shopStep == ShopStep.Travel || _shopStep == ShopStep.Exit))
+                          || (_phase == Phase.KeyHand && _mission.InMission);   // waiting inside for the key owner: fight what comes
             // SNARED: the walker moves at the snared speed now (BotContext.RunVelocity counts a negative Stat 156).
             // ROOTED (or snared in a way the stat doesn't show): there is no stat to read, but the server says
             // it: pulled back more than 5 m twice within 8 s. Stand still 15 s and try again, instead of walking
@@ -954,6 +958,8 @@ namespace AOBuddy
                     // at fewer than ResupplyStimTarget stims only. Otherwise every 10 minutes a trip that bought
                     // nothing (09:15, 09:26, 09:42, 2026-09-25). Back to NeedsResupply once that is fixed.
                     if (Resupply != null && UsableStims() < _ctx.Config.ResupplyStimTarget && StartShop("low on stims I can use")) return false;
+                    // KEY HAND-OFF: no Mission Key Duplicator - buy one at Fair Trade first (at most every 30 minutes).
+                    if (_current == null && KeyHandNeedsDuplicator() && _clock - _dupShopAt > 1800 && StartToolShop("no Mission Key Duplicator for the key hand-off")) return false;
                     if (Inventory.NumFreeSlots < 4)
                     {
                         _tell($"I'm out of room: {Inventory.NumFreeSlots} free inventory slot(s) and no bag with space. Stopping the mission run after {_done} mission(s); clear some space and say 'mission run' again.");
@@ -1107,6 +1113,8 @@ namespace AOBuddy
                 {
                     if (_phaseTime < 2.5) return false;       // the quest update arrives just after the zone-in
                     if (_healOut) { _healOut = false; _resumeBlitz = true; }
+                    // KEY HAND-OFF: judged here, before the entrance route check (a problem building would be skipped by it).
+                    if (KeyAtEntrance(me)) return false;
                     // The owner's rule: judge the mission at the entrance, where leaving is one step away. Blitz's own
                     // planner says whether it has a walkable path to the target; none, or no way to look for it, and
                     // the mission is dropped right here instead of being fought over deep inside.
@@ -1138,9 +1146,10 @@ namespace AOBuddy
                 }
 
                 case Phase.Blitz:
+                    if (KeyAfterClear()) return false;
                     if (_mission.Active)
                     {
-                        if (_phaseTime > (_ctx.Config.MissionClear ? 3 * BlitzTimeout : BlitzTimeout)) Skip("it was taking too long");
+                        if (_phaseTime > (_ctx.Config.MissionClear || _key == KeyStep.Clearing ? 3 * BlitzTimeout : BlitzTimeout)) Skip("it was taking too long");
                         return false;
                     }
                     if (_mission.InMission)
@@ -1203,6 +1212,9 @@ namespace AOBuddy
                 case Phase.Shop:
                     return ShopTick(me);
 
+                case Phase.KeyHand:
+                    return KeyHandTick(me);
+
                 case Phase.ExitStand:
                 {
                     if (!_mission.InMission) { _follow.ClearMovement(); Enter(_exitReturn == Phase.Leaving ? OutsidePhase : Phase.Blitz, "out through the exit"); return false; }
@@ -1257,8 +1269,8 @@ namespace AOBuddy
         private Identity? _healMob, _healPrevMob;
         private bool _healMobLogged = true;
         /// <summary>Out of the building to heal, going back in: the recorder keeps the building's file open.</summary>
-        public bool HealingOut => Active && _healOut;
-        private Phase OutsidePhase => _healOut ? Phase.HealOut : Phase.ToTerminal;
+        public bool HealingOut => Active && (_healOut || KeyAway);
+        private Phase OutsidePhase => _keyOut ? Phase.KeyHand : _healOut ? Phase.HealOut : Phase.ToTerminal;
 
         private static int HpPctOf(SimpleChar n)
             => n != null && n.TryGetStat(Stat.MaxHealth, out int max) && max > 0 && n.TryGetStat(Stat.Health, out int hp) ? (int)(100.0 * hp / max) : -1;
@@ -2125,7 +2137,7 @@ namespace AOBuddy
             if (d <= 15f && !_overland.Active) { _follow.SetManualTarget(Codedoc.Spot); return true; }   // the last metres on foot
             return Travel(me, Codedoc.SpotPf, Codedoc.Spot, "the Codedoc buffers");
         }
-        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Stims, Exit }
+        private enum ShopStep { Travel, Sell, OpenBank, TakeBag, FillBag, StoreBag, Buy, Stims, Exit, Tool }
         private ShopStep _shopStep;
         private double _shopStepAt, _shopTriedAt = -9999;
         private const int FairTradePf = 1187;
@@ -2592,6 +2604,7 @@ namespace AOBuddy
             if (!_ctx.Config.MissionShop || Resupply == null || _clock - _shopTriedAt < 600) return false;
             _shopTriedAt = _clock;
             _shopBag = null; _shopBoughtForNanos = false; _shopBoughtForRoom = false; _shopArrival = null; _shopFullBags.Clear(); _shopStimsTried = false;
+            _shopToolOnly = false; _shopToolTried = false;
             _ctx.Log($"MISSIONRUN: housekeeping ({why}): off to Fair Trade to sell, bank the keepers and make room.");
             _tell($"Going to Fair Trade ({why}): sell, bank my nano crystals, buy what I need. (Test switch: mission run shop on|off.)");
             _shopStep = ShopStep.Travel; _shopStepAt = _clock; _travelStarted = false; _travelTries = 0;
@@ -2666,6 +2679,7 @@ namespace AOBuddy
                     if (Movement.Flat(me.Transform.Position, ShopSpot) > 1.5f && _clock - _ftInAt < 30) { _follow.SetManualTarget(ShopSpot); return true; }
                     _ftInAt = -1;
                     _follow.ClearMovement();
+                    if (_shopToolOnly) return ShopBuyTool(me);   // key hand-off: just the duplicator
                     _sellRounds = 0; _sellSentAt = -99; _sellStage = 0; _sellMoves = 0; _sellBagsOpened = false; _lastBatch = null; _refusedSlots.Clear(); _badVendors.Clear(); _lastVendor = null; _wholeRefusals = 0;
                     ShopNext(ShopStep.Sell, $"{Sellable().Count} item(s) to sell.");
                     return false;
@@ -2880,9 +2894,12 @@ namespace AOBuddy
                     _ctx.Log("MISSIONRUN: shop: stocked with stims I can use; back to missions after this.");
                     return ShopAfterNanos(me);
 
+                case ShopStep.Tool:
+                    return ShopToolTick(me, t);
+
                 case ShopStep.Exit:
                 {
-                    if (pf != FairTradePf) { _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
+                    if (pf != FairTradePf) { _shopToolOnly = false; _follow.ClearMovement(); _tell($"Housekeeping done: {Inventory.NumFreeSlots} free slot(s)."); Enter(Phase.ToTerminal, "back from Fair Trade"); return false; }
                     // No landing spot (logged in inside, 13:26 2026-09-24) or it didn't take him out: the hike's own way
                     // out - the nearest door, stood on - toward the terminal. It hands back to this step once out.
                     if (t > 30 || !_shopArrival.HasValue)
@@ -2955,6 +2972,7 @@ namespace AOBuddy
                 ShopNext(ShopStep.Stims, "buying stims/rechargers I can use.");
                 return false;
             }
+            if (!_shopToolTried && KeyHandNeedsDuplicator()) return ShopBuyTool(me);   // key hand-off
             ShopNext(ShopStep.Exit, "leaving the way I came in.");
             return false;
         }
@@ -3705,6 +3723,7 @@ namespace AOBuddy
             // Dropped before getting inside: that door is hard to reach from here - remember it (see Unreachable).
             if (_current != null && !_mission.InMission) RememberUnreachable(_current.Playfield.Instance, new Vector3(_current.Location.X, 0, _current.Location.Z));
             int n = DeleteHeldMissions();
+            KeyReset();
             _ctx.Log($"MISSIONRUN: skipping the mission: {why}.");
             _tell($"Skipping this mission ({why}); deleted {n}.");
             _current = null; _completed = false; _healOut = false; _returnTpl = 0;

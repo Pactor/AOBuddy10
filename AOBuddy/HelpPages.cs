@@ -96,6 +96,7 @@ namespace AOBuddy
                 {
                     new Cmd("mission run", "start the loop at the mission terminal next to me (team terminal if I'm in a team, solo if not): roll, accept, travel, blitz, back, again"),
                     new Cmd("mission run new", "start the loop but ignore a mission I'm already holding"),
+                    new Cmd("keyhand on|off|status", "key hand-off: on a mission with rooms I can't walk (keyhand rooms), copy the key, tell you the door, wait inside for your 'here', trade you the copy, team you, clear, wait for your 'done'. keyhand owner <name> | wait <min> | donewait <min> | peek <min> | rooms add|remove <room> | check | cancel"),
                     new Cmd("mission run skip", "delete the mission I'm on and go on to the next (not running: just delete my terminal missions)"),
                     new Cmd("mission run stop", "end the loop - no more rolling or accepting"),
                     new Cmd("mission run status", "what the loop is doing and how many are done"),
