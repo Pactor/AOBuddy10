@@ -870,6 +870,11 @@ namespace AOBuddy
             // at hand - never walked out to heal; he fled at 37% and the mission was dropped. The timer we took from
             // the server's lock runs out on its own.
             else _lockSeen.Remove(s);
+            // A use still waiting on VerifyHealUses is not free to repeat. The placeholder lock and the verify
+            // window are the same 3 s, and the resend landed in the same tick the window ran out, before the
+            // verify saw it - 15:40 (2026-09-28): stim/recharger resent every 3 s for minutes, never a HEAL-OK or
+            // HEAL-REFUSED, sat forever. Let the verify decide first.
+            if (_healUseSentAt.ContainsKey(s)) return false;
             return !_lockUntil.TryGetValue(s, out double until) || _sessionSeconds >= until;
         }
 
