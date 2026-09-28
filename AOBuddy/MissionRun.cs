@@ -1604,6 +1604,7 @@ namespace AOBuddy
         private int _hikeChain;
         private double _hikeAtExitAt = -1;
         private int _hikeChainFrom = -1;
+        private bool _hikeBounced;
         private volatile NavGround _hikeGround;
         private volatile int _hikeGroundPf = -1;
 
@@ -1729,6 +1730,22 @@ namespace AOBuddy
             {
                 _follow.ClearMovement();
                 int now = (int)Playfield.ModelId;
+                // Bounced straight back (20:54:56, 2026-09-27: landed in Holes in the Wall by the line home and was back in
+                // Borealis 0.3 s later without walking). Not a wrong way and not a real arrival: the rule below would rule
+                // the zone out and detour 7 crossings. Once per crossing, forget where the chain came from and take the
+                // same way again.
+                bool bounced = now == _hikeChainFrom && _hikeChain > 0 && _phaseTime < 3 && !_hikeBounced;
+                if (bounced)
+                {
+                    _hikeBounced = true;
+                    _ctx.Log($"MISSIONRUN: bounced straight back into {Zoning.Name(now)} from {Zoning.Name(_hikeFromPf)} ({_phaseTime:0.0}s after landing); taking the same way again.");
+                    _hikeChainFrom = -1; _hikeChain = Math.Max(0, _hikeChain - 1);
+                    Enter(_hikeReturn, "bounced back");
+                    _hikeLastHike = -99;
+                    StartHike(me, _hikeTargetPf, _hikeGoal, _hikeWhat);
+                    return false;
+                }
+                if (_phaseTime >= 3) _hikeBounced = false;   // a second instant bounce falls through to the normal rule
                 if (now != _hikeFromPf && now != _hike.Exit.ToPf) BlockWrongExit(_hikeFromPf, now);
                 // EVERY crossing on foot, not just the first (08:25-08:30, 2026-09-24): handed to travel in the ICC
                 // (Andromeda 655), it tried the Jobe, Tir and Omni-1 Trade whompas at ground height, three tries
