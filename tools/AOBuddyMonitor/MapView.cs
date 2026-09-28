@@ -139,11 +139,19 @@ namespace AOBuddyMonitor
             // zone-in placement by the same AOBuddyNav.ComposeMission the bot used), else the outdoor
             // terrain when this playfield has one, else a coordinate grid — the overlays read on all three.
             var mission = nav?.Mission?.Layout != null ? _render.GetMission(nav.Mission.Layout) : null;
+            // Saavick's map of this playfield when the extractor wrote map.png (outdoor zones and static
+            // dungeons); else a static dungeon (no ground data) draws its own rooms and walls like a mission plan
+            MapRender.PlanetMap planet = null;
+            if (mission == null && pf >= 0)
+            {
+                planet = _render.GetPlanetMap(pf);
+                if (planet == null && _render.Get(pf) == null) mission = _render.GetDungeon(pf);
+            }
             MapRender.Terrain terrain = null;
             int floor = 0;
             if (mission != null)
             {
-                floor = _floorOverride ?? nav.Mission.Floor ?? (mission.Floors.Length > 0 ? mission.Floors[0] : 0);
+                floor = _floorOverride ?? nav?.Mission?.Floor ?? (mission.Floors.Length > 0 ? mission.Floors[0] : 0);
                 if (_anchorPending && mission.ExitXZ != null && _anchorDoor != null && _anchorDoor.Length >= 3)
                 {
                     // anchor: put the mission-space centre where the EXIT lands on the same SCREEN point the
@@ -167,7 +175,7 @@ namespace AOBuddyMonitor
             }
             else
             {
-                terrain = pf >= 0 ? _render.Get(pf) : null;
+                terrain = pf >= 0 && planet == null ? _render.Get(pf) : null;
                 if (terrain != null)
                 {
                     if (!_bitmaps.TryGetValue((pf, 0), out var bmp))
@@ -177,6 +185,13 @@ namespace AOBuddyMonitor
                     var tl = ToScreen(0, terrain.H * terrain.Cell);
                     var br = ToScreen(terrain.W * terrain.Cell, 0);
                     ctx.DrawImage(bmp, new Rect(0, 0, terrain.W, terrain.H), new Rect(tl, br));
+                }
+                else if (planet != null)
+                {
+                    // map.json's transform: image pixel (0,0) is world (Left, Top), z-max at the top like ours
+                    var tl = ToScreen((float)planet.Left, (float)planet.Top);
+                    var br = ToScreen((float)planet.Right, (float)planet.Bottom);
+                    ctx.DrawImage(planet.Bmp, new Rect(0, 0, planet.W, planet.H), new Rect(tl, br));
                 }
                 else
                 {
@@ -323,9 +338,9 @@ namespace AOBuddyMonitor
             // corner text: zone, floor when inside, zoom, hover coordinates
             string hoverTxt = _hover == null ? "" : $"  @ {_hover.Value.X:0}, {_hover.Value.Y:0}";
             string floorTxt = mission == null ? ""
-                : $"  ·  floor {floor}" + (nav.Mission.Floor != null && floor != nav.Mission.Floor ? $" (bot on {nav.Mission.Floor})" : "")
+                : $"  ·  floor {floor}" + (nav?.Mission?.Floor != null && floor != nav.Mission.Floor ? $" (bot on {nav.Mission.Floor})" : "")
                   + (mission.Floors.Length > 1 ? "  ·  PgUp/PgDn" : "");
-            Label(ctx, 8, 6, $"{(pf < 0 ? "no bot" : nav?.Zone ?? "?")}{(terrain == null && mission == null ? " — no terrain (grid)" : "")}{floorTxt}  ·  {_scale * 100:0}%{hoverTxt}", alignTop: true);
+            Label(ctx, 8, 6, $"{(pf < 0 ? "no bot" : nav?.Zone ?? "?")}{(terrain == null && mission == null && planet == null ? " — no terrain (grid)" : "")}{floorTxt}  ·  {_scale * 100:0}%{hoverTxt}", alignTop: true);
         }
 
         private static void Cross(DrawingContext ctx, Point c, double r, IPen pen)

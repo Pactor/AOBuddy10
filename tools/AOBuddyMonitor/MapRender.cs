@@ -160,6 +160,87 @@ namespace AOBuddyMonitor
                 };
                 foreach (var r in lay.Rooms) ml.Rooms.Add(r);
                 var nav = AOBuddyNav.ComposeMission(_pluginDir, ml);
+                return BuildPlan(nav, lay.Instance, lay.WorldHeight, true);
+            }
+            catch { return null; }
+        }
+
+        // ---- static dungeons (owner, 2026-09-28: Condemned Subway drew all black - "draw the walls, I want to see
+        // something at least"). A dungeon has no ground.bin, but its rooms.json is placed already: the same plan as a
+        // mission, from AOBuddyNav.Load. One plan (floor 0), every wall drawn - a static dungeon's rooms sit at several
+        // heights under one floor number, so the mission's per-floor height band would drop most of them.
+        private readonly Dictionary<int, MissionPlan> _dungeons = new Dictionary<int, MissionPlan>();
+        private readonly HashSet<int> _dungeonLoading = new HashSet<int>();
+        public MissionPlan GetDungeon(int pf)
+        {
+            if (pf < 0 || _pluginDir.Length == 0) return null;
+            lock (_mLock)
+            {
+                if (_dungeons.TryGetValue(pf, out var p)) return p;
+                if (_dungeonLoading.Contains(pf)) return null;
+                _dungeonLoading.Add(pf);
+            }
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                MissionPlan plan = null;
+                try { var nav = AOBuddyNav.Load(_pluginDir, pf); if (nav?.Ground == null && nav?.Dungeon != null) plan = BuildPlan(nav, pf, 0, false); } catch { }
+                lock (_mLock) { _dungeons[pf] = plan; }
+                if (plan != null) Rendered?.Invoke(pf);
+            });
+            return null;
+        }
+
+        // ---- Saavick's map (owner, 2026-09-28): the extractor's --saavick step crops each playfield out of
+        // Saavick's Map of Rubi-Ka into GameData/Nav/<pf>/map.png + map.json (world -> image pixel transform),
+        // so nothing here reads the client's PlanetMap folder. For static dungeons it replaces the rooms/walls
+        // plan (which stays the fallback when there is no map.png).
+        public sealed class PlanetMap
+        {
+            public Avalonia.Media.Imaging.Bitmap Bmp;
+            public int W, H;                        // image pixels
+            public double OriginX, OriginZ;         // pixel of world (0,0); py grows DOWN as z grows up
+            public double Sx, Sz;                   // pixels per metre
+            public double Left => -OriginX / Sx;
+            public double Right => (W - OriginX) / Sx;
+            public double Top => OriginZ / Sz;
+            public double Bottom => (OriginZ - H) / Sz;
+        }
+
+        private readonly Dictionary<int, PlanetMap> _planet = new Dictionary<int, PlanetMap>();
+
+        /// <summary>The playfield's map.png, or null when the extractor wrote none. Loaded once per pf
+        /// (a ~1200 px PNG, decoded on the calling thread — the view's, as Avalonia bitmaps want).</summary>
+        public PlanetMap GetPlanetMap(int pf)
+        {
+            if (pf < 0 || _pluginDir.Length == 0) return null;
+            if (_planet.TryGetValue(pf, out var pm)) return pm;
+            pm = null;
+            try
+            {
+                string dir = AOBuddyNav.FolderFor(_pluginDir, pf);
+                string png = Path.Combine(dir, "map.png"), js = Path.Combine(dir, "map.json");
+                if (File.Exists(png) && File.Exists(js))
+                {
+                    var j = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(js));
+                    var bmp = new Avalonia.Media.Imaging.Bitmap(png);
+                    pm = new PlanetMap
+                    {
+                        Bmp = bmp, W = bmp.PixelSize.Width, H = bmp.PixelSize.Height,
+                        OriginX = (double)j["originX"], OriginZ = (double)j["originZ"],
+                        Sx = (double)j["pxPerMetreX"], Sz = (double)j["pxPerMetreZ"],
+                    };
+                    if (pm.Sx <= 0 || pm.Sz <= 0) pm = null;
+                }
+            }
+            catch { pm = null; }
+            _planet[pf] = pm;
+            return pm;
+        }
+
+        private MissionPlan BuildPlan(AOBuddyNav nav, int key, float worldHeight, bool heightBands)
+        {
+            try
+            {
                 var d = nav?.Dungeon;
                 if (d == null || d.Rooms.Count == 0) return null;
 
@@ -195,7 +276,7 @@ namespace AOBuddyMonitor
                 while (s > 1 && Math.Max(cw, ch) * s > 4096) s--;
                 var plan = new MissionPlan
                 {
-                    Instance = lay.Instance, Cell = cell, Name = nav.Name,
+                    Instance = key, Cell = cell, Name = nav.Name,
                     MinX = (float)minX, MinZ = (float)minZ,
                     W = cw * s, H = ch * s, PxPerCell = s,
                     Floors = d.Rooms.Select(r => r.Floor).Distinct().OrderBy(f => f).ToArray(),
@@ -209,7 +290,7 @@ namespace AOBuddyMonitor
                     foreach (var rm in d.Rooms)
                     {
                         if (rm.Floor != floor) continue;
-                        int v = 56 + (rm.PoolIndex * 37 % 26);
+                        int v = 56 + (Math.Max(0, rm.PoolIndex >= 0 ? rm.PoolIndex : rm.Index) * 37 % 26);
                         Walk(rm, (a, b, x, z) =>
                         {
                             int px = (int)((x - minX) / cell * s), py = (int)((z - minZ) / cell * s);
@@ -225,14 +306,15 @@ namespace AOBuddyMonitor
                         // the label at the room's walkable centroid, not its pivot — rotated rooms put the pivot oddly
                         double sx = 0, sz = 0; int n = 0;
                         Walk(rm, (a, b, x, z) => { sx += x; sz += z; n++; });
-                        if (n > 0) plan.Rooms.Add(new RoomLabel(rm.PoolName, floor, (float)(sx / n), (float)(sz / n)));
+                        if (n > 0) plan.Rooms.Add(new RoomLabel(string.IsNullOrEmpty(rm.PoolName) ? rm.Name : rm.PoolName, floor, (float)(sx / n), (float)(sz / n)));
                     }
 
                     // …then bake the walls: nav.Walls' triangles whose height sits in this floor's band
                     var onFloor = d.Rooms.Where(r => r.Floor == floor).ToList();
                     if (onFloor.Count > 0 && nav.Walls != null)
                     {
-                        float y0 = onFloor.Min(r => r.Pos[1]) - 1f, y1 = onFloor.Min(r => r.Pos[1]) + Math.Max(3f, lay.WorldHeight * 0.8f);
+                        float y0 = heightBands ? onFloor.Min(r => r.Pos[1]) - 1f : float.MinValue;
+                        float y1 = heightBands ? onFloor.Min(r => r.Pos[1]) + Math.Max(3f, worldHeight * 0.8f) : float.MaxValue;
                         void Line(double ax, double az, double bx, double bz)
                         {
                             int x0 = (int)Math.Round((ax - minX) / cell * s), z0 = (int)Math.Round((az - minZ) / cell * s);

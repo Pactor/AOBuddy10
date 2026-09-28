@@ -70,6 +70,7 @@ namespace AONavExtractor
                     Directory.CreateDirectory(dir);
 
                     // --png: every texture as its own image (x8) - tile-<index>.png, for eyeballing
+                    const int sc = 8;   // the x8 above (was undefined: the committed file did not compile)
                     if (png)
                         for (int t = 0; t < n; t++)
                         {
@@ -557,7 +558,7 @@ namespace AONavExtractor
         private static int MaxOf(uint mask) { int bits = 0; while (mask != 0) { bits += (int)(mask & 1u); mask >>= 1; } return (1 << bits) - 1; }
 
         // smallest PNG writer that could work (8-bit RGB, filter 0, zlib via the BCL) — navmap's, verbatim
-        private static byte[] EncodePng(byte[] rgb, int w, int h)
+        internal static byte[] EncodePng(byte[] rgb, int w, int h)
         {
             var raw = new byte[h * (w * 3 + 1)];
             for (int y = 0; y < h; y++)

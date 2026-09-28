@@ -30,6 +30,7 @@ namespace AONavExtractor
                 if (args.Length >= 3 && args[0] == "--hostwater") return HostWater(args[1], int.Parse(args[2]));
                 if (args.Length >= 3 && args[0] == "--grounddump") return HostGround(args[1], int.Parse(args[2]));
                 if (args.Length >= 3 && args[0] == "--tilemapdump") return TileMapDump(args[1], int.Parse(args[2]));
+                if (args.Length >= 3 && args[0] == "--saavick") return SaavicksMap.Run(args);
                 if (args.Length >= 4 && args[0] == "--tilecolors") return TileColors.Run(args[1], args[2], args[3], args.Length > 4 && args[4] == "--png");
                 if (args.Length >= 6 && args[0] == "--offsettest") return TileColors.OffsetTest(args[1], args[2], int.Parse(args[3]), int.Parse(args[4]), int.Parse(args[5]));
                 if (args.Length >= 6 && args[0] == "--optest") return TileColors.OpTest(args[1], args[2], int.Parse(args[3]), int.Parse(args[4]), int.Parse(args[5]));
