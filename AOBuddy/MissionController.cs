@@ -1538,7 +1538,7 @@ namespace AOBuddy
             Vector3 dir = new Vector3(tp.Value.X - pos.X, 0, tp.Value.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d - 1.5f);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
-            next = new Vector3(next.X, _grid.HeightAt(next, pos.Y) ?? pos.Y, next.Z);
+            next = new Vector3(next.X, StepY(_grid.HeightAt(next, pos.Y) ?? pos.Y, pos.Y), next.Z);
             _ctx.WalkState = $"mission: up to the item d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             _actStill = 0;
@@ -1694,11 +1694,19 @@ namespace AOBuddy
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
             float? y = _grid.HeightAt(next, pos.Y);
-            next = new Vector3(next.X, y ?? wp.Y, next.Z);
+            next = new Vector3(next.X, StepY(y ?? wp.Y, pos.Y), next.Z);
             _ctx.WalkState = $"mission({_purpose}) wp {_pathIndex + 1}/{_path.Count} d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             return true;
         }
+
+        // THE HEIGHT HE SENDS (2026-09-27 22:03, mission 2224863, 'mission line' test at the foot of the ramp he came down:
+        // refused after 0.3 m with our height 6.0 against the server's 6.8). The 2 m floor tiles hold one height each; on a
+        // ramp that is under the real surface, so each step put his feet inside the ramp and the server refused it - the
+        // "server put me back" at every ramp. Never step below where he stands unless the tile is clearly a lower level
+        // (a drop of more than 1.5 m): a little high is snapped down to the ground (a height-only correction), a little
+        // low is inside the rock.
+        private static float StepY(float tileY, float nowY) => tileY >= nowY || nowY - tileY > 1.5f ? tileY : nowY;
 
         private float ArriveRadius() => _purpose == Purpose.Button ? 1.5f : _purpose == Purpose.Target ? 2.5f : _purpose == Purpose.Search || _purpose == Purpose.Clear ? 3f : 2.0f;
 
