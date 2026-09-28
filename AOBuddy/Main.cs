@@ -69,7 +69,9 @@ namespace AOBuddy
         private MissionController _mission;
         private HuntController _hunt;
         private ChewyBuffController _chewy;
-        private CodedocBuffController _codedoc;   // RubiKa 2019's buff bot (Chewy stays for Rubi-Ka)
+        private CodedocBuffController _codedoc;
+        private bool _petsWaitLogged;
+        private double _petsWaitFor;   // RubiKa 2019's buff bot (Chewy stays for Rubi-Ka)
         private MissionRoll _roll;
         private MissionRun _run;
         private MissionRecorder _recorder;
@@ -720,7 +722,13 @@ namespace AOBuddy
                 _ctx.Vitals.Poll(me, owner);
                 // Keep pets up — summons go through the SHARED cast queue so they serialize with buffs (no
                 // interruption), and only when nothing else is queued/casting.
-                _pets.MaintainPets(me, dt, _support.HasPendingCasts, _support.QueueCast);
+                // Outside a mission, pets wait for the Codedoc step and the own self-buffs (better pets after buffs).
+                // Capped at 3 minutes so a self-buff that never lands can't keep him petless.
+                bool petsWait = !_mission.InMission && ((_codedoc != null && _codedoc.PetsWait) || _support.SelfBuffsPending);
+                _petsWaitFor = petsWait ? _petsWaitFor + dt : 0;
+                if (_petsWaitFor > 180) petsWait = false;
+                if (petsWait != _petsWaitLogged) { _petsWaitLogged = petsWait; Log(petsWait ? "PET: summons wait for the buffs (Codedoc, then own self-buffs)." : $"PET: summons resume ({(_petsWaitFor > 180 ? "waited 3 min for buffs" : "buffs done")})."); }
+                _pets.MaintainPets(me, dt, _support.HasPendingCasts || petsWait, _support.QueueCast);
 
                 // Feed the movement leash: anchor to the server's confirmed position, but ONLY while a
                 // correction is fresh (server actively disagreeing). Stale = server happy = no leash, so

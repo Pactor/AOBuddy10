@@ -305,6 +305,11 @@ namespace AOBuddy
         // finish (and make the pets castable) instead of the two fighting over the cast slot.
         public bool HasPendingCasts => _castQueue != null && _castQueue.Count > 0;
 
+        // True until a buff scan finds no self-buff missing (pets wait for this outside missions, owner 2026-09-27:
+        // summon after the buffs so the better pets are castable).
+        private bool _selfScanClean;
+        public bool SelfBuffsPending => _ctx.Config.AutoBuff && _ctx.Config.BuffSelf && !_selfScanClean;
+
         public void KeepBuffs(LocalPlayer me, PlayerChar owner, bool inCombat)
         {
             if (!_ctx.Config.AutoBuff) return;
@@ -319,6 +324,7 @@ namespace AOBuddy
             // higher StackingOrder = up) and only if they fit his free NCU (NcuFits). Held while the step is pending.
             if (_ctx.Status.CodedocHold)
             {
+                _selfScanClean = false;
                 if (!_codedocHoldLogged) { _codedocHoldLogged = true; _ctx.Log("AUTO-BUFF: holding own self-buffs until the Codedoc buffs are in (CODEDOC step pending)."); }
                 return;
             }
@@ -346,6 +352,7 @@ namespace AOBuddy
             EnsureNoLandLoaded();
             VerifyOwnerLandings(owner);
             RebuildBuffPlansIfNeeded(me);
+            _selfScanClean = !_ctx.Config.BuffSelf || !_buffPlans.Any(p => IsBestCastableInLine(p, me) && NeedsBuff(me, p));
             if (_buffPlans.Count == 0) return;
 
             foreach (BuffPlan plan in _buffPlans)

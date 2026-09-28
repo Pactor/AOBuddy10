@@ -146,6 +146,7 @@ namespace AOBuddy
         public void Disarm(string why)
         {
             if (_armed) _ctx.Log($"CODEDOC: disarmed ({why}).");
+            if (_armed || Busy) _disarmedAt = _clock;
             _armed = false;
         }
 
@@ -154,6 +155,13 @@ namespace AOBuddy
         public bool Hold => Enabled && (Busy || (_armed && (int)Playfield.ModelId == SpotPf && _clock - _armedAt < 600));
 
         public bool Busy => _stage != Stage.Idle;
+
+        private double _disarmedAt = double.NegativeInfinity;
+
+        /// <summary>Pets wait for the buffs (owner): summoning before Codedoc and the own self-buffs gives the weak
+        /// pets. True while the step is armed (bounded to 15 minutes) or running, and for a few seconds after it
+        /// ends so the own self-buffs get queued first.</summary>
+        public bool PetsWait => Enabled && (Busy || (_armed && _clock - _armedAt < 900) || _clock - _disarmedAt < 8);
 
         /// <summary>Armed, in the Codedoc zone, and something is missing that Codedoc can give. An empty plan
         /// disarms (logged) so the run never walks over for nothing.</summary>
