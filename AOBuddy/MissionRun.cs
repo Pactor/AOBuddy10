@@ -1832,12 +1832,14 @@ namespace AOBuddy
                 // (19:33-19:36, Y 47 over booths at Y 15), recorded as paths/longroad_*.
                 // ...or the grid's way crosses the server's pull-backs (06:48, 2026-09-28: after a backoff the grid found a
                 // route over the ridge again - "he is trying to run into long road from top of hill again").
-                int roadSnaps = best != null && best.Count > 1 ? LearnedGround.SnapHitsAlong(_hikeFromPf, best) : 0;
-                if ((best == null || best.Count <= 1 || bestLeft > 15f || roadSnaps >= 2) && RoadIn(grid, pos, at, e) is List<Vector3> viaRoad)
+                // ALWAYS, once the owner has recorded the way in (06:50, 2026-09-28, second time from the ridge at (2328,41,896):
+                // "still doing it" - "he cant come into this town that way ever, he must follow entrance"). More than 40 m from
+                // the exit and a recorded road ends at it: the road, whatever the grid says.
+                if (Movement.Flat(pos, at) > 40f && RoadIn(grid, pos, at, e) is List<Vector3> viaRoad)
                 {
                     _hikeRoute = viaRoad;
                     _follow.LoadReplay(OnGround(viaRoad.Skip(1), pos), false);
-                    _ctx.Log($"MISSIONRUN: {(roadSnaps >= 2 ? $"the grid's way to {e} crosses {roadSnaps} server pull-backs" : $"no clean grid route to {e}")}; going in by the recorded road ({viaRoad.Count} points).");
+                    _ctx.Log($"MISSIONRUN: a recorded road ends at {e}; going in by it ({viaRoad.Count} points).");
                 }
                 // OUT BY THE ENTRANCE (owner, 2026-09-27): standing in a walled place (the Longest Road Omni town) whose
                 // only way out on foot is a recorded road starting here - no clean grid way, or the grid's way runs over
