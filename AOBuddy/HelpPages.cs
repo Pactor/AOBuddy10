@@ -177,6 +177,7 @@ namespace AOBuddy
                     new Cmd("catalog", "the item catalogue"),
                     new Cmd("nanodump", "dump every known nano to the log"),
                     new Cmd("missiondbg", "toggle mission debug logging"),
+                    new Cmd("watchdog", "seconds since the server last sent anything, the dead-connection threshold, how often it fired"),
                 },
             },
         };

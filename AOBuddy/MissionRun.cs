@@ -47,6 +47,7 @@ namespace AOBuddy
         private Phase _phase = Phase.Off;
         private double _phaseTime, _clock;
         public bool Active => _phase != Phase.Off;
+        public bool WantRunning => _wantRun;   // a 'mission run want' run (the watchdog resumes the same kind)
 
         // The terminal, remembered where the run was started.
         private int _termPf;

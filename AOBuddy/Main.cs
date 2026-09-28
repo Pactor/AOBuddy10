@@ -85,6 +85,7 @@ namespace AOBuddy
         private AOBuddyNav _navData;           // test-only reader for GameData/Nav, see the 'navdata' command
         private byte[] _lastZoneInPacket;      // raw PlayfieldAnarchyF of the current zone; carries a mission's room placements
         private WireCapture _capture;          // 'missiondbg' wire diagnostics (R3.5)
+        private Watchdog _watchdog;            // dead-connection watchdog: server silent too long -> exit 75 for the supervisor
         private string _logFile;
 
         // Tick / diagnostics state that belongs to Main's coordination, not to any one system.
@@ -179,6 +180,7 @@ namespace AOBuddy
             _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
             Client.NanoSeen += (caster, target, nano, secs) => { try { OnNanoSeen(caster, target, nano, secs); } catch { } };
+            _watchdog = new Watchdog(_config, pluginDir, Log);
             BuildCommands();
 
             Log($"=== Init owner='{_config.Owner}' mode={_mode} ===");
@@ -522,6 +524,11 @@ namespace AOBuddy
                 try { HandleCommand(cmd.Text, cmd.Reply); }
                 catch (Exception ex) { Log($"COMMAND EXCEPTION (api): {ex}"); try { cmd.Reply("error: " + ex.Message); } catch { } }
             }
+
+            // Dead-connection watchdog (2026-09-27): before anything that can return early. It only counts in play,
+            // and resumes the mission run after a watchdog restart by running the command as the owner would.
+            try { _watchdog.Tick(_run.Active, _run.WantRunning, c => HandleCommand(c, r => Log("WATCHDOG resume: " + r))); }
+            catch (Exception ex) { Log("WATCHDOG error: " + ex.Message); }
 
             LocalPlayer me = DynelManager.LocalPlayer;
             if (me == null)
@@ -1054,6 +1061,7 @@ namespace AOBuddy
                 o["inCombat"] = s.InCombat;
                 o["casting"] = s.Casting;
                 o["inMission"] = s.InMission;
+                o["watchdog"] = _watchdog.Json();
                 if (me != null)
                 {
                     var p = me.Transform.Position;
@@ -1372,6 +1380,7 @@ namespace AOBuddy
                 }
             };
             t["status"] = (reply, p) => reply(StatusLine());
+            t["watchdog"] = (reply, p) => reply(_watchdog.Status());
             t["pos"] = (reply, p) =>
             {
                 LocalPlayer meP = DynelManager.LocalPlayer;

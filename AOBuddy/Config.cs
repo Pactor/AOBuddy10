@@ -234,6 +234,10 @@ namespace AOBuddy
         // Mission zones that rank lower (playfield ids; Athen Shire 550 by default): their travel cost goes up by this.
         public List<int> MissionSlowZones = new List<int> { 550 };
         public float MissionSlowZoneCost = 3000;
+        // Dead-connection watchdog: in play and nothing from the server for this long -> log + exit 75 (tools\run-bot.ps1
+        // restarts, the mission run resumes itself). 0 = off. 300 s: retail sniffs show zone streams silent up to 164 s.
+        public int WatchdogSeconds = 300;
+        public bool WatchdogRestart = true;                      // false = only log the firing
         public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
         public bool MissionRecord = false;                       // record every mission building's packets + a mob/door index (missions/records)
         public bool MissionClear = false;                        // clear mode: kill every mob in the building before the objective (mission run clear on|off)
