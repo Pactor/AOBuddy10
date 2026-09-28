@@ -1569,7 +1569,7 @@ namespace AOBuddy
             Vector3 dir = new Vector3(tp.Value.X - pos.X, 0, tp.Value.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d - 1.5f);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
-            next = new Vector3(next.X, StepY(_grid.HeightAt(next, pos.Y) ?? pos.Y, pos.Y), next.Z);
+            next = new Vector3(next.X, StepY(_grid.HeightAt(next, pos.Y) ?? pos.Y, pos.Y, step), next.Z);
             _ctx.WalkState = $"mission: up to the item d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             _actStill = 0;
@@ -1725,7 +1725,7 @@ namespace AOBuddy
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
             float? y = _grid.HeightAt(next, pos.Y);
-            next = new Vector3(next.X, StepY(y ?? wp.Y, pos.Y), next.Z);
+            next = new Vector3(next.X, StepY(y ?? wp.Y, pos.Y, step), next.Z);
             _ctx.WalkState = $"mission({_purpose}) wp {_pathIndex + 1}/{_path.Count} d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             return true;
@@ -1737,7 +1737,9 @@ namespace AOBuddy
         // "server put me back" at every ramp. Never step below where he stands unless the tile is clearly a lower level
         // (a drop of more than 1.5 m): a little high is snapped down to the ground (a height-only correction), a little
         // low is inside the rock.
-        private static float StepY(float tileY, float nowY) => tileY >= nowY || nowY - tileY > 1.5f ? tileY : nowY;
+        // Going down: no faster than he moves forward (45 degrees) - 11:16-11:18, 2026-09-28, Midtech 2224933: a dip to 3.2 m
+        // on a 5 m floor, the tile height dropped at once and put his feet under the stair; 16 refusals, mission dropped.
+        private static float StepY(float tileY, float nowY, float stepLen) => tileY >= nowY ? tileY : Math.Max(tileY, nowY - Math.Max(0.05f, stepLen));
 
         private float ArriveRadius() => _purpose == Purpose.Button ? 1.5f : _purpose == Purpose.Target ? 2.5f : _purpose == Purpose.Search || _purpose == Purpose.Clear ? 3f : 2.0f;
 
