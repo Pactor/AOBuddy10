@@ -768,6 +768,21 @@ namespace AOBuddy
                     // and died. Outside a mission, losing: drop the fight and run back along the trail he came by.
                     // Now (owner, 17:55 2026-09-26) he doesn't fight outdoors at all: a fight that finds him outside
                     // (it followed him out) is dropped and the walk goes on.
+                    // ONLY THE PERSON TO FIND IS ON HIM (09:43-09:53, 2026-09-28, 2224928: 10 minutes 'fighting' at 100% HP with
+                    // Elmo Saar, the find-person target, on him at 4 m - he is never fought, so combat never ended). Nothing
+                    // else fighting him and HP fine: back to the blitz.
+                    if (_mission.InMission && _mission.FindPersonTarget is Identity fp && _phaseTime > 5 && (hpNow < 0 || hpNow >= 60))
+                    {
+                        var on = DynelManager.Npcs.Where(x => x != null && !x.Owner.HasValue && x.FightingIdentity.HasValue && x.FightingIdentity.Value == me.Identity).ToList();
+                        if (on.Count > 0 && on.All(x => x.Identity == fp))
+                        {
+                            if (me.IsAttacking) me.StopAttack();
+                            _fightIgnoreUntil = _clock + 60; _fightIgnoreSetAt = _clock;
+                            _ctx.Log($"MISSIONRUN: only '{on[0].Name}', the person to find, is on me; not a fight - carrying on.");
+                            Enter(_fightReturn == Phase.Fight ? Phase.AwaitBlitz : _fightReturn, "only the person to find on me");
+                            return false;
+                        }
+                    }
                     if (!_mission.InMission) { _ctx.Log("MISSIONRUN: outside a mission; not fighting, carrying on."); Enter(_fightReturn == Phase.Fight ? Phase.ToTerminal : _fightReturn, "no fighting outdoors"); return false; }
                     // HEAL OUTSIDE AND COME BACK (owner, 2026-09-26, on the A-500s that killed him: "if I am down to 50% hp
                     // and my stims cooldown is large, I turn, I run outside mission door, I sit and heal, I come back in and
