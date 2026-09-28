@@ -355,13 +355,18 @@ namespace AOBuddy
                 return false;
             }
             var cells = new HashSet<int>(); var drops = new HashSet<int>();
-            foreach (var road in LearnedGround.Roads().Concat(LearnedGround.WalksIn(Pf)))
+            var ownerRoads = LearnedGround.Roads();
+            var ownerSet = new HashSet<List<Vector3>>(ownerRoads);
+            foreach (var road in ownerRoads.Concat(LearnedGround.WalksIn(Pf)))
                 for (int i = 0; i + 1 < road.Count; i++)
                 {
                     Vector3 a = road[i], b = road[i + 1];
                     if (Vector3.Distance(a, b) > 40f || !OnFloor(a) || !OnFloor(b)) continue;   // a zone jump, or another zone's walk
                     float flat = (float)Math.Sqrt((b.X - a.X) * (b.X - a.X) + (b.Z - a.Z) * (b.Z - a.Z));
-                    if (flat > 0.1f && Math.Abs(b.Y - a.Y) / flat > DropGrade) { CellsAlong(a, b, 2.5f, drops); continue; }
+                    // A drop is allowed only where the OWNER walked it (his recorded roads), never from the bot's own walks
+                    // (2026-09-28 06:5x: his glitch off the Longest Road ridge, saved as one of his walks, let the route to
+                    // the town's entrance drop 26 m at (2121,875) -> (2119,873)).
+                    if (flat > 0.1f && Math.Abs(b.Y - a.Y) / flat > DropGrade) { if (ownerSet.Contains(road)) CellsAlong(a, b, 2.5f, drops); continue; }
                     CellsAlong(a, b, 1.5f, cells);
                 }
             foreach (int c in drops) cells.Remove(c);
@@ -605,7 +610,10 @@ namespace AOBuddy
                             // The Longest Road town: coming down off the ridge (server Y 42-51) onto the whompa (Y 15)
                             // glitched him; the town has one way in and out, recorded as paths/longroad_*). A drop he could
                             // not walk back up is taken only where the owner walked it (a recorded road or jump).
-                            if (-rise > MaxRise * d && !(_road != null && _road[ncell]) && !(_drop != null && _drop[ncell])) continue;
+                            // Only along a drop the owner walked: BOTH cells on it (2026-09-28 06:5x: a drop onto a road cell was
+                            // allowed from anywhere - the bot's own walks mark the town street below the ridge as road, and the
+                            // way to the town's entrance went off the ridge, 41 m -> 15 m at (2121,875)).
+                            if (-rise > MaxRise * d && !(_drop != null && _drop[ncell] && _drop[curCell])) continue;
                             float grade = Math.Abs(rise) / d;
                             float slope = grade > SlopeFree ? SlopeWeight * (grade - SlopeFree) * (rise < 0 ? 0.5f : 1f) : 0f;
                             if (rise > 0.2f && _drop != null && _drop[ncell]) slope += DropClimbCost;
