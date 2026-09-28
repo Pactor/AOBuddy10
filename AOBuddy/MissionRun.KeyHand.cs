@@ -54,7 +54,14 @@ namespace AOBuddy
         private KeyStep _key = KeyStep.None;
         private KeyHandSettings _khStore;
         private string KeyHandPath => Path.Combine(_pluginDir, "keyhand.json");
-        private KeyHandSettings KH => _khStore ?? (_khStore = JsonStore.Load<KeyHandSettings>(KeyHandPath, _ctx.Log) ?? new KeyHandSettings());
+        private KeyHandSettings KH => _khStore ?? (_khStore = LoadKH());
+        private KeyHandSettings LoadKH()
+        {
+            var k = JsonStore.Load<KeyHandSettings>(KeyHandPath, _ctx.Log) ?? new KeyHandSettings();
+            // The json's list is added onto the default one on load ("ramp_2, Vent1, ramp_2, Vent1"): keep each once.
+            k.ProblemRooms = (k.ProblemRooms ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            return k;
+        }
         private void SaveKH() => JsonStore.Save(KeyHandPath, JsonConvert.SerializeObject(KH, Formatting.Indented), _ctx.Log);
         private string KhOwner => !string.IsNullOrWhiteSpace(KH.Owner) ? KH.Owner.Trim() : (_ctx.Config.Owner ?? "").Trim();
 
@@ -532,7 +539,7 @@ namespace AOBuddy
         private bool ShopToolTick(LocalPlayer me, double t)
         {
             if (Resupply.Active || t < 1) return false;
-            if (Duplicator() == null && t < 5) return false;   // the item lands just after the trade
+            if (Duplicator() == null && t < 15) return false;   // the item lands after the trade (21:28, 2026-09-27: over 5 s)
             KLog(Duplicator() != null ? "bought a Mission Key Duplicator." : "couldn't buy a Mission Key Duplicator here (see the RESUPPLY lines).");
             if (_shopToolOnly) { ShopNext(ShopStep.Exit, "leaving the way I came in."); return false; }
             return ShopAfterNanos(me);
