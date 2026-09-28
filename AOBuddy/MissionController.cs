@@ -328,6 +328,20 @@ namespace AOBuddy
         public void Command(string args, Action<string> reply)
         {
             string sub = (args ?? "").Trim().ToLowerInvariant();
+            // 'mission line x y z x y z ...': walk exactly these points, no planner (a test of what the server accepts).
+            if (sub.StartsWith("line "))
+            {
+                var nums = sub.Substring(5).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => float.TryParse(t, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v) ? v : float.NaN).ToList();
+                var me0 = DynelManager.LocalPlayer;
+                if (_grid == null || me0 == null || nums.Count < 3 || nums.Count % 3 != 0 || nums.Any(float.IsNaN)) { reply("mission line x y z [x y z ...]"); return; }
+                _tour = false;
+                var pts = new List<Vector3> { me0.MovementComponent.Position };
+                for (int i = 0; i < nums.Count; i += 3) pts.Add(new Vector3(nums[i], nums[i + 1], nums[i + 2]));
+                _path = pts; _pathIndex = 0; _purpose = Purpose.Regroup; _pendingButton = null; _completed = false; _replans = 0; _lastCorrection = null; _lineTest = true;
+                Enter(Phase.Walk, "line test: " + string.Join(" ", pts.Select(q => $"({q.X:0.0},{q.Y:0.0},{q.Z:0.0})")));
+                reply($"Walking {pts.Count - 1} point(s) straight.");
+                return;
+            }
             switch (sub)
             {
                 case "":
@@ -430,6 +444,7 @@ namespace AOBuddy
         /// server's position and plan again from there. Returns true when handled.
         /// </summary>
         private double _heightLogAt = -99;
+        private bool _lineTest;
         public bool OnServerCorrection(LocalPlayer me, Vector3 serverPos)
         {
             if (!Active || me == null) return false;
@@ -442,6 +457,14 @@ namespace AOBuddy
             {
                 Movement.SetPose(me, new Vector3(local.X, serverPos.Y, local.Z), me.MovementComponent.Heading);
                 if (Now - _heightLogAt > 5) { _heightLogAt = Now; _ctx.Log($"MISSION: server set my height to {serverPos.Y:0.0} at ({serverPos.X:0},{serverPos.Z:0}) (I had {local.Y:0.0}); walking on."); }
+                return true;
+            }
+            if (_lineTest)
+            {
+                _lineTest = false;
+                _ctx.Log($"LINE: refused - server put me at ({serverPos.X:0.0},{serverPos.Y:0.0},{serverPos.Z:0.0}), {gap:0.0} m back from ({local.X:0.0},{local.Y:0.0},{local.Z:0.0}), leg {_pathIndex}/{_path?.Count - 1}.");
+                Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
+                Stop("line test refused");
                 return true;
             }
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
@@ -1685,7 +1708,9 @@ namespace AOBuddy
             _path = null;
             switch (_purpose)
             {
-                case Purpose.Regroup: Enter(_completed ? Phase.Exit : Phase.Plan, "back on ground I walked, planning again"); break;
+                case Purpose.Regroup:
+                    if (_lineTest) { _lineTest = false; _ctx.Log($"LINE: reached the end ({me.MovementComponent.Position.X:0.0},{me.MovementComponent.Position.Y:0.0},{me.MovementComponent.Position.Z:0.0})."); Stop("line test done"); break; }
+                    Enter(_completed ? Phase.Exit : Phase.Plan, "back on ground I walked, planning again"); break;
                 case Purpose.Tour: TourNext(true, "arrived"); break;
                 case Purpose.Button: Enter(Phase.PressButton, "at the button"); break;
                 case Purpose.Target: Enter(Phase.Act, "at the target"); break;
