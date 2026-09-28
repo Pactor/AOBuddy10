@@ -753,7 +753,7 @@ namespace AOBuddy
             }
             _pathIndex = 0; _purpose = h.Purpose; _pendingButton = h.Button;
             float len = 0; for (int i = 1; i < _path.Count; i++) len += Vector3.Distance(_path[i - 1], _path[i]);
-            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}{ClearText}");
+            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}{_grid?.RouteWallText}");
         }
 
         private Hop? NextHop(Vector3 pos, out string why)
@@ -2108,7 +2108,7 @@ namespace AOBuddy
             }
             return min;
         }
-        private string ClearText => _routeMinClear < 0 ? "" : _routeMinClear >= WantClear ? ", 2 m or more off every wall"
+        public string RouteWallText => _routeMinClear < 0 ? "" : _routeMinClear >= WantClear ? ", 2 m or more off every wall"
             : $", closest to a wall {BodyRadius + (_routeMinClear - 0.5f) * Fine:0.0} m";
 
         private List<(int, int, int)> FineAStar((int, int, int) s, (int, int, int) g, HashSet<(int, int, int)> blocked)
