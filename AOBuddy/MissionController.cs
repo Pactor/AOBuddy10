@@ -753,7 +753,7 @@ namespace AOBuddy
             }
             _pathIndex = 0; _purpose = h.Purpose; _pendingButton = h.Button;
             float len = 0; for (int i = 1; i < _path.Count; i++) len += Vector3.Distance(_path[i - 1], _path[i]);
-            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}");
+            Enter(Phase.Walk, $"{why}: {len:0} m, {_path.Count} points{(fb ? ", through an unmarked doorway" : "")}{ClearText}");
         }
 
         private Hop? NextHop(Vector3 pos, out string why)
@@ -2084,8 +2084,32 @@ namespace AOBuddy
             usedFallback = cells.Any(c => !_walk.ContainsKey(ParentOf(c)));
             // Ends on the open cell nearest the goal, not the goal itself: a button or item often sits on
             // or against a wall, and walking into the wall is what the server stops.
-            return SmoothFine(cells, blocked);
+            var smooth = SmoothFine(cells, blocked);
+            _routeMinClear = RouteMinClear(smooth, floor);
+            return smooth;
         }
+
+        // The walked route's closest approach to a wall, for the log (owner: "don't just tell me, show me").
+        private int _routeMinClear = -1;
+        private int RouteMinClear(List<Vector3> pts, int floor)
+        {
+            if (_fineClear == null || pts == null || pts.Count < 2) return -1;
+            int min = WantClear;
+            for (int i = 1; i < pts.Count; i++)
+            {
+                float d = Vector3.Distance(pts[i - 1], pts[i]);
+                int n = Math.Max(1, (int)(d / 0.25f));
+                for (int s = 0; s <= n; s++)
+                {
+                    float t = s / (float)n;
+                    var f = (floor, (int)Math.Floor((pts[i - 1].X + (pts[i].X - pts[i - 1].X) * t) / Fine), (int)Math.Floor((pts[i - 1].Z + (pts[i].Z - pts[i - 1].Z) * t) / Fine));
+                    if (_fineClear.TryGetValue(f, out int c)) min = Math.Min(min, c);
+                }
+            }
+            return min;
+        }
+        private string ClearText => _routeMinClear < 0 ? "" : _routeMinClear >= WantClear ? ", 2 m or more off every wall"
+            : $", closest to a wall {BodyRadius + (_routeMinClear - 0.5f) * Fine:0.0} m";
 
         private List<(int, int, int)> FineAStar((int, int, int) s, (int, int, int) g, HashSet<(int, int, int)> blocked)
         {
