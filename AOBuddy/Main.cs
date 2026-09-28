@@ -884,7 +884,10 @@ namespace AOBuddy
             // missions"). He runs to the door; a pet on a mob out there pulled the Hammer train in Longest Road that
             // killed him at 11:46. No Attack order outside, and any pet that picks a fight on its own is called off.
             bool outside = _run.Active && !_mission.InMission;
-            if (outside) _pets.CallOffOutside(me);
+            // Nor at a mob by the mission's target while rooms are left (owner, 2026-09-28): pets there pull the target too.
+            bool byTarget = _mission.InMission && ((fighting && target != null && _mission.NearObjective(target.Transform.Position))
+                                                   || (!fighting && petHunt != null && _mission.NearObjective(petHunt.Transform.Position)));
+            if (outside || byTarget) _pets.CallOffOutside(me);
             else if (fighting) retargeted |= _pets.EngageTarget(me, target, _config.TickMs / 1000.0);
             else if (petHunt != null) _pets.EngageTarget(me, petHunt, _config.TickMs / 1000.0);
 

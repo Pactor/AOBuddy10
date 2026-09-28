@@ -823,12 +823,17 @@ namespace AOBuddy
                             // went to fight a third" - a pull target 15 m off was swung at from where he stood, its HP never
                             // moved, it was dropped after 20 s and the next one pulled, the first now on its way to him).
                             bool pulling = _pullId.HasValue && foe != null && foe.Identity == _pullId.Value;
-                            if (foe != null && !nest && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
+                            // ...and never toward the mission's target while rooms are left (owner, 2026-09-28): a mob by
+                            // the find/kill target is left to come to him.
+                            bool byTarget = foe != null && _mission.InMission && _mission.NearObjective(foe.Transform.Position);
+                            if (byTarget && _clock - _byTargetLogAt > 10) { _byTargetLogAt = _clock; _ctx.Log($"MISSIONRUN: not closing in on '{foe.Name}' - it's by the mission's target; letting it come to me."); }
+                            if (foe != null && !nest && !byTarget && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
                             {
                                 // Inside, along the building's path: straight at a mob round a corner the server pulled
                                 // him back at the wall and the mob's HP never moved (11:24, 2026-09-25, first clear run).
                                 var step = _mission.InMission ? _mission.StepToward(me.Transform.Position, foe.Transform.Position) : null;
-                                _phaseTime = 0; _follow.SetManualTarget(step ?? foe.Transform.Position); return true;
+                                if (!(step.HasValue && _mission.NearObjective(step.Value)))
+                                { _phaseTime = 0; _follow.SetManualTarget(step ?? foe.Transform.Position); return true; }
                             }
                         }
                         // Stay until the fight is really over (not just back above the emergency line).
@@ -1634,6 +1639,7 @@ namespace AOBuddy
         private double _hikeAtExitAt = -1;
         private int _hikeChainFrom = -1;
         private int _touredInstance = -1;
+        private double _byTargetLogAt = -99;
         private bool _hikeBounced;
         private volatile NavGround _hikeGround;
         private volatile int _hikeGroundPf = -1;
