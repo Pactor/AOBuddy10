@@ -288,19 +288,45 @@ Trader. The same pattern exists for the other lines: `Nano Can: Robust Treatment
 
 ---
 
-## 5. Pet classes
+## 5. Pet classes and the 80% rule
 
-The same sequence applies, with one extra consideration you raised: the wrangle lets you
-*upload and summon* a pet nano above your natural skill, but control is checked continuously.
+The same sequence applies, with one extra consideration: the wrangle lets you *upload and
+summon* a pet nano far above your natural skill, but control is checked continuously, not
+just at cast time.
 
-**The 80% rule — your knowledge, not found in local data.** Nothing in `nanos.ocp`,
-`items.ocp`, the AOSharp game data or the OmniCell server encodes "you must keep 80% of the
-skill requirement or the pet stops obeying". I looked for it specifically. It is a server-side
-behaviour, so treat your statement as the specification; there is nothing here to check it
-against, and nothing here contradicts it either.
+**The 80% rule.** It is the general over-equipping mechanic applied to pets. To keep full
+command, your **current buffed nano skills must stay at or above 80% of the minimum skills the
+pet's nano needed to cast**.
 
-What the data *does* say: pet nanos gate on Matter Creation / Time and Space and the like, and
-the bot already reads pet type off the wire (see `HANDOFF-pets-and-casting.md`).
+- A pet needing 1,000 Matter Creation and 1,000 Time and Space needs **800 in both** kept up
+  after the outside buffs fall off.
+- At 799 the pet is over-equipped immediately.
+
+What happens below the line:
+
+- It **ignores every command** — pet window and text alike — and will say so, with strings
+  like "You are not my master!".
+- It falls back to **follow / behind**: it trails you, and will not attack, heal or use
+  abilities.
+- Control returns **the instant** the skills are buffed back to 80% or over. Nothing is lost
+  and the pet does not have to be re-summoned.
+
+In game, **`/oe <skill>`** reports where you stand, for pets and for equipment.
+
+Sources: the ao-universe [Over-Equipped](https://www.ao-universe.com/guides/classic-ao/gameplay-guides-6/over-equipped)
+and [Engineer MkIII](https://www.ao-universe.com/guides/classic-ao/profession-guides/engineer-guide-mkiii-13)
+guides, [wiki.aodb.us Meta-Physicist](http://wiki.aodb.us/wiki/Meta-Physicist) and
+[Engineer: Tips and Tricks](https://wiki.aodb.us/wiki/Engineer:Tips_and_Tricks).
+
+**It is not in the local data.** Nothing in `nanos.ocp`, `items.ocp`, the AOSharp game data or
+the OmniCell server encodes the threshold or the refusal — I looked for it specifically. It is
+server-side behaviour, so for OmniCell it is a thing to *implement*, and the description above
+is the specification.
+
+What the packs *do* carry: the nano skill requirements themselves, which are the number the
+80% is taken of, on each pet nano's ToUse action. The bot already reads pet role and master off
+the wire (`NpcChar.Owner`, `NpcChar.Role`; see `HANDOFF-pets-and-casting.md`), which is what a
+client-side 80% warning would need.
 
 ---
 
@@ -321,13 +347,13 @@ the bot already reads pet type off the wire (see `HANDOFF-pets-and-casting.md`).
    requirement too.
 7. **Suit off, wrangle on** — Exceptional Skill Wrangler is +121 to every weapon and nano
    skill for 54 NCU, three minutes. Equip inside that window.
-8. **Pets**: summon under the wrangle, then keep enough skill to hold them (your 80% figure).
+8. **Pets**: summon under the wrangle, then keep at least **80% of the pet nano's casting
+   requirement** in the nano skills, or it stops taking orders - see section 5.
 
 ---
 
 ## What is not in the local data
 
-- The 80% pet-control threshold.
 - Where anything comes from: which mission, vendor, or drop. `items.ocp` has requirements and
   effects, not sources.
 - Implant cluster crafting (which cluster goes in which slot to build a given implant) — the
