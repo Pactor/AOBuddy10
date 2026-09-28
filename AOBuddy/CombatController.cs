@@ -340,7 +340,7 @@ namespace AOBuddy
             if (key != _lastTargetLog)
             {
                 _lastTargetLog = key;
-                if (t != null) _ctx.Log($"TARGET: '{t.Name}' id={t.Identity.Instance} via {src} d={DynelManager.LocalPlayer?.DistanceFrom(t):0.0}");
+                if (t != null) _ctx.Log($"TARGET: '{t.Name}' lvl {(t.TryGetStat(Stat.Level, out int tl) ? tl : 0)} id={t.Identity.Instance} via {src} d={DynelManager.LocalPlayer?.DistanceFrom(t):0.0}");
                 else _ctx.Log("TARGET: none (no owner fight)");
             }
             return t;

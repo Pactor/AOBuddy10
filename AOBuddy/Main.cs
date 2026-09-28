@@ -1103,6 +1103,7 @@ namespace AOBuddy
                         o["target"] = new JObject
                         {
                             ["name"] = tgt.Name,
+                            ["level"] = tgt.TryGetStat(Stat.Level, out int tl) ? tl : 0,   // owner, 2026-09-27
                             ["hpPct"] = tmax > 0 ? (int)Math.Round(100.0 * thp / tmax) : -1,
                             ["nanoPct"] = tnanomax > 0 ? (int)Math.Round(100.0 * tnano / tnanomax) : -1,
                             ["dist"] = Math.Round(me.DistanceFrom(tgt), 1),
