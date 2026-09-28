@@ -66,7 +66,7 @@ namespace AOBuddy
         private const double CorrectionSettleSec = 1.0;
         private readonly HashSet<(int, int, int)> _blocked = new HashSet<(int, int, int)>();
         private Purpose _purpose;
-        private enum Purpose { Button, Target, Entrance, Search, Clear }
+        private enum Purpose { Button, Target, Entrance, Search, Clear, Regroup, Tour }
         private readonly HashSet<int> _visited = new HashSet<int>();   // rooms searched for an unseen target
         private readonly HashSet<int> _liftTried = new HashSet<int>();  // elevator rooms walked to for their buttons
         private double _lookAccum;
@@ -277,7 +277,7 @@ namespace AOBuddy
             if (Active) Stop("zoned");
             _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _roomGoal.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0; _blockClearTried = false;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
-            _trail.Clear(); _trailWhole = true; _retrace = false;
+            _trail.Clear(); _trailAt.Clear(); _trailWhole = true; _retrace = false; _regroupedAt = null; _sameSpot = 0;
             try
             {
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
@@ -337,7 +337,11 @@ namespace AOBuddy
                     if (_grid == null) { reply("Not in a mission building."); break; }
                     Start(reply);
                     break;
-                case "stop": Stop("owner said stop"); reply("Mission mode off."); break;
+                case "tour":
+                    if (_grid == null) { reply("Not in a mission building."); break; }
+                    StartTour(reply);
+                    break;
+                case "stop": _tour = false; Stop("owner said stop"); reply("Mission mode off."); break;
                 case "backoutside":
                 case "out":
                     if (_grid == null) { reply("Not in a mission building."); break; }
@@ -433,6 +437,11 @@ namespace AOBuddy
             Movement.SetPose(me, serverPos, me.MovementComponent.Heading);
             _move.Reset();
             _ctx.Log($"MISSION: server put me at ({serverPos.X:0},{serverPos.Y:0},{serverPos.Z:0}), {gap:0.0} m from where I thought I was; planning from there.");
+            TrailRefused(serverPos);
+            if (_tour) _tourPulls++;
+            bool sameSpot = _lastCorrection.HasValue && Movement.Flat(_lastCorrection.Value, serverPos) < 1.5f;
+            _sameSpot = sameSpot ? _sameSpot + 1 : 0;
+            if (_sameSpot >= 3 && _purpose != Purpose.Regroup && TryRegroup(serverPos)) { _lastCorrection = serverPos; _sameSpot = 0; return true; }
             // A tile path through walls the server enforces: 14:06 (2026-09-27, HiTech 2224805) pinned at (59,6,161)
             // dozens of times a minute. After 5 pull-backs on it the walls were right - no more tile paths to this target.
             if (_onTilePath && ++_tilePulls >= 5)
@@ -512,8 +521,53 @@ namespace AOBuddy
             _actStill = 0;
         }
 
+        // =====================================================================================================
+        // TOUR (owner, 2026-09-27 night: "leave him in this mission and work on it until you can actually make him walk to
+        // exit, but dont exit, make him walk each room again and again until you figure this out"). Every room, then a spot
+        // 6 m inside the exit door (never onto it), round and round. Each leg is logged: reached or not, time, pull-backs.
+        // =====================================================================================================
+        private bool _tour;
+        private readonly List<(string Name, Vector3 Pos)> _tourStops = new List<(string, Vector3)>();
+        private int _tourIdx, _tourLap, _tourPulls, _tourOk, _tourFail;
+        private double _tourLegAt;
+
+        private void StartTour(Action<string> reply)
+        {
+            if (Active) Stop("tour");
+            _tourStops.Clear();
+            foreach (int f in _grid.Floors) foreach (var r in _grid.RoomsOn(f)) _tourStops.Add((r.Name, r.Centre));
+            var ex = _nav.Exit;
+            if (ex != null) _tourStops.Add(("near the exit", new Vector3((float)(ex.X - ex.Nx * 6), (float)ex.Y, (float)(ex.Z - ex.Nz * 6))));
+            _tour = true; _tourIdx = 0; _tourLap = 1; _tourOk = 0; _tourFail = 0;
+            _completed = false; _replans = 0; _blocked.Clear(); _lastCorrection = null; _retrace = false;
+            TourLegStart();
+            Enter(Phase.Plan, "tour");
+            reply($"Touring {_tourStops.Count} stops (every room, then 6 m inside the exit), round and round. 'mission stop' ends it.");
+        }
+
+        private void TourLegStart() { _tourLegAt = Now; _tourPulls = 0; _replans = 0; }
+
+        private Hop? TourHop(out string why)
+        {
+            var st = _tourStops[_tourIdx];
+            why = $"tour lap {_tourLap} stop {_tourIdx + 1}/{_tourStops.Count} '{st.Name}'";
+            return new Hop { Pos = st.Pos, Purpose = Purpose.Tour };
+        }
+
+        private void TourNext(bool ok, string how)
+        {
+            var st = _tourStops[_tourIdx];
+            if (ok) _tourOk++; else _tourFail++;
+            _ctx.Log($"TOUR: lap {_tourLap} stop {_tourIdx + 1}/{_tourStops.Count} '{st.Name}' ({st.Pos.X:0},{st.Pos.Z:0}): {(ok ? "REACHED" : "FAILED - " + how)} in {Now - _tourLegAt:0}s, {_tourPulls} pull-back(s). Totals: {_tourOk} reached, {_tourFail} failed.");
+            if (++_tourIdx >= _tourStops.Count) { _tourIdx = 0; _tourLap++; }
+            TourLegStart();
+            _path = null; _blocked.Clear(); _lastCorrection = null; _regroupedAt = null; _sameSpot = 0;
+            Enter(Phase.Plan, "tour: next stop");
+        }
+
         private void Fail(string why)
         {
+            if (_tour) { TourNext(false, why); return; }
             _ctx.Log("MISSION: giving up - " + why);
             _tell("Mission blitz stopped: " + why);
             Stop(why);
@@ -682,14 +736,52 @@ namespace AOBuddy
         // (rooms he has been through), loops cut out, instead of the planner's shortest way to the exit door. Only
         // while the trail runs unbroken from the entrance (an elevator ride or a pull-back jump breaks it).
         private readonly List<Vector3> _trail = new List<Vector3>();
+        private readonly List<double> _trailAt = new List<double>();
         private bool _trailWhole, _retrace;
         public void NoteTrail(Vector3 p)
         {
             if (_grid == null) return;
-            if (_trail.Count == 0) { _trail.Add(p); return; }
+            if (_trail.Count == 0) { TrailAdd(p); return; }
             float d = Vector3.Distance(_trail[_trail.Count - 1], p);
-            if (d > 8f) { _trail.Clear(); _trailWhole = false; _trail.Add(p); return; }   // a ride or a jump
-            if (d >= 1.5f) { _trail.Add(p); if (_trail.Count > 4000) { _trail.RemoveAt(0); _trailWhole = false; } }
+            if (d > 8f) { _trail.Clear(); _trailAt.Clear(); _trailWhole = false; TrailAdd(p); return; }   // a ride or a jump
+            if (d >= 1.5f) { TrailAdd(p); if (_trail.Count > 4000) { _trail.RemoveAt(0); _trailAt.RemoveAt(0); _trailWhole = false; } }
+        }
+        private void TrailAdd(Vector3 p) { _trail.Add(p); _trailAt.Add(Now); }
+
+        // A pull-back means the last steps were never walked on the server: drop them from the trail, so it only holds
+        // ground the server let him stand on.
+        private void TrailRefused(Vector3 serverPos)
+        {
+            while (_trail.Count > 0 && _trailAt[_trail.Count - 1] > Now - 1.5 && Vector3.Distance(_trail[_trail.Count - 1], serverPos) > 1f)
+            { _trail.RemoveAt(_trail.Count - 1); _trailAt.RemoveAt(_trailAt.Count - 1); }
+            if (_trail.Count == 0 || Vector3.Distance(_trail[_trail.Count - 1], serverPos) >= 1.5f) TrailAdd(serverPos);
+        }
+
+        // BACK TO THE LAST GOOD AREA (owner, 2026-09-27 21:40, mission 2224863: pinned at (225,53) after 200+ pull-backs,
+        // the planned way up the ramp ran ~2 m off the ramp he had come down, z 54.8-55.3 against his trail's z 52-53 -
+        // "go back to last known good area"). Pulled back to the same spot three times: walk his own trail back 20 m
+        // (ground the server let him stand on), then plan again from there. Once per spot.
+        private int _sameSpot;
+        private Vector3? _regroupedAt;
+        private bool TryRegroup(Vector3 pos)
+        {
+            if (_regroupedAt.HasValue && Movement.Flat(_regroupedAt.Value, pos) < 3f) return false;
+            int i = -1; float bd = 3f;
+            for (int k = _trail.Count - 1; k >= 0; k--) { float d = Movement.Flat(_trail[k], pos); if (d < bd) { bd = d; i = k; } }
+            if (i < 1) return false;
+            var back = new List<Vector3> { pos };
+            float len = 0;
+            for (int k = i - 1; k >= 0 && len < 20f; k--)
+            {
+                len += Vector3.Distance(back[back.Count - 1], _trail[k]);
+                back.Add(_trail[k]);
+            }
+            if (len < 3f) return false;
+            _regroupedAt = pos;
+            _path = back; _pathIndex = 0; _purpose = Purpose.Regroup; _pendingButton = null;
+            Enter(Phase.Walk, $"pulled back to ({pos.X:0},{pos.Z:0}) three times; back {len:0} m along ground I walked ("
+                + string.Join(" ", back.Take(6).Select(q => $"({q.X:0},{q.Y:0},{q.Z:0})")) + ")");
+            return true;
         }
 
         private List<Vector3> RetracePath(Vector3 pos, Vector3 land)
@@ -772,6 +864,7 @@ namespace AOBuddy
         {
             int? myFloor = _grid.FloorAt(pos);
             if (!myFloor.HasValue) { why = "I am not on any floor of this building"; return null; }
+            if (_tour) return TourHop(out why);
 
             int goalFloor;
             Vector3? goalPos = null;
@@ -1582,6 +1675,8 @@ namespace AOBuddy
             _path = null;
             switch (_purpose)
             {
+                case Purpose.Regroup: Enter(_completed ? Phase.Exit : Phase.Plan, "back on ground I walked, planning again"); break;
+                case Purpose.Tour: TourNext(true, "arrived"); break;
                 case Purpose.Button: Enter(Phase.PressButton, "at the button"); break;
                 case Purpose.Target: Enter(Phase.Act, "at the target"); break;
                 case Purpose.Search: Enter(Phase.Plan, "searched a room"); break;
