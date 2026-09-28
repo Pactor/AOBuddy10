@@ -79,6 +79,7 @@ namespace AOBuddy
             _mission.Fightable = n => !_combat.IsSetAside(n.Identity);
             _pluginDir = pluginDir; _tell = tell; _combat = combat;
             LearnedGround.Init(pluginDir);
+            MobDanger.Init(pluginDir, _ctx.Log);
             _aware = new Awareness(_ctx.Log);
             RouteCache.Init(pluginDir, _ctx.Log);
             _roll.ListArrived += OnList;
@@ -1620,6 +1621,9 @@ namespace AOBuddy
         private NavGridCache _hikeNav => _ctx.NavGrid;
         private int _hikeGridPf = -1;
         private IWalkGrid _hikeGrid;
+        private int _hikeDangerVer = -1, _hikeDangerReplans;
+        private double _hikeDangerAt = -99;
+        private const int DangerReplans = 3;
 
         private IWalkGrid HikeGrid()
         {
@@ -1748,6 +1752,7 @@ namespace AOBuddy
             _hikeNoRoute = false;
             _hike = route.Hops[0]; _hikeFromPf = here; _hikeTargetPf = pf; _hikeGoal = goal; _hikeWhat = what;
             _hikeReturn = _phase; _hikeLastHike = _clock; _hikePass = -1; _hikePassStage = 0; _hikePassAt = _clock; _hikeUses = 0; _hikeUsedAt = -99; _hikeRoute = null; _hikeAtExitAt = -1; _hikeBackTo = null; _hikeCameFrom = null; _hikeOnAt = -1; _hikeLineFrom = null;
+            _hikeDangerReplans = 0; _hikeDangerAt = -99;
             if (_overland.Active) _overland.Stop("mission run walks this leg itself");
             var e = _hike.Exit;
             _ctx.Log($"MISSIONRUN: walking to the first exit myself: {e} at ({e.A.X:0},{e.A.Z:0}) ({route.Describe()}).");
@@ -1862,6 +1867,24 @@ namespace AOBuddy
                     _ctx.Log($"MISSIONRUN: grid route to {bestLeft:0} m from the exit ({best.Count} points), then straight on.");
                 }
                 else _ctx.Log("MISSIONRUN: no grid route toward the exit; walking straight.");
+                _hikeDangerVer = MobDanger.LiveVersion;   // the plan saw the live hostiles as they are now
+            }
+            // A PACK ON THE WAY (owner, 2026-09-28: he never fights outside, he only runs; 08:31 a lvl 42-43 pack by the
+            // mission door killed him on the grid leg). The live hostiles changed and one now stands within its aggro range
+            // of the way ahead (not on the owner's recorded road): plan the leg again - the grid now prices them. At most
+            // DangerReplans per hike, 5 s apart; not once they are on him (Awareness leaves chasers out).
+            if (_hikeRoute != null && _hikeRoute.Count > 1 && _follow.ReplayCount > 0 && MobDanger.LiveVersion != _hikeDangerVer
+                && _clock - _hikeDangerAt > 5 && _hikeDangerReplans < DangerReplans)
+            {
+                _hikeDangerVer = MobDanger.LiveVersion;
+                if (MobDanger.ThreatAhead(_hikeFromPf, _hikeRoute, -1, pos, 150f, out string who))
+                {
+                    _hikeDangerAt = _clock; _hikeDangerReplans++;
+                    _ctx.Log($"MISSIONRUN: {who} - planning the way to {e} again round them ({_hikeDangerReplans}/{DangerReplans}).");
+                    _follow.ClearMovement();
+                    _hikeRoute = null;
+                    return true;
+                }
             }
             // STALLED: not a metre in 30 s on the way to the exit (01:30-01:32, 2026-09-25, Aegean: the grid leg's
             // last point skipped as blocked 14 m short of the Stret West Bank line, and he stood there - the walk

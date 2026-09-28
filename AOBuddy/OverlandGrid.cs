@@ -81,6 +81,13 @@ namespace AOBuddy
         // not road, and climbing through it costs DropClimbCost extra.
         private const float DropGrade = 1.2f, DropClimbCost = 10f;   // = MaxRise: only what can't be walked up is a jump
         private const float RoadFactor = 0.5f, SnapWeight = 2f, SnapRadius = 6f, SlopeWeight = 4f, SlopeFree = 0.15f;
+        // HOSTILE MOBS (owner, 2026-09-28, MobDanger): extra step cost round the places aggressive mobs stand - the atlas's
+        // and the live ones - never a block. The owner's recorded roads (_ownerRoad) get none: they keep their priority.
+        // A cell's cost is capped at DangerCap so a nest of spots stays a cost the search can still weigh.
+        private float[] _danger; private bool[] _ownerRoad;
+        private int _dangerKey = int.MinValue, _dangerLearnVer = -1, _dangerLiveVer = -1, _dangerSpots, _dangerLive;
+        private readonly List<(int cell, float add)> _liveStamp = new List<(int, float)>();
+        private const float DangerCap = 100f;
 
         private OverlandGrid(int pf, float cell, int w, int h, NavGround g)
         {
@@ -354,7 +361,7 @@ namespace AOBuddy
                 for (int f = 0; f < FloorCount(c); f++) if (Math.Abs(FloorH(c, f) - p.Y) < 3f) return true;
                 return false;
             }
-            var cells = new HashSet<int>(); var drops = new HashSet<int>();
+            var cells = new HashSet<int>(); var drops = new HashSet<int>(); var owner = new HashSet<int>();
             var ownerRoads = LearnedGround.Roads();
             var ownerSet = new HashSet<List<Vector3>>(ownerRoads);
             foreach (var road in ownerRoads.Concat(LearnedGround.WalksIn(Pf)))
@@ -368,9 +375,12 @@ namespace AOBuddy
                     // the town's entrance drop 26 m at (2121,875) -> (2119,873)).
                     if (flat > 0.1f && Math.Abs(b.Y - a.Y) / flat > DropGrade) { if (ownerSet.Contains(road)) CellsAlong(a, b, 2.5f, drops); continue; }
                     CellsAlong(a, b, 1.5f, cells);
+                    if (ownerSet.Contains(road)) CellsAlong(a, b, 1.5f, owner);
                 }
             foreach (int c in drops) cells.Remove(c);
             foreach (int c in cells) { _road[c] = true; _anyRoad = true; }
+            _ownerRoad = new bool[_w * _h];
+            foreach (int c in owner) _ownerRoad[c] = true;
             foreach (int c in drops) _drop[c] = true;
             int R = (int)Math.Ceiling(SnapRadius / Cell);
             foreach (var sp in LearnedGround.SnapsIn(Pf))
@@ -386,6 +396,59 @@ namespace AOBuddy
                     }
             }
         }
+
+        /// <summary>The hostile-mob cost layer, current for the atlas, his level, the owner's roads and the live mobs.</summary>
+        private void EnsureDanger()
+        {
+            int key = MobDanger.Key(Pf);
+            if (key != _dangerKey || _learnVer != _dangerLearnVer)
+            {
+                _dangerKey = key; _dangerLearnVer = _learnVer;
+                _liveStamp.Clear(); _dangerLiveVer = -1;
+                var spots = MobDanger.AtlasSpots(Pf);
+                _dangerSpots = spots.Count;
+                if (spots.Count == 0) _danger = null;
+                else
+                {
+                    if (_danger == null) _danger = new float[_w * _h]; else Array.Clear(_danger, 0, _danger.Length);
+                    foreach (var s in spots) StampSpot(s, null);
+                }
+            }
+            if (MobDanger.LiveVersion != _dangerLiveVer)
+            {
+                _dangerLiveVer = MobDanger.LiveVersion;
+                if (_danger != null) foreach (var (c, add) in _liveStamp) _danger[c] = Math.Max(0f, _danger[c] - add);
+                _liveStamp.Clear();
+                var live = MobDanger.LiveSpots(Pf);
+                _dangerLive = live.Count;
+                if (live.Count > 0 && _danger == null) _danger = new float[_w * _h];
+                foreach (var s in live) StampSpot(s, _liveStamp);
+            }
+        }
+
+        // Crossing the spot's aggro circle through its middle costs DetourPerMob x W metres; its cost fades to nothing at R.
+        private void StampSpot(MobDanger.Spot s, List<(int, float)> undo)
+        {
+            if (s.R <= 0 || s.W <= 0) return;
+            float k = MobDanger.DetourPerMob / s.R * s.W;
+            int sx = CellX(s.X), sz = CellZ(s.Z), R = (int)Math.Ceiling(s.R / Cell) + 1;
+            for (int dz = -R; dz <= R; dz++)
+                for (int dx = -R; dx <= R; dx++)
+                {
+                    int x = sx + dx, z = sz + dz;
+                    if (!In(x, z)) continue;
+                    float ex = (x + 0.5f) * Cell - s.X, ez = (z + 0.5f) * Cell - s.Z;
+                    float d = (float)Math.Sqrt(ex * ex + ez * ez);
+                    if (d >= s.R) continue;
+                    int c = z * _w + x;
+                    if (_blocked[c] || (_ownerRoad != null && _ownerRoad[c])) continue;
+                    float add = k * (1f - d / s.R);
+                    _danger[c] += add;
+                    undo?.Add((c, add));
+                }
+        }
+
+        private float DangerAt(int cell) => _danger == null ? 0f : Math.Min(DangerCap, _danger[cell]);
 
         private float ClearAt(int cell) => _clear == null ? ClearMetres : _clear[cell] * Cell;
 
@@ -535,11 +598,29 @@ namespace AOBuddy
             // Between two fixed objects (whompahs, grids, doors) the route is planned once and kept (RouteCache).
             why = "";
             var saved = RouteCache.Get(this, a, b, reach, goalY, extra, (p, q) => Search(p, q, extra, snap, 1.5f, false, out _, float.NaN));
-            if (saved != null) return saved;
+            if (saved != null)
+            {
+                // A saved route was planned without today's mobs: through a hostile spot, plan it afresh.
+                var (hit, all, near) = MobDanger.Along(Pf, saved);
+                if (hit == 0) return saved;
+                MobDanger.Log($"OVERLAND: the saved route passes {hit} of {all} hostile-mob spot(s) (closest {near:0} m); planning afresh.");
+            }
             // In sight of b first; if that walks nowhere (b's pocket is closed off), on distance alone.
             var route = Search(a, b, extra, snap, reach, true, out why, goalY) ?? Search(a, b, extra, snap, reach, false, out _, goalY);
             if (route != null) RouteCache.Put(this, a, b, reach, goalY, route);
+            if (route != null && _danger != null)
+            {
+                var (hit, all, near) = MobDanger.Along(Pf, route);
+                MobDanger.Log($"OVERLAND: routing round {_dangerSpots} hostile-mob spot(s){(_dangerLive > 0 ? $" and {_dangerLive} live hostile(s)" : "")} in {Zoning.Name(Pf)}: {route.Count} points, {RouteLength(route):0} m; passes {hit} of {all} within aggro range, closest {near:0} m.");
+            }
             return route;
+        }
+
+        private static float RouteLength(List<Vector3> p)
+        {
+            float l = 0;
+            for (int i = 1; i < p.Count; i++) l += (float)Math.Sqrt((p[i].X - p[i - 1].X) * (p[i].X - p[i - 1].X) + (p[i].Z - p[i - 1].Z) * (p[i].Z - p[i - 1].Z));
+            return l;
         }
 
         private List<Vector3> Search(Vector3 a, Vector3 b, HashSet<int> extra, float snap, float reach, bool sight, out string why, float goalY)
@@ -574,6 +655,7 @@ namespace AOBuddy
             var closed = new HashSet<long>();
             var open = new PriorityQueue<long, float>();
             EnsureLearned();
+            EnsureDanger();
             float hScale = _anyRoad ? RoadFactor : 1.2f;   // a road step costs less than its length: keep the estimate under it
             float H(int x, int z) { int dx = Math.Abs(x - bx), dz = Math.Abs(z - bz); return hScale * Math.Max(0f, Math.Max(dx, dz) + 0.4142f * Math.Min(dx, dz) - reachCells); }
             open.Enqueue(start, H(s.Value.Item1, s.Value.Item2));
@@ -598,7 +680,7 @@ namespace AOBuddy
                         int ncell = nz * _w + nx;
                         float d = (dx != 0 && dz != 0 ? 1.4142f : 1f) * Cell;
                         float len1 = dx != 0 && dz != 0 ? 1.4142f : 1f;
-                        float baseMul = 1f + WallCost(ncell) + (_water != null && _water[ncell] ? WaterWeight : 0f) + (_learn != null ? _learn[ncell] : 0f);
+                        float baseMul = 1f + WallCost(ncell) + (_water != null && _water[ncell] ? WaterWeight : 0f) + (_learn != null ? _learn[ncell] : 0f) + DangerAt(ncell);
                         float roadMul = _road != null && _road[ncell] ? RoadFactor : 1f;
                         for (int j = 0; j < FloorCount(ncell); j++)
                         {
@@ -701,6 +783,7 @@ namespace AOBuddy
             float keep = Math.Min(ClearKeep, Math.Min(ClearAt(c0), ClearAt(c1)));
             bool onRoad = _road != null && _road[c0] && _road[c1];
             float learnEnds = _learn == null ? 0f : Math.Max(_learn[c0], _learn[c1]);
+            float dangerEnds = Math.Max(DangerAt(c0), DangerAt(c1));
             // ...and the chord must TRACK A FLOOR it can be walked on: at each sample, some OPEN floor of
             // the cell lies within 1.5 m of the chord's height. The floors follow a ramp, so a ramp chord
             // passes; a shortcut straight up a wall face passes through heights that have no floor near
@@ -730,6 +813,8 @@ namespace AOBuddy
                 // Wall turn (13:27, 2026-09-26) the pull cut the corner off the road over the spot the server resets.
                 if (onRoad && !_road[sc]) return false;
                 if (_learn != null && _learn[sc] > learnEnds + 1f) return false;
+                // ...nor through a hostile-mob spot the search went round (the pull would cut back into it).
+                if (DangerAt(sc) > dangerEnds + 1f) return false;
                 if (!Open((int)Math.Floor(x + px), (int)Math.Floor(z + pz), extra) || !Open((int)Math.Floor(x - px), (int)Math.Floor(z - pz), extra)) return false;
             }
             return true;

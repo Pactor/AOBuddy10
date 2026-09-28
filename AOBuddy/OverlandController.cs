@@ -81,6 +81,10 @@ namespace AOBuddy
         private int _groundPf = -1;
         private readonly HashSet<int> _stuckCells = new HashSet<int>();   // cells we got stuck walking into, this leg
         private int _stuckCount;
+        // hostile mobs on the way (MobDanger): the live picture the route was planned with, and the replans for it this leg
+        private int _dangerVer = -1, _dangerReplans;
+        private double _dangerAt = -99;
+        private const int MaxDangerReplans = 3;
 
         private const float JumpMeters = 8f;          // a one-frame move this big was the server moving us
         private const float ObjectRange = 2.5f;       // how close to walk up to an object before using it
@@ -318,7 +322,7 @@ namespace AOBuddy
 
         private void NextLeg(LocalPlayer me)
         {
-            _path.Clear(); _tries = 0; _stuckCells.Clear(); _stuckCount = 0; _frontal = false;
+            _path.Clear(); _tries = 0; _stuckCells.Clear(); _stuckCount = 0; _frontal = false; _dangerReplans = 0;
             if (_legs == null || _legs.Count == 0)
             {
                 // Out of legs: with no coordinates, being in the playfield is the destination.
@@ -490,6 +494,7 @@ namespace AOBuddy
             }
             else _path.Add(goal);   // no grid (or off it): straight there
             if (across.HasValue) _path.Add(across.Value);
+            _dangerVer = MobDanger.LiveVersion;   // the plan saw the live hostiles as they are now
             Enter(Phase.Walk, "walking to " + what);
         }
 
@@ -722,6 +727,22 @@ namespace AOBuddy
                 _stuck.Reset();
                 if (_pathIndex >= _path.Count) { ArriveWalk(me); return; }
                 wp = _path[_pathIndex]; d = Movement.Flat(pos, wp);
+            }
+
+            // A PACK ON THE WAY (owner, 2026-09-28: outside he never fights, he only runs): the live hostiles changed and one
+            // stands within its aggro range of the next 150 m - plan the leg again, the grid now prices them. Not on a recorded
+            // road out (the owner's roads keep their priority), at most MaxDangerReplans a leg, 5 s apart.
+            if (_grid is OverlandGrid && !_roadOut && MobDanger.LiveVersion != _dangerVer && Now - _dangerAt > 5 && _dangerReplans < MaxDangerReplans)
+            {
+                _dangerVer = MobDanger.LiveVersion;
+                if (MobDanger.ThreatAhead(_grid.Pf, _path, _pathIndex, pos, 150f, out string who))
+                {
+                    _dangerAt = Now; _dangerReplans++;
+                    _ctx.Log($"OVERLAND: {who} - planning this leg again round them ({_dangerReplans}/{MaxDangerReplans}).");
+                    _move.Hold(me, _ctx.Config.SendIntervalMs);
+                    BeginLeg(me);
+                    return;
+                }
             }
 
             if (_stuck.Tick(d, dt, 0.3f, StuckSeconds))

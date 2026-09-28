@@ -46,7 +46,8 @@ namespace AOBuddy
             if (me == null || clock - _at < 0.5) return;
             _at = clock;
             int pf = (int)Playfield.ModelId;
-            if (pf != _pf) { _pf = pf; _foes.Clear(); _trail.Clear(); _myTrail.Clear(); _shadow.Clear(); }
+            if (pf != _pf) { _pf = pf; _foes.Clear(); _trail.Clear(); _myTrail.Clear(); _shadow.Clear(); _ourTargets.Clear(); _noted.Clear(); }
+            if (me.TryGetStat(Stat.Level, out int myLevel)) MobDanger.SetMyLevel(myLevel);
 
             var mine = me.Transform.Position;
             _myTrail.Enqueue((clock, mine));
@@ -89,10 +90,30 @@ namespace AOBuddy
                 n.TryGetStat(Stat.Level, out int lvl);
                 near.Add(new Seen { Mob = n, Dist = d, Level = lvl, OnUs = onUs, Following = following });
             }
-            LogEngagements(me, guard);
+            bool outdoors = !inMission && pf < 100000;
+            LogEngagements(me, guard, outdoors ? pf : -1);
             foreach (var id in _trail.Keys.ToList()) if (!here.Contains(id)) _trail.Remove(id);
             foreach (var id in _shadow.Keys.ToList()) if (clock - _shadow[id].seen > Forget) _shadow.Remove(id);
             Near = near.OrderBy(s => s.Dist).ToList();
+
+            // LIVE HOSTILES for the walk grid (MobDanger): every mob of a kind that has turned on him unprovoked outdoors, as
+            // far as the server shows them - but not the ones already on him or following him (going round the mob that
+            // chases him goes nowhere; the flight handles those).
+            if (outdoors)
+            {
+                var chasing = new HashSet<Identity>(Near.Where(s => s.OnUs || s.Following).Select(s => s.Mob.Identity));
+                var live = new List<MobDanger.LiveMob>();
+                foreach (var n in DynelManager.Npcs)
+                {
+                    if (n == null || n.Owner.HasValue || guard.Contains(n.Identity) || chasing.Contains(n.Identity)) continue;
+                    if (n.TryGetStat(Stat.Health, out int hp) && hp <= 0) continue;
+                    if (!MobDanger.IsHostile(n.Name)) continue;
+                    n.TryGetStat(Stat.Level, out int lvl);
+                    live.Add(new MobDanger.LiveMob(n.Name, lvl, n.Transform.Position));
+                }
+                MobDanger.SetLive(pf, live);
+            }
+            else MobDanger.SetLive(pf, new List<MobDanger.LiveMob>());
 
             string now = Summary();
             if (now != _last && (clock - _loggedAt > 2 || OnUsCount + FollowingCount > 0))
@@ -141,7 +162,11 @@ namespace AOBuddy
         // of the lines shows who opened.
         private readonly Dictionary<Identity, Identity?> _fighting = new Dictionary<Identity, Identity?>();
 
-        private void LogEngagements(LocalPlayer me, HashSet<Identity> guard)
+        // Mobs one of us has fought this zone (then its turning on us is no proof it is aggressive), and mobs already noted
+        // as having turned on us unprovoked (one aggro per mob: a mob switching from a pet to him logs AGGRO again).
+        private readonly HashSet<Identity> _ourTargets = new HashSet<Identity>(), _noted = new HashSet<Identity>();
+
+        private void LogEngagements(LocalPlayer me, HashSet<Identity> guard, int outdoorPf)
         {
             string Who(Identity id) => id == me.Identity ? "me" : (DynelManager.Characters.FirstOrDefault(c => c.Identity == id)?.Name ?? id.ToString());
             string Dist(Identity id) { var c = DynelManager.Characters.FirstOrDefault(x => x.Identity == id); return c != null ? $"{me.DistanceFrom(c):0} m" : "?"; }
@@ -156,8 +181,17 @@ namespace AOBuddy
                 _fighting.TryGetValue(c.Identity, out var was);
                 if (Nullable.Equals(was, ft)) continue;
                 _fighting[c.Identity] = ft;
-                if (ours && ft.HasValue) _log($"ENGAGE: {Who(c.Identity)} ({Dist(c.Identity)}) -> '{Who(ft.Value)}' ({Dist(ft.Value)}).");
-                else if (!ours && ft.HasValue && guard.Contains(ft.Value)) _log($"AGGRO: '{c.Name}' ({Dist(c.Identity)}) on {Who(ft.Value)}.");
+                if (ours && ft.HasValue) { _ourTargets.Add(ft.Value); _log($"ENGAGE: {Who(c.Identity)} ({Dist(c.Identity)}) -> '{Who(ft.Value)}' ({Dist(ft.Value)})."); }
+                else if (!ours && ft.HasValue && guard.Contains(ft.Value))
+                {
+                    _log($"AGGRO: '{c.Name}' ({Dist(c.Identity)}) on {Who(ft.Value)}.");
+                    // Outdoors and none of us had fought it: its kind attacks on sight (MobDanger, for the walk grid).
+                    if (outdoorPf >= 0 && !_ourTargets.Contains(c.Identity) && _noted.Add(c.Identity))
+                    {
+                        c.TryGetStat(Stat.Level, out int lvl);
+                        MobDanger.NoteAggro(outdoorPf, c.Name, lvl, me.DistanceFrom(c), me.Transform.Position);
+                    }
+                }
             }
             foreach (var id in _fighting.Keys.ToList()) if (!seen.Contains(id)) _fighting.Remove(id);
         }
