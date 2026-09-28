@@ -3440,6 +3440,10 @@ namespace AOBuddy
                 }
             }
             if (bestRoad == null) return null;
+            // Already inside (10:52, 2026-09-28: at (1999,694) in the Longest Road town, 90 m from the booth, he was sent back
+            // out through the town wall to the road's outer end to loop in again): nearer the exit than the road's entrance
+            // is - no road in.
+            if (Movement.Flat(pos, at) < Movement.Flat(bestRoad[0], at)) return null;
             // Join the road at its far end - the whole road, never a shortcut onto its middle from above.
             var entry = bestRoad[0];
             var toEntry = Movement.Flat(pos, entry) > 3f ? NearestPath(grid, pos, entry, out float left, OtherPads(grid, _hikeFromPf, e)) : null;
