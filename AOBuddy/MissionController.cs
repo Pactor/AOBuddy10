@@ -418,6 +418,7 @@ namespace AOBuddy
         private void GoOutside(Action<string> reply)
         {
             if (Active) Stop("owner said back outside");
+            _tour = false;   // walking out ends a tour (01:55, 2026-09-28: a heal-out's exit push was counted as a failed tour stop)
             _retrace = true;
             _completed = true; _announced = true; _rewards.Clear(); _replans = 0; _presses = 0; _blocked.Clear(); _lastCorrection = null;
             _path = null; _pendingButton = null;
