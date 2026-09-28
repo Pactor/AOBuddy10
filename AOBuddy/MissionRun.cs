@@ -1761,7 +1761,17 @@ namespace AOBuddy
                 if (grid == null) return false;                       // still building (a few seconds)
                 _hikeRoute = new List<Vector3>();
                 var best = NearestPath(grid, pos, at, out float bestLeft, OtherPads(grid, _hikeFromPf, e));
-                if (best != null && best.Count > 1)
+                // THROUGH THE ENTRANCE (owner, 2026-09-27): no clean grid route to the exit, and one of the owner's recorded
+                // roads ends at it - walk to that road's far end and follow it in. The Longest Road town has one way in;
+                // walking straight from the mission door took him up the ridge onto the roof of the whompa booths
+                // (19:33-19:36, Y 47 over booths at Y 15), recorded as paths/longroad_*.
+                if ((best == null || best.Count <= 1 || bestLeft > 15f) && RoadIn(grid, pos, at, e) is List<Vector3> viaRoad)
+                {
+                    _hikeRoute = viaRoad;
+                    _follow.LoadReplay(OnGround(viaRoad.Skip(1), pos), false);
+                    _ctx.Log($"MISSIONRUN: no clean grid route to {e}; going in by the recorded road ({viaRoad.Count} points).");
+                }
+                else if (best != null && best.Count > 1)
                 {
                     _hikeRoute = best;
                     // Off every other zone's line on the way (06:12-06:18, 2026-09-25: landed in Aegean at (229,1118),
@@ -3306,6 +3316,33 @@ namespace AOBuddy
             if (wrong.Kind == ExitKind.ZoneLine) grid.CellsAlong(wrong.A, wrong.B, PadKeepOff, set);
             else grid.CellsAlong(wrong.A, wrong.A, PadKeepOff + 0.5f, set);
             _ctx.Log($"MISSIONRUN: took the wrong way - {wrong} at ({wrong.A.X:0},{wrong.A.Z:0}) from ({p.X:0},{p.Z:0}); blocked {set.Count - before} cell(s) round it in {Zoning.Name(fromPf)}, going back.");
+        }
+
+        /// <summary>A way in along a recorded road that ends within 30 m (and 5 m of height) of 'at': a grid path (or a
+        /// straight line when the grid has none) to the road's other end, then the road to its end at 'at'. Null when no
+        /// recorded road ends there.</summary>
+        private List<Vector3> RoadIn(IWalkGrid grid, Vector3 pos, Vector3 at, ZoneExit e)
+        {
+            List<Vector3> bestRoad = null; float bestEnd = 30f;
+            foreach (var r0 in LearnedGround.Roads())
+            {
+                if (r0 == null || r0.Count < 2) continue;
+                foreach (var r in new[] { r0, Enumerable.Reverse(r0).ToList() })   // walk it toward 'at'
+                {
+                    var end = r[r.Count - 1];
+                    float d = Movement.Flat(end, at);
+                    if (d < bestEnd && Math.Abs(end.Y - at.Y) < 5f && Movement.Flat(r[0], at) > d + 20f) { bestEnd = d; bestRoad = r; }
+                }
+            }
+            if (bestRoad == null) return null;
+            // Join the road at its far end - the whole road, never a shortcut onto its middle from above.
+            var entry = bestRoad[0];
+            var toEntry = Movement.Flat(pos, entry) > 3f ? NearestPath(grid, pos, entry, out float left, OtherPads(grid, _hikeFromPf, e)) : null;
+            var route = new List<Vector3> { pos };
+            if (toEntry != null && toEntry.Count > 1) route.AddRange(toEntry.Skip(1));
+            route.AddRange(bestRoad);
+            route.Add(at);
+            return route;
         }
 
         private List<Vector3> NearestPath(IWalkGrid grid, Vector3 pos, Vector3 at, out float bestLeft, HashSet<int> extra = null)
