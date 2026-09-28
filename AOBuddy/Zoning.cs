@@ -98,6 +98,9 @@ namespace AOBuddy
         public double ScottyCost = 400;
         public double UnknownWalk = 250; // walking from a point we don't know
         public bool UseScotty = true;
+        // Leave out walking straight from the start to the goal (same zone, and the walk grid found no way on foot):
+        // the route must go through at least one exit and land more than 30 m from the start.
+        public bool NoDirectWalk;
 
         // The Grid (152) looks cheap to the planner — its inside is counted as flat straight-line walking —
         // but the real trip crosses decks and rides lift beams, so it is far slower than it plans (owner,
@@ -154,6 +157,8 @@ namespace AOBuddy
 
         public static IReadOnlyList<ZoneExit> ExitsFrom(int pf) =>
             _exits.TryGetValue(pf, out var l) ? l : (IReadOnlyList<ZoneExit>)Array.Empty<ZoneExit>();
+
+        public static IEnumerable<ZoneExit> ExitsInto(int pf) => _all.Where(e => e.ToPf == pf);
 
         public static void Load(string pluginDir, Action<string> log)
         {
@@ -319,7 +324,9 @@ namespace AOBuddy
                 if (u == end) break;
                 int pf = PfOf(u);
                 Vector3? p = pos[u];
-                if (pf == toPf) Relax(u, end, d + (goal.HasValue ? Walk(p, goal.Value) : 0), goal, goal, null);
+                // NoDirectWalk: nor from a landing back on the same spot (a teleport there and straight back).
+                bool sameSpot = opt.NoDirectWalk && (u == start || (p.HasValue && Flat(p.Value, from) < 30));
+                if (pf == toPf && !sameSpot) Relax(u, end, d + (goal.HasValue ? Walk(p, goal.Value) : 0), goal, goal, null);
                 if (_exits.TryGetValue(pf, out var list))
                     foreach (var e in list)
                     {

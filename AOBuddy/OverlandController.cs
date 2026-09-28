@@ -61,6 +61,7 @@ namespace AOBuddy
         // walled place; at its far end the leg is planned again from there. _roadOutFrom: where each road out began,
         // so the road back in is never taken as the next way "out".
         private bool _walkFirst, _noWalk, _roadOut;
+        private Vector3 _noWalkAt; private int _noWalkPf = -1;
         private readonly List<Vector3> _roadOutFrom = new List<Vector3>();
 
         // walking
@@ -84,6 +85,7 @@ namespace AOBuddy
         private const float JumpMeters = 8f;          // a one-frame move this big was the server moving us
         private const float ObjectRange = 2.5f;       // how close to walk up to an object before using it
         private const float GoalRange = 3f;
+        private const float WideGoalRange = 8f;   // a goal in a wall: the nearest reachable ground within this
         private const float UseReach = 4.5f;          // an object may stand in its own walls: stop this close, outside them
         private const float PadReach = 0.6f;          // a pad is walked onto, not used: stop on its centre
         private const int MaxTries = 3;               // per exit, before it is written off and we plan again
@@ -255,6 +257,12 @@ namespace AOBuddy
             o.Filter = e => !_failed.Contains(e) && (e.Kind == ExitKind.ZoneLine || e.Kind == ExitKind.Scotty || e.ObjInstance != 0)
                             && (recorded == null || !recorded.Contains(TravelFailures.Key(e)))
                             && !FactionMap.HostileExit(_pluginDir, _ctx.Log, side, e, z => z != dest && avoid != null && avoid.Contains(z));
+            // The walk found no way on foot (or failed before): through the exits means through at least one
+            // (21:00, 2026-09-27: Stret West Bank, the fallback planned the same walk again, four times).
+            // Only from the spot the walk failed at: from any other landing the walk gets its own try.
+            o.NoDirectWalk = (int)Playfield.ModelId == _destPf
+                && ((_noWalk && _noWalkPf == _destPf && Movement.Flat(me.MovementComponent.Position, _noWalkAt) < 30f)
+                    || (recorded != null && recorded.Contains(TravelFailures.Walk) && (int)Playfield.ModelId == _attemptFromPf));
             return o;
         }
 
@@ -426,6 +434,18 @@ namespace AOBuddy
                 }
                 float reach = _leg.Exit == null ? GoalRange : _leg.Exit.Kind == ExitKind.ZoneLine ? 1.5f : IsPad(_leg.Exit) ? PadReach : UseReach;
                 var route = _grid.FindPath(from, goal, extra, 8f, reach, out string why);
+                // A door set in its building's wall has no open ground within GoalRange (21:00, 2026-09-27: Stret West
+                // Bank (681,1367), floors under it blocked; open ground 5-7 m out). End the walk near it instead; the
+                // mission run walks the last metres to the door itself.
+                if (route == null && _leg.Exit == null)
+                {
+                    var near = _grid.FindPath(from, goal, extra, 8f, WideGoalRange, out _);
+                    if (near != null)
+                    {
+                        _ctx.Log($"OVERLAND: no open ground within {reach:0} m of ({goal.X:0},{goal.Z:0}); walking to the nearest reachable spot, {Movement.Flat(near[near.Count - 1], goal):0.0} m from it.");
+                        route = near;
+                    }
+                }
                 // WALK OUT BY THE ENTRANCE (owner, 2026-09-27): no way on the grid from where he stands - or the grid's way
                 // runs where the server has pulled him back (the Longest Road town: the grid climbs the ridge at
                 // (1971,877)-(2013,911), 20+ snap-backs in snapbacks.json) - and a recorded road starts within 30 m: walk it
@@ -444,10 +464,18 @@ namespace AOBuddy
                     _ctx.Log($"OVERLAND: no route to {what} on the data ({why}); it's {Movement.Flat(from, goal):0} m, walking straight.");
                     route = new List<Vector3> { from, goal };
                 }
-                if (route == null && _leg.Exit == null && _walkFirst)
+                // No way on foot from where an exit put him (21:00, 2026-09-27: the Stret East Bank teleport lands in
+                // Stret West Bank at (1143,541), cut off from the door): leave out every exit landing here, so the next
+                // plan doesn't bring him straight back to this spot.
+                int landed = 0;
+                if (route == null && _leg.Exit == null)
+                    foreach (var x in Zoning.ExitsInto(_grid.Pf))
+                        if (x.Arrival.HasValue && Movement.Flat(x.Arrival.Value, from) < 30f && _failed.Add(x)) landed++;
+                if (landed > 0) _ctx.Log($"OVERLAND: no way on foot from ({from.X:0},{from.Z:0}); leaving out the {landed} exit(s) that land here.");
+                if (route == null && _leg.Exit == null && (_walkFirst || landed > 0))
                 {
                     // The same-zone walk has no way on foot from here: plan through the exits, from here.
-                    _walkFirst = false; _noWalk = true;
+                    _walkFirst = false; _noWalk = true; _noWalkAt = from; _noWalkPf = _grid.Pf;
                     Replan(me, $"no way on foot to ({goal.X:0},{goal.Z:0}) ({why}); planning through the exits");
                     return;
                 }
