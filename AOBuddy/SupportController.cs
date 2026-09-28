@@ -1540,8 +1540,50 @@ namespace AOBuddy
             catch { return true; }   // criteria unreadable — don't hard-refuse
         }
 
+        // A stack in the main inventory first. A backpack item's slot is (bag handle << 16 | slot) and the server
+        // quietly ignores a Use on it: 18:53 (2026-09-28), 1,528 stim/recharger uses refused over three hours - the
+        // QL18 stacks he picked were both in a backpack while QL13/15 ones sat in his inventory unused. When the
+        // inventory has none left, a stack is moved out of its bag (RestockFromBag) and used from there.
         public Item BestUsableHealItem(string keyword, string exactName)
-            => HealItemPool(keyword, exactName).OrderByDescending(it => it.Ql).FirstOrDefault();
+        {
+            var pool = HealItemPool(keyword, exactName).ToList();
+            Item inv = pool.Where(it => it.Slot.Type == IdentityType.Inventory).OrderByDescending(it => it.Ql).FirstOrDefault();
+            if (inv != null) return inv;
+            Item bagged = pool.OrderByDescending(it => it.Ql).FirstOrDefault();
+            if (bagged != null) RestockFromBag(bagged);
+            return bagged;
+        }
+
+        // Open the bag holding this stack (that is what gives its slots a live handle), then a second later move
+        // the stack into the inventory, found again by name and QL in the reopened bag.
+        private readonly Dictionary<string, double> _restockOpenedAt = new Dictionary<string, double>();
+        private void RestockFromBag(Item it)
+        {
+            LocalPlayer me = DynelManager.LocalPlayer;
+            if (me == null || Inventory.NumFreeSlots < 1) return;
+            string key = it.Name + "|" + it.Ql;
+            if (_restockOpenedAt.TryGetValue(key, out double openedAt))
+            {
+                if (_sessionSeconds - openedAt < 1.0) return;
+                if (_sessionSeconds - openedAt < 10.0)
+                {
+                    var c = Inventory.Containers?.FirstOrDefault(b => b?.Items != null && b.Items.Any(x => x.Name == it.Name && x.Ql == it.Ql));
+                    var fresh = c?.Items.FirstOrDefault(x => x.Name == it.Name && x.Ql == it.Ql);
+                    if (fresh != null)
+                    {
+                        fresh.MoveToInventory();
+                        _ctx.Log($"RESTOCK: moved {it.Name} QL{it.Ql} x{fresh.Count} out of its bag into the inventory.");
+                        _restockOpenedAt[key] = _sessionSeconds + 10;   // nothing more for 11 s while the move lands
+                        return;
+                    }
+                }
+            }
+            var bag = Inventory.Containers?.FirstOrDefault(b => b?.Items != null && b.Items.Contains(it));
+            if (bag == null) return;
+            GameCommands.OpenContainer(me, bag.Identity);
+            _restockOpenedAt[key] = _sessionSeconds;
+            _ctx.Log($"RESTOCK: no {it.Name} left in the inventory; opening the bag that holds QL{it.Ql} x{it.Count}.");
+        }
 
         public int CountUsableHealItems(string keyword, string exactName)
             => HealItemPool(keyword, exactName).Sum(it => Math.Max(1, it.Count));
