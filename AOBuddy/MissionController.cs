@@ -1936,6 +1936,45 @@ namespace AOBuddy
                         if (clear) _fine.Add((k.Item1, fx, fz));
                     }
             }
+            BuildClearance();
+        }
+
+        // RUN DOWN THE MIDDLE (owner, 2026-09-27: "stop hugging walls, I do not care if it is the fastest way there, run in
+        // the middle of the walls" - mission 2224863 at (225,53): the route hugged the wall beside a doorway and the server
+        // snapped him back every second). Per open 0.5 m cell, its distance in cells to the nearest closed one (walls, the
+        // body margin, the floor's edge), capped at WantClear. The search pays for cells nearer than that; the smoothing keeps
+        // each cut at least as far from the walls as the route it replaces.
+        private const int WantClear = 4;            // 2 m: in a corridor narrower than 4 m, its centre line
+        private const float WallWeight = 2.0f;      // extra cost per cell short of WantClear
+        private Dictionary<(int, int, int), int> _fineClear;
+        private int Clear((int, int, int) f) => _fineClear != null && _fineClear.TryGetValue(f, out int c) ? c : WantClear;
+
+        private void BuildClearance()
+        {
+            _fineClear = new Dictionary<(int, int, int), int>(_fine.Count);
+            var q = new Queue<(int, int, int)>();
+            foreach (var f in _fine)
+            {
+                bool edge = false;
+                for (int dx = -1; dx <= 1 && !edge; dx++)
+                    for (int dz = -1; dz <= 1 && !edge; dz++)
+                        if ((dx != 0 || dz != 0) && !_fine.Contains((f.Item1, f.Item2 + dx, f.Item3 + dz))) edge = true;
+                if (edge) { _fineClear[f] = 1; q.Enqueue(f); }
+            }
+            while (q.Count > 0)
+            {
+                var f = q.Dequeue();
+                int c = _fineClear[f];
+                if (c >= WantClear) continue;
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                    {
+                        if (dx == 0 && dz == 0) continue;
+                        var n = (f.Item1, f.Item2 + dx, f.Item3 + dz);
+                        if (!_fine.Contains(n) || _fineClear.ContainsKey(n)) continue;
+                        _fineClear[n] = c + 1; q.Enqueue(n);
+                    }
+            }
         }
 
         private float ParentY((int, int, int) k) => _walk.TryGetValue(k, out float y) ? y : _fallback.TryGetValue(k, out y) ? y : 0f;
@@ -2077,7 +2116,7 @@ namespace AOBuddy
                         if (dx != 0 && dz != 0 && (!FineOpen((k.Item1, k.Item2 + dx, k.Item3), blocked) || !FineOpen((k.Item1, k.Item2, k.Item3 + dz), blocked))) continue;
                         // Shared doorway cells are real floor once the walls decide; a small premium keeps
                         // routes on tiles where both are open.
-                        float cc = _walk.ContainsKey(ParentOf(n)) ? 1f : 1.5f;
+                        float cc = (_walk.ContainsKey(ParentOf(n)) ? 1f : 1.5f) + WallWeight * Math.Max(0, WantClear - Clear(n));
                         float nc = c0 + (dx != 0 && dz != 0 ? 1.4142f : 1f) * cc;
                         if (cost.TryGetValue(n, out float old) && old <= nc) continue;
                         cost[n] = nc; prev[n] = k;
@@ -2114,6 +2153,8 @@ namespace AOBuddy
 
         private bool ClearFine((int, int, int) a, (int, int, int) b, HashSet<(int, int, int)> blocked)
         {
+            // A cut may not run nearer the walls than its two ends (down the middle, not along the wall).
+            int minClear = Math.Min(Math.Min(Clear(a), Clear(b)), WantClear);
             float ax = a.Item2 + 0.5f, az = a.Item3 + 0.5f, bx = b.Item2 + 0.5f, bz = b.Item3 + 0.5f;
             int n = (int)Math.Ceiling(Math.Max(Math.Abs(bx - ax), Math.Abs(bz - az)) * 4) + 1;
             float lastY = FineY(a);
@@ -2124,6 +2165,7 @@ namespace AOBuddy
                 var k = (a.Item1, (int)Math.Floor(ax + (bx - ax) * t), (int)Math.Floor(az + (bz - az) * t));
                 if (k.Equals(lastCell)) continue;
                 if (!FineOpen(k, blocked)) return false;
+                if (Clear(k) < minClear) return false;
                 float y = FineY(k);
                 if (Math.Abs(y - lastY) > MaxStepUp) return false;
                 if (k.Item2 != lastCell.Item2 && k.Item3 != lastCell.Item3 &&
