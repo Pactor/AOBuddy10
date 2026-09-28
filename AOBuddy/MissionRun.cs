@@ -125,6 +125,13 @@ namespace AOBuddy
             string a = (args ?? "").Trim().ToLowerInvariant();
             if (a == "stop") { if (Active) { Stop("owner said stop"); reply($"Mission run stopped after {_done} mission(s)."); } else reply("No mission run going."); return; }
             if (a == "status") { reply(Status()); return; }
+            if (a == "tour" || a.StartsWith("tour "))
+            {
+                // TOUR TEST (owner, 2026-09-27 night): every room + the exit area this many laps before each blitz.
+                if (int.TryParse(a.Substring(4).Trim(), out int laps) && laps >= 0) { _ctx.Config.MissionTourLaps = laps; SaveConfigValue("MissionTourLaps", laps); }
+                reply($"Tour before each mission: {(_ctx.Config.MissionTourLaps > 0 ? _ctx.Config.MissionTourLaps + " lap(s)" : "off")}. 'mission run tour <laps>' (0 = off).");
+                return;
+            }
             if (a == "clear" || a.StartsWith("clear "))
             {
                 // CLEAR MODE (owner, 2026-09-25): kill every mob in the building before the objective - XP, and for
@@ -1141,6 +1148,14 @@ namespace AOBuddy
                         }
                     }
                     _resumeBlitz = false;
+                    // TOUR TEST (owner, 2026-09-27 night): walk every room and the exit area MissionTourLaps times first.
+                    // Re-started after a fight broke it off; done once all laps are walked (_touredInstance).
+                    if (_ctx.Config.MissionTourLaps > 0 && _touredInstance != (int)Playfield.ModelId)
+                    {
+                        _mission.Command("tour", s => _ctx.Log("MISSIONRUN: tour: " + s));
+                        Enter(Phase.Blitz, "touring first");
+                        return false;
+                    }
                     _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
                     Enter(Phase.Blitz, "blitzing");
                     return false;
@@ -1148,6 +1163,18 @@ namespace AOBuddy
 
                 case Phase.Blitz:
                     if (KeyAfterClear()) return false;
+                    if (_mission.Touring)
+                    {
+                        if (_mission.TourLap > _ctx.Config.MissionTourLaps)
+                        {
+                            _ctx.Log($"MISSIONRUN: toured {_ctx.Config.MissionTourLaps} lap(s); now the mission.");
+                            _touredInstance = (int)Playfield.ModelId;
+                            _mission.Command("stop", _ => { });
+                            _mission.Command("blitz", s => _ctx.Log("MISSIONRUN: blitz: " + s));
+                            Enter(Phase.Blitz, "blitzing");
+                        }
+                        return false;
+                    }
                     if (_mission.Active)
                     {
                         if (_phaseTime > (_ctx.Config.MissionClear || _key == KeyStep.Clearing ? 3 * BlitzTimeout : BlitzTimeout)) Skip("it was taking too long");
@@ -1605,6 +1632,7 @@ namespace AOBuddy
         private int _hikeChain;
         private double _hikeAtExitAt = -1;
         private int _hikeChainFrom = -1;
+        private int _touredInstance = -1;
         private bool _hikeBounced;
         private volatile NavGround _hikeGround;
         private volatile int _hikeGroundPf = -1;

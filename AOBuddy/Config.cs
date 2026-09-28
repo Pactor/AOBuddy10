@@ -240,6 +240,7 @@ namespace AOBuddy
         public bool WatchdogRestart = true;                      // false = only log the firing
         public int BotApiPort = 5591;                            // local control API for the aobuddy MCP server, 127.0.0.1 only (0 = off)
         public bool MissionRecord = false;                       // record every mission building's packets + a mob/door index (missions/records)
+        public int MissionTourLaps = 0;                          // TEST (2026-09-27): tour every room + the exit area this many laps before each mission's blitz (0 = off)
         public bool MissionClear = false;                        // clear mode: kill every mob in the building before the objective (mission run clear on|off)
         public bool MissionShop = false;                         // TEST: when out of room, go to Fair Trade, bank nano crystals, buy a bag (mission run shop on|off)
         public int MissionCashReserve = 20000;
