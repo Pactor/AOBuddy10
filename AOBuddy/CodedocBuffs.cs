@@ -165,11 +165,66 @@ namespace AOBuddy
 
         /// <summary>Armed, in the Codedoc zone, and something is missing that Codedoc can give. An empty plan
         /// disarms (logged) so the run never walks over for nothing.</summary>
+        // ONLY WHEN THEY'VE RUN OUT (owner, 2026-09-28: "I doubt any of his buffs timers have run out, so also need to buff
+        // only when they have" - 10:55 a restart armed the step and he walked over with every buff up and 0 free NCU). The
+        // codes Codedoc gave this character are kept (codedoc-given.json); the trip is made when one of them is no longer
+        // carried, or when none of them is (a fresh character, or a death wiped them).
+        private HashSet<string> _given; private string _givenFor;
+        private string GivenFile => System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_levelFile) ?? ".", "codedoc-given.json");
+        private HashSet<string> Given(LocalPlayer me)
+        {
+            if (_given != null && _givenFor == me.Name) return _given;
+            _givenFor = me.Name; _given = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var all = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(GivenFile, _ctx.Log);
+            if (all?[me.Name] is Newtonsoft.Json.Linq.JArray arr) foreach (var t in arr) _given.Add((string)t);
+            return _given;
+        }
+        private void NoteGiven(LocalPlayer me, string code)
+        {
+            if (me == null || !Given(me).Add(code)) return;
+            var all = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(GivenFile, _ctx.Log) ?? new Newtonsoft.Json.Linq.JObject();
+            all[me.Name] = new Newtonsoft.Json.Linq.JArray(_given.ToArray());
+            JsonStore.Save(GivenFile, all.ToString(), _ctx.Log);
+        }
+        // Seconds left on the running buff of d's line (unknown timer = plenty); 0 when it's not running.
+        private double SecondsLeft(LocalPlayer me, Def d)
+        {
+            if (me?.Buffs == null || d.Nano == null) return 0;
+            foreach (var b in me.Buffs)
+            {
+                bool same = b.Id == d.Landed
+                            || (d.Nano.NanoLine != NanoLine.NOSTACKING && b.NanoItem != null
+                                && b.NanoItem.NanoLine == d.Nano.NanoLine && b.NanoItem.StackingOrder >= d.Nano.StackingOrder);
+                if (!same) continue;
+                double rem = b.Cooldown?.RemainingTime ?? -1;
+                return rem < 0 ? double.MaxValue : rem;
+            }
+            return 0;
+        }
+
+        private string RunOut(LocalPlayer me)
+        {
+            var given = Given(me);
+            var defs = _buffs.Where(d => given.Contains(d.Code)).ToList();
+            // Nothing on record yet (first run with this file): the Codedoc buffs he carries now were given to him.
+            if (defs.Count == 0)
+            {
+                foreach (var d in _buffs.Where(d => d.Nano != null && SecondsLeft(me, d) > 0 && me.Buffs.Any(b => b.Id == d.Landed))) NoteGiven(me, d.Code);
+                defs = _buffs.Where(d => given.Contains(d.Code)).ToList();
+                if (defs.Count == 0) return "no Codedoc buffs on record for me";
+            }
+            var gone = defs.Where(d => SecondsLeft(me, d) < _ctx.Config.CodedocRefreshMinutes * 60).Select(d => d.Code).ToList();
+            if (gone.Count == defs.Count) return "none of Codedoc's buffs are running";
+            return gone.Count > 0 ? "run out: " + string.Join(", ", gone) : null;
+        }
+
         public bool Wants(LocalPlayer me)
         {
             if (!Enabled || !_armed || Busy || me == null) return false;
             if ((int)Playfield.ModelId != SpotPf) return false;
             if (!Resolve()) return false;   // item data not in yet: ask again next tick
+            string runOut = RunOut(me);
+            if (runOut == null) { Disarm("every buff Codedoc gave me is still running"); return false; }
             var notes = new List<string>();
             var preview = Preview(me, notes);
             if (preview.Count == 0)
@@ -178,7 +233,7 @@ namespace AOBuddy
                 foreach (var n in notes.Take(8)) _ctx.Log("CODEDOC:   " + n);
                 return false;
             }
-            _ctx.Log($"CODEDOC: missing ({_armWhy}): {string.Join(", ", preview.Select(p => $"{p.stage}:{p.def.Code}"))}.");
+            _ctx.Log($"CODEDOC: {runOut}; missing ({_armWhy}): {string.Join(", ", preview.Select(p => $"{p.stage}:{p.def.Code}"))}.");
             return true;
         }
 
@@ -702,6 +757,7 @@ namespace AOBuddy
             {
                 _ctx.Log($"CODEDOC: {_current.Code} landed — {_current.Name} [{_current.Landed}] after {_clock - _askedAt:0.0}s; free NCU now {ChewyBuffController.FreeNcu(me)}.");
                 _landedCount++;
+                NoteGiven(me, _current.Code);
                 EndCurrent();
                 _settleUntil = _clock + SettleSec;   // stats (Max NCU, skills) settle before the next plan
                 return;

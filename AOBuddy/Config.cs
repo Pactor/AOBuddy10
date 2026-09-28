@@ -189,6 +189,7 @@ namespace AOBuddy
                                                   // don't tradeskill mid-fight; raise for an implant session)
         public bool BuffAskOnStart = true;        // run the ask once, shortly after login
         public double BuffStartupDelaySec = 25;   // grace after login: buff timers sync, item data loads
+        public int CodedocRefreshMinutes = 10;   // go back to Codedoc when a buff it gave has run out or has fewer minutes than this left
         public int BuffSkipRemainingPct = 50;     // don't re-ask a buff with more than this % of its duration left
         // --- CODEDOC (RubiKa 2019 ONLY — regular Rubi-Ka keeps the Chewy flow above) -------------------------
         // RK2019 has no Chewy; its buff bot is 'Codedoc' with helper toons by the Borealis grid entrance (sniff
