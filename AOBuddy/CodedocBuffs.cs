@@ -75,6 +75,7 @@ namespace AOBuddy
         {
             _ctx = ctx;
             _file = Path.Combine(pluginDir, "GameData", "CodedocBuffs.json");
+            _levelFile = Path.Combine(pluginDir, "codedoc-level.json");
             Load();
             // Tells travel on the chat server (sniff: port 7106, type 30). Queue them; the update thread reads them.
             try { Client.Chat.PrivateMessageReceived += (s, m) => { try { _tells.Enqueue((m.SenderId, m.SenderName, m.Message ?? "")); } catch { } }; }
@@ -240,6 +241,26 @@ namespace AOBuddy
         // Codes refused ("Failed to cast ...") — level refusals keep until he levels, others for the session;
         // timed-out codes back off for 30 minutes; codes asked in this episode are not asked again.
         private readonly Dictionary<string, int> _levelBlocked = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        // "Your level is too low" survives a restart (owner, 2026-09-27: 215ncu was asked again after every restart):
+        // codedoc-level.json = { "<character>": { "<code>": <level refused at> } }, read once per character.
+        private readonly string _levelFile;
+        private string _levelFor;
+        private void LoadLevelBlocks(LocalPlayer me)
+        {
+            if (me == null || string.IsNullOrEmpty(me.Name) || _levelFor == me.Name) return;
+            _levelFor = me.Name;
+            var all = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(_levelFile, _ctx.Log);
+            if (all?[me.Name] is Newtonsoft.Json.Linq.JObject mine)
+                foreach (var kv in mine) _levelBlocked[kv.Key] = (int)kv.Value;
+            if (_levelBlocked.Count > 0) _ctx.Log($"CODEDOC: remembered level refusals: {string.Join(", ", _levelBlocked.Select(kv => $"{kv.Key} at {kv.Value}"))}.");
+        }
+        private void SaveLevelBlocks(LocalPlayer me)
+        {
+            if (me == null || string.IsNullOrEmpty(me.Name)) return;
+            var all = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(_levelFile, _ctx.Log) ?? new Newtonsoft.Json.Linq.JObject();
+            all[me.Name] = Newtonsoft.Json.Linq.JObject.FromObject(_levelBlocked);
+            JsonStore.Save(_levelFile, all.ToString(), _ctx.Log);
+        }
         private readonly Dictionary<string, string> _refused = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, double> _backoffUntil = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _askedThisEpisode = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -249,6 +270,7 @@ namespace AOBuddy
 
         private string BlockedWhy(LocalPlayer me, Def d)
         {
+            LoadLevelBlocks(me);
             if (_levelBlocked.TryGetValue(d.Code, out int lvl) && lvl == Level(me)) return $"Codedoc said level too low (at {lvl})";
             if (_refused.TryGetValue(d.Code, out string why)) return "Codedoc refused: " + why;
             if (_backoffUntil.TryGetValue(d.Code, out double t) && _clock < t) return $"no answer last time (back off {(t - _clock) / 60:0} min)";
@@ -719,6 +741,7 @@ namespace AOBuddy
                 if (why.IndexOf("level is too low", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     _levelBlocked[d.Code] = Level(me);
+                    SaveLevelBlocks(me);
                     _ctx.Log($"CODEDOC: {d.Code} refused ({senderName}/{senderId}): \"{why}\" — hard stop for it until I level; trying the next lower one of its line.");
                     // Fall back down the same line (owner: 'Your level is too low' = the next lower one).
                     if (d == _current && d.Nano != null)
