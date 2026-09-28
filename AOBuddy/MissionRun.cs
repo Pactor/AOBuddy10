@@ -1117,7 +1117,7 @@ namespace AOBuddy
                 }
                 case Phase.WaitForWarp:
                 {
-                    if (_phaseTime < 45) return false;
+                    if (_phaseTime < 30) return false;
                     // Back to what the hike was for: the door, or the terminal with no mission held (ToDoor with no
                     // mission threw at _current.Playfield, Algorithman 18:18, 2026-09-27).
                     Enter(_hikeReturn == Phase.ToDoor && _current != null ? Phase.ToDoor : Phase.ToTerminal, "Next leg after Scotty warp");
