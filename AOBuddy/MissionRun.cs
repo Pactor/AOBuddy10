@@ -1830,11 +1830,14 @@ namespace AOBuddy
                 // roads ends at it - walk to that road's far end and follow it in. The Longest Road town has one way in;
                 // walking straight from the mission door took him up the ridge onto the roof of the whompa booths
                 // (19:33-19:36, Y 47 over booths at Y 15), recorded as paths/longroad_*.
-                if ((best == null || best.Count <= 1 || bestLeft > 15f) && RoadIn(grid, pos, at, e) is List<Vector3> viaRoad)
+                // ...or the grid's way crosses the server's pull-backs (06:48, 2026-09-28: after a backoff the grid found a
+                // route over the ridge again - "he is trying to run into long road from top of hill again").
+                int roadSnaps = best != null && best.Count > 1 ? LearnedGround.SnapHitsAlong(_hikeFromPf, best) : 0;
+                if ((best == null || best.Count <= 1 || bestLeft > 15f || roadSnaps >= 2) && RoadIn(grid, pos, at, e) is List<Vector3> viaRoad)
                 {
                     _hikeRoute = viaRoad;
                     _follow.LoadReplay(OnGround(viaRoad.Skip(1), pos), false);
-                    _ctx.Log($"MISSIONRUN: no clean grid route to {e}; going in by the recorded road ({viaRoad.Count} points).");
+                    _ctx.Log($"MISSIONRUN: {(roadSnaps >= 2 ? $"the grid's way to {e} crosses {roadSnaps} server pull-backs" : $"no clean grid route to {e}")}; going in by the recorded road ({viaRoad.Count} points).");
                 }
                 // OUT BY THE ENTRANCE (owner, 2026-09-27): standing in a walled place (the Longest Road Omni town) whose
                 // only way out on foot is a recorded road starting here - no clean grid way, or the grid's way runs over
