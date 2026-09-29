@@ -871,6 +871,13 @@ namespace AOBuddy
                                            && _aware.Near.Any(x => x.Mob != null && x.Mob.Identity == foe.Identity && (x.OnUs || x.Following));
                             bool byTarget = foe != null && _mission.InMission && !chasing && _mission.NearObjective(foe.Transform.Position);
                             if (byTarget && _clock - _byTargetLogAt > 10) { _byTargetLogAt = _clock; _ctx.Log($"MISSIONRUN: not closing in on '{foe.Name}' - it's by the mission's target; letting it come to me."); }
+                            // CAN'T REACH IT FROM HERE (owner, 06:40 2026-09-29: "he has not walked into the room"): Borer Scorpiod
+                            // 3.7 m off through a wall; the server took his Attack (06:35:35) and not one blow or miss followed
+                            // for 5 minutes (rec-2224977-20260929-062902). Closing in stopped at 4 m, so he never went round.
+                            // No blow of his on it for three of his own swings (measured from the blow record): walk the
+                            // building's path into its room until one lands; still none after the walk, leave it be.
+                            if (foe != null && _mission.InMission && !nest && !byTarget && ReachCheck(me, foe) is Vector3 into)
+                            { _phaseTime = 0; _follow.SetManualTarget(into); return true; }
                             if (foe != null && !nest && !byTarget && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
                             {
                                 // Inside, along the building's path: straight at a mob round a corner the server pulled
@@ -1361,6 +1368,55 @@ namespace AOBuddy
             double left = SupportController.Instance?.LockLeft(Stat.FirstAid)
                           ?? (me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) ? cd.RemainingTime : 0);
             return !(left > T("healoutstim"));
+        }
+
+        // REACH, from the wire: is anything of his landing on (or missing) the mob he is attacking?
+        // Returns where to walk to get at it, or null when his blows are reaching it (or it has just been set aside).
+        private Identity? _reachFoe, _reachWalking;
+        private double _reachSince, _reachWalkUntil;
+        private static double? _swingSecs;   // his own time between blows, measured; kept across fights
+        private Vector3? ReachCheck(LocalPlayer me, NpcChar foe)
+        {
+            double now = Blows.Now;
+            var mine = Blows.Since(now - Blows.KeepSeconds).Where(b => b.Attacker == me.Identity).ToList();
+            // His swing time: the median gap between his blows on one mob, from the last minute.
+            var gaps = new List<double>();
+            for (int i = 1; i < mine.Count; i++)
+                if (mine[i].Target == mine[i - 1].Target && mine[i].Time - mine[i - 1].Time < 10) gaps.Add(mine[i].Time - mine[i - 1].Time);
+            if (gaps.Count >= 3) { gaps.Sort(); _swingSecs = gaps[gaps.Count / 2]; }
+            if (!_swingSecs.HasValue) return null;   // not measured yet this session: nothing to judge by
+
+            if (_reachFoe != foe.Identity) { _reachFoe = foe.Identity; _reachSince = now; _reachWalking = null; }
+            double last = mine.Where(b => b.Target == foe.Identity).Select(b => b.Time).DefaultIfEmpty(_reachSince).Max();
+            double quiet = now - Math.Max(last, _reachSince);
+            if (last > _reachSince && _reachWalking == foe.Identity)
+            {
+                _ctx.Log($"MISSIONRUN: reaching '{foe.Name}' now ({me.DistanceFrom(foe):0.0} m).");
+                _reachWalking = null;
+            }
+            if (quiet < 3 * _swingSecs.Value) { if (_reachWalking != foe.Identity) return null; }
+            var pos = me.Transform.Position;
+            if (_reachWalking != foe.Identity)
+            {
+                float? len = _mission.PathLen(pos, foe.Transform.Position);
+                if (!len.HasValue)
+                {
+                    _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s ({me.DistanceFrom(foe):0.0} m) and no path to it; leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, foe.Identity, 300);
+                    return null;
+                }
+                _reachWalking = foe.Identity;
+                _reachWalkUntil = now + len.Value / Math.Max(1f, _ctx.RunVelocity(me)) + 3 * _swingSecs.Value;
+                _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s (my swing {_swingSecs:0.0} s), {me.DistanceFrom(foe):0.0} m off: can't reach it from here; walking the path to it ({len:0} m).");
+            }
+            if (now > _reachWalkUntil)
+            {
+                _ctx.Log($"MISSIONRUN: walked the path to '{foe.Name}' and still no blow of mine lands; leaving it alone for 5 minutes.");
+                _combat.SetAside(me, foe.Identity, 300);
+                _reachWalking = null;
+                return null;
+            }
+            return _mission.StepToward(pos, foe.Transform.Position) ?? foe.Transform.Position;
         }
 
         // THE RACE, from the wire: null while he is winning, else why he is losing.
