@@ -2743,11 +2743,13 @@ namespace AOBuddy
             return true;
         }
 
+        private bool _shopExitRetraced;
         private void ShopNext(ShopStep s, string log)
         {
             // Auto-buff back on once the bank step is over (it is paused for the bank open).
             if (s != ShopStep.OpenBank && _bankBuffWas.HasValue) { _ctx.Config.AutoBuff = _bankBuffWas.Value; _bankBuffWas = null; }
             _shopStep = s; _shopStepAt = _clock; _ctx.Log("MISSIONRUN: shop: " + log);
+            if (s == ShopStep.Exit) _shopExitRetraced = false;
         }
 
         private int _shopPrevPf = -1;
@@ -3042,6 +3044,42 @@ namespace AOBuddy
                     }
                     // Back the way he came in: to where he landed, then 3 m on past it, away from the shop spot.
                     Vector3 a = _shopArrival.Value;
+                    // From wherever the terminals left him, first his OWN footsteps back to the landing spot - every one
+                    // accepted on the way in. A straight line from the last terminal ran into a wall and he gave up
+                    // (00:33, 2026-09-29, 'stuck in Fair Trade' after 16 terminal visits).
+                    if (!_shopExitRetraced)
+                    {
+                        _shopExitRetraced = true;
+                        // The shop's own floor plan first (FloorGrid from the client's floors and walls) - it works after a
+                        // restart too, when there is no trail yet.
+                        var fg = Movement.Flat(me.Transform.Position, a) > 3f ? HikeGrid() : null;
+                        var gp = fg == null ? null : NearestPath(fg, me.Transform.Position, a, out float gLeft);
+                        if (gp != null && gp.Count > 1 && Movement.Flat(gp[gp.Count - 1], a) < 2f)
+                        {
+                            _follow.LoadReplay(OnGround(gp.Skip(1), me.Transform.Position), false);
+                            _ctx.Log($"MISSIONRUN: shop: out by the shop's floor plan - {gp.Count} points to where I landed.");
+                            return true;
+                        }
+                        if (Movement.Flat(me.Transform.Position, a) > 3f && _good.Count >= 2)
+                        {
+                            var back = new List<Vector3>();
+                            Vector3 last = me.Transform.Position;
+                            for (int i = _good.Count - 1; i >= 0; i--)
+                            {
+                                if (Movement.Flat(last, _good[i]) > 20f) break;       // a jump: the zone-in, not walkable
+                                if (back.Count == 0 && Movement.Flat(_good[i], last) < 1.5f) continue;
+                                back.Add(_good[i]); last = _good[i];
+                                if (Movement.Flat(_good[i], a) < 2f) break;           // back where he landed
+                            }
+                            if (back.Count > 0)
+                            {
+                                _follow.LoadReplay(back, false);
+                                _ctx.Log($"MISSIONRUN: shop: out the way I walked in - {back.Count} steps of my own trail back to where I landed.");
+                                return true;
+                            }
+                        }
+                    }
+                    if (_follow.HasWork && t < 25) return true;               // still walking the trail back
                     var d = new Vector3(a.X - ShopSpot.X, 0, a.Z - ShopSpot.Z);
                     float len = d.Magnitude;
                     var target = len > 0.5f ? new Vector3(a.X + d.X / len * 3f, a.Y, a.Z + d.Z / len * 3f) : a;
