@@ -246,18 +246,68 @@ namespace AOBuddy
         // Returns true if it handled the tick (cast OR refilling), so Main holds while we buff.
         // Resurrection Sickness (the debuff after a reclaim) blocks using stims/rechargers AND casting.
         // While it's up the bot must not try to heal/rest/cast — and crucially must NOT run the no-heal
-        // blacklist (a stim/recharger failing here is rez-sickness, not a bad item). It's a named nano in
-        // me.Buffs; when it expires, everything resumes on its own.
+        // blacklist (a stim/recharger failing here is rez-sickness, not a bad item). When it wears off,
+        // everything resumes on its own.
+        //
+        // WHAT REZ SICKNESS IS, from the client's own data (RDB of 18.8.62_EP1, checked 2026-09-29): it is NOT a
+        // nano. No nano record (type 1040005, all 10965 of them, every one present in ItemData.bin) is called
+        // "Resurrection Sickness"; the old name match here could never fire. It is the stat
+        // TemporarySkillReduction (247). Every remover in the data says so:
+        //   Rebirth 301117 (NanoLine ResurrectionSicknessRemoval 1045), use criteria: target 247 GreaterThan 1,
+        //     effect Set 247 = 1 ("You feel like a new person.");
+        //   Nano Can: Resurrection Sickness Removal 301070 / 303390, use criteria 247 GreaterThan 1,
+        //     effect Set 247 = 1 ("You feel so much better").
+        // So "rez sick" = the condition the client's own removal nano requires of its target. The operator and
+        // value are read from the item data (the ResurrectionSicknessRemoval nanos' use criterion on 247), not
+        // typed in here.
         public static bool IsRezSick(LocalPlayer me)
         {
-            var buffs = me?.Buffs;
-            if (buffs == null) return false;
-            foreach (var b in buffs)
+            if (me == null) return false;
+            var rule = RezSickRule();
+            if (rule == null) return false;   // logged loudly by RezSickRule
+            if (!me.TryGetStat(Stat.TemporarySkillReduction, out int v)) return false;   // never sent = never sick
+            switch (rule.Operator)
             {
-                string n = b.NanoItem != null ? b.NanoItem.Name : null;
-                if (n != null && n.IndexOf("Resurrection Sickness", StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                case UseCriteriaOperator.GreaterThan: return v > rule.Param2;
+                case UseCriteriaOperator.LessThan: return v < rule.Param2;
+                case UseCriteriaOperator.EqualTo: return v == rule.Param2;
+                default: return false;
             }
-            return false;
+        }
+
+        private static bool _rezRuleLoaded;
+        private static RequirementCriterion _rezRule;
+
+        private static void StaticLog(string line) { try { Instance?._ctx?.Log?.Invoke(line); } catch { } }
+
+        /// <summary>The use criterion on TemporarySkillReduction (247) that the item data's
+        /// ResurrectionSicknessRemoval nanos (Rebirth 301117) put on their target. Null, logged, if absent.</summary>
+        internal static RequirementCriterion RezSickRule()
+        {
+            if (_rezRuleLoaded) return _rezRule;
+            try
+            {
+                var ids = ItemData.AllNanoIds();
+                if (ids.Count == 0) return null;   // item data not loaded yet - try again next call, don't cache a miss
+                _rezRuleLoaded = true;
+                foreach (int id in ids)
+                {
+                    if (!ItemData.Find(id, out NanoItem n) || n == null || n.NanoLine != NanoLine.ResurrectionSicknessRemoval) continue;
+                    if (n.Criteria == null || !n.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var reqs)) continue;
+                    foreach (var c in reqs)
+                    {
+                        if (c.Param1 != (int)Stat.TemporarySkillReduction) continue;
+                        if (c.Operator != UseCriteriaOperator.GreaterThan && c.Operator != UseCriteriaOperator.LessThan
+                            && c.Operator != UseCriteriaOperator.EqualTo) continue;
+                        _rezRule = c;
+                        StaticLog($"REZSICK rule from item data: {n.Name} [{id}] requires TemporarySkillReduction(247) {c.Operator} {c.Param2} - rez sick while that holds.");
+                        return _rezRule;
+                    }
+                }
+            }
+            catch (Exception ex) { StaticLog($"REZSICK rule: item data read failed: {ex.Message}"); }
+            StaticLog("REZSICK RULE MISSING: no ResurrectionSicknessRemoval nano with a TemporarySkillReduction(247) use criterion in ItemData - the bot cannot tell it is rez sick.");
+            return null;
         }
 
         public bool TryDrainCast(LocalPlayer me, bool manualActive, bool inCombat)

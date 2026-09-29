@@ -91,6 +91,8 @@ namespace AOSharp.Clientless
         // ends. Retail capture 20260923-114223 s4: Brawl used with 15 at t=791.342 -> SpecialAvailable(142) at
         // t=806.438 (15.1 s later); Dimach used with 1800; Fling Shot 23 (s5). Local player only.
         public static Action<Stat, int> SpecialUsed;
+        /// <summary>Diagnostics for the plugin's own log (the SDK's Logger only reaches the console).</summary>
+        public static Action<string> Diag;
         public static Action<Stat> SpecialAvailable;
 
         /// <summary>The server confirming a sit/stand actually happened (action 0x57, echoed back).</summary>
@@ -353,6 +355,12 @@ namespace AOSharp.Clientless
                     + $"stats3={fullCharMsg.Stats3?.Length ?? -1} stats4={fullCharMsg.Stats4?.Length ?? -1} "
                     + $"nanos={fullCharMsg.UploadedNanoIds?.Length ?? -1} perks={(fullCharMsg.Perks == null ? "null" : fullCharMsg.Perks.Length.ToString())} "
                     + $"pets={fullCharMsg.Pets?.Length ?? -1}");
+
+                // The three Identity+int+int lists nobody reads (Unknown4/6/8): the shape of running nanos with their
+                // timers. Rez sickness never shows among his buffs after a reclaim (2026-09-29); logged to find where it is.
+                string U(FullCharacterMessage.UnknownDataType2[] a) => a == null ? "null"
+                    : string.Join(" ", a.Select(e => $"{(int)e.Unknown2.Type:X}:{e.Unknown2.Instance}/{e.Unknown3}/{e.Unknown4}"));
+                Diag?.Invoke($"FULLCHAR lists: u4=[{U(fullCharMsg.Unknown4)}] u6=[{U(fullCharMsg.Unknown6)}] u8=[{U(fullCharMsg.Unknown8)}]");
 
                 DynelManager.LocalPlayerProxy.ApplyFullCharUpdate(fullCharMsg);
 

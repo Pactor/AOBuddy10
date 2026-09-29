@@ -277,6 +277,7 @@ namespace AOBuddy
             // Why the server refused something. Category 110 is its feedback channel; the id identifies the
             // message. Logged with whatever we last asked for, so a refusal stops being invisible - six
             // rechargers were once logged as "used" while the server rejected every one of them.
+            Client.Diag += s => Log(s);
             Client.Feedback += (category, messageId) =>
             {
                 if (category != 110) return;
@@ -467,6 +468,7 @@ namespace AOBuddy
             _support.OnZone();            // re-grace buffs/rest after the reclaim (stats read stale a moment)
             _ctx.Vitals.Clear();
             Log($"RECLAIMED/alive at ({pos.X:0},{pos.Y:0},{pos.Z:0}) after {_deadSeconds:0}s dead — resuming.");
+            LogMyNanos(me, "after the reclaim");
             PlayerChar owner = _owner.Find();
             if (owner != null)
                 try { Client.SendPrivateMessage(owner.Identity.Instance, $"Back up at the reclaim point ({pos.X:0},{pos.Y:0},{pos.Z:0}). Waiting for you — send 'come' when close or walk to me."); } catch { }
@@ -940,8 +942,36 @@ namespace AOBuddy
         }
 
         // Reset all navigation state on a detected zone/teleport so no system chases old coordinates.
+        // Every running nano the server has him carrying, by id, with the name the item data gives, plus
+        // TemporarySkillReduction (stat 247) - rez sickness is that stat, not a nano (see SupportController.IsRezSick).
+        private void LogMyNanos(LocalPlayer me, string when)
+        {
+            if (me?.Buffs == null) return;
+            Log($"NANOS ON ME ({when}): " + (me.Buffs.Count == 0 ? "none" : string.Join(", ", me.Buffs.Select(b =>
+                $"{b.Id} '{b.NanoItem?.Name ?? "?"}' {(b.Cooldown?.RemainingTime ?? 0):0}s")))
+                + $" | TemporarySkillReduction(247)={(me.TryGetStat(Stat.TemporarySkillReduction, out int tsr) ? tsr.ToString() : "not sent")} rezSick={SupportController.IsRezSick(me)}");
+            ReportUnknownNanos(me);
+        }
+
+        // Every nano running on him must be named by the client's item data (ItemData.bin holds all 10965 RDB nano
+        // records). One the data can't name is a data gap or a wrong assumption - say so loudly, once per id.
+        private readonly HashSet<int> _unknownNanosReported = new HashSet<int>();
+        private void ReportUnknownNanos(LocalPlayer me)
+        {
+            if (me?.Buffs == null) return;
+            foreach (var b in me.Buffs)
+            {
+                if (b == null || b.NanoItem != null || !_unknownNanosReported.Add(b.Id)) continue;
+                string what = ItemData.Find(b.Id, out DummyItem d) && d != null
+                    ? $"the item data has it as an ITEM, not a nano: '{d.Name}'"
+                    : "the item data has no record with this id at all";
+                Log($"!!! UNKNOWN NANO ON ME: id {b.Id} ({(b.Cooldown?.RemainingTime ?? 0):0}s left) - {what}. Every running nano should be in ItemData; report this id.");
+            }
+        }
+
         private void ClearNav()
         {
+            try { LogMyNanos(DynelManager.LocalPlayer, "zone"); } catch { }
             _follow.Reset();
             _travel.Reset();
             _resupply.OnZone();
@@ -975,12 +1005,13 @@ namespace AOBuddy
             _hbAccum += dt;
             if (_hbAccum < 1.0) return;
             _hbAccum = 0;
+            ReportUnknownNanos(me);
 
             Vector3 p = me.MovementComponent.Position;
             string od = owner != null ? me.DistanceFrom(owner).ToString("0.0") : "n/a";
             string ohp = _ctx.Vitals.Describe(owner);
             Log($"hb [{_ctx.Behavior}] mode={_mode} hp={Pct(hp)} nano={Pct(_support.SelfNanoPct(me))} ohp={ohp} pos=({p.X:0},{p.Y:0},{p.Z:0}) owner={(owner == null ? "LOST" : "ok")} dist={od} ospd={_support.OwnerSpeed:0.0} " +
-                $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)} atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
+                $"wp={_follow.TrailCount} replay={_follow.ReplayCount} zc={_follow.ZoneCrossing} combat={_combat.InCombat} rest={_support.Resting} sit={_support.Sitting} rng={_effAttackRange:0.0} runspd={(me.TryGetStat(Stat.RunSpeed, out int _rs) ? _rs : -1)} movemode={(me.TryGetStat(Stat.CurrentMovementMode, out int _mm) ? _mm : -1)} moving={_move.Moving} leash={_move.Leashed} rez={SupportController.IsRezSick(me)}(tsr={(me.TryGetStat(Stat.TemporarySkillReduction, out int _tsr) ? _tsr : -1)}) atk={me.IsAttacking} dcmove(own={_diagOwnerMoves}/self={_diagSelfMoves}) | walk[{_ctx.WalkState}]");
             _diagOwnerMoves = 0; _diagSelfMoves = 0;
         }
 
