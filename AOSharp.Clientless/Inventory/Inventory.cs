@@ -126,7 +126,14 @@ namespace AOSharp.Clientless
         internal static void ResetContainers()
         {
             Bank.IsOpen = false;
+            // ...but their handles are the old zone's (2026-09-28: every stim in a bag ignored after a zone, 1,528
+            // refusals in three hours). Mark them so the bags get opened again; ContainerGeneration says a zone passed.
+            foreach (var c in _containers) c.Stale = true;
+            ContainerGeneration++;
         }
+
+        /// <summary>Goes up on every zone; a bag opened before the latest one is Stale.</summary>
+        public static int ContainerGeneration { get; private set; }
 
         // Count is the stack size the server created (a shop purchase of 7 stims arrives as one AddTemplate
         // with Count 7); without it the stack read as a single item.

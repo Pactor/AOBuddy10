@@ -1005,22 +1005,34 @@ namespace AOBuddy
         private double _bagReadAt;                      // clock the next open goes out (0 = not yet armed, -1 = done)
         private bool _bagReadLogged;
         private readonly HashSet<Identity> _bagReadDone = new HashSet<Identity>();
+        private int _bagReadGen;
 
         private void BagReadTick(LocalPlayer me)
         {
             if (me == null || _dead) return;
+            // Every zone leaves the bags' handles stale (Inventory.ResetContainers): read them through again, the
+            // stale ones only, or no item in a bag can be used or moved until something reopens it.
+            if (_bagReadGen != Inventory.ContainerGeneration)
+            {
+                _bagReadGen = Inventory.ContainerGeneration;
+                _bagReadDone.Clear(); _bagReadLogged = false; _bagReadAt = 0;
+            }
             if (_bagReadAt == 0) { _bagReadAt = _ctx.Clock.Seconds + 2; return; }   // 2 s: in before the first command
             if (_bagReadAt < 0 || _ctx.Clock.Seconds < _bagReadAt) return;
-            var bag = Inventory.Items.FirstOrDefault(i => i != null
+            // Nothing in the inventory yet = the FullCharacter hasn't landed: wait for it, or the read-through ends
+            // having opened no bag at all (20:23:17, 2026-09-28, a login inside a mission: "opened 0 bag(s)").
+            if (Inventory.Items == null || Inventory.Items.Count == 0) { _bagReadAt = _ctx.Clock.Seconds + 1; return; }
+            var bag =Inventory.Items.FirstOrDefault(i => i != null
                 && i.Slot.Type == IdentityType.Inventory && i.UniqueIdentity.Type == IdentityType.Container
-                && !_bagReadDone.Contains(i.UniqueIdentity));
+                && !_bagReadDone.Contains(i.UniqueIdentity)
+                && (Inventory.Containers.FirstOrDefault(c => c.Identity == i.UniqueIdentity) is not Container kc || kc.Stale));
             if (bag == null)
             {
                 if (_bagReadLogged) return;
                 _bagReadLogged = true;
                 _bagReadAt = -1;
                 int known = Inventory.Containers.Count(c => c.Handle != 0);
-                Log($"BAGS: login read-through done — opened {_bagReadDone.Count} bag(s), {known} with contents known.");
+                Log($"BAGS: read-through done (login or zone) — opened {_bagReadDone.Count} bag(s), {known} with contents known.");
                 return;
             }
             _bagReadDone.Add(bag.UniqueIdentity);

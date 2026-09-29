@@ -15,6 +15,9 @@ namespace AOSharp.Clientless
         public bool IsOpen => Handle != 0;
         public Item Item => Inventory.Items.FirstOrDefault(x => x.UniqueIdentity == Identity);
         public int Handle { get; internal set; }
+        // Set on every zone: the contents are still right, but the Handle is the old zone's, and the server ignores a
+        // Use or move on a slot built from it until the bag is opened again (which replaces this Container).
+        public bool Stale { get; internal set; }
         public Identity Identity { get; internal set; }
         public List<Item> Items { get; internal set; }
 
