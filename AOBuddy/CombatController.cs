@@ -208,6 +208,28 @@ namespace AOBuddy
         private Identity? _specTarget;         // the target the per-target notes below are about
         private readonly Dictionary<Stat, string> _specBlockedOnTarget = new Dictionary<Stat, string>();   // condition refusals
         private readonly Dictionary<Stat, float> _specOutOfRangeAt = new Dictionary<Stat, float>();       // refused at this distance
+        private readonly Dictionary<Stat, double> _specRechargeUntil = new Dictionary<Stat, double>();   // server recharge, kept across zones
+
+        // Learned special ranges, per special AND weapon set: "Dimach|Illegally Modified Ofab Viper+..." -> ok (farthest
+        // accepted), no (closest refused). Only ever from the server's own accept/refuse.
+        private static readonly string RangeFile = System.IO.Path.Combine(
+            System.IO.Path.GetDirectoryName(typeof(CombatController).Assembly.Location) ?? ".", "special-ranges.json");
+        private Newtonsoft.Json.Linq.JObject _ranges;
+        private static string RangeKey(Stat s) => s + "|" + string.Join("+", EquippedWeapons().Select(w => w.Name).OrderBy(n => n));
+        private (float ok, float no) LearnedRange(Stat s)
+        {
+            if (_ranges == null) _ranges = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(RangeFile, _ctx.Log) ?? new Newtonsoft.Json.Linq.JObject();
+            var e = _ranges[RangeKey(s)] as Newtonsoft.Json.Linq.JObject;
+            return ((float?)e?["ok"] ?? 0f, (float?)e?["no"] ?? 0f);
+        }
+        private void NoteRange(Stat s, float dist, bool ok)
+        {
+            var (okAt, no) = LearnedRange(s);
+            if (ok ? dist <= okAt : no > 0 && dist >= no) return;   // ok = farthest accepted (for the record), no = closest refused
+            if (ok) okAt = dist; else no = dist;
+            _ranges[RangeKey(s)] = new Newtonsoft.Json.Linq.JObject { ["ok"] = Math.Round(okAt, 1), ["no"] = Math.Round(no, 1) };
+            JsonStore.Save(RangeFile, _ranges.ToString(), _ctx.Log);
+        }
         private readonly Dictionary<Stat, double> _specWaitAvailable = new Dictionary<Stat, double>();    // -> next probe time
 
         private void FireReadySpecials(LocalPlayer me, SimpleChar target, bool opening)
@@ -235,13 +257,25 @@ namespace AOBuddy
             foreach (Stat special in AllowedWeaponSpecials().OrderBy(s => (int)s))
             {
                 if (!me.IsSpecialReady(special)) continue;   // the server's SpecialUsed recharge is still running
+                // ...and our own copy of it: every zone makes a new LocalPlayer, and its cooldowns go with the old one
+                // (20:35:15, 2026-09-28: Dimach accepted with 300 s, two zones later re-sent after 97 s and refused).
+                if (_specRechargeUntil.TryGetValue(special, out double until) && now < until) continue;
                 if (_specWaitAvailable.TryGetValue(special, out double probeAt) && now < probeAt) continue;
                 if (_specBlockedOnTarget.ContainsKey(special)) continue;
                 if (_specOutOfRangeAt.TryGetValue(special, out float refusedAt) && dist > refusedAt - RangeRetryCloserMeters) continue;
 
                 // Needs the target unaware: only as the opener, on a mob not fighting anyone yet. A mob already fighting
                 // the owner or a pet may or may not be "aware" of HIM - the data can't tell, so the safe answer is don't.
-                if (OpenerSpecials.Contains(special) && !(opening && !target.FightingIdentity.HasValue)) continue;
+                // Not only at the moment he picks the mob: that is usually from far off (20:28:39, 2026-09-28, Sneak
+                // Attack at 14 m, refused out of range). Any time before the mob fights anyone, within the range the
+                // server has not refused this special at (learned across mobs).
+                if (OpenerSpecials.Contains(special) && target.FightingIdentity.HasValue) continue;
+                // The range the server has shown for this special with these weapons (special-ranges.json, kept across
+                // restarts): short of the closest distance it was refused at. A fresh login re-learned it metre by metre,
+                // six refusals per mob (20:36:48, 2026-09-28). Not "within the farthest accepted": that only ever
+                // shrinks (Fast Attack pinned to 1.1 m).
+                var (_, refusedAt2) = LearnedRange(special);
+                if (refusedAt2 > 0 && dist > refusedAt2 - RangeRetryCloserMeters) continue;
                 // Backstab: "the target must be fighting someone else" (38085045). Whether we are "behind" it the
                 // server decides; a behind-refusal blocks it on this target (see OnSpecialFeedback).
                 if (special == Stat.Backstab && !(target.FightingIdentity.HasValue && target.FightingIdentity.Value != me.Identity)) continue;
@@ -265,6 +299,8 @@ namespace AOBuddy
             _specWaitAvailable.Remove(stat);
             _lastSpecAcceptedAt = now;
             _specNextAt = now + SpecialGapSeconds;
+            _specRechargeUntil[stat] = now + seconds;
+            if (_specPending == stat) NoteRange(stat, _specSentDist, ok: true);
             if (_specPending == stat) _specPending = null;
             _ctx.Log($"SPECIAL ok: {stat} - server recharge {seconds} s.");
         }
@@ -272,6 +308,7 @@ namespace AOBuddy
         private void OnSpecialAvailable(Stat stat)
         {
             if (!WeaponSpecials.Contains(stat)) return;
+            _specRechargeUntil.Remove(stat);
             if (_specWaitAvailable.Remove(stat)) _ctx.Log($"SPECIAL: {stat} available again (server).");
         }
 
@@ -303,6 +340,7 @@ namespace AOBuddy
                     break;
                 case FbOutOfRange:
                     if (sameTarget) _specOutOfRangeAt[special] = _specSentDist;
+                    NoteRange(special, _specSentDist, ok: false);
                     why = $"out of special range at {_specSentDist:0.0} m - retry only closer";
                     break;
                 case FbWaitPrevious:
