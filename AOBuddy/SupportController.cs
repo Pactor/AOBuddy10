@@ -167,7 +167,8 @@ namespace AOBuddy
         private int _restRunPeakHp = -1, _restRunPeakNano = -1;
         private double _restSuppressUntil;
         private const double RestRunNoGainSeconds = 25.0;
-        private const double RestRunBackoffSeconds = 60.0;
+        private double _restLastActiveAt = -100;
+        private const double RestRunBackoffSeconds = 20.0;   // owner (2026-09-29): a minute was overkill
 
         public bool Resting => _resting;
         public bool Sitting => _sitting;
@@ -1213,13 +1214,18 @@ namespace AOBuddy
             // to notice nothing is improving. It once ran eight of those cycles in thirty seconds with HP
             // pinned at 73% the whole way. This tracker spans the cycles - if HP and nano have not climbed
             // across a run of them, stop trying for a while instead of doing it forever.
-            if (hpNow > _restRunPeakHp || nanoNow > _restRunPeakNano)
+            // Only while he is resting, and a rest after a gap starts a new run: the peaks were kept from before the
+            // fight (100%), so the first second of the next sit read as '25 s and nothing moved' and he stood again
+            // for a minute without using a single item (05:50:51-05:52:43, 2026-09-29).
+            if (_resting && _sessionSeconds - _restLastActiveAt > 10) _restRunSince = 0;
+            if (_resting) _restLastActiveAt = _sessionSeconds;
+            if (_resting && (hpNow > _restRunPeakHp || nanoNow > _restRunPeakNano))
             {
                 if (hpNow > _restRunPeakHp) _restRunPeakHp = hpNow;
                 if (nanoNow > _restRunPeakNano) _restRunPeakNano = nanoNow;
                 _restRunSince = _sessionSeconds;
             }
-            if (_restRunSince > 0 && _sessionSeconds - _restRunSince >= RestRunNoGainSeconds)
+            if (_resting && _restRunSince > 0 && _sessionSeconds - _restRunSince >= RestRunNoGainSeconds)
             {
                 _restSuppressUntil = _sessionSeconds + RestRunBackoffSeconds;
                 _restRunSince = 0;
@@ -1272,7 +1278,8 @@ namespace AOBuddy
                 _sitting = true; _resting = true; _rechargeAccum = 0; _restElapsed = 0;
                 _restPeakHp = hpNow; _restPeakNano = nanoNow; _restLastGainAt = 0;
                 _seatConfirmed = false; _seatFallbackLogged = false;   // wait for the server to say we sat
-                if (_restRunSince <= 0) { _restRunSince = _sessionSeconds; _restRunPeakHp = hpNow; _restRunPeakNano = nanoNow; }
+                if (_restRunSince <= 0 || _sessionSeconds - _restLastActiveAt > 10) { _restRunSince = _sessionSeconds; _restRunPeakHp = hpNow; _restRunPeakNano = nanoNow; }
+                _restLastActiveAt = _sessionSeconds;
                 _ctx.Log($"REST: sitting to recover at hp={Pct(hpNow)} nano={Pct(nanoNow)}.");
             }
             else _restElapsed += _ctx.Config.TickMs / 1000.0;
