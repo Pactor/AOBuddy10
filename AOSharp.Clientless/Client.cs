@@ -99,6 +99,9 @@ namespace AOSharp.Clientless
         /// <summary>Diagnostics for the plugin's own log (the SDK's Logger only reaches the console).</summary>
         public static Action<string> Diag;
         public static Action<Stat> SpecialAvailable;
+        /// <summary>A skill we tried is still locked: the skill and the seconds left on it (CharacterAction 0x84, sent with a
+        /// refused use - e.g. First Aid 123 with 33, 29, 26 ... s left, rec-2186490-20260926-180137).</summary>
+        public static Action<Stat, int> SpecialUnavailable;
 
         /// <summary>The server confirming a sit/stand actually happened (action 0x57, echoed back).</summary>
         public static Action<Identity> PostureToggled;
@@ -553,15 +556,15 @@ namespace AOSharp.Clientless
             {
                 HealthDamageMessage hd = (HealthDamageMessage)msg;
 
-                // The packet names the stat it moved: a nano drain/refill carries CurrentNano, and writing
-                // that into Health put a nano number in someone's HP.
+                // It is always HEALTH: the field once read as "the stat it moved" is the damage type (OmniCell; 0 or
+                // 90-97 on the wire, never CurrentNano in 12,461 recorded copies), so the nano branch never ran.
                 // WHOSE HP: the message's own Identity is the character whose HP this is; the field called
                 // Target is the one who dealt it (OmniCell's messaging calls it Source). Capture 20260910-200346:
                 // one healer (Source 1999636446) heals three characters, each message carrying that receiver's
                 // own HP. Writing it into Target set the healer's HP to the patient's: the bot stimmed the owner
                 // (42% -> 79%, 322/402) and read its own HP as 51% = 322/638 until restart (2026-09-23 21:01).
                 if (DynelManager.Find(hd.Identity, out Dynel hpTarget))
-                    hpTarget.SetStat(hd.Stat == Stat.CurrentNano ? Stat.CurrentNano : Stat.Health, hd.TargetHp);
+                    hpTarget.SetStat(Stat.Health, hd.Health);
             });
 
             // Keep skills/abilities live. After login these change via SkillMessage (buffs like
@@ -778,7 +781,7 @@ namespace AOSharp.Clientless
                     Team.OnTeamMessage(charActionMessage);
                     break;
                 case CharacterActionType.SetNanoDuration:
-                    SetNanoDurationCharAction(charActionMessage.Identity, charActionMessage.Target.Instance, charActionMessage.Parameter2);
+                    SetNanoDurationCharAction(charActionMessage.Identity, charActionMessage.Target.Instance, charActionMessage.Parameter2, charActionMessage.Parameter1);
                     break;
                 // A nano learned mid-session: CharacterAction UploadNano (0xCC) on the character, Parameter1 = NanoProgram
                 // (53019), Parameter2 = the nano id - 18 of them in the retail captures (e.g. 20260914-120906), and
@@ -794,6 +797,10 @@ namespace AOSharp.Clientless
                     break;
                 case CharacterActionType.SpecialAvailable:
                     SpecialAvailableAction(charActionMessage.Identity, (Stat)charActionMessage.Parameter2);
+                    break;
+                case CharacterActionType.SpecialUnavailable:
+                    if (DynelManager.LocalPlayer != null && charActionMessage.Identity == DynelManager.LocalPlayer.Identity)
+                        SpecialUnavailable?.Invoke((Stat)charActionMessage.Parameter1, charActionMessage.Parameter2);
                     break;
                 case CharacterActionType.FinishNanoCasting:
                 case CharacterActionType.InterruptNanoCasting:
@@ -955,9 +962,13 @@ namespace AOSharp.Clientless
         /// </summary>
         public static event Action<Identity, Identity, int, float> NanoSeen;
 
-        private static void SetNanoDurationCharAction(Identity identity, int nanoId, int param2)
+        // Parameter1 is the CASTER's instance (OmniCell builds it so; on the wire it differs from the buffed character in
+        // 452 of 6,187 copies - a pet casting on its master, a teammate's buff). It was reported as Identity.None.
+        private static void SetNanoDurationCharAction(Identity identity, int nanoId, int param2, int casterInstance)
         {
-            NanoSeen?.Invoke(Identity.None, identity, nanoId, param2 / 100f);
+            Identity caster = casterInstance == 0 ? Identity.None
+                : DynelManager.Characters.FirstOrDefault(c => c.Identity.Instance == casterInstance)?.Identity ?? new Identity(IdentityType.SimpleChar, casterInstance);
+            NanoSeen?.Invoke(caster, identity, nanoId, param2 / 100f);
             if (!DynelManager.Find(identity, out SimpleChar simpleChar))
                 return;
 

@@ -184,7 +184,22 @@ namespace AOBuddy
             _pluginDir = pluginDir;
             _lastClockSec = ctx.Clock.Seconds;
             Instance = this;
+            // The server's word on the heal-item locks (see HealItemReady).
+            Client.SpecialAvailable += s => { if (s == Stat.FirstAid || s == Stat.Treatment) _awaitingAvailable.Remove(s); };
+            Client.SpecialUnavailable += (s, left) =>
+            {
+                if (s != Stat.FirstAid && s != Stat.Treatment || left <= 0) return;
+                _lockUntil[s] = _sessionSeconds + left;
+                _awaitingAvailable.Add(s);
+                _ctx.Log($"HEAL-LOCK: server says {s} is locked {left} s more.");
+            };
         }
+
+        // Accepted heal uses whose lock the server has not yet lifted (SpecialAvailable). The server lifts it 39.9-40.4 s
+        // after a stim, and our 40 s timer let a stim go before it - refused (03:01.974, rec-2224980-20260929-071825:
+        // SpecialUnavailable 123 with 1 s left, SpecialAvailable 0.4 s later). Held until the lift, or 5 s past the timer.
+        private readonly HashSet<Stat> _awaitingAvailable = new HashSet<Stat>();
+        private const double AwaitAvailableGraceSeconds = 5.0;
 
         private readonly string _pluginDir;
 
@@ -935,7 +950,9 @@ namespace AOBuddy
             // verify saw it - 15:40 (2026-09-28): stim/recharger resent every 3 s for minutes, never a HEAL-OK or
             // HEAL-REFUSED, sat forever. Let the verify decide first.
             if (_healUseSentAt.ContainsKey(s)) return false;
-            return !_lockUntil.TryGetValue(s, out double until) || _sessionSeconds >= until;
+            if (_lockUntil.TryGetValue(s, out double until) && _sessionSeconds < until) return false;
+            // Our timer has run out; the server's lift decides, unless it is AwaitAvailableGraceSeconds late.
+            return !_awaitingAvailable.Contains(s) || _sessionSeconds >= until + AwaitAvailableGraceSeconds;
         }
 
         /// <summary>Seconds left on the skill lock of a stim (FirstAid) or recharger (Treatment) as the bot keeps it.</summary>
@@ -977,6 +994,7 @@ namespace AOBuddy
                     // Accepted: the server locked the skill. Take ITS timer, which is the real one.
                     _lockUntil[s] = _sessionSeconds + cd.RemainingTime;
                     _lockSeen.Add(s);
+                    _awaitingAvailable.Add(s);
                     _ctx.Log($"HEAL-OK: server accepted {item} — {s} locked {cd.RemainingTime:0.#}s.");
                     if (_awaitingRestUseConfirm && s == _restUseStat) _restUseConfirmed = true;
                     if (_healUseStack.TryGetValue(s, out string okStack)) _stackRefusedInARow.Remove(okStack);
@@ -1578,10 +1596,11 @@ namespace AOBuddy
             if (usable.Count > 0) return usable;
 
             // Nothing passes a requirement we could actually read: his skill really is short of every QL he is
-            // carrying. Offer the lowest QL - all of it, not one stack - as the best chance of being accepted.
-            if (matches.Count == 0) return matches;
-            int lowest = matches.Min(it => it.Ql);
-            return matches.Where(it => it.Ql == lowest).ToList();
+            // carrying, so none of it is usable - no "lowest QL as the best chance" (08:01-08:03, 2026-09-29: his
+            // last QL20 gone, it offered the QL30s, First Aid 180 against > 227, and the server refused every one).
+            // Empty means out of usable stims, which asks for a resupply. An unreadable skill never lands here:
+            // MeetsHealReqs lets that through.
+            return new List<Item>();
         }
 
         // Item.MeetsUseReqs returns FALSE when an item has no UseCriteria at all (basic stims have
@@ -1602,19 +1621,36 @@ namespace AOBuddy
                 if (me == null || it == null || it.Criteria == null) return true;
                 if (!it.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var crits) || crits == null || crits.Count == 0)
                     return true;
-                foreach (var c in crits)
+                // The skill gate is First Aid (123) / Treatment (124) terms in the item's criteria (reverse Polish).
+                // A stim has one: First Aid > N. A recharger has two joined by Or: Treatment > N Or First Aid > N
+                // (Health and Nano Recharger 291082/291083 - "124 GreaterThan 126, 123 GreaterThan 126, Or"), so
+                // either skill will do. Requiring every term, as this did, turned that Or into an And.
+                var skill = new List<bool?>();   // one per term: met / not met / skill unreadable
+                int skillOrs = 0;
+                for (int i = 0; i < crits.Count; i++)
                 {
-                    if (c.Param1 == 123 || c.Param1 == 124)   // First Aid / Treatment
+                    var c = crits[i];
+                    if (c.Param1 == 123 || c.Param1 == 124)
                     {
                         // A skill we cannot READ is not a skill of zero. Defaulting the missing stat to 0
                         // failed every requirement and quietly shrank the usable pool - the bot reported
                         // "8 stims left" while carrying twenty-four it could use. Unknown means don't refuse;
                         // if the item really is out of reach the server refuses the Use and HEAL-REFUSED says so.
-                        if (!me.TryGetStat((Stat)c.Param1, out int have)) continue;
-                        if (have < c.Param2) return false;    // skill requirement genuinely not met
+                        if (!me.TryGetStat((Stat)c.Param1, out int have)) { skill.Add(null); continue; }
+                        // GreaterThan in the item data means greater: Health and Nano Stim QL30 is First Aid > 227,
+                        // QL20 > 152 (item data 291043/291044, 2026-09-29), so equal is not enough.
+                        skill.Add(c.Operator == UseCriteriaOperator.GreaterThan ? have > c.Param2
+                                : c.Operator == UseCriteriaOperator.LessThan ? have < c.Param2
+                                : c.Operator == UseCriteriaOperator.EqualTo ? have == c.Param2
+                                : have >= c.Param2);
                     }
+                    // An Or right after two skill terms joins them.
+                    else if (c.Operator == UseCriteriaOperator.Or && i >= 2 && (crits[i - 1].Param1 == 123 || crits[i - 1].Param1 == 124)
+                             && (crits[i - 2].Param1 == 123 || crits[i - 2].Param1 == 124))
+                        skillOrs++;
                 }
-                return true;
+                if (skill.Count == 0 || skill.Any(x => x == null)) return true;
+                return skillOrs > 0 ? skill.Any(x => x == true) : skill.All(x => x == true);
             }
             catch { return true; }   // criteria unreadable — don't hard-refuse
         }

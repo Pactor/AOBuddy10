@@ -544,7 +544,10 @@ namespace AOBuddy
             // Still on, or re-applied within 10 s of running out (a 6 s aura renewed every 8 s): the same buff, not news.
             if (_nanoOn.TryGetValue((target, nano), out var until) && until.AddSeconds(10) > now) { _nanoOn[(target, nano)] = now.AddSeconds(secs); return; }
             _nanoOn[(target, nano)] = now.AddSeconds(secs);
-            Log($"NANO: {name} ({nano}) is on {who} for {secs:0.#} s.");
+            // Who put it there (SetNanoDuration's caster, 2026-09-29) - left out when it is his own or unknown.
+            string from = caster.Instance == 0 || caster == me.Identity ? ""
+                : " from " + (DynelManager.Find(caster, out SimpleChar cc) ? $"'{cc.Name}'" : caster.ToString());
+            Log($"NANO: {name} ({nano}) is on {who} for {secs:0.#} s{from}.");
         }
 
         private void OnUpdate(object _, double dt)
