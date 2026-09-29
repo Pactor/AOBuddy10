@@ -85,6 +85,14 @@ namespace AOSharp.Clientless
         // successful one from the log.
         public static Action<int, int> Feedback;
 
+        // The server's verdict on OUR special actions (weapon specials, First Aid, Treatment, Level, ...).
+        // CharacterAction 170 SpecialUsed: Parameter1 = the skill stat, Parameter2 = its recharge in whole
+        // SECONDS; CharacterAction 164 SpecialAvailable: Parameter2 = the skill stat, sent when that recharge
+        // ends. Retail capture 20260923-114223 s4: Brawl used with 15 at t=791.342 -> SpecialAvailable(142) at
+        // t=806.438 (15.1 s later); Dimach used with 1800; Fling Shot 23 (s5). Local player only.
+        public static Action<Stat, int> SpecialUsed;
+        public static Action<Stat> SpecialAvailable;
+
         /// <summary>The server confirming a sit/stand actually happened (action 0x57, echoed back).</summary>
         public static Action<Identity> PostureToggled;
         public static Action<Identity> PetAdded;
@@ -877,6 +885,7 @@ namespace AOSharp.Clientless
                 return;
 
             DynelManager.LocalPlayer.RegisterCooldown(stat, cooldownTime);
+            SpecialUsed?.Invoke(stat, cooldownTime);
         }
 
         private static void SpecialAvailableAction(Identity identity, Stat stat)
@@ -888,6 +897,7 @@ namespace AOSharp.Clientless
                 return;
 
             DynelManager.LocalPlayer.RemoveCooldown(stat);
+            SpecialAvailable?.Invoke(stat);
         }
 
         private static void OnBuffMessage(Identity identity, int nanoId)

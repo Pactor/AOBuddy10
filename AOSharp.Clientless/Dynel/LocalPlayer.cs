@@ -70,8 +70,12 @@ namespace AOSharp.Clientless
         // Fire a weapon SPECIAL attack (Fast Attack, Brawl, Fling Shot, Burst, Full Auto, Aimed Shot, Sneak
         // Attack, Dimach …). The special is identified by its skill Stat; the equipped weapon + skills decide
         // which are valid. This is a SEPARATE message from Attack and does NOT reset the main weapon swing
-        // timer, so it's safe to fire alongside auto-attack. We optimistically register a short cooldown so we
-        // don't re-send before the server's SpecialUsed echo sets the real recharge.
+        // timer, so it's safe to fire alongside auto-attack.
+        // NO placeholder cooldown: the old guessed 2 s "until SpecialUsed arrives" expired after every REFUSED
+        // special (a refusal never sends SpecialUsed), so the bot re-sent refused specials every 2 s forever
+        // (aobuddy.log 2026-09-28 20:19: FastAttack/SneakAttack/Dimach each ~2.1 s, each answered by feedback
+        // 110). The real recharge is the server's SpecialUsed (Client.SpecialUsed); the caller gates re-sends
+        // on the server's verdict (accepted = SpecialUsed, refused = Feedback 110).
         public void PerformSpecialAttack(Identity target, Stat special)
         {
             Client.Send(new CharSecSpecAttackMessage
@@ -79,7 +83,6 @@ namespace AOSharp.Clientless
                 Target = target,
                 Stat = special
             });
-            RegisterCooldown(special, 2);
         }
 
         // A learned special is ready when it is not currently on cooldown.

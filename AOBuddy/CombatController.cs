@@ -41,6 +41,10 @@ namespace AOBuddy
         public CombatController(BotContext ctx)
         {
             _ctx = ctx;
+            // The server's verdict on each special we send (see FireReadySpecials).
+            Client.SpecialUsed += OnSpecialUsed;
+            Client.SpecialAvailable += OnSpecialAvailable;
+            Client.Feedback += OnSpecialFeedback;
         }
 
         // Targets not to fight for a while: a mob our blows don't touch (MissionRun.Attacker, 2026-09-23: 12
@@ -114,6 +118,9 @@ namespace AOBuddy
                 if (newTarget || _notSwinging >= StallResumeSeconds)
                 {
                     bool resume = !newTarget;
+                    // OPENER: a special that needs the target unaware (Sneak Attack, Aimed Shot) can only land
+                    // before our first blow makes it aware - so it goes out BEFORE the one Attack, never after.
+                    if (newTarget) FireReadySpecials(me, target, opening: true);
                     _ctx.Log($"ATTACK-> '{target.Name}' id={target.Identity} weapon={string.Join("+", EquippedWeapons().Select(w => w.Name))}{(resume ? $" (resume after {_notSwinging:0.0}s not swinging)" : "")}");
                     me.Attack(target);
                     _attackedTarget = target.Identity;
@@ -122,7 +129,7 @@ namespace AOBuddy
                 _inCombat = true;
                 _sinceCombat = 0;
 
-                FireReadySpecials(me, target);
+                FireReadySpecials(me, target, opening: false);
             }
             else
             {
@@ -153,16 +160,172 @@ namespace AOBuddy
             Stat.Burst, Stat.FlingShot, Stat.AimedShot, Stat.FullAuto, Stat.Backstab,
         };
 
-        private void FireReadySpecials(LocalPlayer me, SimpleChar target)
+        // ---- WEAPON SPECIALS: fired on the SERVER'S verdict, never on a guessed timer -------------------------
+        //
+        // What the server says (retail capture 20260923-114223 s4/s5, bot log 2026-09-28 20:18-20:20):
+        //  * ACCEPTED: CharSecSpecAttack echo + CharacterAction 170 SpecialUsed(skill, recharge SECONDS) +
+        //    SpecialAttackInfo. Then 164 SpecialAvailable(skill) when the recharge ends (Brawl 15 s -> 15.1 s later).
+        //    Seen: Brawl 15, Fling Shot 23, Dimach 1800 (the recharge depends on weapon + skill; the server sends it).
+        //  * REFUSED: only a Feedback 110 - no SpecialUsed. That is why the old guessed 2 s placeholder re-sent every
+        //    refused special every ~2 s for the whole fight. The refusal ids (text.mdb via Tyrbot docs/mmdb.txt):
+        private const int FbTargetAware = 90809749;       // "Special attack not possible. The target is aware of your presence."
+        private const int FbWaitPrevious = 154558667;     // "Wait for your previous special attack to complete."
+        private const int FbOutOfRange = 165509237;       // "The target is outside special attack range!"
+        private const int FbMustFightOther = 38085045;    // "Special attack not possible. The target must be fighting someone else."
+        private const int FbMustBeBehind = 244601803;     // "Special attack not possible. You must be behind the target."
+        private const int FbBehindTarget = 164102084;     // "You must be behind the target!"
+        private const int FbUnavailable = 22901477;       // "Special attack is unavailable."
+        //
+        // "Wait for your previous special attack to complete" has TWO causes on the wire:
+        //  (a) another special was accepted a moment ago: s4 t=791.159 Brawl+Dimach sent together -> Brawl accepted,
+        //      Dimach refused; Dimach alone at t=793.306 (1.96 s after Brawl's SpecialUsed) accepted. Bot log 20:19:50.645
+        //      FastAttack accepted, Dimach refused; Dimach at 20:19:52.828 (2.18 s later) accepted.
+        //  (b) that special is itself still recharging: s4 Dimach SpecialUsed 1800 at t=793.377, then every Dimach press
+        //      for the rest of the capture (84x) got this id and no SpecialAvailable(144) ever came.
+        // Hence: ONE special per server round-trip, a gap of SpecialGapSeconds after an accepted one (the shortest gap
+        // seen to be accepted), and a (b)-refusal waits for the server's SpecialAvailable.
+        private const double SpecialGapSeconds = 2.0;
+        private const double VerdictTimeoutSeconds = 3.0;   // server answers in ~0.1-0.4 s (log); no answer = give up waiting
+        private const double LockoutWindowSeconds = SpecialGapSeconds + VerdictTimeoutSeconds;
+        // FALLBACK only: a special refused as "still recharging" whose recharge started before we could see it (e.g. used
+        // before this login - Dimach 1800 s kept being refused after a restart, log 20:18:44). The server announces the
+        // end with SpecialAvailable; if that never comes we re-probe with ONE packet this often instead of never again.
+        private const double UnknownRechargeProbeSeconds = 120.0;
+        // Out of range: retry only once we are this much closer than where it was refused (hysteresis, not a game rule).
+        private const float RangeRetryCloserMeters = 1.0f;
+
+        // Specials that need the target UNAWARE of us - usable only as the opener, before our first blow. Sneak Attack:
+        // proven (every Sneak Attack on a mob already on him refused 90809749, log 20:18:44-20:20:10). Aimed Shot: NOT seen
+        // on the wire yet; the same "unaware" rule is assumed as the SAFE option (it only ever narrows when we fire).
+        private static readonly HashSet<Stat> OpenerSpecials = new HashSet<Stat> { Stat.SneakAttack, Stat.AimedShot };
+
+        private Stat? _specPending;            // sent, verdict not in yet - nothing else goes out meanwhile
+        private double _specSentAt;
+        private Identity _specPendingTarget;
+        private float _specSentDist;
+        private double _specNextAt;            // no special before this (after an accepted one / an in-progress lockout)
+        private double _lastSpecAcceptedAt = -999;
+        private Identity? _specTarget;         // the target the per-target notes below are about
+        private readonly Dictionary<Stat, string> _specBlockedOnTarget = new Dictionary<Stat, string>();   // condition refusals
+        private readonly Dictionary<Stat, float> _specOutOfRangeAt = new Dictionary<Stat, float>();       // refused at this distance
+        private readonly Dictionary<Stat, double> _specWaitAvailable = new Dictionary<Stat, double>();    // -> next probe time
+
+        private void FireReadySpecials(LocalPlayer me, SimpleChar target, bool opening)
         {
-            if (!_ctx.Config.UseSpecials) return;
-            // Fire only the specials the EQUIPPED WEAPON allows (read from its own criteria), each when ready.
-            foreach (Stat special in AllowedWeaponSpecials())
+            if (!_ctx.Config.UseSpecials || me == null || target == null) return;
+            double now = _ctx.Clock.Seconds;
+
+            if (_specTarget != target.Identity)
             {
-                if (!me.IsSpecialReady(special)) continue;
-                me.PerformSpecialAttack(target.Identity, special);
-                _ctx.Log($"SPECIAL-> {special} on '{target.Name}' id={target.Identity.Instance}");
+                _specTarget = target.Identity;
+                _specBlockedOnTarget.Clear();
+                _specOutOfRangeAt.Clear();
             }
+
+            if (_specPending.HasValue)
+            {
+                if (now - _specSentAt < VerdictTimeoutSeconds) return;
+                _ctx.Log($"SPECIAL: no verdict for {_specPending.Value} after {VerdictTimeoutSeconds:0} s - not waiting any longer.");
+                _specPending = null;
+            }
+            if (now < _specNextAt) return;
+
+            float dist = me.DistanceFrom(target);
+            // Fire only the specials the EQUIPPED WEAPON allows (read from its own criteria) - at most ONE per round-trip.
+            foreach (Stat special in AllowedWeaponSpecials().OrderBy(s => (int)s))
+            {
+                if (!me.IsSpecialReady(special)) continue;   // the server's SpecialUsed recharge is still running
+                if (_specWaitAvailable.TryGetValue(special, out double probeAt) && now < probeAt) continue;
+                if (_specBlockedOnTarget.ContainsKey(special)) continue;
+                if (_specOutOfRangeAt.TryGetValue(special, out float refusedAt) && dist > refusedAt - RangeRetryCloserMeters) continue;
+
+                // Needs the target unaware: only as the opener, on a mob not fighting anyone yet. A mob already fighting
+                // the owner or a pet may or may not be "aware" of HIM - the data can't tell, so the safe answer is don't.
+                if (OpenerSpecials.Contains(special) && !(opening && !target.FightingIdentity.HasValue)) continue;
+                // Backstab: "the target must be fighting someone else" (38085045). Whether we are "behind" it the
+                // server decides; a behind-refusal blocks it on this target (see OnSpecialFeedback).
+                if (special == Stat.Backstab && !(target.FightingIdentity.HasValue && target.FightingIdentity.Value != me.Identity)) continue;
+
+                me.PerformSpecialAttack(target.Identity, special);
+                _specPending = special;
+                _specSentAt = now;
+                _specPendingTarget = target.Identity;
+                _specSentDist = dist;
+                if (_specWaitAvailable.ContainsKey(special)) _specWaitAvailable[special] = now + UnknownRechargeProbeSeconds;
+                _ctx.Log($"SPECIAL-> {special} on '{target.Name}' id={target.Identity.Instance} d={dist:0.0}{(opening ? " (opener)" : "")}");
+                return;
+            }
+        }
+
+        // ACCEPTED: the server started the special's real recharge.
+        private void OnSpecialUsed(Stat stat, int seconds)
+        {
+            if (!WeaponSpecials.Contains(stat)) return;   // First Aid / Treatment / Level also arrive here
+            double now = _ctx.Clock.Seconds;
+            _specWaitAvailable.Remove(stat);
+            _lastSpecAcceptedAt = now;
+            _specNextAt = now + SpecialGapSeconds;
+            if (_specPending == stat) _specPending = null;
+            _ctx.Log($"SPECIAL ok: {stat} - server recharge {seconds} s.");
+        }
+
+        private void OnSpecialAvailable(Stat stat)
+        {
+            if (!WeaponSpecials.Contains(stat)) return;
+            if (_specWaitAvailable.Remove(stat)) _ctx.Log($"SPECIAL: {stat} available again (server).");
+        }
+
+        // REFUSED: the Feedback 110 that answers the special we just sent. Nothing else goes out while one is pending,
+        // so the refusal is that special's. (Dual-wield sends some refusals twice, one per hand - a repeat with nothing
+        // pending is ignored.)
+        private void OnSpecialFeedback(int category, int id)
+        {
+            if (category != 110 || !_specPending.HasValue) return;
+            Stat special = _specPending.Value;
+            double now = _ctx.Clock.Seconds;
+            bool sameTarget = _specTarget.HasValue && _specTarget.Value == _specPendingTarget;
+            string why;
+            switch (id)
+            {
+                case FbTargetAware:
+                    if (sameTarget) _specBlockedOnTarget[special] = "target aware";
+                    why = "target is aware of him - not again on this mob";
+                    break;
+                case FbMustFightOther:
+                    if (sameTarget) _specBlockedOnTarget[special] = "target not fighting someone else";
+                    why = "target must be fighting someone else - not again on this mob";
+                    break;
+                case FbMustBeBehind:
+                case FbBehindTarget:
+                    // Combat never moves him, so he won't get behind it this fight.
+                    if (sameTarget) _specBlockedOnTarget[special] = "not behind";
+                    why = "must be behind the target - not again on this mob";
+                    break;
+                case FbOutOfRange:
+                    if (sameTarget) _specOutOfRangeAt[special] = _specSentDist;
+                    why = $"out of special range at {_specSentDist:0.0} m - retry only closer";
+                    break;
+                case FbWaitPrevious:
+                    if (now - _lastSpecAcceptedAt < LockoutWindowSeconds)
+                    {
+                        _specNextAt = now + SpecialGapSeconds;   // (a) another special still completing
+                        why = "previous special still completing - wait";
+                    }
+                    else
+                    {
+                        _specWaitAvailable[special] = now + UnknownRechargeProbeSeconds;   // (b) its own recharge
+                        why = "still recharging (from before we saw it) - wait for the server's SpecialAvailable";
+                    }
+                    break;
+                case FbUnavailable:
+                    _specWaitAvailable[special] = now + UnknownRechargeProbeSeconds;
+                    why = "unavailable - wait for the server's SpecialAvailable";
+                    break;
+                default:
+                    return;   // not a special verdict (loot, kill, ...) - keep waiting for the real one
+            }
+            _specPending = null;
+            _ctx.Log($"SPECIAL refused: {special} - {why} (feedback 110/{id}).");
         }
 
         // The special attacks the equipped weapon ALLOWS — read straight from the weapon's own criteria, where
@@ -283,6 +446,11 @@ namespace AOBuddy
             _inCombat = false;
             _attackedTarget = null;
             _notSwinging = 0;
+            // Per-fight special notes go; the server-side recharge waits (_specWaitAvailable) are the character's, and stay.
+            _specPending = null;
+            _specTarget = null;
+            _specBlockedOnTarget.Clear();
+            _specOutOfRangeAt.Clear();
         }
 
         // ---- Target selection ----------------------------------------------------
