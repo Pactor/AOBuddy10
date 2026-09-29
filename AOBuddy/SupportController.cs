@@ -51,6 +51,15 @@ namespace AOBuddy
         // me.Cooldowns within a beat. So: hold a short window after each use, then decide.
         private readonly Dictionary<Stat, double> _healUseSentAt = new Dictionary<Stat, double>();
         private readonly Dictionary<Stat, string> _healUseItem = new Dictionary<Stat, string>();
+        // The stack each pending use came from (slot + QL), and how many uses of each stack in a row the server
+        // has refused. Three in a row sets that stack aside for a while so another is tried - a refusal nothing
+        // explains once looped for three hours on the same stack (2026-09-28).
+        private readonly Dictionary<Stat, string> _healUseStack = new Dictionary<Stat, string>();
+        private readonly Dictionary<string, int> _stackRefusedInARow = new Dictionary<string, int>();
+        private readonly Dictionary<string, double> _stackSetAsideUntil = new Dictionary<string, double>();
+        private const int StackRefusalsToSetAside = 3;
+        private const double StackSetAsideSeconds = 300;
+        private static string StackKey(Item it) => it == null ? "?" : $"{it.Slot.Type}:{it.Slot.Instance}:{it.Ql}";
         // The posture and combat state AT THE MOMENT OF THE USE, so a refusal can name its likely cause rather
         // than always blaming combat. A sit-only item used while standing is refused just as flatly.
         private readonly Dictionary<Stat, string> _healUseState = new Dictionary<Stat, string>();
@@ -893,6 +902,7 @@ namespace AOBuddy
             _lockSeen.Remove(s);
             _healUseSentAt[s] = _sessionSeconds;
             _healUseItem[s] = it?.Name ?? "?";
+            _healUseStack[s] = StackKey(it);
             _healUseState[s] = (_sitting ? "seated" : "standing") + ", " + (_lastKnownInCombat ? "in combat" : "out of combat");
         }
 
@@ -918,6 +928,7 @@ namespace AOBuddy
                     _lockSeen.Add(s);
                     _ctx.Log($"HEAL-OK: server accepted {item} — {s} locked {cd.RemainingTime:0.#}s.");
                     if (_awaitingRestUseConfirm && s == _restUseStat) _restUseConfirmed = true;
+                    if (_healUseStack.TryGetValue(s, out string okStack)) _stackRefusedInARow.Remove(okStack);
                     (done ?? (done = new List<Stat>())).Add(s);
                     continue;
                 }
@@ -942,11 +953,22 @@ namespace AOBuddy
                 // refusal in combat or while standing says nothing about the item, and blacklisting on a
                 // guess is what once condemned a perfectly good recharger.
                 if (_awaitingRestUseConfirm && s == _restUseStat) _restUseRefused = true;
+                if (_healUseStack.TryGetValue(s, out string badStack) && !where.EndsWith("in combat"))
+                {
+                    int n2 = (_stackRefusedInARow.TryGetValue(badStack, out int c) ? c : 0) + 1;
+                    _stackRefusedInARow[badStack] = n2;
+                    if (n2 >= StackRefusalsToSetAside)
+                    {
+                        _stackRefusedInARow.Remove(badStack);
+                        _stackSetAsideUntil[badStack] = _sessionSeconds + StackSetAsideSeconds;
+                        _ctx.Log($"HEAL-SETASIDE: {item} (stack {badStack}) refused {n2} times in a row; trying another stack for {StackSetAsideSeconds / 60:0} min.");
+                    }
+                }
                 (done ?? (done = new List<Stat>())).Add(s);
             }
 
             if (done != null)
-                foreach (Stat s in done) { _healUseSentAt.Remove(s); _healUseItem.Remove(s); _healUseState.Remove(s); }
+                foreach (Stat s in done) { _healUseSentAt.Remove(s); _healUseItem.Remove(s); _healUseState.Remove(s); _healUseStack.Remove(s); }
         }
 
         private int _refusedHealUses;
@@ -1546,7 +1568,8 @@ namespace AOBuddy
         // inventory has none left, a stack is moved out of its bag (RestockFromBag) and used from there.
         public Item BestUsableHealItem(string keyword, string exactName)
         {
-            var pool = HealItemPool(keyword, exactName).ToList();
+            var pool = HealItemPool(keyword, exactName)
+                .Where(it => !_stackSetAsideUntil.TryGetValue(StackKey(it), out double until) || _sessionSeconds >= until).ToList();
             Item inv = pool.Where(it => it.Slot.Type == IdentityType.Inventory).OrderByDescending(it => it.Ql).FirstOrDefault();
             if (inv != null) return inv;
             Item bagged = pool.OrderByDescending(it => it.Ql).FirstOrDefault();
@@ -1579,8 +1602,11 @@ namespace AOBuddy
                 }
             }
             var bag = Inventory.Containers?.FirstOrDefault(b => b?.Items != null && b.Items.Contains(it));
-            if (bag == null) return;
-            GameCommands.OpenContainer(me, bag.Identity);
+            // Opened by its inventory slot, as the login read-through (Main.BagReadTick) does: a Use on the bag's
+            // own identity got no reopen, so the stale handle stayed and every move was ignored (20:09, 2026-09-28).
+            var bagItem = Inventory.Items.FirstOrDefault(i => i != null && i.UniqueIdentity == bag?.Identity);
+            if (bagItem == null) return;
+            GameCommands.OpenContainer(me, bagItem.Slot);
             _restockOpenedAt[key] = _sessionSeconds;
             _ctx.Log($"RESTOCK: no {it.Name} left in the inventory; opening the bag that holds QL{it.Ql} x{it.Count}.");
         }
