@@ -1490,8 +1490,17 @@ namespace AOBuddy
             double killSecs = ours > 0 ? foeHp / ours : double.PositiveInfinity;
             double hpAtKill = myHp - theirs * killSecs;
             if (hpAtKill >= floor) return null;
+            // Losing, but not yet an EMERGENCY while he can still stay and reach the door above the floor with them on
+            // him the whole way (the walk + 5 s of them following). He goes at the last safe moment, not the first:
+            // at 07:37:44 (2026-09-29) he walked out at 83% from a Claw-C22 doing 7 HP/s, 72 s from the floor - stims
+            // come back every 40 s and the fight changes long before that. Two lizards at 64/s on 763 HP (07:24:31) still go.
+            float? walk = _mission.ExitWalkMeters(me.Transform.Position);
+            double walkSecs = (walk ?? 0f) / Math.Max(1f, _ctx.RunVelocity(me)) + 5;
+            double atDoor = myHp - theirs * walkSecs;
+            if (walk.HasValue && atDoor - theirs * 1.0 >= floor) return null;   // one more second of standing still leaves him above it
             return $"{onMe.Count} on me with {foeHp} HP, landing {ours:0}/s on them = {(double.IsInfinity(killSecs) ? "never" : $"{killSecs:0} s")}; "
-                 + $"{theirs:0}/s on my {myHp} HP puts me under {floor:0} ({T("healoutdoorhp"):0}%) in {Math.Max(0, (myHp - floor) / theirs):0} s";
+                 + $"{theirs:0}/s on my {myHp} HP puts me under {floor:0} ({T("healoutdoorhp"):0}%) in {Math.Max(0, (myHp - floor) / theirs):0} s"
+                 + $"; {walk:0} m to the door (~{walkSecs:0} s): I'd reach it with ~{atDoor:0} HP";
         }
 
         private double _losingLogAt = -999, _noHeadwayLogAt = -999;
