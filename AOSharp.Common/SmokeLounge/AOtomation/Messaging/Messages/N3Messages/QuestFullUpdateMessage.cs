@@ -37,6 +37,12 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(0, SerializeSize = ArraySizeType.X3F1)]
         public Quest[] Quests { get; set; }
 
+        /// <summary>One byte after the whole list (OmniCell QuestFullUpdateMessage.AnnounceAsNew). It used to be read as a
+        /// byte at the end of EACH quest (Quest.Unknown28): right for a one-quest message, and with two quests the second was
+        /// read one byte late - QuestId garbage (e.g. 14336784:CCD8AE00) in all 10 two-quest messages of 328 recorded.</summary>
+        [AoMember(1)]
+        public byte AnnounceAsNew { get; set; }
+
         #endregion
     }
 }

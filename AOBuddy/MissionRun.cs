@@ -451,6 +451,7 @@ namespace AOBuddy
             if (m?.Body is QuestFullUpdateMessage qfu)
             {
                 if (m.RawPacket != null) _lastQuestLog = m.RawPacket;
+                _lastQuests = qfu.Quests;
                 if (qfu.Quests != null) foreach (var q in qfu.Quests) _quests[q.QuestId] = q;
             }
             if (m?.Body is QuestMessage gone && gone.Action == QuestAction.Delete) _quests.Remove(gone.Mission);
@@ -4006,41 +4007,27 @@ namespace AOBuddy
 
         private readonly HashSet<Identity> _deleted = new HashSet<Identity>();
 
-        /// <summary>The missions from a mission terminal in the quest log. The SDK's own decode of the quest log
-        /// came back empty live (21:40, "deleted 0"), so this reads the raw message the way MissionRecords does:
-        /// each quest starts with its Mission identity (0xDAC3); a quest from a terminal carries the terminal's
-        /// identity (0xDAC1) before the next quest starts (capture 20260923-201746).</summary>
+        /// <summary>The missions from a mission terminal in the quest log: the latest QuestFullUpdate's quests (as the raw
+        /// read of it did) plus any quest held whose giver is a MissionTerminal. From the terminal = its giver (Quest.UnknownId1,
+        /// OmniCell's QuestGiver) or one of its actions is a MissionTerminal (0xDAC1; retail: 23 givers, 3 actions), or the
+        /// giver is our terminal as a SimpleChar (0xC350; the login quest log names it so, capture 20260923-232359 - seen as
+        /// C0000320 and C0010320, so the third byte is not compared). This was a raw byte scan while the SDK misread the quest
+        /// log (a byte per quest that is one byte per list); fixed 2026-09-29, the typed read gives the same answer as the raw
+        /// scan for all 672 quests recorded (351 in the mission recordings, 321 in the retail captures).</summary>
         private List<Identity> HeldMissionIds()
         {
             var ids = new List<Identity>();
             foreach (var q in _quests.Values) if (q.UnknownId1.Type == IdentityType.MissionTerminal) ids.Add(q.QuestId);
-            var b = _lastQuestLog;
-            if (b != null)
+            const int Mask = unchecked((int)0xFF00FFFF);
+            foreach (var q in _lastQuests ?? new Quest[0])
             {
-                var starts = new List<(int at, int inst)>();
-                for (int i = 0; i + 8 <= b.Length; i++)
-                    if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xDA && b[i + 3] == 0xC3)
-                    {
-                        int inst = (b[i + 4] << 24) | (b[i + 5] << 16) | (b[i + 6] << 8) | b[i + 7];
-                        if (!starts.Any(x => x.inst == inst)) starts.Add((i, inst));
-                    }
-                for (int k = 0; k < starts.Count; k++)
-                {
-                    int end = k + 1 < starts.Count ? starts[k + 1].at : b.Length;
-                    bool fromTerminal = false;
-                    for (int i = starts[k].at + 8; i + 4 <= end && !fromTerminal; i++)
-                        fromTerminal = b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xDA && b[i + 3] == 0xC1;
-                    // The login quest log names the terminal as a 0xC350 identity with the terminal's instance, not
-                    // as 0xDAC1 (capture 20260923-232359: all three held missions, none with 0xDAC1), so missions
-                    // from before a restart were invisible here and never deleted. This terminal has shown up as
-                    // C0000320 and C0010320 (bot log 23:13 and the same capture), so the third byte is not compared.
-                    if (_termId.Instance != 0)
-                        for (int i = starts[k].at + 8; i + 8 <= end && !fromTerminal; i++)
-                            fromTerminal = b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0xC3 && b[i + 3] == 0x50
-                                && b[i + 4] == (byte)(_termId.Instance >> 24) && b[i + 6] == (byte)(_termId.Instance >> 8) && b[i + 7] == (byte)_termId.Instance;
-                    var id = new Identity(IdentityType.Mission, starts[k].inst);
-                    if (fromTerminal && !ids.Contains(id)) ids.Add(id);
-                }
+                bool fromTerminal = q.UnknownId1.Type == IdentityType.MissionTerminal
+                    || (q.QuestActions ?? new QuestActionInfo[0]).Any(a => a.Action.Type == IdentityType.MissionTerminal || a.UnknownId1.Type == IdentityType.MissionTerminal
+                                                                          || a.UnknownId2.Type == IdentityType.MissionTerminal || a.UnknownId3.Type == IdentityType.MissionTerminal
+                                                                          || a.UnknownId4.Type == IdentityType.MissionTerminal || a.UnknownId5.Type == IdentityType.MissionTerminal
+                                                                          || a.UnknownId6.Type == IdentityType.MissionTerminal || a.UnknownId7.Type == IdentityType.MissionTerminal)
+                    || (_termId.Instance != 0 && q.UnknownId1.Type == IdentityType.SimpleChar && (q.UnknownId1.Instance & Mask) == (_termId.Instance & Mask));
+                if (fromTerminal && !ids.Contains(q.QuestId)) ids.Add(q.QuestId);
             }
             ids.RemoveAll(x => _deleted.Contains(x));
             return ids;
@@ -4081,6 +4068,7 @@ namespace AOBuddy
             catch (Exception ex) { _ctx.Log("MISSIONRUN: couldn't read the saved terminal: " + ex.Message); return false; }
         }
         private byte[] _lastQuestLog;
+        private Quest[] _lastQuests;
 
         // Missions finished lately (door pf + spot, UTC), in done.json: the quest log is the zone-in snapshot, and it
         // still lists a mission finished after it. After a 'mission run' restart he walked back to the finished

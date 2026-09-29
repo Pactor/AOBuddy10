@@ -67,92 +67,92 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
         [AoMember(14, SerializeSize = ArraySizeType.X3F1)]
         public MissionItemReward[] MissionItemData { get; set; }
 
+        // Indices 15-23 were declared twice (two members at each of 15-18); the serializer's stable sort read them in the
+        // order they are numbered now, which is the only change here. Unknown28, a byte at the end of each quest, was the
+        // message's one byte after the list: QuestFullUpdateMessage.AnnounceAsNew (2026-09-29).
         [AoMember(15)]
         public int Unknown11 { get; set; }
 
-        [AoMember(16)]
+        [AoMember(17)]
         public int Unknown12 { get; set; }
 
-        [AoMember(17)]
+        [AoMember(19)]
         public int Unknown13 { get; set; }
 
-        [AoMember(18, SerializeSize = ArraySizeType.NoSerialization, FixedSizeLength = 4, IsFixedSize = true)]
+        [AoMember(21, SerializeSize = ArraySizeType.NoSerialization, FixedSizeLength = 4, IsFixedSize = true)]
         public string UnknownHash1 { get; set; }
 
-        [AoMember(15)]
+        [AoMember(16)]
         public int Unknown14 { get; set; }
 
-        [AoMember(16)]
+        [AoMember(18)]
         public int Unknown15 { get; set; }
 
-        [AoMember(17)]
+        [AoMember(20)]
         public int Unknown16 { get; set; }
 
-        [AoMember(18)]
+        [AoMember(22)]
         public int Unknown17 { get; set; }
 
-        [AoMember(19)]
+        [AoMember(23)]
         public int Unknown18 { get; set; }
 
-        [AoMember(20)]
+        [AoMember(24)]
         public Identity UnknownId2 { get; set; }
 
-        [AoMember(21)]
+        [AoMember(25)]
         public int MissionIconId { get; set; }
 
-        [AoMember(22)]
+        [AoMember(26)]
         public int Unknown20 { get; set; }
 
-        [AoMember(23)]
+        [AoMember(27)]
         public int Unknown21 { get; set; }
 
-        [AoMember(24, SerializeSize = ArraySizeType.X3F1)]
+        [AoMember(28, SerializeSize = ArraySizeType.X3F1)]
         public QuestActionInfo[] QuestActions { get; set; }
 
-        [AoMember(25, SerializeSize = ArraySizeType.X3F1)]
+        [AoMember(29, SerializeSize = ArraySizeType.X3F1)]
         public Identity[] PlayerIds { get; set; }
 
-        [AoMember(26, SerializeSize = ArraySizeType.Int32)]
+        [AoMember(30, SerializeSize = ArraySizeType.Int32)]
         public int[] UnknownArray1 { get; set; }
 
-        [AoMember(27, SerializeSize = ArraySizeType.Int32)]
+        [AoMember(31, SerializeSize = ArraySizeType.Int32)]
         public int[] UnknownArray2 { get; set; }
 
-        [AoMember(28, SerializeSize = ArraySizeType.Int32)]
+        [AoMember(32, SerializeSize = ArraySizeType.Int32)]
         public CharacterInfo[] CharacterInfos { get; set; }
 
-        [AoMember(29)]
+        [AoMember(33)]
         public int Unknown22 { get; set; }
 
-        [AoMember(30, SerializeSize = ArraySizeType.X3F1)]
+        [AoMember(34, SerializeSize = ArraySizeType.X3F1)]
         public Identity[] PlayerIds2 { get; set; }
 
-        [AoMember(31)]
+        [AoMember(35)]
         public int Unknown23 { get; set; }
 
-        [AoMember(32)]
+        [AoMember(36)]
         public int Unknown24 { get; set; }
 
-        [AoMember(33)]
+        [AoMember(37)]
         public Identity UnknownId3 { get; set; }
 
-        [AoMember(34)]
+        [AoMember(38)]
         public int Unknown25 { get; set; }
 
-        [AoMember(35)]
+        [AoMember(39)]
         public int Unknown26 { get; set; }
 
-        [AoMember(36, SerializeSize = ArraySizeType.Int32)]
+        [AoMember(40, SerializeSize = ArraySizeType.Int32)]
         public QuestIdentity[] QuestIdentities { get; set; }
 
-        [AoMember(37)]
+        [AoMember(41)]
         public int Unknown27 { get; set; }
 
-        [AoMember(38, SerializeSize = ArraySizeType.X3F1)]
+        [AoMember(42, SerializeSize = ArraySizeType.X3F1)]
         public Identity[] FactionInfos { get; set; }
-
-        [AoMember(39)]
-        public byte Unknown28 { get; set; }
 
         #endregion
     }
