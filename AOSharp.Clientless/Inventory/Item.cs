@@ -74,20 +74,34 @@ namespace AOSharp.Clientless
                 for (int i = 0; i < lowCriteria.Count; i++)
                 {
                     var param2Low = lowCriteria[i].Param2;
-                    var param2High = highCriteria[i].Param2;
+                    
+                    // Example where this is important: Item ids 158038 and 158039 (Energy Deflection Shield)
+                    // lowTemplate has a "Must Not 0/1" criteria, high template does not.
+                    var highCrit = highCriteria.FirstOrDefault(x => x.Param1 == lowCriteria[i].Param1);
+                    if (highCrit!=null)
+                    {
+                        var param2High = highCrit.Param2;
 
-                    if (ql == lowTemplate.Ql)
-                        interpolatedCriteria = lowCriteria;
-                    else if (ql == highTemplate.Ql)
-                        interpolatedCriteria = highCriteria;
+                        if (ql == lowTemplate.Ql)
+                            interpolatedCriteria = lowCriteria;
+                        else if (ql == highTemplate.Ql)
+                            interpolatedCriteria = highCriteria;
+                        else
+                        {
+                            interpolatedCriteria.Add(new RequirementCriterion
+                            {
+                                Operator = lowCriteria[i].Operator,
+                                Param1 = lowCriteria[i].Param1,
+                                Param2 = (int)Math.Round(param2Low +
+                                                         ((float)ql - lowTemplate.Ql) *
+                                                         (param2High - param2Low) /
+                                                         (highTemplate.Ql - lowTemplate.Ql))
+                            });
+                        }
+                    }
                     else
                     {
-                        interpolatedCriteria.Add(new RequirementCriterion
-                        {
-                            Operator = lowCriteria[i].Operator,
-                            Param1 = lowCriteria[i].Param1,
-                            Param2 = (int)Math.Round(param2Low + ((float)ql - lowTemplate.Ql) * (param2High - param2Low) / (highTemplate.Ql - lowTemplate.Ql))
-                        });
+                        interpolatedCriteria.Add(lowCriteria[i]);
                     }
                 }
 
