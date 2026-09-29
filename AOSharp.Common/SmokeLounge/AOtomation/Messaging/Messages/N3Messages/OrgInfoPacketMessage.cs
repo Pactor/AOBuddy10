@@ -31,11 +31,19 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>The organization id.</summary>
         [AoMember(0)]
-        public int OrgId { get; set; }
+        public int OrganizationId { get; set; }
 
         [AoMember(1, SerializeSize = ArraySizeType.Int16)]
         public string Name { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [System.Obsolete("Wire field is OrganizationId.")]
+        public int OrgId { get => this.OrganizationId; set => this.OrganizationId = value; }
 
         #endregion
     }

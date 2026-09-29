@@ -24,9 +24,11 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
         [AoMember(0)]
         public PlayfieldId PlayfieldId { get; set; }
 
+        /// <summary>Type half of the destination's Identity (OmniCell GridDestination.Identity), which the client carries into GridSelected.</summary>
         [AoMember(1)]
         public int Unknown0 { get; set; }
 
+        /// <summary>Instance half of the destination's Identity (OmniCell GridDestination.Identity).</summary>
         [AoMember(2)]
         public int Unknown1 { get; set; }
 

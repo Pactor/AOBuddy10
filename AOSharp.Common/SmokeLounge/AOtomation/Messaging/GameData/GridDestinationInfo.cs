@@ -21,17 +21,34 @@ namespace SmokeLounge.AOtomation.Messaging.GameData
     {
         #region AoMember Properties
 
+        /// <summary>PlayfieldId and the destination Identity (OmniCell GridDestination.PlayfieldId + Identity).</summary>
         [AoMember(0)]
         public DestinationInfo DestinationInfo { get; set; }
 
+        /// <summary>The label shown for the destination (OmniCell GridDestination.Name).</summary>
         [AoMember(1, SerializeSize = ArraySizeType.Int16)]
-        public string Location { get; set; }
+        public string Name { get; set; }
 
+        /// <summary>The area's level (OmniCell GridDestination.AreaLevel).</summary>
         [AoMember(2)]
-        public int Unknown1 { get; set; }
+        public int AreaLevel { get; set; }
 
+        /// <summary>The area's type, a Roman-numeral type (OmniCell GridDestination.AreaType).</summary>
         [AoMember(3)]
-        public int Unknown2 { get; set; }
+        public int AreaType { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [System.Obsolete("Wire field is Name.")]
+        public string Location { get => this.Name; set => this.Name = value; }
+
+        [System.Obsolete("Wire field is AreaLevel.")]
+        public int Unknown1 { get => this.AreaLevel; set => this.AreaLevel = value; }
+
+        [System.Obsolete("Wire field is AreaType.")]
+        public int Unknown2 { get => this.AreaType; set => this.AreaType = value; }
 
         #endregion
     }

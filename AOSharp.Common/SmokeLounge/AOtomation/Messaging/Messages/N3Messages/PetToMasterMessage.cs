@@ -1,4 +1,4 @@
-using AOSharp.Common.GameData;
+﻿using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {

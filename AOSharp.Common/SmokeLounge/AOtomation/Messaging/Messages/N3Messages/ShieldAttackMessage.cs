@@ -16,9 +16,11 @@ using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
+    // Names ported from OmniCell's AOtomation.Messaging. Old AOSharp names kept as [Obsolete] aliases.
     [AoContract((int)N3MessageType.ShieldAttack)]
     public class ShieldAttackMessage : N3Message
     {
@@ -33,14 +35,31 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>The damage-shield damage taken by the message Identity.</summary>
         [AoMember(0)]
-        public int Amount { get; set; }
+        public int Damage { get; set; }
 
+        /// <summary>Whose damage shield it was (the mob carrying it).</summary>
         [AoMember(1)]
-        public Identity Target { get; set; }
+        public Identity ShieldOwner { get; set; }
 
+        /// <summary>A visual effect id; not a stat (0 in every recorded copy).</summary>
         [AoMember(2)]
-        public Stat Stat { get; set; }
+        public int VisualEffectId { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is Damage.")]
+        public int Amount { get => this.Damage; set => this.Damage = value; }
+
+        [Obsolete("Wire field is ShieldOwner (the shield's owner, not a target).")]
+        public Identity Target { get => this.ShieldOwner; set => this.ShieldOwner = value; }
+
+        [Obsolete("Wire field is VisualEffectId, not a stat.")]
+        public Stat Stat { get => (Stat)this.VisualEffectId; set => this.VisualEffectId = (int)value; }
+
         #endregion
     }
 }

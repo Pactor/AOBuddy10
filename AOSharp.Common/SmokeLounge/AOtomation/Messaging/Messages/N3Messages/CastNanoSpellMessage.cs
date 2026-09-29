@@ -39,9 +39,11 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(1)]
         public Identity Target { get; set; }
 
+        /// <summary>1 only when the nano has a distinct target; self or none = 0 (OmniCell CastNanoMessageHandler).</summary>
         [AoMember(2)]
         public int TargetPresent { get; set; }
 
+        /// <summary>Who cast it; None on some copies, in which case the caster is the message Identity.</summary>
         [AoMember(3)]
         public Identity Caster { get; set; }
 

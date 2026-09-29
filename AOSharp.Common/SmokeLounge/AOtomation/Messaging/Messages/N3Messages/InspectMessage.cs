@@ -33,11 +33,20 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #endregion
 
         #region AoMember Properties
+        /// <summary>The character inspected.</summary>
         [AoMember(0)]
         public Identity Target { get; set; }
 
+        /// <summary>The inspected character's worn items: the standard container record (OmniCell: InventorySlot[] Contents). The reply to CharacterAction 0x105.</summary>
         [AoMember(1, SerializeSize = ArraySizeType.X3F1)]
-        public InspectSlotInfo[] Slot { get; set; }
+        public InspectSlotInfo[] Contents { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [System.Obsolete("Wire field is Contents.")]
+        public InspectSlotInfo[] Slot { get => this.Contents; set => this.Contents = value; }
 
         #endregion
     }

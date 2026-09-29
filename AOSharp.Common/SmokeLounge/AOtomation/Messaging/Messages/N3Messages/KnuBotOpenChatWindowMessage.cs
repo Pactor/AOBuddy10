@@ -39,9 +39,20 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(1)]
         public Identity Target { get; set; }
 
+        /// <summary>
+        /// A flag. 1 in 56 of the 175 captured copies.
+        /// </summary>
+        /// <remarks>
+        /// An int32 on the wire and a bool in the client: the reader at
+        /// 0x10128375 compares it against 1 and stores the result as a byte, so
+        /// anything that is not 1 is false. What it turns on is not established.
+        /// </remarks>
         [AoMember(2)]
         public int Unknown2 { get; set; }
 
+        /// <summary>
+        /// The second flag, and zero in every captured copy.
+        /// </summary>
         [AoMember(3)]
         public int Unknown3 { get; set; }
 

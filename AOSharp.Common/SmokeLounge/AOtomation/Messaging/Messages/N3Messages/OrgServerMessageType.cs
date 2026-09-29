@@ -14,10 +14,26 @@
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    /// <summary>
+    /// Which of the nine shapes an OrgServer carries (ported from OmniCell).
+    /// </summary>
+    /// <remarks>
+    /// The reader at Gamecode 0x10126D95 reads this byte, widens it, and fails
+    /// the whole message unless it is between 1 and 9. AOSharp named three
+    /// (OrgContract = 1, OrgInfo = 2, OrgInvite = 5); its OrgContract value was wrong:
+    /// OmniCell's 404 captured copies are all kind 6, the contract, and kind 1 is a
+    /// container listing. The six kinds without a name have never been captured.
+    /// </remarks>
     public enum OrgServerMessageType : byte
     {
-        OrgContract = 0x01,
-        OrgInfo = 0x02, 
-        OrgInvite = 0x05
+        OrgKind1 = 0x01,
+        OrgInfo = 0x02,
+        OrgKind3 = 0x03,
+        OrgKind4 = 0x04,
+        OrgInvite = 0x05,
+        OrgContract = 0x06,
+        OrgKind7 = 0x07,
+        OrgKind8 = 0x08,
+        OrgKind9 = 0x09,
     }
 }

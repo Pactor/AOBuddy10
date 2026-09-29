@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TowerInfoPacket.cs" company="SmokeLounge">
 //   Copyright © 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
@@ -12,95 +12,81 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using AOSharp.Common.GameData;
-
 namespace SmokeLounge.AOtomation.Messaging.GameData
 {
-    using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
-    using SmokeLounge.AOtomation.Messaging.Serialization;
-    using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
+    using System.Text;
 
+    /// <summary>
+    /// The examine record of a tower (NotAPlayer 0x10 with HasAcgItems 0x04 or Suppression 0x08). The record is on
+    /// <see cref="InfoPacket"/>; the AOSharp original's flat field names are kept below as read-only aliases of the
+    /// record fields they were really reading.
+    /// </summary>
     public class TowerInfoPacket : InfoPacket
     {
-        #region AoMember Properties
+        /// <summary>Alias of <see cref="InfoPacket.Version"/>.</summary>
+        public byte Unknown1 => this.Version;
 
-        [AoMember(0)]
-        public byte Unknown1 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.Profession"/>.</summary>
+        public byte Unknown2 => (byte)this.Profession;
 
-        [AoMember(1)]
-        public byte Unknown2 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.Level"/>.</summary>
+        public byte Unknown3 => this.Level;
 
-        [AoMember(2)]
-        public byte Unknown3 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.TitleLevel"/>.</summary>
+        public byte Unknown4 => this.TitleLevel;
 
-        [AoMember(3)]
-        public byte Unknown4 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.VisualProfession"/>.</summary>
+        public byte Unknown5 => (byte)this.VisualProfession;
 
-        [AoMember(4)]
-        public byte Unknown5 { get; set; }
+        /// <summary>High byte of <see cref="InfoPacket.SideXp"/>.</summary>
+        public byte Unknown6 => (byte)((ushort)this.SideXp >> 8);
 
-        [AoMember(5)]
-        public byte Unknown6 { get; set; }
+        /// <summary>Low byte of <see cref="InfoPacket.SideXp"/>.</summary>
+        public byte Unknown7 => (byte)this.SideXp;
 
-        [AoMember(6)]
-        public byte Unknown7 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.BreedHostility"/>.</summary>
+        public int Unknown8 => this.BreedHostility;
 
-        [AoMember(7)]
-        public int Health { get; set; }
+        /// <summary>Length of <see cref="InfoPacket.FirstName"/>.</summary>
+        public short Unknown9 => (short)(this.FirstName?.Length ?? 0);
 
-        [AoMember(8)]
-        public int MaxHealth { get; set; }
+        /// <summary>Length of <see cref="InfoPacket.LastName"/>.</summary>
+        public short Unknown10 => (short)(this.LastName?.Length ?? 0);
 
-        [AoMember(9)]
-        public int Unknown8 { get; set; }
+        /// <summary>Length of <see cref="InfoPacket.AuxiliaryName"/>.</summary>
+        public short Unknown11 => (short)(this.AuxiliaryName?.Length ?? 0);
 
-        [AoMember(10)]
-        public int OrganizationId { get; set; }
+        /// <summary>The bytes of <see cref="InfoPacket.DisplayText"/>.</summary>
+        public byte[] FormattedText => Encoding.ASCII.GetBytes(this.DisplayText ?? string.Empty);
 
-        [AoMember(11)]
-        public short Unknown9 { get; set; }
+        /// <summary>The X3F1 header of <see cref="InfoPacket.Towers"/>.</summary>
+        public int TowerCount3F1 => ((this.Towers?.Length ?? 0) + 1) * 0x3F1;
 
-        [AoMember(12)]
-        public short Unknown10 { get; set; }
+        /// <summary>First ACG item's low id.</summary>
+        public int TowerLowId => this.Towers != null && this.Towers.Length > 0 ? this.Towers[0].LowId : 0;
 
-        [AoMember(13)]
-        public short Unknown11 { get; set; }
+        /// <summary>First ACG item's high id.</summary>
+        public int TowerHighId => this.Towers != null && this.Towers.Length > 0 ? this.Towers[0].HighId : 0;
 
-        [AoMember(14, SerializeSize = ArraySizeType.Int16)]
-        public byte[] FormattedText { get; set; }
+        /// <summary>First ACG item's quality.</summary>
+        public int TowerQuality => this.Towers != null && this.Towers.Length > 0 ? this.Towers[0].Quality : 0;
 
-        [AoMember(15)]
-        public int TowerCount3F1 { get; set; }
+        /// <summary>First ACG item's unused fourth word.</summary>
+        public int Unknown12 => this.Towers != null && this.Towers.Length > 0 ? this.Towers[0].Unknown : 0;
 
-        [AoMember(16)]
-        public int TowerLowId { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.SuppressionTimer"/>.</summary>
+        public int? Timer => this.SuppressionTimer;
 
-        [AoMember(17)]
-        public int TowerHighId { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.SuppressionLevel"/>.</summary>
+        public byte? NextSuppressionGas => this.SuppressionLevel;
 
-        [AoMember(18)]
-        public int TowerQuality { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.InvadersKilled"/>.</summary>
+        public int Unknown14 => this.InvadersKilled;
 
-        [AoMember(19)]
-        public int Unknown12 { get; set; }
+        /// <summary>Alias of <see cref="InfoPacket.KilledByInvaders"/>.</summary>
+        public int Unknown15 => this.KilledByInvaders;
 
-        [AoMember(20)]
-        [AoUsesFlags("flags", typeof(int), FlagsCriteria.EqualsToAny, new[] { (int)InfoPacketType.ControlTower })]
-        public int? Timer { get; set; }
-
-        [AoMember(21)]
-        [AoUsesFlags("flags", typeof(byte), FlagsCriteria.EqualsToAny, new[] { (int)InfoPacketType.ControlTower })]
-        public byte? NextSuppressionGas { get; set; }
-
-        [AoMember(22)]
-        public int Unknown14 { get; set; }
-
-        [AoMember(23)]
-        public int Unknown15 { get; set; }
-
-        [AoMember(24)]
-        public int Unknown16 { get; set; }
-
-        #endregion
+        /// <summary>Alias of <see cref="InfoPacket.AiLevel"/>.</summary>
+        public int Unknown16 => this.AiLevel;
     }
 }

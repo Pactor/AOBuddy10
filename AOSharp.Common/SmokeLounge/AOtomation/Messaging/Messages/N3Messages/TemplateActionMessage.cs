@@ -42,18 +42,22 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(2)]
         public int Quality { get; set; }
 
+        /// <summary>The stack size (OmniCell: the stack size for overflow deliveries); 1 in every recorded copy.</summary>
         [AoMember(3)]
         public int Amount { get; set; }
 
+        /// <summary>What happened to the template: 3 = used (Placement = the inventory slot consumed), 87 = delivered to the overflow window (recorded values).</summary>
         [AoMember(4)]
         public int Action { get; set; }
 
         [AoMember(5)]
         public Identity Placement { get; set; }
 
+        /// <summary>Type half of the second identity: 50000 = used on a character, 0 = none, 51005 on some copies (not in OmniCell's page).</summary>
         [AoMember(6)]
         public int TargetType { get; set; }
 
+        /// <summary>Instance half of the second identity (see TargetType).</summary>
         [AoMember(7)]
         public int TargetInstance { get; set; }
 

@@ -39,11 +39,19 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(1)]
         public Identity Target { get; set; }
 
+        /// <summary>Non-zero when the trade was declined (OmniCell: Declined).</summary>
         [AoMember(2)]
-        public int Decline { get; set; }
+        public int Declined { get; set; }
 
+        /// <summary>Credits in the trade (OmniCell: Credits).</summary>
         [AoMember(3)]
-        public int Amount { get; set; }
+        public int Credits { get; set; }
+
+        [System.Obsolete("Wire field is Declined.")]
+        public int Decline { get => this.Declined; set => this.Declined = value; }
+
+        [System.Obsolete("Wire field is Credits.")]
+        public int Amount { get => this.Credits; set => this.Credits = value; }
         #endregion
     }
 }

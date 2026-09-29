@@ -47,6 +47,23 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.SystemMessages
         [AoMember(4)]
         public uint Cookie2 { get; set; }
 
+        // Members 5-6 added 2026-09-29 from OmniCell (Messages\SystemMessages\ZoneInfoMessage.cs:83-94); the AOSharp
+        // original left these 8 bytes unread. The client stops reading after the cookie and does not need them.
+
+        /// <summary>
+        /// 0 for the copy pointing at port 7501, 1 for those pointing at 7509 and 7512 (OmniCell's captures); 1 in
+        /// the AOBuddy recordings. Meaning open.
+        /// </summary>
+        [AoMember(5)]
+        public int Unknown1 { get; set; }
+
+        /// <summary>
+        /// 0x59DAD28A in OmniCell's three captures, 0x3BAD896B in the AOBuddy recordings: the server's own datum,
+        /// not a literal the client checks.
+        /// </summary>
+        [AoMember(6)]
+        public uint Unknown2 { get; set; }
+
         #endregion
     }
 }

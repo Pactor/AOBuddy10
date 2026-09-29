@@ -29,6 +29,13 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
         /// every value v satisfies (v &amp; flag) == 0). Added last so the existing values keep their numbers;
         /// DoorFullUpdateMessage gates its position on the owner instance with it.
         /// </summary>
-        HasNone
+        HasNone,
+
+        /// <summary>
+        /// Present when the flag equals none of the listed values (OmniCell's NotEqualsToAny).
+        /// Added after HasNone so the existing values keep their numbers; MailRecord gates its
+        /// attachment block on it (the client reads on only when the byte is not 1).
+        /// </summary>
+        NotEqualsToAny
     }
 }

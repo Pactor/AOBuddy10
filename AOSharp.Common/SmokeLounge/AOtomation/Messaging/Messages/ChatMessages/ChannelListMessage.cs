@@ -35,8 +35,12 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.ChatMessages
 
         #region AoMember Properties
 
+        // Layout from OmniCell's chat server writer (Server\ChatEngine\Packets\ChannelJoin.cs): channel
+        // type byte + uint32 channel id (the 5-byte group id), Int16 name, uint32 flags, other data.
+
+        /// <summary>The channel type byte of the 5-byte group id.</summary>
         [AoMember(0)]
-        public byte Unk1 { get; set; }
+        public byte ChannelType { get; set; }
 
         [AoMember(1)]
         public int ChannelId { get; set; }
@@ -44,14 +48,29 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.ChatMessages
         [AoMember(2, SerializeSize = ArraySizeType.Int16)]
         public string ChannelName { get; set; }
 
+        /// <summary>The channel flags (uint32; AOSharp read it as two shorts, Unk2 high and Unk3 low).</summary>
         [AoMember(3)]
-        public short Unk2 { get; set; }
+        public int Flags { get; set; }
 
+        /// <summary>
+        /// The Int16 length of the trailing "other data"; its contents are not read (the audit found no
+        /// capture to settle them).
+        /// </summary>
         [AoMember(4)]
-        public short Unk3 { get; set; }
-
-        [AoMember(5)]
         public short Unk4 { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [System.Obsolete("Wire field is ChannelType.")]
+        public byte Unk1 { get => this.ChannelType; set => this.ChannelType = value; }
+
+        [System.Obsolete("Wire field is Flags (uint32); this is its high half.")]
+        public short Unk2 { get => (short)(this.Flags >> 16); set => this.Flags = (int)((this.Flags & 0x0000FFFF) | (value << 16)); }
+
+        [System.Obsolete("Wire field is Flags (uint32); this is its low half.")]
+        public short Unk3 { get => (short)this.Flags; set => this.Flags = (int)((this.Flags & 0xFFFF0000) | (ushort)value); }
 
         #endregion
     }

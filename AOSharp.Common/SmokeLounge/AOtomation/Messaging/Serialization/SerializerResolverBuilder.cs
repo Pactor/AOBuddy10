@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SerializerResolverBuilder.cs" company="SmokeLounge">
-//   Copyright © 2013 SmokeLounge.
+//   Copyright ï¿½ 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
 //   the extent permitted by applicable law. You can redistribute it
 //   and/or modify it under the terms of the Do What The Fuck You Want
@@ -72,6 +72,13 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
             this.serializers.TryAdd(typeof(LookupMessage), new LookupMessageSerializer());
             this.serializers.TryAdd(typeof(FriendStatusMessage), new FriendStatusSerializer());
             this.serializers.TryAdd(typeof(PrivateGroupMessage), new PrivateGroupMessageSerializer());
+            this.serializers.TryAdd(typeof(CloneMessage), new CloneSerializer());
+            this.serializers.TryAdd(typeof(GfxTriggerMessage), new GfxTriggerSerializer());
+            // 2026-09-29 (agent B): the effect-list, examine-record, zone-in and operator readers.
+            this.serializers.TryAdd(typeof(NanoEffectRecord[]), new NanoEffectRecordListSerializer());
+            this.serializers.TryAdd(typeof(InfoPacket), new InfoPacketSerializer());
+            this.serializers.TryAdd(typeof(PlayfieldAnarchyFMessage), new PlayfieldAnarchyFMessageSerializer());
+            this.serializers.TryAdd(typeof(SmokeLounge.AOtomation.Messaging.Messages.OperatorMessage), new OperatorMessageSerializer());
         }
 
         #endregion

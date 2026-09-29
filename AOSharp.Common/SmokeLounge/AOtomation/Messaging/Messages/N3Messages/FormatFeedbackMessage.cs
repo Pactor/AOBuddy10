@@ -35,12 +35,15 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>Chat category; OmniCell fills 0, 0 in every recorded copy.</summary>
         [AoMember(0)]
         public int ChatCategory { get; set; }
 
+        /// <summary>The encoded feedback text (OmniCell names this wire field FormattedMessage; here that name is the native-formatting getter, which throws clientless).</summary>
         [AoMember(1, SerializeSize = ArraySizeType.Int16)]
         public string Message { get; set; }
       
+        /// <summary>Payload kind; OmniCell fills 0, 0 in every recorded copy.</summary>
         [AoMember(2)]
         public int PayloadKind { get; set; }
         #endregion

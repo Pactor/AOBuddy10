@@ -166,6 +166,8 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
                     return this.EvaluateEqualsToAny(usesFlags);
                 case FlagsCriteria.HasNone:
                     return this.EvaluateHasNone(usesFlags);
+                case FlagsCriteria.NotEqualsToAny:
+                    return this.EvaluateEqualsToAny(usesFlags) == false;
                 case FlagsCriteria.Default:
                     return true;
                 default:

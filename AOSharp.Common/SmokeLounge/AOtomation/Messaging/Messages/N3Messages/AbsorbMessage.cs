@@ -16,9 +16,11 @@ using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
+    // Names ported from OmniCell's AOtomation.Messaging. Old AOSharp names kept as [Obsolete] aliases.
     [AoContract((int)N3MessageType.Absorb)]
     public class AbsorbMessage : N3Message
     {
@@ -33,11 +35,24 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>Damage the shield/absorb soaked.</summary>
         [AoMember(0)]
-        public int Amount { get; set; }
+        public int DamageAbsorbed { get; set; }
 
+        /// <summary>The damage type as its armour-class stat id (e.g. 91 MeleeAC).</summary>
         [AoMember(1)]
-        public Stat DmgType { get; set; }
+        public int DamageTypeStat { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is DamageAbsorbed.")]
+        public int Amount { get => this.DamageAbsorbed; set => this.DamageAbsorbed = value; }
+
+        [Obsolete("Wire field is DamageTypeStat.")]
+        public Stat DmgType { get => (Stat)this.DamageTypeStat; set => this.DamageTypeStat = (int)value; }
+
         #endregion
     }
 }

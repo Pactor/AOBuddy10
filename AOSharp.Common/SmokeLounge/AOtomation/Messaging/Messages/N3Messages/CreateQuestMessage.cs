@@ -16,9 +16,11 @@ using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
+    // Names ported from OmniCell's AOtomation.Messaging. Old AOSharp names kept as [Obsolete] aliases.
     [AoContract((int)N3MessageType.CreateQuest)]
     public class CreateQuestMessage : N3Message
     {
@@ -33,8 +35,18 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>
+        /// The offered quest to accept (OmniCell's CreateQuestMessageHandler looks the offer up by its Instance).
+        /// </summary>
         [AoMember(0)]
-        public Identity MissionId { get; set; }
+        public Identity QuestIdentity { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is QuestIdentity.")]
+        public Identity MissionId { get => this.QuestIdentity; set => this.QuestIdentity = value; }
 
         #endregion
     }

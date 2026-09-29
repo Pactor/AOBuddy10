@@ -42,14 +42,36 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(2)]
         public KnuBotTradeAction Action { get; set; }
 
+        /// <summary>
+        /// An Identity both senders zero.
+        /// </summary>
+        /// <remarks>
+        /// This was two int32s (Unknown3, Unknown4), which is the same eight bytes and the wrong
+        /// shape: the reader takes it with the client's Identity reader at
+        /// 0x10128D06, in the call before the one that takes the item. Both
+        /// exported senders pass the address of two words they have just
+        /// cleared, so the client cannot put anything else in it.
+        /// </remarks>
         [AoMember(3)]
-        public int Unknown3 { get; set; }
+        public Identity Unknown1 { get; set; }
 
+        /// <summary>
+        /// The item being added or removed.
+        /// </summary>
+        /// <remarks>
+        /// The third argument of both exported senders.
+        /// </remarks>
         [AoMember(4)]
-        public int Unknown4 { get; set; }
+        public Identity Item { get; set; }
 
-        [AoMember(5)]
-        public Identity Slot { get; set; }
+        [System.Obsolete("Wire field is Unknown1 (an Identity); this is its type half.")]
+        public int Unknown3 { get => (int)this.Unknown1.Type; set => this.Unknown1 = new Identity((IdentityType)value, this.Unknown1.Instance); }
+
+        [System.Obsolete("Wire field is Unknown1 (an Identity); this is its instance half.")]
+        public int Unknown4 { get => this.Unknown1.Instance; set => this.Unknown1 = new Identity(this.Unknown1.Type, value); }
+
+        [System.Obsolete("Wire field is Item.")]
+        public Identity Slot { get => this.Item; set => this.Item = value; }
 
         #endregion
     }

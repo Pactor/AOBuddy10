@@ -30,6 +30,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>Not identified. OmniCell's server fills 0; on the wire 0, or 0x42000018 on a few specific (category 110) messages.</summary>
         [AoMember(0)]
         public int Unknown1 { get; set; }
 

@@ -34,11 +34,20 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>The destinations on offer (OmniCell GridDestination[]).</summary>
         [AoMember(0, SerializeSize = ArraySizeType.X3F1)]
-        public GridDestinationInfo[] GridDestinations { get; set; }
+        public GridDestinationInfo[] Destinations { get; set; }
 
+        /// <summary>Unidentified in OmniCell as well; it only has to be echoed back in GridSelected.</summary>
         [AoMember(1)]
         public GridInteractionToken Token { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [System.Obsolete("Wire field is Destinations.")]
+        public GridDestinationInfo[] GridDestinations { get => this.Destinations; set => this.Destinations = value; }
 
         #endregion
     }

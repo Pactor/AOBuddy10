@@ -41,6 +41,16 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.SystemMessages
         [AoMember(2)]
         public int Expansions { get; set; }
 
+        /// <summary>
+        /// A trailing int32, 0 in every captured copy.
+        /// </summary>
+        /// <remarks>
+        /// Added 2026-09-29 from OmniCell (Messages\SystemMessages\CharacterListMessage.cs:57-66); the AOSharp
+        /// original left these 4 bytes unread. The client does not require it. Meaning unknown.
+        /// </remarks>
+        [AoMember(3)]
+        public int Unknown1 { get; set; }
+
         #endregion
     }
 }

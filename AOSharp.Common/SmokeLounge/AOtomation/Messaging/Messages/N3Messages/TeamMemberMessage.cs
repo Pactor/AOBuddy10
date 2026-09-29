@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TeamMemberMessage.cs" company="SmokeLounge">
 //   Copyright © 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
@@ -37,6 +37,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(0)]
         public Identity Character { get; set; }
 
+        /// <summary>The team (a TeamWindow identity). OmniCell: a Team of 0:0 means that member was removed.</summary>
         [AoMember(1)]
         public Identity Team { get; set; }
 

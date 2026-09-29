@@ -16,11 +16,15 @@ using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
     using static SmokeLounge.AOtomation.Messaging.Messages.N3Messages.PlayfieldAnarchyFMessage;
 
+    // Names ported from OmniCell's AOtomation.Messaging. OmniCell models Source + Target as one
+    // Identity[] whose count Action decides; this SDK keeps Source (present for Repair, UseItemOnItem,
+    // UseItemOnCharacter) and Target, which read the same bytes. Old names kept as [Obsolete] aliases.
     [AoContract((int)N3MessageType.GenericCmd)]
     public class GenericCmdMessage : N3Message
     {
@@ -35,22 +39,38 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>
+        /// The Verification_e the client keeps on every command (n3Command_t::GetVerification).
+        /// </summary>
+        /// <remarks>
+        /// On the server's echo of a command this is its verdict: 1 = accepted, 2 = refused
+        /// (MISSION-MODE-PLAN.md; recordings: 1,010 of 1,988 echoes were refusals).
+        /// </remarks>
         [AoMember(0)]
-        public int Temp1 { get; set; }
+        public int Verification { get; set; }
 
+        /// <summary>
+        /// A serial number, so the client can tell its own commands apart.
+        /// </summary>
         [AoMember(1)]
-        public int Count { get; set; }
+        public int Serial { get; set; }
 
         [AoFlags("action")]
         [AoMember(2)]
         public GenericCmdAction Action { get; set; }
 
+        /// <summary>
+        /// An int32 on the wire that the client keeps as a boolean. Its meaning is not established.
+        /// </summary>
         [AoMember(3)]
-        public int Temp4 { get; set; }
+        public int Flag { get; set; }
 
         [AoMember(4)]
         public Identity User { get; set; }
 
+        /// <summary>
+        /// The first of the two targets, present only for Repair, UseItemOnItem and UseItemOnCharacter.
+        /// </summary>
         [AoUsesFlags("action", typeof(Identity), FlagsCriteria.EqualsToAny, new[] {
             (int)GenericCmdAction.Repair,
             (int)GenericCmdAction.UseItemOnItem,
@@ -58,10 +78,26 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         })]
         [AoMember(5)]
         public Identity? Source { get; set; }
-        
+
+        /// <summary>
+        /// What the action is being done to.
+        /// </summary>
         [AoMember(6)]
         public Identity Target { get; set; }
-        
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is Verification (echo: 1 accepted, 2 refused).")]
+        public int Temp1 { get => this.Verification; set => this.Verification = value; }
+
+        [Obsolete("Wire field is Serial.")]
+        public int Count { get => this.Serial; set => this.Serial = value; }
+
+        [Obsolete("Wire field is Flag.")]
+        public int Temp4 { get => this.Flag; set => this.Flag = value; }
+
         #endregion
     }
 }

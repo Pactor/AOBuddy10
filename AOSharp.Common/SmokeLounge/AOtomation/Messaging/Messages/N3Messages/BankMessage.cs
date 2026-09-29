@@ -14,10 +14,21 @@
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
+    /// <summary>
+    /// What is in the character's own bank.
+    /// </summary>
+    /// <remarks>
+    /// Ported from OmniCell. A container and nothing else. The reader at Gamecode 0x10072518 pushes
+    /// the container and the stream and calls the shared container reader at
+    /// 0x1002A5DB - the same one FullCharacter's inventory and BankCorpse use -
+    /// and then stops. The dispatcher at 0x1007254B resolves the message identity to a
+    /// character and writes that character's own instance into the container.
+    /// </remarks>
     [AoContract((int)N3MessageType.Bank)]
     public class BankMessage : N3Message
     {
@@ -32,10 +43,23 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+        /// <summary>
+        /// What is in it.
+        /// </summary>
+        /// <remarks>
+        /// Each entry is the shared container record: a placement, two int16s,
+        /// an Identity and a GameData::ACGItem_t.
+        /// </remarks>
         [AoMember(0, SerializeSize = ArraySizeType.X3F1)]
-        public InventorySlot[] BankSlots { get; set; }
+        public InventorySlot[] Contents { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is Contents.")]
+        public InventorySlot[] BankSlots { get => this.Contents; set => this.Contents = value; }
 
         #endregion
     }
 }
-

@@ -16,9 +16,11 @@ using AOSharp.Common.GameData;
 
 namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 {
+    using System;
     using SmokeLounge.AOtomation.Messaging.GameData;
     using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
+    // Names ported from OmniCell's AOtomation.Messaging. Old AOSharp names kept as [Obsolete] aliases.
     [AoContract((int)N3MessageType.Attack)]
     public class AttackMessage : N3Message
     {
@@ -36,8 +38,16 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(0)]
         public Identity Target { get; set; }
 
+        /// <summary>OmniCell: Action. Its server fills 0; 0 in every recorded copy.</summary>
         [AoMember(1)]
-        public byte Unknown1 { get; set; }
+        public byte Action { get; set; }
+
+        #endregion
+
+        #region Old AOSharp names (aliases, not on the wire)
+
+        [Obsolete("Wire field is Action.")]
+        public byte Unknown1 { get => this.Action; set => this.Action = value; }
 
         #endregion
     }
