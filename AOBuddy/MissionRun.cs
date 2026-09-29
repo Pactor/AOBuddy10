@@ -700,14 +700,23 @@ namespace AOBuddy
                 // stand set it back each time, and he was held at (35,5,17) over and over.
                 if (_mission.InMission && _heldAt.HasValue && Movement.Flat(_heldAt.Value, me.Transform.Position) < 4f)
                     return false;
+                // Rooted or snared is KNOWN, not guessed: it is a running nano on him (owner, 2026-09-28: "he should
+                // KNOW if he is"). None running = the pull-back is the ground, not a debuff: standing still helps
+                // nothing, so leave it to the walker, which blocks the cells it keeps walking into.
+                var (hold, holdSecs) = MovementDebuff(me);
+                if (hold == null)
+                {
+                    if (_clock - _heldNoDebuffLoggedAt > 30) { _heldNoDebuffLoggedAt = _clock; _ctx.Log($"MISSIONRUN: pulled back during {_phase}; no root or snare on me, so it is the ground - walking on."); }
+                    return false;
+                }
                 _heldAt = _mission.InMission ? me.Transform.Position : (Vector3?)null;
-                _heldUntil = _clock + T("held");
+                _heldUntil = _clock + Math.Min(T("held"), Math.Max(2, holdSecs));
                 _fightStart = _clock; _fightHpMin = 100;
                 _fightReturn = _phase;
                 if (_mission.Active) _mission.Stop("held");
                 if (_overland.Active) _overland.Stop("held");
                 _follow.ClearMovement();
-                _ctx.Log($"MISSIONRUN: the server keeps pulling me back during {_phase} (rooted or snared?); standing still 15 s.");
+                _ctx.Log($"MISSIONRUN: {hold} is on me ({holdSecs:0} s left); standing still until it ends (at most {T("held"):0} s).");
                 Enter(Phase.Fight, "held");
                 return false;
             }
@@ -2152,6 +2161,32 @@ namespace AOBuddy
         private bool _hikeNoRoute;
         private static string ExitKey(ZoneExit e) => $"{e.FromPf}:{e.ObjType}:{e.ObjInstance}:{e.A.X:0}:{e.A.Z:0}";
         private bool BadExit(ZoneExit e) => _badExits.Contains(ExitKey(e)) || (e.Kind == ExitKind.ZoneLine && _badBorders.Contains((e.FromPf, e.ToPf)));
+        private double _heldNoDebuffLoggedAt = -100;
+
+        // Nano lines that stop or slow movement. From the game's own nano-line table (AOSharp.Common NanoLine),
+        // not a list of names: whatever nano of these lines is running on him holds him.
+        private static readonly HashSet<NanoLine> HoldLines = new HashSet<NanoLine>
+        {
+            NanoLine.Root, NanoLine.Snare, NanoLine.Mezz, NanoLine.Stun, NanoLine.BossRoot, NanoLine.UnremovableSnare,
+            NanoLine.DarkRuinsRootandSnare, NanoLine.AOEMezz, NanoLine.AOESnare, NanoLine.AOERoot,
+        };
+
+        /// <summary>The running nano that roots/snares/mezzes him - by its nano line, or any running nano that lowers
+        /// his Run Speed - with its time left; (null, 0) when there is none.</summary>
+        private static (string, double) MovementDebuff(LocalPlayer me)
+        {
+            foreach (var b in me?.Buffs ?? Enumerable.Empty<Buff>())
+            {
+                var n = b.NanoItem;
+                if (n == null) continue;
+                bool slows = n.Modifiers != null && n.Modifiers.TryGetValue(SpellListType.Use, out var use) && use != null
+                             && use.TryGetValue(Stat.RunSpeed, out int rs) && rs < 0;
+                if (HoldLines.Contains(n.NanoLine) || slows)
+                    return ($"'{n.Name}' ({(HoldLines.Contains(n.NanoLine) ? n.NanoLine.ToString() : "Run Speed down")})", b.Cooldown?.RemainingTime ?? 0);
+            }
+            return (null, 0);
+        }
+
         private void MarkBadExit(ZoneExit e)
         {
             if (_badExits.Add(ExitKey(e)))
