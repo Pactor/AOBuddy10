@@ -37,11 +37,16 @@ namespace AOSharp.Clientless
         internal static void RaiseActionRaw(byte[] packet) { try { ActionRaw?.Invoke(packet); } catch { } }
         // DoorFullUpdate, raw, whether or not the SDK reader copes: the lock flag is read from the bytes.
         public static event Action<byte[]> DoorFullUpdateRaw;
+        /// <summary>The server's verdict on one of OUR commands (Use, UseItemOnItem ...): the echo, and true = accepted.</summary>
+        public static event Action<GenericCmdMessage, bool> UseVerdict;
         internal static void RaiseDoorFullUpdateRaw(byte[] packet) { try { DoorFullUpdateRaw?.Invoke(packet); } catch { } }
-        internal static void RaiseChestFullUpdateRaw(byte[] packet)
+        /// <summary>ChestFullUpdate, read (null if it could not be), with its raw bytes.</summary>
+        public static event Action<ChestFullUpdateMessage, byte[]> ChestFullUpdate;
+        internal static void RaiseChestFullUpdate(byte[] packet, ChestFullUpdateMessage chest)
         {
-            try { Inventory.OnChestItemRaw(packet); } catch { }
+            try { if (chest != null) Inventory.OnChestItem(chest); } catch { }
             try { ChestFullUpdateRaw?.Invoke(packet); } catch { }
+            try { ChestFullUpdate?.Invoke(chest, packet); } catch { }
         }
 
         internal static Credentials Credentials;
@@ -682,6 +687,11 @@ namespace AOSharp.Clientless
             {
                 GenericCmdMessage genericCmdMsg = (GenericCmdMessage)msg;
                 DynelManager.OnDynelUsed(genericCmdMsg.User, genericCmdMsg.Target);
+                // The server's echo of a command carries its verdict in Temp1 (OmniCell: Verification): 1 accepted,
+                // 2 refused (MISSION-MODE-PLAN.md 20). 1,010 of the bot's 2,000 recorded uses came back refused - 856 on
+                // items inside bags (Backpack slots), 142 on inventory items - and nothing could see it.
+                if (DynelManager.LocalPlayer != null && genericCmdMsg.User == DynelManager.LocalPlayer.Identity)
+                    UseVerdict?.Invoke(genericCmdMsg, genericCmdMsg.Temp1 == 1);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.TemplateAction, (msg) =>

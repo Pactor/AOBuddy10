@@ -164,7 +164,7 @@ namespace AOBuddy
             _hunt = new HuntController(_ctx, () => _ctx.Status.InMission);
             _chewy = new ChewyBuffController(_ctx, _support, _overland, pluginDir,
                 _ctx.TellOwner);
-            Client.ChestFullUpdateRaw += raw => { try { _mission.OnChestRaw(raw); } catch { } };
+            Client.ChestFullUpdate += (chest, raw) => { try { _mission.OnChest(chest, raw); } catch { } };
             Client.ActionRaw += raw => { try { _mission.OnDoorActionRaw(raw); } catch { } };
             Client.DoorFullUpdateRaw += raw => { try { _mission.OnDoorRaw(raw); } catch { } };
             _roll = new MissionRoll(_ctx);
@@ -253,6 +253,9 @@ namespace AOBuddy
             // Watch the owner use objects (lifts, grid, whompas, mission door-buttons) so TRAVEL can
             // ride the same one when he zones off it.
             DynelManager.DynelUsed += OnDynelUsed;
+
+            // The server's verdict on our own uses: every refusal logged with what it was (see OnUseVerdict).
+            Client.UseVerdict += OnUseVerdict;
 
             // The server SetPos-corrects our position. Apply it ONLY when stopped — see OnServerCorrectedMe.
             DynelManager.LocalPlayerCorrected += OnServerCorrectedMe;
@@ -472,6 +475,31 @@ namespace AOBuddy
             PlayerChar owner = _owner.Find();
             if (owner != null)
                 try { Client.SendPrivateMessage(owner.Identity.Instance, $"Back up at the reclaim point ({pos.X:0},{pos.Y:0},{pos.Z:0}). Waiting for you — send 'come' when close or walk to me."); } catch { }
+        }
+
+        // USE REFUSED (2026-09-29): the echo of each of his commands says whether the server took it (GenericCmd Temp1:
+        // 1 accepted, 2 refused). 1,010 of ~2,000 recorded uses were refused unseen - 856 on items inside bags, 142 on
+        // inventory items. Each refusal is logged with the item or object and its slot, at most once a minute per target,
+        // so the code sending them can be found from the log.
+        private readonly Dictionary<Identity, (double at, int n)> _refused = new Dictionary<Identity, (double, int)>();
+        private void OnUseVerdict(GenericCmdMessage echo, bool accepted)
+        {
+            if (accepted) return;
+            try
+            {
+                double now = _ctx.Clock.Seconds;
+                _refused.TryGetValue(echo.Target, out var r);
+                r.n++;
+                if (now - r.at < 60 && r.at > 0) { _refused[echo.Target] = r; return; }
+                string what = null;
+                var item = SupportController.AllInvItems().FirstOrDefault(i => i != null && i.Slot == echo.Target);
+                if (item != null) what = $"{item.Name} QL{item.Ql}";
+                else if (DynelManager.Find(echo.Target, out Dynel d)) what = d.Name;
+                string src = echo.Source.HasValue && echo.Source.Value.Instance != 0 ? $" with {SupportController.AllInvItems().FirstOrDefault(i => i != null && i.Slot == echo.Source.Value)?.Name ?? echo.Source.Value.ToString()}" : "";
+                Log($"USE REFUSED: {echo.Action} on {echo.Target} ({what ?? "unknown"}){src} - refused {r.n} time(s) since the last line.");
+                _refused[echo.Target] = (now, 0);
+            }
+            catch { }
         }
 
         // The owner used an object — hand it to TRAVEL, which arms a ride if he then zones off it.

@@ -97,22 +97,22 @@ namespace AOSharp.Clientless
         // version 11, owner = the player, InventoryId 101, BodyLocation 0x6F (next free slot), stats 3F1-counted
         // with the template in 702/703 (ACGItemTemplateID/ID2). Add it where the client would put it. Chests out
         // in the world (mission containers) have another owner and are left alone.
-        internal static void OnChestItemRaw(byte[] b)
+        // The QL is stat 701 (ACGItemLevel): the raw read took 54, which no container carries, and every bag came out
+        // QL 1 (audit 2026-09-29: 701 in all 40,263 recorded).
+        internal static void OnChestItem(ChestFullUpdateMessage c)
         {
-            if (b == null || b.Length < 59 || b[32] != 0x0B) return;
-            int R(int p) => (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3];
-            var id = new Identity((IdentityType)R(20), R(24));
+            var id = c.Identity;
             var me = DynelManager.LocalPlayer;
-            if (id.Type != IdentityType.Container || me == null) return;
-            if (new Identity((IdentityType)R(33), R(37)) != me.Identity) return;
+            if (id.Type != IdentityType.Container || me == null || c.Owner != me.Identity || c.Stats == null) return;
             if (_items.Any(i => i.UniqueIdentity == id) || Bank.Items.Any(i => i.UniqueIdentity == id)) return;
-            int low = 0, high = 0, ql = 1, n = R(55) / 1009 - 1;
-            for (int k = 0, p = 59; k < n && p + 8 <= b.Length; k++, p += 8)
+            int low = 0, high = 0, ql = 1;
+            foreach (var st in c.Stats)
             {
-                int key = R(p), val = R(p + 4);
-                if (key == 702) low = val; else if (key == 703) high = val; else if (key == 54) ql = val;
+                if (st.Value1 == Stat.ACGItemTemplateID) low = st.Value2;
+                else if (st.Value1 == Stat.ACGItemTemplateID2) high = st.Value2;
+                else if (st.Value1 == Stat.ACGItemLevel) ql = st.Value2;
             }
-            int body = b[54];
+            int body = c.BodyLocation;
             int? slot = body == 0x6F ? GetNextAvailableSlot()
                       : body >= INVENTORY_START && body < INVENTORY_START + INVENTORY_CAPACITY && !_items.Any(i => i.Slot.Type == IdentityType.Inventory && i.Slot.Instance == body) ? body : (int?)null;
             if (slot == null) return;

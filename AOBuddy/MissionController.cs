@@ -238,18 +238,14 @@ namespace AOBuddy
             }
         }
 
-        /// <summary>A ChestFullUpdate, raw: 16-byte header, N3 type at 16, the container's Identity at 20,
-        /// then a byte, version, owner identity, and its position as three big-endian floats at 41 (capture
-        /// 20260923-201746 s12 seq 11: 51017:196604570 at (279.9, 5.1, 267.8)).</summary>
-        public void OnChestRaw(byte[] b)
+        /// <summary>A ChestFullUpdate (the SDK's read of it, and its raw bytes). Only a chest on the ground has a position
+        /// (Coordinates; OmniCell's layout, 2026-09-29): a bag someone holds has none, and the raw read at offset 41 put
+        /// every held bag at (0, 0, ~0) among the mission's containers.</summary>
+        public void OnChest(ChestFullUpdateMessage c, byte[] b)
         {
-            if (b == null || b.Length < 53) return;
-            int type = (b[20] << 24) | (b[21] << 16) | (b[22] << 8) | b[23];
-            int inst = (b[24] << 24) | (b[25] << 16) | (b[26] << 8) | b[27];
-            float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
-            var pos = new Vector3(F(41), F(45), F(49));
-            if (float.IsNaN(pos.X) || Math.Abs(pos.X) > 100000) return;
-            var cid = new Identity((IdentityType)type, inst);
+            if (c == null || b == null || !c.Coordinates.HasValue) return;
+            var pos = c.Coordinates.Value;
+            var cid = c.Identity; int inst = cid.Instance;
             _items[cid] = new SeenItem { Template = 0, Pos = pos, Seen = Now };
             _chestRaw[cid] = b;
             if (_chestSaved < 12 && _instance != 0)

@@ -182,19 +182,15 @@ namespace AOSharp.Clientless.Net
                 Message message;
                 if (!TryDeserializeSimpleCharFullUpdate(packet, out message))
                 {
-                    // WORKAROUND (AOSharpSDK 1.0.89): the ChestFullUpdate reader baked into the NuGet
-                    // AOSharp.Common.dll is an older, broken version that throws OverflowException on the
-                    // mission / corpse containers the server sends on zone-in (a huge count is read from
-                    // the wrong offset). The correct field layout is known (OmniCell's
-                    // ChestItemFullUpdateMessage), but the bot doesn't use chest contents, so we simply
-                    // DROP these packets rather than let the broken serializer throw and spam the console.
-                    // When looting is needed later, add a corrected reader here like the SimpleChar one.
+                    // ChestFullUpdate: ChestFullUpdateMessage is OmniCell's layout since 2026-09-29 (all 47,851 recorded
+                    // copies read exactly; the old one threw on every chest on the ground). Read once here and handed on
+                    // typed, with the raw bytes (MissionController keeps them), then dropped: nothing else consumes it.
                     if (IsN3MessageType(packet, N3MessageType.ChestFullUpdate))
                     {
-                        // Still not deserialized, but handed on raw: a mission's find-item target can be one of
-                        // these containers (quest record target 0xC74E, 2026-09-23 22:10), and dropping them left
-                        // the bot unable to see it.
-                        Client.RaiseChestFullUpdateRaw(packet);
+                        ChestFullUpdateMessage chest = null;
+                        try { chest = _serializer.Deserialize(packet)?.Body as ChestFullUpdateMessage; }
+                        catch (Exception ex) { _logger.Error($"CHEST: unreadable ChestFullUpdate ({ex.Message}), {packet.Length} bytes."); }
+                        Client.RaiseChestFullUpdate(packet, chest);
                         return;
                     }
 
