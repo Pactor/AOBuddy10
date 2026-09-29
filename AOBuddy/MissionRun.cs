@@ -724,6 +724,13 @@ namespace AOBuddy
             int hpTick = _ctx.Status.SelfHpPct;
             if (hpTick >= 90) _hpHighAt = _clock;
             if (hpTick >= 0) { if (_prevHp >= 0 && hpTick < _prevHp) _lastHurt = _clock; _prevHp = hpTick; }
+            // HURT is damage landing on him OR a pet, from the blow record (weapon and nano), not only his own HP going down.
+            // A heal pet keeps his HP at 100% (Algorithman's MP, 17:24:38 and 17:25:34 2026-09-29: 'nothing hurts me',
+            // back to the blitz, with a Seasoned OT Clerk nuking him and his pets and T-69 on him).
+            var guarded = CombatController.Guarded(me, null);
+            if (Blows.Since(Blows.Now - 1.0).Any(b => b.Damage > 0 && (b.Target == me.Identity || guarded.Contains(b.Target))
+                                                      && b.Attacker != me.Identity && !guarded.Contains(b.Attacker)))
+                _lastHurt = _clock;
             // PINNED WHILE FLEEING (22:53, 2026-09-24, Holes in the Wall): he fled at 38% from three mobs, the server
             // held him at (41,6,87) - rooted - and he stood 11 s not fighting back, 38% -> dead. Not getting away
             // (under 3 m in 3 s) and still being hit: turn and fight, and no fleeing again for a while.
@@ -1401,10 +1408,11 @@ namespace AOBuddy
             double now = Blows.Now, fightFrom = now - (_clock - _fightStart);
             // His real blows and misses - not the Attack that starts the swinging.
             var mine = Blows.Since(now - Blows.KeepSeconds).Where(b => b.Attacker == me.Identity && !b.IsEngage).ToList();
-            // His swing time: the median gap between his blows on one mob, from the last minute.
+            // His swing time: the median gap between his weapon's blows on one mob, from the last minute (a nuke is no swing).
+            var swung = mine.Where(b => !b.IsNano).ToList();
             var gaps = new List<double>();
-            for (int i = 1; i < mine.Count; i++)
-                if (mine[i].Target == mine[i - 1].Target && mine[i].Time - mine[i - 1].Time < 10) gaps.Add(mine[i].Time - mine[i - 1].Time);
+            for (int i = 1; i < swung.Count; i++)
+                if (swung[i].Target == swung[i - 1].Target && swung[i].Time - swung[i - 1].Time < 10) gaps.Add(swung[i].Time - swung[i - 1].Time);
             string key = WeaponKey();
             if (key != _swingKey) { _swingKey = key; _swingSecs = key.Length > 0 ? SavedSwing(key) : null; }   // weapons changed: theirs
             if (gaps.Count >= 3) { gaps.Sort(); _swingSecs = gaps[gaps.Count / 2]; if (key.Length > 0) SaveSwing(key, _swingSecs.Value); }
@@ -1414,11 +1422,22 @@ namespace AOBuddy
             // the old fight, 44 s of 'no blow' made him start and stop the walk every tick.
             if (_reachFoe != foe.Identity || _reachSince < fightFrom) { _reachFoe = foe.Identity; _reachSince = Math.Max(now, fightFrom); _reachWalking = null; }
             double last = mine.Where(b => b.Target == foe.Identity && b.Time >= _reachSince).Select(b => b.Time).DefaultIfEmpty(_reachSince).Max();
+            // NEVER SET ASIDE ONE THAT IS HURTING US (Algorithman's MP, 17:24:35 2026-09-29): a Seasoned OT Clerk, a caster
+            // standing off at 10-13 m, was left alone for 5 minutes because his blows didn't land - and nuked him and his
+            // pets the whole time. One that has done damage to him or a pet while being judged stays in the fight.
+            var guarded = CombatController.Guarded(me, null);
+            bool hurting = Blows.Since(_reachSince).Any(b => b.Attacker == foe.Identity && b.Damage > 0 && (b.Target == me.Identity || guarded.Contains(b.Target)));
             if (_reachWalking == foe.Identity)
             {
                 if (last > _reachWalkFrom)
                 {
                     _ctx.Log($"MISSIONRUN: reaching '{foe.Name}' now ({me.DistanceFrom(foe):0.0} m).");
+                    _reachWalking = null; _reachSince = now;
+                    return null;
+                }
+                if (now > _reachWalkUntil && hurting)
+                {
+                    _ctx.Log($"MISSIONRUN: walked the path to '{foe.Name}' and still no blow of mine lands, but it is hurting us; staying on it.");
                     _reachWalking = null; _reachSince = now;
                     return null;
                 }
@@ -1435,6 +1454,12 @@ namespace AOBuddy
             if (quiet < 3 * _swingSecs.Value) return null;
             var pos = me.Transform.Position;
             float? len = _mission.PathLen(pos, foe.Transform.Position);
+            if (!len.HasValue && hurting)
+            {
+                _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s ({me.DistanceFrom(foe):0.0} m) and no path to it, but it is hurting us; staying on it.");
+                _reachSince = now;
+                return null;
+            }
             if (!len.HasValue)
             {
                 _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s ({me.DistanceFrom(foe):0.0} m) and no path to it; leaving it alone for 5 minutes.");

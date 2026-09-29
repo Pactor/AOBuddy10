@@ -565,6 +565,14 @@ namespace AOSharp.Clientless
                 // (42% -> 79%, 322/402) and read its own HP as 51% = 322/638 until restart (2026-09-23 21:01).
                 if (DynelManager.Find(hd.Identity, out Dynel hpTarget))
                     hpTarget.SetStat(Stat.Health, hd.Health);
+                // Damage with no weapon behind it (SourceItem 0: nukes, DoT ticks, procs) comes ONLY here - no AttackInfo -
+                // so it is a blow of its own, and says who the source is fighting. A weapon's (SourceItem = the
+                // AttackInfo's WeaponInstance) is already in from its AttackInfo. See Blows.
+                if (hd.Delta < 0 && hd.SourceItem == 0 && hd.Source != hd.Identity)
+                {
+                    NoteBlow(hd.Source, hd.Identity);
+                    Blows.AddNano(hd.Source, hd.Identity, -hd.Delta);
+                }
             });
 
             // Keep skills/abilities live. After login these change via SkillMessage (buffs like
