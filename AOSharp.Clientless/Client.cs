@@ -712,6 +712,7 @@ namespace AOSharp.Clientless
                 AttackMessage attackMessage = (AttackMessage)msg;
                 if (DynelManager.Find(attackMessage.Identity, out SimpleChar attacker))
                     attacker.FightingIdentity = attackMessage.Target;
+                Blows.Engage(attackMessage.Identity, attackMessage.Target);
             });
 
             // EVERY BLOW names who struck whom (capture 20260925-113057 s14: AttackInfo Identity = the attacker, Target = the

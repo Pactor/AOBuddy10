@@ -810,8 +810,9 @@ namespace AOBuddy
                     if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && _clock - _lastHurt < 3
                         && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && LosingRace(me) is string why)
                     {
-                        _ctx.Log($"MISSIONRUN: losing: {why} - going out to heal.");
-                        if (StartHealOut(me, hpNow)) return false;
+                        // Logged once per 10 s while a trip is refused (06:46:32: every tick, beside 'no headway').
+                        if (_clock - _losingLogAt >= 10) { _losingLogAt = _clock; _ctx.Log($"MISSIONRUN: losing: {why} - going out to heal."); }
+                        if (StartHealOut(me, hpNow)) { _losingLogAt = -999; return false; }
                     }
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
@@ -1373,12 +1374,13 @@ namespace AOBuddy
         // REACH, from the wire: is anything of his landing on (or missing) the mob he is attacking?
         // Returns where to walk to get at it, or null when his blows are reaching it (or it has just been set aside).
         private Identity? _reachFoe, _reachWalking;
-        private double _reachSince, _reachWalkUntil;
+        private double _reachSince, _reachWalkFrom, _reachWalkUntil;
         private static double? _swingSecs;   // his own time between blows, measured; kept across fights
         private Vector3? ReachCheck(LocalPlayer me, NpcChar foe)
         {
-            double now = Blows.Now;
-            var mine = Blows.Since(now - Blows.KeepSeconds).Where(b => b.Attacker == me.Identity).ToList();
+            double now = Blows.Now, fightFrom = now - (_clock - _fightStart);
+            // His real blows and misses - not the Attack that starts the swinging.
+            var mine = Blows.Since(now - Blows.KeepSeconds).Where(b => b.Attacker == me.Identity && !b.IsEngage).ToList();
             // His swing time: the median gap between his blows on one mob, from the last minute.
             var gaps = new List<double>();
             for (int i = 1; i < mine.Count; i++)
@@ -1386,36 +1388,40 @@ namespace AOBuddy
             if (gaps.Count >= 3) { gaps.Sort(); _swingSecs = gaps[gaps.Count / 2]; }
             if (!_swingSecs.HasValue) return null;   // not measured yet this session: nothing to judge by
 
-            if (_reachFoe != foe.Identity) { _reachFoe = foe.Identity; _reachSince = now; _reachWalking = null; }
-            double last = mine.Where(b => b.Target == foe.Identity).Select(b => b.Time).DefaultIfEmpty(_reachSince).Max();
-            double quiet = now - Math.Max(last, _reachSince);
-            if (last > _reachSince && _reachWalking == foe.Identity)
+            // A new mob, or the same one in a new fight (back in from a heal trip, 06:47:17): judged from now. Judged from
+            // the old fight, 44 s of 'no blow' made him start and stop the walk every tick.
+            if (_reachFoe != foe.Identity || _reachSince < fightFrom) { _reachFoe = foe.Identity; _reachSince = Math.Max(now, fightFrom); _reachWalking = null; }
+            double last = mine.Where(b => b.Target == foe.Identity && b.Time >= _reachSince).Select(b => b.Time).DefaultIfEmpty(_reachSince).Max();
+            if (_reachWalking == foe.Identity)
             {
-                _ctx.Log($"MISSIONRUN: reaching '{foe.Name}' now ({me.DistanceFrom(foe):0.0} m).");
-                _reachWalking = null;
-            }
-            if (quiet < 3 * _swingSecs.Value) { if (_reachWalking != foe.Identity) return null; }
-            var pos = me.Transform.Position;
-            if (_reachWalking != foe.Identity)
-            {
-                float? len = _mission.PathLen(pos, foe.Transform.Position);
-                if (!len.HasValue)
+                if (last > _reachWalkFrom)
                 {
-                    _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s ({me.DistanceFrom(foe):0.0} m) and no path to it; leaving it alone for 5 minutes.");
-                    _combat.SetAside(me, foe.Identity, 300);
+                    _ctx.Log($"MISSIONRUN: reaching '{foe.Name}' now ({me.DistanceFrom(foe):0.0} m).");
+                    _reachWalking = null; _reachSince = now;
                     return null;
                 }
-                _reachWalking = foe.Identity;
-                _reachWalkUntil = now + len.Value / Math.Max(1f, _ctx.RunVelocity(me)) + 3 * _swingSecs.Value;
-                _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s (my swing {_swingSecs:0.0} s), {me.DistanceFrom(foe):0.0} m off: can't reach it from here; walking the path to it ({len:0} m).");
+                if (now > _reachWalkUntil)
+                {
+                    _ctx.Log($"MISSIONRUN: walked the path to '{foe.Name}' and still no blow of mine lands; leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, foe.Identity, 300);
+                    _reachWalking = null;
+                    return null;
+                }
+                return _mission.StepToward(me.Transform.Position, foe.Transform.Position) ?? foe.Transform.Position;
             }
-            if (now > _reachWalkUntil)
+            double quiet = now - last;
+            if (quiet < 3 * _swingSecs.Value) return null;
+            var pos = me.Transform.Position;
+            float? len = _mission.PathLen(pos, foe.Transform.Position);
+            if (!len.HasValue)
             {
-                _ctx.Log($"MISSIONRUN: walked the path to '{foe.Name}' and still no blow of mine lands; leaving it alone for 5 minutes.");
+                _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s ({me.DistanceFrom(foe):0.0} m) and no path to it; leaving it alone for 5 minutes.");
                 _combat.SetAside(me, foe.Identity, 300);
-                _reachWalking = null;
                 return null;
             }
+            _reachWalking = foe.Identity; _reachWalkFrom = now;
+            _reachWalkUntil = now + len.Value / Math.Max(1f, _ctx.RunVelocity(me)) + 3 * _swingSecs.Value;
+            _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s (my swing {_swingSecs:0.0} s), {me.DistanceFrom(foe):0.0} m off: can't reach it from here; walking the path to it ({len:0} m).");
             return _mission.StepToward(pos, foe.Transform.Position) ?? foe.Transform.Position;
         }
 
@@ -1436,19 +1442,27 @@ namespace AOBuddy
             if (onMe.Count == 0) return null;   // the last blow killed it (05:50:20, 2026-09-29: '0 on me', walked out at 78%)
 
             double now = Blows.Now, from = now - fightSecs;
-            var blows = Blows.Since(from);
+            var recent = Blows.Since(now - Blows.KeepSeconds);
+            var blows = recent.Where(b => b.Time >= from).ToList();
             var ids = new HashSet<Identity>(onMe.Select(n => n.Identity));
 
+            // Each one timed from its Attack on him (the start of its swinging), not its first blow: 40 + 90 from a
+            // Piercer Scorpiod read 41/s from its first blow and walked him out at 85% (06:46:33, 2026-09-29) - it had
+            // been swinging for 6.3 s, 21/s. No Attack seen (it started before we were near): from its first blow.
             double theirs = 0;
             foreach (var n in onMe)
             {
-                var swings = blows.Where(b => b.Attacker == n.Identity && b.Target == me.Identity).ToList();
+                var at = recent.Where(b => b.Attacker == n.Identity && b.Target == me.Identity).ToList();
+                int start = at.FindLastIndex(b => b.IsEngage);
+                var swings = start >= 0 ? at.Skip(start).ToList() : at.Where(b => b.Time >= from).ToList();
                 if (swings.Count == 0) continue;
-                theirs += swings.Sum(b => b.Amount) / Math.Max(MinSecs, now - swings[0].Time);
+                theirs += swings.Sum(b => b.Damage) / Math.Max(MinSecs, now - swings[0].Time);
             }
             if (theirs <= 0) return null;   // nothing landing on him
 
-            double ours = blows.Where(b => ids.Contains(b.Target) && !ids.Contains(b.Attacker)).Sum(b => b.Amount) / fightSecs;
+            // What lands on them. Their own regeneration is not taken off (a Piercer Scorpiod regains ~12 HP/s, 1129 ->
+            // 1297 in 14 s): the kill reads that much sooner than it is.
+            double ours = blows.Where(b => ids.Contains(b.Target) && !ids.Contains(b.Attacker)).Sum(b => b.Damage) / fightSecs;
             int foeHp = onMe.Sum(n => n.TryGetStat(Stat.Health, out int h) ? h : 0);
             double floor = myMax * T("healoutdoorhp") / 100.0;
             double killSecs = ours > 0 ? foeHp / ours : double.PositiveInfinity;
@@ -1458,6 +1472,7 @@ namespace AOBuddy
                  + $"{theirs:0}/s on my {myHp} HP puts me under {floor:0} ({T("healoutdoorhp"):0}%) in {Math.Max(0, (myHp - floor) / theirs):0} s";
         }
 
+        private double _losingLogAt = -999, _noHeadwayLogAt = -999;
         private bool StartHealOut(LocalPlayer me, int hpNow)
         {
             if (_healTrips >= T("healtrips")) return false;
@@ -1467,7 +1482,7 @@ namespace AOBuddy
             // No headway on the same mob since the last trip: this one resting won't beat.
             if (tgt != null && _healPrevMob.HasValue && tgt.Identity == _healPrevMob.Value && tHp >= 0 && _healPrevHp >= 0 && tHp >= _healPrevHp - 2)
             {
-                _ctx.Log($"MISSIONRUN: '{tgt.Name}' is at {tHp}% again, {_healPrevHp}% when I last went out to heal; no headway.");
+                if (_clock - _noHeadwayLogAt >= 10) { _noHeadwayLogAt = _clock; _ctx.Log($"MISSIONRUN: '{tgt.Name}' is at {tHp}% again, {_healPrevHp}% when I last went out to heal; no headway."); }
                 return false;   // the flee below drops the mission
             }
             foreach (var x in from) _combat.SetAside(me, x.Identity, T("fleesecs"));
