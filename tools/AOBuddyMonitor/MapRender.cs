@@ -100,8 +100,8 @@ namespace AOBuddyMonitor
         // A mission building is not in the client data: the bot composes it from the zone-in placement and
         // the pool's rooms.json (AOBuddyNav.ComposeMission), and /nav carries just that placement. Here the
         // SAME composition runs against this machine's GameData, then each floor becomes a bitmap: one pixel
-        // per walkable room cell, walls baked in as brighter lines (nav.Walls, world triangles filtered to
-        // the floor's height band). All floors render on a background task; the plan pops in when ready.
+        // per walkable room cell, walls baked in as brighter lines (nav.Walls sliced at body height by the planner's
+        // own MissionGrid.WallPlan). All floors render on a background task; the plan pops in when ready.
 
         public sealed class MissionPlan
         {
@@ -167,8 +167,9 @@ namespace AOBuddyMonitor
 
         // ---- static dungeons (owner, 2026-09-28: Condemned Subway drew all black - "draw the walls, I want to see
         // something at least"). A dungeon has no ground.bin, but its rooms.json is placed already: the same plan as a
-        // mission, from AOBuddyNav.Load. One plan (floor 0), every wall drawn - a static dungeon's rooms sit at several
-        // heights under one floor number, so the mission's per-floor height band would drop most of them.
+        // mission, from AOBuddyNav.Load. Its walls go through the same MissionGrid.WallPlan slicing; note a static dungeon's
+        // rooms can sit at several heights under one floor number, and where two overlap in plan the grid keeps the higher
+        // floor's height for that cell (as it would for a mission), so a lower level's walls there are cut too high.
         private readonly Dictionary<int, MissionPlan> _dungeons = new Dictionary<int, MissionPlan>();
         private readonly HashSet<int> _dungeonLoading = new HashSet<int>();
         public MissionPlan GetDungeon(int pf)
@@ -283,6 +284,13 @@ namespace AOBuddyMonitor
                 };
                 if (nav.Exit != null) { plan.ExitXZ = new[] { (float)nav.Exit.X, (float)nav.Exit.Z }; plan.ExitFloor = nav.Exit.Floor; }
 
+                // The planner's own grid over the same composition (MissionController.OnZoneIn builds it the same way):
+                // its per-cell floor heights and wall slicing give the walls below. No doors are known here; the grid
+                // only keeps the dictionary for the bot's lock handling.
+                MissionGrid grid = null;
+                if (nav.Walls != null && nav.Walls.Length >= 9)
+                    try { grid = MissionGrid.Build(nav, new Dictionary<AOSharp.Common.GameData.Identity, DoorInfo>()); } catch { grid = null; }
+
                 // per floor: paint the walkable cells (a shade per room, so rooms read as rooms)…
                 foreach (int floor in plan.Floors)
                 {
@@ -309,12 +317,14 @@ namespace AOBuddyMonitor
                         if (n > 0) plan.Rooms.Add(new RoomLabel(string.IsNullOrEmpty(rm.PoolName) ? rm.Name : rm.PoolName, floor, (float)(sx / n), (float)(sz / n)));
                     }
 
-                    // …then bake the walls: nav.Walls' triangles whose height sits in this floor's band
-                    var onFloor = d.Rooms.Where(r => r.Floor == floor).ToList();
-                    if (onFloor.Count > 0 && nav.Walls != null)
+                    // …then bake the walls as a floor plan: the wall triangles cut by the horizontal planes the
+                    // planner clears its cells against (MissionGrid.WallPlan - SliceAbove over each cell's own floor
+                    // height), so what is drawn is exactly what the route has to get round: room outlines, plus the
+                    // dividers and objects that stand at body height. (Until 2026-09-29 every edge of every triangle
+                    // in a height band was drawn, top-down, and cave rooms became a wireframe tangle.)
+                    var segs = grid?.WallPlan(floor);
+                    if (segs != null && segs.Count > 0)
                     {
-                        float y0 = heightBands ? onFloor.Min(r => r.Pos[1]) - 1f : float.MinValue;
-                        float y1 = heightBands ? onFloor.Min(r => r.Pos[1]) + Math.Max(3f, worldHeight * 0.8f) : float.MaxValue;
                         void Line(double ax, double az, double bx, double bz)
                         {
                             int x0 = (int)Math.Round((ax - minX) / cell * s), z0 = (int)Math.Round((az - minZ) / cell * s);
@@ -335,17 +345,7 @@ namespace AOBuddyMonitor
                                     }
                             }
                         }
-                        for (int t = 0; t + 8 < nav.Walls.Length; t += 9)
-                        {
-                            bool inBand = true;
-                            for (int k = 0; k < 3; k++) if (nav.Walls[t + k * 3 + 1] < y0 || nav.Walls[t + k * 3 + 1] > y1) { inBand = false; break; }
-                            if (!inBand) continue;
-                            for (int k = 0; k < 3; k++)
-                            {
-                                int a0 = t + k * 3, a1 = t + ((k + 1) % 3) * 3;
-                                Line(nav.Walls[a0], nav.Walls[a0 + 2], nav.Walls[a1], nav.Walls[a1 + 2]);
-                            }
-                        }
+                        foreach (var sg in segs) Line(sg[0], sg[1], sg[2], sg[3]);
                     }
                     lock (plan.FloorBgra) plan.FloorBgra[floor] = img;
                 }

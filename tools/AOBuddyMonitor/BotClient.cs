@@ -111,6 +111,18 @@ namespace AOBuddyMonitor
             public MissionLayout Layout;       // present while inside a mission building
             public int? Floor;                 // the floor the bot is on (server numbering, can be negative)
             public int[] Floors = new int[0];  // every floor the building has
+            public List<Door> Doors = new List<Door>();   // the doors the server sent (MissionController.DoorsJson)
+        }
+
+        /// <summary>A door as the server sent it (DoorFullUpdate / DoorStatusUpdate, via MissionController.DoorsJson).</summary>
+        public sealed class Door
+        {
+            public string Id = "?";
+            public float[] Pos;                 // [x,y,z]
+            public float[] Fwd;                 // the door's Heading forward on the ground plane [x,z]; [0,0] = unknown
+            public bool Open, Locked, Picked, Unpickable;
+            public int LockDifficulty, Room = -1, AdjoiningRoom = -1;
+            public int? Floor;                  // the bot's MissionGrid.FloorAt for it; null = unknown
         }
 
         /// <summary>The zone-in placement verbatim (mirrors AOBuddyNav.MissionLayout): which pool room went
@@ -333,6 +345,22 @@ namespace AOBuddyMonitor
                     Floor = (int?)m["floor"],
                 };
                 if (m["floors"] is JArray fl) n.Mission.Floors = fl.Select(x => (int?)x ?? 0).ToArray();
+                if (m["doors"] is JArray da)
+                    foreach (var e in da.OfType<JObject>())
+                        n.Mission.Doors.Add(new Door
+                        {
+                            Id = (string)e["id"] ?? "?",
+                            Pos = Vec(e["pos"]),
+                            Fwd = Vec(e["fwd"]),
+                            Open = (bool?)e["open"] ?? false,
+                            Locked = (bool?)e["locked"] ?? false,
+                            Picked = (bool?)e["picked"] ?? false,
+                            Unpickable = (bool?)e["unpickable"] ?? false,
+                            LockDifficulty = (int?)e["lockDifficulty"] ?? 0,
+                            Room = (int?)e["room"] ?? -1,
+                            AdjoiningRoom = (int?)e["adjoiningRoom"] ?? -1,
+                            Floor = (int?)e["floor"],
+                        });
                 if (m["layout"] is JObject l)
                 {
                     var lay = new MissionLayout

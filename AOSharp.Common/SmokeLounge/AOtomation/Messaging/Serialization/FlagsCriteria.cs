@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FlagsCriteria.cs" company="SmokeLounge">
-//   Copyright © 2013 SmokeLounge.
+//   Copyright ï¿½ 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
 //   the extent permitted by applicable law. You can redistribute it
 //   and/or modify it under the terms of the Do What The Fuck You Want
@@ -22,6 +22,13 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
 
         EqualsToAny, 
 
-        Default
+        Default,
+
+        /// <summary>
+        /// Present when none of the listed bits is set (OmniCell's SerializationContext.EvaluateHasNone:
+        /// every value v satisfies (v &amp; flag) == 0). Added last so the existing values keep their numbers;
+        /// DoorFullUpdateMessage gates its position on the owner instance with it.
+        /// </summary>
+        HasNone
     }
 }

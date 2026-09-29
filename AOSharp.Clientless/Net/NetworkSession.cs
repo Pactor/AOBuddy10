@@ -201,18 +201,8 @@ namespace AOSharp.Clientless.Net
                     if (IsN3MessageType(packet, N3MessageType.Action)) Client.RaiseActionRaw(packet);
                     if (IsN3MessageType(packet, N3MessageType.DoorFullUpdate)) Client.RaiseDoorFullUpdateRaw(packet);
 
-                    // SpellList: a nano was uploaded/learned mid-session. The stock serializer leaves this
-                    // message empty (its body is undefined), so learned nanos never reached SpellList and the
-                    // bot wouldn't summon e.g. a just-learned heal pet until a relog. Pull the added nano out
-                    // and add it live, then drop the packet (nothing else consumes it).
-                    if (IsN3MessageType(packet, N3MessageType.SpellList))
-                    {
-                        TryApplySpellListNano(packet);
-                        return;
-                    }
 
-                    // FullCharacter: try the stock serializer first (correct for the common no-pet case); only
-                    // fall back to the corrected reader when it throws (a pet is up — see FullCharacterReader).
+                    // FullCharacter: FullCharacterReader, the real layout (see TryDeserializeFullCharacter).
                     if (!TryDeserializeFullCharacter(packet, out message))
                         message = _serializer.Deserialize(packet);
                 }
@@ -347,10 +337,11 @@ namespace AOSharp.Clientless.Net
 
         /// <summary>
         /// FullCharacter handling. Returns false for non-FullCharacter packets (caller uses the stock path).
-        /// For a FullCharacter it PREFERS the stock serializer (unchanged for the common no-pet case) and only
-        /// falls back to <see cref="FullCharacterReader"/> when the stock serializer throws — which it does
-        /// whenever the character has a pet up (the trailing pet identity is mis-read as a TeamMember struct
-        /// and it reads past the end). The fallback keeps our stats + spell list and extracts the pet list.
+        /// Every FullCharacter is read by <see cref="FullCharacterReader"/>, the real layout (OmniCell's, 530 of 530
+        /// recorded copies with nothing left over). The stock class is misaligned after the stats - teamed it
+        /// loaded the empty buff list as Perks and wiped them. Should the reader ever fail, the stock class is
+        /// used only for what it reads right (inventory, nanos, stats): its Perks, Pets and team are dropped, so
+        /// nothing is overwritten with a misread.
         /// </summary>
         private bool TryDeserializeFullCharacter(byte[] packet, out Message message)
         {
@@ -358,14 +349,9 @@ namespace AOSharp.Clientless.Net
             if (!IsN3MessageType(packet, N3MessageType.FullCharacter))
                 return false;
 
+            Header header = DeserializeHeader(packet);
             try
             {
-                message = _serializer.Deserialize(packet);
-                return true;
-            }
-            catch
-            {
-                Header header = DeserializeHeader(packet);
                 using (MemoryStream bodyStream = new MemoryStream(packet))
                 using (MessagingStreamReader bodyReader = new MessagingStreamReader(bodyStream))
                 {
@@ -375,38 +361,17 @@ namespace AOSharp.Clientless.Net
                 }
                 return true;
             }
-        }
-
-        /// <summary>
-        /// Extract the nano a SpellList message uploaded and add it to the LOCAL player's SpellList live.
-        /// The SpellList body has a variable effect block we can't cheaply skip, but the uploaded nano lives
-        /// in a fixed 14-byte tail: [HasNano=1][Nano.Type(4)][Nano.Instance(4)][UnreadFlag][ApplyScope(4)].
-        /// So we read the tail, not the effects. A stray misread is harmless — a bogus id just fails the nano
-        /// lookup in AutoSummons and is ignored. Only applies to our own character (identity at offset 24).
-        /// </summary>
-        private void TryApplySpellListNano(byte[] packet)
-        {
-            try
+            catch (Exception ex)
             {
-                if (packet == null || packet.Length < 38) return;   // 16 header + type + identity + ≥14 tail
-                using (MemoryStream ms = new MemoryStream(packet))
-                using (MessagingStreamReader r = new MessagingStreamReader(ms))
+                _logger.Error($"FULLCHAR: the reader failed ({ex.Message}); applying only inventory, nanos and stats from the stock class. {packet.Length} bytes.");
+                try
                 {
-                    r.Position = 24;                        // character Identity.Instance
-                    int charInstance = r.ReadInt32();
-                    if (Client.LocalDynelId != 0 && charInstance != Client.LocalDynelId) return;
-
-                    r.Position = packet.Length - 14;        // start of the [HasNano][Nano][…] tail
-                    if (r.ReadByte() != 1) return;          // HasNano == 0: nothing uploaded here
-                    r.ReadInt32();                          // Nano.Type
-                    int nanoId = r.ReadInt32();             // Nano.Instance == the nano id
-                    if (nanoId <= 0) return;
-
-                    LocalPlayer me = DynelManager.LocalPlayer;
-                    if (me != null) me.AddUploadedNano(nanoId);
+                    message = _serializer.Deserialize(packet);
+                    if (message?.Body is FullCharacterMessage fc) { fc.Perks = null; fc.Pets = null; fc.TeamMembers = null; fc.Buffs = null; }
                 }
+                catch { message = null; }
+                return true;
             }
-            catch { /* never let a malformed SpellList disrupt processing */ }
         }
 
         /// <summary>

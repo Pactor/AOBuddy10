@@ -1376,6 +1376,25 @@ namespace AOBuddy
         private Identity? _reachFoe, _reachWalking;
         private double _reachSince, _reachWalkFrom, _reachWalkUntil;
         private static double? _swingSecs;   // his own time between blows, measured; kept across fights
+        // ...and across restarts, per weapon set (swing-times.json beside the plugin, like special-ranges.json): after the
+        // 06:48 restart nothing was measured yet, the check sat out, and he stood 3.8 m from Borer Scorpiod again (06:51).
+        private static readonly string SwingFile = System.IO.Path.Combine(
+            System.IO.Path.GetDirectoryName(typeof(MissionRun).Assembly.Location) ?? ".", "swing-times.json");
+        private JObject _swings;
+        private string _swingKey;
+        private static string WeaponKey() => string.Join("+", CombatController.EquippedWeapons().Select(w => w.Name).OrderBy(n => n));
+        private double? SavedSwing(string key)
+        {
+            if (_swings == null) _swings = JsonStore.Load<JObject>(SwingFile, _ctx.Log) ?? new JObject();
+            return (double?)_swings[key];
+        }
+        private void SaveSwing(string key, double secs)
+        {
+            if (_swings == null) SavedSwing(key);
+            if (_swings[key] is JToken old && Math.Abs((double)old - secs) < 0.05) return;
+            _swings[key] = Math.Round(secs, 2);
+            JsonStore.Save(SwingFile, _swings.ToString(), _ctx.Log);
+        }
         private Vector3? ReachCheck(LocalPlayer me, NpcChar foe)
         {
             double now = Blows.Now, fightFrom = now - (_clock - _fightStart);
@@ -1385,8 +1404,10 @@ namespace AOBuddy
             var gaps = new List<double>();
             for (int i = 1; i < mine.Count; i++)
                 if (mine[i].Target == mine[i - 1].Target && mine[i].Time - mine[i - 1].Time < 10) gaps.Add(mine[i].Time - mine[i - 1].Time);
-            if (gaps.Count >= 3) { gaps.Sort(); _swingSecs = gaps[gaps.Count / 2]; }
-            if (!_swingSecs.HasValue) return null;   // not measured yet this session: nothing to judge by
+            string key = WeaponKey();
+            if (key != _swingKey) { _swingKey = key; _swingSecs = key.Length > 0 ? SavedSwing(key) : null; }   // weapons changed: theirs
+            if (gaps.Count >= 3) { gaps.Sort(); _swingSecs = gaps[gaps.Count / 2]; if (key.Length > 0) SaveSwing(key, _swingSecs.Value); }
+            if (!_swingSecs.HasValue) return null;   // never measured with these weapons: nothing to judge by
 
             // A new mob, or the same one in a new fight (back in from a heal trip, 06:47:17): judged from now. Judged from
             // the old fight, 44 s of 'no blow' made him start and stop the walk every tick.
@@ -1646,6 +1667,7 @@ namespace AOBuddy
                         };
                         var rooms = _mission.NavDungeonRooms;
                         if (rooms != null) mj["floors"] = new JArray(rooms.Select(r => r.Floor).Distinct().OrderBy(f => f));
+                        mj["doors"] = _mission.DoorsJson();   // the server's own doors (DoorFullUpdate), drawn by the monitor
                         if (me != null && _mission.InMission)
                         {
                             var f = _mission.FloorAt(me.Transform.Position);

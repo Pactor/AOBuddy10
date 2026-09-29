@@ -91,12 +91,32 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(18, SerializeSize = ArraySizeType.X3F1)]
         public Perk[] Perks { get; set; }
 
-        // NOT an AoMember — the stock generated serializer never touches this. It is populated only by the
-        // custom fallback reader (NetworkSession.TryDeserializeFullCharacter) when the stock serializer
-        // chokes on the trailing pet section (which it does whenever the character has a pet up: the pet's
-        // 8-byte identity sits where the stock reader expects a full TeamMember struct and it reads past the
-        // end). This is the AUTHORITATIVE pet list for the character, used to set pet ownership reliably.
+        // NOT AoMembers from here on. The AoMember layout above is wrong from UnknownIdentities on: the wire
+        // (OmniCell's FullCharacterMessage, which decodes all 530 recorded copies with nothing left over) carries
+        //   TeamFlags; TeamIdentity if 1 or 3; RaidTeamIndex if 3; Team (1) or six raid teams (3);
+        //   Pets; Buffs; ResearchGoals.
+        // The stock layout read TeamFlags as a count, Pets as TeamMembers, Buffs as Unknown12 and ResearchGoals
+        // as Perks - right only while solo with no pet; teamed it loaded the empty buff list as Perks and wiped
+        // the trained perks. AOSharp.Clientless.Net.FullCharacterReader reads the real layout into the fields
+        // below (and Perks = ResearchGoals). Unknown4/6/8 are the skill, perk and nano LOCK timers (Identity,
+        // lock duration, remaining), e.g. First Aid 40 s with 36 left.
+        public int TeamFlags { get; set; }
+        public Identity? TeamIdentity { get; set; }
+        public int? RaidTeamIndex { get; set; }
+        public TeamMember[][] RaidTeams { get; set; }
+        /// <summary>The character's pets (the AUTHORITATIVE pet list, used to set pet ownership).</summary>
         public Identity[] Pets { get; set; }
+        /// <summary>The nano effects running on the character: each effect's function identity, hits, amount, spell list.</summary>
+        public BuffEntry[] Buffs { get; set; }
+
+        public class BuffEntry
+        {
+            public Identity Effect { get; set; }
+            public int Hits { get; set; }
+            public int Amount { get; set; }
+            public int Target { get; set; }
+            public int SpellList { get; set; }
+        }
 
         #endregion
 

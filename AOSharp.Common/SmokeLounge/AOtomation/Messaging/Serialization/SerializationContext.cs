@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SerializationContext.cs" company="SmokeLounge">
-//   Copyright © 2013 SmokeLounge.
+//   Copyright ï¿½ 2013 SmokeLounge.
 //   This program is free software. It comes without any warranty, to
 //   the extent permitted by applicable law. You can redistribute it
 //   and/or modify it under the terms of the Do What The Fuck You Want
@@ -164,11 +164,19 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
                     return this.EvaluateHasAny(usesFlags);
                 case FlagsCriteria.EqualsToAny:
                     return this.EvaluateEqualsToAny(usesFlags);
+                case FlagsCriteria.HasNone:
+                    return this.EvaluateHasNone(usesFlags);
                 case FlagsCriteria.Default:
                     return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private bool EvaluateHasNone(AoUsesFlagsAttribute usesFlags)
+        {
+            var flagValue = this.GetFlagValue(usesFlags.Flag);
+            return usesFlags.CriteriaValues.All(v => (v & flagValue) == 0);
         }
 
         private bool EvaluateEqualsToAny(AoUsesFlagsAttribute usesFlags)

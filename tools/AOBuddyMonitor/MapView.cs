@@ -53,6 +53,10 @@ namespace AOBuddyMonitor
         private readonly IBrush _mobBrush = new SolidColorBrush(Color.FromArgb(170, 160, 128, 80));
         private readonly IBrush _petBrush = new SolidColorBrush(Color.FromArgb(235, 80, 150, 235));
         private readonly IPen _botPen = new Pen(Brushes.Lime, 2);
+        private readonly Pen _doorOpenPen = new Pen(new SolidColorBrush(Color.FromArgb(240, 90, 220, 90)), 3) { LineCap = PenLineCap.Round };
+        private readonly Pen _doorShutPen = new Pen(new SolidColorBrush(Color.FromArgb(240, 200, 200, 200)), 3) { LineCap = PenLineCap.Round };
+        private readonly Pen _doorLockedPen = new Pen(new SolidColorBrush(Color.FromArgb(240, 235, 70, 70)), 3) { LineCap = PenLineCap.Round };
+        private const double DoorTickPx = 7;              // half the tick, in screen pixels (a symbol, not a door width)
 
         public MapView(MapRender render)
         {
@@ -292,6 +296,29 @@ namespace AOBuddyMonitor
                     var d = ToScreen(nav.Mission.Door[0], nav.Mission.Door[2]);
                     Cross(ctx, d, 7, _walkPen);
                 }
+
+                // the building's real doors, as the server sent them (DoorFullUpdate / DoorStatusUpdate): a short tick
+                // across the door's facing at its position, green open, grey shut, red locked; hover names it
+                if (mission != null && nav.Mission?.Doors != null)
+                    foreach (var dr in nav.Mission.Doors)
+                    {
+                        if (dr.Pos == null || (dr.Floor.HasValue && dr.Floor.Value != floor)) continue;
+                        var p = ToScreen(dr.Pos[0], dr.Pos[2]);
+                        var pen = dr.Locked ? _doorLockedPen : dr.Open ? _doorOpenPen : _doorShutPen;
+                        double fx = dr.Fwd != null ? dr.Fwd[0] : 0, fz = dr.Fwd != null ? dr.Fwd[1] : 0, fl = Math.Sqrt(fx * fx + fz * fz);
+                        if (fl > 1e-3)
+                        {
+                            // across the facing = the facing turned 90 degrees; screen Y is inverted (-Z)
+                            double ax = -fz / fl, az = fx / fl, r = DoorTickPx;
+                            ctx.DrawLine(pen, new Point(p.X - ax * r, p.Y + az * r), new Point(p.X + ax * r, p.Y - az * r));
+                        }
+                        else ctx.DrawEllipse(null, pen, p, 3, 3);   // no heading known (raw fallback read)
+                        bool hovered = _hoverPx.HasValue && Math.Abs(_hoverPx.Value.X - p.X) <= DoorTickPx && Math.Abs(_hoverPx.Value.Y - p.Y) <= DoorTickPx;
+                        if (hovered)
+                            Label(ctx, p.X + 8, p.Y - 8, $"door {dr.Id}  rooms {dr.Room} / {dr.AdjoiningRoom}  lock difficulty {dr.LockDifficulty}"
+                                                         + (dr.Locked ? "  LOCKED" : dr.Open ? "  open" : "  shut")
+                                                         + (dr.Picked ? "  (picked)" : "") + (dr.Unpickable ? "  (gave up picking)" : ""));
+                    }
 
                 // the server's snap-backs on this floor: where he tried to be (local) vs where he was put
                 foreach (var s in nav.Snaps)

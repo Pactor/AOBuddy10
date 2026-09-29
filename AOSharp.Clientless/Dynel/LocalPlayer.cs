@@ -219,8 +219,8 @@ namespace AOSharp.Clientless
             if (fullChar.UploadedNanoIds != null && fullChar.UploadedNanoIds.Length > 0)
                 SpellList = fullChar.UploadedNanoIds;
 
-            // Perks may be null when this came from the corrected fallback reader (the pet-case FullCharacter,
-            // whose trailing section it doesn't fully decode). Don't wipe the perks the login FullCharacter set.
+            // Perks (the ResearchGoals) are null only when FullCharacterReader failed and the stock class was used for
+            // the rest - its Perks are misread (teamed, they were the empty buff list and wiped the perks). Keep what we have.
             if (fullChar.Perks != null)
                 Perks = fullChar.Perks;
         }

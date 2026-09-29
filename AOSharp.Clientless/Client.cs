@@ -770,6 +770,15 @@ namespace AOSharp.Clientless
                 case CharacterActionType.SetNanoDuration:
                     SetNanoDurationCharAction(charActionMessage.Identity, charActionMessage.Target.Instance, charActionMessage.Parameter2);
                     break;
+                // A nano learned mid-session: CharacterAction UploadNano (0xCC) on the character, Parameter1 = NanoProgram
+                // (53019), Parameter2 = the nano id - 18 of them in the retail captures (e.g. 20260914-120906), and
+                // OmniCell's uploadnano.cs sends the same. (SpellList was taken for this before; it is a nano RUNNING on a
+                // character, and it put the Health and Nano Recharger's effect 291081 in his nano list.)
+                case CharacterActionType.UploadNano:
+                    if (DynelManager.LocalPlayer != null && charActionMessage.Identity == DynelManager.LocalPlayer.Identity
+                        && charActionMessage.Parameter1 == (int)IdentityType.NanoProgram)
+                        DynelManager.LocalPlayer.AddUploadedNano(charActionMessage.Parameter2);
+                    break;
                 case CharacterActionType.SpecialUsed:
                     SpecialUsedAction(charActionMessage.Identity, (Stat)charActionMessage.Parameter1, charActionMessage.Parameter2);
                     break;

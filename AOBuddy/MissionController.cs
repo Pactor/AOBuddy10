@@ -118,10 +118,23 @@ namespace AOBuddy
         }
         public string RoomAt(Vector3 p) => _grid?.RoomAt(p);
         public int? FloorAt(Vector3 p) => _grid?.FloorAt(p);
-        public Newtonsoft.Json.Linq.JArray DoorsJson() => new Newtonsoft.Json.Linq.JArray(_doors.Select(kv => new Newtonsoft.Json.Linq.JObject
+        /// <summary>The doors the server sent for this zone (MissionRecorder, and /nav for the monitor's map). Called off the
+        /// network thread, which may be adding a door meanwhile: a snapshot that collides is simply retried.</summary>
+        public Newtonsoft.Json.Linq.JArray DoorsJson()
+        {
+            KeyValuePair<Identity, DoorInfo>[] snap = null;
+            for (int i = 0; i < 3 && snap == null; i++) try { snap = _doors.ToArray(); } catch (InvalidOperationException) { }
+            return DoorsJson(snap ?? new KeyValuePair<Identity, DoorInfo>[0]);
+        }
+
+        private Newtonsoft.Json.Linq.JArray DoorsJson(KeyValuePair<Identity, DoorInfo>[] doors) => new Newtonsoft.Json.Linq.JArray(doors.Select(kv => new Newtonsoft.Json.Linq.JObject
         {
             ["id"] = kv.Key.ToString(), ["pos"] = new Newtonsoft.Json.Linq.JArray(Math.Round(kv.Value.Pos.X, 2), Math.Round(kv.Value.Pos.Y, 2), Math.Round(kv.Value.Pos.Z, 2)),
             ["locked"] = kv.Value.Locked, ["picked"] = !kv.Value.Locked && _pickedDoors.Contains(kv.Key), ["unpickable"] = _unpickable.Contains(kv.Key),
+            ["open"] = kv.Value.Open, ["lockDifficulty"] = kv.Value.Difficulty,
+            ["yaw"] = Math.Round(kv.Value.Yaw, 4), ["fwd"] = new Newtonsoft.Json.Linq.JArray(Math.Round(kv.Value.FwdX, 4), Math.Round(kv.Value.FwdZ, 4)),
+            ["room"] = kv.Value.Room, ["adjoiningRoom"] = kv.Value.AdjoiningRoom,
+            ["floor"] = FloorAt(kv.Value.Pos),       // the planner's floor for it (MissionGrid.FloorAt); null outside a mission
         }));
         private readonly HashSet<Identity> _pickedDoors = new HashSet<Identity>();
 
@@ -176,6 +189,10 @@ namespace AOBuddy
 
                 case QuestFullUpdateMessage _:
                     if (m.RawPacket != null) { _lastQuestUpdate = m.RawPacket; ParseRecord(); }
+                    break;
+
+                case DoorStatusUpdateMessage dsu:
+                    OnDoorStatus(dsu);
                     break;
 
                 case CharacterActionMessage ca:
@@ -1034,17 +1051,60 @@ namespace AOBuddy
 
         private static int BE32(byte[] b, int p) => (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3];
 
+        // The door, typed (2026-09-29): AOSharp.Common's DoorFullUpdateMessage is now OmniCell's layout, which reads all
+        // 75,171 DoorFullUpdates in missions\records (238 recordings) with no byte left over, and its Flags stat agrees
+        // with the old marker scan below on the lock bit in every one of them. The raw scan stays as the fallback
+        // should a packet ever not decode.
+        private static readonly SmokeLounge.AOtomation.Messaging.Serialization.MessageSerializer DoorSerializer =
+            new SmokeLounge.AOtomation.Messaging.Serialization.MessageSerializer();
+
         public void OnDoorRaw(byte[] b)
         {
             if (b == null || b.Length < 60 || BE32(b, 20) != DoorType) return;
             var id = new Identity((IdentityType)DoorType, BE32(b, 24));
-            float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
-            var pos = new Vector3(F(41), F(45), F(49));
-            bool locked = false; int diff = 0;
-            for (int i = 53; i + 12 <= b.Length; i++)
-                if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0x2F && b[i + 3] == 0x4C) { locked = (b[i + 11] & 0x40) != 0; break; }
-            _doors[id] = new DoorInfo { Pos = pos, Locked = locked, Difficulty = diff };
-            if (locked) _ctx.Log($"MISSION: locked door {id} at ({pos.X:0},{pos.Y:0},{pos.Z:0}).");
+            DoorFullUpdateMessage msg = null;
+            try { msg = DoorSerializer.Deserialize(b)?.Body as DoorFullUpdateMessage; } catch { msg = null; }
+            DoorInfo door;
+            if (msg != null && msg.Coordinate.HasValue && msg.Stats != null)
+            {
+                uint flags = 0;
+                foreach (var st in msg.Stats) if (st.Value1 == Stat.Flags) { flags = st.Value2; break; }
+                door = new DoorInfo
+                {
+                    Pos = msg.Coordinate.Value, Locked = (flags & 0x40) != 0, Open = (flags & 0x80) != 0,
+                    Difficulty = msg.LockDifficulty, Room = msg.Room, AdjoiningRoom = msg.AdjoiningRoom,
+                };
+                if (msg.Heading.HasValue)
+                {
+                    var q = msg.Heading.Value; var f = q.Forward;
+                    door.Yaw = q.Yaw; door.FwdX = f.X; door.FwdZ = f.Z;
+                }
+            }
+            else
+            {
+                float F(int p) => BitConverter.ToSingle(new[] { b[p + 3], b[p + 2], b[p + 1], b[p] }, 0);
+                var pos = new Vector3(F(41), F(45), F(49));
+                bool locked = false, open = false;
+                for (int i = 53; i + 12 <= b.Length; i++)
+                    if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 0x2F && b[i + 3] == 0x4C) { locked = (b[i + 11] & 0x40) != 0; open = (b[i + 11] & 0x80) != 0; break; }
+                door = new DoorInfo { Pos = pos, Locked = locked, Open = open };
+            }
+            _doors[id] = door;
+            if (door.Locked) _ctx.Log($"MISSION: locked door {id} at ({door.Pos.X:0},{door.Pos.Y:0},{door.Pos.Z:0}), lock difficulty {door.Difficulty}.");
+        }
+
+        // DoorStatusUpdate names the door by the message Identity (OmniCell DoorStatusUpdateMessageHandler: message.Identity
+        // = door). In the 238 recordings it reached a mission door only when a lock was picked: all 25 such copies say
+        // Locked=0 and arrive in the same millisecond as, and just before, the ActionMessage 115 - so the lock is cleared
+        // (and remembered as picked) here exactly as OnDoorActionRaw does; that handler still runs the clear-mode restart.
+        // Opening and closing come in fresh DoorFullUpdates (Flags bit 0x80), not here.
+        public void OnDoorStatus(DoorStatusUpdateMessage m)
+        {
+            if (m == null || !_doors.TryGetValue(m.Identity, out var d)) return;
+            bool locked = m.Locked != 0;
+            if (d.Locked && !locked) _pickedDoors.Add(m.Identity);
+            d.Locked = locked;
+            d.Open = m.Open != 0;
         }
 
         public void OnDoorActionRaw(byte[] b)
@@ -2182,9 +2242,33 @@ namespace AOBuddy
         private Vector3 FineCentre((int, int, int) f) => new Vector3((f.Item2 + 0.5f) * Fine, FineY(f), (f.Item3 + 0.5f) * Fine);
 
         /// <summary>The walls in 2 m columns [cx0..cx1] x [cz0..cz1], sliced by the plane y = cut: (x1, z1, x2, z2) each.</summary>
-        private List<float[]> WallSegments(int cx0, int cz0, int cx1, int cz1, float cut)
+        private List<float[]> WallSegments(int cx0, int cz0, int cx1, int cz1, float cut) => WallSlices(cx0, cz0, cx1, cz1, cut).Select(s => s.seg).ToList();
+
+        /// <summary>The walls as the planner sees them, for drawing (AOBuddyMonitor's mission map, 2026-09-29): on one floor,
+        /// each 2 m cell BuildWalls tests (the grown _fineY cells) slices the wall triangles in its own column at every height
+        /// in SliceAbove over that cell's floor height - the same planes and the same WallSegments slicing the fine cells are
+        /// cleared against. One (x1, z1, x2, z2) segment per triangle and cut height. Empty without wall data.</summary>
+        public List<float[]> WallPlan(int floor)
         {
-            var seen = new HashSet<int>(); var segs = new List<float[]>();
+            var segs = new List<float[]>();
+            if (_wallTris == null || _fineY == null) return segs;
+            var seen = new HashSet<(int, float)>();
+            foreach (var kv in _fineY)
+            {
+                if (kv.Key.Item1 != floor) continue;
+                foreach (float above in SliceAbove)
+                {
+                    float cut = kv.Value + above;
+                    foreach (var s in WallSlices(kv.Key.Item2, kv.Key.Item3, kv.Key.Item2, kv.Key.Item3, cut))
+                        if (seen.Add((s.tri, cut))) segs.Add(s.seg);
+                }
+            }
+            return segs;
+        }
+
+        private List<(int tri, float[] seg)> WallSlices(int cx0, int cz0, int cx1, int cz1, float cut)
+        {
+            var seen = new HashSet<int>(); var segs = new List<(int tri, float[] seg)>();
             float[] w = _wallTris;
             for (int x = cx0; x <= cx1; x++)
                 for (int z = cz0; z <= cz1; z++)
@@ -2203,7 +2287,7 @@ namespace AOBuddy
                             px = w[p0] + (w[p1] - w[p0]) * s; pz = w[p0 + 2] + (w[p1 + 2] - w[p0 + 2]) * s;
                             seg[got * 2] = px; seg[got * 2 + 1] = pz; got++;
                         }
-                        if (got == 2) segs.Add(seg);
+                        if (got == 2) segs.Add((t, seg));
                     }
                 }
             return segs;
@@ -2592,5 +2676,16 @@ namespace AOBuddy
         }
     }
     
-    public sealed class DoorInfo { public Vector3 Pos; public bool Locked; public int Difficulty; }
+    /// <summary>A door as the server sent it (DoorFullUpdateMessage, then DoorStatusUpdateMessage).</summary>
+    public sealed class DoorInfo
+    {
+        public Vector3 Pos;
+        public bool Locked;                 // Flags (stat 0) bit 0x40
+        public bool Open;                   // Flags (stat 0) bit 0x80
+        public int Difficulty;              // LockDifficulty (stat 299)
+        public float Yaw;                   // radians, Quaternion.Yaw of the door's Heading
+        public float FwdX, FwdZ;            // the Heading's forward vector (Quaternion.Forward) on the ground plane;
+                                            // (0,0) when only the raw fallback read the door (no heading)
+        public short Room = -1, AdjoiningRoom = -1;   // indices into the mission's room table; -1 = none
+    }
 }
