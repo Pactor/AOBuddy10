@@ -799,21 +799,19 @@ namespace AOBuddy
                     // left for the walk out, and the mission is kept.
                     if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < T("healouthp") && _clock - _lastHurt < 3
                         && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && StartHealOut(me, hpNow)) return false;
-                    // ...or EARLIER when the walk out won't be survived at the rate he is losing HP (05:16:42, 2026-09-29: left at
-                    // 44% with three on him, losing ~1.4%/s, 71 m to the door, stim locked - died 18 s later at the door).
-                    // Predicted HP at the door = now - loss rate x (walk time + 5 s of them following); under healoutdoorhp, go now.
-                    NoteFightHp(hpNow);
-                    if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < 90 && _clock - _lastHurt < 3
-                        && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && HpLossPerSec() is float loss && loss > 0.2f
-                        && _mission.ExitWalkMeters(me.Transform.Position) is float walk)
+                    // ...or EARLIER, but only in an emergency (owner, 2026-09-29: "he walks outside to heal in an emergency, not
+                    // just because"): he is LOSING the fight - at the damage really landing on him, his HP falls under
+                    // healoutdoorhp before everything on him is dead. Both sides from the wire (SDK Blows: every AttackInfo /
+                    // SpecialAttackInfo amount) and the server's own Health for each of them, not HP% sampled over a few
+                    // seconds - that read two quick hits as 5%/s and walked him out at 73-87% three times, from one Tac-V85
+                    // he was beating (05:45, 05:50, 05:57); the one at 05:57 had ~450 HP left, ~4.5 s at his ~100 HP/s,
+                    // while it did ~17 HP/s to his 620 (rec-2224975-20260929-055443, 02:42-02:56).
+                    // Losing is what died at 05:16:42 (44%, three on him, stim locked): that goes out, and sooner.
+                    if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && _clock - _lastHurt < 3
+                        && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && LosingRace(me) is string why)
                     {
-                        float secs = walk / Math.Max(1f, _ctx.RunVelocity(me)) + 5f;
-                        float atDoor = hpNow - loss * secs;
-                        if (atDoor < T("healoutdoorhp"))
-                        {
-                            _ctx.Log($"MISSIONRUN: {hpNow}% HP, losing {loss:0.0}%/s, {walk:0} m to the door (~{secs:0} s): I'd reach it at ~{atDoor:0}% - going now.");
-                            if (StartHealOut(me, hpNow)) return false;
-                        }
+                        _ctx.Log($"MISSIONRUN: losing: {why} - going out to heal.");
+                        if (StartHealOut(me, hpNow)) return false;
                     }
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
@@ -1365,23 +1363,43 @@ namespace AOBuddy
             return !(left > T("healoutstim"));
         }
 
-        // HP over the last seconds of a fight, for the loss rate the walk out is judged by.
-        private readonly List<(double t, int hp)> _fightHp = new List<(double, int)>();
-        private void NoteFightHp(int hp)
+        // THE RACE, from the wire: null while he is winning, else why he is losing.
+        //   theirs = what each mob on him has landed on him since it first swung at him this fight (misses count as swings)
+        //   ours   = what has landed on those mobs since the fight began - his blows, his pets', anyone's
+        //   kill   = the server's Health of every mob on him / ours;  he is losing when his Health - theirs x kill
+        //            falls under healoutdoorhp before then.
+        // Under 3 s of fight there is too little to judge by (the healouthp rule still covers it).
+        private string LosingRace(LocalPlayer me)
         {
-            if (hp < 0) return;
-            _fightHp.Add((_clock, hp));
-            while (_fightHp.Count > 0 && _clock - _fightHp[0].t > 8) _fightHp.RemoveAt(0);
-        }
-        private float? HpLossPerSec()
-        {
-            if (_fightHp.Count < 2) return null;
-            var (t0, h0) = _fightHp[0]; var (t1, h1) = _fightHp[_fightHp.Count - 1];
-            if (t1 - t0 < 3) return null;
-            // A stim in the window makes it read as healing; the peak-to-now drop is what the mobs are doing.
-            int peak = _fightHp.Max(x => x.hp);
-            double since = _fightHp.Last(x => x.hp == peak).t;
-            return t1 - since >= 2 ? (float)((peak - h1) / (t1 - since)) : (float)((h0 - h1) / (t1 - t0));
+            const double MinSecs = 3;
+            double fightSecs = _clock - _fightStart;
+            if (fightSecs < MinSecs) return null;
+            if (!me.TryGetStat(Stat.Health, out int myHp) || !me.TryGetStat(Stat.MaxHealth, out int myMax) || myMax <= 0) return null;
+            var onMe = DynelManager.Npcs.Where(n => n != null && n.FightingIdentity.HasValue && n.FightingIdentity.Value == me.Identity
+                                                    && n.TryGetStat(Stat.Health, out int oh) && oh > 0).ToList();
+            if (onMe.Count == 0) return null;   // the last blow killed it (05:50:20, 2026-09-29: '0 on me', walked out at 78%)
+
+            double now = Blows.Now, from = now - fightSecs;
+            var blows = Blows.Since(from);
+            var ids = new HashSet<Identity>(onMe.Select(n => n.Identity));
+
+            double theirs = 0;
+            foreach (var n in onMe)
+            {
+                var swings = blows.Where(b => b.Attacker == n.Identity && b.Target == me.Identity).ToList();
+                if (swings.Count == 0) continue;
+                theirs += swings.Sum(b => b.Amount) / Math.Max(MinSecs, now - swings[0].Time);
+            }
+            if (theirs <= 0) return null;   // nothing landing on him
+
+            double ours = blows.Where(b => ids.Contains(b.Target) && !ids.Contains(b.Attacker)).Sum(b => b.Amount) / fightSecs;
+            int foeHp = onMe.Sum(n => n.TryGetStat(Stat.Health, out int h) ? h : 0);
+            double floor = myMax * T("healoutdoorhp") / 100.0;
+            double killSecs = ours > 0 ? foeHp / ours : double.PositiveInfinity;
+            double hpAtKill = myHp - theirs * killSecs;
+            if (hpAtKill >= floor) return null;
+            return $"{onMe.Count} on me with {foeHp} HP, landing {ours:0}/s on them = {(double.IsInfinity(killSecs) ? "never" : $"{killSecs:0} s")}; "
+                 + $"{theirs:0}/s on my {myHp} HP puts me under {floor:0} ({T("healoutdoorhp"):0}%) in {Math.Max(0, (myHp - floor) / theirs):0} s";
         }
 
         private bool StartHealOut(LocalPlayer me, int hpNow)
@@ -3459,7 +3477,7 @@ namespace AOBuddy
             ["walktries"] = (2f,    "walk-to-it tries per arrival"),
             ["chain"]     = (10f,   "zone crossings I hike in a row before travel takes over"),
             ["healouthp"] = (50f,   "HP % under which, inside and with the stim far off, I walk out, heal to full and come back (0 = never)"),
-            ["healoutdoorhp"] = (30f, "leave to heal once the HP I'd have left at the exit door (at the current loss rate) falls under this"),
+            ["healoutdoorhp"] = (30f, "HP % the fight must not push me under before everything on me is dead (damage from the wire); losing that race = go out to heal"),
             ["healoutstim"] = (10f, "seconds of stim lock left that count as 'far off' for healing outside"),
             ["healtrips"] = (4f,    "heal-outside trips per mission"),
             ["healoutsecs"] = (300f, "most seconds I rest outside before going back in"),

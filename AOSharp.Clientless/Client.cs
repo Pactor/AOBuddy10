@@ -722,12 +722,20 @@ namespace AOSharp.Clientless
             {
                 var ai = (AttackInfoMessage)msg;
                 NoteBlow(ai.Identity, ai.Target);
+                Blows.Add(ai.Identity, ai.Target, ai.Amount);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.MissedAttackInfo, (msg) =>
             {
                 var mi = (MissedAttackInfoMessage)msg;
                 NoteBlow(mi.Attacker, mi.Defender);
+                Blows.Add(mi.Attacker, mi.Defender, 0);
+            });
+
+            _n3MsgCallbacks.Add(N3MessageType.SpecialAttackInfo, (msg) =>
+            {
+                var si = (SpecialAttackInfoMessage)msg;
+                Blows.Add(si.Identity, si.Target, si.Amount);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg) =>
