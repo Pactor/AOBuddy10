@@ -749,6 +749,7 @@ namespace AOSharp.Clientless
             _n3MsgCallbacks.Add(N3MessageType.SpecialAttackInfo, (msg) =>
             {
                 var si = (SpecialAttackInfoMessage)msg;
+                NoteBlow(si.Identity, si.Target);
                 Blows.Add(si.Identity, si.Target, si.Amount);
             });
 
