@@ -403,6 +403,10 @@ namespace AOBuddy
             // we're so far behind server-side that we vanish from the owner's view. So once the gap passes
             // ResyncGap we APPLY it even while moving, capping the desync and snapping us back onto the
             // server's position. Stopped, we always apply. This keeps the ramp fix AND stops the vanish.
+            // The retail client does the same (measured 2026-09-29 on 2,617 SetPos to the player's own character in
+            // the 50 retail captures): under 10 m its next move carried on from its own position 86% of the time
+            // (2,187 of 2,536); at 10 m and over it took the server's spot 64% (52 of 81). The SetPos StopMoving byte
+            // is no help here: it is 1 on every correction to our own character (21,639 of 21,639 recorded).
             if (_move.Moving && gap < ResyncGapMeters)
             {
                 Log($"SETPOS IGNORED (moving): server ({pos.X:0},{pos.Y:0},{pos.Z:0}) vs local ({local.X:0},{local.Y:0},{local.Z:0}) gap={gap:0.0}m — controller drives its own path.");
