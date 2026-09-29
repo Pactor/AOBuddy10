@@ -37,7 +37,10 @@ namespace AOSharp.Common.SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         #region AoMember Properties
 
         /// <summary>
-        /// OmniCell: 0 = BuffStarted, 1 = BuffEnded (OmniCell BuffMessageHandler). 0 in every recorded copy.
+        /// OmniCell: 0 = BuffStarted, 1 = BuffEnded (OmniCell BuffMessageHandler). 0 in every recorded copy - and on
+        /// retail a BuffMessage is the buff ENDING whatever this says: of 426 in the bot's recordings, 345 arrive as the
+        /// SetNanoDuration they follow runs out (+-2 s), 59 mid-way (Mesmeric Gaze on mobs, broken by a hit), 18 right
+        /// after a refresh (2026-09-29). The SDK removes the buff on it (Client.OnBuffMessage), which is right.
         /// </summary>
         [AoMember(0)]
         public short Action { get; set; }

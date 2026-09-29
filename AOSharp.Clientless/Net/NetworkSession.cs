@@ -494,10 +494,14 @@ namespace AOSharp.Clientless.Net
                 Body = new PingMessage
                 {
                     PingMessageType = PingMessageType.Pong,
-                    ServerTime = pingBody.ServerTime,
-                    UpTime1 = pingBody.UpTime1,
-                    UpTime2 = pingBody.UpTime2,
-                    Unk2 = pingBody.Unk2,
+                    // As the retail client answers (50 captures, 2026-09-29): the server's stamp and sequence back, and
+                    // our own millisecond clock as the receive and transmit stamps - the server's are 0, and copying
+                    // them sent 0.
+                    OriginatorStamp = pingBody.OriginatorStamp,
+                    ReceiveStamp = unchecked((uint)Environment.TickCount),
+                    TransmitStamp = unchecked((uint)Environment.TickCount),
+                    Sequence = pingBody.Sequence,
+                    HopCount = pingBody.HopCount,
                 },
                 Header = new Header
                 {
