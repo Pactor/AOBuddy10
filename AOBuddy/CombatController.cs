@@ -79,7 +79,18 @@ namespace AOBuddy
             SimpleChar target = GetAssistTarget(me, owner);
             if (target != null && IsSetAside(target.Identity)) target = null;
             // SOLO (mission run): with no owner fight, whatever is attacking the bot or its pets.
-            if (target == null && defend != null) target = LogTarget(defend, "defending");
+            // ...but FINISH the one he is on first: switching to each new arrival left the last one alive and on him, and
+            // they piled up (05:15:25-05:16:23, 2026-09-29: three Rhinoman Smashers / a Techwrecker, each hit and dropped
+            // for the next, three on him, dead at the door). The owner: kill them as they come, don't drag them round.
+            if (target == null && defend != null)
+            {
+                SimpleChar cur = _attackedTarget.HasValue ? DynelManager.Characters.FirstOrDefault(c => c.Identity == _attackedTarget.Value) : null;
+                if (cur != null && cur.Identity != defend.Identity && !IsSetAside(cur.Identity) && IsAlive(cur) && IsHostile(cur, me, owner)
+                    && me.DistanceFrom(cur) <= _ctx.Config.AssistMaxDistance)
+                    target = cur;
+                else
+                    target = LogTarget(defend, "defending");
+            }
 
             // His FightingTarget flickers to null for a tick mid-fight. Don't read that as "fight over" and
             // drop the mob we are on — hold the current one while it is still a live, hostile, in-range mob.

@@ -799,6 +799,22 @@ namespace AOBuddy
                     // left for the walk out, and the mission is kept.
                     if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < T("healouthp") && _clock - _lastHurt < 3
                         && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && StartHealOut(me, hpNow)) return false;
+                    // ...or EARLIER when the walk out won't be survived at the rate he is losing HP (05:16:42, 2026-09-29: left at
+                    // 44% with three on him, losing ~1.4%/s, 71 m to the door, stim locked - died 18 s later at the door).
+                    // Predicted HP at the door = now - loss rate x (walk time + 5 s of them following); under healoutdoorhp, go now.
+                    NoteFightHp(hpNow);
+                    if (_mission.InMission && !_completed && !_healOut && hpNow >= 0 && hpNow < 90 && _clock - _lastHurt < 3
+                        && _clock >= _fleeUntil && _clock >= _noFleeUntil && !StimSoon(me) && HpLossPerSec() is float loss && loss > 0.2f
+                        && _mission.ExitWalkMeters(me.Transform.Position) is float walk)
+                    {
+                        float secs = walk / Math.Max(1f, _ctx.RunVelocity(me)) + 5f;
+                        float atDoor = hpNow - loss * secs;
+                        if (atDoor < T("healoutdoorhp"))
+                        {
+                            _ctx.Log($"MISSIONRUN: {hpNow}% HP, losing {loss:0.0}%/s, {walk:0} m to the door (~{secs:0} s): I'd reach it at ~{atDoor:0}% - going now.");
+                            if (StartHealOut(me, hpNow)) return false;
+                        }
+                    }
                     // INSIDE, losing (12:37, 2026-09-24, fight style): eight Aquaans and Junkbots (29-33) at a clan
                     // building's entrance held him at 1-7% HP for 10 s with the stim on its lock, and he died there.
                     // Drop the fight and walk out the exit; the mission is dropped unless it's already done.
@@ -850,14 +866,19 @@ namespace AOBuddy
                             bool pulling = _pullId.HasValue && foe != null && foe.Identity == _pullId.Value;
                             // ...and never toward the mission's target while rooms are left (owner, 2026-09-28): a mob by
                             // the find/kill target is left to come to him.
-                            bool byTarget = foe != null && _mission.InMission && _mission.NearObjective(foe.Transform.Position);
+                            // ...EXCEPT one already on him or following him that isn't the find/kill target itself: it is coming
+                            // anyway - kill it, don't drag it round (owner, 2026-09-29: "if he has mobs following him that are
+                            // not the kill or find target, then kill them"; 05:25 he 'let it come', then moved on with it biting).
+                            bool chasing = foe != null && foe.Identity != _mission.ObjectiveNpc
+                                           && _aware.Near.Any(x => x.Mob != null && x.Mob.Identity == foe.Identity && (x.OnUs || x.Following));
+                            bool byTarget = foe != null && _mission.InMission && !chasing && _mission.NearObjective(foe.Transform.Position);
                             if (byTarget && _clock - _byTargetLogAt > 10) { _byTargetLogAt = _clock; _ctx.Log($"MISSIONRUN: not closing in on '{foe.Name}' - it's by the mission's target; letting it come to me."); }
                             if (foe != null && !nest && !byTarget && me.DistanceFrom(foe) > 4f && (_clock - _lastHurt < 5 || _mission.Clearing || pulling))
                             {
                                 // Inside, along the building's path: straight at a mob round a corner the server pulled
                                 // him back at the wall and the mob's HP never moved (11:24, 2026-09-25, first clear run).
                                 var step = _mission.InMission ? _mission.StepToward(me.Transform.Position, foe.Transform.Position) : null;
-                                if (!(step.HasValue && _mission.NearObjective(step.Value)))
+                                if (chasing || !(step.HasValue && _mission.NearObjective(step.Value)))
                                 { _phaseTime = 0; _follow.SetManualTarget(step ?? foe.Transform.Position); return true; }
                             }
                         }
@@ -1342,6 +1363,25 @@ namespace AOBuddy
             double left = SupportController.Instance?.LockLeft(Stat.FirstAid)
                           ?? (me.Cooldowns.TryGetValue(Stat.FirstAid, out var cd) ? cd.RemainingTime : 0);
             return !(left > T("healoutstim"));
+        }
+
+        // HP over the last seconds of a fight, for the loss rate the walk out is judged by.
+        private readonly List<(double t, int hp)> _fightHp = new List<(double, int)>();
+        private void NoteFightHp(int hp)
+        {
+            if (hp < 0) return;
+            _fightHp.Add((_clock, hp));
+            while (_fightHp.Count > 0 && _clock - _fightHp[0].t > 8) _fightHp.RemoveAt(0);
+        }
+        private float? HpLossPerSec()
+        {
+            if (_fightHp.Count < 2) return null;
+            var (t0, h0) = _fightHp[0]; var (t1, h1) = _fightHp[_fightHp.Count - 1];
+            if (t1 - t0 < 3) return null;
+            // A stim in the window makes it read as healing; the peak-to-now drop is what the mobs are doing.
+            int peak = _fightHp.Max(x => x.hp);
+            double since = _fightHp.Last(x => x.hp == peak).t;
+            return t1 - since >= 2 ? (float)((peak - h1) / (t1 - since)) : (float)((h0 - h1) / (t1 - t0));
         }
 
         private bool StartHealOut(LocalPlayer me, int hpNow)
@@ -3419,6 +3459,7 @@ namespace AOBuddy
             ["walktries"] = (2f,    "walk-to-it tries per arrival"),
             ["chain"]     = (10f,   "zone crossings I hike in a row before travel takes over"),
             ["healouthp"] = (50f,   "HP % under which, inside and with the stim far off, I walk out, heal to full and come back (0 = never)"),
+            ["healoutdoorhp"] = (30f, "leave to heal once the HP I'd have left at the exit door (at the current loss rate) falls under this"),
             ["healoutstim"] = (10f, "seconds of stim lock left that count as 'far off' for healing outside"),
             ["healtrips"] = (4f,    "heal-outside trips per mission"),
             ["healoutsecs"] = (300f, "most seconds I rest outside before going back in"),
@@ -4165,7 +4206,7 @@ namespace AOBuddy
             var a = (_defId.HasValue ? onUs.FirstOrDefault(n => n.Identity == _defId.Value) : null) ?? onUs.FirstOrDefault();
             // Nothing hitting yet, but something following him inside: that one next, before it brings friends.
             if (a == null && _mission.InMission)
-                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && n.Identity != _mission.FindPersonTarget
+                a = _aware.Following.Select(x => x.Mob).OfType<NpcChar>().FirstOrDefault(n => !_combat.IsSetAside(n.Identity) && n.Identity != _mission.ObjectiveNpc
                                                                              && me.DistanceFrom(n) <= _ctx.Config.AssistMaxDistance);
             // IN COMBAT WITH NOTHING FIGHTING HIM: a Tac-V85 Public Enemy turret (lvl 38) 4 m off shot him while he sat
             // under it trying to rest, every recharger refused with 110/135453684 - "can't heal while in combat"
@@ -4305,7 +4346,7 @@ namespace AOBuddy
         public string AwareSummary => _aware?.Summary() ?? "";
         /// <summary>Inside, fight style: something is on him or following him - he stops walking and deals with it.</summary>
         private bool AwareStop() => _mission.InMission && string.Equals(_ctx.Config.MissionStyle, "fight", StringComparison.OrdinalIgnoreCase)
-                                    && _aware.Near.Any(x => (x.OnUs || x.Following) && !_combat.IsSetAside(x.Mob.Identity) && x.Mob.Identity != _mission.FindPersonTarget);
+                                    && _aware.Near.Any(x => (x.OnUs || x.Following) && !_combat.IsSetAside(x.Mob.Identity) && x.Mob.Identity != _mission.ObjectiveNpc);
         private static int LevelOf(SimpleChar c) => c.TryGetStat(Stat.Level, out int l) ? l : 0;
         /// <summary>Outdoors: the nearest live mob fighting him or a pet within 40 m (every blow marks who it is on).</summary>
         private SimpleChar Chaser(LocalPlayer me)

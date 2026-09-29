@@ -834,6 +834,20 @@ namespace AOBuddy
             return back;
         }
 
+        /// <summary>Metres of the walk out from here to just inside the exit door (the same retrace the walk out uses;
+        /// the straight distance when there is none); null outside a mission.</summary>
+        public float? ExitWalkMeters(Vector3 from)
+        {
+            if (_nav == null || _grid == null) return null;
+            var ex = _nav.Exit;
+            var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
+                                  : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
+            var back = RetracePath(from, land);
+            if (back == null || back.Count < 2) return Vector3.Distance(from, land);
+            float len = 0; for (int k = 1; k < back.Count; k++) len += Vector3.Distance(back[k - 1], back[k]);
+            return len;
+        }
+
         private void PlanNext(LocalPlayer me)
         {
             if (_completed && _retrace && _nav != null)
