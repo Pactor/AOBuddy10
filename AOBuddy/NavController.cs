@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -197,6 +197,7 @@ namespace AOBuddy
                         if (m.MonsterData == null && MobModels.Get(npc.Identity) is MobModels.Model fm)
                         {
                             m.MonsterData = (int)fm.MonsterData; m.Mesh = fm.HeadMesh; m.MonsterTexture = fm.Textures?.FirstOrDefault();
+                            m.Pc = fm.IsPlayer; m.PetType = fm.IsPet ? 1 : 0;
                             _dirty = true;
                             _ctx.Log($"NAV: mob model filled in for '{npc.Name}' at ({m.X:0},{m.Z:0}): {fm}.");
                         }
@@ -206,7 +207,7 @@ namespace AOBuddy
                 int lvl = 0; npc.TryGetStat(Stat.Level, out lvl);
                 // The model too (owner, 2026-09-27): from the spawn packet (MobModels), not stats - those read empty.
                 var md = MobModels.Get(npc.Identity);
-                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl, MonsterData = (int?)md?.MonsterData, Mesh = md?.HeadMesh, MonsterTexture = md?.Textures?.FirstOrDefault() });
+                _zone.Mobs.Add(new NavMob { X = p.X, Y = p.Y, Z = p.Z, Name = npc.Name, Level = lvl, MonsterData = (int?)md?.MonsterData, Mesh = md?.HeadMesh, MonsterTexture = md?.Textures?.FirstOrDefault(), Pc = md?.IsPlayer, PetType = md == null ? (int?)null : (md.IsPet ? 1 : 0) });
                 _dirty = true;
                 _ctx.Log($"NAV: mob spawn '{npc.Name}' (lvl {lvl}) at ({p.X:0},{p.Y:0},{p.Z:0}) model {(md != null ? md.ToString() : "not seen")}.");
             }
@@ -390,6 +391,11 @@ namespace AOBuddy
         public string Name;
         public int Level;
         public int? MonsterData, Mesh, MonsterTexture;
+
+        // Who it is (owner, 2026-09-29). A name, a level and a place cannot tell a person from an NPC,
+        // and the world spawn tables built from this file filled up with players and their pets.
+        public bool? Pc;
+        public int? PetType;
     }
 
     // A logged interactable world object: its position, its identity type, and its NAME (which is what tells

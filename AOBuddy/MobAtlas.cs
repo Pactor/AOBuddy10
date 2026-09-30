@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +14,10 @@ namespace AOBuddy
     /// us), its level, and its track - a point each time it has moved 1 m. When it dies or is gone for 10 s the
     /// sighting is appended, one JSON line, to Plugins/AOBuddy/mobs/&lt;pf&gt;.jsonl:
     ///   {"t":"2026-09-26T15:02:11Z","pf":790,"id":"SimpleChar:EA7200D","name":"Swift Claw","lvl":41,"side":3,
-    ///    "first":[x,y,z],"firstSeenAt":"...","popIn":true,"died":false,"secs":42,"track":[[s,x,y,z,heading],...]}
+    ///    "first":[x,y,z],"firstSeenAt":"...","popIn":true,"died":false,"secs":42,"track":[[s,x,y,z,heading],...],
+    ///    "pc":false,"petType":0,"petMaster":0}
+    /// pc says this is a player and petType/petMaster say it is somebody's pet - neither belongs in a
+    /// world spawn table, and nothing else in the line can tell them from an NPC.
     /// popIn = it appeared within 60 m of us (a spawn point, not a mob we walked up to). Many sightings of the
     /// same mob name in a zone give its spawn points and patrol routes; aggregation is for the tools.
     /// Mission buildings are left to the mission recorder (their ids and coordinates are per instance).
@@ -118,6 +121,11 @@ namespace AOBuddy
             var o = new JObject
             {
                 ["t"] = s.FirstAt.ToString("o"), ["pf"] = _pf, ["id"] = id.ToString(), ["name"] = s.Name, ["lvl"] = s.Lvl, ["side"] = s.Side, ["monsterData"] = s.Model?.MonsterData, ["monsterScale"] = s.Model?.MonsterScale, ["headMesh"] = s.Model?.HeadMesh, ["meshes"] = s.Model?.Meshes != null ? new JArray(s.Model.Meshes) : null, ["textures"] = s.Model?.Textures != null ? new JArray(s.Model.Textures) : null,
+                // Who it is, not just what it looks like (owner, 2026-09-29). A world spawn table
+                // built from this log stood players and player pets as NPCs - Healsalot was an NPC in
+                // Borealis - because a name, a level and a place cannot tell them apart and a person
+                // carries no monster body any more than a humanoid NPC does. These say outright.
+                ["pc"] = s.Model?.IsPlayer, ["petType"] = s.Model?.PetType, ["petMaster"] = s.Model?.PetMaster,
                 ["first"] = new JArray(Math.Round(s.First.X, 1), Math.Round(s.First.Y, 1), Math.Round(s.First.Z, 1)),
                 ["popIn"] = s.PopIn, ["died"] = s.Died, ["secs"] = Math.Round((s.LastAt - s.FirstAt).TotalSeconds),
                 ["track"] = s.Track,
