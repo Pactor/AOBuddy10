@@ -41,7 +41,7 @@ namespace AOBuddy
             public bool IsPet => PetType != 0 || PetMaster != 0;
 
             public override string ToString() =>
-                $"monsterData={MonsterData} scale={MonsterScale} head={(HeadMesh?.ToString() ?? "-")} meshes=[{string.Join(",", Meshes ?? new uint[0])}] textures=[{string.Join(",", Textures ?? new int[0])}] {(IsPlayer ? "player" : "npc")}{(IsPet ? " pet" : "")}";
+                $"monsterData={MonsterData} scale={MonsterScale} head={(HeadMesh?.ToString() ?? "-")} meshes=[{string.Join(",", Meshes ?? new uint[0])}] textures=[{string.Join(",", Textures ?? new int[0])}] {(IsPlayer ? "player" : "npc")}{(IsPet ? $" pet (type {PetType}, master {(PetMaster != 0 ? PetMaster.ToString() : "not sent")})" : "")}";
         }
 
         private static readonly ConcurrentDictionary<Identity, Model> _byId = new ConcurrentDictionary<Identity, Model>();

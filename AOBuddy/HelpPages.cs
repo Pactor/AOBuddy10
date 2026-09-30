@@ -61,6 +61,7 @@ namespace AOBuddy
                     new Cmd("stay", "stop following and hold position"),
                     new Cmd("come", "walk to where I am now"),
                     new Cmd("stop", "drop whatever you were walking toward"),
+                    new Cmd("logout", "log out cleanly (about 30 s, as the game does) and close the bot"),
                     new Cmd("stand", "stand up"),
                     new Cmd("sit", "sit down"),
                     new Cmd("forward", "nudge forward a few metres", "[m]"),

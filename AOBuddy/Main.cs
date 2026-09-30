@@ -296,6 +296,30 @@ namespace AOBuddy
         // FollowTarget NpcPath carries us along its waypoints: take the end of it and let overland travel wait out the
         // ride. While standing on a pad every message about us is logged, so whatever a beam really sends shows up.
         private readonly HashSet<string> _padSeen = new HashSet<string>();
+        // A clean logout, as the retail client does it (50 retail captures, 33 logouts): it SITS (CharDCMove
+        // SwitchToSit - the last move before the logout in 32 of 32, 30 of them 0.01-0.13 s before), sends
+        // CharacterAction Logout (0x78, every other field 0), then stays connected sending only pings, and the
+        // SERVER closes the link - 30.1 s later in 26 of the 33 (the others end early: the capture or the client
+        // stopped). A standing Logout did nothing: the server was still sending 45 s later (21:49, 2026-09-29).
+        // Killing the process instead left him standing in the world, still logged in (owner, 2026-09-29).
+        private DateTime _logoutAt = DateTime.MinValue;
+        private const int LogoutWaitSecs = 45;
+        private bool _logoutQuietLogged;
+        private System.Threading.Timer _logoutTimer;
+
+        // The SDK calls OnUpdate only in play (Client.Update), so the close is watched from a timer: out of play (the
+        // server closed the link) or past LogoutWaitSecs, the process ends - exit 0, so tools\run-bot.ps1 does not
+        // start him again.
+        private void LogoutWatch(object _)
+        {
+            double secs = (DateTime.UtcNow - _logoutAt).TotalSeconds, quiet = _watchdog.SecondsSinceLastMessage;
+            if (!_logoutQuietLogged && quiet >= 5) { _logoutQuietLogged = true; Log($"LOGOUT: nothing from the server since {secs - quiet:0.0} s after the logout."); }
+            if (Client.InPlay && secs <= LogoutWaitSecs) return;
+            Log(!Client.InPlay ? $"LOGOUT: out of play {secs:0.0} s after the logout (last server message {quiet:0.0} s ago): the server let me go; exiting."
+                               : $"LOGOUT: the link is still open {LogoutWaitSecs} s after the logout (last server message {quiet:0.0} s ago); exiting anyway.");
+            Environment.Exit(0);
+        }
+
         private void OnServerMovedMe(Message m)
         {
             LocalPlayer lp = DynelManager.LocalPlayer;
@@ -561,6 +585,10 @@ namespace AOBuddy
                 try { HandleCommand(cmd.Text, cmd.Reply); }
                 catch (Exception ex) { Log($"COMMAND EXCEPTION (api): {ex}"); try { cmd.Reply("error: " + ex.Message); } catch { } }
             }
+
+            // LOGGING OUT ('logout'): nothing else runs - no step, cast, swing or pet summons - while the server counts
+            // down. The wait for its close runs on LogoutWatch's own timer: this tick stops once he is out of play.
+            if (_logoutAt != DateTime.MinValue) return;
 
             // Dead-connection watchdog (2026-09-27): before anything that can return early. It only counts in play,
             // and resumes the mission run after a watchdog restart by running the command as the owner would.
@@ -1339,6 +1367,17 @@ namespace AOBuddy
                 _overland.Stop("stop command");
                 { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
                 reply("Mode: Idle. Standing down.");
+            };
+            t["logout"] = (reply, p) =>
+            {
+                t["stop"](_ => { }, p);
+                Client.Config.AutoReconnect = false;   // the server's close must not log him back in
+                DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.SwitchToSit);
+                Client.Send(new CharacterActionMessage { Action = SmokeLounge.AOtomation.Messaging.GameData.CharacterActionType.Logout });
+                _logoutAt = DateTime.UtcNow;
+                _logoutTimer = new System.Threading.Timer(LogoutWatch, null, 250, 250);
+                Log("LOGOUT: sat down and sent CharacterAction Logout; waiting for the server to close the link (about 30 s).");
+                reply("Logging out: standing still until the server lets me go (about 30 s), then the bot exits.");
             };
             t["follow"] = (reply, p) =>
             {
