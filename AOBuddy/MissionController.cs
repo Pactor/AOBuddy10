@@ -501,6 +501,21 @@ namespace AOBuddy
                 _onTilePath = false; _tileRefused = true; _path = null;
                 _ctx.Log($"MISSION: the server held me {_tilePulls} times on the tile path - the walls are solid there; not trying it again for this target.");
             }
+            // Walking up to a locked door: held on the same spot again (a chair, 2026-10-01 12:13 - owner: 'he was trying to
+            // run over it instead of turning round'), block the cells he was pushing into so the path to the door goes round.
+            if (_phase == Phase.PickLock && _lastCorrection.HasValue && Movement.Flat(_lastCorrection.Value, serverPos) < 1.5f && gap > 0.3f)
+            {
+                var here = _grid.CellOf(serverPos);
+                float dx = (local.X - serverPos.X) / gap, dz = (local.Z - serverPos.Z) / gap;
+                for (float st = 0.5f; st <= 2f; st += 0.5f)
+                {
+                    var c = _grid.CellOf(new Vector3(serverPos.X + dx * st, serverPos.Y, serverPos.Z + dz * st));
+                    if (!c.HasValue || c.Equals(here) || !_blocked.Add(c.Value)) continue;
+                    if (!StillGetsOut(serverPos)) { _blocked.Remove(c.Value); continue; }
+                    _ctx.Log($"MISSION: held at ({serverPos.X:0},{serverPos.Z:0}) on the way to the locked door; blocking cell {c.Value.Item2},{c.Value.Item3} and going round.");
+                }
+            }
+            _lastCorrection = _phase == Phase.PickLock ? serverPos : _lastCorrection;
             if (_phase == Phase.Walk)
             {
                 // Small pull-backs count too. 2026-09-27 13:43 (mission 2224801) the server pulled him back 0.5-1.4 m
@@ -1140,8 +1155,10 @@ namespace AOBuddy
             if (!_pickDoor.HasValue || !_doors.TryGetValue(_pickDoor.Value, out var door)) { _move.Hold(me, _ctx.Config.SendIntervalMs); Enter(_pickReturn, "the door is gone"); return; }
             // UP TO THE DOOR FIRST (2026-10-01 12:13-12:14, mission 2225101): the door (55,5,150) was 'near' by the bot's own
             // position, but the server held him at (50,6,149), 5.1 m off - every one of 40 picks came back 'too far'
-            // (feedback 110/172594057), and the owner, at the door, opened it first try. Walk to within PickReach of it
-            // (the position here is the server's after its corrections); if he can't get there, the door is given up.
+            // (feedback 110/172594057), and the owner, at the door, opened it first try. He was across the room on a chair,
+            // trying to run straight over it (owner). Walk to within PickReach of it along the building's path - which
+            // goes round the cells the server keeps pulling him back from - not in a straight line (the position here is
+            // the server's after its corrections); if he can't get there, the door is given up.
             var pos = me.MovementComponent.Position;
             float off = Movement.Flat(pos, door.Pos);
             if (door.Locked && off > PickReach)
@@ -1149,8 +1166,10 @@ namespace AOBuddy
                 if (_phaseTime > 15) { _ctx.Log($"MISSION: can't get within {PickReach} m of {_pickDoor} ({off:0.0} m off after 15 s); going round it."); _pickTries = PickTries; }
                 else
                 {
-                    float step = Math.Min(Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep), off - PickReach + 0.3f);
-                    var toward = new Vector3((door.Pos.X - pos.X) / off, 0, (door.Pos.Z - pos.Z) / off);
+                    var next = StepToward(pos, door.Pos) ?? door.Pos;
+                    float left = Math.Max(0.01f, Movement.Flat(pos, next));
+                    float step = Math.Min(Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep), left);
+                    var toward = new Vector3((next.X - pos.X) / left, 0, (next.Z - pos.Z) / left);
                     _ctx.WalkState = $"mission: up to the locked door, {off:0.0} m";
                     _move.Advance(me, new Vector3(pos.X + toward.X * step, pos.Y, pos.Z + toward.Z * step), Movement.SafeLook(toward, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
                     return;
