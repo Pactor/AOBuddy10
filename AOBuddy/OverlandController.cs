@@ -459,7 +459,7 @@ namespace AOBuddy
                 {
                     int snaps = route != null ? LearnedGround.SnapHitsAlong(_grid.Pf, route) : 0;
                     if ((route == null || snaps >= RoadOutSnaps)
-                        && TryRoadOut(from, what, route == null ? $"no route to {what} on the data ({why})" : $"the grid's way to {what} runs over {snaps} server pull-back(s)"))
+                        && TryRoadOut(from, what, route == null ? $"no route to {what} on the data ({why})" : $"the grid's way to {what} runs over {snaps} server pull-back(s)", route == null ? (int?)null : snaps))
                         return;
                     if (route == null) _ctx.Log($"OVERLAND: no route to {what} on the data ({why}).");
                 }
@@ -553,7 +553,7 @@ namespace AOBuddy
         // Loads it as the path: a straight step to its start, then the road. True when taken.
         private const int RoadOutSnaps = 2;   // a grid way over this many remembered pull-backs is no way out when a road is
 
-        private bool TryRoadOut(Vector3 from, string what, string reason)
+        private bool TryRoadOut(Vector3 from, string what, string reason, int? gridSnaps = null)
         {
             if (_grid == null) return false;
             var ground = _ground?.Ground;
@@ -561,6 +561,19 @@ namespace AOBuddy
                 (ground == null || double.IsNaN(ground.HeightAt(end.X, end.Z)) || Math.Abs(ground.HeightAt(end.X, end.Z) - end.Y) < 3)
                 && _roadOutFrom.All(b => Movement.Flat(b, end) > 30f));
             if (road == null) return false;
+            // ONLY A ROAD WITH FEWER PULL-BACKS THAN THE GRID'S WAY (2026-10-01, Borealis reclaim (685,482)): the grid's
+            // 81 m to the terminal passed 4 remembered pull-backs, and the road out it took instead - 657 m away and 676 m
+            // back - starts in the very corner where 12 of them were recorded, on earlier walks of that road.
+            if (gridSnaps.HasValue)
+            {
+                var withStart = new List<Vector3> { from }; withStart.AddRange(road);
+                int roadSnaps = LearnedGround.SnapHitsAlong(_grid.Pf, withStart);
+                if (roadSnaps >= gridSnaps.Value)
+                {
+                    _ctx.Log($"OVERLAND: {reason}, but the recorded road out runs over {roadSnaps}; taking the grid's way.");
+                    return false;
+                }
+            }
             _roadOutFrom.Add(from);
             _path.AddRange(road);
             _roadOut = true;

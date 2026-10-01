@@ -517,6 +517,15 @@ namespace AOBuddy
             return best;
         }
 
+        private bool StartOk(int x, int z, HashSet<int> extra, float y)
+        {
+            if (!Open(x, z, extra)) return false;
+            int cell = z * _w + x;
+            for (int i = 0; i < FloorCount(cell); i++)
+                if (FloorOpen(cell, i) && (float.IsNaN(y) || Math.Abs(FloorH(cell, i) - y) <= 3f)) return true;
+            return false;
+        }
+
         private static float Len(float x, float y, float z) => (float)Math.Sqrt(x * x + y * y + z * z);
 
         // ---- queries ------------------------------------------------------------------------------------------
@@ -560,11 +569,16 @@ namespace AOBuddy
             return into;
         }
 
-        /// <summary>The nearest open cell to p within maxR metres, ring by ring; null when there is none.</summary>
+        /// <summary>The nearest open cell to p within maxR metres, ring by ring, that has an open floor within 3 m of
+        /// p's height (any open floor when p.Y is NaN); null when there is none.</summary>
+        /// <remarks>An open cell whose floors are all blocked is no start: at the Borealis reclaim (689,73,483) the cell
+        /// under him was taken and the search gave up on the spot - "every floor under me is blocked" - so after every
+        /// death travel walked a 657 m recorded road out and 676 m back for the 83 m to the terminal (2026-10-01, 04:35,
+        /// 10:35, 11:02). The next cell with a floor he can stand on is the start instead.</remarks>
         private (int, int)? NearestOpen(Vector3 p, float maxR, HashSet<int> extra)
         {
             int cx = CellX(p.X), cz = CellZ(p.Z);
-            if (Open(cx, cz, extra)) return (cx, cz);
+            if (StartOk(cx, cz, extra, p.Y)) return (cx, cz);
             int R = (int)Math.Ceiling(maxR / Cell);
             for (int r = 1; r <= R; r++)
             {
@@ -572,7 +586,7 @@ namespace AOBuddy
                 for (int dz = -r; dz <= r; dz++)
                     for (int dx = -r; dx <= r; dx++)
                     {
-                        if (Math.Max(Math.Abs(dx), Math.Abs(dz)) != r || !Open(cx + dx, cz + dz, extra)) continue;
+                        if (Math.Max(Math.Abs(dx), Math.Abs(dz)) != r || !StartOk(cx + dx, cz + dz, extra, p.Y)) continue;
                         float d = dx * dx + dz * dz;
                         if (d < bd) { bd = d; best = (cx + dx, cz + dz); }
                     }

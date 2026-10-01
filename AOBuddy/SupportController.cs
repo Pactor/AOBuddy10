@@ -1233,7 +1233,23 @@ namespace AOBuddy
 
             // Rez sickness blocks rechargers — don't sit, and (critically) don't run the no-heal blacklist,
             // or a good recharger that "failed" only because of rez sickness would be blacklisted for good.
-            if (IsRezSick(me)) { if (_sitting) StandIfSitting(me); _resting = false; return false; }
+            // ...but SITTING needs no item and no skill: rez sick at 40% HP and nano he stood at the terminal doing nothing
+            // (owner, 2026-10-01 11:05: "why is he not healing?"). Sit and regenerate, items left alone.
+            if (IsRezSick(me))
+            {
+                int hpS = SelfHpPct(me), npS = SelfNanoPct(me);
+                bool want = _resting ? (Below(hpS, 99) || Below(npS, 95))
+                                     : (Below(hpS, _ctx.Config.RestBelowPercent) || Below(npS, _ctx.Config.RestNanoBelowPercent));
+                if (inCombat || combatLull || !want) { if (_sitting) StandIfSitting(me); _resting = false; return false; }
+                if (!_sitting)
+                {
+                    me.MovementComponent.ChangeMovement(MovementAction.SwitchToSit);
+                    _sitting = true;
+                    _ctx.Log($"REST: rez sick - sitting to regenerate at hp={hpS}% nano={npS}% (no heal items until it wears off).");
+                }
+                _resting = true;
+                return true;
+            }
 
             // Resting is the bot's OWN need — it does NOT depend on the owner. He could be anywhere (or gone);
             // if the bot needs HP/nano and isn't in a fight, it sits and recovers. So a missing/lost owner
