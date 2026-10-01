@@ -296,7 +296,7 @@ namespace AOBuddy
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
                 if (_nav?.Layout == null) { _nav = null; return; }
                 _instance = _nav.Layout.Instance;
-                if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _mobRoom.Clear(); _clearPasses = 0; _clearGaveUp = false; }
+                if (_clearInstance != _instance) { _clearInstance = _instance; ClearPct = -1; _clearVisited.Clear(); _mobRoom.Clear(); _mobsSeen.Clear(); _mobsDead.Clear(); _clearPasses = 0; _clearGaveUp = false; }
                 _grid = MissionGrid.Build(_nav, _doors);
                 ParseRecord();
                 _ctx.Log($"MISSION: in {_nav.Name} instance {_instance}, {_grid.Describe()}");
@@ -1269,13 +1269,21 @@ namespace AOBuddy
             foreach (var n in DynelManager.Npcs)
             {
                 if (n == null || n.Owner.HasValue || n.Identity == FindPersonTarget) continue;
-                if (n.TryGetStat(Stat.Health, out int h) && h <= 0) { _mobRoom.Remove(n.Identity); continue; }
+                if (_grid.FloorAt(n.Transform.Position).HasValue) _mobsSeen.Add(n.Identity);
+                if (n.TryGetStat(Stat.Health, out int h) && h <= 0) { _mobRoom.Remove(n.Identity); _mobsDead.Add(n.Identity); continue; }
                 var nf = _grid.FloorAt(n.Transform.Position);
                 if (!nf.HasValue) continue;
                 var ri = RoomIndexAt(n.Transform.Position, nf.Value);
                 if (ri.HasValue) _mobRoom[n.Identity] = ri.Value;
             }
         }
+        // OUR OWN COUNT (owner, 2026-10-01: "we can count"): the server's 'x% cleared' line came in 211 of 268 recordings
+        // through 2026-09-29 and in none of 39 since Martialbacon took over (2026-09-30) - kills or not. Mission 2225067:
+        // 9 mobs seen, 9 dead, and he told the owner he couldn't clear it. Every mob seen in the building, and every one
+        // seen dead (Health 0 - the SDK sets it on the death action and the corpse).
+        private readonly HashSet<Identity> _mobsSeen = new HashSet<Identity>(), _mobsDead = new HashSet<Identity>();
+        private int MobsSeen => _mobsSeen.Count;
+        private int MobsDead => _mobsDead.Count(_mobsSeen.Contains);
         private int _clearInstance, _clearPasses;
         private bool _clearGaveUp;
         private const int ClearCategory = 110, ClearMessage = 79979934;
@@ -1378,7 +1386,8 @@ namespace AOBuddy
             return len;
         }
 
-        private string ClearText => ClearPct < 0 ? "no kill counted yet" : $"{ClearPct:0.#}% cleared";
+        private string ClearText => ClearPct >= 0 ? $"{ClearPct:0.#}% cleared"
+                                  : MobsSeen == 0 ? "no mob seen yet" : $"{MobsDead} of {MobsSeen} mobs seen dead";
 
         private Hop? ClearHop(Vector3 pos, int floor, out string why)
         {
@@ -1447,6 +1456,14 @@ namespace AOBuddy
                 return ClearHop(pos, floor, out why);
             }
             _clearGaveUp = true;
+            // Every reachable room walked, and every mob he saw is dead: cleared, by his own count.
+            if (ClearPct < 0 && MobsSeen > 0 && MobsDead == MobsSeen)
+            {
+                _ctx.Log($"MISSION: cleared by my count - all {MobsSeen} mobs seen are dead and every reachable room is walked (no 'x% cleared' line from the server); on to the objective.");
+                _tell($"Cleared it: all {MobsSeen} mobs I saw are dead; doing the objective.");
+                why = "cleared by my count";
+                return null;
+            }
             _ctx.Log($"MISSION: clear mode gave up at {ClearText} after two rounds of every reachable room; on to the objective.");
             _tell($"Couldn't clear this one ({ClearText}); doing the objective.");
             why = "clear mode gave up";
