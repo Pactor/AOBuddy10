@@ -197,6 +197,11 @@ namespace AOBuddy
 
                 case CharacterActionMessage ca:
                     if ((int)ca.Action == MissionChangedAction && IsMe(ca.Identity)) OnCompleted("MissionChanged");
+                    // A death, as the server says it (CharacterAction Death): counted dead and out of its room at once.
+                    // Read only when clear mode scanned, kills made mid-fight were missed - mission 2225072 (07:23-07:32,
+                    // 2026-10-01) read '1 of 21 mobs seen dead' and walked a second round to rooms of mobs long dead.
+                    if (ca.Action == SmokeLounge.AOtomation.Messaging.GameData.CharacterActionType.Death && !IsMe(ca.Identity))
+                    { _mobsDead.Add(ca.Identity); _mobRoom.Remove(ca.Identity); }
                     break;
 
                 case FormatFeedbackMessage _:
@@ -1269,7 +1274,7 @@ namespace AOBuddy
             foreach (var n in DynelManager.Npcs)
             {
                 if (n == null || n.Owner.HasValue || n.Identity == FindPersonTarget) continue;
-                if (_grid.FloorAt(n.Transform.Position).HasValue) _mobsSeen.Add(n.Identity);
+                if (_grid.FloorAt(n.Transform.Position).HasValue && Fightable(n)) _mobsSeen.Add(n.Identity);
                 if (n.TryGetStat(Stat.Health, out int h) && h <= 0) { _mobRoom.Remove(n.Identity); _mobsDead.Add(n.Identity); continue; }
                 var nf = _grid.FloorAt(n.Transform.Position);
                 if (!nf.HasValue) continue;
