@@ -75,6 +75,7 @@ namespace AOBuddy
         private MissionRoll _roll;
         private MissionRun _run;
         private MissionRecorder _recorder;
+        private DeathRecorder _deathRec;       // every packet for 25 minutes after a death (the lost end of rez sickness)
         private MobAtlas _atlas;
         private bool _missionWasActive;
         private OverlandController _overland;
@@ -179,6 +180,8 @@ namespace AOBuddy
             _atlas = new MobAtlas(pluginDir, Log);
             _recorder = new MissionRecorder(_ctx, _mission, pluginDir, () => _run.CurrentLine, () => _roll.LastDifficulty, () => _run.HealingOut);
             Client.PacketRaw += (p, server) => { try { _recorder.OnPacket(p, server); } catch { } };
+            _deathRec = new DeathRecorder(_ctx, pluginDir);
+            Client.PacketRaw += (p, server) => { try { _deathRec.OnPacket(p, server); } catch { } };
             Client.NanoSeen += (caster, target, nano, secs) => { try { OnNanoSeen(caster, target, nano, secs); } catch { } };
             _watchdog = new Watchdog(_config, pluginDir, Log);
             BuildCommands();
@@ -462,6 +465,7 @@ namespace AOBuddy
             LocalPlayer me = DynelManager.LocalPlayer;
             _deathPos = me?.MovementComponent.Position;
             Log($"DIED (server death signal) at ({_deathPos?.X ?? 0:0},{_deathPos?.Y ?? 0:0},{_deathPos?.Z ?? 0:0}) — stopping all activity; reclaim in ~5s.");
+            try { _deathRec?.Start(); } catch (Exception ex) { Log("DEATHREC: " + ex.Message); }
             // No StopAttack here: the server ends the fight on death by itself, and the SDK already sends
             // one from its own death handler. The standing rule is that while he has a mob to attack he
             // never issues it — only an explicit 'idle'/'stop' from the owner does.
@@ -596,6 +600,7 @@ namespace AOBuddy
             catch (Exception ex) { Log("WATCHDOG error: " + ex.Message); }
 
             LocalPlayer me = DynelManager.LocalPlayer;
+            try { _deathRec?.Tick(me); } catch (Exception ex) { Log("DEATHREC: " + ex.Message); }
             if (me == null)
                 return;
 
@@ -1368,6 +1373,7 @@ namespace AOBuddy
                 { LocalPlayer lp = DynelManager.LocalPlayer; if (lp != null) { _move.Stop(lp, _config.SendIntervalMs); if (lp.IsAttacking) lp.StopAttack(); } }
                 reply("Mode: Idle. Standing down.");
             };
+            t["deathrec"] = (reply, p) => { _deathRec.Start(); reply($"Recording every packet for {DeathRecorder.RecordMinutes} minutes (as after a death)."); };
             t["logout"] = (reply, p) =>
             {
                 t["stop"](_ => { }, p);
