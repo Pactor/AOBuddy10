@@ -15,20 +15,27 @@ namespace AOBuddy
     /// the first exit the plan used from its start zone ("walk" for an on-foot plan), the reason and the time.
     /// A plan toward the same goal leaves out the exits that failed as a first step; MissionRun gives up on a door
     /// after GiveUpAfter failed attempts and goes back to its terminal.
+    ///
+    /// A failed WALK counts only from where it started (within SameStartMeters): 2026-10-01 one walk from the reclaim
+    /// corner in Borealis (689,483) got stuck at (702,481) at 04:39, and for the next six hours every trip to the
+    /// terminal from anywhere in Borealis left walking out - from (676,535), 42 m off, it went through the Backyard 5
+    /// pad, landed back in Borealis and planned the same again, 47 times (06:09-06:19). An exit is the same exit
+    /// from anywhere; a walk is not. Entries saved before the start was kept have none, and don't hold a walk back.
     /// </summary>
     public sealed class TravelFailures
     {
         public sealed class Entry
         {
             public int FromPf, GoalPf;
-            public bool HasGoal;
-            public float GX, GZ;
+            public bool HasGoal, HasFrom;
+            public float GX, GZ, FX, FZ;
             public string First, FirstText, Reason;
             public DateTime When;
         }
 
         public const double KeepHours = 6;
         public const float SameGoalMeters = 30f;   // doors are points; a goal this close counts as the same one
+        public const float SameStartMeters = 30f;  // a walk from this close counts as the same walk (OverlandController's NoDirectWalk uses 30 m)
         public const int GiveUpAfter = 2;
         public const string Walk = "walk";
 
@@ -62,12 +69,13 @@ namespace AOBuddy
             x.GoalPf == goalPf && x.HasGoal == goal.HasValue
             && (!goal.HasValue || Math.Sqrt((x.GX - goal.Value.X) * (x.GX - goal.Value.X) + (x.GZ - goal.Value.Z) * (x.GZ - goal.Value.Z)) < SameGoalMeters);
 
-        public void Record(int fromPf, int goalPf, Vector3? goal, string first, string firstText, string reason)
+        public void Record(int fromPf, Vector3? from, int goalPf, Vector3? goal, string first, string firstText, string reason)
         {
             var l = List;
             l.Add(new Entry
             {
                 FromPf = fromPf, GoalPf = goalPf, HasGoal = goal.HasValue,
+                HasFrom = from.HasValue, FX = from.HasValue ? (float)Math.Round(from.Value.X) : 0f, FZ = from.HasValue ? (float)Math.Round(from.Value.Z) : 0f,
                 GX = goal.HasValue ? (float)Math.Round(goal.Value.X) : 0f, GZ = goal.HasValue ? (float)Math.Round(goal.Value.Z) : 0f,
                 First = first ?? Walk, FirstText = firstText, Reason = reason, When = DateTime.UtcNow,
             });
@@ -76,9 +84,13 @@ namespace AOBuddy
             _log($"TRAVELFAILS: recorded a failed trip from {Zoning.Name(fromPf)} to {g}, first step {firstText ?? first} ({reason}); {Count(goalPf, goal)} failed attempt(s) at that goal in the last {KeepHours:0} h.");
         }
 
-        /// <summary>The first steps (exit keys, or Walk) that failed recently toward this goal.</summary>
-        public HashSet<string> FailedFirsts(int goalPf, Vector3? goal) =>
-            new HashSet<string>(List.Where(x => Same(x, goalPf, goal)).Select(x => x.First));
+        /// <summary>The first steps (exit keys, or Walk) that failed recently toward this goal - a walk only when it
+        /// started within SameStartMeters of <paramref name="from"/> in <paramref name="fromPf"/>.</summary>
+        public HashSet<string> FailedFirsts(int goalPf, Vector3? goal, int fromPf, Vector3 from) =>
+            new HashSet<string>(List.Where(x => Same(x, goalPf, goal)
+                                                && (x.First != Walk || (x.HasFrom && x.FromPf == fromPf
+                                                    && Math.Sqrt((x.FX - from.X) * (x.FX - from.X) + (x.FZ - from.Z) * (x.FZ - from.Z)) < SameStartMeters)))
+                                    .Select(x => x.First));
 
         /// <summary>Failed attempts at this goal within KeepHours.</summary>
         public int Count(int goalPf, Vector3? goal) => List.Count(x => Same(x, goalPf, goal));

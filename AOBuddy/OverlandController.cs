@@ -52,6 +52,7 @@ namespace AOBuddy
         // same goal leaves out the first steps that failed before (20:11-20:14, 2026-09-27: the same six legs three times).
         public TravelFailures Failures { get; }
         private int _attemptFromPf;
+        private Vector3 _attemptFromPos;   // where this attempt started: a failed walk is remembered from there (TravelFailures)
         private string _attemptFirst, _attemptFirstText;
         private bool _attemptRecorded, _ignoreRecord;
         private HashSet<string> _recordedFails = new HashSet<string>();
@@ -197,9 +198,9 @@ namespace AOBuddy
             if (Active) Stop("new destination");
             _destPf = pf; _destX = x; _destY = y;
             _failed.Clear(); _replans = 0;
-            _attemptFromPf = (int)Playfield.ModelId; _attemptFirst = null; _attemptFirstText = null; _attemptRecorded = false; _ignoreRecord = false;
+            _attemptFromPf = (int)Playfield.ModelId; _attemptFromPos = me.MovementComponent.Position; _attemptFirst = null; _attemptFirstText = null; _attemptRecorded = false; _ignoreRecord = false;
             _noWalk = false; _walkFirst = false; _roadOut = false; _roadOutFrom.Clear();
-            _recordedFails = Failures.FailedFirsts(pf, DestGoal);
+            _recordedFails = Failures.FailedFirsts(pf, DestGoal, _attemptFromPf, _attemptFromPos);
             if (_recordedFails.Count > 0)
                 _ctx.Log($"OVERLAND: {Failures.Count(pf, DestGoal)} failed trip(s) to this goal in the last {TravelFailures.KeepHours:0} h; leaving out their first step(s): {string.Join(", ", _recordedFails)}.");
             if (!Plan(me, out string summary)) { reply($"No way to {Zoning.Name(pf)} from here."); _phase = Phase.Off; return; }
@@ -218,7 +219,7 @@ namespace AOBuddy
         {
             if (_phase == Phase.Off || _attemptRecorded) return;
             _attemptRecorded = true;
-            Failures.Record(_attemptFromPf, _destPf, DestGoal, _attemptFirst ?? TravelFailures.Walk, _attemptFirstText, why);
+            Failures.Record(_attemptFromPf, _attemptFromPos, _destPf, DestGoal, _attemptFirst ?? TravelFailures.Walk, _attemptFirstText, why);
         }
 
         public void Stop(string why)
