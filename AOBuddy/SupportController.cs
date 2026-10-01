@@ -492,6 +492,31 @@ namespace AOBuddy
 
         private bool IsCoverer(BuffPlan plan) => _coverers != null && _coverers.Contains(plan.NanoId);
 
+        // Every nano's stat effects on use, from the client data (GameData/NanoEffects.json, written by
+        // tools/mp-nano-extractor 'effects' out of nanos.ocp): [target, function, stat, amount], a CastNano's nano
+        // resolved one level under "via". Null (logged) when the file is missing - then nothing is skipped by it.
+        private static Newtonsoft.Json.Linq.JObject _nanoEffects;
+        private static bool _nanoEffectsLoaded;
+
+        private string LowersCastNeeds(int nanoId, HashSet<int> castNeeds)
+        {
+            if (!_nanoEffectsLoaded)
+            {
+                _nanoEffectsLoaded = true;
+                string f = Path.Combine(_pluginDir, "GameData", "NanoEffects.json");
+                _nanoEffects = JsonStore.Load<Newtonsoft.Json.Linq.JObject>(f, _ctx.Log)?["nanos"] as Newtonsoft.Json.Linq.JObject;
+                _ctx.Log(_nanoEffects != null ? $"AUTO-BUFF: nano effects for {_nanoEffects.Count} nanos (NanoEffects.json)."
+                                              : $"AUTO-BUFF: no {f} - a buff's effects on him can't be checked.");
+            }
+            if (_nanoEffects?[nanoId.ToString()] is not Newtonsoft.Json.Linq.JObject n) return null;
+            var all = new List<Newtonsoft.Json.Linq.JToken>();
+            if (n["e"] is Newtonsoft.Json.Linq.JArray e) all.AddRange(e);
+            if (n["via"] is Newtonsoft.Json.Linq.JObject via) foreach (var kv in via) if (kv.Value is Newtonsoft.Json.Linq.JArray ve) all.AddRange(ve);
+            var hits = all.Where(x => (int)x[1] != 53051 && (int)x[3] < 0 && castNeeds.Contains((int)x[2]))
+                          .Select(x => $"{(Stat)(int)x[2]} {(int)x[3]}").Distinct().ToList();
+            return hits.Count == 0 ? null : string.Join(", ", hits);
+        }
+
         // Use-stat modifiers of a nano as stat->value (its effect map). Empty if it has none.
         private static Dictionary<Stat, int> UseMods(NanoItem ni)
         {
@@ -508,6 +533,12 @@ namespace AOBuddy
             _lastSpellCount = spells.Length;
 
             var plans = new List<BuffPlan>();
+            // The stats his own nanos need to be cast (every learned nano's use criteria): a "buff" that lowers one of
+            // them on him is no keep-up buff (Lotus on Water, below).
+            var castNeeds = new HashSet<int>();
+            foreach (int sid in spells)
+                if (ItemData.Find(sid, out NanoItem sn) && sn?.Criteria != null && sn.Criteria.TryGetValue(ItemActionInfo.UseCriteria, out var sc))
+                    foreach (var c in sc) if (c.Operator == UseCriteriaOperator.GreaterThan) castNeeds.Add(c.Param1);
             foreach (int id in spells)
             {
                 if (_ctx.Config.ExcludeNanoIds != null && _ctx.Config.ExcludeNanoIds.Contains(id)) { _ctx.Log($"AUTO-BUFF skip [{id}]: excluded by config."); continue; }
@@ -527,6 +558,13 @@ namespace AOBuddy
                 // probe (MeetsUseReqs), so a hostile nano can never land on a friendly regardless.
                 if (ni.NCU <= 0) { _ctx.Log($"AUTO-BUFF skip '{nm}' [{id}]: NCU={ni.NCU} (not a lasting buff). self={self} netMod={net}"); continue; }
                 if (net != int.MinValue && net < 0) { _ctx.Log($"AUTO-BUFF skip '{nm}' [{id}]: debuff (netMod={net}). NCU={ni.NCU} self={self}"); continue; }
+                // WHAT IT DOES TO HIM, from the client data (GameData/NanoEffects.json, out of nanos.ocp - ItemData.bin has
+                // no spell effects). Lotus on Water (81820) read as a harmless buff - NCU 3, no use modifiers - and was
+                // recast every ~15 s outside combat (2026-10-01 06:20-06:22, nano 81% -> 5%, then sat at the mission
+                // entrance): it casts 'Nano skills inoperative' (157743), -4000 to stats 122 and 127-131, and his own
+                // casting needs 122 and 128 above 142. Owner: "it is a combat buff".
+                string lowers = LowersCastNeeds(id, castNeeds);
+                if (lowers != null) { _ctx.Log($"AUTO-BUFF skip '{nm}' [{id}]: it lowers {lowers} on him, which his casting needs (NanoEffects.json) - not a keep-up buff."); continue; }
                 plans.Add(new BuffPlan { NanoId = id, Nano = ni, Self = self, Line = ni.NanoLine, Ncu = ni.NCU });
                 _ctx.Log($"AUTO-BUFF keep '{nm}' [{id}]: NCU={ni.NCU} netMod={net} self={self} line={ni.NanoLine}");
             }
