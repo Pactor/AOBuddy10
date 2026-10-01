@@ -281,7 +281,8 @@ namespace AOBuddy
             if (me == null) return false;
             var rule = RezSickRule();
             if (rule == null) return false;   // logged loudly by RezSickRule
-            if (!me.TryGetStat(Stat.TemporarySkillReduction, out int v)) return false;   // never sent = never sick
+            if (!me.TryGetStat(Stat.TemporarySkillReduction, out int read)) return false;   // never sent = never sick
+            int v = RezSickNow(read);
             switch (rule.Operator)
             {
                 case UseCriteriaOperator.GreaterThan: return v > rule.Param2;
@@ -289,6 +290,38 @@ namespace AOBuddy
                 case UseCriteriaOperator.EqualTo: return v == rule.Param2;
                 default: return false;
             }
+        }
+
+        // REZ SICKNESS COUNTS DOWN ON ITS OWN; NOTHING SAYS SO. 247 comes only in the FullCharacter at login and zone-in.
+        // Six deaths of the capturing player in the 50 retail captures, followed up to 19 minutes: not one Stat message
+        // carries 247, while the zone-in readings fall in a straight line - 0016b01d 4973 -> 4703 -> 3596 -> 3245 -> 2624
+        // at 7.9/30.2/112.7/139.6/186.9 s after the death, 7a5559e8 4973 -> 3002 -> 2678 at 7.3/156.7/181.5 s, and two
+        // more; all four together fit 13.19 a second (every reading within 51 of the line), 0 about 385 s after death.
+        // The bot's death recording 2026-10-01 10:35 shows the same: 11 minutes, no 247. Holding the reclaim's 5000 kept
+        // him at the terminal - no casting, no stims, no rest - until a relog (2026-10-01, 04:35 to 05:09).
+        // So: the last reading, less 13.19/s since it came; a later lower reading of the same sickness re-measures it.
+        public const double RezSickPerSecond = 13.19;
+        private static readonly System.Diagnostics.Stopwatch _rezClock = System.Diagnostics.Stopwatch.StartNew();
+        private static int _rezRead = -1;
+        private static double _rezReadAt, _rezRate = RezSickPerSecond;
+
+        /// <summary>247 as it is now: the last reading less what has worn off since.</summary>
+        internal static int RezSickNow(int read)
+        {
+            double now = _rezClock.Elapsed.TotalSeconds;
+            if (read != _rezRead)
+            {
+                if (_rezRead > 0 && read > 0 && read < _rezRead && now - _rezReadAt > 5)
+                {
+                    double rate = (_rezRead - read) / (now - _rezReadAt);
+                    StaticLog($"REZSICK: reading {_rezRead} -> {read} in {now - _rezReadAt:0.0} s = {rate:0.00}/s (counting at {_rezRate:0.00}/s).");
+                    _rezRate = rate;
+                }
+                if (read > 0) StaticLog($"REZSICK: 247 = {read} - counting down at {_rezRate:0.00}/s, over in about {read / _rezRate:0} s.");
+                _rezRead = read; _rezReadAt = now;
+            }
+            if (read <= 0) return read;
+            return Math.Max(0, (int)Math.Ceiling(read - _rezRate * (now - _rezReadAt)));
         }
 
         private static bool _rezRuleLoaded;
