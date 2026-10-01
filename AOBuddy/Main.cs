@@ -381,6 +381,8 @@ namespace AOBuddy
                 if (lp != null && cm.Identity.Instance == lp.Identity.Instance)
                 {
                     _diagSelfMoves++;
+                    // The server's echo of our own move carries its ground height there (MissionController.OnServerEcho).
+                    if (cm.MoveType == MovementAction.Update) _mission.OnServerEcho(cm.Position);
                 }
             }
         }

@@ -296,6 +296,7 @@ namespace AOBuddy
             _items.Clear(); _chestRaw.Clear(); _chestSaved = 0; _record = null; _grid = null; _nav = null; _instance = 0; _blocked.Clear(); _visited.Clear(); _roomGoal.Clear(); _liftTried.Clear(); _lastPathFrom = null; _personRoom = null; _personRoomName = null; _personCells = null; _onTilePath = false; _tileRefused = false; _tilePulls = 0; _blockClearTried = false;
             _doors.Clear(); _unpickable.Clear(); _pickDoor = null;
             _trail.Clear(); _trailAt.Clear(); _trailWhole = true; _retrace = false; _regroupedAt = null; _sameSpot = 0;
+            _serverGround.Clear();
             try
             {
                 _nav = raw == null ? null : AOBuddyNav.LoadMission(_pluginDir, raw);
@@ -1701,7 +1702,7 @@ namespace AOBuddy
             Vector3 dir = new Vector3(tp.Value.X - pos.X, 0, tp.Value.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d - 1.5f);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
-            next = new Vector3(next.X, StepY(_grid.HeightAt(next, pos.Y) ?? pos.Y, pos.Y, step), next.Z);
+            next = new Vector3(next.X, StepY(GroundY(next, pos.Y) ?? pos.Y, pos.Y, step), next.Z);
             _ctx.WalkState = $"mission: up to the item d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
             _actStill = 0;
@@ -1856,7 +1857,7 @@ namespace AOBuddy
             Vector3 dir = new Vector3(wp.X - pos.X, 0, wp.Z - pos.Z).Normalize();
             float step = Movement.CappedStep(_ctx.RunVelocity(me), dt, _ctx.Config.MaxStep, d);
             Vector3 next = new Vector3(pos.X + dir.X * step, pos.Y, pos.Z + dir.Z * step);
-            float? y = _grid.HeightAt(next, pos.Y);
+            float? y = GroundY(next, pos.Y);
             next = new Vector3(next.X, StepY(y ?? wp.Y, pos.Y, step), next.Z);
             _ctx.WalkState = $"mission({_purpose}) wp {_pathIndex + 1}/{_path.Count} d={d:0.0}";
             _move.Advance(me, next, Movement.SafeLook(dir, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
@@ -1871,6 +1872,56 @@ namespace AOBuddy
         // low is inside the rock.
         // Going down: no faster than he moves forward (45 degrees) - 11:16-11:18, 2026-09-28, Midtech 2224933: a dip to 3.2 m
         // on a 5 m floor, the tile height dropped at once and put his feet under the stair; 16 refusals, mission dropped.
+        // THE SERVER'S GROUND. The server echoes every move he sends (CharDCMove Update) with its own height for that spot,
+        // and a move more than 0.5 m under that ground is refused: in the 2026-10-01 mission recordings 5,800 echoes were
+        // over 0.5 m above the height he sent and 5,799 of them were followed by a SetPos within 0.3 s - 5,799 of the day's
+        // 6,957 pull-backs. Grey Caves-Mines 2225111, 16:35-17:02: a step at x 74.5 where the 2 m tile said 5.2 and the
+        // server 5.82-5.92, pulled back 555 times. Every echo is kept (0.5 m cells, per instance) and walked at from then on.
+        private const float EchoCell = 0.5f;
+        private readonly Dictionary<(int, int), List<float>> _serverGround = new Dictionary<(int, int), List<float>>();
+        private double _echoLogAt;
+
+        public void OnServerEcho(Vector3 p)
+        {
+            if (_grid == null) return;
+            var k = ((int)Math.Floor(p.X / EchoCell), (int)Math.Floor(p.Z / EchoCell));
+            if (!_serverGround.TryGetValue(k, out var ys)) _serverGround[k] = ys = new List<float>();
+            int i = ys.FindIndex(y => Math.Abs(y - p.Y) < 1f);   // another floor over the same spot keeps its own height
+            if (i >= 0) ys[i] = p.Y; else ys.Add(p.Y);
+        }
+
+        // The server's height nearest to p (within 0.75 m across, 2 m up or down from nearY), or null if never echoed there.
+        private float? ServerGround(Vector3 p, float nearY)
+        {
+            int cx = (int)Math.Floor(p.X / EchoCell), cz = (int)Math.Floor(p.Z / EchoCell);
+            float? best = null; float bestD = float.MaxValue;
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dz = -1; dz <= 1; dz++)
+                {
+                    if (!_serverGround.TryGetValue((cx + dx, cz + dz), out var ys)) continue;
+                    float mx = (cx + dx + 0.5f) * EchoCell - p.X, mz = (cz + dz + 0.5f) * EchoCell - p.Z;
+                    float d = (float)Math.Sqrt(mx * mx + mz * mz);
+                    if (d > 0.75f) continue;
+                    foreach (float y in ys)
+                        if (Math.Abs(y - nearY) <= 2f && d + Math.Abs(y - nearY) * 0.1f < bestD) { bestD = d + Math.Abs(y - nearY) * 0.1f; best = y; }
+                }
+            return best;
+        }
+
+        // The height to walk at: the server's where it has told us, else the tile's.
+        private float? GroundY(Vector3 p, float nearY)
+        {
+            float? tile = _grid.HeightAt(p, nearY);
+            float? sg = ServerGround(p, nearY);
+            if (!sg.HasValue) return tile;
+            if (tile.HasValue && sg.Value - tile.Value > 0.3f && Now - _echoLogAt > 10)
+            {
+                _echoLogAt = Now;
+                _ctx.Log($"MISSION: the server's ground at ({p.X:0.0},{p.Z:0.0}) is {sg.Value:0.00}, the tile says {tile.Value:0.00} - walking at the server's.");
+            }
+            return sg;
+        }
+
         private static float StepY(float tileY, float nowY, float stepLen) => tileY >= nowY ? tileY : Math.Max(tileY, nowY - Math.Max(0.05f, stepLen));
 
         private float ArriveRadius() => _purpose == Purpose.Button ? 1.5f : _purpose == Purpose.Target ? 2.5f : _purpose == Purpose.Search || _purpose == Purpose.Clear ? 3f : 2.0f;
