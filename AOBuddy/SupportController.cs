@@ -541,12 +541,33 @@ namespace AOBuddy
                 _ctx.Log(_nanoEffects != null ? $"AUTO-BUFF: nano effects for {_nanoEffects.Count} nanos (NanoEffects.json)."
                                               : $"AUTO-BUFF: no {f} - a buff's effects on him can't be checked.");
             }
-            if (_nanoEffects?[nanoId.ToString()] is not Newtonsoft.Json.Linq.JObject n) return null;
+            var hits = NanoEffectRows(nanoId).Where(x => (int)x[1] != 53051 && (int)x[3] < 0 && castNeeds.Contains((int)x[2]))
+                          .Select(x => $"{(Stat)(int)x[2]} {(int)x[3]}").Distinct().ToList();
+            return hits.Count == 0 ? null : string.Join(", ", hits);
+        }
+
+        private static List<Newtonsoft.Json.Linq.JToken> NanoEffectRows(int nanoId)
+        {
             var all = new List<Newtonsoft.Json.Linq.JToken>();
+            if (_nanoEffects?[nanoId.ToString()] is not Newtonsoft.Json.Linq.JObject n) return all;
             if (n["e"] is Newtonsoft.Json.Linq.JArray e) all.AddRange(e);
             if (n["via"] is Newtonsoft.Json.Linq.JObject via) foreach (var kv in via) if (kv.Value is Newtonsoft.Json.Linq.JArray ve) all.AddRange(ve);
-            var hits = all.Where(x => (int)x[1] != 53051 && (int)x[3] < 0 && castNeeds.Contains((int)x[2]))
-                          .Select(x => $"{(Stat)(int)x[2]} {(int)x[3]}").Distinct().ToList();
+            return all;
+        }
+
+        // Crowd-control functions (OmniCell FunctionType), exported into NanoEffects.json by the extractor. A nano that
+        // does one of these is no keep-up buff: Detain Suspect (56218, line Root, NCU 1, no stat mods) passed as one and
+        // he cast it on himself every 2.5 s, rooting himself (2026-10-01 13:37). Call after LowersCastNeeds (it loads).
+        private static readonly Dictionary<int, string> CrowdControlFns = new Dictionary<int, string>
+        {
+            { 53068, "RestrictAction (root)" }, { 53153, "Mezz" }, { 53128, "Daze" },
+            { 53121, "Fear" }, { 53127, "CharmNpc" }, { 53089, "CastStunNano" },
+        };
+
+        private static string CrowdControls(int nanoId)
+        {
+            var hits = NanoEffectRows(nanoId).Where(x => (int)x[1] != 53051 && CrowdControlFns.ContainsKey((int)x[1]))
+                          .Select(x => CrowdControlFns[(int)x[1]]).Distinct().ToList();
             return hits.Count == 0 ? null : string.Join(", ", hits);
         }
 
@@ -598,6 +619,8 @@ namespace AOBuddy
                 // casting needs 122 and 128 above 142. Owner: "it is a combat buff".
                 string lowers = LowersCastNeeds(id, castNeeds);
                 if (lowers != null) { _ctx.Log($"AUTO-BUFF skip '{nm}' [{id}]: it lowers {lowers} on him, which his casting needs (NanoEffects.json) - not a keep-up buff."); continue; }
+                string cc = CrowdControls(id);
+                if (cc != null) { _ctx.Log($"AUTO-BUFF skip '{nm}' [{id}]: crowd control ({cc}, NanoEffects.json) - not a keep-up buff."); continue; }
                 plans.Add(new BuffPlan { NanoId = id, Nano = ni, Self = self, Line = ni.NanoLine, Ncu = ni.NCU });
                 _ctx.Log($"AUTO-BUFF keep '{nm}' [{id}]: NCU={ni.NCU} netMod={net} self={self} line={ni.NanoLine}");
             }
