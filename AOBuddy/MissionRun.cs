@@ -1450,6 +1450,12 @@ namespace AOBuddy
                 }
                 return _mission.StepToward(me.Transform.Position, foe.Transform.Position) ?? foe.Transform.Position;
             }
+            // ONLY WITHIN HIS REACH (owner, 2026-10-01: "he just ran past 2 mobs aggroing both to get to a mob in a closed
+            // room"): at 06:24:13 '34 - Automatic' was 20.6 m off, no blow in 4.2 s, and this walked him a 40 m path to it
+            // through the rooms between. Farther than his weapon reaches, no blow is no news - closing in is the fight's own
+            // job. Judged from when it is in reach (the Borer Scorpiod this was made for stood 3.7 m off, through a wall).
+            float reach = me.TryGetStat(Stat.AttackRange, out int rawReach) && rawReach > 0 ? Math.Max(rawReach / 100f, 1.5f) : _ctx.Config.AttackRange;
+            if (me.DistanceFrom(foe) > reach) { _reachSince = now; return null; }
             double quiet = now - last;
             if (quiet < 3 * _swingSecs.Value) return null;
             var pos = me.Transform.Position;
