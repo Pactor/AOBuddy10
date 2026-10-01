@@ -539,7 +539,9 @@ namespace AOBuddy
                 }
                 // The same refusal with nothing new to steer round (no cell could be blocked): planning again gives the
                 // same route, so stay on it; the stuck watch in WalkTick blocks the waypoint's cell after 3 s.
-                if (repeat && added.Count == 0 && gap <= 2f && _path != null && RewindOnto(serverPos))
+                // ...and the stuck watch must be left to run: rewinding reset it, so on 2026-10-01 (mission 2225093,
+                // 11:31-11:44) he was held at (232,5,101) 3,469 times backing out and that cell was never blocked.
+                if (repeat && added.Count == 0 && gap <= 2f && _path != null && RewindOnto(serverPos, resetStuck: false))
                 {
                     _lastCorrection = serverPos;
                     return true;
@@ -1874,7 +1876,7 @@ namespace AOBuddy
         /// (within 0.4 m - a route starts on the centre of the nearest 0.5 m cell, up to 0.35 m from where the walk
         /// began). The walk goes on to that leg's end, so the line walked is one the planner checked. False when p
         /// is on none of them: then the route must be planned again from p.</summary>
-        private bool RewindOnto(Vector3 p)
+        private bool RewindOnto(Vector3 p, bool resetStuck = true)
         {
             const float OnLeg = 0.4f;
             // A spot the walls close (pinned inside a wall slab, 2224812 15:13:52: z 79.94 in a slab at z 79.8-80.2)
@@ -1888,7 +1890,7 @@ namespace AOBuddy
             {
                 Vector3 a = _path[Math.Max(0, i - 1)], b = _path[i];
                 if (FlatToSegment(p, a, b) > (i == 0 ? firstTol : OnLeg) || Math.Abs(p.Y - b.Y) > MaxLegDy) continue;
-                if (i != _pathIndex) { _ctx.Log($"MISSION: pulled back onto leg {i + 1}/{_path.Count} of the route; walking it again."); _stuck.Reset(); }
+                if (i != _pathIndex) { _ctx.Log($"MISSION: pulled back onto leg {i + 1}/{_path.Count} of the route; walking it again."); if (resetStuck) _stuck.Reset(); }
                 _pathIndex = i;
                 return true;
             }
