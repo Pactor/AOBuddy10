@@ -663,7 +663,7 @@ namespace AOBuddy
                     return WalkTick(me, dt);
 
                 case Phase.PickLock:
-                    PickTick(me);
+                    PickTick(me, dt);
                     return true;
 
                 case Phase.PressButton:
@@ -1051,6 +1051,7 @@ namespace AOBuddy
         private bool _noPickTold;
         public static readonly int[] LockPicks = { 95577, 156639, 216380, 295999, 296000, 296001, 297014 };
         private const int DoorType = 0xC748, ActionUnlocked = 115, PickTries = 40;
+        private const float PickReach = 2f;   // pick from within this of the door (the server refuses from 5 m: 'too far')
 
         private static int BE32(byte[] b, int p) => (b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3];
 
@@ -1134,10 +1135,28 @@ namespace AOBuddy
             return null;
         }
 
-        private void PickTick(LocalPlayer me)
+        private void PickTick(LocalPlayer me, double dt)
         {
+            if (!_pickDoor.HasValue || !_doors.TryGetValue(_pickDoor.Value, out var door)) { _move.Hold(me, _ctx.Config.SendIntervalMs); Enter(_pickReturn, "the door is gone"); return; }
+            // UP TO THE DOOR FIRST (2026-10-01 12:13-12:14, mission 2225101): the door (55,5,150) was 'near' by the bot's own
+            // position, but the server held him at (50,6,149), 5.1 m off - every one of 40 picks came back 'too far'
+            // (feedback 110/172594057), and the owner, at the door, opened it first try. Walk to within PickReach of it
+            // (the position here is the server's after its corrections); if he can't get there, the door is given up.
+            var pos = me.MovementComponent.Position;
+            float off = Movement.Flat(pos, door.Pos);
+            if (door.Locked && off > PickReach)
+            {
+                if (_phaseTime > 15) { _ctx.Log($"MISSION: can't get within {PickReach} m of {_pickDoor} ({off:0.0} m off after 15 s); going round it."); _pickTries = PickTries; }
+                else
+                {
+                    float step = Math.Min(Math.Min((float)(_ctx.RunVelocity(me) * dt), _ctx.Config.MaxStep), off - PickReach + 0.3f);
+                    var toward = new Vector3((door.Pos.X - pos.X) / off, 0, (door.Pos.Z - pos.Z) / off);
+                    _ctx.WalkState = $"mission: up to the locked door, {off:0.0} m";
+                    _move.Advance(me, new Vector3(pos.X + toward.X * step, pos.Y, pos.Z + toward.Z * step), Movement.SafeLook(toward, me.MovementComponent.Heading), run: true, dt, _ctx.Config.SendIntervalMs);
+                    return;
+                }
+            }
             _move.Hold(me, _ctx.Config.SendIntervalMs);
-            if (!_pickDoor.HasValue || !_doors.TryGetValue(_pickDoor.Value, out var door)) { Enter(_pickReturn, "the door is gone"); return; }
             if (!door.Locked)
             {
                 _ctx.Log($"MISSION: picked {_pickDoor} in {_pickTries} tr{(_pickTries == 1 ? "y" : "ies")}.");
