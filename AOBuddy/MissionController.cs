@@ -815,6 +815,15 @@ namespace AOBuddy
         }
         private void TrailAdd(Vector3 p) { _trail.Add(p); _trailAt.Add(Now); }
 
+        /// <summary>The first point of his own trail at least <paramref name="meters"/> back from <paramref name="from"/>
+        /// (ground the server let him walk), or null when the trail is shorter than that.</summary>
+        public Vector3? TrailBack(Vector3 from, float meters)
+        {
+            for (int i = _trail.Count - 1; i >= 0; i--)
+                if (Movement.Flat(_trail[i], from) >= meters && Math.Abs(_trail[i].Y - from.Y) < 3f) return _trail[i];
+            return null;
+        }
+
         // A pull-back means the last steps were never walked on the server: drop them from the trail, so it only holds
         // ground the server let him stand on.
         private void TrailRefused(Vector3 serverPos)

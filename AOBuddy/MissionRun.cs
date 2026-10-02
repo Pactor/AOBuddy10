@@ -1381,8 +1381,9 @@ namespace AOBuddy
 
         // REACH, from the wire: is anything of his landing on (or missing) the mob he is attacking?
         // Returns where to walk to get at it, or null when his blows are reaching it (or it has just been set aside).
-        private Identity? _reachFoe, _reachWalking;
+        private Identity? _reachFoe, _reachWalking, _reachBacking;
         private double _reachSince, _reachWalkFrom, _reachWalkUntil;
+        private Vector3 _reachBackTo;
         private static double? _swingSecs;   // his own time between blows, measured; kept across fights
         // ...and across restarts, per weapon set (swing-times.json beside the plugin, like special-ranges.json): after the
         // 06:48 restart nothing was measured yet, the check sat out, and he stood 3.8 m from Borer Scorpiod again (06:51).
@@ -1420,7 +1421,7 @@ namespace AOBuddy
 
             // A new mob, or the same one in a new fight (back in from a heal trip, 06:47:17): judged from now. Judged from
             // the old fight, 44 s of 'no blow' made him start and stop the walk every tick.
-            if (_reachFoe != foe.Identity || _reachSince < fightFrom) { _reachFoe = foe.Identity; _reachSince = Math.Max(now, fightFrom); _reachWalking = null; }
+            if (_reachFoe != foe.Identity || _reachSince < fightFrom) { _reachFoe = foe.Identity; _reachSince = Math.Max(now, fightFrom); _reachWalking = null; _reachBacking = null; }
             double last = mine.Where(b => b.Target == foe.Identity && b.Time >= _reachSince).Select(b => b.Time).DefaultIfEmpty(_reachSince).Max();
             // NEVER SET ASIDE ONE THAT IS HURTING US (Algorithman's MP, 17:24:35 2026-09-29): a Seasoned OT Clerk, a caster
             // standing off at 10-13 m, was left alone for 5 minutes because his blows didn't land - and nuked him and his
@@ -1450,6 +1451,25 @@ namespace AOBuddy
                 }
                 return _mission.StepToward(me.Transform.Position, foe.Transform.Position) ?? foe.Transform.Position;
             }
+            if (_reachBacking == foe.Identity)
+            {
+                if (last > _reachWalkFrom)
+                {
+                    _ctx.Log($"MISSIONRUN: backed off and it followed; reaching '{foe.Name}' now ({me.DistanceFrom(foe):0.0} m).");
+                    _reachBacking = null; _reachSince = now;
+                    return null;
+                }
+                if (now > _reachWalkUntil)
+                {
+                    _reachBacking = null;
+                    if (hurting) { _ctx.Log($"MISSIONRUN: backed off from '{foe.Name}' and still no blow of mine lands, but it is hurting us; staying on it."); _reachSince = now; return null; }
+                    _ctx.Log($"MISSIONRUN: backed off from '{foe.Name}' and still no blow of mine lands; leaving it alone for 5 minutes.");
+                    _combat.SetAside(me, foe.Identity, 300);
+                    return null;
+                }
+                if (Movement.Flat(me.Transform.Position, _reachBackTo) < 1f) return me.Transform.Position;   // there: stand and let it come (null would walk him back at it)
+                return _mission.StepToward(me.Transform.Position, _reachBackTo) ?? _reachBackTo;
+            }
             // ONLY WITHIN HIS REACH (owner, 2026-10-01: "he just ran past 2 mobs aggroing both to get to a mob in a closed
             // room"): at 06:24:13 '34 - Automatic' was 20.6 m off, no blow in 4.2 s, and this walked him a 40 m path to it
             // through the rooms between. Farther than his weapon reaches, no blow is no news - closing in is the fight's own
@@ -1459,6 +1479,17 @@ namespace AOBuddy
             double quiet = now - last;
             if (quiet < 3 * _swingSecs.Value) return null;
             var pos = me.Transform.Position;
+            // RIGHT NEXT TO IT AND NOTHING LANDS EITHER WAY (owner, 2026-10-01 22:03: "hes standing in a doorway, not hitting
+            // the mob, just back out, it is aggroed on you it will follow"): 'Claw-C22 Escapee' 0.7-1.0 m off for over a
+            // minute, no blow of his and none of its, no refusal from the server; walking the path to it was 0 m. Back out
+            // 5 m along the ground he came in on and let it follow him out of the doorway.
+            if (me.DistanceFrom(foe) <= 2.5f && _mission.TrailBack(pos, 5f) is Vector3 back)
+            {
+                _reachBacking = foe.Identity; _reachWalkFrom = now; _reachBackTo = back;
+                _reachWalkUntil = now + 5f / Math.Max(1f, _ctx.RunVelocity(me)) + 4 * _swingSecs.Value;
+                _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s (my swing {_swingSecs:0.0} s), {me.DistanceFrom(foe):0.0} m off: backing out 5 m the way I came to ({back.X:0},{back.Z:0}) for it to follow.");
+                return _mission.StepToward(pos, back) ?? back;
+            }
             float? len = _mission.PathLen(pos, foe.Transform.Position);
             if (!len.HasValue && hurting)
             {
