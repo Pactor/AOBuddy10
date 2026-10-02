@@ -1483,7 +1483,7 @@ namespace AOBuddy
             // the mob, just back out, it is aggroed on you it will follow"): 'Claw-C22 Escapee' 0.7-1.0 m off for over a
             // minute, no blow of his and none of its, no refusal from the server; walking the path to it was 0 m. Back out
             // 5 m along the ground he came in on and let it follow him out of the doorway.
-            if (me.DistanceFrom(foe) <= 2.5f && _mission.TrailBack(pos, 5f) is Vector3 back)
+            if (me.DistanceFrom(foe) <= 2.5f && _mission.TrailBack(pos, 5f, foe.Transform.Position) is Vector3 back)
             {
                 _reachBacking = foe.Identity; _reachWalkFrom = now; _reachBackTo = back;
                 _reachWalkUntil = now + 5f / Math.Max(1f, _ctx.RunVelocity(me)) + 4 * _swingSecs.Value;

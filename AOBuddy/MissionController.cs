@@ -817,10 +817,23 @@ namespace AOBuddy
 
         /// <summary>The first point of his own trail at least <paramref name="meters"/> back from <paramref name="from"/>
         /// (ground the server let him walk), or null when the trail is shorter than that.</summary>
-        public Vector3? TrailBack(Vector3 from, float meters)
+        public Vector3? TrailBack(Vector3 from, float meters, Vector3? awayFrom = null)
         {
             for (int i = _trail.Count - 1; i >= 0; i--)
                 if (Movement.Flat(_trail[i], from) >= meters && Math.Abs(_trail[i].Y - from.Y) < 3f) return _trail[i];
+            // No trail that long (22:10, 2026-10-01: restarted beside the mob, he had not walked a step in the building):
+            // the way out instead - the walk-out route toward the exit door, as long as it doesn't pass the mob.
+            if (_nav == null || _grid == null) return null;
+            var ex = _nav.Exit;
+            var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
+                                  : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
+            var route = RetracePath(from, land) ?? PathFrom(from, land, out _);
+            if (route == null) return null;
+            foreach (var q in route)
+            {
+                if (awayFrom.HasValue && Movement.Flat(q, awayFrom.Value) < 1.5f) return null;   // the way out runs past it
+                if (Movement.Flat(q, from) >= meters) return q;
+            }
             return null;
         }
 
