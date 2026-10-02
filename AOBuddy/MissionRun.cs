@@ -2529,8 +2529,16 @@ namespace AOBuddy
             // NODROP is never sold (owner, 2026-09-24): the item data's Flags bit 26.
             if (ItemValues.IsNoDrop(i.Id, i.HighId)) return false;
             if (i.Name.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 || i.Name.IndexOf("mission", StringComparison.OrdinalIgnoreCase) >= 0) return false;
-            if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !PetController.IsMeleeLoadout(DynelManager.LocalPlayer)) return false;
+            // Sold only when melee is PROVEN by a sent AttackRange: the server never sent it to Lowfatbacon (2026-10-01,
+            // 'stat AttackRange' - not sent), IsMeleeLoadout read that as melee, and his 13,025 Energy Weapon Ammo was sellable.
+            if (i.Name.StartsWith("Ammo:", StringComparison.OrdinalIgnoreCase) && !MeleeProven()) return false;
             return true;
+        }
+
+        private static bool MeleeProven()
+        {
+            LocalPlayer me = DynelManager.LocalPlayer;
+            return me != null && me.TryGetStat(Stat.AttackRange, out int cm) && cm > 0 && PetController.IsMeleeLoadout(me);
         }
 
         // Sellable items still inside bags: they can't be sold from there (owner), so they're moved to the
