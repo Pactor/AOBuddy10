@@ -828,13 +828,29 @@ namespace AOBuddy
             var land = ex != null ? new Vector3((float)(ex.X - ex.Nx * 1.5), (float)ex.Y, (float)(ex.Z - ex.Nz * 1.5))
                                   : new Vector3(_nav.Layout.LandX, _nav.Layout.LandY, _nav.Layout.LandZ);
             var route = RetracePath(from, land) ?? PathFrom(from, land, out _);
-            if (route == null) return null;
-            foreach (var q in route)
+            if (route != null)
+                foreach (var q in route)
+                {
+                    if (awayFrom.HasValue && Movement.Flat(q, awayFrom.Value) < 1.5f) break;   // the way out runs past it
+                    if (Movement.Flat(q, from) >= meters) return q;
+                }
+            // The mob stands in the way out (22:11, 2026-10-01: in the doorway he came in by): an open spot that far off on
+            // the side away from it, whose path doesn't pass it - the farthest from the mob of 16 directions.
+            if (!awayFrom.HasValue) return null;
+            Vector3? best = null; float bestD = 0;
+            for (int i = 0; i < 16; i++)
             {
-                if (awayFrom.HasValue && Movement.Flat(q, awayFrom.Value) < 1.5f) return null;   // the way out runs past it
-                if (Movement.Flat(q, from) >= meters) return q;
+                double a = i * Math.PI / 8;
+                var c = new Vector3(from.X + (float)Math.Cos(a) * meters, from.Y, from.Z + (float)Math.Sin(a) * meters);
+                float d = Movement.Flat(c, awayFrom.Value);
+                if (d <= Movement.Flat(from, awayFrom.Value) + 2f || d <= bestD || !_grid.OpenAt(c) || !(_grid.HeightAt(c, from.Y) is float cy)) continue;
+                var path = PathFrom(from, new Vector3(c.X, cy, c.Z), out _);
+                if (path == null || path.Any(q => Movement.Flat(q, awayFrom.Value) < 1.5f)) continue;
+                float len = 0; var prev = from; foreach (var q in path) { len += Movement.Flat(prev, q); prev = q; }
+                if (len > meters * 2) continue;   // round a wall - not "backing off"
+                best = new Vector3(c.X, cy, c.Z); bestD = d;
             }
-            return null;
+            return best;
         }
 
         // A pull-back means the last steps were never walked on the server: drop them from the trail, so it only holds
