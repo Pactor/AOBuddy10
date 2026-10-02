@@ -440,16 +440,51 @@ namespace AOBuddy
             _tour = false;   // walking out ends a tour (01:55, 2026-09-28: a heal-out's exit push was counted as a failed tour stop)
             _retrace = true;
             _completed = true; _announced = true; _rewards.Clear(); _replans = 0; _presses = 0; _blocked.Clear(); _lastCorrection = null;
-            _path = null; _pendingButton = null;
+            _path = null; _pendingButton = null; _ownerMove = false;
             Enter(Phase.Exit, "owner said back outside");
             var ex = _nav.Exit;
             reply(ex != null ? $"Heading outside: the exit door on floor {ex.Floor} ({ex.X:0},{ex.Z:0}). Send 'mission stop' to cancel."
                              : "Heading to where I zoned in (this building's exit door is unknown). Send 'mission stop' to cancel.");
         }
 
+        // THE OWNER'S CLICK (AOBuddyMonitor right-click -> 'moveto x z', owner 2026-10-02: "if i see him stick i can make him
+        // back up a bit"). Walks the building's path to the clicked spot on his floor; a blitz that was running plans again
+        // from there, otherwise he stops there and whatever owns him (the run's fight, follow) carries on.
+        private bool _ownerMove, _ownerMoveResume, _ownerMoveWasExit;
+        private double _ownerMoveLogAt = -99;
+        public bool MoveTo(float x, float z, Action<string> reply)
+        {
+            var me = DynelManager.LocalPlayer;
+            if (_grid == null || me == null) return false;
+            var pos = me.MovementComponent.Position;
+            var probe = new Vector3(x, pos.Y, z);
+            if (!(_grid.HeightAt(probe, pos.Y) is float y)) { reply($"({x:0.0},{z:0.0}) isn't walkable floor near my height."); return true; }
+            var goal = new Vector3(x, y, z);
+            var path = PathFrom(pos, goal, out _);
+            if (path == null || path.Count == 0) { reply($"No walkable path from here to ({x:0.0},{z:0.0})."); return true; }
+            if (Movement.Flat(path[0], pos) > 0.5f) path.Insert(0, pos);
+            if (Movement.Flat(path[path.Count - 1], goal) > 0.5f) path.Add(goal);
+            _ownerMoveResume = Active; _ownerMoveWasExit = Active && _phase == Phase.Exit;
+            _ownerMove = true;
+            _tour = false; _lineTest = false;
+            _path = path; _pathIndex = 0; _purpose = Purpose.Regroup; _pendingButton = null; _replans = 0; _lastCorrection = null;
+            float len = 0; for (int i = 1; i < path.Count; i++) len += Movement.Flat(path[i - 1], path[i]);
+            Enter(Phase.Walk, $"owner's click: walking to ({x:0.0},{z:0.0}), {len:0} m");
+            reply($"Walking to ({x:0.0},{z:0.0}), {len:0} m.");
+            return true;
+        }
+
         public void Stop(string why)
         {
             if (_phase == Phase.Off) return;
+            // The owner's click-move is not cancelled by a fight starting or a hold: he clicked to get him out of a spot.
+            if (_ownerMove && (why == "fighting" || why == "held"))
+            {
+                _ownerMoveResume = false;   // a fight began meanwhile: the run takes over at the spot, no blitz restart
+                if (Now - _ownerMoveLogAt > 5) { _ownerMoveLogAt = Now; _ctx.Log($"MISSION: not stopping for '{why}' - walking to where the owner clicked first."); }
+                return;
+            }
+            _ownerMove = false;
             var me = DynelManager.LocalPlayer;
             if (me != null) _move.Stop(me, _ctx.Config.SendIntervalMs);
             _ctx.Log($"MISSION: blitz stopped ({why}) in phase {_phase}.");
@@ -1971,6 +2006,15 @@ namespace AOBuddy
             switch (_purpose)
             {
                 case Purpose.Regroup:
+                    if (_ownerMove)
+                    {
+                        _ownerMove = false;
+                        var at = me.MovementComponent.Position;
+                        _ctx.Log($"MISSION: at the spot the owner clicked ({at.X:0.0},{at.Z:0.0}).");
+                        if (_ownerMoveResume) Enter(_completed || _ownerMoveWasExit ? Phase.Exit : Phase.Plan, "owner's move done, planning again");
+                        else Stop("at the owner's spot");
+                        break;
+                    }
                     if (_lineTest) { _lineTest = false; _ctx.Log($"LINE: reached the end ({me.MovementComponent.Position.X:0.0},{me.MovementComponent.Position.Y:0.0},{me.MovementComponent.Position.Z:0.0})."); Stop("line test done"); break; }
                     Enter(_completed ? Phase.Exit : Phase.Plan, "back on ground I walked, planning again"); break;
                 case Purpose.Tour: TourNext(true, "arrived"); break;

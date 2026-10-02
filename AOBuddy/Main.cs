@@ -1409,6 +1409,18 @@ namespace AOBuddy
                 if (lp == null) return;
                 WorkTheZoneLine(lp, reply);
             };
+            // 'moveto x z' (the monitor's right-click): inside a mission along the building's path, outside straight there.
+            t["moveto"] = (reply, p) =>
+            {
+                var a = p.Skip(1).Where(x => x.Length > 0).ToArray();
+                if (a.Length < 2 || !float.TryParse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float mx)
+                    || !float.TryParse(a[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float mz)) { reply("moveto <x> <z>"); return; }
+                if (_mission.InMission && _mission.MoveTo(mx, mz, reply)) return;
+                LocalPlayer lp = DynelManager.LocalPlayer;
+                if (lp == null) return;
+                _follow.SetManualTarget(new Vector3(mx, lp.Transform.Position.Y, mz));
+                reply($"Walking straight to ({mx:0.0},{mz:0.0}).");
+            };
             t["stand"] = (reply, p) => { DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.LeaveSit); reply("Standing up."); };
             t["sit"] = (reply, p) => { DynelManager.LocalPlayer?.MovementComponent.ChangeMovement(MovementAction.SwitchToSit); reply("Sitting down."); };
             t["specials"] = (reply, p) =>

@@ -51,7 +51,8 @@ namespace AOBuddyMonitor
             _render = new MapRender(_cfg.PluginDir);
             _map = new MapView(_render);
             MapHost.Children.Add(_map);
-            _map.FollowToggled += on => CbFollow.IsChecked = on;   // zone change re-grabs follow; keep the box honest
+            _map.FollowToggled += on => CbFollow.IsChecked = on;
+            _map.MoveToRequested += (x, z) => SendText(string.Format(System.Globalization.CultureInfo.InvariantCulture, "moveto {0:0.0} {1:0.0}", x, z));   // right-click on the map   // zone change re-grabs follow; keep the box honest
             _render.Rendered += pf => Dispatcher.UIThread.Post(() => _map.InvalidateVisual());
             LogLine("monitor up — " + (_cfg.PluginDir.Length > 0 ? "nav data: " + _cfg.PluginDir : "no plugin dir found; maps will be grids"));
             LogLine("waiting for the bot on " + _cfg.Base);
@@ -321,6 +322,12 @@ namespace AOBuddyMonitor
             string text = (CmdBox.Text ?? "").Trim();
             if (text.Length == 0 || !CmdBox.IsEnabled) return;
             CmdBox.Text = "";
+            SendText(text);
+        }
+
+        private void SendText(string text)
+        {
+            if (!CmdBox.IsEnabled) return;   // one command at a time: replies are still being collected
             CmdBox.IsEnabled = false;
             CmdState.Text = "sending — collecting replies…";
             if (!_cmdHistory.Contains(text)) _cmdHistory.Add(text);

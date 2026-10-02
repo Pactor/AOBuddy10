@@ -72,6 +72,10 @@ namespace AOBuddyMonitor
         /// <summary>Raised when the view itself flips Follow (a zone change grabs the leash back), so the
         /// toolbar checkbox can stay in sync without a binding.</summary>
         public event Action<bool> FollowToggled;
+        /// <summary>Right-click on the map: the world (x, z) to send him to ('moveto x z').</summary>
+        public event Action<float, float> MoveToRequested;
+        private Vector2? _moveMark;                      // the last right-clicked spot, drawn as a cross
+        private static readonly IPen _movePen = new Pen(Brushes.Orange, 2);
 
         /// <summary>New /nav snapshot (1 Hz). Keep the last one even when a poll fails, so the map never
         /// blanks out while the bot zones.</summary>
@@ -349,6 +353,8 @@ namespace AOBuddyMonitor
                         Label(ctx, p.X + 6, p.Y - 6, m.Name + (m.HpPct >= 0 ? " " + m.HpPct + "%" : ""));
                 }
 
+                if (_moveMark != null) Cross(ctx, ToScreen(_moveMark.Value.X, _moveMark.Value.Y), 6, _movePen);
+
                 // him: a green dot with his facing
                 if (nav.Pos != null)
                 {
@@ -388,6 +394,15 @@ namespace AOBuddyMonitor
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             base.OnPointerPressed(e);
+            if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+            {
+                var w = ToWorld(e.GetPosition(this));
+                _moveMark = w;
+                MoveToRequested?.Invoke(w.X, w.Y);
+                InvalidateVisual();
+                e.Handled = true;
+                return;
+            }
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
             _dragging = true;
             _dragPoint = new Vector2((float)e.GetPosition(this).X, (float)e.GetPosition(this).Y);
