@@ -1490,6 +1490,7 @@ namespace AOBuddy
                 _ctx.Log($"MISSIONRUN: no blow of mine on '{foe.Name}' in {quiet:0.0} s (my swing {_swingSecs:0.0} s), {me.DistanceFrom(foe):0.0} m off: backing out 5 m the way I came to ({back.X:0},{back.Z:0}) for it to follow.");
                 return _mission.StepToward(pos, back) ?? back;
             }
+            if (me.DistanceFrom(foe) <= 2.5f) _ctx.Log($"MISSIONRUN: no way to back out from '{foe.Name}' ({me.DistanceFrom(foe):0.0} m): no trail, way out or open spot 5 m off that doesn't pass it.");
             float? len = _mission.PathLen(pos, foe.Transform.Position);
             if (!len.HasValue && hurting)
             {

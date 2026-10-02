@@ -831,7 +831,7 @@ namespace AOBuddy
             if (route != null)
                 foreach (var q in route)
                 {
-                    if (awayFrom.HasValue && Movement.Flat(q, awayFrom.Value) < 1.5f) break;   // the way out runs past it
+                    if (awayFrom.HasValue && Movement.Flat(q, awayFrom.Value) < Movement.Flat(from, awayFrom.Value) - 0.3f) break;   // the way out runs past it (closer than he stands now)
                     if (Movement.Flat(q, from) >= meters) return q;
                 }
             // The mob stands in the way out (22:11, 2026-10-01: in the doorway he came in by): an open spot that far off on
@@ -845,7 +845,7 @@ namespace AOBuddy
                 float d = Movement.Flat(c, awayFrom.Value);
                 if (d <= Movement.Flat(from, awayFrom.Value) + 2f || d <= bestD || !_grid.OpenAt(c) || !(_grid.HeightAt(c, from.Y) is float cy)) continue;
                 var path = PathFrom(from, new Vector3(c.X, cy, c.Z), out _);
-                if (path == null || path.Any(q => Movement.Flat(q, awayFrom.Value) < 1.5f)) continue;
+                if (path == null || path.Any(q => Movement.Flat(q, awayFrom.Value) < Movement.Flat(from, awayFrom.Value) - 0.3f)) continue;
                 float len = 0; var prev = from; foreach (var q in path) { len += Movement.Flat(prev, q); prev = q; }
                 if (len > meters * 2) continue;   // round a wall - not "backing off"
                 best = new Vector3(c.X, cy, c.Z); bestD = d;
