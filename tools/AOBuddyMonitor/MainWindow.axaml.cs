@@ -52,7 +52,7 @@ namespace AOBuddyMonitor
             _map = new MapView(_render);
             MapHost.Children.Add(_map);
             _map.FollowToggled += on => CbFollow.IsChecked = on;
-            _map.MoveToRequested += (x, z) => SendText(string.Format(System.Globalization.CultureInfo.InvariantCulture, "moveto {0:0.0} {1:0.0}", x, z));   // right-click on the map   // zone change re-grabs follow; keep the box honest
+            _map.MapMenuRequested += ShowMapMenu;   // right-click on the map   // zone change re-grabs follow; keep the box honest
             _render.Rendered += pf => Dispatcher.UIThread.Post(() => _map.InvalidateVisual());
             LogLine("monitor up — " + (_cfg.PluginDir.Length > 0 ? "nav data: " + _cfg.PluginDir : "no plugin dir found; maps will be grids"));
             LogLine("waiting for the bot on " + _cfg.Base);
@@ -345,6 +345,26 @@ namespace AOBuddyMonitor
                     CmdBox.Focus();
                 });
             });
+        }
+
+        // ---- map right-click menu -------------------------------------------------------------------------
+        // One entry per action: the header and what it does with the clicked world (x, z). Add entries here.
+        private static string Num(float v) => v.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+        private (string Header, Action<float, float> Run)[] MapActions => new (string, Action<float, float>)[]
+        {
+            ("Move here", (x, z) => { _map.SetMark(x, z); SendText($"moveto {Num(x)} {Num(z)}"); }),
+        };
+
+        private void ShowMapMenu(float x, float z)
+        {
+            var items = new List<Control> { new MenuItem { Header = $"({x:0.0}, {z:0.0})", IsEnabled = false }, new Separator() };
+            foreach (var (header, run) in MapActions)
+            {
+                var mi = new MenuItem { Header = header, IsEnabled = CmdBox.IsEnabled };
+                mi.Click += (_, _) => run(x, z);
+                items.Add(mi);
+            }
+            new ContextMenu { ItemsSource = items }.Open(_map);
         }
 
         // ---- map toolbar --------------------------------------------------------------------------------

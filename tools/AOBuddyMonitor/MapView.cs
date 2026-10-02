@@ -72,8 +72,10 @@ namespace AOBuddyMonitor
         /// <summary>Raised when the view itself flips Follow (a zone change grabs the leash back), so the
         /// toolbar checkbox can stay in sync without a binding.</summary>
         public event Action<bool> FollowToggled;
-        /// <summary>Right-click on the map: the world (x, z) to send him to ('moveto x z').</summary>
-        public event Action<float, float> MoveToRequested;
+        /// <summary>Right-click on the map: the world (x, z) under the cursor, for the map's context menu.</summary>
+        public event Action<float, float> MapMenuRequested;
+        /// <summary>Mark a spot on the map (an orange cross), e.g. where he was sent.</summary>
+        public void SetMark(float x, float z) { _moveMark = new Vector2(x, z); InvalidateVisual(); }
         private Vector2? _moveMark;                      // the last right-clicked spot, drawn as a cross
         private static readonly IPen _movePen = new Pen(Brushes.Orange, 2);
 
@@ -397,9 +399,7 @@ namespace AOBuddyMonitor
             if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
             {
                 var w = ToWorld(e.GetPosition(this));
-                _moveMark = w;
-                MoveToRequested?.Invoke(w.X, w.Y);
-                InvalidateVisual();
+                MapMenuRequested?.Invoke(w.X, w.Y);
                 e.Handled = true;
                 return;
             }
